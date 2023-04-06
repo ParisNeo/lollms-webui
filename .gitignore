@@ -131,3 +131,5 @@ dmypy.json
 # Database
 *.db
 /data
+models/
+!models/README.md
