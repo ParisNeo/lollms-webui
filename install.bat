@@ -130,6 +130,7 @@ powershell -Command "Invoke-WebRequest -Uri 'https://the-eye.eu/public/AI/models
 echo Cleaning tmp folder
 rd /s /q "./tmp"
 
-echo Virtual environment created and packages installed successfully. Run app.py
+echo Virtual environment created and packages installed successfully.
+echo Every thing is setup. Just run run.bat 
 pause
 exit /b 0
