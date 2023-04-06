@@ -1,12 +1,12 @@
 # Gpt4All Web UI
 
-![GitHub license](https://img.shields.io/github/license/ParisNeo/Gpt4All-webui)
+![GitHub license](https://img.shields.io/github/license/nomic-ai/GPT4All-ui)
 
-![GitHub issues](https://img.shields.io/github/issues/ParisNeo/Gpt4All-webui)
+![GitHub issues](https://img.shields.io/github/issues/nomic-ai/GPT4All-ui)
 
-![GitHub stars](https://img.shields.io/github/stars/ParisNeo/Gpt4All-webui)
+![GitHub stars](https://img.shields.io/github/stars/nomic-ai/GPT4All-ui)
 
-![GitHub forks](https://img.shields.io/github/forks/ParisNeo/Gpt4All-webui)
+![GitHub forks](https://img.shields.io/github/forks/nomic-ai/GPT4All-ui)
 
 This is a Flask web application that provides a chat UI for interacting with the GPT4All chatbot.
 
@@ -20,23 +20,8 @@ The app allows users to send messages to the chatbot and view its responses in r
 
 The model has just been released and it may evolve over time, this webui is meant for community to get easy and fully local access to a chatbot that may become better with time.
 
-## Disclaimer
-
-The model used by GPT4ALL has been fine-tuned using the LORA technique on LLAMA 7B weights (for now). It is important to note that the LLAMA weights are under commercial proprietary license, and therefore, this model cannot be used for commercial purposes. We do not provide the weights ourselves, but have built a UI wrapper on top of the Nomic library, which downloads the weights automatically upon running the program.
-
-It is important to understand that we are not responsible for any misuse of this tool. Please use it responsibly and at your own risk. While we hope that Nomic will address this issue in the future by providing clean weights that can be used freely, for now, this model is intended for testing purposes only.
-
 ## UI screenshot
 ![image](https://user-images.githubusercontent.com/827993/229951093-27114d9f-0e1f-4d84-b103-e35cd3f9310d.png)
-
-**Note for Windows users:** At the moment, Nomic-AI has not provided a wheel for Windows, so you will need to use the app with the Windows Subsystem for Linux (WSL). To install WSL, follow these steps:
-
-- Open the Windows Features settings (you can find this by searching for "Windows Features" in the Start menu).
-- Enable the "Windows Subsystem for Linux" feature.
-- Restart your computer when prompted.
-- Install a Linux distribution from the Microsoft Store (e.g., Ubuntu).
-- Open the Linux distribution and follow the prompts to create a new user account.
-- We apologize for any inconvenience this may cause. We are working on a more widespread version.
 
 ## Installation
 
@@ -45,35 +30,55 @@ To install the app, follow these steps:
 1.  Clone the GitHub repository:
 
 ```
-git clone https://github.com/ParisNeo/Gpt4All-webui
+git clone https://github.com/nomic-ai/gpt4all-ui
 ```
 
 1.  Navigate to the project directory:
 
 ```
-cd Gpt4All-webui
+cd GPT4All-ui
 ```
 
 1.  Run the appropriate installation script for your platform:
 
-On Windows with WSL:
-
-- When Nomic add windows support you would be able to use this :
-
-  ```
-  install.bat
-  ```
+On Windows :
+```
+install.bat
+```
 - On linux/ Mac os
 
-  ```
+```
 ./install.sh
-  ```
+```
 
 On Linux/MacOS, if you have issues, refer more details are presented [here](docs/Linux_Osx_Install.md)
+These scripts will create a Python virtual environment and install the required dependencies. It will also download the models and install them.
 
-These scripts will create a Python virtual environment and install the required dependencies.
-
+Now you're ready to work!
 ## Usage
+For simple newbies on Windows:
+```cmd
+run.bat
+```
+
+For simple newbies on Linux/MacOsX:
+```bash
+run.sh
+```
+
+if you want more control on your launch, you can activate your environment:
+
+On Windows:
+```cmd
+env/Scripts/activate.bat
+```
+
+On Linux/MacOs:
+```cmd
+source venv/bin/activate
+```
+
+Now you are ready to customize your Bot.
 
 To run the Flask server, execute the following command:
 ```bash
@@ -144,15 +149,4 @@ We are excited about these future plans for the project and look forward to impl
 
 ## License
 
-This project is licensed under the Apache 2.0 License. See the [LICENSE](https://github.com/ParisNeo/Gpt4All-webui/blob/main/LICENSE) file for details.
-
-## Special thanks
-
-
-Special thanks to :
-- [cclaar-byte](https://github.com/cclaar-byte)
-- [CybearWarfare](https://github.com/CybearWarfare)
-- [Jan Brummelte](https://github.com/brummelte) 
-- [higorvaz](https://github.com/higorvaz)
-
-for their contributions.
+This project is licensed under the Apache 2.0 License. See the [LICENSE](https://github.com/nomic-ai/GPT4All-ui/blob/main/LICENSE) file for details.
