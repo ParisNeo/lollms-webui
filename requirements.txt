@@ -1,0 +1,4 @@
+flask
+nomic
+pytest
+pyllamacpp

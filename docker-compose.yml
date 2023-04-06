@@ -1,0 +1,12 @@
+version: '3.8'
+
+services: 
+  webui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./data:/srv/data
+      - ./data/.nomic:/root/.nomic/
+    ports: 
+      - "4685:4685"
