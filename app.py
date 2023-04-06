@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, render_template, Response, stream_with_context
-from nomic.gpt4all import GPT4All
+from pyllamacpp.model import Model
 import argparse
 import threading
 from io import StringIO
@@ -148,7 +148,6 @@ class Gpt4AllWebUI():
         self.app=app
         self.db_path= db_path
         self.add_endpoint('/', '', self.index, methods=['GET'])
-        self.add_endpoint('/stream', 'stream', self.stream, methods=['GET'])
         self.add_endpoint('/export', 'export', self.export, methods=['GET'])
         self.add_endpoint('/new_discussion', 'new_discussion', self.new_discussion, methods=['GET'])
         self.add_endpoint('/bot', 'bot', self.bot, methods=['POST'])
@@ -159,11 +158,43 @@ class Gpt4AllWebUI():
 
         self.add_endpoint('/update_message', 'update_message', self.update_message, methods=['GET'])
         
-        
-        
+        conditionning_message="""
+Instruction: Act as GPT4All. A kind and helpful AI bot built to help users solve problems.
+Start by welcoming the user then stop sending text.
+GPT4All:"""
+        self.prepare_query(conditionning_message)
+        chatbot_bindings.generate(conditionning_message, n_predict=55, new_text_callback=self.new_text_callback, n_threads=8)
+        print(f"Bot said:{self.bot_says}")        
         # Chatbot conditionning
         # response = self.chatbot_bindings.prompt("This is a discussion between A user and an AI. AI responds to user questions in a helpful manner. AI is not allowed to lie or deceive. AI welcomes the user\n### Response:")
         # print(response)
+
+    def prepare_query(self, message):
+        self.bot_says=''
+        self.full_text=''
+        self.is_bot_text_started=False
+        self.current_message = message
+
+
+    def new_text_callback(self, text: str):
+        print(text, end="")
+        self.full_text += text
+        if self.is_bot_text_started:
+            self.bot_says += text
+        if self.current_message in self.full_text:
+            self.is_bot_text_started=True
+
+    def new_text_callback_with_yield(self, text: str):
+        """
+        To do , fix the problem with yield to be able to show interactive response as text comes
+        """
+        print(text, end="")
+        self.full_text += text
+        if self.is_bot_text_started:
+            self.bot_says += text
+        if self.current_message in self.full_text:
+            self.is_bot_text_started=True
+        yield text
 
     def add_endpoint(self, endpoint=None, endpoint_name=None, handler=None, methods=['GET'], *args, **kwargs):
         self.app.add_url_rule(endpoint, endpoint_name, handler, methods=methods, *args, **kwargs)
@@ -184,63 +215,29 @@ class Gpt4AllWebUI():
         # Return the formatted message
         return message
 
-
-    def stream(self):
-        def generate():
-            # Replace this with your text-generating code
-            for i in range(10):
-                yield f'This is line {i+1}\n'
-                time.sleep(1)
-
-        return Response(stream_with_context(generate()))
-
     def export(self):
         return jsonify(export_to_json(self.db_path))
 
-
     @stream_with_context
     def parse_to_prompt_stream(self, message, message_id):
-        bot_says = ['']
-        point = b''
-        bot = self.chatbot_bindings.bot
+        bot_says = ''
         self.stop=False
-
-        # very important. This is the maximum time we wait for the model
-        wait_val = 15.0 # At the beginning the server may need time to send data. we wait 15s
 
         # send the message to the bot
         print(f"Received message : {message}")
-        bot = self.chatbot_bindings.bot
-        bot.stdin.write(message.encode('utf-8'))
-        bot.stdin.write(b"\n")
-        bot.stdin.flush()
-
         # First we need to send the new message ID to the client
         response_id = self.current_discussion.add_message("GPT4All",'') # first the content is empty, but we'll fill it at the end
         yield(json.dumps({'type':'input_message_infos','message':message, 'id':message_id, 'response_id':response_id}))
 
-        #Now let's wait for the bot to answer
-        while not self.stop:
-            readable, _, _ = select.select([bot.stdout], [], [], wait_val)
-            wait_val = 4.0 # Once started, the process doesn't take that much so we reduce the wait
-            if bot.stdout in readable:
-                point += bot.stdout.read(1)
-                try:
-                    character = point.decode("utf-8")
-                    if character == "\n":
-                        bot_says.append('\n')
-                        yield '\n'
-                    else:
-                        bot_says[-1] += character
-                    yield character
-                    point = b''
+        self.current_message = "User: "+message+"\nGPT4All:"
+        self.prepare_query(self.current_message)
+        chatbot_bindings.generate(self.current_message, n_predict=55, new_text_callback=self.new_text_callback, n_threads=8)
 
-                except UnicodeDecodeError:
-                    if len(point) > 4:
-                        point = b''
-            else:
-                self.current_discussion.update_message(response_id,bot_says)
-                return "\n".join(bot_says)
+        self.current_discussion.update_message(response_id,self.bot_says)
+        yield self.bot_says
+        # TODO : change this to use the yield version in order to send text word by word
+
+        return "\n".join(bot_says)
             
     def bot(self):
         self.stop=True
@@ -335,17 +332,19 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    chatbot_bindings = GPT4All(decoder_config = {
-                'temp': args.temp,
-                'n_predict':args.n_predict,
-                'top_k':args.top_k,
-                'top_p':args.top_p,
-                #'color': True,#"## Instruction",
-                'repeat_penalty': args.repeat_penalty,
-                'repeat_last_n':args.repeat_last_n,
-                'ctx_size': args.ctx_size
-            })
-    chatbot_bindings.open()
+    chatbot_bindings = Model(ggml_model='./models/gpt4all-converted.bin', n_ctx=512)
+    
+    # Old Code
+    # GPT4All(decoder_config = {
+    #     'temp': args.temp,
+    #     'n_predict':args.n_predict,
+    #     'top_k':args.top_k,
+    #     'top_p':args.top_p,
+    #     #'color': True,#"## Instruction",
+    #     'repeat_penalty': args.repeat_penalty,
+    #     'repeat_last_n':args.repeat_last_n,
+    #     'ctx_size': args.ctx_size
+    # })
     check_discussion_db(args.db_path)
     bot = Gpt4AllWebUI(chatbot_bindings, app, args.db_path)
 

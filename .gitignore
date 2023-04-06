@@ -130,4 +130,13 @@ dmypy.json
 
 # Database
 *.db
+
+# Docker files
 /data
+
+# models
+models/
+!models/README.md
+
+# Temporary files
+tmp/
