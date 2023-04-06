@@ -57,15 +57,28 @@ These scripts will create a Python virtual environment and install the required 
 Now you're ready to work!
 ## Usage
 For simple newbies on Windows:
-```bash
+```cmd
 run.bat
 ```
 
 For simple newbies on Linux/MacOsX:
 ```bash
-run.bat
+run.sh
 ```
 
+if you want more control on your launch, you can activate your environment:
+
+On Windows:
+```cmd
+env/Scripts/activate.bat
+```
+
+On Linux/MacOs:
+```cmd
+source venv/bin/activate
+```
+
+Now you are ready to customize your Bot.
 
 To run the Flask server, execute the following command:
 ```bash
@@ -137,14 +150,3 @@ We are excited about these future plans for the project and look forward to impl
 ## License
 
 This project is licensed under the Apache 2.0 License. See the [LICENSE](https://github.com/nomic-ai/GPT4All-ui/blob/main/LICENSE) file for details.
-
-## Special thanks
-
-
-Special thanks to :
-- [cclaar-byte](https://github.com/cclaar-byte)
-- [CybearWarfare](https://github.com/CybearWarfare)
-- [Jan Brummelte](https://github.com/brummelte) 
-- [higorvaz](https://github.com/higorvaz)
-
-for their contributions.
