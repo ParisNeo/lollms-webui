@@ -35,6 +35,7 @@ echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 
+if not exist "./tmp" mkdir "./tmp"
 
 REM Check if Python is installed
 set /p="Checking for python..." <nul
@@ -44,10 +45,10 @@ if %errorlevel% neq 0 (
     if /i ".choice." equ "Y" (
         REM Download Python installer
         echo Downloading Python installer...
-        powershell -Command "Invoke-WebRequest -Uri 'https://www.python.org/ftp/python/3.10.0/python-3.10.0-amd64.exe' -OutFile 'python.exe'"
+        powershell -Command "Invoke-WebRequest -Uri 'https://www.python.org/ftp/python/3.10.0/python-3.10.0-amd64.exe' -OutFile 'tmp/python.exe'"
         REM Install Python
         echo Installing Python...
-        python.exe /quiet /norestart
+        tmp/python.exe /quiet /norestart
     ) else (
         echo Please install Python and try again.
         pause
@@ -66,10 +67,10 @@ if %errorlevel% neq 0 (
     if /i ".choice." equ "Y" (
         REM Download get-pip.py
         echo Downloading get-pip.py...
-        powershell -Command "Invoke-WebRequest -Uri 'https://bootstrap.pypa.io/get-pip.py' -OutFile 'get-pip.py'"
+        powershell -Command "Invoke-WebRequest -Uri 'https://bootstrap.pypa.io/get-pip.py' -OutFile 'tmp/get-pip.py'"
         REM Install pip
         echo Installing pip...
-        python get-pip.py
+        python tmp/get-pip.py
     ) else .
         echo Please install pip and try again.
         pause
@@ -123,6 +124,12 @@ if .ERRORLEVEL. neq 0 (
     exit /b 1
 )
 
-echo Virtual environment created and packages installed successfully.
+echo Downloading latest model
+powershell -Command "Invoke-WebRequest -Uri 'https://the-eye.eu/public/AI/models/nomic-ai/gpt4all/gpt4all-lora-quantized-ggml.bin' -OutFile 'models/gpt4all-lora-quantized-ggml.bin'"
+
+echo Cleaning tmp folder
+rd /s /q "./tmp"
+
+echo Virtual environment created and packages installed successfully. Run app.py
 pause
 exit /b 0
