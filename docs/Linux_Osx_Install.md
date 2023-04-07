@@ -1,5 +1,11 @@
 # Installing GPT4All-Webui on Linux or macOS:
 
+\- Make sure you have all the dependencies for requirements
+`python3.11 -m pip install cmake`
+`python3.11 -m pip install nproc` if you have issues with scikit-learn add the foollowing env var
+`SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL=True` 
+`python3.11 -m pip install wget`
+
 \- Install requirements  
 python3.11 -m pip install -r requirements.txt 
 
