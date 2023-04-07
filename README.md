@@ -33,21 +33,24 @@ To install the app, follow these steps:
 git clone https://github.com/nomic-ai/gpt4all-ui
 ```
 
+### Manual setup
+Hint: Scroll down for docker-compose setup
+
 1.  Navigate to the project directory:
 
-```
+```bash
 cd gpt4all-ui
 ```
 
-1.  Run the appropriate installation script for your platform:
+2.  Run the appropriate installation script for your platform:
 
 On Windows :
-```
+```cmd
 install.bat
 ```
 - On linux/ Mac os
 
-```
+```bash
 bash ./install.sh
 ```
 
@@ -55,6 +58,7 @@ On Linux/MacOS, if you have issues, refer more details are presented [here](docs
 These scripts will create a Python virtual environment and install the required dependencies. It will also download the models and install them.
 
 Now you're ready to work!
+
 ## Usage
 For simple newbies on Windows:
 ```cmd
@@ -65,7 +69,6 @@ For simple newbies on Linux/MacOsX:
 ```bash
 bash run.sh
 ```
-
 
 if you want more control on your launch, you can activate your environment:
 
@@ -106,6 +109,22 @@ Note: All options are optional, and have default values.
 Once the server is running, open your web browser and navigate to http://localhost:9600 (or http://your host name:your port number if you have selected different values for those) to access the chatbot UI. To use the app, open a web browser and navigate to this URL.
 
 Make sure to adjust the default values and descriptions of the options to match your specific application.
+
+### Docker Compose Setup
+Make sure to have the `gpt4all-lora-quantized-ggml.bin` inside the `models` directory.
+After that you can simply use docker-compose or podman-compose to build and start the application:
+
+Build
+```bash
+docker-compose -f docker-compose.yml build
+```
+
+Start
+```bash
+docker-compose -f docker-compose.yml up
+```
+
+After that you can open the application in your browser on http://localhost:9600
 
 ## Contribute
 

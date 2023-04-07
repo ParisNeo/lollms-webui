@@ -1,0 +1,31 @@
+name: Docker Build and Lint
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: false
+          tags: gpt4all-ui:latest
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Run Hadolint
+        run: |
+          docker run --rm -i -v $PWD/.hadolint.yaml:/.config/hadolint.yaml hadolint/hadolint < Dockerfile
