@@ -48,7 +48,7 @@ install.bat
 - On linux/ Mac os
 
 ```
-./install.sh
+bash ./install.sh
 ```
 
 On Linux/MacOS, if you have issues, refer more details are presented [here](docs/Linux_Osx_Install.md)
@@ -63,8 +63,9 @@ run.bat
 
 For simple newbies on Linux/MacOsX:
 ```bash
-run.sh
+bash run.sh
 ```
+
 
 if you want more control on your launch, you can activate your environment:
 
