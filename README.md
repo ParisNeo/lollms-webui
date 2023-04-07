@@ -7,9 +7,9 @@
 
 This is a Flask web application that provides a chat UI for interacting with the GPT4All chatbot.
 
-[Discord server](https://discord.gg/DZ4wsgg4)
+Follow us on our [Discord server](https://discord.gg/DZ4wsgg4).
 
-## What is GPT4All
+## What is GPT4All ?
 
 GPT4All is a language model built by Nomic-AI, a company specializing in natural language processing. The app uses Nomic-AI's library to communicate with the GPT4All model, which runs locally on the user's PC. For more details about this project, head on to their [github repository](https://github.com/nomic-ai/gpt4all). You can also reald their [Technical report](https://s3.amazonaws.com/static.nomic.ai/gpt4all/2023_GPT4All_Technical_Report.pdf) for more information about the training process, the database etc.
 
