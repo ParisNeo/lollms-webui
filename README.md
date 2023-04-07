@@ -111,7 +111,7 @@ Once the server is running, open your web browser and navigate to http://localho
 Make sure to adjust the default values and descriptions of the options to match your specific application.
 
 ### Docker Compose Setup
-Make sure to have the `gpt4all-lora-quantized-ggml.bin` inside the `gpt4all-lora-quantized-ggml.bin` directory.
+Make sure to have the `gpt4all-lora-quantized-ggml.bin` inside the `models` directory.
 After that you can simply use docker-compose or podman-compose to build and start the application:
 
 Build
