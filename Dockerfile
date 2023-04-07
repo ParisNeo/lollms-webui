@@ -10,5 +10,5 @@ COPY ./app.py /srv/app.py
 COPY ./static /srv/static
 COPY ./templates /srv/templates
 
-COPY ./models /srv/models
+# COPY ./models /srv/models  # Mounting model is more efficient
 CMD ["python", "app.py", "--host", "0.0.0.0", "--port", "4685", "--db_path", "data/database.db"]
