@@ -35,7 +35,7 @@ git clone https://github.com/nomic-ai/gpt4all-ui
 1.  Navigate to the project directory:
 
 ```
-cd GPT4All-ui
+cd gpt4all-ui
 ```
 
 1.  Run the appropriate installation script for your platform:
