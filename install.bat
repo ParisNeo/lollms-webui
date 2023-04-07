@@ -125,27 +125,51 @@ if %ERRORLEVEL% neq 0 (
 )
 
 echo Downloading latest model
-IF NOT EXIST models (
+if not exist models (
     md models
 )
 
-IF NOT EXIST models/gpt4all-lora-quantized-ggml.bin (
-    powershell -Command "Invoke-WebRequest -Uri 'https://the-eye.eu/public/AI/models/nomic-ai/gpt4all/gpt4all-lora-quantized-ggml.bin' -OutFile 'models/gpt4all-lora-quantized-ggml.bin'"
-) ELSE (
-    :PROMPT
+if not exist models/gpt4all-lora-quantized-ggml.bin (
     echo.
-    set /p choice="The model file already exists. Do you want to override it? (y/n) "
-    if /i {%choice%}=={y} (
-        powershell -Command "Invoke-WebRequest -Uri 'https://the-eye.eu/public/AI/models/nomic-ai/gpt4all/gpt4all-lora-quantized-ggml.bin' -OutFile 'models/gpt4all-lora-quantized-ggml.bin'" && goto :CONTINUE
-    ) else if /i {%choice%}=={n} (
-        goto :CONTINUE
-    ) else (
-        echo.
-        echo Invalid input. Please enter 'y' or 'n'.
-        goto :PROMPT
-    )
+    choice /C YNB /M "The default model file (gpt4all-lora-quantized-ggml.bin) does not exist. Do you want to download it? Press B to download it with a browser (faster)."
+    if errorlevel 3 goto DOWNLOAD_WITH_BROWSER
+    if errorlevel 2 goto DOWNLOAD_SKIP
+    if errorlevel 1 goto MODEL_DOWNLOAD
+) ELSE (
+    echo.
+    choice /C YNB /M "The default model file (gpt4all-lora-quantized-ggml.bin) already exists. Do you want to replace it? Press B to download it with a browser (faster)."
+    if errorlevel 3 goto DOWNLOAD_WITH_BROWSER
+    if errorlevel 2 goto DOWNLOAD_SKIP
+    if errorlevel 1 goto MODEL_DOWNLOAD
 )
+
+:DOWNLOAD_WITH_BROWSER
+start https://the-eye.eu/public/AI/models/nomic-ai/gpt4all/gpt4all-lora-quantized-ggml.bin
+echo Link has been opened with the default web browser, make sure to save it into the models folder. Press any key to continue.
+pause
+goto :CONTINUE
+
+:MODEL_DOWNLOAD
+echo.
+echo Downloading latest model...
+powershell -Command "Invoke-WebRequest -Uri 'https://the-eye.eu/public/AI/models/nomic-ai/gpt4all/gpt4all-lora-quantized-ggml.bin' -OutFile 'models/gpt4all-lora-quantized-ggml.bin'"
+if errorlevel 1 (
+    echo Failed to download model. Please check your internet connection.
+    choice /C YN /M "Do you want to try downloading again?"
+    if errorlevel 2 goto DOWNLOAD_SKIP
+    if errorlevel 1 goto MODEL_DOWNLOAD
+) else (
+    echo Model successfully downloaded.
+)
+goto :CONTINUE
+
+:DOWNLOAD_SKIP
+echo.
+echo Skipping download of model file...
+goto :CONTINUE
+
 :CONTINUE
+echo.
 
 echo Cleaning tmp folder
 rd /s /q "./tmp"
