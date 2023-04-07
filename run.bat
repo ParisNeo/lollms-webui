@@ -37,4 +37,4 @@ echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 
 echo on
 call env/Scripts/activate.bat
-python app.py
+python app.py %*

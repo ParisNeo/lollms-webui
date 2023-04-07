@@ -527,6 +527,7 @@ const welcome_message = `
 - Act as ChefAI an AI that has the ability to create recipes for any occasion. Instruction: Give me a recipe for my next anniversary.<br>
 </code>
 </div>
+<div>Welcome! I'm here to assist you with anything you need. What can I do for you today?</div>
 `;
 //welcome_message = add_collapsible_div("Note:", text, 'hints');
 
