@@ -1,11 +1,8 @@
 # Gpt4All Web UI
 
 ![GitHub license](https://img.shields.io/github/license/nomic-ai/GPT4All-ui)
-
 ![GitHub issues](https://img.shields.io/github/issues/nomic-ai/GPT4All-ui)
-
 ![GitHub stars](https://img.shields.io/github/stars/nomic-ai/GPT4All-ui)
-
 ![GitHub forks](https://img.shields.io/github/forks/nomic-ai/GPT4All-ui)
 
 This is a Flask web application that provides a chat UI for interacting with the GPT4All chatbot.
