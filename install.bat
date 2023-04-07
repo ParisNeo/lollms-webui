@@ -128,9 +128,24 @@ echo Downloading latest model
 IF NOT EXIST models (
     md models
 )
+
 IF NOT EXIST models/gpt4all-lora-quantized-ggml.bin (
     powershell -Command "Invoke-WebRequest -Uri 'https://the-eye.eu/public/AI/models/nomic-ai/gpt4all/gpt4all-lora-quantized-ggml.bin' -OutFile 'models/gpt4all-lora-quantized-ggml.bin'"
+) ELSE (
+    :PROMPT
+    echo.
+    set /p choice="The model file already exists. Do you want to override it? (y/n) "
+    if /i {%choice%}=={y} (
+        powershell -Command "Invoke-WebRequest -Uri 'https://the-eye.eu/public/AI/models/nomic-ai/gpt4all/gpt4all-lora-quantized-ggml.bin' -OutFile 'models/gpt4all-lora-quantized-ggml.bin'" && goto :CONTINUE
+    ) else if /i {%choice%}=={n} (
+        goto :CONTINUE
+    ) else (
+        echo.
+        echo Invalid input. Please enter 'y' or 'n'.
+        goto :PROMPT
+    )
 )
+:CONTINUE
 
 echo Cleaning tmp folder
 rd /s /q "./tmp"
