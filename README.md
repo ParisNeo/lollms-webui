@@ -93,7 +93,8 @@ On Linux/MacOS more details are [here](docs/Linux_Osx_Usage.md)
 
 
 ## Options
-
+*   `--model`: the name of the model to be used. The model should be placed in models folder (default: gpt4all-lora-quantized.bin)
+*   `--seed`: the random seed for reproductibility. If fixed, it is possible to reproduce the outputs exactly (default: random)
 *   `--port`: the port on which to run the server (default: 9600)
 *   `--host`: the host address on which to run the server (default: localhost)
 *   `--temp`: the sampling temperature for the model (default: 0.1)
