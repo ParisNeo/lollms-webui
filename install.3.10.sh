@@ -59,5 +59,12 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+echo Downloading latest model
+wget -P models/  https://the-eye.eu/public/AI/models/nomic-ai/gpt4all/gpt4all-lora-quantized-ggml.bin
+if [ $? -ne 0 ]; then
+  echo "Failed to download model. Please check your `wget` dependency, internet connection and try again."
+  exit 1
+fi
+
 echo "Virtual environment created and packages installed successfully."
 exit 0

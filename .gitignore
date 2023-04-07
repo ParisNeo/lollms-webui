@@ -130,13 +130,14 @@ dmypy.json
 
 # Database
 *.db
+
+# Docker files
 /data
 
-# Models and tokenizers
-*.bin
-*.bin.orig
-*.model
+# models
+models/
+!models/.keep
+!models/README.md
 
-
-# Vscode files 
-.vscode
+# Temporary files
+tmp/

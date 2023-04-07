@@ -1,42 +1,27 @@
 # Gpt4All Web UI
 
-![GitHub license](https://img.shields.io/github/license/ParisNeo/Gpt4All-webui)
-
-![GitHub issues](https://img.shields.io/github/issues/ParisNeo/Gpt4All-webui)
-
-![GitHub stars](https://img.shields.io/github/stars/ParisNeo/Gpt4All-webui)
-
-![GitHub forks](https://img.shields.io/github/forks/ParisNeo/Gpt4All-webui)
+![GitHub license](https://img.shields.io/github/license/nomic-ai/GPT4All-ui)
+![GitHub issues](https://img.shields.io/github/issues/nomic-ai/GPT4All-ui)
+![GitHub stars](https://img.shields.io/github/stars/nomic-ai/GPT4All-ui)
+![GitHub forks](https://img.shields.io/github/forks/nomic-ai/GPT4All-ui)
+[![Discord](https://img.shields.io/discord/1092918764925882418?color=7289da&label=Discord&logo=discord&logoColor=ffffff)](https://discord.gg/DZ4wsgg4)
 
 This is a Flask web application that provides a chat UI for interacting with the GPT4All chatbot.
 
-[Discord server](https://discord.gg/DZ4wsgg4)
+Follow us on our [Discord server](https://discord.gg/DZ4wsgg4).
 
-## What is GPT4All
+## What is GPT4All ?
 
-GPT4All is a language model built by Nomic-AI, a company specializing in natural language processing. The app uses Nomic-AI's library to communicate with the GPT4All model, which runs locally on the user's PC. For more details about this project, head on to their [github repository](https://github.com/nomic-ai/gpt4all). You can also reald their [Technical report](https://s3.amazonaws.com/static.nomic.ai/gpt4all/2023_GPT4All_Technical_Report.pdf) for more information about the training process, the batabase etc.
+GPT4All is an exceptional language model, designed and developed by Nomic-AI, a proficient company dedicated to natural language processing. The app uses Nomic-AI's advanced library to communicate with the cutting-edge GPT4All model, which operates locally on the user's PC, ensuring seamless and efficient communication.
 
-The app allows users to send messages to the chatbot and view its responses in real-time. Additionally, users can export the entire chat history in text or JSON format.
+If you are interested in learning more about this groundbreaking project, visit their Github repository [github repository](https://github.com/nomic-ai/gpt4all), where you can find comprehensive information regarding the app's functionalities and technical details. Moreover, you can delve deeper into the training process and database by going through their detailed Technical report, available for download at [Technical report](https://s3.amazonaws.com/static.nomic.ai/gpt4all/2023_GPT4All_Technical_Report.pdf).
 
-The model has just been released and it may evolve over time, this webui is meant for community to get easy and fully local access to a chatbot that may become better with time.
+One of the app's impressive features is that it allows users to send messages to the chatbot and receive instantaneous responses in real-time, ensuring a seamless user experience. Additionally, the app facilitates the exportation of the entire chat history in either text or JSON format, providing greater flexibility to the users.
 
-## Disclaimer
-
-The model used by GPT4ALL has been fine-tuned using the LORA technique on LLAMA 7B weights (for now). It is important to note that the LLAMA weights are under commercial proprietary license, and therefore, this model cannot be used for commercial purposes. We do not provide the weights ourselves, but have built a UI wrapper on top of the Nomic library, which downloads the weights automatically upon running the program.
-
-It is important to understand that we are not responsible for any misuse of this tool. Please use it responsibly and at your own risk. While we hope that Nomic will address this issue in the future by providing clean weights that can be used freely, for now, this model is intended for testing purposes only.
+It's worth noting that the model has recently been launched, and it's expected to evolve over time, enabling it to become even better in the future. This webui is designed to provide the community with easy and fully localized access to a chatbot that will continue to improve and adapt over time.
 
 ## UI screenshot
 ![image](https://user-images.githubusercontent.com/827993/229951093-27114d9f-0e1f-4d84-b103-e35cd3f9310d.png)
-
-**Note for Windows users:** At the moment, Nomic-AI has not provided a wheel for Windows, so you will need to use the app with the Windows Subsystem for Linux (WSL). To install WSL, follow these steps:
-
-- Open the Windows Features settings (you can find this by searching for "Windows Features" in the Start menu).
-- Enable the "Windows Subsystem for Linux" feature.
-- Restart your computer when prompted.
-- Install a Linux distribution from the Microsoft Store (e.g., Ubuntu).
-- Open the Linux distribution and follow the prompts to create a new user account.
-- We apologize for any inconvenience this may cause. We are working on a more widespread version.
 
 ## Installation
 
@@ -45,35 +30,59 @@ To install the app, follow these steps:
 1.  Clone the GitHub repository:
 
 ```
-git clone https://github.com/ParisNeo/Gpt4All-webui
+git clone https://github.com/nomic-ai/gpt4all-ui
 ```
+
+### Manual setup
+Hint: Scroll down for docker-compose setup
 
 1.  Navigate to the project directory:
 
+```bash
+cd gpt4all-ui
 ```
-cd Gpt4All-webui
+
+2.  Run the appropriate installation script for your platform:
+
+On Windows :
+```cmd
+install.bat
 ```
-
-1.  Run the appropriate installation script for your platform:
-
-On Windows with WSL:
-
-- When Nomic add windows support you would be able to use this :
-
-  ```
-  install.bat
-  ```
 - On linux/ Mac os
 
-  ```
-./install.sh
-  ```
+```bash
+bash ./install.sh
+```
 
 On Linux/MacOS, if you have issues, refer more details are presented [here](docs/Linux_Osx_Install.md)
+These scripts will create a Python virtual environment and install the required dependencies. It will also download the models and install them.
 
-These scripts will create a Python virtual environment and install the required dependencies.
+Now you're ready to work!
 
 ## Usage
+For simple newbies on Windows:
+```cmd
+run.bat
+```
+
+For simple newbies on Linux/MacOsX:
+```bash
+bash run.sh
+```
+
+if you want more control on your launch, you can activate your environment:
+
+On Windows:
+```cmd
+env/Scripts/activate.bat
+```
+
+On Linux/MacOs:
+```cmd
+source venv/bin/activate
+```
+
+Now you are ready to customize your Bot.
 
 To run the Flask server, execute the following command:
 ```bash
@@ -100,6 +109,22 @@ Note: All options are optional, and have default values.
 Once the server is running, open your web browser and navigate to http://localhost:9600 (or http://your host name:your port number if you have selected different values for those) to access the chatbot UI. To use the app, open a web browser and navigate to this URL.
 
 Make sure to adjust the default values and descriptions of the options to match your specific application.
+
+### Docker Compose Setup
+Make sure to have the `gpt4all-lora-quantized-ggml.bin` inside the `models` directory.
+After that you can simply use docker-compose or podman-compose to build and start the application:
+
+Build
+```bash
+docker-compose -f docker-compose.yml build
+```
+
+Start
+```bash
+docker-compose -f docker-compose.yml up
+```
+
+After that you can open the application in your browser on http://localhost:9600
 
 ## Contribute
 
@@ -144,15 +169,4 @@ We are excited about these future plans for the project and look forward to impl
 
 ## License
 
-This project is licensed under the Apache 2.0 License. See the [LICENSE](https://github.com/ParisNeo/Gpt4All-webui/blob/main/LICENSE) file for details.
-
-## Special thanks
-
-
-Special thanks to :
-- [cclaar-byte](https://github.com/cclaar-byte)
-- [CybearWarfare](https://github.com/CybearWarfare)
-- [Jan Brummelte](https://github.com/brummelte) 
-- [higorvaz](https://github.com/higorvaz)
-
-for their contributions.
+This project is licensed under the Apache 2.0 License. See the [LICENSE](https://github.com/nomic-ai/GPT4All-ui/blob/main/LICENSE) file for details.
