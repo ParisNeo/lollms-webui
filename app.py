@@ -230,7 +230,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
             conditionning_message,
             new_text_callback=self.new_text_callback,
 
-            n_predict=0,#len(conditionning_message),
+            n_predict=len(conditionning_message),
             temp=self.args.temp,
             top_k=self.args.top_k,
             top_p=self.args.top_p,
