@@ -37,7 +37,7 @@ echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 
 
 # Activate the virtual environment
-source venv/bin/activate
+source env/bin/activate
 
 # Launch the Python application
 python app.py
