@@ -10,4 +10,4 @@ services:
       - ./data/.nomic:/root/.nomic/
       - ./models:/srv/models
     ports: 
-      - "4685:4685"
+      - "9600:9600"
