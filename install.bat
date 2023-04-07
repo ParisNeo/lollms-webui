@@ -127,8 +127,10 @@ if %ERRORLEVEL% neq 0 (
 echo Downloading latest model
 IF NOT EXIST models (
     md models
-) else ()
-powershell -Command "Invoke-WebRequest -Uri 'https://the-eye.eu/public/AI/models/nomic-ai/gpt4all/gpt4all-lora-quantized-ggml.bin' -OutFile 'models/gpt4all-lora-quantized-ggml.bin'"
+)
+IF NOT EXIST models/gpt4all-lora-quantized-ggml.bin (
+    powershell -Command "Invoke-WebRequest -Uri 'https://the-eye.eu/public/AI/models/nomic-ai/gpt4all/gpt4all-lora-quantized-ggml.bin' -OutFile 'models/gpt4all-lora-quantized-ggml.bin'"
+)
 
 echo Cleaning tmp folder
 rd /s /q "./tmp"
