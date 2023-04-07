@@ -332,7 +332,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    chatbot_bindings = Model(ggml_model='./models/gpt4all-converted.bin', n_ctx=512)
+    chatbot_bindings = Model(ggml_model='./models/gpt4all-lora-quantized-ggml.bin', n_ctx=512)
     
     # Old Code
     # GPT4All(decoder_config = {
