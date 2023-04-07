@@ -131,3 +131,12 @@ dmypy.json
 # Database
 *.db
 /data
+
+# Models and tokenizers
+*.bin
+*.bin.orig
+*.model
+
+
+# Vscode files 
+.vscode
