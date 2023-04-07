@@ -326,7 +326,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         self.prepare_query(self.current_message)
         self.chatbot_bindings.generate(
             self.current_message,
-            new_text_callback=self.new_text_callback_with_yield,
+            new_text_callback=self.new_text_callback,#_with_yield,
             n_predict=len(self.current_message)+args.n_predict,
             temp=self.args.temp,
             top_k=self.args.top_k,
