@@ -1,10 +1,11 @@
 import argparse
 import json
 import re
-import random
 import sqlite3
 import traceback
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
+
 
 from flask import (
     Flask,
@@ -196,13 +197,20 @@ class Gpt4AllWebUI:
         self.add_endpoint(
             "/update_message", "update_message", self.update_message, methods=["GET"]
         )
+        self.add_endpoint(
+            "/update_model_params", "update_model_params", self.update_model_params, methods=["POST"]
+        )
 
 
+        self.prepare_a_new_chatbot()
+
+
+    def prepare_a_new_chatbot(self):
         # Create chatbot
         self.chatbot_bindings = self.create_chatbot()
         # Chatbot conditionning
         self.condition_chatbot()
-
+        
 
     def create_chatbot(self):
         return Model(
@@ -222,16 +230,17 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
             conditionning_message,
             new_text_callback=self.new_text_callback,
 
-            n_predict=len(conditionning_message),
+            n_predict=0,#len(conditionning_message),
             temp=self.args.temp,
             top_k=self.args.top_k,
             top_p=self.args.top_p,
             repeat_penalty=self.args.repeat_penalty,
             repeat_last_n = self.args.repeat_last_n,
             #seed=self.args.seed,
-            n_threads=8,
+            n_threads=8
         )
         print(f"Bot said:{self.bot_says}")        
+
 
     def prepare_query(self, message):
         self.bot_says = ""
@@ -317,8 +326,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         self.prepare_query(self.current_message)
         self.chatbot_bindings.generate(
             self.current_message,
-            new_text_callback=self.new_text_callback,
-
+            new_text_callback=self.new_text_callback_with_yield,
             n_predict=len(self.current_message)+args.n_predict,
             temp=self.args.temp,
             top_k=self.args.top_k,
@@ -326,7 +334,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
             repeat_penalty=self.args.repeat_penalty,
             repeat_last_n = self.args.repeat_last_n,
             #seed=self.args.seed,
-            n_threads=8,
+            n_threads=8
         )
 
         self.current_discussion.update_message(response_id, self.bot_says)
@@ -387,26 +395,30 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         Discussion.rename(self.db_path, discussion_id, title)
         return "renamed successfully"
 
-    def get_messages(self):
-        data = request.get_json()
-        discussion_id = data["id"]
-        self.current_discussion = Discussion(discussion_id, self.db_path)
-        messages = self.current_discussion.get_messages()
-        full_message = ""
-        for message in messages:
-            full_message += message['sender'] + ": " + message['content'] + "\n"
-            
+    def restore_discussion(self, full_message):
         self.chatbot_bindings.generate(
             full_message,
             new_text_callback=self.new_text_callback,
-            n_predict=len(messages),
+            n_predict=0,#len(full_message),
             temp=self.args.temp,
             top_k=self.args.top_k,
             top_p=self.args.top_p,
             repeat_penalty= self.args.repeat_penalty,
             repeat_last_n = self.args.repeat_last_n,
-            n_threads=8,
+            n_threads=8
         )
+
+    def get_messages(self):
+        data = request.get_json()
+        discussion_id = data["id"]
+        self.current_discussion = Discussion(discussion_id, self.db_path)
+        messages = self.current_discussion.get_messages()
+        
+        # full_message = ""
+        # for message in messages:
+        #     full_message += message['sender'] + ": " + message['content'] + "\n"
+        # app.config['executor'].submit(self.restore_discussion, full_message)
+
         return jsonify(messages)
 
     def delete_discussion(self):
@@ -439,13 +451,15 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         # Get the current timestamp
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        # Create chatbot
-        self.chatbot_bindings = self.create_chatbot()
-        # Chatbot conditionning
-        self.condition_chatbot()
+        app.config['executor'].submit(self.prepare_a_new_chatbot)
         # Return a success response
         return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp})
 
+    def update_model_params(self):
+        data = request.get_json()
+        self.args.temp = data["temp"]
+        return jsonify({"status":"ok"})
+        
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Start the chatbot Flask app.")
@@ -462,7 +476,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--n_predict",
         type=int,
-        default=256,#128,
+        default=256,
         help="Number of tokens to predict at each step.",
     )
     parser.add_argument(
@@ -503,6 +517,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     check_discussion_db(args.db_path)
+    executor = ThreadPoolExecutor(max_workers=2)
+    app.config['executor'] = executor
+
     bot = Gpt4AllWebUI(app, args)
 
     if args.debug:
