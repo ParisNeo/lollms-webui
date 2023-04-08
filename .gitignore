@@ -141,3 +141,6 @@ models/
 
 # Temporary files
 tmp/
+
+# 
+llama.cpp
