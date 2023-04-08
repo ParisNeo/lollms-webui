@@ -71,7 +71,7 @@ if %errorlevel% neq 0 (
         REM Install pip
         echo Installing pip...
         python tmp/get-pip.py
-    ) else .
+    ) else (
         echo Please install pip and try again.
         pause
         exit /b 1
