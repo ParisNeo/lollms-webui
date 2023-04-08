@@ -16,7 +16,7 @@ from flask import (
     stream_with_context,
 )
 from pyllamacpp.model import Model
-
+from queue import Queue
 
 # =================================== Database ==================================================================
 class Discussion:
@@ -173,6 +173,8 @@ class Gpt4AllWebUI:
         self.current_discussion = None
         self.app = _app
         self.db_path = args.db_path
+
+        self.text_queue = Queue(0)
         
         self.add_endpoint("/", "", self.index, methods=["GET"])
         self.add_endpoint("/export", "export", self.export, methods=["GET"])
@@ -254,20 +256,9 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         self.full_text += text
         if self.is_bot_text_started:
             self.bot_says += text
+            self.text_queue.put(text)
         if self.current_message in self.full_text:
             self.is_bot_text_started = True
-
-    def new_text_callback_with_yield(self, text: str):
-        """
-        To do , fix the problem with yield to be able to show interactive response as text comes
-        """
-        print(text, end="")
-        self.full_text += text
-        if self.is_bot_text_started:
-            self.bot_says += text
-        if self.current_message in self.full_text:
-            self.is_bot_text_started = True
-        yield text# .encode('utf-8').decode('utf-8')
 
     def add_endpoint(
         self,
@@ -301,6 +292,22 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
     def export(self):
         return jsonify(export_to_json(self.db_path))
 
+    def generate_message(self):
+        self.generating=True
+        self.chatbot_bindings.generate(
+            self.current_message,
+            new_text_callback=self.new_text_callback,#_with_yield,
+            n_predict=len(self.current_message)+self.args.n_predict,
+            temp=self.args.temp,
+            top_k=self.args.top_k,
+            top_p=self.args.top_p,
+            repeat_penalty=self.args.repeat_penalty,
+            repeat_last_n = self.args.repeat_last_n,
+            #seed=self.args.seed,
+            n_threads=8
+        )
+        self.generating=False
+
     @stream_with_context
     def parse_to_prompt_stream(self, message, message_id):
         bot_says = ""
@@ -325,18 +332,16 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
 
         self.current_message = "\nUser: " + message + "\nGPT4All: "
         self.prepare_query(self.current_message)
-        self.chatbot_bindings.generate(
-            self.current_message,
-            new_text_callback=self.new_text_callback,#_with_yield,
-            n_predict=len(self.current_message)+self.args.n_predict,
-            temp=self.args.temp,
-            top_k=self.args.top_k,
-            top_p=self.args.top_p,
-            repeat_penalty=self.args.repeat_penalty,
-            repeat_last_n = self.args.repeat_last_n,
-            #seed=self.args.seed,
-            n_threads=8
-        )
+        self.generating = True
+        app.config['executor'].submit(self.generate_message)
+        while self.generating:
+            try:
+                value = self.text_queue.get(False)
+                yield value
+            except :
+                pass
+
+
 
         self.current_discussion.update_message(response_id, self.bot_says)
         yield self.bot_says# .encode('utf-8').decode('utf-8')
