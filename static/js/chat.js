@@ -99,7 +99,7 @@ function addMessage(sender, message, id, can_edit=false) {
 
   const messageTextElement = document.createElement('div');
   messageTextElement.classList.add('font-medium', 'text-md');
-  messageTextElement.innerHTML = message;
+  messageTextElement.innerText = message;
   // Create a hidden div element needed to buffer responses before commiting them to the visible message
   const hiddenElement = document.createElement('div');
   hiddenElement.style.display = 'none';
@@ -180,6 +180,10 @@ const welcome_message = `
 - Write me a poem about the fall of Julius Ceasar into a ceasar salad in iambic pentameter.<br>
 - What is a three word topic describing the following keywords: baseball, football, soccer.<br>
 - Act as ChefAI an AI that has the ability to create recipes for any occasion. Instruction: Give me a recipe for my next anniversary.<br>
+- who is Abraham Lincoln?.<br>
+- write a letter to my collegue and tell him I can't make it to work today. Make it humorous.<br>
+- write a poem about love between two AIs.<br>
+- a=5, b=7, c is integer, c>a and c<b. what is the value of c<br>
 </code>
 </div>
 <div>Welcome! I'm here to assist you with anything you need. What can I do for you today?</div>
