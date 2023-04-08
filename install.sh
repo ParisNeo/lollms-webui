@@ -53,6 +53,20 @@ else
   fi
 fi
 
+# check if cmake is installed, if not install it
+if [ "$(command -v cmake)" = "" ]; then
+    echo "cmake not found, installing cmake ..."
+    sudo apt-get install -y cmake # for Linux
+    brew install cmake # for macOS
+fi
+
+# check if nproc is installed, if not install it
+if [ "$(command -v nproc)" = "" ]; then
+    echo "nproc not found, installing nproc ..."
+    sudo apt-get install -y coreutils # for Linux
+    brew install coreutils # for macOS
+fi
+
 # Install venv module
 echo -n "Checking for venv module..."
 if python3.11 -m venv env > /dev/null 2>&1; then
