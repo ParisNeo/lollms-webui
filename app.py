@@ -164,6 +164,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
 
     def generate_message(self):
         self.generating=True
+        self.text_queue.queue.clear()
         self.chatbot_bindings.generate(
             self.current_message,
             new_text_callback=self.new_text_callback,#_with_yield,
