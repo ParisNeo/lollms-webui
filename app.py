@@ -468,7 +468,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "-m", "--model", type=str, default="gpt4all-lora-quantized.bin", help="Force using a specific model."
+        "-m", "--model", type=str, default="gpt4all-lora-quantized-ggml.bin", help="Force using a specific model."
     )
     parser.add_argument(
         "--temp", type=float, default=0.1, help="Temperature parameter for the model."
