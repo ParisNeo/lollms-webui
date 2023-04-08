@@ -43,6 +43,7 @@ REM Run the Python app
 python app.py %*
 set app_result=%errorlevel%
 
+REM Ask if user wants the model fixed
 IF %app_result% EQU 0 (
     goto END
 ) ELSE (
@@ -52,6 +53,7 @@ IF %app_result% EQU 0 (
     if errorlevel 1 goto MODEL_FIX
 )
 
+REM Git Clone, Renames the bad model and fixes it using the same original name
 :MODEL_FIX
 if not exist llama.cpp git clone https://github.com/ggerganov/llama.cpp.git
 move models\gpt4all-lora-quantized-ggml.bin models\gpt4all-lora-quantized-ggml.bin.original
