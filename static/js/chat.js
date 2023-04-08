@@ -117,6 +117,8 @@ function addMessage(sender, message, id, can_edit=false) {
         inputField.type = 'text';
         inputField.classList.add('font-medium', 'text-md', 'border', 'border-gray-300', 'p-1');
         inputField.value = messageTextElement.innerHTML;
+
+        editButton.style.display="none"
   
         const saveButton = document.createElement('button');
         saveButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'my-2', 'ml-2');
@@ -138,6 +140,7 @@ function addMessage(sender, message, id, can_edit=false) {
               .catch(error => {
                   console.error('There was a problem updating the message:', error);
               });
+            editButton.style.display="block"
             messageElement.replaceChild(messageTextElement, inputField);
             //messageElement.removeChild(inputField);
             messageElement.removeChild(saveButton);
