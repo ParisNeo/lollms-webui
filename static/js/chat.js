@@ -160,103 +160,6 @@ function addMessage(sender, message, id, can_edit=false) {
   return {'messageTextElement':messageTextElement, 'hiddenElement':hiddenElement}
 }
 
-
-
-
-
-
-
-function add_collapsible_div(discussion_title, text, id) {
-    // Create the outer box element
-    const box = document.createElement('div');
-    box.classList.add('bg-gray-100', 'rounded-lg', 'p-4');
-  
-    // Create the title element
-    const title = document.createElement('h2');
-    title.classList.add('text-lg', 'font-medium');
-    title.textContent = discussion_title;
-  
-    // Create the toggle button element
-    const toggleBtn = document.createElement('button');
-    toggleBtn.classList.add('focus:outline-none');
-    toggleBtn.id = `${id}-toggle-btn`;
-  
-    // Create the expand icon element
-    const expandIcon = document.createElement('path');
-    expandIcon.id = `${id}-expand-icon`;
-    expandIcon.setAttribute('d', 'M5 5h10v10H5z');
-  
-    // Create the collapse icon element
-    const collapseIcon = document.createElement('path');
-    collapseIcon.id = `${id}-collapse-icon`;
-    collapseIcon.setAttribute('d', 'M7 10h6');
-  
-    // Add the icons to the toggle button element
-    toggleBtn.appendChild(expandIcon);
-    toggleBtn.appendChild(collapseIcon);
-  
-    // Create the content element
-    const content = document.createElement('div');
-    content.id = `${id}-box-content`;
-    content.classList.add('mt-4');
-    content.textContent = text; 
-    // Add the title, toggle button, and content to the box element
-    // Create the title and toggle button container element
-    const titleToggleContainer = document.createElement('div');
-    titleToggleContainer.classList.add('flex', 'justify-between', 'items-center');
-
-    // Add the title and toggle button to the container element
-    titleToggleContainer.appendChild(title);
-    titleToggleContainer.appendChild(toggleBtn);
-
-    // Add the container element to the box element
-    box.appendChild(titleToggleContainer);
-    box.appendChild(content);
-  
-    // Add the box to the document
-    document.body.appendChild(box);
-  
-    // Add the CSS styles to the head of the document
-    const css = `
-      #${id}-box-content {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.2s ease-out;
-      }
-  
-      #${id}-box-content.expanded {
-        max-height: 1000px;
-        transition: max-height 0.5s ease-in;
-      }
-  
-      #${id}-toggle-btn:focus #${id}-collapse-icon {
-        display: block;
-      }
-  
-      #${id}-toggle-btn:focus #${id}-expand-icon {
-        display: none;
-      }
-  
-      #${id}-collapse-icon {
-        display: none;
-      }
-    `;
-    const head = document.head || document.getElementsByTagName('head')[0];
-    const style = document.createElement('style');
-    style.type = 'text/css';
-    style.appendChild(document.createTextNode(css));
-    head.appendChild(style);
-  
-    // Add the JavaScript code to toggle the box
-    const toggleBtnEl = document.querySelector(`#${id}-toggle-btn`);
-    const boxContentEl = document.querySelector(`#${id}-box-content`);
-  
-    toggleBtnEl.addEventListener('click', function() {
-      boxContentEl.classList.toggle('expanded');
-    });
-    return box
-  }
-
 const welcome_message = `
 <div>
 <code>This is a very early testing Web UI of GPT4All chatbot.
@@ -278,7 +181,6 @@ const welcome_message = `
 </div>
 <div>Welcome! I'm here to assist you with anything you need. What can I do for you today?</div>
 `;
-//welcome_message = add_collapsible_div("Note:", text, 'hints');
 
 addMessage("GPT4ALL",welcome_message,0);
 

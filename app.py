@@ -236,7 +236,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
             top_p=self.args.top_p,
             repeat_penalty=self.args.repeat_penalty,
             repeat_last_n = self.args.repeat_last_n,
-            #seed=self.args.seed,
+            seed=self.args.seed,
             n_threads=8
         )
         print(f"Bot said:{self.bot_says}")        
@@ -267,7 +267,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
             self.bot_says += text
         if self.current_message in self.full_text:
             self.is_bot_text_started = True
-        yield text
+        yield text.encode('utf-8').decode('latin-1')
 
     def add_endpoint(
         self,
@@ -339,7 +339,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         )
 
         self.current_discussion.update_message(response_id, self.bot_says)
-        yield self.bot_says
+        yield self.bot_says.encode('utf-8').decode('latin-1')
         # TODO : change this to use the yield version in order to send text word by word
 
         return "\n".join(bot_says)
@@ -458,18 +458,24 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
 
     def update_model_params(self):
         data = request.get_json()
+        self.args.model = str(data["model"])
+        self.args.n_predict = int(data["nPredict"])
+        self.args.seed = int(data["seed"])
+        
         self.args.temp = float(data["temp"])
-        self.args.top_k = float(data["top_k"])
-        self.args.top_p = float(data["top_p"])
-        self.args.repeat_penalty = float(data["repeat_penalty"])
-        self.args.repeat_last_n = float(data["repeat_last_n"])
+        self.args.top_k = int(data["topK"])
+        self.args.top_p = float(data["topP"])
+        self.args.repeat_penalty = int(data["repeatPenalty"])
+        self.args.repeat_last_n = int(data["repeatLastN"])
 
         print("Parameters changed to:")
         print(f"\tTemperature:{self.args.temp}")
+        print(f"\tNPredict:{self.args.n_predict}")
+        print(f"\tSeed:{self.args.seed}")
         print(f"\top_k:{self.args.top_k}")
         print(f"\top_p:{self.args.top_p}")
-        print(f"\repeat_penalty:{self.args.repeat_penalty}")
-        print(f"\repeat_last_n:{self.args.repeat_last_n}")
+        print(f"\trepeat_penalty:{self.args.repeat_penalty}")
+        print(f"\trepeat_last_n:{self.args.repeat_last_n}")
         return jsonify({"status":"ok"})
         
 
