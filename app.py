@@ -267,7 +267,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
             self.bot_says += text
         if self.current_message in self.full_text:
             self.is_bot_text_started = True
-        yield text.encode('utf-8').decode('latin-1')
+        yield text# .encode('utf-8').decode('utf-8')
 
     def add_endpoint(
         self,
@@ -339,7 +339,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         )
 
         self.current_discussion.update_message(response_id, self.bot_says)
-        yield self.bot_says.encode('utf-8').decode('latin-1')
+        yield self.bot_says# .encode('utf-8').decode('utf-8')
         # TODO : change this to use the yield version in order to send text word by word
 
         return "\n".join(bot_says)
