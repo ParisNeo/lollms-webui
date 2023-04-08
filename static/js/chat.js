@@ -164,29 +164,27 @@ function addMessage(sender, message, id, can_edit=false) {
 }
 
 const welcome_message = `
-<div>
-<code>This is a very early testing Web UI of GPT4All chatbot.
-<br>Keep in mind that this is a 7B parameters model running on your own PC's CPU. It is literally 24 times smaller than GPT-3 in terms of parameter count.
-<br>While it is still new and not as powerful as GPT-3.5 or GPT-4, it can still be useful for many applications.
-<br>Any feedback and contribution is welcomed.
-<br>This Web UI is a binding to the GPT4All model that allows you to test a chatbot locally on your machine. Feel free to ask questions or give instructions.</code>
+This is a very early testing Web UI of GPT4All chatbot.
+Keep in mind that this is a 7B parameters model running on your own PC's CPU. It is literally 24 times smaller than GPT-3 in terms of parameter count.
+While it is still new and not as powerful as GPT-3.5 or GPT-4, it can still be useful for many applications.
+Many people are building models out there and you can try the models and compare them yourself.
+Any feedback and contribution is welcomed.
+This Web UI is a binding to the GPT4All model that allows you to test a chatbot locally on your machine. Feel free to ask questions or give instructions.
 
-<br>Examples:<br>
-<code>
-- A color description has been provided. Find the CSS code associated with that color. A light red color with a medium light shade of pink.<br>
-- Come up with an interesting idea for a new movie plot. Your plot should be described with a title and a summary.<br>
-- Reverse a string in python.<br>
-- List 10 dogs.<br>
-- Write me a poem about the fall of Julius Ceasar into a ceasar salad in iambic pentameter.<br>
-- What is a three word topic describing the following keywords: baseball, football, soccer.<br>
-- Act as ChefAI an AI that has the ability to create recipes for any occasion. Instruction: Give me a recipe for my next anniversary.<br>
-- who is Abraham Lincoln?.<br>
-- write a letter to my collegue and tell him I can't make it to work today. Make it humorous.<br>
-- write a poem about love between two AIs.<br>
-- a=5, b=7, c is integer, c>a and c<b. what is the value of c<br>
-</code>
-</div>
-<div>Welcome! I'm here to assist you with anything you need. What can I do for you today?</div>
+Examples:
+
+- A color description has been provided. Find the CSS code associated with that color. A light red color with a medium light shade of pink.
+- Come up with an interesting idea for a new movie plot. Your plot should be described with a title and a summary.
+- Reverse a string in python.
+- List 10 dogs.
+- Write me a poem about the fall of Julius Ceasar into a ceasar salad in iambic pentameter.
+- What is a three word topic describing the following keywords: baseball, football, soccer.
+- Act as ChefAI an AI that has the ability to create recipes for any occasion. Instruction: Give me a recipe for my next anniversary.
+- who is Abraham Lincoln?.
+- write a letter to my collegue and tell him I can't make it to work today. Make it humorous.
+- write a poem about love between two AIs.
+- a=5, b=7, c is integer, c>a and c<b. what is the value of c
+Welcome! I'm here to assist you with anything you need. What can I do for you today?
 `;
 
 addMessage("GPT4ALL",welcome_message,0);
