@@ -145,7 +145,7 @@ if not exist models/gpt4all-lora-quantized-ggml.bin (
 
 :DOWNLOAD_WITH_BROWSER
 start https://the-eye.eu/public/AI/models/nomic-ai/gpt4all/gpt4all-lora-quantized-ggml.bin
-echo Link has been opened with the default web browser, make sure to save it into the models folder. Press any key to continue.
+echo Link has been opened with the default web browser, make sure to save it into the models folder. When it finishes the download, press any key to continue.
 pause
 goto :CONTINUE
 
@@ -170,6 +170,13 @@ goto :CONTINUE
 
 :CONTINUE
 echo.
+
+echo Converting the model to the new format
+if not exist tmp/llama.cpp git clone https://github.com/ggerganov/llama.cpp.git tmp\llama.cpp
+move models\gpt4all-lora-quantized-ggml.bin models\gpt4all-lora-quantized-ggml.bin.original
+python tmp\llama.cpp\migrate-ggml-2023-03-30-pr613.py models\gpt4all-lora-quantized-ggml.bin.original models\gpt4all-lora-quantized-ggml.bin
+echo The model file (gpt4all-lora-quantized-ggml.bin) has been fixed.
+
 
 echo Cleaning tmp folder
 rd /s /q "./tmp"

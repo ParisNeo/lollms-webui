@@ -5,7 +5,7 @@ import sqlite3
 import traceback
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
-
+import sys
 
 from flask import (
     Flask,
@@ -230,7 +230,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
             conditionning_message,
             new_text_callback=self.new_text_callback,
 
-            n_predict=0,#len(conditionning_message),
+            n_predict=len(conditionning_message),
             temp=self.args.temp,
             top_k=self.args.top_k,
             top_p=self.args.top_p,
@@ -250,6 +250,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
 
     def new_text_callback(self, text: str):
         print(text, end="")
+        sys.stdout.flush()
         self.full_text += text
         if self.is_bot_text_started:
             self.bot_says += text
