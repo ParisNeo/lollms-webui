@@ -1,3 +1,36 @@
+function populate_models(){
+  // Get a reference to the <select> element
+  const selectElement = document.getElementById('model');
+
+  // Fetch the list of .bin files from the models subfolder
+  fetch('/list_models')
+    .then(response => response.json())
+    .then(data => {
+      if (Array.isArray(data)) {
+        // data is an array
+        const selectElement = document.getElementById('model');
+        data.forEach(filename => {
+          const optionElement = document.createElement('option');
+          optionElement.value = filename;
+          optionElement.textContent = filename;
+          selectElement.appendChild(optionElement);
+        });
+
+        // fetch('/get_args')
+        // .then(response=> response.json())
+        // .then(data=>{
+          
+        // })
+      } else {
+        console.error('Expected an array, but received:', data);
+      }
+    });
+
+}
+
+populate_models()
+
+
 
 const submitButton = document.getElementById('submit-model-params');
 submitButton.addEventListener('click', (event) => {
@@ -5,7 +38,7 @@ submitButton.addEventListener('click', (event) => {
   event.preventDefault();
 
   modelInput = document.getElementById('model');
-  
+
   seedInput = document.getElementById('seed');
   tempInput = document.getElementById('temp');
   nPredictInput = document.getElementById('n-predict');

@@ -171,11 +171,29 @@ goto :CONTINUE
 :CONTINUE
 echo.
 
+set /p choice=Do you want to download and install the GPT4All model? [Y/N]
+if /i ".choice." equ "Y" (
+echo -n "Checking for git..."
+if command -v git > /dev/null 2>&1; then
+  echo "OK"
+else
+  read -p "Git is not installed. Would you like to install Git? [Y/N] " choice
+  if [ "$choice" = "Y" ] || [ "$choice" = "y" ]; then
+    echo "Installing Git..."
+    sudo apt update
+    sudo apt install -y git
+  else
+    echo "Please install Git and try again."
+    exit 1
+  fi
+fi
+
 echo Converting the model to the new format
 if not exist tmp/llama.cpp git clone https://github.com/ggerganov/llama.cpp.git tmp\llama.cpp
 move models\gpt4all-lora-quantized-ggml.bin models\gpt4all-lora-quantized-ggml.bin.original
 python tmp\llama.cpp\migrate-ggml-2023-03-30-pr613.py models\gpt4all-lora-quantized-ggml.bin.original models\gpt4all-lora-quantized-ggml.bin
 echo The model file (gpt4all-lora-quantized-ggml.bin) has been fixed.
+)
 
 
 echo Cleaning tmp folder
