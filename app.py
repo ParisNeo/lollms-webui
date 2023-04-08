@@ -5,7 +5,7 @@ import sqlite3
 import traceback
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
-
+import sys
 
 from flask import (
     Flask,
@@ -250,6 +250,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
 
     def new_text_callback(self, text: str):
         print(text, end="")
+        sys.stdout.flush()
         self.full_text += text
         if self.is_bot_text_started:
             self.bot_says += text
