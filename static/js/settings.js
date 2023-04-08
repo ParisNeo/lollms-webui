@@ -5,6 +5,7 @@ submitButton.addEventListener('click', (event) => {
   event.preventDefault();
 
   modelInput = document.getElementById('model');
+  
   seedInput = document.getElementById('seed');
   tempInput = document.getElementById('temp');
   nPredictInput = document.getElementById('n-predict');
