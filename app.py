@@ -458,18 +458,19 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
 
     def update_model_params(self):
         data = request.get_json()
+        self.args.model = float(data["model"])
         self.args.temp = float(data["temp"])
-        self.args.top_k = float(data["top_k"])
-        self.args.top_p = float(data["top_p"])
-        self.args.repeat_penalty = float(data["repeat_penalty"])
-        self.args.repeat_last_n = float(data["repeat_last_n"])
+        self.args.top_k = float(data["topK"])
+        self.args.top_p = float(data["topP"])
+        self.args.repeat_penalty = float(data["repeatPenalty"])
+        self.args.repeat_last_n = float(data["repeatLastN"])
 
         print("Parameters changed to:")
         print(f"\tTemperature:{self.args.temp}")
         print(f"\top_k:{self.args.top_k}")
         print(f"\top_p:{self.args.top_p}")
-        print(f"\repeat_penalty:{self.args.repeat_penalty}")
-        print(f"\repeat_last_n:{self.args.repeat_last_n}")
+        print(f"\trepeat_penalty:{self.args.repeat_penalty}")
+        print(f"\trepeat_last_n:{self.args.repeat_last_n}")
         return jsonify({"status":"ok"})
         
 
