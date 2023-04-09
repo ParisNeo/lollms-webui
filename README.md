@@ -49,10 +49,16 @@ On Windows :
 ```cmd
 install.bat
 ```
-- On linux/ Mac os
+- On Linux
 
 ```bash
 bash ./install.sh
+```
+
+- On Mac os
+
+```bash
+bash ./install-macos.sh
 ```
 
 On Linux/MacOS, if you have issues, refer more details are presented [here](docs/Linux_Osx_Install.md)
