@@ -37,6 +37,41 @@ echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 
 if not exist "./tmp" mkdir "./tmp"
 
+REM Check if Git is installed
+echo "Checking for git..."
+where git >nul 2>&1
+if %ERRORLEVEL% EQU 0 (
+    goto GIT_CHECKED
+) else (
+    goto GIT_INSTALL
+)
+:GIT_FINISH
+
+REM Check if Git is installed
+:GIT_CHECKED
+echo "Git is installed."
+goto GIT_SKIP
+
+:GIT_INSTALL
+echo.
+choice /C YN /M "Do you want to download and install Git?"
+if errorlevel 2 goto GIT_CANCEL
+if errorlevel 1 goto GIT_INSTALL_2
+
+:GIT_INSTALL_2
+echo "Git is not installed. Installing Git..."
+powershell.exe -Command "Start-Process https://git-scm.com/download/win -Wait"
+goto GIT_SKIP
+
+:GIT_CANCEL
+echo.
+echo Git download cancelled.
+echo Please install Git and try again.
+pause
+exit /b 1
+
+:GIT_SKIP
+
 REM Check if Python is installed
 set /p="Checking for python..." <nul
 where python >nul 2>&1
@@ -172,28 +207,6 @@ echo Skipping download of model file...
 goto :CONTINUE
 
 :CONTINUE
-
-REM Install Git
-echo.
-choice /C YN /M "Do you want to download and install Git?"
-if errorlevel 2 goto GIT_CANCEL
-if errorlevel 1 goto GIT_CHECK
-
-:GIT_CANCEL
-echo Git download cancelled.
-goto GIT_FINISH
-
-:GIT_CHECK
-REM Install Git
-echo "Checking for git..."
-where git >nul 2>&1
-if %ERRORLEVEL% EQU 0 (
-    echo "Git is installed."
-) else (
-    echo "Git is not installed. Installing Git..."
-    powershell.exe -Command "Start-Process https://git-scm.com/download/win -Wait"
-)
-:GIT_FINISH
 
 REM This code lists all files in the ./models folder and asks the user to choose one to convert.
 REM If the user agrees, it converts using Python. If not, it skips. On conversion failure, it reverts to original model.
