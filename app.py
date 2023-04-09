@@ -96,7 +96,6 @@ class Gpt4AllWebUI:
 
     def condition_chatbot(self, conditionning_message = """
 Instruction: Act as GPT4All. A kind and helpful AI bot built to help users solve problems.
-Start by welcoming the user then stop sending text.
 GPT4All:Welcome! I'm here to assist you with anything you need. What can I do for you today?"""
                           ):
         self.full_message += conditionning_message +"\n"

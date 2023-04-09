@@ -89,8 +89,9 @@ chatForm.addEventListener('submit', event => {
 function addMessage(sender, message, id, can_edit=false) {
   console.log(id)
   const messageElement = document.createElement('div');
-  messageElement.classList.add('bg-secondary', 'drop-shadow-sm', 'p-4', 'mx-6', 'my-4', 'flex', 'flex-col', 'space-x-2');
-  messageElement.classList.add(sender);
+  messageElement.classList.add('bg-secondary', 'drop-shadow-sm', 'p-4', 'mx-6', 'my-4', 'flex', 'flex-col', 'space-x-2', 'rounded-lg', 'shadow-lg', 'bg-gray-800', 'hover:bg-gray-700', 'transition-colors', 'duration-300');
+  
+  //messageElement.classList.add(sender);
   messageElement.setAttribute('id', id);
 
   const senderElement = document.createElement('div');
@@ -110,7 +111,9 @@ function addMessage(sender, message, id, can_edit=false) {
   if(can_edit)
   {
     const editButton = document.createElement('button');
-    editButton.classList.add('bg-blue-500', 'hover:bg-blue-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'my-2');
+    editButton.classList.add('my-1','mx-1','outline-none','px-4','bg-accent','text-black','rounded-md','hover:bg-[#7ba0ea]','active:bg-[#3d73e1]','transition-colors','ease-in-out');
+    editButton.style.float = 'right'; // set the float property to right    
+    editButton.style.display='inline-block'
     editButton.innerHTML = 'Edit';
     editButton.addEventListener('click', () => {
         const inputField = document.createElement('input');
@@ -140,7 +143,7 @@ function addMessage(sender, message, id, can_edit=false) {
               .catch(error => {
                   console.error('There was a problem updating the message:', error);
               });
-            editButton.style.display="block"
+            editButton.style.display='inline-block'
             messageElement.replaceChild(messageTextElement, inputField);
             //messageElement.removeChild(inputField);
             messageElement.removeChild(saveButton);
