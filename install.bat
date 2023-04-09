@@ -255,7 +255,6 @@ echo.
 echo The model file (!modelPath!) has been converted to the new format.
 goto END
 
-pause
 :CANCEL_CONVERSION
 echo.
 echo Conversion cancelled. Skipping...
