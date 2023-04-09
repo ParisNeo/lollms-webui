@@ -100,21 +100,22 @@ Start by welcoming the user then stop sending text.
 GPT4All:Welcome! I'm here to assist you with anything you need. What can I do for you today?"""
                           ):
         self.full_message += conditionning_message +"\n"
-        self.prepare_query(conditionning_message)
-        self.chatbot_bindings.generate(
-            conditionning_message,
-            new_text_callback=self.new_text_callback,
 
-            n_predict=len(conditionning_message),
-            temp=self.args.temp,
-            top_k=self.args.top_k,
-            top_p=self.args.top_p,
-            repeat_penalty=self.args.repeat_penalty,
-            repeat_last_n = self.args.repeat_last_n,
-            seed=self.args.seed,
-            n_threads=8
-        )
-        print(f"Bot said:{self.bot_says}")        
+        # self.prepare_query(conditionning_message)
+        # self.chatbot_bindings.generate(
+        #     conditionning_message,
+        #     new_text_callback=self.new_text_callback,
+
+        #     n_predict=len(conditionning_message),
+        #     temp=self.args.temp,
+        #     top_k=self.args.top_k,
+        #     top_p=self.args.top_p,
+        #     repeat_penalty=self.args.repeat_penalty,
+        #     repeat_last_n = self.args.repeat_last_n,
+        #     seed=self.args.seed,
+        #     n_threads=8
+        # )
+        # print(f"Bot said:{self.bot_says}")        
 
 
     def prepare_query(self, message):
