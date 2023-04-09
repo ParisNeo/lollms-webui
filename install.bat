@@ -172,6 +172,7 @@ goto :CONTINUE
 echo.
 
 REM Install Git
+echo.
 choice /C YN /M "Do you want to download and install Git?"
 if errorlevel 2 goto GIT_CANCEL
 if errorlevel 1 goto GIT_CHECK
@@ -185,8 +186,10 @@ REM Install Git
 echo "Checking for git..."
 where git >nul 2>&1
 if %ERRORLEVEL% EQU 0 (
+    echo.
     echo "Git is installed."
 ) else (
+    echo.
     echo "Git is not installed. Installing Git..."
     powershell.exe -Command "Start-Process https://git-scm.com/download/win -Wait"
 )
@@ -213,26 +216,28 @@ REM Prompt user to choose a model to convert
 set /P modelNumber="Enter the number of the model you want to convert: "
 
 if not defined file[%modelNumber%] (
+    echo.
     echo Invalid option. Restarting...
     goto CONVERT_RESTART
 )
 
 set "modelPath=!file[%modelNumber%]!"
 
+echo.
 echo You selected !modelPath!
 REM Ask user if they want to convert the model
 choice /C YN /M "Do you want to convert the selected model to the new format?"
 if errorlevel 2 (
+    echo.
     echo Model conversion cancelled. Skipping...
     goto END
 )
 REM Convert the model
+echo.
 echo Converting the model to the new format...
 if not exist tmp\llama.cpp git clone https://github.com/ggerganov/llama.cpp.git tmp\llama.cpp
 move /y "!modelPath!" "!modelPath!.original"
 python tmp\llama.cpp\migrate-ggml-2023-03-30-pr613.py "!modelPath!.original" "!modelPath!"
-echo %errorlevel%
-pause
 if %errorlevel% neq 0 (
     goto ERROR_CONVERSION
 ) else (
@@ -240,16 +245,19 @@ if %errorlevel% neq 0 (
 )
 
 :ERROR_CONVERSION
+echo.
 echo Error during model conversion. Restarting...
 move /y "!modelPath!.original" "!modelPath!"
 goto CONVERT_RESTART
 
 :SUCCESSFUL_CONVERSION
+echo.
 echo The model file (!modelPath!) has been converted to the new format.
 goto END
 
 pause
 :CANCEL_CONVERSION
+echo.
 echo Conversion cancelled. Skipping...
 goto END
 
