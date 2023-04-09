@@ -41,6 +41,7 @@ REM Check if Python is installed
 set /p="Checking for python..." <nul
 where python >nul 2>&1
 if %errorlevel% neq 0 (
+    echo.
     set /p choice=Python is not installed. Would you like to install Python? [Y/N] 
     if /i ".choice." equ "Y" (
         REM Download Python installer
@@ -63,6 +64,7 @@ REM Check if pip is installed
 set /p="Checking for pip..." <nul
 python -m pip >nul 2>&1
 if %errorlevel% neq 0 (
+    echo.
     set /p choice=Pip is not installed. Would you like to install pip? [Y/N]
     if /i ".choice." equ "Y" (
         REM Download get-pip.py
@@ -84,6 +86,7 @@ REM Check if venv module is available
 set /p="Checking for venv..." <nul
 python -c "import venv" >nul 2>&1
 if %errorlevel% neq 0 (
+    echo.
     set /p choice=venv module is not available. Would you like to upgrade Python to the latest version? [Y/N]
     if /i ".choice." equ "Y" (
         REM Upgrade Python
@@ -169,7 +172,6 @@ echo Skipping download of model file...
 goto :CONTINUE
 
 :CONTINUE
-echo.
 
 REM Install Git
 echo.
@@ -186,10 +188,8 @@ REM Install Git
 echo "Checking for git..."
 where git >nul 2>&1
 if %ERRORLEVEL% EQU 0 (
-    echo.
     echo "Git is installed."
 ) else (
-    echo.
     echo "Git is not installed. Installing Git..."
     powershell.exe -Command "Start-Process https://git-scm.com/download/win -Wait"
 )
@@ -198,6 +198,7 @@ if %ERRORLEVEL% EQU 0 (
 REM This code lists all files in the ./models folder and asks the user to choose one to convert.
 REM If the user agrees, it converts using Python. If not, it skips. On conversion failure, it reverts to original model.
 :CONVERT_RESTART
+echo.
 choice /C YN /M "In order to make a model work, it needs to go through the LLaMA tokenizer, this will fix errors with the model in run.bat. Do you want to convert the model?"
 if errorlevel 2 goto CANCEL_CONVERSION
 if errorlevel 1 goto CONVERT_START
@@ -226,6 +227,7 @@ set "modelPath=!file[%modelNumber%]!"
 echo.
 echo You selected !modelPath!
 REM Ask user if they want to convert the model
+echo.
 choice /C YN /M "Do you want to convert the selected model to the new format?"
 if errorlevel 2 (
     echo.
