@@ -116,7 +116,7 @@ function populate_discussions_list()
         discussionButton.textContent = discussion.title;
         discussionButton.addEventListener('click', () => {
           // send query with discussion id to reveal discussion messages
-          fetch('/get_messages', {
+          fetch('/load_discussion', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'

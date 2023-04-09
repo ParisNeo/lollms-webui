@@ -18,9 +18,9 @@ from flask import (
 from pyllamacpp.model import Model
 from queue import Queue
 from pathlib import Path
-
+import gc
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
-
+import time
 
 class Gpt4AllWebUI:
     def __init__(self, _app, args) -> None:
@@ -28,6 +28,9 @@ class Gpt4AllWebUI:
         self.current_discussion = None
         self.app = _app
         self.db_path = args.db_path
+
+        # workaround for non interactive mode
+        self.full_message = ""
 
         # This is the queue used to stream text to the ui as the bot spits out its response
         self.text_queue = Queue(0)
@@ -45,7 +48,7 @@ class Gpt4AllWebUI:
         )
         self.add_endpoint("/rename", "rename", self.rename, methods=["POST"])
         self.add_endpoint(
-            "/get_messages", "get_messages", self.get_messages, methods=["POST"]
+            "/load_discussion", "load_discussion", self.load_discussion, methods=["POST"]
         )
         self.add_endpoint(
             "/delete_discussion",
@@ -96,7 +99,7 @@ Instruction: Act as GPT4All. A kind and helpful AI bot built to help users solve
 Start by welcoming the user then stop sending text.
 GPT4All:Welcome! I'm here to assist you with anything you need. What can I do for you today?"""
                           ):
-        
+        self.full_message += conditionning_message +"\n"
         self.prepare_query(conditionning_message)
         self.chatbot_bindings.generate(
             conditionning_message,
@@ -126,6 +129,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         self.full_text += text
         if self.is_bot_text_started:
             self.bot_says += text
+            self.full_message += text
             self.text_queue.put(text)
         if self.current_message in self.full_text:
             self.is_bot_text_started = True
@@ -164,10 +168,12 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
 
     def generate_message(self):
         self.generating=True
-        self.text_queue.queue.clear()
+        self.text_queue=Queue()
+        gc.collect()
+
         self.chatbot_bindings.generate(
-            self.current_message,
-            new_text_callback=self.new_text_callback,#_with_yield,
+            self.full_message,#self.current_message,
+            new_text_callback=self.new_text_callback,
             n_predict=len(self.current_message)+self.args.n_predict,
             temp=self.args.temp,
             top_k=self.args.top_k,
@@ -202,20 +208,21 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         )
 
         self.current_message = "\nUser: " + message + "\nGPT4All: "
-        self.prepare_query(self.current_message)
+        self.full_message += self.current_message
+        self.prepare_query(self.full_message)
         self.generating = True
         app.config['executor'].submit(self.generate_message)
-        while self.generating:
+        while self.generating or not self.text_queue.empty():
             try:
                 value = self.text_queue.get(False)
                 yield value
             except :
-                pass
+                time.sleep(1)
 
 
 
         self.current_discussion.update_message(response_id, self.bot_says)
-        yield self.bot_says# .encode('utf-8').decode('utf-8')
+        #yield self.bot_says# .encode('utf-8').decode('utf-8')
         # TODO : change this to use the yield version in order to send text word by word
 
         return "\n".join(bot_says)
@@ -285,16 +292,16 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
             n_threads=8
         )
 
-    def get_messages(self):
+    def load_discussion(self):
         data = request.get_json()
         discussion_id = data["id"]
         self.current_discussion = Discussion(discussion_id, self.db_path)
         messages = self.current_discussion.get_messages()
         
-        # full_message = ""
-        # for message in messages:
-        #     full_message += message['sender'] + ": " + message['content'] + "\n"
-        # app.config['executor'].submit(self.restore_discussion, full_message)
+        self.full_message = ""
+        for message in messages:
+            self.full_message += message['sender'] + ": " + message['content'] + "\n"
+        app.config['executor'].submit(self.restore_discussion, self.full_message)
 
         return jsonify(messages)
 
