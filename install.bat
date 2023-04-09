@@ -145,7 +145,7 @@ if not exist models/gpt4all-lora-quantized-ggml.bin (
 
 :DOWNLOAD_WITH_BROWSER
 start https://the-eye.eu/public/AI/models/nomic-ai/gpt4all/gpt4all-lora-quantized-ggml.bin
-echo Link has been opened with the default web browser, make sure to save it into the models folder. When it finishes the download, press any key to continue.
+echo Link has been opened with the default web browser, make sure to save it into the models folder before continuing. Press any key to continue...
 pause
 goto :CONTINUE
 
@@ -171,30 +171,89 @@ goto :CONTINUE
 :CONTINUE
 echo.
 
-set /p choice=Do you want to download and install the GPT4All model? [Y/N]
-if /i ".choice." equ "Y" (
-echo -n "Checking for git..."
-if command -v git > /dev/null 2>&1; then
-  echo "OK"
-else
-  read -p "Git is not installed. Would you like to install Git? [Y/N] " choice
-  if [ "$choice" = "Y" ] || [ "$choice" = "y" ]; then
-    echo "Installing Git..."
-    sudo apt update
-    sudo apt install -y git
-  else
-    echo "Please install Git and try again."
-    exit 1
-  fi
-fi
+REM Install Git
+choice /C YN /M "Do you want to download and install Git?"
+if errorlevel 2 goto GIT_CANCEL
+if errorlevel 1 goto GIT_CHECK
 
-echo Converting the model to the new format
-if not exist tmp/llama.cpp git clone https://github.com/ggerganov/llama.cpp.git tmp\llama.cpp
-move models\gpt4all-lora-quantized-ggml.bin models\gpt4all-lora-quantized-ggml.bin.original
-python tmp\llama.cpp\migrate-ggml-2023-03-30-pr613.py models\gpt4all-lora-quantized-ggml.bin.original models\gpt4all-lora-quantized-ggml.bin
-echo The model file (gpt4all-lora-quantized-ggml.bin) has been fixed.
+:GIT_CANCEL
+echo Git download cancelled.
+goto GIT_FINISH
+
+:GIT_CHECK
+REM Install Git
+echo "Checking for git..."
+where git >nul 2>&1
+if %ERRORLEVEL% EQU 0 (
+    echo "Git is installed."
+) else (
+    echo "Git is not installed. Installing Git..."
+    powershell.exe -Command "Start-Process https://git-scm.com/download/win -Wait"
+)
+:GIT_FINISH
+
+REM This code lists all files in the ./models folder and asks the user to choose one to convert.
+REM If the user agrees, it converts using Python. If not, it skips. On conversion failure, it reverts to original model.
+:CONVERT_RESTART
+choice /C YN /M "In order to make a model work, it needs to go through the LLaMA tokenizer, this will fix errors with the model in run.bat. Do you want to convert the model?"
+if errorlevel 2 goto CANCEL_CONVERSION
+if errorlevel 1 goto CONVERT_START
+
+:CONVERT_START
+REM List all files in the models folder
+setlocal EnableDelayedExpansion
+set count=0
+for %%a in (models\*.*) do (
+    set /A count+=1
+    set "file[!count!]=%%a"
+    echo [!count!] %%a
 )
 
+REM Prompt user to choose a model to convert
+set /P modelNumber="Enter the number of the model you want to convert: "
+
+if not defined file[%modelNumber%] (
+    echo Invalid option. Restarting...
+    goto CONVERT_RESTART
+)
+
+set "modelPath=!file[%modelNumber%]!"
+
+echo You selected !modelPath!
+REM Ask user if they want to convert the model
+choice /C YN /M "Do you want to convert the selected model to the new format?"
+if errorlevel 2 (
+    echo Model conversion cancelled. Skipping...
+    goto END
+)
+REM Convert the model
+echo Converting the model to the new format...
+if not exist tmp\llama.cpp git clone https://github.com/ggerganov/llama.cpp.git tmp\llama.cpp
+move /y "!modelPath!" "!modelPath!.original"
+python tmp\llama.cpp\migrate-ggml-2023-03-30-pr613.py "!modelPath!.original" "!modelPath!"
+echo %errorlevel%
+pause
+if %errorlevel% neq 0 (
+    goto ERROR_CONVERSION
+) else (
+    goto SUCCESSFUL_CONVERSION
+)
+
+:ERROR_CONVERSION
+echo Error during model conversion. Restarting...
+move /y "!modelPath!.original" "!modelPath!"
+goto CONVERT_RESTART
+
+:SUCCESSFUL_CONVERSION
+echo The model file (!modelPath!) has been converted to the new format.
+goto END
+
+pause
+:CANCEL_CONVERSION
+echo Conversion cancelled. Skipping...
+goto END
+
+:END
 
 echo Cleaning tmp folder
 rd /s /q "./tmp"
