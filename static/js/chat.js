@@ -110,6 +110,18 @@ function addMessage(sender, message, id, can_edit=false) {
   messageElement.appendChild(messageTextElement);
   if(can_edit)
   {
+    // Create buttons container
+    const buttonsContainer = document.createElement('div');
+    // Add the 'flex' class to the div
+    buttonsContainer.classList.add('flex');
+
+    // Add the 'justify-end' class to the div
+    buttonsContainer.classList.add('justify-end'); 
+
+    // Set the width and height of the container to 100%
+    buttonsContainer.style.width = '100%';
+    buttonsContainer.style.height = '100%';
+           
     const editButton = document.createElement('button');
     editButton.classList.add('my-1','mx-1','outline-none','px-4','bg-accent','text-black','rounded-md','hover:bg-[#7ba0ea]','active:bg-[#3d73e1]','transition-colors','ease-in-out');
     editButton.style.float = 'right'; // set the float property to right    
@@ -121,7 +133,7 @@ function addMessage(sender, message, id, can_edit=false) {
         inputField.classList.add('font-medium', 'text-md', 'border', 'border-gray-300', 'p-1');
         inputField.value = messageTextElement.innerHTML;
 
-        editButton.style.display="none"
+        buttonsContainer.style.display="none"
   
         const saveButton = document.createElement('button');
         saveButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'my-2', 'ml-2');
@@ -143,10 +155,10 @@ function addMessage(sender, message, id, can_edit=false) {
               .catch(error => {
                   console.error('There was a problem updating the message:', error);
               });
-            editButton.style.display='inline-block'
-            messageElement.replaceChild(messageTextElement, inputField);
-            //messageElement.removeChild(inputField);
-            messageElement.removeChild(saveButton);
+              buttonsContainer.style.display='inline-block'
+              messageElement.replaceChild(messageTextElement, inputField);
+              //messageElement.removeChild(inputField);
+              messageElement.removeChild(saveButton);
         });
   
         messageElement.replaceChild(inputField, messageTextElement);
@@ -154,7 +166,8 @@ function addMessage(sender, message, id, can_edit=false) {
         inputField.focus();
     });
 
-    messageElement.appendChild(editButton);
+    buttonsContainer.appendChild(editButton);
+    messageElement.appendChild(buttonsContainer);
   }
   chatWindow.appendChild(messageElement);
   chatWindow.appendChild(hiddenElement);

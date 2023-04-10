@@ -4,7 +4,7 @@ function populate_discussions_list()
   // Populate discussions list
   const discussionsList = document.querySelector('#discussions-list');
   discussionsList.innerHTML = "";
-  fetch('/discussions')
+  fetch('/list_discussions')
     .then(response => response.json())
     .then(discussions => {
       discussions.forEach(discussion => {
@@ -162,7 +162,39 @@ function populate_discussions_list()
 // First time we populate the discussions list
 populate_discussions_list()
 
+// adding export discussion button
+const exportDiscussionButton = document.createElement('button');
+exportDiscussionButton.classList.add(
+                    'my-1',
+                    'mx-1',
+                    'outline-none',
+                    'px-4',
+                    'bg-accent',
+                    'text-black',
+                    'rounded-md',
+                    'hover:bg-[#7ba0ea]',
+                    'active:bg-[#3d73e1]',
+                    'transition-colors',
+                    'ease-in-out'
+                  );
+exportDiscussionButton.style.float = 'right'; // set the float property to right    
+exportDiscussionButton.style.display='inline-block'
+exportDiscussionButton.innerHTML = 'Export discussion to text';
+exportDiscussionButton.addEventListener('click', () => {
+    fetch('/bot', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message })
+    }).then(function(response) {
 
+    }).catch(function(error){
+
+    });  
+});
+const actionBtns = document.querySelector('#action-buttons');
+actionBtns.appendChild(exportDiscussionButton);
 
 const newDiscussionBtn = document.querySelector('#new-discussion-btn');
 

@@ -19,6 +19,10 @@
                 <div id="discussions-list" class="h-96 overflow-y-auto">
 
                 </div>
+                <div  id="action-buttons" class="h-96 overflow-y-auto">
+                    <input type="button" value="New Discussion" id="new-discussion-btn" class="my-1 mx-1 outline-none px-4 bg-accent text-black rounded-md hover:bg-[#7ba0ea] active:bg-[#3d73e1]  transition-colors ease-in-out">
+                    <input type="button" value="Export" id="export-button" class="my-1 mx-1 outline-none px-4 bg-accent text-black rounded-md hover:bg-[#7ba0ea] active:bg-[#3d73e1]  transition-colors ease-in-out">
+                </div>
             </section>
             <section class="md:h-1/2 md:border-b border-accent flex flex md:flex-col">
                 <div>
@@ -72,8 +76,6 @@
         </section>
     </main>
     <footer class="border-t border-accent flex">
-        <input type="button" value="New Chat" id="new-discussion-btn" class="my-1 mx-1 outline-none px-4 bg-accent text-black rounded-md hover:bg-[#7ba0ea] active:bg-[#3d73e1]  transition-colors ease-in-out">
-        <input type="button" value="Export" id="export-button" class="my-1 mx-1 outline-none px-4 bg-accent text-black rounded-md hover:bg-[#7ba0ea] active:bg-[#3d73e1]  transition-colors ease-in-out">
         <form id="chat-form" class="flex w-full">
             <input type="text" id="user-input" placeholder="Type your message..." class="bg-secondary my-1 mx-1 outline-none drop-shadow-sm w-full rounded-md p-2">
             <input type="submit" value="Send" id="submit-input" class="my-1 mx-1 outline-none px-4 bg-accent text-black rounded-md hover:bg-[#7ba0ea] active:bg-[#3d73e1]  transition-colors ease-in-out">

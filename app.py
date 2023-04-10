@@ -5,7 +5,7 @@ import traceback
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 import sys
-from db import Discussion, export_to_json, check_discussion_db, last_discussion_has_messages
+from db import DiscussionsDB, Discussion
 from flask import (
     Flask,
     Response,
@@ -28,6 +28,9 @@ class Gpt4AllWebUI:
         self.current_discussion = None
         self.app = _app
         self.db_path = args.db_path
+        self.db = DiscussionsDB(self.db_path)
+        # If the database is empty, populate it with tables
+        self.db.populate()
 
         # workaround for non interactive mode
         self.full_message = ""
@@ -35,17 +38,21 @@ class Gpt4AllWebUI:
         # This is the queue used to stream text to the ui as the bot spits out its response
         self.text_queue = Queue(0)
 
+        self.add_endpoint(
+            "/list_models", "list_models", self.list_models, methods=["GET"]
+        )
+        self.add_endpoint(
+            "/list_discussions", "list_discussions", self.list_discussions, methods=["GET"]
+        )
         
         
         self.add_endpoint("/", "", self.index, methods=["GET"])
+        self.add_endpoint("/export_discussion", "export_discussion", self.export_discussion, methods=["GET"])
         self.add_endpoint("/export", "export", self.export, methods=["GET"])
         self.add_endpoint(
             "/new_discussion", "new_discussion", self.new_discussion, methods=["GET"]
         )
         self.add_endpoint("/bot", "bot", self.bot, methods=["POST"])
-        self.add_endpoint(
-            "/discussions", "discussions", self.discussions, methods=["GET"]
-        )
         self.add_endpoint("/rename", "rename", self.rename, methods=["POST"])
         self.add_endpoint(
             "/load_discussion", "load_discussion", self.load_discussion, methods=["POST"]
@@ -65,11 +72,6 @@ class Gpt4AllWebUI:
         )
 
         self.add_endpoint(
-            "/list_models", "list_models", self.list_models, methods=["GET"]
-        )
-
-
-        self.add_endpoint(
             "/get_args", "get_args", self.get_args, methods=["GET"]
         )
         
@@ -79,6 +81,22 @@ class Gpt4AllWebUI:
         models_dir = Path('./models')  # replace with the actual path to the models folder
         models = [f.name for f in models_dir.glob('*.bin')]
         return jsonify(models)
+
+    def list_discussions(self):
+        try:
+            discussions = self.db.get_discussions()
+            return jsonify(discussions)
+        except Exception as ex:
+            print(ex)
+            return jsonify({
+                "status":"Error",
+                "content":                "<b style='color:red;'>Exception :<b>"
+                + str(ex)
+                + "<br>"
+                + traceback.format_exc()
+                + "<br>Please report exception"
+            })
+
 
     def prepare_a_new_chatbot(self):
         # Create chatbot
@@ -164,8 +182,11 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         return message
 
     def export(self):
-        return jsonify(export_to_json(self.db_path))
+        return jsonify(self.db.export_to_json())
 
+    def export_discussion(self):
+        return jsonify(self.full_message)
+    
     def generate_message(self):
         self.generating=True
         self.text_queue=Queue()
@@ -231,7 +252,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         self.stop = True
 
         try:
-            if self.current_discussion is None or not last_discussion_has_messages(
+            if self.current_discussion is None or not self.db.does_last_discussion_have_messages(
                 self.db_path
             ):
                 self.current_discussion = Discussion.create_discussion(self.db_path)
@@ -258,19 +279,6 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
                 + "<br>Please report exception"
             )
 
-    def discussions(self):
-        try:
-            discussions = Discussion.get_discussions(self.db_path)
-            return jsonify(discussions)
-        except Exception as ex:
-            print(ex)
-            return (
-                "<b style='color:red;'>Exception :<b>"
-                + str(ex)
-                + "<br>"
-                + traceback.format_exc()
-                + "<br>Please report exception"
-            )
 
     def rename(self):
         data = request.get_json()
@@ -295,7 +303,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
     def load_discussion(self):
         data = request.get_json()
         discussion_id = data["id"]
-        self.current_discussion = Discussion(discussion_id, self.db_path)
+        self.current_discussion = Discussion(discussion_id, self.db)
         messages = self.current_discussion.get_messages()
         
         self.full_message = ""
@@ -426,7 +434,6 @@ if __name__ == "__main__":
     parser.set_defaults(debug=False)
     args = parser.parse_args()
 
-    check_discussion_db(args.db_path)
     executor = ThreadPoolExecutor(max_workers=2)
     app.config['executor'] = executor
 
