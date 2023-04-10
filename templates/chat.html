@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwindcss.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
 </head>
-<body class="w-screen h-screen bg-primary text-gray-400 flex flex-col overflow-hidden">
+<body class="w-screen h-full bg-primary text-gray-400 flex flex-col">
     <div class="w-full h-20 border-b border-accent bg-tertiary text-2xl font-bold flex justify-between items-center px-6">
         <div class="w-12 h-12"><img src="{{ url_for('static', filename='images/icon.png') }}"></div>
         <h1>GPT4All - WEBUI</h1>
@@ -22,7 +22,7 @@
         </ul>
     </div>
     <div id="main" class="tab-pane flex flex-col">
-        <div class="w-1/3 bg-gray-200 flex flex-row border-r border-gray-400 h-screen">
+        <div class="w-1/3 bg-gray-200 flex flex-row">
                 <section>
                     <section  id="action-buttons" class="flex-none md:border-b border-accent flex flex-row md:flex-row">
                             <button id="new-discussion-btn" class="my-1 mx-1 outline-none px-4 bg-accent text-black rounded-md hover:bg-[#7ba0ea] active:bg-[#3d73e1]  transition-colors ease-in-out">
@@ -38,12 +38,12 @@
                     <div>
                         <h1>Discussions</h1>
                     </div>
-                    <div id="discussions-list" class="overflow-y-auto h-full">
+                    <div id="discussions-list" class="overflow-y-auto">
 
                     </div>
                 </section>
-            <div class="flex-coll w-full h-screen">
-                <div id="chat-window" class="w-2/3 overflow-y-auto flex flex-col flex-1">
+            <section class="flex-coll w-full">
+                <div id="chat-window" class="w-2/3 overflow-y-auto flex flex-col h-500">
 
                 </div>
                 <form id="chat-form" class="flex w-full mt-auto">
@@ -51,8 +51,8 @@
                     <input type="submit" value="Send" id="submit-input" class="my-1 mx-1 outline-none px-4 bg-accent text-black rounded-md hover:bg-[#7ba0ea] active:bg-[#3d73e1]  transition-colors ease-in-out">
                     <div id="wait-animation" style="display: none;" class="lds-facebook bg-secondary my-1 mx-1 outline-none drop-shadow-sm w-full rounded-md p-2"><div></div><div></div><div></div></div>
                 </form>    
-            </div>
-</div>
+            </section>
+    </div>
     </div>
     <div class="tab-pane" id="settings" style="display: non;">
         <div class="h-96 overflow-y-auto">
@@ -68,28 +68,28 @@
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2" for="temp">Temperature</label>
-                <input class="bg-gray-700 slider absolute top-0 w-full h-full opacity-0" id="temp" type="range" min="0" max="1" step="0.1" value="0.1" name="temp">
+                <input class="bg-gray-700 slider absolute top-0 w-full opacity-0" id="temp" type="range" min="0" max="1" step="0.1" value="0.1" name="temp">
                 <p id="slider-value">0.1</p>
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2" for="n-predict">N Predict</label>
-                <input class="bg-gray-700 slider absolute top-0 w-full h-full opacity-0" id="n-predict" type="range" min="0" max="2048" step="1" value="256" name="n-predict">
+                <input class="bg-gray-700 slider absolute top-0 w-full opacity-0" id="n-predict" type="range" min="0" max="2048" step="1" value="256" name="n-predict">
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2" for="top-k">Top K</label>
-                <input class="bg-gray-700 slider absolute top-0 w-full h-full opacity-0" id="top-k" type="range" min="0" max="100" step="1" value="40" name="top-k">
+                <input class="bg-gray-700 slider absolute top-0 w-full opacity-0" id="top-k" type="range" min="0" max="100" step="1" value="40" name="top-k">
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2" for="top-p">Top P</label>
-                <input class="bg-gray-700 slider absolute top-0 w-full h-full opacity-0" id="top-p" type="range" min="0" max="100" step="1" value="40" name="top-p">
+                <input class="bg-gray-700 slider absolute top-0 w-full opacity-0" id="top-p" type="range" min="0" max="100" step="1" value="40" name="top-p">
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2" for="repeat-penalty">Repeat penalty</label>
-                <input class="bg-gray-700 slider absolute top-0 w-full h-full opacity-0" id="repeat-penalty" type="range" min="0" max="100" step="1" value="40" name="repeat-penalty">
+                <input class="bg-gray-700 slider absolute top-0 w-full opacity-0" id="repeat-penalty" type="range" min="0" max="100" step="1" value="40" name="repeat-penalty">
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2" for="repeat-last-n">Repeat penalty</label>
-                <input class="bg-gray-700 slider absolute top-0 w-full h-full opacity-0" id="repeat-last-n" type="range" min="0" max="100" step="1" value="40" name="repeat-last-n">
+                <input class="bg-gray-700 slider absolute top-0 w-full opacity-0" id="repeat-last-n" type="range" min="0" max="100" step="1" value="40" name="repeat-last-n">
             </div>
             <div class="mb-4">
                 <button type="submit" id="submit-model-params" class="my-1 mx-1 outline-none px-4 bg-accent text-black rounded-md hover:bg-[#7ba0ea] active:bg-[#3d73e1]  transition-colors ease-in-out">Update parameters</button>

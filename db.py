@@ -127,7 +127,7 @@ class DiscussionsDB:
             conn.commit()
     
     def load_last_discussion(self):
-        last_discussion_id = self.select("SELECT id FROM discussions ORDER BY id DESC LIMIT 1", fetch_all=False)
+        last_discussion_id = self.select("SELECT id FROM discussion ORDER BY id DESC LIMIT 1", fetch_all=False)
         if last_discussion_id is None:
             last_discussion_id = self.create_discussion()
         else:
@@ -154,7 +154,11 @@ class DiscussionsDB:
         return [{"id": row[0], "title": row[1]} for row in rows]
 
     def does_last_discussion_have_messages(self):
-        last_discussion_id = self.select("SELECT id FROM discussion ORDER BY id DESC LIMIT 1", fetch_all=False)[0]
+        last_discussion_id = self.select("SELECT id FROM discussion ORDER BY id DESC LIMIT 1", fetch_all=False)
+        if last_discussion_id is None:
+            last_discussion_id = self.create_discussion()
+        else:
+            last_discussion_id=last_discussion_id[0]
         last_message = self.select("SELECT * FROM message WHERE discussion_id=?", (last_discussion_id,), fetch_all=False)
         return last_message is not None
     
@@ -169,7 +173,7 @@ class DiscussionsDB:
         for row in db_discussions:
             discussion_id = row[0]
             discussion = {"id": discussion_id, "messages": []}
-            rows = self.select(f"SELECT * FROM message WHERE discussion_id={discussion_id}")
+            rows = self.select(f"SELECT * FROM message WHERE discussion_id=?",(discussion_id))
             for message_row in rows:
                 discussion["messages"].append(
                     {"sender": message_row[1], "content": message_row[2]}
