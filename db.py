@@ -197,7 +197,7 @@ class Discussion:
             new_title (str): The nex discussion name
         """
         self.discussions_db.update(
-            f"UPDATE discussion SET title={new_title} WHERE id={self.discussion_id}"
+            f"UPDATE discussion SET title=? WHERE id=?",(new_title,self.discussion_id)
         )
 
     def delete_discussion(self):
