@@ -282,7 +282,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         data = request.get_json()
         discussion_id = data["id"]
         title = data["title"]
-        Discussion.rename(self.db_path, discussion_id, title)
+        self.db.rename(self.db_path, discussion_id, title)
         return "renamed successfully"
 
     def restore_discussion(self, full_message):
@@ -314,7 +314,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
     def delete_discussion(self):
         data = request.get_json()
         discussion_id = data["id"]
-        self.current_discussion = Discussion(discussion_id, self.db_path)
+        self.current_discussion = Discussion(discussion_id, self.db)
         self.current_discussion.delete_discussion()
         self.current_discussion = None
         return jsonify({})
@@ -337,7 +337,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
 
     def new_discussion(self):
         title = request.args.get("title")
-        self.current_discussion = self.db.create_discussion(self.db_path, title)
+        self.current_discussion = self.db.create_discussion(title)
         # Get the current timestamp
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 

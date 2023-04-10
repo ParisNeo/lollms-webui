@@ -185,7 +185,7 @@ class Discussion:
             new_content (str): The nex message content
         """
         self.discussions_db.update(
-            f"UPDATE message SET content = {new_content} WHERE id = {message_id}"
+            f"UPDATE message SET content = ? WHERE id = ?",(new_content,message_id)
         )
 
 
