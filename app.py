@@ -342,6 +342,9 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         app.config['executor'].submit(self.prepare_a_new_chatbot)
+
+        self.full_message =""
+        
         # Return a success response
         return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp})
 
