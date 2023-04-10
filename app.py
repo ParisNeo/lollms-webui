@@ -113,13 +113,17 @@ class Gpt4AllWebUI:
 Instruction: Act as GPT4All. A kind and helpful AI bot built to help users solve problems.
 GPT4All:Welcome! I'm here to assist you with anything you need. What can I do for you today?"""
                           ):
-        self.full_message += conditionning_message +"\n"
-        if self.current_discussion is None or not self.db.does_last_discussion_have_messages():
-            self.current_discussion = self.db.create_discussion()
+        self.full_message += conditionning_message
+        if self.current_discussion is None:
+            if self.db.does_last_discussion_have_messages():
+                self.current_discussion = self.db.create_discussion()
+            else:
+                self.current_discussion = self.db.load_last_discussion()
         
         message_id = self.current_discussion.add_message(
             "conditionner", conditionning_message, DiscussionsDB.MSG_TYPE_CONDITIONNING,0
         )
+        
 
 
 
@@ -256,8 +260,11 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
     def bot(self):
         self.stop = True
 
-        if self.current_discussion is None or not self.db.does_last_discussion_have_messages():
-            self.current_discussion = self.db.create_discussion()
+        if self.current_discussion is None:
+            if self.db.does_last_discussion_have_messages():
+                self.current_discussion = self.db.create_discussion()
+            else:
+                self.current_discussion = self.db.load_last_discussion()
 
         message_id = self.current_discussion.add_message(
             "user", request.json["message"]
@@ -274,7 +281,6 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
 
     def rename(self):
         data = request.get_json()
-        discussion_id = data["id"]
         title = data["title"]
         self.current_discussion.rename(title)
         return "renamed successfully"

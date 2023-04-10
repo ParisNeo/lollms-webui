@@ -165,23 +165,8 @@ function populate_discussions_list()
 populate_discussions_list()
 
 // adding export discussion button
-const exportDiscussionButton = document.createElement('button');
-exportDiscussionButton.classList.add(
-                    'my-1',
-                    'mx-1',
-                    'outline-none',
-                    'px-4',
-                    'bg-accent',
-                    'text-black',
-                    'rounded-md',
-                    'hover:bg-[#7ba0ea]',
-                    'active:bg-[#3d73e1]',
-                    'transition-colors',
-                    'ease-in-out'
-                  );
-exportDiscussionButton.style.float = 'right'; // set the float property to right    
-exportDiscussionButton.style.display='inline-block'
-exportDiscussionButton.innerHTML = 'Export discussion to text';
+const exportDiscussionButton = document.querySelector('#export-discussion-button');
+
 exportDiscussionButton.addEventListener('click', () => {
   fetch(`/export_discussion`)
   .then(response => response.text())

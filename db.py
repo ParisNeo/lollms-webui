@@ -125,7 +125,11 @@ class DiscussionsDB:
         with sqlite3.connect(self.db_path) as conn:
             conn.execute(query, params)
             conn.commit()
-
+    
+    def load_last_discussion(self):
+        last_discussion_id = self.select("SELECT id FROM discussions ORDER BY id DESC LIMIT 1", fetch_all=False)[0]
+        return Discussion(last_discussion_id, self)
+    
     def create_discussion(self, title="untitled"):
         """Creates a new discussion
 
@@ -146,7 +150,8 @@ class DiscussionsDB:
         return [{"id": row[0], "title": row[1]} for row in rows]
 
     def does_last_discussion_have_messages(self):
-        last_message = self.select("SELECT * FROM message ORDER BY id DESC LIMIT 1", fetch_all=False)
+        last_discussion_id = self.select("SELECT id FROM discussion ORDER BY id DESC LIMIT 1", fetch_all=False)[0]
+        last_message = self.select("SELECT * FROM message WHERE discussion_id=?", (last_discussion_id,), fetch_all=False)
         return last_message is not None
     
     def remove_discussions(self):
