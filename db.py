@@ -127,7 +127,11 @@ class DiscussionsDB:
             conn.commit()
     
     def load_last_discussion(self):
-        last_discussion_id = self.select("SELECT id FROM discussions ORDER BY id DESC LIMIT 1", fetch_all=False)[0]
+        last_discussion_id = self.select("SELECT id FROM discussions ORDER BY id DESC LIMIT 1", fetch_all=False)
+        if last_discussion_id is None:
+            last_discussion_id = self.create_discussion()
+        else:
+            last_discussion_id=last_discussion_id[0]
         return Discussion(last_discussion_id, self)
     
     def create_discussion(self, title="untitled"):

@@ -55,8 +55,8 @@ chatForm.addEventListener('submit', event => {
                 {
                   // We parse it and
                   infos = JSON.parse(text)
-                  addMessage('User', infos.message, infos.id, can_edit=true);
-                  elements = addMessage('GPT4ALL', '', infos.response_id, can_edit=true);
+                  addMessage('User', infos.message, infos.id, 0, can_edit=true);
+                  elements = addMessage('GPT4ALL', '', infos.response_id, 0, can_edit=true);
                   messageTextElement=elements['messageTextElement'];
                   hiddenElement=elements['hiddenElement'];
                   entry_counter ++;
@@ -264,7 +264,7 @@ Examples:
 Welcome! I'm here to assist you with anything you need. What can I do for you today?
 `;
 
-addMessage("GPT4ALL",welcome_message,0);
+addMessage("GPT4ALL",welcome_message,0,0,false);
 
 // Code for collapsable text
 const collapsibles = document.querySelectorAll('.collapsible');

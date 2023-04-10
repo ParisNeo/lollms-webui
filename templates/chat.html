@@ -21,10 +21,9 @@
           </li>
         </ul>
     </div>
-    <div id="main" class="tab-pane absolute inset-0 border-4 border-red-500 h-full">
-        <div class="absolute inset-0 border-4 border-red-500 w-1/3 bg-gray-200 flex flex-row border-r border-gray-400 h-full">
-            <div class="absolute inset-0 border-4 border-red-500">
-                <section class="flex-1 absolute inset-0 border-4 border-red-500 overflow-y-auto h-full">
+    <div id="main" class="tab-pane flex flex-col">
+        <div class="w-1/3 bg-gray-200 flex flex-row border-r border-gray-400 h-screen">
+                <section>
                     <section  id="action-buttons" class="flex-none md:border-b border-accent flex flex-row md:flex-row">
                             <button id="new-discussion-btn" class="my-1 mx-1 outline-none px-4 bg-accent text-black rounded-md hover:bg-[#7ba0ea] active:bg-[#3d73e1]  transition-colors ease-in-out">
                                 <img src="/static/images/new_message.png" style="width: 20px;height: 20px;">
@@ -39,17 +38,23 @@
                     <div>
                         <h1>Discussions</h1>
                     </div>
-                    <div id="discussions-list" class="h-96 overflow-y-auto h-full">
+                    <div id="discussions-list" class="overflow-y-auto h-full">
 
                     </div>
                 </section>
-            </div>
-            <div id="chat-window" class="w-2/3 overflow-y-auto flex flex-col  max-h-full">
+            <div class="flex-coll w-full h-screen">
+                <div id="chat-window" class="w-2/3 overflow-y-auto flex flex-col flex-1">
 
+                </div>
+                <form id="chat-form" class="flex w-full mt-auto">
+                    <input type="text" id="user-input" placeholder="Type your message..." class="bg-secondary my-1 mx-1 outline-none drop-shadow-sm w-full rounded-md p-2">
+                    <input type="submit" value="Send" id="submit-input" class="my-1 mx-1 outline-none px-4 bg-accent text-black rounded-md hover:bg-[#7ba0ea] active:bg-[#3d73e1]  transition-colors ease-in-out">
+                    <div id="wait-animation" style="display: none;" class="lds-facebook bg-secondary my-1 mx-1 outline-none drop-shadow-sm w-full rounded-md p-2"><div></div><div></div><div></div></div>
+                </form>    
             </div>
-        </div>
+</div>
     </div>
-    <div class="tab-pane" id="settings">
+    <div class="tab-pane" id="settings" style="display: non;">
         <div class="h-96 overflow-y-auto">
             <form id="model-params-form" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
             <div class="mb-4">
@@ -94,11 +99,6 @@
     </div>
 
     <footer class="border-t border-accent flex">
-        <form id="chat-form" class="flex w-full">
-            <input type="text" id="user-input" placeholder="Type your message..." class="bg-secondary my-1 mx-1 outline-none drop-shadow-sm w-full rounded-md p-2">
-            <input type="submit" value="Send" id="submit-input" class="my-1 mx-1 outline-none px-4 bg-accent text-black rounded-md hover:bg-[#7ba0ea] active:bg-[#3d73e1]  transition-colors ease-in-out">
-            <div id="wait-animation" style="display: none;" class="lds-facebook bg-secondary my-1 mx-1 outline-none drop-shadow-sm w-full rounded-md p-2"><div></div><div></div><div></div></div>
-        </form>
     </footer>
     <script src="{{ url_for('static', filename='js/marked.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
