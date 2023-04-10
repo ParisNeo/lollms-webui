@@ -255,7 +255,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
             if self.current_discussion is None or not self.db.does_last_discussion_have_messages(
                 self.db_path
             ):
-                self.current_discussion = Discussion.create_discussion(self.db_path)
+                self.current_discussion = DiscussionsDB.create_discussion()
 
             message_id = self.current_discussion.add_message(
                 "user", request.json["message"]
