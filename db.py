@@ -38,15 +38,14 @@ class DiscussionsDB:
         Returns the cursor object for further processing.
         """
         with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute(query)
+            cursor = conn.execute(query)
             if fetch_all:
                 return cursor.fetchall()
             else:
                 return cursor.fetchone()
             
 
-    def delete(self, query, fetch_all=True):
+    def delete(self, query):
         """
         Execute the specified SQL delete query on the database,
         with optional parameters.
@@ -65,13 +64,22 @@ class DiscussionsDB:
         """
         
         with sqlite3.connect(self.db_path) as conn:
-            self.conn = conn
-            cursor = self.execute(query, params)
+            cursor = conn.execute(query, params)
             rowid = cursor.lastrowid
             conn.commit()
         self.conn = None
         return rowid
 
+    def update(self, query, params=None):
+        """
+        Execute the specified Update SQL query on the database,
+        with optional parameters.
+        Returns the ID of the newly inserted row.
+        """
+        
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute(query, params)
+            conn.commit()
 
     def create_discussion(self, title="untitled"):
         """Creates a new discussion
@@ -82,7 +90,7 @@ class DiscussionsDB:
         Returns:
             Discussion: A Discussion instance 
         """
-        discussion_id = self.insert(f"INSERT INTO discussion (title) VALUES ({title})")
+        discussion_id = self.insert(f"INSERT INTO discussion (title) VALUES (?)",(title,))
         return Discussion(discussion_id, self)
 
     def build_discussion(self, discussion_id=0):
@@ -103,13 +111,13 @@ class DiscussionsDB:
 
 
     def export_to_json(self):
-        cur = self.execute("SELECT * FROM discussion")
+        db_discussions = self.select("SELECT * FROM discussion")
         discussions = []
-        for row in cur.fetchall():
+        for row in db_discussions:
             discussion_id = row[0]
             discussion = {"id": discussion_id, "messages": []}
-            cur.execute("SELECT * FROM message WHERE discussion_id=?", (discussion_id,))
-            for message_row in cur.fetchall():
+            rows = self.select(f"SELECT * FROM message WHERE discussion_id={discussion_id}")
+            for message_row in rows:
                 discussion["messages"].append(
                     {"sender": message_row[1], "content": message_row[2]}
                 )
@@ -132,11 +140,10 @@ class Discussion:
         Returns:
             int: The added message id
         """
-        self.discussions_db.execute(
-            f"INSERT INTO message (sender, content, discussion_id) VALUES ({sender}, {content}, {self.discussion_id})",
+        message_id = self.discussions_db.insert(
+            "INSERT INTO message (sender, content, discussion_id) VALUES (?, ?, ?)", 
+            (sender, content, self.discussion_id)
         )
-        message_id = self.discussions_db.conn.cursor().lastrowid
-        self.discussions_db.commit()
         return message_id
 
     def rename(self, new_title):
@@ -145,21 +152,19 @@ class Discussion:
         Args:
             new_title (str): The nex discussion name
         """
-        self.discussions_db.execute(
+        self.discussions_db.update(
             f"UPDATE discussion SET title={new_title} WHERE id={self.discussion_id}"
         )
-        self.discussions_db.commit()
 
     def delete_discussion(self):
         """Deletes the discussion
         """
-        self.discussions_db.execute(
+        self.discussions_db.delete(
             f"DELETE FROM message WHERE discussion_id={self.discussion_id}"
         )
-        self.discussions_db.execute(
+        self.discussions_db.delete(
             f"DELETE FROM discussion WHERE id={self.discussion_id}"
         )
-        self.discussions_db.commit()
 
     def get_messages(self):
         """Gets a list of messages information
@@ -179,10 +184,9 @@ class Discussion:
             message_id (int): The id of the message to be changed
             new_content (str): The nex message content
         """
-        self.discussions_db.execute(
+        self.discussions_db.update(
             f"UPDATE message SET content = {new_content} WHERE id = {message_id}"
         )
-        self.discussions_db.commit()
 
 
 # ========================================================================================================================
