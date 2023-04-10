@@ -252,9 +252,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         self.stop = True
 
         try:
-            if self.current_discussion is None or not self.db.does_last_discussion_have_messages(
-                self.db_path
-            ):
+            if self.current_discussion is None or not self.db.does_last_discussion_have_messages():
                 self.current_discussion = self.db.create_discussion()
 
             message_id = self.current_discussion.add_message(
