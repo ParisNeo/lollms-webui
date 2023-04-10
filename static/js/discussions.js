@@ -132,7 +132,9 @@ function populate_discussions_list()
                   var container = document.getElementById('chat-window');
                   container.innerHTML = '';
                   messages.forEach(message => {
-                    addMessage(message.sender, message.content, message.id, true);
+                    if(message.type==0){
+                      addMessage(message.sender, message.content, message.id, message.rank, true);
+                    }
                   });
                     });
               } else {
@@ -181,17 +183,22 @@ exportDiscussionButton.style.float = 'right'; // set the float property to right
 exportDiscussionButton.style.display='inline-block'
 exportDiscussionButton.innerHTML = 'Export discussion to text';
 exportDiscussionButton.addEventListener('click', () => {
-    fetch('/bot', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ message })
-    }).then(function(response) {
+  fetch(`/export_discussion`)
+  .then(response => response.text())
+  .then(data => {
+    const filename = window.prompt('Please enter a filename:', 'discussion.txt');
+    if (filename !== null) {
+      const blob = new Blob([data], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+  }).catch(function(error){
 
-    }).catch(function(error){
-
-    });  
+  });  
 });
 const actionBtns = document.querySelector('#action-buttons');
 actionBtns.appendChild(exportDiscussionButton);

@@ -23,6 +23,7 @@ app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
 import time
 
 class Gpt4AllWebUI:
+
     def __init__(self, _app, args) -> None:
         self.args = args
         self.current_discussion = None
@@ -68,6 +69,13 @@ class Gpt4AllWebUI:
             "/update_message", "update_message", self.update_message, methods=["GET"]
         )
         self.add_endpoint(
+            "/message_rank_up", "message_rank_up", self.message_rank_up, methods=["GET"]
+        )
+        self.add_endpoint(
+            "/message_rank_down", "message_rank_down", self.message_rank_down, methods=["GET"]
+        )
+        
+        self.add_endpoint(
             "/update_model_params", "update_model_params", self.update_model_params, methods=["POST"]
         )
 
@@ -83,19 +91,8 @@ class Gpt4AllWebUI:
         return jsonify(models)
 
     def list_discussions(self):
-        try:
-            discussions = self.db.get_discussions()
-            return jsonify(discussions)
-        except Exception as ex:
-            print(ex)
-            return jsonify({
-                "status":"Error",
-                "content":                "<b style='color:red;'>Exception :<b>"
-                + str(ex)
-                + "<br>"
-                + traceback.format_exc()
-                + "<br>Please report exception"
-            })
+        discussions = self.db.get_discussions()
+        return jsonify(discussions)
 
 
     def prepare_a_new_chatbot(self):
@@ -117,6 +114,14 @@ Instruction: Act as GPT4All. A kind and helpful AI bot built to help users solve
 GPT4All:Welcome! I'm here to assist you with anything you need. What can I do for you today?"""
                           ):
         self.full_message += conditionning_message +"\n"
+        if self.current_discussion is None or not self.db.does_last_discussion_have_messages():
+            self.current_discussion = self.db.create_discussion()
+        
+        message_id = self.current_discussion.add_message(
+            "conditionner", conditionning_message, DiscussionsDB.MSG_TYPE_CONDITIONNING,0
+        )
+
+
 
         # self.prepare_query(conditionning_message)
         # self.chatbot_bindings.generate(
@@ -251,38 +256,27 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
     def bot(self):
         self.stop = True
 
-        try:
-            if self.current_discussion is None or not self.db.does_last_discussion_have_messages():
-                self.current_discussion = self.db.create_discussion()
+        if self.current_discussion is None or not self.db.does_last_discussion_have_messages():
+            self.current_discussion = self.db.create_discussion()
 
-            message_id = self.current_discussion.add_message(
-                "user", request.json["message"]
-            )
-            message = f"{request.json['message']}"
+        message_id = self.current_discussion.add_message(
+            "user", request.json["message"]
+        )
+        message = f"{request.json['message']}"
 
-            # Segmented (the user receives the output as it comes)
-            # We will first send a json entry that contains the message id and so on, then the text as it goes
-            return Response(
-                stream_with_context(
-                    self.parse_to_prompt_stream(message, message_id)
-                )
+        # Segmented (the user receives the output as it comes)
+        # We will first send a json entry that contains the message id and so on, then the text as it goes
+        return Response(
+            stream_with_context(
+                self.parse_to_prompt_stream(message, message_id)
             )
-        except Exception as ex:
-            print(ex)
-            return (
-                "<b style='color:red;'>Exception :<b>"
-                + str(ex)
-                + "<br>"
-                + traceback.format_exc()
-                + "<br>Please report exception"
-            )
-
+        )
 
     def rename(self):
         data = request.get_json()
         discussion_id = data["id"]
         title = data["title"]
-        self.db.rename(self.db_path, discussion_id, title)
+        self.current_discussion.rename(discussion_id, title)
         return "renamed successfully"
 
     def restore_discussion(self, full_message):
@@ -320,20 +314,20 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         return jsonify({})
 
     def update_message(self):
-        try:
-            discussion_id = request.args.get("id")
-            new_message = request.args.get("message")
-            self.current_discussion.update_message(discussion_id, new_message)
-            return jsonify({"status": "ok"})
-        except Exception as ex:
-            print(ex)
-            return (
-                "<b style='color:red;'>Exception :<b>"
-                + str(ex)
-                + "<br>"
-                + traceback.format_exc()
-                + "<br>Please report exception"
-            )
+        discussion_id = request.args.get("id")
+        new_message = request.args.get("message")
+        self.current_discussion.update_message(discussion_id, new_message)
+        return jsonify({"status": "ok"})
+
+    def message_rank_up(self):
+        discussion_id = request.args.get("id")
+        new_rank = self.current_discussion.message_rank_up(discussion_id)
+        return jsonify({"new_rank": new_rank})
+
+    def message_rank_down(self):
+        discussion_id = request.args.get("id")
+        new_rank = self.current_discussion.message_rank_down(discussion_id)
+        return jsonify({"new_rank": new_rank})
 
     def new_discussion(self):
         title = request.args.get("title")

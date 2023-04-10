@@ -55,8 +55,8 @@ chatForm.addEventListener('submit', event => {
                 {
                   // We parse it and
                   infos = JSON.parse(text)
-                  addMessage('User', infos.message, infos.id, true);
-                  elements = addMessage('GPT4ALL', '', infos.response_id, true);
+                  addMessage('User', infos.message, infos.id, can_edit=true);
+                  elements = addMessage('GPT4ALL', '', infos.response_id, can_edit=true);
                   messageTextElement=elements['messageTextElement'];
                   hiddenElement=elements['hiddenElement'];
                   entry_counter ++;
@@ -86,7 +86,7 @@ chatForm.addEventListener('submit', event => {
 });
 
 
-function addMessage(sender, message, id, can_edit=false) {
+function addMessage(sender, message, id, rank=0, can_edit=false) {
   console.log(id)
   const messageElement = document.createElement('div');
   messageElement.classList.add('bg-secondary', 'drop-shadow-sm', 'p-4', 'mx-6', 'my-4', 'flex', 'flex-col', 'space-x-2', 'rounded-lg', 'shadow-lg', 'bg-gray-800', 'hover:bg-gray-700', 'transition-colors', 'duration-300');
@@ -166,8 +166,69 @@ function addMessage(sender, message, id, can_edit=false) {
         inputField.focus();
     });
 
+    const rank_up = document.createElement('button');
+    rank_up.classList.add('my-1','mx-1','outline-none','px-4','bg-accent','text-black','rounded-md','hover:bg-[#7ba0ea]','active:bg-[#3d73e1]','transition-colors','ease-in-out');
+    rank_up.style.float = 'right'; // set the float property to right    
+    rank_up.style.display='inline-block'
+    rank_up.innerHTML = 'Up';
+    rank_up.addEventListener('click', () => {
+        const url = `/message_rank_up?id=${id}`;
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.new_rank)
+            if(data.new_rank>0){
+                rank_up.innerText=`Up(${data.new_rank})`
+                rank_down.innerText=`Down`
+            }
+            else if(data.new_rank<0){
+                rank_up.innerText=`Up`
+                rank_down.innerText=`Down(${data.new_rank})`
+            }
+        })
+        .catch(error => {
+            console.error('There was a problem updating the message:', error);
+        });
+    });
+
+    const rank_down = document.createElement('button');
+    rank_down.classList.add('my-1','mx-1','outline-none','px-4','bg-accent','text-black','rounded-md','hover:bg-[#7ba0ea]','active:bg-[#3d73e1]','transition-colors','ease-in-out');
+    rank_down.style.float = 'right'; // set the float property to right    
+    rank_down.style.display='inline-block'
+    rank_down.innerHTML = 'Down';
+    rank_down.addEventListener('click', () => {
+        const url = `/message_rank_down?id=${id}`;
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            if(data.new_rank>0){
+                rank_up.innerText=`Up(${data.new_rank})`
+                rank_down.innerText=`Down`
+            }
+            else if(data.new_rank<0){
+                rank_up.innerText=`Up`
+                rank_down.innerText=`Down(${data.new_rank})`
+            }
+        })
+        .catch(error => {
+            console.error('There was a problem updating the message:', error);
+        });
+    });
+
     buttonsContainer.appendChild(editButton);
+    buttonsContainer.appendChild(rank_up);
+    buttonsContainer.appendChild(rank_down);
     messageElement.appendChild(buttonsContainer);
+    if(rank>0){
+        rank_up.innerText=`Up(${rank})`
+        rank_down.innerText=`Down`
+    }
+    else if(rank<0){
+        rank_up.innerText=`Up`
+        rank_down.innerText=`Down(${rank})`
+    }
+
   }
   chatWindow.appendChild(messageElement);
   chatWindow.appendChild(hiddenElement);
