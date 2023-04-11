@@ -10,7 +10,7 @@ function populate_discussions_list()
       discussions.forEach(discussion => {
         const buttonWrapper = document.createElement('div');
         //buttonWrapper.classList.add('flex', 'space-x-2', 'mt-2');
-        buttonWrapper.classList.add('flex', 'items-center', 'mt-2', 'py-4', 'text-left');
+        buttonWrapper.classList.add('flex', 'items-center', 'mt-2', 'px-2', 'py-4', 'text-left');
         
         const renameButton = document.createElement('button');
         renameButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-2', 'px-2', 'rounded', 'ml-2', 'mr-2',"w-20","h-20");

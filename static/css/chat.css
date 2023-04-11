@@ -1,0 +1,20 @@
+:root {
+    --color-primary-light: #ffffff;
+    --color-secondary-light: #f2f2f2;
+    
+    --color-primary-dark: #1a1a1a;
+    --color-secondary-dark: #333333;
+  }
+
+  /* Default light mode styles */
+  .text-primary {
+    color: var(--color-primary-light);
+  }
+  
+  /* Dark mode styles */
+  @media (prefers-color-scheme: dark) {
+    .mode-dark .text-primary {
+      color: var(--color-primary-dark);
+    }
+  }
+  
