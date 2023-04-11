@@ -21,7 +21,9 @@ One of the app's impressive features is that it allows users to send messages to
 It's worth noting that the model has recently been launched, and it's expected to evolve over time, enabling it to become even better in the future. This webui is designed to provide the community with easy and fully localized access to a chatbot that will continue to improve and adapt over time.
 
 ## UI screenshot
+### MAIN page
 ![image](https://user-images.githubusercontent.com/827993/231264794-8ebbe3e3-2e92-45eb-82ac-72de671e2c42.png)
+### Settings page
 ![image](https://user-images.githubusercontent.com/827993/231264862-a99e8f2f-0731-4c8b-812c-9401c430e2a1.png)
 
 
