@@ -46,7 +46,8 @@ class Gpt4AllWebUI:
 
         # workaround for non interactive mode
         self.full_message = ""
-
+        self.full_message_list = []
+        self.prompt_message = ""
         # This is the queue used to stream text to the ui as the bot spits out its response
         self.text_queue = Queue(0)
 
@@ -135,7 +136,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
             "conditionner", conditionning_message, DiscussionsDB.MSG_TYPE_CONDITIONNING,0
         )
         
-
+        self.full_message_list.append(conditionning_message)
 
 
         # self.prepare_query(conditionning_message)
@@ -155,11 +156,11 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         # print(f"Bot said:{self.bot_says}")        
 
 
-    def prepare_query(self, message):
+    def prepare_query(self):
         self.bot_says = ""
         self.full_text = ""
         self.is_bot_text_started = False
-        self.current_message = message
+        #self.current_message = message
 
     def new_text_callback(self, text: str):
         print(text, end="")
@@ -169,7 +170,8 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
             self.bot_says += text
             self.full_message += text
             self.text_queue.put(text)
-        if self.current_message in self.full_text:
+        #if self.current_message in self.full_text:
+        if len(self.prompt_message) <= len(self.full_text):
             self.is_bot_text_started = True
 
     def add_endpoint(
@@ -213,7 +215,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         gc.collect()
 
         self.chatbot_bindings.generate(
-            self.full_message,#self.current_message,
+            self.prompt_message,#self.full_message,#self.current_message,
             new_text_callback=self.new_text_callback,
             n_predict=len(self.current_message)+self.args.n_predict,
             temp=self.args.temp,
@@ -250,7 +252,13 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
 
         self.current_message = "\nUser: " + message + "\nGPT4All: "
         self.full_message += self.current_message
-        self.prepare_query(self.full_message)
+        self.full_message_list.append(self.current_message)
+        
+        if len(self.full_message_list) > 5:
+            self.prompt_message = '\n'.join(self.full_message_list[-5:])
+        else:
+            self.prompt_message = self.full_message
+        self.prepare_query()
         self.generating = True
         app.config['executor'].submit(self.generate_message)
         while self.generating or not self.text_queue.empty():
@@ -263,6 +271,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
 
 
         self.current_discussion.update_message(response_id, self.bot_says)
+        self.full_message_list.append(self.bot_says)
         #yield self.bot_says# .encode('utf-8').decode('utf-8')
         # TODO : change this to use the yield version in order to send text word by word
 
@@ -297,8 +306,13 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         return "renamed successfully"
 
     def restore_discussion(self, full_message):
+        self.prompt_message = full_message
+
+        if len(self.full_message_list)>5:
+            self.prompt_message = "\n".join(self.full_message_list[-5:])
+
         self.chatbot_bindings.generate(
-            full_message,
+            self.prompt_message,#full_message,
             new_text_callback=self.new_text_callback,
             n_predict=0,#len(full_message),
             temp=self.args.temp,
@@ -316,8 +330,10 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         messages = self.current_discussion.get_messages()
         
         self.full_message = ""
+        self.full_message_list = []
         for message in messages:
             self.full_message += message['sender'] + ": " + message['content'] + "\n"
+            self.full_message_list.append(message['sender'] + ": " + message['content'])
         app.config['executor'].submit(self.restore_discussion, self.full_message)
 
         return jsonify(messages)
