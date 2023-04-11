@@ -96,6 +96,14 @@ class Gpt4AllWebUI:
         )
 
         self.add_endpoint(
+            "/extensions", "extensions", self.extensions, methods=["GET"]
+        )
+
+        self.add_endpoint(
+            "/training", "training", self.training, methods=["GET"]
+        )
+
+        self.add_endpoint(
             "/help", "help", self.help, methods=["GET"]
         )
 
@@ -412,6 +420,14 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
 
     def help(self):
         return render_template("help.html")
+    
+    def training(self):
+        return render_template("training.html")
+
+    def extensions(self):
+        return render_template("extensions.html")
+
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Start the chatbot Flask app.")
