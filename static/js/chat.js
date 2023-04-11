@@ -123,7 +123,7 @@ function addMessage(sender, message, id, rank=0, can_edit=false) {
     buttonsContainer.style.height = '100%';
            
     const editButton = document.createElement('button');
-    editButton.classList.add('my-1','mx-1','outline-none','px-4','bg-accent','text-black','rounded-md','hover:bg-[#7ba0ea]','active:bg-[#3d73e1]','transition-colors','ease-in-out');
+    editButton.classList.add('my-1','mx-1','outline-none','px-4','bg-accent','text-white','rounded-md','hover:bg-[#7ba0ea]','active:bg-blue-100','transition-colors','ease-in-out');
     editButton.style.float = 'right'; // set the float property to right    
     editButton.style.display='inline-block'
     editButton.innerHTML = 'Edit';
@@ -167,7 +167,7 @@ function addMessage(sender, message, id, rank=0, can_edit=false) {
     });
 
     const rank_up = document.createElement('button');
-    rank_up.classList.add('my-1','mx-1','outline-none','px-4','bg-accent','text-black','rounded-md','hover:bg-[#7ba0ea]','active:bg-[#3d73e1]','transition-colors','ease-in-out');
+    rank_up.classList.add('my-1','mx-1','outline-none','px-4','bg-accent','text-white','rounded-md','hover:bg-[#7ba0ea]','active:bg-[#3d73e1]','transition-colors','ease-in-out');
     rank_up.style.float = 'right'; // set the float property to right    
     rank_up.style.display='inline-block'
     rank_up.innerHTML = 'Up';
@@ -196,7 +196,7 @@ function addMessage(sender, message, id, rank=0, can_edit=false) {
     });
 
     const rank_down = document.createElement('button');
-    rank_down.classList.add('my-1','mx-1','outline-none','px-4','bg-accent','text-black','rounded-md','hover:bg-[#7ba0ea]','active:bg-[#3d73e1]','transition-colors','ease-in-out');
+    rank_down.classList.add('my-1','mx-1','outline-none','px-4','bg-accent','text-white','rounded-md','hover:bg-[#7ba0ea]','active:bg-[#3d73e1]','transition-colors','ease-in-out');
     rank_down.style.float = 'right'; // set the float property to right    
     rank_down.style.display='inline-block'
     rank_down.innerHTML = 'Down';

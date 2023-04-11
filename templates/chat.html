@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwindcss.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
 </head>
-<body class="w-screen h-full bg-primary text-gray-400 flex flex-col bg-blue-900">
+<body class="w-screen h-full bg-primary text-gray-400 flex flex-col bg-blue-1000">
     <div class="w-full h-20 border-b border-accent bg-tertiary text-2xl font-bold flex justify-between items-center px-6">
         <div class="w-12 h-12"><img src="{{ url_for('static', filename='images/icon.png') }}"></div>
         <h1>GPT4All - WEBUI</h1>
@@ -30,10 +30,10 @@
           </li>
         </ul>
     </div>
-    <div id="main" class="tab-pane">
+    <div id="main" class="tab-pane bg-gray-800">
         <div class="grid grid-cols-3 gap-4">
-        <section class="col-span-1 bg-gray-200">
-            <section id="action-buttons" class="bg-gray-100">
+        <section class="col-span-1 bg-gray-800">
+            <section id="action-buttons" class="bg-gray-800">
                 <button id="new-discussion-btn" class="">
                     <img src="/static/images/new_message.png" class="w-10 h-10">
                 </button>
