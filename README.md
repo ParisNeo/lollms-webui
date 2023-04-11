@@ -22,9 +22,9 @@ It's worth noting that the model has recently been launched, and it's expected t
 
 ## UI screenshot
 ### MAIN page
-![image](https://user-images.githubusercontent.com/827993/231264794-8ebbe3e3-2e92-45eb-82ac-72de671e2c42.png)
+![image](https://user-images.githubusercontent.com/827993/231307919-fda4d6e9-df17-4646-ba06-33afe6b6b176.png)
 ### Settings page
-![image](https://user-images.githubusercontent.com/827993/231264862-a99e8f2f-0731-4c8b-812c-9401c430e2a1.png)
+![image](https://user-images.githubusercontent.com/827993/231309009-4d190850-4292-4de2-a303-ceb04f5cf0ed.png)
 
 
 ## Installation
