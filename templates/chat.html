@@ -5,57 +5,62 @@
     <title>GPT4All - WEBUI</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwindcss.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+
 </head>
-<body class="w-screen h-500 bg-primary text-gray-400 flex flex-col bg-blue-1000">
-    <div class="w-full h-25 border-b border-accent bg-tertiary text-2xl font-bold flex justify-between items-center px-6">
+<body class="w-screen h-500 bg-primary text-gray-400 flex flex-col bg-gray-900 overflow-hidden">
+    <div class="w-full h-50 border-b border-accent bg-tertiary text-2xl font-bold flex justify-between items-center px-6 py-6">
         <div class="w-12 h-12"><img src="{{ url_for('static', filename='images/icon.png') }}"></div>
         <h1>GPT4All - WEBUI</h1>
     </div>
-    <div class="border-b border-gray-200">
-        <ul class="flex border-b border-gray-200">
+    <div class="border-b border-gray-800 content-center items-center">
+        <ul class="flex border-b border-gray-800 content-center items-center">
           <li class="mr-1">
-            <a href="#main" class="bg-gray-100 text-gray-700 py-2 px-4 rounded-t-md font-medium hover:text-gray-900">Main</a>
+            <a href="#main" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:text-gray-100">Main</a>
           </li>
           <li class="mr-1">
-            <a href="#settings" class="bg-gray-100 text-gray-700 py-2 px-4 rounded-t-md font-medium hover:text-gray-900">Settings</a>
+            <a href="#settings" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:text-gray-100">Settings</a>
           </li>
           <li class="mr-1">
-            <a href="#extensions" class="bg-gray-100 text-gray-700 py-2 px-4 rounded-t-md font-medium hover:text-gray-900">Extensions</a>
+            <a href="#extensions" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:text-gray-100" id="extensions-link">Extensions</a>
           </li>
           <li class="mr-1">
-            <a href="#training" class="bg-gray-100 text-gray-700 py-2 px-4 rounded-t-md font-medium hover:text-gray-900">Training</a>
+            <a href="#training" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:text-gray-100" id="training-link">Training</a>
           </li>
           <li class="mr-1">
-            <a href="#help" class="bg-gray-100 text-gray-700 py-2 px-4 rounded-t-md font-medium hover:text-gray-900" id="help-link">Help</a>
+            <a href="#help" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:text-gray-100" id="help-link">Help</a>
           </li>
         </ul>
     </div>
-    <div id="main" class="tab-pane bg-gray-800">
-        <div class="grid grid-cols-3 gap-4">
-            <section class="col-span-1 bg-gray-800 overflow-y-auto">
-                <section id="action-buttons" class="bg-gray-800 px-4 py-4">
-                    <button id="new-discussion-btn" class="px-4 py-4 rounded hover:bg-gray-600 ">
-                        <img src="/static/images/new_message.png" class="w-10 h-10">
-                    </button>
-                    <button value="Export" id="export-button" class="px-4 py-4 rounded hover:bg-gray-600">
-                        <img src="/static/images/export_database.png" class="w-10 h-10">
-                    </button>
-                    <button value="Export" id="export-discussion-button" class="px-4 py-4 rounded hover:bg-gray-600">
-                        <img src="/static/images/export_discussion.png" class="w-10 h-10">
-                    </button>
-                </section>
+    <div id="main" class="tab-pane bg-gray-800 h-full">
+        <div class="grid grid-cols-5 gap-4 h-full">
+            <div class="col-span-1 bg-gray-900 h-full">
                 <div>
                     <h1 class="font-bold font-large">Discussions</h1>
                 </div>
-                <div id="discussions-list" class="overflow-y-auto">
+                <div id="discussions-list" class="overflow-y-auto h-96">
 
                 </div>
-            </section>
-            <section class="col-span-2 bg-gray-400">
-                <div id="chat-window" class="overflow-y-auto">
+            </div>
+            <div class="col-span-4 bg-gray-900 h-full">
+                <div class="text-white">
+                    <h1 class="font-bold font-large">Chat box</h1>
+                </div>
+                <div id="chat-window" class="overflow-y-auto h-96">
         
                 </div>
-            </section>
+            </div>
+        </div>
+        <div id="action-buttons" class="bg-gray-800 px-4 py-4">
+            <button id="new-discussion-btn" class="px-4 py-4 rounded hover:bg-gray-600 ">
+                <img src="/static/images/new_message.png" class="w-10 h-10">
+            </button>
+            <button value="Export" id="export-button" class="px-4 py-4 rounded hover:bg-gray-600">
+                <img src="/static/images/export_database.png" class="w-10 h-10">
+            </button>
+            <button value="Export-discussion" id="export-discussion-button" class="px-4 py-4 rounded hover:bg-gray-600">
+                <img src="/static/images/export_discussion.png" class="w-10 h-10">
+            </button>
         </div>
         <form id="chat-form" class="flex w-full mt-auto">
             <input type="text" id="user-input" placeholder="Type your message..." class="bg-secondary my-1 mx-1 outline-none drop-shadow-sm w-full rounded-md p-2">
@@ -63,17 +68,17 @@
             <div id="wait-animation" style="display: none;" class="lds-facebook bg-secondary my-1 mx-1 outline-none drop-shadow-sm w-full rounded-md p-2"><div></div><div></div><div></div></div>
         </form>    
     </div>
-        <div class="tab-pane" id="settings" style="display: none;">
+    <div class="tab-pane" id="settings" style="display: none;">
         <div class="h-96 overflow-y-auto">
-            <form id="model-params-form" class="bg-white shadow-md rounded px-8 py-8 pt-6 pb-8 mb-4">
+            <form id="model-params-form" class="bg-gray-700 shadow-md rounded px-8 py-8 pt-6 pb-8 mb-4">
             <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2" for="model">Model</label>
-                <select class="bg-gray-700 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="model" name="model"  value="gpt4all-lora-quantized.bin">
+                <label class="block text-gray-500 font-bold mb-2" for="model">Model</label>
+                <select class="bg-gray-700 text-gray-100 shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="model" name="model"  value="gpt4all-lora-quantized.bin">
                 </select>
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2" for="seed">Seed</label>
-                <input class="bg-gray-700 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="seed" type="text" name="seed" value="0">
+                <input class="bg-gray-700 text-gray-100 shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="seed" type="text" name="seed" value="0">
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2" for="temp">Temperature</label>
