@@ -94,7 +94,11 @@ class Gpt4AllWebUI:
         self.add_endpoint(
             "/get_args", "get_args", self.get_args, methods=["GET"]
         )
-        
+
+        self.add_endpoint(
+            "/help", "help", self.help, methods=["GET"]
+        )
+
         self.prepare_a_new_chatbot()
 
     def list_models(self):
@@ -406,6 +410,8 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
     def get_args(self):
         return jsonify(self.args)
 
+    def help(self):
+        return render_template("help.html")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Start the chatbot Flask app.")

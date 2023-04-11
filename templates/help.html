@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help | Your Website Name</title>
+  <!-- Include Tailwind CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwindcss.min.css') }}"
+    integrity="sha512-PNlNwDXNLGt8dJtS5o5bw5aEabz7V9/TwGssCt7E8BX0y4bt4p4z96B+VbX9t2Zc29KKnJw2e0VHMC3KjJyLQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Include custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/help.css') }}">
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="flex justify-between items-center bg-gray-900 text-white p-4">
+    <a href="/" class="text-lg font-bold">GPT4All-ui</a>
+    <!-- Dropdown menu -->
+    <div class="relative">
+      <button class="flex items-center text-lg font-bold">
+        Help
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+          class="ml-2 h-5 w-5 transform transition-transform duration-300">
+          <path fill-rule="evenodd"
+            d="M6.293 6.293a1 1 0 0 0-1.414 1.414L8.586 12l-3.707 3.293a1 1 0 1 0 1.414 1.414l4-4a1 1 0 0 0 0-1.414l-4-4a1 1 0 0 0-.707-.293zm7.414 0a1 1 0 0 1 1.414 0l4 4a1 1 0 0 1 0 1.414l-4 4a1 1 0 1 1-1.414-1.414L11.414 12l3.293-3.293a1 1 0 0 1 1.414 0z" />
+        </svg>
+      </button>
+      <ul class="absolute right-0 w-40 mt-2 py-2 bg-white rounded-md shadow-xl z-10 hidden">
+        <li><a href="#credits" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Credits</a></li>
+        <li><a href="#how-to-use" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">How to use</a></li>
+        <li><a href="#faq" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">FAQ</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Credits section -->
+  <section id="credits" class="mb-8">
+    <h2 class="text-2xl font-bold mb-4">Credits</h2>
+    <p class="mb-4">Here are the developers who worked on this website:</p>
+    <ul class="list-disc list-inside mb-4">
+      <li>@ParisNeo : Creator of the project and Lead developer</li>
+      <li>@AndriyMulyar : CEO of Nomic-ai who offered to link the project as their official ui for GPT4All</li>
+      <li><a href="https://github.com/nomic-ai/gpt4all-ui/graphs/contributors">A number of very talented open source developers without whome this project wouldn't be as awesome as it is.</a></li>
+      <li>You, the users of this tool who helped us in various ways</li>
+    </ul>
+    
+    <p class="mb-4">We would also like to acknowledge the following open-source projects that we used:</p>
+    <ul class="list-disc list-inside mb-4">
+      <li>pyllamacpp</li>
+      <li>llamacpp</li>
+      <li>llama</li>
+    </ul>
+    <p>Thank you to everyone who contributed to the development of this website!</p>
+  </section>
+
+  <!-- How to use section -->
+  <section id="how-to-use" class="mb-8">
+    <h2 class="text-2xl font-bold mb-4">How to use</h2>
+    <ol class="list-decimal list-inside mb-4">
+      <li>Step 1: Write your prompt.</li>
+      <li>Step 2: Press enter or click the send button.</li>
+      <li>Step 3: Read the output.</li>
+      <li>Step 4: Rank the output if you want or edit it.</li>
+      <li>Step 5: Continue the discussion untill you have no more queries.</li>
+    </ol>
+    <p class="mb-4">Here are some tips and tricks to help you get the most out of this website:</p>
+    <ul class="list-disc list-inside">
+      <li>Tip 1: Be specific with your questions.</li>
+      <li>Tip 2: The model needs to be tamed. So try to put it in the mood to answer your question.</li>
+      <li>Tip 3: The model can give helarious, false or completely made up responses. So be vigilant not to use the model for sensitive subjects like medication or financial advice</li>
+    </ul>
+  </section>
+
+  <!-- FAQ section -->
+  <section id="faq">
+    <h2 class="text-2xl font-bold mb-4">Frequently Asked Questions (FAQ)</h2>
+    <dl class="mb-8">
+      <div class="mb-4">
+        <dt class="font-bold">How to install?</dt>
+        <dd>Download the model from .</dd>
+      </div>
+      <div class="mb-4">
+        <dt class="font-bold">Question 2?</dt>
+        <dd>Answer to question 2.</dd>
+      </div>
+      <div>
+        <dt class="font-bold">Question 3?</dt>
+        <dd>Answer to question 3.</dd>
+      </div>
+    </dl>
+  </section>
+</div>
+</main>
+<!-- Include jQuery and custom JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha384-/Y6p6TKLrLCf7N6EWeWvB8KK9gBhuivtJ5f5r5cVzs3s15LYGroMNFaGv/ZeCwPb"
+  crossorigin="anonymous"></script>
+<script src="js/help.js"></script>
+</body>
+</html>

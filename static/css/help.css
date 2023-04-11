@@ -1,0 +1,42 @@
+/* Style for the help page */
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  
+  .section-title {
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .section-title h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  
+  .section-title p {
+    font-size: 1.125rem;
+    font-weight: 300;
+  }
+  
+  .list-disc,
+  .list-decimal {
+    margin-left: 2rem;
+  }
+  
+  .list-inside {
+    margin-left: 1.5rem;
+  }
+  
+  .faq dt {
+    font-weight: bold;
+    margin-top: 1.5rem;
+  }
+  
+  .faq dd {
+    margin-left: 0;
+  }
+  
