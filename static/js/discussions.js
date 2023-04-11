@@ -173,7 +173,8 @@ exportDiscussionButton.addEventListener('click', () => {
   .then(data => {
     const filename = window.prompt('Please enter a filename:', 'discussion.txt');
     if (filename !== null) {
-      const blob = new Blob([data], { type: 'text/plain' });
+      const text = data.replace(/\n/g, "\r\n");
+      const blob = new Blob([text], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;

@@ -185,6 +185,10 @@ function addMessage(sender, message, id, rank=0, can_edit=false) {
                 rank_up.innerText=`Up`
                 rank_down.innerText=`Down(${data.new_rank})`
             }
+            else{
+                rank_up.innerText=`Up`
+                rank_down.innerText=`Down`
+            }
         })
         .catch(error => {
             console.error('There was a problem updating the message:', error);

@@ -75,78 +75,118 @@ exit /b 1
 REM Check if Python is installed
 set /p="Checking for python..." <nul
 where python >nul 2>&1
-if %errorlevel% neq 0 (
-    echo.
-    set /p choice=Python is not installed. Would you like to install Python? [Y/N] 
-    if /i ".choice." equ "Y" (
-        REM Download Python installer
-        echo Downloading Python installer...
-        powershell -Command "Invoke-WebRequest -Uri 'https://www.python.org/ftp/python/3.10.0/python-3.10.0-amd64.exe' -OutFile 'tmp/python.exe'"
-        REM Install Python
-        echo Installing Python...
-        tmp/python.exe /quiet /norestart
-    ) else (
-        echo Please install Python and try again.
-        pause
-        exit /b 1
-    )
+if %ERRORLEVEL% EQU 0 (
+    goto PYTHON_CHECKED
 ) else (
-    echo OK
+    goto PYTHON_INSTALL
 )
+:PYTHON_CHECKED
+echo "Python is installed."
+goto PYTHON_SKIP
+
+:PYTHON_INSTALL
+echo.
+choice /C YN /M "Do you want to download and install python?"
+if errorlevel 2 goto PYTHON_CANCEL
+if errorlevel 1 goto PYTHON_INSTALL_2
+
+:PYTHON_INSTALL_2
+REM Download Python installer
+echo Downloading Python installer...
+powershell -Command "Invoke-WebRequest -Uri 'https://www.python.org/ftp/python/3.10.0/python-3.10.0-amd64.exe' -OutFile 'tmp/python.exe'"
+REM Install Python
+echo Installing Python...
+tmp/python.exe /quiet /norestart
+
+:PYTHON_CANCEL
+echo Please install python and try again.
+pause
+exit /b 1
+
+:PYTHON_SKIP
 
 
 REM Check if pip is installed
 set /p="Checking for pip..." <nul
 python -m pip >nul 2>&1
-if %errorlevel% neq 0 (
-    echo.
-    set /p choice=Pip is not installed. Would you like to install pip? [Y/N]
-    if /i ".choice." equ "Y" (
-        REM Download get-pip.py
-        echo Downloading get-pip.py...
-        powershell -Command "Invoke-WebRequest -Uri 'https://bootstrap.pypa.io/get-pip.py' -OutFile 'tmp/get-pip.py'"
-        REM Install pip
-        echo Installing pip...
-        python tmp/get-pip.py
-    ) else (
-        echo Please install pip and try again.
-        pause
-        exit /b 1
-    )
+if %ERRORLEVEL% EQU 0 (
+    goto PIP_CHECKED
 ) else (
-    echo OK
+    goto PIP_INSTALL
 )
+:PIP_CHECKED
+echo "Pip is installed."
+goto PIP_SKIP
 
-REM Check if venv module is available
-set /p="Checking for venv..." <nul
+:PIP_INSTALL
+echo.
+choice /C YN /M "Do you want to download and install pip?"
+if errorlevel 2 goto PIP_CANCEL
+if errorlevel 1 goto PIP_INSTALL_2
+
+:PIP_INSTALL_2
+REM Download get-pip.py
+echo Downloading get-pip.py...
+powershell -Command "Invoke-WebRequest -Uri 'https://bootstrap.pypa.io/get-pip.py' -OutFile 'tmp/get-pip.py'"
+REM Install pip
+echo Installing pip...
+python tmp/get-pip.py
+
+:PIP_CANCEL
+echo Please install pip and try again.
+pause
+exit /b 1
+
+:PIP_SKIP
+
+REM Upgrading pip setuptools and wheel
+echo Updating pip setuptools and wheel
+python -m pip install --upgrade pip setuptools wheel
+
+
+REM Check if pip is installed
+set /p="Checking for virtual environment..." <nul
 python -c "import venv" >nul 2>&1
-if %errorlevel% neq 0 (
-    echo.
-    set /p choice=venv module is not available. Would you like to upgrade Python to the latest version? [Y/N]
-    if /i ".choice." equ "Y" (
-        REM Upgrade Python
-        echo Upgrading Python...
-        python -m pip install --upgrade pip setuptools wheel
-        python -m pip install --upgrade --user python
-    ) else (
-        echo Please upgrade your Python installation and try again.
-        pause
-        exit /b 1
-    )
+if %ERRORLEVEL% EQU 0 (
+    goto VENV_CHECKED
 ) else (
-    echo OK
+    goto VENV_INSTALL
 )
+:VENV_CHECKED
+echo "Virtual environment is installed."
+goto VENV_SKIP
+
+:VENV_INSTALL
+echo.
+choice /C YN /M "Do you want to download and install venv?"
+if errorlevel 2 goto VENV_CANCEL
+if errorlevel 1 goto VENV_INSTALL_2
+
+:VENV_INSTALL_2
+REM Installinv venv
+echo installing venv...
+pip install virtualenv
+
+:VENV_CANCEL
+echo Please install venv and try again.
+pause
+exit /b 1
+
+:VENV_SKIP
+
 
 REM Create a new virtual environment
 set /p="Creating virtual environment ..." <nul
-python -m venv env
-if %errorlevel% neq 0 (
+python -m venv env >nul 2>&1
+if %ERRORLEVEL% EQU 0 (
+    goto VENV_CREATED
+) else (
     echo Failed to create virtual environment. Please check your Python installation and try again.
     pause
     exit /b 1
-) else (
-    echo OK
 )
+
+:VENV_CREATED
 
 REM Activate the virtual environment
 set /p="Activating virtual environment ..." <nul
