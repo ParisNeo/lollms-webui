@@ -264,7 +264,6 @@ Examples:
 - who is Abraham Lincoln?.
 - write a letter to my collegue and tell him I can't make it to work today. Make it humorous.
 - write a poem about love between two AIs.
-- a=5, b=7, c is integer, c>a and c<b. what is the value of c
 Welcome! I'm here to assist you with anything you need. What can I do for you today?
 `;
 
