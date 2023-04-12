@@ -2,3 +2,4 @@ flask
 nomic
 pytest
 pyllamacpp
+pyyaml

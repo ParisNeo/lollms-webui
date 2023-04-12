@@ -1,0 +1,13 @@
+seed: 0
+model: "gpt4all-lora-quantized-ggml.bin"
+temp: 0.1
+n_predict: 256
+top_k: 40
+top_p: 0.95
+repeat_penalty: 1.3
+repeat_last_n: 64
+ctx_size: 512
+debug: false
+host: "localhost"
+port: 9600
+db_path: "database.db"
