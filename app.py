@@ -36,8 +36,9 @@ from config import load_config
 
 class Gpt4AllWebUI:
 
-    def __init__(self, _app, config:dict) -> None:
+    def __init__(self, _app, config:dict, personality:dict) -> None:
         self.config = config
+        self.personality = personality
         self.current_discussion = None
         self.app = _app
         self.db_path = config["db_path"]
@@ -135,7 +136,7 @@ class Gpt4AllWebUI:
         # Create chatbot
         self.chatbot_bindings = self.create_chatbot()
         # Chatbot conditionning
-        self.condition_chatbot(self.config["personality_conditionning"])
+        self.condition_chatbot(self.personality["personality_conditionning"])
         
 
     def create_chatbot(self):
@@ -249,7 +250,7 @@ class Gpt4AllWebUI:
             )
         )
 
-        self.current_message = self.config["message_prefix"] + message + self.config["message_postfix"]
+        self.current_message = self.personality["message_prefix"] + message + self.personality["message_suffix"]
         self.full_message += self.current_message
         self.full_message_list.append(self.current_message)
         
@@ -441,6 +442,10 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        "-p", "--personality", type=str, default=None, help="Selects the personality to be using."
+    )
+
+    parser.add_argument(
         "-s", "--seed", type=int, default=None, help="Force using a specific seed value."
     )
 
@@ -501,10 +506,12 @@ if __name__ == "__main__":
         if arg_value is not None:
             config[arg_name] = arg_value
 
+    personality = load_config(f"personalities/{config['personality']}.yaml")
+
     executor = ThreadPoolExecutor(max_workers=2)
     app.config['executor'] = executor
 
-    bot = Gpt4AllWebUI(app, config)
+    bot = Gpt4AllWebUI(app, config, personality)
 
     if config["debug"]:
         app.run(debug=True, host=config["host"], port=config["port"])

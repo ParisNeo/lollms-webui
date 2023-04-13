@@ -210,7 +210,7 @@ class Discussion:
         self.discussion_id = discussion_id
         self.discussions_db = discussions_db
 
-    def add_message(self, sender, content, message_type=0, rank=0):
+    def add_message(self, sender, content, message_type=0, rank=0, parent=0):
         """Adds a new message to the discussion
 
         Args:
@@ -221,8 +221,8 @@ class Discussion:
             int: The added message id
         """
         message_id = self.discussions_db.insert(
-            "INSERT INTO message (sender, content, type, rank, discussion_id) VALUES (?, ?, ?, ?, ?)", 
-            (sender, content, message_type, rank, self.discussion_id)
+            "INSERT INTO message (sender, content, type, rank, parent, discussion_id) VALUES (?, ?, ?, ?, ?, ?)", 
+            (sender, content, message_type, rank, parent, self.discussion_id)
         )
         return message_id
 
