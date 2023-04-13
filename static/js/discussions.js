@@ -174,67 +174,70 @@ function populate_discussions_list()
 }
 
 
-// adding export discussion button
-const exportDiscussionButton = document.querySelector('#export-discussion-button');
+function populate_menu(){
+  // adding export discussion button
+  const exportDiscussionButton = document.querySelector('#export-discussion-button');
 
-exportDiscussionButton.addEventListener('click', () => {
-  fetch(`/export_discussion`)
-  .then(response => response.text())
-  .then(data => {
-    const filename = window.prompt('Please enter a filename:', 'discussion.txt');
-    if (filename !== null) {
-      const text = data.replace(/\n/g, "\r\n");
-      const blob = new Blob([text], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      link.click();
-      URL.revokeObjectURL(url);
-    }
-  }).catch(function(error){
-
-  });  
-});
-const actionBtns = document.querySelector('#action-buttons');
-actionBtns.appendChild(exportDiscussionButton);
-
-const newDiscussionBtn = document.querySelector('#new-discussion-btn');
-const resetDBButton = document.querySelector('#reset-discussions-btn');
-resetDBButton.addEventListener('click', () => {
-
-});
-newDiscussionBtn.addEventListener('click', () => {
-  const chatWindow = document.getElementById('chat-window');
-
-  const discussionName = prompt('Enter a name for the new discussion:');
-  if (discussionName) {
-    const sendbtn = document.querySelector("#submit-input")
-    const waitAnimation = document.querySelector("#wait-animation")
-    sendbtn.style.display="none";
-    waitAnimation.style.display="block";
-
-    // Add the discussion to the discussion list
-    const discussionItem = document.createElement('li');
-    discussionItem.textContent = discussionName;
-    fetch(`/new_discussion?title=${discussionName}`)
-    .then(response => response.json())
+  exportDiscussionButton.addEventListener('click', () => {
+    fetch(`/export_discussion`)
+    .then(response => response.text())
     .then(data => {
-        console.log(`New chat ${data.welcome_message}`)
-        // Select the new discussion
-        //selectDiscussion(discussionId);
-        chatWindow.innerHTML=""
-        addMessage("GPT4ALL", data.welcome_message,0);
-        
-        populate_discussions_list()
-        sendbtn.style.display="block";
-        waitAnimation.style.display="none";
-    })
-    .catch(error => {
-      // Handle any errors that occur
-      console.error(error);
-    });
-    
+      const filename = window.prompt('Please enter a filename:', 'discussion.txt');
+      if (filename !== null) {
+        const text = data.replace(/\n/g, "\r\n");
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+    }).catch(function(error){
 
-  }
-});
+    });  
+  });
+  const actionBtns = document.querySelector('#action-buttons');
+  actionBtns.appendChild(exportDiscussionButton);
+
+  const newDiscussionBtn = document.querySelector('#new-discussion-btn');
+  const resetDBButton = document.querySelector('#reset-discussions-btn');
+  resetDBButton.addEventListener('click', () => {
+
+  });
+  newDiscussionBtn.addEventListener('click', () => {
+    const chatWindow = document.getElementById('chat-window');
+
+    const discussionName = prompt('Enter a name for the new discussion:');
+    if (discussionName) {
+      const sendbtn = document.querySelector("#submit-input")
+      const waitAnimation = document.querySelector("#wait-animation")
+      sendbtn.style.display="none";
+      waitAnimation.style.display="block";
+
+      // Add the discussion to the discussion list
+      const discussionItem = document.createElement('li');
+      discussionItem.textContent = discussionName;
+      fetch(`/new_discussion?title=${discussionName}`)
+      .then(response => response.json())
+      .then(data => {
+          console.log(`New chat ${data.welcome_message}`)
+          // Select the new discussion
+          //selectDiscussion(discussionId);
+          chatWindow.innerHTML=""
+          addMessage("GPT4ALL", data.welcome_message,0);
+          
+          populate_discussions_list()
+          sendbtn.style.display="block";
+          waitAnimation.style.display="none";
+      })
+      .catch(error => {
+        // Handle any errors that occur
+        console.error(error);
+      });
+      
+
+    }
+  });
+
+}
