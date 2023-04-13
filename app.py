@@ -183,7 +183,7 @@ class Gpt4AllWebUI:
             self.full_message += text
             self.text_queue.put(text)
         #if self.current_message in self.full_text:
-        if len(self.prompt_message) <= len(self.full_text):
+        if len(self.prompt_message) < len(self.full_text):
             self.is_bot_text_started = True
 
     def add_endpoint(
