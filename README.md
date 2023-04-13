@@ -103,7 +103,7 @@ Now you are ready to customize your Bot.
 
 To run the Flask server, execute the following command:
 ```bash
-python app.py [--port PORT] [--host HOST] [--temp TEMP] [--n-predict N_PREDICT] [--top-k TOP_K] [--top-p TOP_P] [--repeat-penalty REPEAT_PENALTY] [--repeat-last-n REPEAT_LAST_N] [--ctx-size CTX_SIZE]
+python app.py [--config CONFIG] [--personality PERSONALITY] [--port PORT] [--host HOST] [--temp TEMP] [--n-predict N_PREDICT] [--top-k TOP_K] [--top-p TOP_P] [--repeat-penalty REPEAT_PENALTY] [--repeat-last-n REPEAT_LAST_N] [--ctx-size CTX_SIZE]
 ```
 
 On Linux/MacOS more details are [here](docs/Linux_Osx_Usage.md)
@@ -167,6 +167,7 @@ You can launch the application using the personality in two ways:
 - Either you want to change it permanently by putting the name of the personality inside your configuration file
 - Or just use the `--personality` or `-p` option to give the personality name to be used.
 
+If you deem your personality worthy of sharing, you can share the personality by adding it to the [GPT4all personalities](https://github.com/ParisNeo/GPT4All_Personalities) repository. Just fork the repo, add your file and do a pull request.
 
 ## Contribute
 
