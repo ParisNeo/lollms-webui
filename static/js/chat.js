@@ -37,7 +37,27 @@ function addMessage(sender, message, id, rank=0, can_edit=false) {
       // Set the width and height of the container to 100%
       buttonsContainer.style.width = '100%';
       buttonsContainer.style.height = '100%';
-             
+
+      const resendButton = document.createElement('button');
+      resendButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded',"w-10","h-10");
+      resendButton.style.float = 'right'; // set the float property to right    
+      resendButton.style.display='inline-block'
+      resendButton.innerHTML = '';
+      const resendImg = document.createElement('img');
+      resendImg.src = "/static/images/refresh.png";
+      resendImg.classList.add('py-1', 'px-1', 'rounded', 'w-10', 'h-10');
+      resendButton.appendChild(resendImg)
+      rank_up.addEventListener('click', () => {
+        const url = `/message_rank_up?id=${id}`;
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+        })
+        .catch(error => {
+            console.error('There was a problem updating the message:', error);
+        });    
+      });
+
       const editButton = document.createElement('button');
       editButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded',"w-10","h-10");
       editButton.style.float = 'right'; // set the float property to right    
@@ -195,8 +215,8 @@ function addMessage(sender, message, id, rank=0, can_edit=false) {
               console.error('There was a problem updating the message:', error);
           });
       });
-  
       buttonsContainer.appendChild(editButton);
+      buttonsContainer.appendChild(resendButton);
       buttonsContainer.appendChild(deleteButton);
       
       buttonsContainer.appendChild(rank_up);

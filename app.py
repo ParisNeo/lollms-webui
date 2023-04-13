@@ -69,6 +69,7 @@ class Gpt4AllWebUI:
             "/new_discussion", "new_discussion", self.new_discussion, methods=["GET"]
         )
         self.add_endpoint("/bot", "bot", self.bot, methods=["POST"])
+        self.add_endpoint("/run_to", "run_to", self.run_to, methods=["POST"])
         self.add_endpoint("/rename", "rename", self.rename, methods=["POST"])
         self.add_endpoint(
             "/load_discussion", "load_discussion", self.load_discussion, methods=["POST"]
@@ -303,6 +304,21 @@ class Gpt4AllWebUI:
             "user", request.json["message"]
         )
         message = f"{request.json['message']}"
+
+        # Segmented (the user receives the output as it comes)
+        # We will first send a json entry that contains the message id and so on, then the text as it goes
+        return Response(
+            stream_with_context(
+                self.parse_to_prompt_stream(message, message_id)
+            )
+        )
+    
+    
+    def run_to(self):
+        data = request.get_json()
+        message_id = data["id"]
+
+        self.stop = True
 
         # Segmented (the user receives the output as it comes)
         # We will first send a json entry that contains the message id and so on, then the text as it goes
