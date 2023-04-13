@@ -144,6 +144,30 @@ function populate_models(){
       }
     });
 
+  // Fetch the list of .yaml files from the models subfolder
+  fetch('/list_personalities')
+  .then(response => response.json())
+  .then(data => {
+    if (Array.isArray(data)) {
+      // data is an array
+      const selectElement = document.getElementById('personalities');
+      data.forEach(filename => {
+        const optionElement = document.createElement('option');
+        optionElement.value = filename;
+        optionElement.textContent = filename;
+        selectElement.appendChild(optionElement);
+      });
+
+      // fetch('/get_args')
+      // .then(response=> response.json())
+      // .then(data=>{
+        
+      // })
+    } else {
+      console.error('Expected an array, but received:', data);
+    }
+  });
+
 }
 
 populate_models()

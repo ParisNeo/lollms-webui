@@ -6,6 +6,12 @@
         </select>
     </div>
     <div class="mb-4">
+        <label class="block font-bold mb-2" for="model">Personalities</label>
+        <select class="bg-gray-700 shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="personalities" name="personalities"  value="gpt4all_chatbot.yaml">
+        </select>
+    </div>
+    
+    <div class="mb-4">
         <label class="block font-bold mb-2" for="seed">Seed</label>
         <input class="bg-gray-700 shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="seed" type="text" name="seed" value="0">
     </div>
@@ -23,7 +29,7 @@
     </div>
     <div class="mb-4">
         <label class="block font-bold mb-2" for="top-p" id="top-p-value">Top P</label>
-        <input class="w-full slider-value" id="top-p" type="range" min="0" max="100" step="1" value="40" name="top-p">
+        <input class="w-full slider-value" id="top-p" type="range" min="0" max="1" step="0.1" value="0.95" name="top-p">
     </div>
     <div class="mb-4">
         <label class="block font-bold mb-2" for="repeat-penalty" id="repeat-penalty-value">Repeat penalty</label>

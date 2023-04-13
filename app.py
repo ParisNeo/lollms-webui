@@ -58,6 +58,10 @@ class Gpt4AllWebUI:
             "/list_models", "list_models", self.list_models, methods=["GET"]
         )
         self.add_endpoint(
+            "/list_personalities", "list_personalities", self.list_personalities, methods=["GET"]
+        )
+
+        self.add_endpoint(
             "/list_discussions", "list_discussions", self.list_discussions, methods=["GET"]
         )
         
@@ -128,6 +132,11 @@ class Gpt4AllWebUI:
         models_dir = Path('./models')  # replace with the actual path to the models folder
         models = [f.name for f in models_dir.glob('*.bin')]
         return jsonify(models)
+    
+    def list_personalities(self):
+        personalities_dir = Path('./personalities')  # replace with the actual path to the models folder
+        personalities = [f.name for f in personalities_dir.glob('*.yaml')]
+        return jsonify(personalities)
 
     def list_discussions(self):
         discussions = self.db.get_discussions()

@@ -200,7 +200,10 @@ const actionBtns = document.querySelector('#action-buttons');
 actionBtns.appendChild(exportDiscussionButton);
 
 const newDiscussionBtn = document.querySelector('#new-discussion-btn');
+const resetDBButton = document.querySelector('#reset-discussions-btn');
+resetDBButton.addEventListener('click', () => {
 
+});
 newDiscussionBtn.addEventListener('click', () => {
   const chatWindow = document.getElementById('chat-window');
 
