@@ -40,6 +40,7 @@ class Gpt4AllWebUI:
         self.config = config
         self.personality = personality
         self.current_discussion = None
+        self.current_message_id = 0
         self.app = _app
         self.db_path = config["db_path"]
         self.db = DiscussionsDB(self.db_path)
@@ -152,8 +153,13 @@ class Gpt4AllWebUI:
             self.current_discussion = self.db.load_last_discussion()
         
         message_id = self.current_discussion.add_message(
-            "conditionner", conditionning_message, DiscussionsDB.MSG_TYPE_CONDITIONNING,0
+            "conditionner", conditionning_message, DiscussionsDB.MSG_TYPE_CONDITIONNING,0,self.current_message_id
         )
+        if self.personality["welcome_message"]!="":
+            message_id = self.current_discussion.add_message(
+                "gpt4all", self.personality["welcome_message"], DiscussionsDB.MSG_TYPE_CONDITIONNING,0,self.current_message_id
+            )
+        
         return message_id
 
     def prepare_query(self):
@@ -255,7 +261,7 @@ class Gpt4AllWebUI:
         self.full_message_list.append(self.current_message)
         
         if len(self.full_message_list) > self.config["nb_messages_to_remember"]:
-            self.prompt_message = [self.config["personality_conditionning"]]+ '\n'.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
+            self.prompt_message = [self.personality["personality_conditionning"]]+ '\n'.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
         else:
             self.prompt_message = self.full_message
         self.prepare_query()
@@ -340,6 +346,7 @@ class Gpt4AllWebUI:
         for message in messages:
             self.full_message += message['sender'] + ": " + message['content'] + "\n"
             self.full_message_list.append(message['sender'] + ": " + message['content'])
+            self.current_message_id=message['id']
         app.config['executor'].submit(self.restore_discussion, self.full_message)
 
         return jsonify(messages)
@@ -385,7 +392,7 @@ class Gpt4AllWebUI:
         self.full_message =""
 
         # Return a success response
-        return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp})
+        return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp, "welcome_message":self.personality["welcome_message"]})
 
     def update_model_params(self):
         data = request.get_json()

@@ -142,5 +142,11 @@ models/
 # Temporary files
 tmp/
 
-# 
-llama.cpp
+# configurations other than the default one
+configs/*
+!configs/default.yaml
+
+# personalities other than the default one
+personalities/*
+!personalities/gpt4all_chatbot.yaml
+

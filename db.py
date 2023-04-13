@@ -155,6 +155,7 @@ class DiscussionsDB:
             last_discussion_id = self.create_discussion()
         else:
             last_discussion_id=last_discussion_id[0]
+        self.current_message_id = self.select("SELECT id FROM message WHERE discussion_id=? ORDER BY id DESC LIMIT 1", (last_discussion_id,), fetch_all=False)
         return Discussion(last_discussion_id, self)
     
     def create_discussion(self, title="untitled"):
