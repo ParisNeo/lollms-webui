@@ -110,12 +110,91 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-echo Downloading latest model
-wget -P models/  https://the-eye.eu/public/AI/models/nomic-ai/gpt4all/gpt4all-lora-quantized-ggml.bin
+
+echo ""
+echo "Downloading latest model..."
+curl -o "models/gpt4all-lora-quantized-ggml.bin" "https://the-eye.eu/public/AI/models/nomic-ai/gpt4all/gpt4all-lora-quantized-ggml.bin"
 if [ $? -ne 0 ]; then
-  echo "Failed to download model. Please check your `wget` dependency, internet connection and try again."
-  exit 1
+    echo "Failed to download model. Please check your internet connection."
+    read -p "Do you want to try downloading again? Press Y to download." yn
+    case $yn in
+        [Yy]* ) echo "Downloading latest model..."
+                curl -o "models/gpt4all-lora-quantized-ggml.bin" "https://the-eye.eu/public/AI/models/nomic-ai/gpt4all/gpt4all-lora-quantized-ggml.bin";;
+        * ) echo "Skipping download of model file...";;
+    esac
+else
+    echo "Model successfully downloaded."
 fi
+
+echo ""
+echo "In order to make a model work, it needs to go through the LLaMA tokenizer, this will fix errors with the model in run.bat. Do you want to convert the model?"
+read -p "Press Y to convert or N to skip: " yn
+case $yn in
+    [Yy]* )
+        echo ""
+        echo "Select a model to convert:"
+        count=0
+        for f in models/*; do
+            count=$((count+1))
+            file[$count]=$f
+            echo "[$count] $f"
+        done
+
+        Prompt user to choose a model to convert
+        read -p "Enter the number of the model you want to convert: " modelNumber
+
+        if [ -z "${file[modelNumber]}" ]; then
+        echo ""
+        echo "Invalid option. Restarting..."
+        exit 1
+        fi
+
+        modelPath="${file[modelNumber]}"
+
+        echo ""
+        echo "You selected $modelPath"
+
+        Ask user if they want to convert the model
+        echo ""
+        read -p "Do you want to convert the selected model to the new format? (Y/N)" choice
+
+        if [ "$choice" == "N" ]; then
+        echo ""
+        echo "Model conversion cancelled. Skipping..."
+        exit 0
+        fi
+
+        The output inside a code tag
+        echo "The code has been converted successfully."
+esac
+# Convert the model
+echo ""
+echo "Converting the model to the new format..."
+if [ ! -d "tmp/llama.cpp" ]; then
+    git clone https://github.com/ggerganov/llama.cpp.git tmp/llama.cpp
+fi
+mv -f "${modelPath}" "${modelPath}.original"
+python tmp/llama.cpp/migrate-ggml-2023-03-30-pr613.py "${modelPath}.original" "${modelPath}"
+if [ $? -ne 0 ]; then
+    echo ""
+    echo "Error during model conversion. Restarting..."
+    mv -f "${modelPath}.original" "${modelPath}"
+    goto CONVERT_RESTART
+else
+    echo ""
+    echo "The model file (${modelPath}) has been converted to the new format."
+    goto END
+fi
+
+:CANCEL_CONVERSION
+echo ""
+echo "Conversion cancelled. Skipping..."
+goto END
+
+:END
+echo ""
+echo "Cleaning tmp folder"
+rm -rf "./tmp"
 
 
 echo "Virtual environment created and packages installed successfully."
