@@ -6,7 +6,7 @@
 ![GitHub forks](https://img.shields.io/github/forks/nomic-ai/GPT4All-ui)
 [![Discord](https://img.shields.io/discord/1092918764925882418?color=7289da&label=Discord&logo=discord&logoColor=ffffff)](https://discord.gg/DZ4wsgg4)
 
-This is a Flask web application that provides a chat UI for interacting with the GPT4All chatbot.
+This is a Flask web application that provides a chat UI for interacting with llamacpp based chatbots such as GPT4all, vicuna etc...
 
 Follow us on our [Discord server](https://discord.gg/DZ4wsgg4).
 
