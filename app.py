@@ -87,6 +87,10 @@ class Gpt4AllWebUI:
         self.add_endpoint(
             "/message_rank_down", "message_rank_down", self.message_rank_down, methods=["GET"]
         )
+        self.add_endpoint(
+            "/delete_message", "delete_message", self.delete_message, methods=["GET"]
+        )
+        
         
         self.add_endpoint(
             "/update_model_params", "update_model_params", self.update_model_params, methods=["POST"]
@@ -102,6 +106,13 @@ class Gpt4AllWebUI:
 
         self.add_endpoint(
             "/training", "training", self.training, methods=["GET"]
+        )
+        self.add_endpoint(
+            "/main", "main", self.main, methods=["GET"]
+        )
+        
+        self.add_endpoint(
+            "/settings", "settings", self.settings, methods=["GET"]
         )
 
         self.add_endpoint(
@@ -358,6 +369,12 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
         new_rank = self.current_discussion.message_rank_down(discussion_id)
         return jsonify({"new_rank": new_rank})
 
+    def delete_message(self):
+        discussion_id = request.args.get("id")
+        new_rank = self.current_discussion.delete_message(discussion_id)
+        return jsonify({"new_rank": new_rank})
+
+
     def new_discussion(self):
         title = request.args.get("title")
         self.current_discussion = self.db.create_discussion(title)
@@ -401,6 +418,12 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
     
     def get_config(self):
         return jsonify(self.config)
+
+    def main(self):
+        return render_template("main.html")
+    
+    def settings(self):
+        return render_template("settings.html")
 
     def help(self):
         return render_template("help.html")
@@ -459,7 +482,7 @@ if __name__ == "__main__":
         help="launch Flask server in debug mode",
     )
     parser.add_argument(
-        "--host", type=str, default="localhost", help="the hostname to listen on"
+        "--host", type=str, default=None, help="the hostname to listen on"
     )
     parser.add_argument("--port", type=int, default=None, help="the port to listen on")
     parser.add_argument(

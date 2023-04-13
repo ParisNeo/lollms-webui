@@ -1,0 +1,35 @@
+<div class="dark bg-gray-900 md:flex-row flex felx-row">
+    <div class="dark hidden bg-gray-900 md:flex md:w-[260px] flex flex-col">
+        <nav id="action-buttons" class="flex flex-row">
+            <button id="new-discussion-btn" class="px-4 py-4 rounded hover:bg-gray-600">
+                <img src="/static/images/new_message.png" class="w-10 h-10">
+            </button>
+            <button value="Export" id="export-button" class="px-4 py-4 rounded hover:bg-gray-600">
+                <img src="/static/images/export_database.png" class="w-10 h-10">
+            </button>
+            <button value="Export-discussion" id="export-discussion-button" class="px-4 py-4 rounded hover:bg-gray-600">
+                <img src="/static/images/export_discussion.png" class="w-10 h-10">
+            </button>
+        </nav>
+        <div>
+            <h1 class="font-bold font-large">Discussions</h1>
+        </div>
+        <nav id="discussions-list" class="flex h-full flex-1 flex-col space-y-1 p-2 overflow-y-auto">
+
+        </nav>
+    </div>
+    <div class="flex max-w-full flex-1 flex-col">
+        <div class="text-white">
+            <h1 class="font-bold font-large">Chat box</h1>
+        </div>
+        <div id="chat-window" class="overflow-y-auto max-h-full">
+    
+        </div>
+        <form id="chat-form" class="flex w-full mt-auto">
+            <input type="text" id="user-input" placeholder="Type your message..." class="bg-secondary my-1 mx-1 outline-none drop-shadow-sm w-full rounded-md p-2">
+            <div id="wait-animation" style="display: none;" class="lds-facebook bg-secondary my-1 mx-1 outline-none drop-shadow-sm w-full rounded-md p-2"><div></div><div></div><div></div></div>
+            <input type="submit" value="Send" id="submit-input" class="my-1 mx-1 outline-none px-4 bg-accent text-black rounded-md hover:bg-[#7ba0ea] active:bg-[#3d73e1]  transition-colors ease-in-out">
+        </form>    
+    </div>
+    
+</div>

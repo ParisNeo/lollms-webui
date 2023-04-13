@@ -90,7 +90,7 @@ class DiscussionsDB:
                 return cursor.fetchone()
             
 
-    def delete(self, query):
+    def delete(self, query, params=None):
         """
         Execute the specified SQL delete query on the database,
         with optional parameters.
@@ -98,7 +98,10 @@ class DiscussionsDB:
         """
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            cursor.execute(query)
+            if params is None:
+                cursor.execute(query)
+            else:
+                cursor.execute(query, params)
             conn.commit()
    
     def insert(self, query, params=None):
@@ -276,5 +279,14 @@ class Discussion:
             f"UPDATE message SET rank = ? WHERE id = ?",(new_rank,message_id)
         )
         return new_rank
+    
+    def delete_message(self, message_id):
+        """Delete the message
+
+        Args:
+            message_id (int): The id of the message to be deleted
+        """
+        # Retrieve current rank value for message_id
+        self.discussions_db.delete("DELETE FROM message WHERE id=?", (message_id,))
 
 # ========================================================================================================================

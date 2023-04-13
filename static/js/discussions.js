@@ -13,7 +13,7 @@ function populate_discussions_list()
         buttonWrapper.classList.add('flex', 'items-center', 'mt-2', 'px-2', 'py-1', 'text-left');
         
         const renameButton = document.createElement('button');
-        renameButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-2', 'px-2', 'rounded', 'ml-2', 'mr-2',"w-20","h-20");
+        renameButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded',"w-10","h-10");
         const renameImg = document.createElement('img');
         renameImg.src = "/static/images/edit_discussion.png";
         renameImg.classList.add('py-2', 'px-2', 'rounded', 'w-15', 'h-15');
@@ -77,7 +77,7 @@ function populate_discussions_list()
           dialog.showModal();
         });
         const deleteButton = document.createElement('button');
-        deleteButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'rounded', 'ml-2', 'mr-2', "w-20", "h-20");
+        deleteButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded',"w-10","h-10");
         const deleteImg = document.createElement('img');
         deleteImg.src = "/static/images/delete_discussion.png";
         deleteImg.classList.add('py-2', 'px-2', 'rounded', 'w-15', 'h-15');
@@ -110,7 +110,7 @@ function populate_discussions_list()
         });
 
         const discussionButton = document.createElement('button');
-        discussionButton.classList.add('bg-blue-500', 'hover:bg-blue-700', 'text-white', 'font-bold', 'rounded', 'ml-2', 'w-full', 'h-20');
+        discussionButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'ml-2', 'w-full');
         discussionButton.textContent = discussion.title;
         discussionButton.addEventListener('click', () => {
           // send query with discussion id to reveal discussion messages

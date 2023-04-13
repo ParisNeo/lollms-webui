@@ -16,99 +16,25 @@
     <div class="border-b border-gray-800 content-center items-center">
         <ul class="flex border-b border-gray-800 content-center items-center">
           <li class="mr-1">
-            <a href="#main" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:text-gray-100">Main</a>
+            <a href="#main" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:bg-gray-200 hover:text-black" id="main-link">Main</a>
           </li>
           <li class="mr-1">
-            <a href="#settings" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:text-gray-100">Settings</a>
+            <a href="#settings" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:bg-gray-200 hover:text-black" id="settings-link">Settings</a>
           </li>
           <li class="mr-1">
-            <a href="#extensions" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:text-gray-100" id="extensions-link">Extensions</a>
+            <a href="#extensions" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:bg-gray-200 hover:text-black" id="extensions-link">Extensions</a>
           </li>
           <li class="mr-1">
-            <a href="#training" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:text-gray-100" id="training-link">Training</a>
+            <a href="#training" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:bg-gray-200 hover:text-black" id="training-link">Training</a>
           </li>
           <li class="mr-1">
-            <a href="#help" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:text-gray-100" id="help-link">Help</a>
+            <a href="#help" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:bg-gray-200 hover:text-black" id="help-link">Help</a>
           </li>
         </ul>
     </div>
-    <div id="main" class="tab-pane bg-gray-800 h-full">
-        <div class="grid grid-cols-5 gap-4 h-full">
-            <div class="col-span-1 bg-gray-900 h-full">
-                <div>
-                    <h1 class="font-bold font-large">Discussions</h1>
-                </div>
-                <div id="discussions-list" class="overflow-y-auto h-96">
-
-                </div>
-            </div>
-            <div class="col-span-4 bg-gray-900 h-full">
-                <div class="text-white">
-                    <h1 class="font-bold font-large">Chat box</h1>
-                </div>
-                <div id="chat-window" class="overflow-y-auto h-96">
-        
-                </div>
-            </div>
-        </div>
-        <div id="action-buttons" class="bg-gray-800 px-4 py-4">
-            <button id="new-discussion-btn" class="px-4 py-4 rounded hover:bg-gray-600 ">
-                <img src="/static/images/new_message.png" class="w-10 h-10">
-            </button>
-            <button value="Export" id="export-button" class="px-4 py-4 rounded hover:bg-gray-600">
-                <img src="/static/images/export_database.png" class="w-10 h-10">
-            </button>
-            <button value="Export-discussion" id="export-discussion-button" class="px-4 py-4 rounded hover:bg-gray-600">
-                <img src="/static/images/export_discussion.png" class="w-10 h-10">
-            </button>
-        </div>
-        <form id="chat-form" class="flex w-full mt-auto">
-            <input type="text" id="user-input" placeholder="Type your message..." class="bg-secondary my-1 mx-1 outline-none drop-shadow-sm w-full rounded-md p-2">
-            <input type="submit" value="Send" id="submit-input" class="my-1 mx-1 outline-none px-4 bg-accent text-black rounded-md hover:bg-[#7ba0ea] active:bg-[#3d73e1]  transition-colors ease-in-out">
-            <div id="wait-animation" style="display: none;" class="lds-facebook bg-secondary my-1 mx-1 outline-none drop-shadow-sm w-full rounded-md p-2"><div></div><div></div><div></div></div>
-        </form>    
+    <div id="main" class="tab-pane overflow-hidden flex flex-row w-full h-full relative flex">
     </div>
     <div class="tab-pane" id="settings" style="display: none;">
-        <div class="h-full overflow-y-auto">
-            <form id="model-params-form" class="bg-gray-700 shadow-md rounded px-8 py-8 pt-6 pb-8 mb-4 text-white">
-            <div class="mb-4">
-                <label class="block font-bold mb-2" for="model">Model</label>
-                <select class="bg-gray-700 shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="model" name="model"  value="gpt4all-lora-quantized.bin">
-                </select>
-            </div>
-            <div class="mb-4">
-                <label class="block font-bold mb-2" for="seed">Seed</label>
-                <input class="bg-gray-700 shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="seed" type="text" name="seed" value="0">
-            </div>
-            <div class="mb-4">
-                <label class="block font-bold mb-2" for="temp" id="temperature-value">Temperature (0.1)</label>
-                <input class="w-full slider-value" id="temp" type="range" min="0" max="1" step="0.1" value="0.1" name="temp">
-            </div>
-            <div class="mb-4">
-                <label class="block font-bold mb-2" for="n-predict" id="n-predict-value">N Predict (256)</label>
-                <input class="w-full slider-value" id="n-predict" type="range" min="0" max="2048" step="1" value="256" name="n-predict">
-            </div>
-            <div class="mb-4">
-                <label class="block font-bold mb-2" for="top-k" id="top-k-value">Top K</label>
-                <input class="w-full slider-value" id="top-k" type="range" min="0" max="100" step="1" value="40" name="top-k">
-            </div>
-            <div class="mb-4">
-                <label class="block font-bold mb-2" for="top-p" id="top-p-value">Top P</label>
-                <input class="w-full slider-value" id="top-p" type="range" min="0" max="100" step="1" value="40" name="top-p">
-            </div>
-            <div class="mb-4">
-                <label class="block font-bold mb-2" for="repeat-penalty" id="repeat-penalty-value">Repeat penalty</label>
-                <input class="w-full slider-value" id="repeat-penalty" type="range" min="0" max="2" step="0.1" value="1.3" name="repeat-penalty">
-            </div>
-            <div class="mb-4">
-                <label class="block font-bold mb-2" for="repeat-last-n" id="repeat-last-n-value">Repeat last N</label>
-                <input class="w-full slider-value" id="repeat-last-n" type="range" min="0" max="100" step="1" value="40" name="repeat-last-n">
-            </div>
-            <div class="mb-4">
-                <button type="submit" id="submit-model-params" class="my-1 mx-1 outline-none px-4 bg-accent rounded-md bg-gray-500 hover:bg-gray-300 transition-colors ease-in-out">Update parameters</button>
-            </div>
-            </form>
-        </div>
     </div>
     <div class="tab-pane" id="extensions" style="display: none;">
     </div>
@@ -119,15 +45,17 @@
     </div>
     <footer class="border-t border-accent flex">
     </footer>
-    <script src="{{ url_for('static', filename='js/marked.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/marked.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/extensions.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/training.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/help.js') }}"></script>
+
     <script src="{{ url_for('static', filename='js/discussions.js') }}"></script>
     <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
     <script src="{{ url_for('static', filename='js/db_export.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tabs.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/help.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/extensions.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/training.js') }}"></script>
     
 </body>
 </html>
