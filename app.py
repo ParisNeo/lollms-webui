@@ -439,7 +439,7 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Start the chatbot Flask app.")
     parser.add_argument(
-        "-s", "--seed", type=int, default=None, help="Force using a specific model."
+        "-s", "--seed", type=int, default=None, help="Force using a specific seed value."
     )
 
     parser.add_argument(
