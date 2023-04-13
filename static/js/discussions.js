@@ -42,8 +42,6 @@ function load_discussion(discussion=0){
   });
 }
 
-load_discussion();
-
 function populate_discussions_list()
 {
   // Populate discussions list
@@ -175,8 +173,6 @@ function populate_discussions_list()
   });
 }
 
-// First time we populate the discussions list
-populate_discussions_list()
 
 // adding export discussion button
 const exportDiscussionButton = document.querySelector('#export-discussion-button');

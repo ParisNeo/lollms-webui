@@ -21,3 +21,18 @@ function showTab(tabId) {
         showTab(tabId);
     });
 }
+
+fetch('/main')
+.then(response => response.text())
+.then(html => {
+  document.getElementById('main').innerHTML = html;
+  // First time we populate the discussions list
+  populate_discussions_list()
+  load_discussion();
+  update_main();
+  db_export();
+  
+})
+.catch(error => {
+  console.error('Error loading main page:', error);
+});

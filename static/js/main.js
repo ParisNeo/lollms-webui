@@ -2,9 +2,10 @@ function update_main(){
   const chatWindow = document.getElementById('chat-window');
   const chatForm = document.getElementById('chat-form');
   const userInput = document.getElementById('user-input');
-  
+
   chatForm.addEventListener('submit', event => {
       event.preventDefault();
+      console.log("Submitting")
   
       // get user input and clear input field
       message = userInput.value;
@@ -85,21 +86,5 @@ function update_main(){
           readStream();
       });
   
-  });
-  
-  const welcome_message = `
-  Welcome! I'm here to assist you with anything you need. What can I do for you today?
-  `;
-  
-  addMessage("GPT4ALL",welcome_message,0,0,false);
-  
+  });  
 }
-fetch('/main')
-.then(response => response.text())
-.then(html => {
-  document.getElementById('main').innerHTML = html;
-  update_main();
-})
-.catch(error => {
-  console.error('Error loading main page:', error);
-});
