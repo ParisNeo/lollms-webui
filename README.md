@@ -110,6 +110,8 @@ On Linux/MacOS more details are [here](docs/Linux_Osx_Usage.md)
 
 
 ## Options
+*   `--config`: the configuration file to be used. It contains default configurations to be used. The script parameters will override the configurations inside the configuration file. It must be placed in configs folder (default: default.yaml)
+*   `--personality`: the personality file name. It contains the definition of the pezrsonality of the chatbot. It should be placed in personalities folder. The default personality is `gpt4all_chatbot.yaml`
 *   `--model`: the name of the model to be used. The model should be placed in models folder (default: gpt4all-lora-quantized.bin)
 *   `--seed`: the random seed for reproductibility. If fixed, it is possible to reproduce the outputs exactly (default: random)
 *   `--port`: the port on which to run the server (default: 9600)
