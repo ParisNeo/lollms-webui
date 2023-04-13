@@ -136,8 +136,6 @@ class Gpt4AllWebUI:
     def prepare_a_new_chatbot(self):
         # Create chatbot
         self.chatbot_bindings = self.create_chatbot()
-        # Chatbot conditionning
-        self.condition_chatbot(self.personality["personality_conditionning"])
         
 
     def create_chatbot(self):
@@ -148,18 +146,26 @@ class Gpt4AllWebUI:
             )
 
     def condition_chatbot(self, conditionning_message):
-        self.full_message += conditionning_message
         if self.current_discussion is None:
             self.current_discussion = self.db.load_last_discussion()
         
         message_id = self.current_discussion.add_message(
-            "conditionner", conditionning_message, DiscussionsDB.MSG_TYPE_CONDITIONNING,0,self.current_message_id
+            "conditionner", 
+            conditionning_message, 
+            DiscussionsDB.MSG_TYPE_CONDITIONNING,
+            0,
+            self.current_message_id
         )
+        self.current_message_id = message_id
         if self.personality["welcome_message"]!="":
             message_id = self.current_discussion.add_message(
-                "gpt4all", self.personality["welcome_message"], DiscussionsDB.MSG_TYPE_CONDITIONNING,0,self.current_message_id
+                self.personality["name"], self.personality["welcome_message"], 
+                DiscussionsDB.MSG_TYPE_NORMAL,
+                0,
+                self.current_message_id
             )
         
+            self.current_message_id = message_id
         return message_id
 
     def prepare_query(self):
@@ -243,7 +249,7 @@ class Gpt4AllWebUI:
         print(f"Received message : {message}")
         # First we need to send the new message ID to the client
         response_id = self.current_discussion.add_message(
-            "GPT4All", ""
+            self.personality["name"], ""
         )  # first the content is empty, but we'll fill it at the end
         yield (
             json.dumps(
@@ -261,7 +267,7 @@ class Gpt4AllWebUI:
         self.full_message_list.append(self.current_message)
         
         if len(self.full_message_list) > self.config["nb_messages_to_remember"]:
-            self.prompt_message = [self.personality["personality_conditionning"]]+ '\n'.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
+            self.prompt_message = self.personality["personality_conditionning"]+ '\n'.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
         else:
             self.prompt_message = self.full_message
         self.prepare_query()
@@ -333,20 +339,23 @@ class Gpt4AllWebUI:
         data = request.get_json()
         if "id" in data:
             discussion_id = data["id"]
+            self.current_discussion = Discussion(discussion_id, self.db)
         else:
             if self.current_discussion is not None:
                 discussion_id = self.current_discussion.discussion_id
+                self.current_discussion = Discussion(discussion_id, self.db)
             else:
-                discussion_id = self.db.create_discussion()
-        self.current_discussion = Discussion(discussion_id, self.db)
+                self.current_discussion = self.db.create_discussion()
+        
         messages = self.current_discussion.get_messages()
         
         self.full_message = ""
         self.full_message_list = []
         for message in messages:
-            self.full_message += message['sender'] + ": " + message['content'] + "\n"
-            self.full_message_list.append(message['sender'] + ": " + message['content'])
-            self.current_message_id=message['id']
+            if message['sender']!="conditionner":
+                self.full_message += message['sender'] + ": " + message['content'] + "\n"
+                self.full_message_list.append(message['sender'] + ": " + message['content'])
+                self.current_message_id=message['id']
         app.config['executor'].submit(self.restore_discussion, self.full_message)
 
         return jsonify(messages)
@@ -390,6 +399,10 @@ class Gpt4AllWebUI:
         app.config['executor'].submit(self.prepare_a_new_chatbot)
 
         self.full_message =""
+
+        # Chatbot conditionning
+        self.condition_chatbot(self.personality["personality_conditionning"])
+
 
         # Return a success response
         return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp, "welcome_message":self.personality["welcome_message"]})

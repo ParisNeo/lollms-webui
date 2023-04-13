@@ -56,8 +56,9 @@ function update_main(){
                   {
                     // We parse it and
                     infos = JSON.parse(text)
+                    console.log(infos)
                     addMessage('User', infos.message, infos.id, 0, can_edit=true);
-                    elements = addMessage('GPT4ALL', '', infos.response_id, 0, can_edit=true);
+                    elements = addMessage(infos.sender, '', infos.response_id, 0, can_edit=true);
                     messageTextElement=elements['messageTextElement'];
                     hiddenElement=elements['hiddenElement'];
                     entry_counter ++;

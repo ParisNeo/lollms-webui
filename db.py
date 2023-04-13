@@ -256,7 +256,8 @@ class Discussion:
         rows = self.discussions_db.select(
             f"SELECT * FROM message WHERE discussion_id={self.discussion_id}"
         )
-        return [{"id": row[0], "sender": row[1], "content": row[2], "type": row[3], "rank": row[4]} for row in rows]
+
+        return [{"id": row[0], "sender": row[1], "content": row[2], "type": row[3], "rank": row[4], "parent": row[5]} for row in rows]
 
     def update_message(self, message_id, new_content):
         """Updates the content of a message

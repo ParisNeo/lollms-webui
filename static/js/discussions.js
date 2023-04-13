@@ -1,9 +1,13 @@
 
 function load_discussion(discussion=0){
   if(discussion)
+  {
+    console.log(discussion.id)
     body = { id: discussion.id }
-  else
+  }
+  else{
     body = {  }
+  }
   // send query with discussion id to reveal discussion messages
   fetch('/load_discussion', {
     method: 'POST',
@@ -21,7 +25,9 @@ function load_discussion(discussion=0){
         var container = document.getElementById('chat-window');
         container.innerHTML = '';
         messages.forEach(message => {
+          console.log(`Adding message ${message.type}`)
           if(message.type==0){
+            console.log("Showing message")
             addMessage(message.sender, message.content, message.id, message.rank, true);
           }
         });
@@ -152,8 +158,8 @@ function populate_discussions_list()
         discussionButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'ml-2', 'w-full');
         discussionButton.textContent = discussion.title;
         discussionButton.addEventListener('click', () => {
-          load_discussion(discussion);
           console.log(`Showing messages for discussion ${discussion.id}`);
+          load_discussion(discussion);
         });
 
 
