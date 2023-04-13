@@ -301,10 +301,10 @@ class Gpt4AllWebUI:
                 self.current_discussion = self.db.load_last_discussion()
 
         message_id = self.current_discussion.add_message(
-            "user", request.json["message"]
+            "user", request.json["message"], parent=self.current_message_id
         )
         message = f"{request.json['message']}"
-
+        self.current_message_id = message_id
         # Segmented (the user receives the output as it comes)
         # We will first send a json entry that contains the message id and so on, then the text as it goes
         return Response(
@@ -313,12 +313,17 @@ class Gpt4AllWebUI:
             )
         )
     
-    
+
     def run_to(self):
         data = request.get_json()
         message_id = data["id"]
 
         self.stop = True
+        message_id = self.current_discussion.add_message(
+            "user", request.json["message"], parent=message_id
+        )
+
+        message = f"{request.json['message']}"
 
         # Segmented (the user receives the output as it comes)
         # We will first send a json entry that contains the message id and so on, then the text as it goes
