@@ -146,6 +146,28 @@ docker-compose -f docker-compose.yml up
 
 After that you can open the application in your browser on http://localhost:9600
 
+
+## Update To latest version
+
+On windows use:
+```bash
+update.bat
+```
+On linux or macos use:
+```bash
+bash update.sh
+```
+
+
+## Build custom personalities and share them
+
+To build a new personality, create a new file with the name of the personality inside the personalities folder. You can look at `gpt4all_chatbot.yaml` file as an example. Then you can fill the fields with the description, the conditionning etc of your personality. Then save the file.
+
+You can launch the application using the personality in two ways:
+- Either you want to change it permanently by putting the name of the personality inside your configuration file
+- Or just use the `--personality` or `-p` option to give the personality name to be used.
+
+
 ## Contribute
 
 This is an open-source project by the community for the community. Our chatbot is a UI wrapper for Nomic AI's model, which enables natural language processing and machine learning capabilities.
