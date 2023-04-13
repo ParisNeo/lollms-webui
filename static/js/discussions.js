@@ -1,4 +1,43 @@
 
+function load_discussion(discussion=0){
+  if(discussion)
+    body = { id: discussion.id }
+  else
+    body = {  }
+  // send query with discussion id to reveal discussion messages
+  fetch('/load_discussion', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  })
+  .then(response => {
+    if (response.ok) {
+      response.text().then(data => {
+        const messages = JSON.parse(data);
+        console.log(messages)
+        // process messages
+        var container = document.getElementById('chat-window');
+        container.innerHTML = '';
+        messages.forEach(message => {
+          if(message.type==0){
+            addMessage(message.sender, message.content, message.id, message.rank, true);
+          }
+        });
+          });
+    } else {
+      alert('Failed to query the discussion');
+    }
+  })
+  .catch(error => {
+    console.error('Failed to get messages:', error);
+    alert('Failed to get messages');
+  });
+}
+
+load_discussion();
+
 function populate_discussions_list()
 {
   // Populate discussions list
@@ -113,36 +152,7 @@ function populate_discussions_list()
         discussionButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'ml-2', 'w-full');
         discussionButton.textContent = discussion.title;
         discussionButton.addEventListener('click', () => {
-          // send query with discussion id to reveal discussion messages
-          fetch('/load_discussion', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ id: discussion.id })
-            })
-            .then(response => {
-              if (response.ok) {
-                response.text().then(data => {
-                  const messages = JSON.parse(data);
-                  console.log(messages)
-                  // process messages
-                  var container = document.getElementById('chat-window');
-                  container.innerHTML = '';
-                  messages.forEach(message => {
-                    if(message.type==0){
-                      addMessage(message.sender, message.content, message.id, message.rank, true);
-                    }
-                  });
-                    });
-              } else {
-                alert('Failed to query the discussion');
-              }
-            })
-            .catch(error => {
-              console.error('Failed to get messages:', error);
-              alert('Failed to get messages');
-            });
+          load_discussion(discussion);
           console.log(`Showing messages for discussion ${discussion.id}`);
         });
 
@@ -190,6 +200,8 @@ actionBtns.appendChild(exportDiscussionButton);
 const newDiscussionBtn = document.querySelector('#new-discussion-btn');
 
 newDiscussionBtn.addEventListener('click', () => {
+  const chatWindow = document.getElementById('chat-window');
+
   const discussionName = prompt('Enter a name for the new discussion:');
   if (discussionName) {
     const sendbtn = document.querySelector("#submit-input")

@@ -11,3 +11,9 @@ debug: false
 host: "localhost"
 port: 9600
 db_path: "database.db"
+nb_messages_to_remember: 5
+message_prefix:  "\nuser:"
+message_postfix: "\ngpt4all:"
+personality_conditionning: |
+  Instruction: Act as gpt4all. A kind and helpful AI bot built to help users solve problems.
+  gpt4all:Welcome! I'm here to assist you with anything you need. What can I do for you today?

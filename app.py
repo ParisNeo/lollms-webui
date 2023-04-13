@@ -135,7 +135,7 @@ class Gpt4AllWebUI:
         # Create chatbot
         self.chatbot_bindings = self.create_chatbot()
         # Chatbot conditionning
-        self.condition_chatbot()
+        self.condition_chatbot(self.config["personality_conditionning"])
         
 
     def create_chatbot(self):
@@ -145,23 +145,15 @@ class Gpt4AllWebUI:
             seed=self.config['seed'],
             )
 
-    def condition_chatbot(self, conditionning_message = """
-Instruction: Act as GPT4All. A kind and helpful AI bot built to help users solve problems.
-GPT4All:Welcome! I'm here to assist you with anything you need. What can I do for you today?"""
-                          ):
+    def condition_chatbot(self, conditionning_message):
         self.full_message += conditionning_message
         if self.current_discussion is None:
-            if self.db.does_last_discussion_have_messages():
-                self.current_discussion = self.db.create_discussion()
-            else:
-                self.current_discussion = self.db.load_last_discussion()
+            self.current_discussion = self.db.load_last_discussion()
         
         message_id = self.current_discussion.add_message(
             "conditionner", conditionning_message, DiscussionsDB.MSG_TYPE_CONDITIONNING,0
         )
-        
-        self.full_message_list.append(conditionning_message)
-
+        return message_id
 
     def prepare_query(self):
         self.bot_says = ""
@@ -257,12 +249,12 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
             )
         )
 
-        self.current_message = "\nUser: " + message + "\nGPT4All: "
+        self.current_message = self.config["message_prefix"] + message + self.config["message_postfix"]
         self.full_message += self.current_message
         self.full_message_list.append(self.current_message)
         
-        if len(self.full_message_list) > 5:
-            self.prompt_message = '\n'.join(self.full_message_list[-5:])
+        if len(self.full_message_list) > self.config["nb_messages_to_remember"]:
+            self.prompt_message = [self.config["personality_conditionning"]]+ '\n'.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
         else:
             self.prompt_message = self.full_message
         self.prepare_query()
@@ -332,7 +324,13 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
 
     def load_discussion(self):
         data = request.get_json()
-        discussion_id = data["id"]
+        if "id" in data:
+            discussion_id = data["id"]
+        else:
+            if self.current_discussion is not None:
+                discussion_id = self.current_discussion.discussion_id
+            else:
+                discussion_id = self.db.create_discussion()
         self.current_discussion = Discussion(discussion_id, self.db)
         messages = self.current_discussion.get_messages()
         
@@ -439,6 +437,10 @@ GPT4All:Welcome! I'm here to assist you with anything you need. What can I do fo
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Start the chatbot Flask app.")
     parser.add_argument(
+        "-c", "--config", type=str, default="default", help="Sets the configuration file to be used."
+    )
+
+    parser.add_argument(
         "-s", "--seed", type=int, default=None, help="Force using a specific model."
     )
 
@@ -490,7 +492,8 @@ if __name__ == "__main__":
     )
     parser.set_defaults(debug=False)
     args = parser.parse_args()
-    config_file_path = "configs/default.yaml"
+
+    config_file_path = f"configs/{args.config}.yaml"
     config = load_config(config_file_path)
 
     # Override values in config with command-line arguments

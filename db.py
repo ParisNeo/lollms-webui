@@ -12,19 +12,26 @@ class DiscussionsDB:
         """
         create database schema
         """
+        db_version = 2
+
         print("Checking discussions database...")
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
 
-            # Check if the 'schema_version' table exists
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS schema_version (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    version INTEGER NOT NULL
-                )
-            """)
             discussion_table_exist=False
             message_table_exist=False
+            schema_table_exist=False
+
+            # Check if the 'schema_version' table exists
+            try:
+                cursor.execute("""
+                    CREATE TABLE schema_version (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        version INTEGER NOT NULL
+                    )
+                """)
+            except:
+                schema_table_exist = True
             try:
                 cursor.execute("""
                         CREATE TABLE discussion (
@@ -32,16 +39,17 @@ class DiscussionsDB:
                             title TEXT
                         )
                     """)
-            except:
+            except Exception:
                 discussion_table_exist=True        
             try:
                 cursor.execute("""
-                        CREATE TABLE IF NOT EXISTS message (
+                        CREATE TABLE message (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             sender TEXT NOT NULL,
                             content TEXT NOT NULL,
                             type INT NOT NULL,
                             rank INT NOT NULL,
+                            parent INT,
                             discussion_id INTEGER NOT NULL,
                             FOREIGN KEY (discussion_id) REFERENCES discussion(id)
                         )
@@ -62,15 +70,27 @@ class DiscussionsDB:
 
             # Upgrade the schema to version 1
             if version < 1:
-                print("Upgrading schema to version 1...")
+                print(f"Upgrading schema to version {db_version}...")
                 # Add the 'created_at' column to the 'message' table
                 if message_table_exist:
-                    cursor.execute("ALTER TABLE message ADD COLUMN type INT DEFAULT 0")
-                    cursor.execute("ALTER TABLE message ADD COLUMN rank INT DEFAULT 0")
-                # Update the schema version
-                cursor.execute("INSERT INTO schema_version (id, version) VALUES (1, 1)")
-                version = 1
-        
+                    cursor.execute("ALTER TABLE message ADD COLUMN type INT DEFAULT 0") # Added in V1
+                    cursor.execute("ALTER TABLE message ADD COLUMN rank INT DEFAULT 0") # Added in V1
+                    cursor.execute("ALTER TABLE message ADD COLUMN parent INT DEFAULT 0") # Added in V2
+            # Upgrade the schema to version 1
+            elif version < 2:
+                print(f"Upgrading schema to version {db_version}...")
+                # Add the 'created_at' column to the 'message' table
+                if message_table_exist:
+                    try:
+                        cursor.execute("ALTER TABLE message ADD COLUMN parent INT DEFAULT 0") # Added in V2
+                    except :
+                        pass
+            # Update the schema version
+            if not schema_table_exist:
+                cursor.execute(f"INSERT INTO schema_version (id, version) VALUES (1, {db_version})")
+            else:
+                cursor.execute(f"UPDATE schema_version SET version=? WHERE id=?",(db_version,1))
+
             conn.commit()
 
     def select(self, query, params=None, fetch_all=True):
