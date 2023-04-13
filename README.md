@@ -22,10 +22,17 @@ It's worth noting that the model has recently been launched, and it's expected t
 
 ## UI screenshot
 ### MAIN page
-![image](https://user-images.githubusercontent.com/827993/231307919-fda4d6e9-df17-4646-ba06-33afe6b6b176.png)
+![image](https://user-images.githubusercontent.com/827993/231809373-ae46f510-5dfe-4432-9fa4-e35328a6c461.png)
 ### Settings page
-![image](https://user-images.githubusercontent.com/827993/231309009-4d190850-4292-4de2-a303-ceb04f5cf0ed.png)
-
+![image](https://user-images.githubusercontent.com/827993/231809510-93b0156a-98dd-4f5b-9d19-25c787570dc1.png)
+### Extensions page
+The extensions interface is not yet ready but once it will be, any one may build its own plugins and share them with the community.
+![image](https://user-images.githubusercontent.com/827993/231809762-0dd8127e-0cab-4310-9df3-d1cff89cf589.png)
+### Training page
+This page is not yet ready, but it will eventually be released to allow you to fine tune your own model and share it if you want
+![image](https://user-images.githubusercontent.com/827993/231810125-b39c0672-f748-4311-9523-9b27b8a89dfe.png)
+### Help
+This page shows credits to the developers, How to use, few FAQ, and some examples to test.
 
 ## Installation
 
