@@ -441,7 +441,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "-s", "--seed", type=int, default=None, help="Force using a specific model."
+        "-s", "--seed", type=int, default=None, help="Force using a specific seed value."
     )
 
     parser.add_argument(
