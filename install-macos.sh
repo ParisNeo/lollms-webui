@@ -138,7 +138,6 @@ else
         * ) echo "Skipping download of model file...";;
     esac
 fi
-#!/bin/bash
 
 echo ""
 echo "Downloading latest model..."
@@ -169,13 +168,13 @@ case $yn in
             echo "[$count] $f"
         done
 
-        # Prompt user to choose a model to convert
+        Prompt user to choose a model to convert
         read -p "Enter the number of the model you want to convert: " modelNumber
 
         if [ -z "${file[modelNumber]}" ]; then
-            echo ""
-            echo "Invalid option. Restarting..."
-            exit 1
+        echo ""
+        echo "Invalid option. Restarting..."
+        exit 1
         fi
 
         modelPath="${file[modelNumber]}"
@@ -183,41 +182,52 @@ case $yn in
         echo ""
         echo "You selected $modelPath"
 
-        # Ask user if they want to convert the model
+        Ask user if they want to convert the model
         echo ""
         read -p "Do you want to convert the selected model to the new format? (Y/N)" choice
 
         if [ "$choice" == "N" ]; then
-            echo ""
-            echo "Model conversion cancelled. Skipping..."
-        else
-            # Convert the model
-            echo "Converting the model to the new format..."
-            if [ ! -d "tmp/llama.cpp" ]; then
-                git clone https://github.com/ggerganov/llama.cpp.git tmp/llama.cpp
-            fi
-            mv -f "${modelPath}" "${modelPath}.original"
-            python tmp/llama.cpp/migrate-ggml-2023-03-30-pr613.py "${modelPath}.original" "${modelPath}"
-            if [ $? -ne 0 ]; then
-                echo ""
-                echo "Error during model conversion. Restarting..."
-                mv -f "${modelPath}.original" "${modelPath}"
-                exit 1
-            else
-                echo ""
-                echo "The model file (${modelPath}) has been converted to the new format."
-            fi
+        echo ""
+        echo "Model conversion cancelled. Skipping..."
+        exit 0
         fi
-        ;;
-    * ) echo ""
-        echo "Conversion cancelled. Skipping..."
-        ;;
-esac
 
+        The output inside a code tag
+        echo "The code has been converted successfully."
+esac
+# Convert the model
+echo ""
+echo "Converting the model to the new format..."
+if [ ! -d "tmp/llama.cpp" ]; then
+    git clone https://github.com/ggerganov/llama.cpp.git tmp/llama.cpp
+    cd tmp\llama.cpp
+    git checkout 0f07cacb05f49704d35a39aa27cfd4b419eb6f8d
+    cd ..\..
+fi
+mv -f "${modelPath}" "${modelPath}.original"
+python tmp/llama.cpp/migrate-ggml-2023-03-30-pr613.py "${modelPath}.original" "${modelPath}"
+if [ $? -ne 0 ]; then
+    echo ""
+    echo "Error during model conversion. Restarting..."
+    mv -f "${modelPath}.original" "${modelPath}"
+    goto CONVERT_RESTART
+else
+    echo ""
+    echo "The model file (${modelPath}) has been converted to the new format."
+    goto END
+fi
+
+:CANCEL_CONVERSION
+echo ""
+echo "Conversion cancelled. Skipping..."
+goto END
+
+:END
 echo ""
 echo "Cleaning tmp folder"
 rm -rf "./tmp"
 
+
 echo "Virtual environment created and packages installed successfully."
-echo "Everything is set up. Just run run.sh"
+echo "Every thing is setup. Just run run.sh"
 exit 0

@@ -172,6 +172,9 @@ echo ""
 echo "Converting the model to the new format..."
 if [ ! -d "tmp/llama.cpp" ]; then
     git clone https://github.com/ggerganov/llama.cpp.git tmp/llama.cpp
+    cd tmp\llama.cpp
+    git checkout 0f07cacb05f49704d35a39aa27cfd4b419eb6f8d
+    cd ..\..
 fi
 mv -f "${modelPath}" "${modelPath}.original"
 python tmp/llama.cpp/migrate-ggml-2023-03-30-pr613.py "${modelPath}.original" "${modelPath}"
