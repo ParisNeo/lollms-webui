@@ -22,7 +22,7 @@ It's worth noting that the model has recently been launched, and it's expected t
 
 ## UI screenshot
 ### MAIN page
-![image](https://user-images.githubusercontent.com/827993/231809373-ae46f510-5dfe-4432-9fa4-e35328a6c461.png)
+![image](https://user-images.githubusercontent.com/827993/231911545-750c8293-58e4-4fac-8b34-f5c0d57a2f7d.png)
 ### Settings page
 ![image](https://user-images.githubusercontent.com/827993/231809510-93b0156a-98dd-4f5b-9d19-25c787570dc1.png)
 ### Extensions page
@@ -168,6 +168,17 @@ You can launch the application using the personality in two ways:
 - Or just use the `--personality` or `-p` option to give the personality name to be used.
 
 If you deem your personality worthy of sharing, you can share the personality by adding it to the [GPT4all personalities](https://github.com/ParisNeo/GPT4All_Personalities) repository. Just fork the repo, add your file and do a pull request.
+
+
+## Features
+
+- Chat with AI
+- Create, edit, and share personality
+- Audio in and audio out with many options for language and voices
+- History of discussion with resume functionality
+- Add new discussion, rename discussion, remove discussion
+- Export database to json format
+- Export discussion to text format
 
 ## Contribute
 
