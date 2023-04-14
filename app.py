@@ -62,6 +62,10 @@ class Gpt4AllWebUI:
         )
 
         self.add_endpoint(
+            "/list_languages", "list_languages", self.list_languages, methods=["GET"]
+        )
+        
+        self.add_endpoint(
             "/list_discussions", "list_discussions", self.list_discussions, methods=["GET"]
         )
         
@@ -137,6 +141,19 @@ class Gpt4AllWebUI:
         personalities_dir = Path('./personalities')  # replace with the actual path to the models folder
         personalities = [f.name for f in personalities_dir.glob('*.yaml')]
         return jsonify(personalities)
+
+    def list_languages(self):
+        lanuguages= [
+        { "value": "en-US", "label": "English" },
+        { "value": "fr-FR", "label": "Français" },
+        { "value": "ar-AR", "label": "العربية" },
+        { "value": "it-IT", "label": "Italiano" },
+        { "value": "de-DE", "label": "Deutsch" },
+        { "value": "nl-XX", "label": "Dutch" },
+        { "value": "zh-CN", "label": "中國人" }
+        ]
+        return jsonify(lanuguages)
+
 
     def list_discussions(self):
         discussions = self.db.get_discussions()

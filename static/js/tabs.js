@@ -32,6 +32,9 @@ fetch('/main')
   load_discussion();
   update_main();
   db_export();
+  prepre_audio();
+  add_audio_in_ui();
+  populateVoicesList();
   
 })
 .catch(error => {

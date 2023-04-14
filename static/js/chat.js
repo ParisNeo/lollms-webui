@@ -319,6 +319,8 @@ function addMessage(sender, message, id, rank=0, can_edit=false) {
     }
     chatWindow.appendChild(messageElement);
     chatWindow.appendChild(hiddenElement);
+
+    attachAudio_modules(messageTextElement);
   
     // scroll to bottom of chat window
     chatWindow.scrollTop = chatWindow.scrollHeight;

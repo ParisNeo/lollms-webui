@@ -5,6 +5,8 @@ fetch('/settings')
   document.getElementById('settings').innerHTML = html;
   
   modelInput = document.getElementById('model');
+  personalityInput = document.getElementById('personalities');
+  languageInput = document.getElementById('language');
   seedInput = document.getElementById('seed');
   tempInput = document.getElementById('temp');
   nPredictInput = document.getElementById('n-predict');
@@ -52,6 +54,8 @@ fetch('/settings')
     .then((data) => {
       console.log(data);
       modelInput.value = data["model"]
+      personalityInput.value = data["personality"]
+      languageInput.value = data["language"]
       seedInput.value = data["seed"]
       tempInput.value = data["temp"]
       nPredictInput.value = data["n_predict"]
@@ -155,6 +159,30 @@ function populate_models(){
         const optionElement = document.createElement('option');
         optionElement.value = filename;
         optionElement.textContent = filename;
+        selectElement.appendChild(optionElement);
+      });
+
+      // fetch('/get_args')
+      // .then(response=> response.json())
+      // .then(data=>{
+        
+      // })
+    } else {
+      console.error('Expected an array, but received:', data);
+    }
+  });
+
+  // Fetch the list of .yaml files from the models subfolder
+  fetch('/list_languages')
+  .then(response => response.json())
+  .then(data => {
+    if (Array.isArray(data)) {
+      // data is an array
+      const selectElement = document.getElementById('language');
+      data.forEach(row => {
+        const optionElement = document.createElement('option');
+        optionElement.value = row.value;
+        optionElement.innerHTML = row.label;
         selectElement.appendChild(optionElement);
       });
 

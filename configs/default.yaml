@@ -13,3 +13,4 @@ port: 9600
 db_path: "database.db"
 nb_messages_to_remember: 5
 personality: "gpt4all_chatbot"
+language: "en_XX"
