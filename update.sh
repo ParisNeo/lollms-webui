@@ -41,7 +41,7 @@ echo Pull latest version of the code
 git pull
 
 echo Download latest personalities
-if not exist tmp\personalities git clone https://github.com/ParisNeo/GPT4All_Personalities.git tmp\personalities
+if not exist tmp/personalities git clone https://github.com/ParisNeo/GPT4All_Personalities.git tmp/personalities
 cp tmp/personalities/* personalities
 
 echo Cleaning tmp folder
