@@ -159,8 +159,9 @@ if (!userAgent.match(/firefox|fxios/i)) {
         audio_in_button.classList.add("audio_btn");
         audio_in_button.innerHTML = "🎤";
 
-        input.parentNode.parentNode.appendChild(
-          audio_in_button
+        input.parentNode.parentNode.insertBefore(
+          audio_in_button,
+          input.parentNode
         );
 
         input.classList.add("flex-1");
