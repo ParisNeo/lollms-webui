@@ -32,12 +32,13 @@ from pathlib import Path
 import gc
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
 import time
-from config import load_config
+from config import load_config, save_config
 
 class Gpt4AllWebUI:
 
-    def __init__(self, _app, config:dict, personality:dict) -> None:
+    def __init__(self, _app, config:dict, personality:dict, config_file_path) -> None:
         self.config = config
+        self.config_file_path = config_file_path
         self.personality = personality
         self.current_discussion = None
         self.current_message_id = 0
@@ -139,7 +140,7 @@ class Gpt4AllWebUI:
     
     def list_personalities(self):
         personalities_dir = Path('./personalities')  # replace with the actual path to the models folder
-        personalities = [f.name for f in personalities_dir.glob('*.yaml')]
+        personalities = [f.stem for f in personalities_dir.glob('*.yaml')]
         return jsonify(personalities)
 
     def list_languages(self):
@@ -476,6 +477,8 @@ class Gpt4AllWebUI:
         self.config['repeat_penalty'] = float(data["repeatPenalty"])
         self.config['repeat_last_n'] = int(data["repeatLastN"])
 
+        save_config(self.config, self.config_file_path)
+
         print("Parameters changed to:")
         print(f"\tModel:{self.config['model']}")
         print(f"\tPersonality:{self.config['personality']}")
@@ -587,7 +590,7 @@ if __name__ == "__main__":
     executor = ThreadPoolExecutor(max_workers=2)
     app.config['executor'] = executor
 
-    bot = Gpt4AllWebUI(app, config, personality)
+    bot = Gpt4AllWebUI(app, config, personality, config_file_path)
 
     if config["debug"]:
         app.run(debug=True, host=config["host"], port=config["port"])
