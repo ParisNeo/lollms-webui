@@ -298,6 +298,11 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
         buttonsContainer.appendChild(rank_up);
         buttonsContainer.appendChild(rank_down);
         messageElement.appendChild(buttonsContainer);
+        // Dirty fix for disabling speech synth for firefox browsers :()
+        if (!userAgent.match(/firefox|fxios/i)) {
+            attachAudio_modules(messageTextElement, buttonsContainer);
+        }
+
         if (rank > 0) {
             thumbUpBadge.innerText = `${rank}`
             thumbDownBadge.innerText = ``
@@ -321,10 +326,6 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
     chatWindow.appendChild(messageElement);
     chatWindow.appendChild(hiddenElement);
 
-    // Dirty fix for disabling speech synth for firefox browsers :()
-    if (!userAgent.match(/firefox|fxios/i)) {
-        attachAudio_modules(messageTextElement);
-    }
 
     // scroll to bottom of chat window
     chatWindow.scrollTop = chatWindow.scrollHeight;

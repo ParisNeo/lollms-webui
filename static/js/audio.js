@@ -77,19 +77,19 @@ if (!userAgent.match(/firefox|fxios/i)) {
     };
   }
 
-  function attachAudio_modules(div) {
-    if (div.parentNode.getElementsByClassName("audio-out-button").length > 0) {
+  function attachAudio_modules(div, container) {
+    if (container.getElementsByClassName("audio-out-button").length > 0) {
       return;
     }
     const audio_out_button = document.createElement("button");
     audio_out_button.id = "audio-out-button";
-    audio_out_button.classList.add("audio_btn");
+    audio_out_button.classList.add("audio_btn",'bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded', "w-10", "h-10");
     audio_out_button.innerHTML = "🕪";
-    div.classList.add("flex-1");
     audio_out_button.classList.add("audio-out-button");
-    div.appendChild(audio_out_button);
+    container.appendChild(audio_out_button);
 
     function play_audio() {
+      console.log("Playing audio")
       if (isSpeaking) {
 
         audio_out_button.style.backgroundColor = "";
@@ -98,7 +98,7 @@ if (!userAgent.match(/firefox|fxios/i)) {
         isSpeaking = false;
       } else {
         isSpeaking = true;
-        text = audio_out_button.previousSibling.textContent;
+        text = div.textContent;
 
         const selectedOption =
           voice_select.selectedOptions[0].getAttribute("data-name");
@@ -114,7 +114,9 @@ if (!userAgent.match(/firefox|fxios/i)) {
           addListeners(audio_out_button, utterThis);
           synth.speak(utterThis);
         } else {
+          console.log("Not native")
           texts = splitString(text, 200);
+          console.log(`Text to say ${texts}`)
           texts.forEach((text) => {
             const utterThis = new SpeechSynthesisUtterance(text);
             utterThis.voice = selectedVoice;
@@ -163,10 +165,6 @@ if (!userAgent.match(/firefox|fxios/i)) {
 
         input.classList.add("flex-1");
         audio_in_button.classList.add("ml-2");
-        //wrapper.appendChild(audio_in_button);
-        //input.parentNode.parentNode.insertBefore(wrapper, input);
-        //input.parentNode.removeChild(input);
-        //wrapper.appendChild(input);
 
         audio_in_button.addEventListener("click", () => {
           if (isStarted) {
