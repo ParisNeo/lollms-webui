@@ -17,3 +17,4 @@ top_k: 40
 top_p: 0.95
 voice: ""
 use_gpu: false # Not active yet
+auto_read: false
