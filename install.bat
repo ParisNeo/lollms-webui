@@ -287,6 +287,7 @@ if errorlevel 2 (
     echo Model conversion cancelled. Skipping...
     goto END
 )
+
 REM Convert the model
 echo.
 echo Converting the model to the new format...
