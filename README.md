@@ -77,6 +77,7 @@ These scripts will create a Python virtual environment and install the required 
 Now you're ready to work!
 
 # Supported models
+You can also refuse to download the model during the install procedure and download it manually.
 For now we support any ggml model such as :
 - [GPT4ALL 7B](https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin)
 - [Vicuna 7B](https://huggingface.co/eachadea/legacy-ggml-vicuna-7b-4bit/resolve/main/ggml-vicuna-7b-4bit.bin)
