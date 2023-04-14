@@ -24,7 +24,7 @@ It's worth noting that the model has recently been launched, and it's expected t
 ### MAIN page
 ![image](https://user-images.githubusercontent.com/827993/231911545-750c8293-58e4-4fac-8b34-f5c0d57a2f7d.png)
 ### Settings page
-![image](https://user-images.githubusercontent.com/827993/231809510-93b0156a-98dd-4f5b-9d19-25c787570dc1.png)
+![image](https://user-images.githubusercontent.com/827993/231912018-4e69e0c3-cbef-4dc8-81b3-d977d96cc7de.png)
 ### Extensions page
 The extensions interface is not yet ready but once it will be, any one may build its own plugins and share them with the community.
 ![image](https://user-images.githubusercontent.com/827993/231809762-0dd8127e-0cab-4310-9df3-d1cff89cf589.png)
