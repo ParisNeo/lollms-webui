@@ -152,9 +152,10 @@ class DiscussionsDB:
     def load_last_discussion(self):
         last_discussion_id = self.select("SELECT id FROM discussion ORDER BY id DESC LIMIT 1", fetch_all=False)
         if last_discussion_id is None:
-            last_discussion_id = self.create_discussion()
+            last_discussion = self.create_discussion()
+            last_discussion_id = last_discussion.discussion_id
         else:
-            last_discussion_id=last_discussion_id[0]
+            last_discussion_id = last_discussion_id[0]
         self.current_message_id = self.select("SELECT id FROM message WHERE discussion_id=? ORDER BY id DESC LIMIT 1", (last_discussion_id,), fetch_all=False)
         return Discussion(last_discussion_id, self)
     
@@ -180,9 +181,10 @@ class DiscussionsDB:
     def does_last_discussion_have_messages(self):
         last_discussion_id = self.select("SELECT id FROM discussion ORDER BY id DESC LIMIT 1", fetch_all=False)
         if last_discussion_id is None:
-            last_discussion_id = self.create_discussion()
+            last_discussion = self.create_discussion()
+            last_discussion_id = last_discussion.discussion_id
         else:
-            last_discussion_id=last_discussion_id[0]
+            last_discussion_id = last_discussion_id[0]
         last_message = self.select("SELECT * FROM message WHERE discussion_id=?", (last_discussion_id,), fetch_all=False)
         return last_message is not None
     
