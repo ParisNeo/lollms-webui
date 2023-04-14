@@ -27,10 +27,10 @@ personality_conditionning: |
 welcome_message: "Welcome! I am GPT4All A free and open discussion AI. What can I do for you today?"
 
 # This prefix is added at the beginning of any message input by the user
-message_prefix:  "\nuser:"
+message_prefix:  "\nuser: "
 
 # This suffix is added at the end of any message input by the user
-message_suffix: "\ngpt4all:"
+message_suffix: "\ngpt4all: "
 
 # Here is the list of extensions this personality requires
 dependencies: []

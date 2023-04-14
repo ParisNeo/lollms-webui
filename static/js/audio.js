@@ -155,9 +155,8 @@ function add_audio_in_ui() {
         audio_in_button.classList.add("audio_btn");
         audio_in_button.innerHTML = "🎤";
   
-        input.parentNode.insertBefore(
-          audio_in_button,
-          input
+        input.parentNode.parentNode.appendChild(
+          audio_in_button
         );
   
         input.classList.add("flex-1");
