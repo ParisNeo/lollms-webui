@@ -167,12 +167,15 @@ class Gpt4AllWebUI:
         
 
     def create_chatbot(self):
-        return Model(
-            ggml_model=f"./models/{self.config['model']}", 
-            n_ctx=self.config['ctx_size'], 
-            seed=self.config['seed'],
-            )
-
+        try:
+            return Model(
+                ggml_model=f"./models/{self.config['model']}", 
+                n_ctx=self.config['ctx_size'], 
+                seed=self.config['seed'],
+                )
+        except Exception as ex:
+            print(f"Exception {ex}")
+            return None
     def condition_chatbot(self, conditionning_message):
         if self.current_discussion is None:
             self.current_discussion = self.db.load_last_discussion()
