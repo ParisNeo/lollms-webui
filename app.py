@@ -577,6 +577,8 @@ if __name__ == "__main__":
     parser.set_defaults(debug=False)
     args = parser.parse_args()
 
+    # The default configuration must be kept unchanged as it is committed to the repository, 
+    # so we have to make a copy that is not comitted
     if args.config=="default":
         args.config = "local_default"
         if not Path(f"configs/local_default.yaml").exists():
