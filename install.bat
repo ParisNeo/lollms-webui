@@ -222,7 +222,7 @@ if not exist models/gpt4all-lora-quantized-ggml.bin (
 )
 
 :DOWNLOAD_WITH_BROWSER
-start https://the-eye.eu/public/AI/models/nomic-ai/gpt4all/gpt4all-lora-quantized-ggml.bin
+start https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin
 echo Link has been opened with the default web browser, make sure to save it into the models folder before continuing. Press any key to continue...
 pause
 goto :CONTINUE
@@ -230,7 +230,7 @@ goto :CONTINUE
 :MODEL_DOWNLOAD
 echo.
 echo Downloading latest model...
-powershell -Command "Invoke-WebRequest -Uri 'https://the-eye.eu/public/AI/models/nomic-ai/gpt4all/gpt4all-lora-quantized-ggml.bin' -OutFile 'models/gpt4all-lora-quantized-ggml.bin'"
+powershell -Command "Invoke-WebRequest -Uri 'https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin' -OutFile 'models/gpt4all-lora-quantized-ggml.bin'"
 if errorlevel 1 (
     echo Failed to download model. Please check your internet connection.
     choice /C YN /M "Do you want to try downloading again?"
@@ -247,76 +247,6 @@ echo Skipping download of model file...
 goto :CONTINUE
 
 :CONTINUE
-
-REM This code lists all files in the ./models folder and asks the user to choose one to convert.
-REM If the user agrees, it converts using Python. If not, it skips. On conversion failure, it reverts to original model.
-:CONVERT_RESTART
-echo.
-choice /C YN /M "In order to make a model work, it needs to go through the LLaMA tokenizer, this will fix errors with the model in run.bat. Do you want to convert the model?"
-if errorlevel 2 goto CANCEL_CONVERSION
-if errorlevel 1 goto CONVERT_START
-
-:CONVERT_START
-REM List all files in the models folder
-setlocal EnableDelayedExpansion
-set count=0
-for %%a in (models\*.*) do (
-    set /A count+=1
-    set "file[!count!]=%%a"
-    echo [!count!] %%a
-)
-
-REM Prompt user to choose a model to convert
-set /P modelNumber="Enter the number of the model you want to convert: "
-
-if not defined file[%modelNumber%] (
-    echo.
-    echo Invalid option. Restarting...
-    goto CONVERT_RESTART
-)
-
-set "modelPath=!file[%modelNumber%]!"
-
-echo.
-echo You selected !modelPath!
-REM Ask user if they want to convert the model
-echo.
-choice /C YN /M "Do you want to convert the selected model to the new format?"
-if errorlevel 2 (
-    echo.
-    echo Model conversion cancelled. Skipping...
-    goto END
-)
-REM Convert the model
-echo.
-echo Converting the model to the new format...
-if not exist tmp\llama.cpp git clone https://github.com/ggerganov/llama.cpp.git tmp\llama.cpp
-cd tmp\llama.cpp
-git checkout 0f07cacb05f49704d35a39aa27cfd4b419eb6f8d
-cd ..\..
-move /y "!modelPath!" "!modelPath!.original"
-python tmp\llama.cpp\migrate-ggml-2023-03-30-pr613.py "!modelPath!.original" "!modelPath!"
-if %errorlevel% neq 0 (
-    goto ERROR_CONVERSION
-) else (
-    goto SUCCESSFUL_CONVERSION
-)
-
-:ERROR_CONVERSION
-echo.
-echo Error during model conversion. Restarting...
-move /y "!modelPath!.original" "!modelPath!"
-goto CONVERT_RESTART
-
-:SUCCESSFUL_CONVERSION
-echo.
-echo The model file (!modelPath!) has been converted to the new format.
-goto END
-
-:CANCEL_CONVERSION
-echo.
-echo Conversion cancelled. Skipping...
-goto END
 
 :END
 
