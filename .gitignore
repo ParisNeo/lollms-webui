@@ -150,3 +150,6 @@ configs/*
 personalities/*
 !personalities/gpt4all_chatbot.yaml
 
+# extensions
+extensions/
+!extensions/.keep

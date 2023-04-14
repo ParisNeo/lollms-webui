@@ -65,12 +65,12 @@ function populate_discussions_list()
         //renameButton.style.backgroundImage = "/rename_discussion.svg"; //.textContent = 'Rename';
         renameButton.addEventListener('click', () => {
           const dialog = document.createElement('dialog');
-          dialog.classList.add('bg-gray-500 text-white', 'rounded', 'p-4');
+          dialog.classList.add('bg-gray-500', 'text-white', 'rounded', 'p-4');
 
           const inputLabel = document.createElement('label');
           inputLabel.textContent = 'New name: ';
           const inputField = document.createElement('input');
-          inputField.classList.add('border', 'border-gray-400', 'rounded', 'py-1', 'px-2');
+          inputField.classList.add('border', "px-2", "mx-2", 'bg-gray-800', 'border-gray-400', 'rounded', 'py-1', 'px-2');
           inputField.setAttribute('type', 'text');
           inputField.setAttribute('name', 'title');
           inputField.setAttribute('value', discussion.title);
