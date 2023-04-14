@@ -33,7 +33,7 @@ import gc
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
 import time
 from config import load_config, save_config
-
+import shutil
 class Gpt4AllWebUI:
 
     def __init__(self, _app, config:dict, personality:dict, config_file_path) -> None:
@@ -577,6 +577,11 @@ if __name__ == "__main__":
     parser.set_defaults(debug=False)
     args = parser.parse_args()
 
+    if args.config=="default":
+        args.config = "local_default"
+        if not Path(f"configs/local_default.yaml").exists():
+            print("No local configuration file found. Building from scratch")
+            shutil.copy(f"configs/default.yaml", f"configs/local_default.yaml")
     config_file_path = f"configs/{args.config}.yaml"
     config = load_config(config_file_path)
 
