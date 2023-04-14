@@ -76,6 +76,13 @@ These scripts will create a Python virtual environment and install the required 
 
 Now you're ready to work!
 
+# Supported models
+For now we support any ggml model such as :
+- [GPT4ALL 7B](https://huggingface.co/parisneo/gpt4all/)
+- [Vicuna 7B](https://huggingface.co/eachadea/legacy-ggml-vicuna-7b-4bit/tree/main)
+- [ALPACA 7B](https://huggingface.co/Sosaka/Alpaca-native-4bit-ggml/blob/main/ggml-alpaca-7b-q4.bin)
+
+Just download the model into the models folder and start using the tool.
 ## Usage
 For simple newbies on Windows:
 ```cmd
