@@ -466,6 +466,9 @@ class Gpt4AllWebUI:
 
         self.config['n_predict'] = int(data["nPredict"])
         self.config['seed'] = int(data["seed"])
+        self.config['model'] = str(data["model"])
+        self.config['voice'] = str(data["voice"])
+        self.config['language'] = str(data["language"])
         
         self.config['temp'] = float(data["temp"])
         self.config['top_k'] = int(data["topK"])
@@ -474,6 +477,10 @@ class Gpt4AllWebUI:
         self.config['repeat_last_n'] = int(data["repeatLastN"])
 
         print("Parameters changed to:")
+        print(f"\tModel:{self.config['model']}")
+        print(f"\tPersonality:{self.config['personality']}")
+        print(f"\tLanguage:{self.config['language']}")
+        print(f"\tVoice:{self.config['voice']}")
         print(f"\tTemperature:{self.config['temp']}")
         print(f"\tNPredict:{self.config['n_predict']}")
         print(f"\tSeed:{self.config['seed']}")

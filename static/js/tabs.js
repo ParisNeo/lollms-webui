@@ -35,7 +35,8 @@ fetch('/main')
   prepre_audio();
   add_audio_in_ui();
   populateVoicesList();
-  
+  populate_models()
+
 })
 .catch(error => {
   console.error('Error loading main page:', error);

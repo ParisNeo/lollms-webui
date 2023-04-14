@@ -65,7 +65,7 @@ function populate_discussions_list()
         //renameButton.style.backgroundImage = "/rename_discussion.svg"; //.textContent = 'Rename';
         renameButton.addEventListener('click', () => {
           const dialog = document.createElement('dialog');
-          dialog.classList.add('bg-white', 'rounded', 'p-4');
+          dialog.classList.add('bg-gray-500 text-white', 'rounded', 'p-4');
 
           const inputLabel = document.createElement('label');
           inputLabel.textContent = 'New name: ';
