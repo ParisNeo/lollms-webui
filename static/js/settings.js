@@ -112,9 +112,11 @@ fetch('/settings')
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
+        alert("Configuration set successfully")
       })
       .catch((error) => {
         console.error('Error:', error);
+        alert("Error setting configuration")
       });
   });
 
