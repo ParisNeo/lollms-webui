@@ -48,24 +48,20 @@ Make sure that your CPU supports `AVX2` instruction set. Without it this applica
 
 ## Windows 10 and 11
 
-## Noob mode
+### Simple:
 
-1. Download this repo .zip:
+1. Download this repository .zip:
 
+![image](https://user-images.githubusercontent.com/80409979/232210909-0ce3dc80-ed34-4b32-b828-e124e3df3ff1.png)
 
+2. Extract contents into a folder.
+3. Install application by double clicking on `install.bat` file from Windows explorer as normal user.
+4. Run application by double clicking on `run.bat` file from Windows explorer as normal user to start the application.
+
+### Advanced mode:
 
 1. Install [git](https://git-scm.com/download/win).
-2. Open powershell by pressing `win + R` buttons on your keyboard then write `powershell` and press `enter`.
-3. Navigate to where you want to clone this repository to with `cd` command. For example you want to download it to drive and folder `E:\git-repos`
-```bash
-cd e:
-```
-
-```bash
-cd git-repos
-```
-
-The command bellow will create directory `E:\git-repos\gpt4all-ui` and clone the repository there.
+2. Open terminal/powershell and navigate to a folder you want to clone this repository.
 
 ```bash
 git clone https://github.com/nomic-ai/gpt4all-ui.git
@@ -114,18 +110,19 @@ bash ./run.sh
 
 ## MacOS
 
-1. Open terminal/console and install dependencies:
+1. Open terminal/console and install `brew`:
 
-`Brew:`
 ```
 $ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
+
+2. Install dependencies:
 
 ```
 brew install git python3
 ```
 
-2. Clone repository:
+3. Clone repository:
 
 ```bash
 git clone https://github.com/nomic-ai/gpt4all-ui.git
@@ -134,13 +131,13 @@ git clone https://github.com/nomic-ai/gpt4all-ui.git
 cd gpt4all-ui
 ```
 
-3. Run installation:
+4. Run installation:
 
 ```bash
 bash ./install.sh
 ```
 
-4. Run application:
+5. Run application:
 
 ```bash
 bash ./run.sh
@@ -180,12 +177,11 @@ docker compose stop
 
 After that you can open the application in your browser on http://localhost:9600
 
-
 Now you're ready to work!
 
 # Supported models
 You can also refuse to download the model during the install procedure and download it manually.
-## For now we support ggml model such as :
+## For now we support ggml models that work out of the box (tested on Windows 11 and Ubuntu 22.04.2) such as :
 
 - [GPT4ALL 7B](https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin)
 - [Vicuna 7B rev 1](https://huggingface.co/eachadea/legacy-ggml-vicuna-7b-4bit/resolve/main/ggml-vicuna-7b-4bit-rev1.bin) 
