@@ -1,7 +1,7 @@
-document.getElementById('extensions-link').addEventListener('click', loadHelpPage);
+document.getElementById('extensions-link').addEventListener('click', loadExtensionsPage);
 
 
-function loadHelpPage(event) {
+function loadExtensionsPage(event) {
     event.preventDefault(); // Prevent the default link behavior
 
     fetch('/extensions')
@@ -10,6 +10,6 @@ function loadHelpPage(event) {
         document.getElementById('extensions').innerHTML = html;
       })
       .catch(error => {
-        console.error('Error loading help page:', error);
+        console.error('Error loading extensions page:', error);
       });
   }
