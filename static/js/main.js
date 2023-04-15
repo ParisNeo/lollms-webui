@@ -16,6 +16,7 @@ function update_main(){
       const waitAnimation = document.querySelector("#wait-animation")
       sendbtn.style.display="none";
       waitAnimation.style.display="block";
+      console.log("Sending message to bot")
       fetch('/bot', {
           method: 'POST',
           headers: {
