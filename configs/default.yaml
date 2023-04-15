@@ -1,7 +1,8 @@
 config: default
 ctx_size: 512
-db_path: database.db
+db_path: databases/database.db
 debug: false
+n_threads: 8
 host: localhost
 language: en-US
 model: gpt4all-lora-quantized-ggml.bin

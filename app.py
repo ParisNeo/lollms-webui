@@ -13,10 +13,9 @@ import argparse
 import json
 import re
 import traceback
-from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 import sys
-from db import DiscussionsDB, Discussion
+from pyGpt4All.db import DiscussionsDB, Discussion
 from flask import (
     Flask,
     Response,
@@ -26,34 +25,20 @@ from flask import (
     stream_with_context,
     send_from_directory
 )
-from pyllamacpp.model import Model
 from queue import Queue
 from pathlib import Path
 import gc
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
 import time
-from config import load_config, save_config
+from pyGpt4All.config import load_config, save_config
+from pyGpt4All.api import GPT4AllAPI
 import shutil
-class Gpt4AllWebUI:
-
+class Gpt4AllWebUI(GPT4AllAPI):
     def __init__(self, _app, config:dict, personality:dict, config_file_path) -> None:
-        self.config = config
-        self.config_file_path = config_file_path
-        self.personality = personality
-        self.current_discussion = None
-        self.current_message_id = 0
-        self.app = _app
-        self.db_path = config["db_path"]
-        self.db = DiscussionsDB(self.db_path)
-        # If the database is empty, populate it with tables
-        self.db.populate()
+        super().__init__(config, personality, config_file_path)
 
-        # workaround for non interactive mode
-        self.full_message = ""
-        self.full_message_list = []
-        self.prompt_message = ""
-        # This is the queue used to stream text to the ui as the bot spits out its response
-        self.text_queue = Queue(0)
+        self.app = _app
+
 
         self.add_endpoint(
             "/list_models", "list_models", self.list_models, methods=["GET"]
@@ -131,7 +116,6 @@ class Gpt4AllWebUI:
             "/help", "help", self.help, methods=["GET"]
         )
 
-        self.prepare_a_new_chatbot()
 
     def list_models(self):
         models_dir = Path('./models')  # replace with the actual path to the models folder
@@ -160,63 +144,6 @@ class Gpt4AllWebUI:
         discussions = self.db.get_discussions()
         return jsonify(discussions)
 
-
-    def prepare_a_new_chatbot(self):
-        # Create chatbot
-        self.chatbot_bindings = self.create_chatbot()
-        
-
-    def create_chatbot(self):
-        try:
-            return Model(
-                ggml_model=f"./models/{self.config['model']}", 
-                n_ctx=self.config['ctx_size'], 
-                seed=self.config['seed'],
-                )
-        except Exception as ex:
-            print(f"Exception {ex}")
-            return None
-    def condition_chatbot(self, conditionning_message):
-        if self.current_discussion is None:
-            self.current_discussion = self.db.load_last_discussion()
-        
-        message_id = self.current_discussion.add_message(
-            "conditionner", 
-            conditionning_message, 
-            DiscussionsDB.MSG_TYPE_CONDITIONNING,
-            0,
-            self.current_message_id
-        )
-        self.current_message_id = message_id
-        if self.personality["welcome_message"]!="":
-            message_id = self.current_discussion.add_message(
-                self.personality["name"], self.personality["welcome_message"], 
-                DiscussionsDB.MSG_TYPE_NORMAL,
-                0,
-                self.current_message_id
-            )
-        
-            self.current_message_id = message_id
-        return message_id
-
-    def prepare_query(self):
-        self.bot_says = ""
-        self.full_text = ""
-        self.is_bot_text_started = False
-        #self.current_message = message
-
-    def new_text_callback(self, text: str):
-        print(text, end="")
-        sys.stdout.flush()
-        self.full_text += text
-        if self.is_bot_text_started:
-            self.bot_says += text
-            self.full_message += text
-            self.text_queue.put(text)
-            
-        #if self.current_message in self.full_text:
-        if len(self.prompt_message) < len(self.full_text):
-            self.is_bot_text_started = True
 
     def add_endpoint(
         self,
@@ -253,24 +180,6 @@ class Gpt4AllWebUI:
     def export_discussion(self):
         return jsonify(self.full_message)
     
-    def generate_message(self):
-        self.generating=True
-        self.text_queue=Queue()
-        gc.collect()
-
-        self.chatbot_bindings.generate(
-            self.prompt_message,#self.full_message,#self.current_message,
-            new_text_callback=self.new_text_callback,
-            n_predict=len(self.current_message)+self.config['n_predict'],
-            temp=self.config['temp'],
-            top_k=self.config['top_k'],
-            top_p=self.config['top_p'],
-            repeat_penalty=self.config['repeat_penalty'],
-            repeat_last_n = self.config['repeat_last_n'],
-            #seed=self.config['seed'],
-            n_threads=8
-        )
-        self.generating=False
 
     @stream_with_context
     def parse_to_prompt_stream(self, message, message_id):
@@ -281,7 +190,7 @@ class Gpt4AllWebUI:
         print(f"Received message : {message}")
         # First we need to send the new message ID to the client
         response_id = self.current_discussion.add_message(
-            self.personality["name"], ""
+            self.personality["name"], "", parent = message_id
         )  # first the content is empty, but we'll fill it at the end
         yield (
             json.dumps(
@@ -295,15 +204,9 @@ class Gpt4AllWebUI:
             )
         )
 
-        self.current_message = self.personality["message_prefix"] + message + self.personality["message_suffix"]
-        self.full_message += self.current_message
-        self.full_message_list.append(self.current_message)
-        
-        if len(self.full_message_list) > self.config["nb_messages_to_remember"]:
-            self.prompt_message = self.personality["personality_conditionning"]+ '\n'.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
-        else:
-            self.prompt_message = self.full_message
-        self.prepare_query()
+        # prepare query and reception
+        self.discussion_messages = self.prepare_query(message_id)
+        self.prepare_reception()
         self.generating = True
         app.config['executor'].submit(self.generate_message)
         while self.generating or not self.text_queue.empty():
@@ -313,12 +216,8 @@ class Gpt4AllWebUI:
             except :
                 time.sleep(1)
 
-
-
         self.current_discussion.update_message(response_id, self.bot_says)
         self.full_message_list.append(self.bot_says)
-        #yield self.bot_says# .encode('utf-8').decode('utf-8')
-        # TODO : change this to use the yield version in order to send text word by word
 
         return "\n".join(bot_says)
 
@@ -331,11 +230,13 @@ class Gpt4AllWebUI:
             else:
                 self.current_discussion = self.db.load_last_discussion()
 
+        message = request.json["message"]
         message_id = self.current_discussion.add_message(
-            "user", request.json["message"], parent=self.current_message_id
+            "user", message, parent=self.current_message_id
         )
         message = f"{request.json['message']}"
         self.current_message_id = message_id
+
         # Segmented (the user receives the output as it comes)
         # We will first send a json entry that contains the message id and so on, then the text as it goes
         return Response(
@@ -348,19 +249,12 @@ class Gpt4AllWebUI:
     def run_to(self):
         data = request.get_json()
         message_id = data["id"]
-
         self.stop = True
-        message_id = self.current_discussion.add_message(
-            "user", request.json["message"], parent=message_id
-        )
-
-        message = f"{request.json['message']}"
-
         # Segmented (the user receives the output as it comes)
         # We will first send a json entry that contains the message id and so on, then the text as it goes
         return Response(
             stream_with_context(
-                self.parse_to_prompt_stream(message, message_id)
+                self.parse_to_prompt_stream("",message_id)
             )
         )
 
@@ -369,24 +263,6 @@ class Gpt4AllWebUI:
         title = data["title"]
         self.current_discussion.rename(title)
         return "renamed successfully"
-
-    def restore_discussion(self, full_message):
-        self.prompt_message = full_message
-
-        if len(self.full_message_list)>5:
-            self.prompt_message = "\n".join(self.full_message_list[-5:])
-
-        self.chatbot_bindings.generate(
-            self.prompt_message,#full_message,
-            new_text_callback=self.new_text_callback,
-            n_predict=0,#len(full_message),
-            temp=self.config['temp'],
-            top_k=self.config['top_k'],
-            top_p=self.config['top_p'],
-            repeat_penalty= self.config['repeat_penalty'],
-            repeat_last_n = self.config['repeat_last_n'],
-            n_threads=8
-        )
 
     def load_discussion(self):
         data = request.get_json()
@@ -402,15 +278,6 @@ class Gpt4AllWebUI:
         
         messages = self.current_discussion.get_messages()
         
-        self.full_message = ""
-        self.full_message_list = []
-        for message in messages:
-            if message['sender']!="conditionner":
-                self.full_message += message['sender'] + ": " + message['content'] + "\n"
-                self.full_message_list.append(message['sender'] + ": " + message['content'])
-                self.current_message_id=message['id']
-        app.config['executor'].submit(self.restore_discussion, self.full_message)
-
         return jsonify(messages)
 
     def delete_discussion(self):
@@ -445,17 +312,8 @@ class Gpt4AllWebUI:
 
     def new_discussion(self):
         title = request.args.get("title")
-        self.current_discussion = self.db.create_discussion(title)
-        # Get the current timestamp
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        app.config['executor'].submit(self.prepare_a_new_chatbot)
-
-        self.full_message =""
-
-        # Chatbot conditionning
-        self.condition_chatbot(self.personality["personality_conditionning"])
-
+        timestamp = self.create_new_discussion(title)
+        app.config['executor'].submit(self.create_chatbot)
 
         # Return a success response
         return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp, "welcome_message":self.personality["welcome_message"]})
@@ -463,10 +321,15 @@ class Gpt4AllWebUI:
     def update_model_params(self):
         data = request.get_json()
         model =  str(data["model"])
+        personality =  str(data["personality"])
         if self.config['model'] != model:
             print("New model selected")
             self.config['model'] = model
-            self.prepare_a_new_chatbot()
+            self.create_chatbot()
+
+        if self.config['personality']!=data["personality"]:
+            self.config['personality'] = data["personality"]
+            self.personality = load_config(f"personalities/{self.config['personality']}.yaml")
 
         self.config['n_predict'] = int(data["nPredict"])
         self.config['seed'] = int(data["seed"])

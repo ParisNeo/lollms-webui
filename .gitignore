@@ -150,6 +150,10 @@ configs/*
 personalities/*
 !personalities/gpt4all_chatbot.yaml
 
+# personalities other than the default one
+databases/*
+!databases/.keep
+
 # extensions
 extensions/
 !extensions/.keep

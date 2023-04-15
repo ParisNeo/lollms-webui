@@ -60,6 +60,10 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
             sendbtn.style.display = "none";
             waitAnimation.style.display = "block";
 
+            // local stuff
+            let messageTextElement_ = undefined
+            let hiddenElement_ = undefined
+
             fetch("/run_to", {
                 method: 'POST',
                 headers: {
@@ -105,10 +109,9 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
                                 // We parse it and
                                 infos = JSON.parse(text)
                                 console.log(infos)
-                                addMessage('User', infos.message, infos.id, 0, can_edit = true);
                                 elements = addMessage(infos.sender, '', infos.response_id, 0, can_edit = true);
-                                messageTextElement = elements['messageTextElement'];
-                                hiddenElement = elements['hiddenElement'];
+                                messageTextElement_ = elements['messageTextElement'];
+                                hiddenElement_ = elements['hiddenElement'];
                                 entry_counter++;
                             }
                             else {
@@ -117,8 +120,8 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
                                     txt = hiddenElement.innerHTML;
                                     if (char != '\f') {
                                         txt += char
-                                        hiddenElement.innerHTML = txt
-                                        messageTextElement.innerHTML = txt.replace(/\n/g, "<br>")
+                                        hiddenElement_.innerHTML = txt
+                                        messageTextElement_.innerHTML = txt.replace(/\n/g, "<br>")
                                     }
 
                                     // scroll to bottom of chat window
