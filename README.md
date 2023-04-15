@@ -31,75 +31,178 @@ The extensions interface is not yet ready but once it will be, any one may build
 ### Training page
 This page is not yet ready, but it will eventually be released to allow you to fine tune your own model and share it if you want
 ![image](https://user-images.githubusercontent.com/827993/231810125-b39c0672-f748-4311-9523-9b27b8a89dfe.png)
-### Help
-This page shows credits to the developers, How to use, few FAQ, and some examples to test.
 
-## Installation
+# Features
 
-To install the app, follow these steps:
+- Chat with AI
+- Create, edit, and share personality
+- Audio in and audio out with many options for language and voices (Chromuim web browsers only)
+- History of discussion with resume functionality
+- Add new discussion, rename discussion, remove discussion
+- Export database to json format
+- Export discussion to text format
 
-1.  Clone the GitHub repository:
+# Installation and running
 
+Make sure that your CPU supports `AVX2` instruction set. Without it this application wont run out of the box. To check your CPU features, please visit the website of your CPU manufacturer for more information and look for `Instruction set extension: AVX2`.
+
+## Windows 10 and 11
+
+## Noob mode
+
+1. Download this repo .zip:
+
+
+
+1. Install [git](https://git-scm.com/download/win).
+2. Open powershell by pressing `win + R` buttons on your keyboard then write `powershell` and press `enter`.
+3. Navigate to where you want to clone this repository to with `cd` command. For example you want to download it to drive and folder `E:\git-repos`
+```bash
+cd e:
 ```
-git clone https://github.com/nomic-ai/gpt4all-ui
+
+```bash
+cd git-repos
 ```
 
-### Manual setup
-Hint: Scroll down for docker-compose setup
+The command bellow will create directory `E:\git-repos\gpt4all-ui` and clone the repository there.
 
-1.  Navigate to the project directory:
+```bash
+git clone https://github.com/nomic-ai/gpt4all-ui.git
+```
 
+4. Install application by double clicking on `install.bat` file from Windows explorer as normal user.
+5. Run application by double clicking on `run.bat` file from Windows explorer as normal user to start the application.
+
+## Linux
+
+1. Open terminal/console and install dependencies:
+
+`Debian-based:`
+```
+sudo apt install git python3 python3-venv
+```
+`Red Hat-based:`
+```
+sudo dnf install git python3
+```
+`Arch-based:`
+```
+sudo pacman -S git python3
+```
+
+2. Clone repository:
+
+```bash
+git clone https://github.com/nomic-ai/gpt4all-ui.git
+```
 ```bash
 cd gpt4all-ui
 ```
 
-2.  Run the appropriate installation script for your platform:
-
-On Windows :
-```cmd
-install.bat
-```
-- On Linux
+3. Run installation:
 
 ```bash
 bash ./install.sh
 ```
 
-- On Mac os
+4. Run application:
 
 ```bash
-bash ./install-macos.sh
+bash ./run.sh
+```
+
+## MacOS
+
+1. Open terminal/console and install dependencies:
+
+`Brew:`
+```
+$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+```
+brew install git python3
+```
+
+2. Clone repository:
+
+```bash
+git clone https://github.com/nomic-ai/gpt4all-ui.git
+```
+```bash
+cd gpt4all-ui
+```
+
+3. Run installation:
+
+```bash
+bash ./install.sh
+```
+
+4. Run application:
+
+```bash
+bash ./run.sh
 ```
 
 On Linux/MacOS, if you have issues, refer more details are presented [here](docs/Linux_Osx_Install.md)
 These scripts will create a Python virtual environment and install the required dependencies. It will also download the models and install them.
 
+## Docker Compose
+Make sure to put models the inside the `models` directory.
+After that you can simply use docker-compose or podman-compose to build and start the application:
+
+Build
+```bash
+docker compose -f docker-compose.yml build
+```
+
+Start
+```bash
+docker compose -f docker-compose.yml up
+```
+
+Stop
+```
+Ctrl + C
+```
+
+Start detached (runs in background)
+```bash
+docker compose -f docker-compose.yml up -d
+```
+
+Stop detached (one that runs in background)
+```bash
+docker compose stop
+```
+
+After that you can open the application in your browser on http://localhost:9600
+
+
 Now you're ready to work!
 
 # Supported models
 You can also refuse to download the model during the install procedure and download it manually.
-For now we support any ggml model such as :
-- [GPT4ALL 7B](https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin) 
-- [Vicuna 7B](https://huggingface.co/eachadea/legacy-ggml-vicuna-7b-4bit/resolve/main/ggml-vicuna-7b-4bit.bin) NOTE:  Does not work out of the box
-- [Vicuna 7B rev 1](https://huggingface.co/eachadea/legacy-ggml-vicuna-7b-4bit/resolve/main/ggml-vicuna-7b-4bit-rev1.bin)
-- [Vicuna 13B q4 v0](https://huggingface.co/eachadea/ggml-vicuna-13b-1.1/resolve/main/ggml-vicuna-13b-1.1-q4_0.bin) NOTE:  Does not work out of the box
-- [Vicuna 13B q4 v1](https://huggingface.co/eachadea/ggml-vicuna-13b-1.1/resolve/main/ggml-vicuna-13b-1.1-q4_1.bin) NOTE:  Does not work out of the box 
+## For now we support ggml model such as :
+
+- [GPT4ALL 7B](https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin)
+- [Vicuna 7B rev 1](https://huggingface.co/eachadea/legacy-ggml-vicuna-7b-4bit/resolve/main/ggml-vicuna-7b-4bit-rev1.bin) 
 - [Vicuna 13B rev 1](https://huggingface.co/eachadea/ggml-vicuna-13b-4bit/resolve/main/ggml-vicuna-13b-4bit-rev1.bin)
-- [ALPACA 7B](https://huggingface.co/Sosaka/Alpaca-native-4bit-ggml/blob/main/ggml-alpaca-7b-q4.bin) NOTE:  Does not work out of the box - Needs conversion
 
-Just download the model into the models folder and start using the tool.
-## Usage
-For simple newbies on Windows:
-```cmd
-run.bat
-```
+## These models dont work out of the box and need to be converted to the right ggml type:
 
-For simple newbies on Linux/MacOsX:
-```bash
-bash run.sh
-```
+- [Vicuna 7B](https://huggingface.co/eachadea/legacy-ggml-vicuna-7b-4bit/resolve/main/ggml-vicuna-7b-4bit.bin) 
+- [Vicuna 13B q4 v0](https://huggingface.co/eachadea/ggml-vicuna-13b-1.1/resolve/main/ggml-vicuna-13b-1.1-q4_0.bin) 
+- [Vicuna 13B q4 v1](https://huggingface.co/eachadea/ggml-vicuna-13b-1.1/resolve/main/ggml-vicuna-13b-1.1-q4_1.bin) 
+- [ALPACA 7B](https://huggingface.co/Sosaka/Alpaca-native-4bit-ggml/blob/main/ggml-alpaca-7b-q4.bin)
 
-if you want more control on your launch, you can activate your environment:
+Just download the model into the `models` folder and start using the tool.
+
+# Advanced Usage
+
+If you want more control on your launch, you can activate your environment:
 
 On Windows:
 ```cmd
@@ -120,14 +223,13 @@ python app.py [--config CONFIG] [--personality PERSONALITY] [--port PORT] [--hos
 
 On Linux/MacOS more details are [here](docs/Linux_Osx_Usage.md)
 
-
 ## Options
 *   `--config`: the configuration file to be used. It contains default configurations to be used. The script parameters will override the configurations inside the configuration file. It must be placed in configs folder (default: default.yaml)
 *   `--personality`: the personality file name. It contains the definition of the pezrsonality of the chatbot. It should be placed in personalities folder. The default personality is `gpt4all_chatbot.yaml`
 *   `--model`: the name of the model to be used. The model should be placed in models folder (default: gpt4all-lora-quantized.bin)
 *   `--seed`: the random seed for reproductibility. If fixed, it is possible to reproduce the outputs exactly (default: random)
 *   `--port`: the port on which to run the server (default: 9600)
-*   `--host`: the host address on which to run the server (default: localhost)
+*   `--host`: the host address on which to run the server (default: localhost). To expose application to local network set this to 0.0.0.0.
 *   `--temp`: the sampling temperature for the model (default: 0.1)
 *   `--n-predict`: the number of tokens to predict at a time (default: 128)
 *   `--top-k`: the number of top-k candidates to consider for sampling (default: 40)
@@ -142,24 +244,7 @@ Once the server is running, open your web browser and navigate to http://localho
 
 Make sure to adjust the default values and descriptions of the options to match your specific application.
 
-### Docker Compose Setup
-Make sure to have the `gpt4all-lora-quantized-ggml.bin` inside the `models` directory.
-After that you can simply use docker-compose or podman-compose to build and start the application:
-
-Build
-```bash
-docker-compose -f docker-compose.yml build
-```
-
-Start
-```bash
-docker-compose -f docker-compose.yml up
-```
-
-After that you can open the application in your browser on http://localhost:9600
-
-
-## Update To latest version
+# Update application To latest version
 
 On windows use:
 ```bash
@@ -170,8 +255,7 @@ On linux or macos use:
 bash update.sh
 ```
 
-
-## Build custom personalities and share them
+# Build custom personalities and share them
 
 To build a new personality, create a new file with the name of the personality inside the personalities folder. You can look at `gpt4all_chatbot.yaml` file as an example. Then you can fill the fields with the description, the conditionning etc of your personality. Then save the file.
 
@@ -182,17 +266,7 @@ You can launch the application using the personality in two ways:
 If you deem your personality worthy of sharing, you can share the personality by adding it to the [GPT4all personalities](https://github.com/ParisNeo/GPT4All_Personalities) repository. Just fork the repo, add your file and do a pull request.
 
 
-## Features
-
-- Chat with AI
-- Create, edit, and share personality
-- Audio in and audio out with many options for language and voices
-- History of discussion with resume functionality
-- Add new discussion, rename discussion, remove discussion
-- Export database to json format
-- Export discussion to text format
-
-## Contribute
+# Contribute
 
 This is an open-source project by the community for the community. Our chatbot is a UI wrapper for Nomic AI's model, which enables natural language processing and machine learning capabilities.
 
@@ -233,6 +307,6 @@ Here are some of the future plans for this project:
 
 We are excited about these future plans for the project and look forward to implementing them in the near future. Stay tuned for updates!
 
-## License
+# License
 
 This project is licensed under the Apache 2.0 License. See the [LICENSE](https://github.com/nomic-ai/GPT4All-ui/blob/main/LICENSE) file for details.
