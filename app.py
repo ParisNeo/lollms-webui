@@ -321,10 +321,15 @@ class Gpt4AllWebUI(GPT4AllAPI):
     def update_model_params(self):
         data = request.get_json()
         model =  str(data["model"])
+        personality =  str(data["personality"])
         if self.config['model'] != model:
             print("New model selected")
             self.config['model'] = model
             self.create_chatbot()
+
+        if self.config['personality']!=data["personality"]:
+            self.config['personality'] = data["personality"]
+            self.personality = load_config(f"personalities/{self.config['personality']}.yaml")
 
         self.config['n_predict'] = int(data["nPredict"])
         self.config['seed'] = int(data["seed"])
