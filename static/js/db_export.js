@@ -1,6 +1,6 @@
 function db_export(){
     const exportButton = document.getElementById('export-button');
-
+    exportButton.title = "Export database";
     exportButton.addEventListener('click', () => {
         const messages = Array.from(chatWindow.querySelectorAll('.message')).map(messageElement => {
             const senderElement = messageElement.querySelector('.sender');

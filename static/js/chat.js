@@ -48,6 +48,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
         const resendImg = document.createElement('img');
         resendImg.src = "/static/images/refresh.png";
         resendImg.classList.add('py-1', 'px-1', 'rounded', 'w-10', 'h-10');
+        resendButton.title = "Resend message";
         resendButton.appendChild(resendImg)
         resendButton.addEventListener('click', () => {
             // get user input and clear input field
@@ -145,6 +146,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
         const editImg = document.createElement('img');
         editImg.src = "/static/images/edit_discussion.png";
         editImg.classList.add('py-1', 'px-1', 'rounded', 'w-10', 'h-10');
+        editButton.title = "Edit message";
         editButton.appendChild(editImg)
 
         editButton.addEventListener('click', () => {
@@ -194,6 +196,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
         const deleteImg = document.createElement('img');
         deleteImg.src = "/static/images/delete_discussion.png";
         deleteImg.classList.add('py-2', 'px-2', 'rounded', 'w-15', 'h-15');
+        deleteButton.title = "Delete message";
         deleteButton.appendChild(deleteImg)
         deleteButton.addEventListener('click', () => {
             const url = `/delete_message?id=${id}`;
@@ -209,6 +212,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
         });
         const rank_up = document.createElement('button');
         rank_up.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded', "w-10", "h-10");
+        rank_up.title = "Upvote";
         rank_up.style.float = 'right'; // set the float property to right    
         rank_up.style.display = 'inline-block'
         rank_up.innerHTML = '';
@@ -253,6 +257,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
 
         const rank_down = document.createElement('button');
         rank_down.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded', "w-10", "h-10");
+        rank_down.title = "Downvote";
         rank_down.style.float = 'right'; // set the float property to right    
         rank_down.style.display = 'inline-block'
         rank_down.innerHTML = '';
