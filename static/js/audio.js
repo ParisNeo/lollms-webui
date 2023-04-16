@@ -82,6 +82,7 @@ if (!userAgent.match(/firefox|fxios/i)) {
       return;
     }
     const audio_out_button = document.createElement("button");
+    audio_out_button.title = "Listen to message";
     audio_out_button.id = "audio-out-button";
     audio_out_button.classList.add("audio_btn",'bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded', "w-10", "h-10");
     audio_out_button.innerHTML = "🕪";
@@ -155,6 +156,7 @@ if (!userAgent.match(/firefox|fxios/i)) {
 
       if (!found) {
         const audio_in_button = document.createElement("button");
+        audio_in_button.title = "Type with your voice";
         audio_in_button.id = "audio_in_tool";
         audio_in_button.classList.add("audio_btn");
         audio_in_button.innerHTML = "🎤";
