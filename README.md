@@ -9,6 +9,9 @@
 This is a Flask web application that provides a chat UI for interacting with [llamacpp](https://github.com/ggerganov/llama.cpp) based chatbots such as [GPT4all](https://github.com/nomic-ai/gpt4all), vicuna etc...
 
 Follow us on our [Discord server](https://discord.gg/bqD6QfGc).
+Watch install video [Usage Videos](https://www.youtube.com/watch?v=6kKv6ESnwMk&t=1s&ab_channel=ParisNeo)
+Watch usage videos [Usage Videos](https://www.youtube.com/watch?v=DCBefhJUUh4&ab_channel=ParisNeo)
+
 
 ![image](https://user-images.githubusercontent.com/827993/231911545-750c8293-58e4-4fac-8b34-f5c0d57a2f7d.png)
 
