@@ -118,11 +118,11 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
                             else {
                                 // For the other enrtries, these are just the text of the chatbot
                                 for (const char of text) {
-                                    txt = hiddenElement.innerHTML;
+                                    txt = hiddenElement_.innerHTML;
                                     if (char != '\f') {
                                         txt += char
                                         hiddenElement_.innerHTML = txt
-                                        messageTextElement_.innerHTML = txt.replace(/\n/g, "<br>")
+                                        messageTextElement_.innerHTML = txt
                                     }
 
                                     // scroll to bottom of chat window
