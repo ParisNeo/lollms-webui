@@ -4,11 +4,11 @@
 ![GitHub issues](https://img.shields.io/github/issues/nomic-ai/GPT4All-ui)
 ![GitHub stars](https://img.shields.io/github/stars/nomic-ai/GPT4All-ui)
 ![GitHub forks](https://img.shields.io/github/forks/nomic-ai/GPT4All-ui)
-[![Discord](https://img.shields.io/discord/1092918764925882418?color=7289da&label=Discord&logo=discord&logoColor=ffffff)](https://discord.gg/DZ4wsgg4)
+[![Discord](https://img.shields.io/discord/1092918764925882418?color=7289da&label=Discord&logo=discord&logoColor=ffffff)](https://discord.gg/bqD6QfGc)
 
 This is a Flask web application that provides a chat UI for interacting with [llamacpp](https://github.com/ggerganov/llama.cpp) based chatbots such as [GPT4all](https://github.com/nomic-ai/gpt4all), vicuna etc...
 
-Follow us on our [Discord server](https://discord.gg/DZ4wsgg4).
+Follow us on our [Discord server](https://discord.gg/bqD6QfGc).
 
 ![image](https://user-images.githubusercontent.com/827993/231911545-750c8293-58e4-4fac-8b34-f5c0d57a2f7d.png)
 
