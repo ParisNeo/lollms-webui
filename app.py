@@ -221,7 +221,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.full_message_list.append(self.bot_says)
         bot_says = markdown.markdown(self.bot_says)
 
-        return "\n".join(bot_says)
+        return bot_says
 
     def bot(self):
         self.stop = True
