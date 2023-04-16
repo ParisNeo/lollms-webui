@@ -32,6 +32,7 @@ import time
 from pyGpt4All.config import load_config, save_config
 from pyGpt4All.api import GPT4AllAPI
 import shutil
+import markdown
 class Gpt4AllWebUI(GPT4AllAPI):
     def __init__(self, _app, config:dict, personality:dict, config_file_path) -> None:
         super().__init__(config, personality, config_file_path)
@@ -212,13 +213,13 @@ class Gpt4AllWebUI(GPT4AllAPI):
             try:
                 while not self.text_queue.empty():
                     value = self.text_queue.get(False)
-                    value.replace("\n","<br>")
-                    yield value
+                    yield value.replace("\n","<br>")
             except :
                 time.sleep(0.1)
 
         self.current_discussion.update_message(response_id, self.bot_says)
         self.full_message_list.append(self.bot_says)
+        bot_says = markdown.markdown(self.bot_says)
 
         return "\n".join(bot_says)
 

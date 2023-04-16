@@ -82,8 +82,11 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
                             function push() {
                                 reader.read().then(function (result) {
                                     if (result.done) {
+                                        console.log(result)
                                         sendbtn.style.display = "block";
                                         waitAnimation.style.display = "none";
+                                        hiddenElement_.innerHTML = txt
+                                        messageTextElement_.innerHTML = txt
                                         controller.close();
                                         return;
                                     }
@@ -100,6 +103,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
                     function readStream() {
                         readableStreamDefaultReader.read().then(function (result) {
                             if (result.done) {
+                                console.log(result)
                                 return;
                             }
 
@@ -109,7 +113,6 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
                             if (entry_counter == 0) {
                                 // We parse it and
                                 infos = JSON.parse(text)
-                                console.log(infos)
                                 elements = addMessage(infos.sender, '', infos.response_id, 0, can_edit = true);
                                 messageTextElement_ = elements['messageTextElement'];
                                 hiddenElement_ = elements['hiddenElement'];

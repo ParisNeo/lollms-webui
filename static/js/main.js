@@ -36,6 +36,7 @@ function update_main(){
                           if (result.done) {
                               sendbtn.style.display="block";
                               waitAnimation.style.display="none";
+                              console.log(result)
                               controller.close();
                               return;
                           }
@@ -62,7 +63,6 @@ function update_main(){
                   {
                     // We parse it and
                     infos = JSON.parse(text)
-                    console.log(infos)
                     addMessage('User', infos.message, infos.id, 0, can_edit=true);
                     elements = addMessage(infos.sender, '', infos.response_id, 0, can_edit=true);
                     messageTextElement=elements['messageTextElement'];
@@ -74,7 +74,6 @@ function update_main(){
                     // For the other enrtries, these are just the text of the chatbot
                     for (const char of text) {
                           txt = hiddenElement.innerHTML;
-                          console.log(txt)
                           if (char != '\f') {
                             txt += char
                             hiddenElement.innerHTML = txt
