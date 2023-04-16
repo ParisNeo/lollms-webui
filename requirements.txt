@@ -3,3 +3,4 @@ nomic
 pytest
 pyllamacpp
 pyyaml
+markdown

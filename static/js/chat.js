@@ -150,16 +150,20 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
         editButton.appendChild(editImg)
 
         editButton.addEventListener('click', () => {
-            const inputField = document.createElement('input');
+            const inputBlock = document.createElement('div')
+            inputBlock.classList.add('flex','flex-col');
+            const inputField = document.createElement('textarea');
             inputField.type = 'text';
-            inputField.classList.add('font-medium', 'text-md', 'border', 'border-gray-300', 'p-1');
+            inputField.classList.add('font-medium', 'resize-y','h-24', 'text-md', 'border', 'border-gray-300', 'p-1');
             inputField.value = messageTextElement.innerHTML;
 
-            buttonsContainer.style.display = "none"
+            //buttonsContainer.style.display = "none"
 
             const saveButton = document.createElement('button');
             saveButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'my-2', 'ml-2');
             saveButton.innerHTML = 'Save';
+            inputBlock.appendChild(inputField)
+            inputBlock.appendChild(saveButton)
             saveButton.addEventListener('click', () => {
                 const newText = inputField.value;
                 messageTextElement.innerHTML = newText;
@@ -177,14 +181,13 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
                     .catch(error => {
                         console.error('There was a problem updating the message:', error);
                     });
-                buttonsContainer.style.display = 'inline-block'
-                messageElement.replaceChild(messageTextElement, inputField);
+                //buttonsContainer.style.display = 'block'
+                messageElement.replaceChild(messageTextElement, inputBlock);
                 //messageElement.removeChild(inputField);
                 messageElement.removeChild(saveButton);
             });
 
-            messageElement.replaceChild(inputField, messageTextElement);
-            messageElement.appendChild(saveButton);
+            messageElement.replaceChild(inputBlock, messageTextElement);
             inputField.focus();
         });
 
