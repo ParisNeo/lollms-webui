@@ -78,7 +78,7 @@ function update_main(){
                           if (char != '\f') {
                             txt += char
                             hiddenElement.innerHTML = txt
-                            messageTextElement.innerHTML = txt.replace(/\n/g, "<br>")
+                            messageTextElement.innerHTML = txt
                           }
   
                       // scroll to bottom of chat window

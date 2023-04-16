@@ -120,18 +120,19 @@ class GPT4AllAPI():
             if message["id"]<= message_id or message_id==-1: 
                 if message["type"]!=self.db.MSG_TYPE_CONDITIONNING:
                     if message["sender"]==self.personality["name"]:
-                        self.full_message_list.append(message["content"])
+                        self.full_message_list.append(self.personality["ai_message_prefix"]+message["content"])
                     else:
-                        if self.personality["add_automatic_return"]:
-                            self.full_message_list.append(self.personality["user_message_prefix"] + message["content"] + "\n" + self.personality["ai_message_prefix"])
-                        else:
-                            self.full_message_list.append(self.personality["user_message_prefix"] + message["content"] + self.personality["ai_message_prefix"])
-                            
+                        self.full_message_list.append(self.personality["user_message_prefix"] + message["content"])
+
+        link_text = self.personality["link_text"]
+
         if len(self.full_message_list) > self.config["nb_messages_to_remember"]:
-            discussion_messages = self.personality["personality_conditionning"]+ '\n'.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
+            discussion_messages = self.personality["personality_conditionning"]+ link_text.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
         else:
-            discussion_messages = self.personality["personality_conditionning"]+ '\n'.join(self.full_message_list)
-        return discussion_messages[:-1] # Removes the last return
+            discussion_messages = self.personality["personality_conditionning"]+ link_text.join(self.full_message_list)
+        
+        discussion_messages += link_text + self.personality["ai_message_prefix"]
+        return discussion_messages # Removes the last return
     
     def new_text_callback(self, text: str):
         print(text, end="")

@@ -212,6 +212,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
             try:
                 while not self.text_queue.empty():
                     value = self.text_queue.get(False)
+                    value.replace("\n","<br>")
                     yield value
             except :
                 time.sleep(0.1)

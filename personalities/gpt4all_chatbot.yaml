@@ -29,8 +29,8 @@ welcome_message: "Welcome! I am GPT4All A free and open discussion AI. What can 
 # This prefix is added at the beginning of any message input by the user
 user_message_prefix:  "user: "
 
-# Should be true for discussion mode
-add_automatic_return: true
+# A text to put between user and chatbot messages
+link_text: "\n"
 
 # This prefix is added at the beginning of any message output by the ai
 ai_message_prefix: "gpt4all: "
