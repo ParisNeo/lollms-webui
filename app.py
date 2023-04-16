@@ -408,6 +408,12 @@ if __name__ == "__main__":
         help="Number of tokens to predict at each step.",
     )
     parser.add_argument(
+        "--n_threads",
+        type=int,
+        default=None,
+        help="Number of threads to use.",
+    )
+    parser.add_argument(
         "--top_k", type=int, default=None, help="Value for the top-k sampling."
     )
     parser.add_argument(
