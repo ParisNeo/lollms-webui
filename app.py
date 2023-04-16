@@ -25,7 +25,6 @@ from flask import (
     stream_with_context,
     send_from_directory
 )
-from queue import Queue
 from pathlib import Path
 import gc
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
@@ -209,12 +208,13 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.prepare_reception()
         self.generating = True
         app.config['executor'].submit(self.generate_message)
-        while self.generating or not self.text_queue.empty():
+        while self.generating:
             try:
-                value = self.text_queue.get(False)
-                yield value
+                while not self.text_queue.empty():
+                    value = self.text_queue.get(False)
+                    yield value
             except :
-                time.sleep(1)
+                time.sleep(0.1)
 
         self.current_discussion.update_message(response_id, self.bot_says)
         self.full_message_list.append(self.bot_says)

@@ -122,8 +122,11 @@ class GPT4AllAPI():
                     if message["sender"]==self.personality["name"]:
                         self.full_message_list.append(message["content"])
                     else:
-                        self.full_message_list.append(self.personality["message_prefix"] + message["content"] + self.personality["message_suffix"])
-
+                        if self.personality["add_automatic_return"]:
+                            self.full_message_list.append(self.personality["user_message_prefix"] + message["content"] + "\n" + self.personality["ai_message_prefix"])
+                        else:
+                            self.full_message_list.append(self.personality["user_message_prefix"] + message["content"] + self.personality["ai_message_prefix"])
+                            
         if len(self.full_message_list) > self.config["nb_messages_to_remember"]:
             discussion_messages = self.personality["personality_conditionning"]+ '\n'.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
         else:

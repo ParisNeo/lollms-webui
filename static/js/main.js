@@ -17,6 +17,10 @@ function update_main(){
       sendbtn.style.display="none";
       waitAnimation.style.display="block";
       console.log("Sending message to bot")
+
+      let hiddenElement = undefined
+      let messageTextElement = undefined
+
       fetch('/bot', {
           method: 'POST',
           headers: {
@@ -66,9 +70,11 @@ function update_main(){
                     entry_counter ++;
                   }
                   else{
+                    entry_counter ++;   
                     // For the other enrtries, these are just the text of the chatbot
                     for (const char of text) {
                           txt = hiddenElement.innerHTML;
+                          console.log(txt)
                           if (char != '\f') {
                             txt += char
                             hiddenElement.innerHTML = txt
@@ -78,7 +84,6 @@ function update_main(){
                       // scroll to bottom of chat window
                       chatWindow.scrollTop = chatWindow.scrollHeight;
                     }
-                    entry_counter ++;   
                   }
   
                   readStream();
