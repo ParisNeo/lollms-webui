@@ -217,7 +217,7 @@ Now you are ready to customize your Bot.
 
 To run the Flask server, execute the following command:
 ```bash
-python app.py [--config CONFIG] [--personality PERSONALITY] [--port PORT] [--host HOST] [--temp TEMP] [--n-predict N_PREDICT] [--top-k TOP_K] [--top-p TOP_P] [--repeat-penalty REPEAT_PENALTY] [--repeat-last-n REPEAT_LAST_N] [--ctx-size CTX_SIZE]
+python app.py [--config CONFIG] [--personality PERSONALITY] [--port PORT] [--host HOST] [--temp TEMP] [--n_threads N_THREADS] [--n_predict N_PREDICT] [--top_k TOP_K] [--top_p TOP_P] [--repeat_penalty REPEAT_PENALTY] [--repeat_last_n REPEAT_LAST_N] [--ctx_size CTX_SIZE]
 ```
 
 On Linux/MacOS more details can be found [here](docs/Linux_Osx_Usage.md)
@@ -230,6 +230,7 @@ On Linux/MacOS more details can be found [here](docs/Linux_Osx_Usage.md)
 *   `--port`: the port on which to run the server (default: 9600)
 *   `--host`: the host address at which to run the server (default: localhost). To expose application to local network, set this to 0.0.0.0.
 *   `--temp`: the sampling temperature for the model (default: 0.1)
+*   `--n_threads`: the number of threads to be used (default:8)
 *   `--n-predict`: the number of tokens to predict at a time (default: 128)
 *   `--top-k`: the number of top-k candidates to consider for sampling (default: 40)
 *   `--top-p`: the cumulative probability threshold for top-p sampling (default: 0.90)
