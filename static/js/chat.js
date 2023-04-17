@@ -30,7 +30,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
 
     const messageTextElement = document.createElement('div');
     messageTextElement.classList.add('font-medium', 'text-md');
-    messageTextElement.innerText = message;
+    messageTextElement.innerHTML = message;
     // Create a hidden div element needed to buffer responses before commiting them to the visible message
     const hiddenElement = document.createElement('div');
     hiddenElement.style.display = 'none';

@@ -65,12 +65,13 @@ function update_main(){
                   if(entry_counter==0)
                   {
                     // We parse it and
-                    infos = JSON.parse(text)
+                    infos = JSON.parse(text);
 
-                    user_msg.setSender(infos.user)
-                    user_msg.setID(infos.id)
-                    bot_msg.setSender(infos.bot)
-                    bot_msg.setID(infos.response_id)
+                    user_msg.setSender(infos.user);
+                    user_msg.setMessage(infos.message);
+                    user_msg.setID(infos.id);
+                    bot_msg.setSender(infos.bot);
+                    bot_msg.setID(infos.response_id);
 
                     messageTextElement  = bot_msg.messageTextElement;
                     hiddenElement       = bot_msg.hiddenElement;
@@ -90,8 +91,8 @@ function update_main(){
                         txt = hiddenElement.innerHTML;
                         if (char != '\f') {
                             txt += char
-                            hiddenElement.innerHTML         = txt
-                            messageTextElement.innerHTML    = txt
+                            hiddenElement.innerHTML         = txt;
+                            messageTextElement.innerHTML    = txt;
                         }
 
                     // scroll to bottom of chat window
