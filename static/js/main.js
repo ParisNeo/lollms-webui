@@ -71,17 +71,26 @@ function update_main(){
                   }
                   else{
                     entry_counter ++;   
+                    prefix = "FINAL:";
+                    if(text.startsWith(prefix)){
+                        text = text.substring(prefix.length);
+                        hiddenElement.innerHTML = text
+                        messageTextElement.innerHTML = text
+                    }
+                    else{
                     // For the other enrtries, these are just the text of the chatbot
                     for (const char of text) {
-                          txt = hiddenElement.innerHTML;
-                          if (char != '\f') {
-                            txt += char
-                            hiddenElement.innerHTML = txt
-                            messageTextElement.innerHTML = txt
-                          }
-  
-                      // scroll to bottom of chat window
-                      chatWindow.scrollTop = chatWindow.scrollHeight;
+                        txt = hiddenElement.innerHTML;
+                        if (char != '\f') {
+                        txt += char
+                        hiddenElement.innerHTML = txt
+                        messageTextElement.innerHTML = txt
+                        }
+
+                    // scroll to bottom of chat window
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                    }
+
                     }
                   }
   
