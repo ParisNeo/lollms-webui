@@ -1,7 +1,7 @@
 @echo off
 @echo off
-set filename=../models/$1
-set newname=../models/$1.original
+set filename=../models/%1
+set newname=../models/%1.original
 
 echo %modelPath%
 echo Converting the model to the new format...
