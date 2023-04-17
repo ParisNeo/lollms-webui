@@ -14,6 +14,8 @@ Watch install video [Usage Videos](https://www.youtube.com/watch?v=6kKv6ESnwMk&t
 
 Watch usage videos [Usage Videos](https://www.youtube.com/watch?v=DCBefhJUUh4&ab_channel=ParisNeo)
 
+Watch settings videos [Usage Videos](https://www.youtube.com/watch?v=7KwR2vdt1t4&t=63s&ab_channel=ParisNeo)
+
 
 ![image](https://user-images.githubusercontent.com/827993/231911545-750c8293-58e4-4fac-8b34-f5c0d57a2f7d.png)
 
