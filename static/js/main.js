@@ -72,8 +72,8 @@ function update_main(){
                     bot_msg.setSender(infos.bot)
                     bot_msg.setID(infos.response_id)
 
-                    messageTextElement=bot_msg.messageTextElement;
-                    hiddenElement=bot_msg.hiddenElement;
+                    messageTextElement  = bot_msg.messageTextElement;
+                    hiddenElement       = bot_msg.hiddenElement;
                     entry_counter ++;
                   }
                   else{
@@ -81,17 +81,17 @@ function update_main(){
                     prefix = "FINAL:";
                     if(text.startsWith(prefix)){
                         text = text.substring(prefix.length);
-                        hiddenElement.innerHTML = text
-                        messageTextElement.innerHTML = text
+                        hiddenElement.innerHTML         = text
+                        messageTextElement.innerHTML    = text
                     }
                     else{
                     // For the other enrtries, these are just the text of the chatbot
                     for (const char of text) {
                         txt = hiddenElement.innerHTML;
                         if (char != '\f') {
-                        txt += char
-                        hiddenElement.innerHTML = txt
-                        messageTextElement.innerHTML = txt
+                            txt += char
+                            hiddenElement.innerHTML         = txt
+                            messageTextElement.innerHTML    = txt
                         }
 
                     // scroll to bottom of chat window
