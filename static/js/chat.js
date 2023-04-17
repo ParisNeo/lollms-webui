@@ -146,19 +146,27 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
                                 entry_counter++;
                             }
                             else {
-                                // For the other enrtries, these are just the text of the chatbot
-                                for (const char of text) {
-                                    txt = hiddenElement_.innerHTML;
-                                    if (char != '\f') {
-                                        txt += char
-                                        hiddenElement_.innerHTML = txt
-                                        messageTextElement_.innerHTML = txt
-                                    }
-
-                                    // scroll to bottom of chat window
-                                    chatWindow.scrollTop = chatWindow.scrollHeight;
-                                }
                                 entry_counter++;
+                                prefix = "FINAL:";
+                                if(text.startsWith(prefix)){
+                                    text = text.substring(prefix.length);
+                                    hiddenElement.innerHTML         = text
+                                    messageTextElement.innerHTML    = text
+                                }
+                                else{
+                                    // For the other enrtries, these are just the text of the chatbot
+                                    for (const char of text) {
+                                        txt = hiddenElement_.innerHTML;
+                                        if (char != '\f') {
+                                            txt += char
+                                            hiddenElement_.innerHTML = txt
+                                            messageTextElement_.innerHTML = txt
+                                        }
+
+                                        // scroll to bottom of chat window
+                                        chatWindow.scrollTop = chatWindow.scrollHeight;
+                                    }
+                                }
                             }
 
                             readStream();

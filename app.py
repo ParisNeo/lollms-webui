@@ -252,7 +252,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
     def run_to(self):
         data = request.get_json()
-        message_id = data["id"]
+        message_id = int(data["id"])
         self.stop = True
         # Segmented (the user receives the output as it comes)
         # We will first send a json entry that contains the message id and so on, then the text as it goes
