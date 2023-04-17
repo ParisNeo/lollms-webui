@@ -35,9 +35,8 @@ echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 
-if not exist "./gpt4all-ui" mkdir "./gpt4all-ui"
-cd
-if not exist "./tmp" mkdir "./tmp"
+
+
 
 REM Check if Git is installed
 echo "Checking for git..."
@@ -74,9 +73,32 @@ exit /b 1
 
 :GIT_SKIP
 
-echo Cloning repository...
-git clone https://github.com/nomic-ai/gpt4all-ui.git .
+REM Check if repository exists 
+git rev-parse --is-inside-work-tree 
+if errorlevel 1 goto :CLONE_REPO
+if errorlevel = 0 goto :PULL_CHANGES
+:PULL_CHANGES
+echo Pulling latest changes 
+git pull origin main
+goto :GET_PERSONALITIES
 
+:CLONE_REPO
+echo Cloning repository...
+git init
+git remote add origin https://github.com/nomic-ai/gpt4all-ui.git
+git fetch
+git reset origin/main  
+git checkout -t origin/main
+git pull origin main
+goto :GET_PERSONALITIES
+
+:GET_PERSONALITIES
+REM Download latest personalities
+if not exist tmp\personalities git clone https://github.com/ParisNeo/GPT4All_Personalities.git tmp\personalities
+copy tmp\personalities\* personalities
+goto :CHECK_PYTHON_INSTALL
+
+:CHECK_PYTHON_INSTALL
 REM Check if Python is installed
 set /p="Checking for python..." <nul
 where python >nul 2>&1
@@ -97,6 +119,7 @@ if errorlevel 1 goto PYTHON_INSTALL_2
 
 :PYTHON_INSTALL_2
 REM Download Python installer
+if not exist "./tmp" mkdir "./tmp"
 echo Downloading Python installer...
 powershell -Command "Invoke-WebRequest -Uri 'https://www.python.org/ftp/python/3.10.0/python-3.10.0-amd64.exe' -OutFile 'tmp/python.exe'"
 REM Install Python
@@ -109,7 +132,6 @@ pause
 exit /b 1
 
 :PYTHON_SKIP
-
 
 REM Check if pip is installed
 set /p="Checking for pip..." <nul
@@ -148,7 +170,6 @@ REM Upgrading pip setuptools and wheel
 echo Updating pip setuptools and wheel
 python -m pip install --upgrade pip setuptools wheel
 
-
 REM Check if pip is installed
 set /p="Checking for virtual environment..." <nul
 python -c "import venv" >nul 2>&1
@@ -179,7 +200,6 @@ exit /b 1
 
 :VENV_SKIP
 
-
 REM Create a new virtual environment
 set /p="Creating virtual environment ..." <nul
 python -m venv env >nul 2>&1
@@ -208,11 +228,11 @@ if %ERRORLEVEL% neq 0 (
 )
 
 echo Downloading latest model
-if not exist models (
-    md models
+if not exist \models (
+    md \models
 )
 
-if not exist models/gpt4all-lora-quantized-ggml.bin (
+if not exist \models/gpt4all-lora-quantized-ggml.bin (
     echo.
     choice /C YNB /M "The default model file (gpt4all-lora-quantized-ggml.bin) does not exist. Do you want to download it? Press B to download it with a browser (faster)."
     if errorlevel 3 goto DOWNLOAD_WITH_BROWSER
@@ -235,7 +255,7 @@ goto :CONTINUE
 :MODEL_DOWNLOAD
 echo.
 echo Downloading latest model...
-powershell -Command "Invoke-WebRequest -Uri 'https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin' -OutFile 'models/gpt4all-lora-quantized-ggml.bin'"
+powershell -Command "Invoke-WebRequest -Uri 'https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin' -OutFile %clone_dir%'/models/gpt4all-lora-quantized-ggml.bin'"
 if errorlevel 1 (
     echo Failed to download model. Please check your internet connection.
     choice /C YN /M "Do you want to try downloading again?"
@@ -254,11 +274,18 @@ goto :CONTINUE
 :CONTINUE
 
 :END
-
+if exist "./tmp"  (
 echo Cleaning tmp folder
 rd /s /q "./tmp"
+)
 
 echo Virtual environment created and packages installed successfully.
-echo Every thing is setup. Just run run.bat 
-pause
+echo Launching application...
+
+REM Run the Python app
+
+python app.py %*
+set app_result=%errorlevel%
+
+pause >nul
 exit /b 0

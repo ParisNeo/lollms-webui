@@ -16,7 +16,6 @@ Watch usage videos [Usage Videos](https://www.youtube.com/watch?v=DCBefhJUUh4&ab
 
 Watch settings videos [Usage Videos](https://www.youtube.com/watch?v=7KwR2vdt1t4&t=63s&ab_channel=ParisNeo)
 
-
 ![image](https://user-images.githubusercontent.com/827993/231911545-750c8293-58e4-4fac-8b34-f5c0d57a2f7d.png)
 
 GPT4All is an exceptional language model, designed and developed by Nomic-AI, a proficient company dedicated to natural language processing. The app uses Nomic-AI's advanced library to communicate with the cutting-edge GPT4All model, which operates locally on the user's PC, ensuring seamless and efficient communication.
@@ -39,20 +38,38 @@ It's worth noting that the model has recently been launched, and it's expected t
 # Installation and running
 
 Make sure that your CPU supports `AVX2` instruction set. Without it, this application won't run out of the box. To check your CPU features, please visit the website of your CPU manufacturer for more information and look for `Instruction set extension: AVX2`.
+> **Note**
+>
+>Default model `gpt4all-lora-quantized-ggml.bin` is roughly 4GB in size.
 
 ## Windows 10 and 11
 
-### Simple:
+### Automatic install
+
+1. Open directory on your computer where you want to download/install this application  (This will create new directory: `/gpt4all-ui/`. Make sure a folder with this name does not exist in this direcotry.)
+2. Press and holde `Shift` on your keyboard and `right click` with your mouse inside a folder. Select from a menu `Open Terminal` or `Open to powershell windows here` (This command can hide under `Show more options` in Windows 11).
+3. Copy and paste this command and press enter: 
+
+> **Note**
+>
+> This command creates new directory `/gpt4all-ui/`, downloads a file [webui.bat](https://raw.githubusercontent.com/nomic-ai/gpt4all-ui/main/webui.bat), changes current work directory to `/gpt4all-ui/` and executes webui.bat that downloads and installs everything that is needed.
+
+```
+mkdir gpt4all-ui & curl https://raw.githubusercontent.com/nomic-ai/gpt4all-ui/main/webui.bat -o ./gpt4all-ui/webui.bat ; pushd ./gpt4all/ ; Invoke-Expression -Command "./webui.bat"
+```
+4. Follow instructions on screen until it launches webui.
+5. To relaunch application double click on `webui.bat` file from Windows explorer as normal user.
+
+### Manual Simple install:
 
 1. Download this repository .zip:
 
 ![image](https://user-images.githubusercontent.com/80409979/232210909-0ce3dc80-ed34-4b32-b828-e124e3df3ff1.png)
 
 2. Extract contents into a folder.
-3. Install application by double clicking on `install.bat` file from Windows Explorer as normal user.
-4. Run application by double clicking on `run.bat` file from Windows Explorer as normal user to start the application.
+3. Install/run application by double clicking on `webui.bat` file from Windows Explorer as normal user.
 
-### Advanced mode:
+### Manual Advanced mode:
 
 1. Install [git](https://git-scm.com/download/win).
 2. Open Terminal/PowerShell and navigate to a folder you want to clone this repository.
@@ -61,8 +78,7 @@ Make sure that your CPU supports `AVX2` instruction set. Without it, this applic
 git clone https://github.com/nomic-ai/gpt4all-ui.git
 ```
 
-4. Install application by double clicking on `install.bat` file from Windows explorer as normal user.
-5. Run application by double clicking on `run.bat` file from Windows explorer as normal user to start the application.
+4. Install/run application by double clicking on `webui.bat` file from Windows explorer as normal user.
 
 ## Linux
 
