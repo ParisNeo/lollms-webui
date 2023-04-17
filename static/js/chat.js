@@ -139,8 +139,8 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
                             if (entry_counter == 0) {
                                 // We parse it and
                                 infos = JSON.parse(text)
-                                elements.id = infos.response_id
-                                elements.setSender(infos.sender)
+                                elements.setID(infos.response_id)
+                                elements.setSender(infos.bot)
                                 messageTextElement_ = elements['messageTextElement'];
                                 hiddenElement_ = elements['hiddenElement'];
                                 entry_counter++;
