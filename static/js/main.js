@@ -70,8 +70,8 @@ function update_main(){
                     user_msg.setID(infos.id)
                     bot_msg.setSender(infos.bot)
                     bot_msg.setID(infos.response_id)
-                    
-                    messageTextElement=elements.messageTextElement;
+
+                    messageTextElement=elements;
                     hiddenElement=elements.hiddenElement;
                     entry_counter ++;
                   }
