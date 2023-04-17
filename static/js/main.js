@@ -66,13 +66,14 @@ function update_main(){
                   {
                     // We parse it and
                     infos = JSON.parse(text)
+
                     user_msg.setSender(infos.user)
                     user_msg.setID(infos.id)
                     bot_msg.setSender(infos.bot)
                     bot_msg.setID(infos.response_id)
 
-                    messageTextElement=elements;
-                    hiddenElement=elements.hiddenElement;
+                    messageTextElement=bot_msg.messageTextElement;
+                    hiddenElement=bot_msg.hiddenElement;
                     entry_counter ++;
                   }
                   else{
