@@ -178,7 +178,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         return jsonify(self.db.export_to_json())
 
     def export_discussion(self):
-        return jsonify(self.full_message)
+        return jsonify({"discussion_text":self.get_discussion_to()})
     
 
     @stream_with_context

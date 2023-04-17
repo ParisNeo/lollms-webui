@@ -133,7 +133,27 @@ class GPT4AllAPI():
         
         discussion_messages += link_text + self.personality["ai_message_prefix"]
         return discussion_messages # Removes the last return
-    
+
+    def get_discussion_to(self, message_id=-1):
+        messages = self.current_discussion.get_messages()
+        self.full_message_list = []
+        for message in messages:
+            if message["id"]<= message_id or message_id==-1: 
+                if message["type"]!=self.db.MSG_TYPE_CONDITIONNING:
+                    if message["sender"]==self.personality["name"]:
+                        self.full_message_list.append(self.personality["ai_message_prefix"]+message["content"])
+                    else:
+                        self.full_message_list.append(self.personality["user_message_prefix"] + message["content"])
+
+        link_text = self.personality["link_text"]
+
+        if len(self.full_message_list) > self.config["nb_messages_to_remember"]:
+            discussion_messages = self.personality["personality_conditionning"]+ link_text.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
+        else:
+            discussion_messages = self.personality["personality_conditionning"]+ link_text.join(self.full_message_list)
+        
+        return discussion_messages # Removes the last return
+
     def new_text_callback(self, text: str):
         print(text, end="")
         sys.stdout.flush()

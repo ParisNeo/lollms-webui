@@ -184,11 +184,13 @@ function populate_menu(){
   exportDiscussionButton.title = "Export discussion to a file";
   exportDiscussionButton.addEventListener('click', () => {
     fetch(`/export_discussion`)
-    .then(response => response.text())
+    .then(response => response.json())
     .then(data => {
+      discussion_text = data["discussion_text"]
+      copyToClipboard(discussion_text)
       const filename = window.prompt('Please enter a filename:', 'discussion.txt');
       if (filename !== null) {
-        const text = data.replace(/\n/g, "\r\n");
+        const text = discussion_text;
         const blob = new Blob([text], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
