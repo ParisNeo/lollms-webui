@@ -159,7 +159,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         )
 
     def index(self):
-        return render_template("chat.html")
+        return render_template("index.html")
 
     def format_message(self, message):
         # Look for a code block within the message
