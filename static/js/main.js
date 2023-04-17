@@ -21,6 +21,9 @@ function update_main(){
       let hiddenElement = undefined
       let messageTextElement = undefined
 
+      user_msg = addMessage('',message, 0, 0, can_edit=true);
+      bot_msg = addMessage('', '', 0, 0, can_edit=true);
+
       fetch('/bot', {
           method: 'POST',
           headers: {
@@ -63,10 +66,13 @@ function update_main(){
                   {
                     // We parse it and
                     infos = JSON.parse(text)
-                    addMessage('User', infos.message, infos.id, 0, can_edit=true);
-                    elements = addMessage(infos.sender, '', infos.response_id, 0, can_edit=true);
-                    messageTextElement=elements['messageTextElement'];
-                    hiddenElement=elements['hiddenElement'];
+                    user_msg.setSender(infos.user)
+                    user_msg.setID(infos.id)
+                    bot_msg.setSender(infos.bot)
+                    bot_msg.setID(infos.response_id)
+                    
+                    messageTextElement=elements.messageTextElement;
+                    hiddenElement=elements.hiddenElement;
                     entry_counter ++;
                   }
                   else{

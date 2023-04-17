@@ -9,6 +9,9 @@
 # Name of the personality
 name: gpt4all
 
+# Name of the user
+user_name: user
+
 # Language (see the list of supported languages here : https://github.com/ParisNeo/GPT4All_Personalities/blob/main/README.md)
 language: "en_XX"
 

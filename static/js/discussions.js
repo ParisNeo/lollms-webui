@@ -1,5 +1,7 @@
 
 function load_discussion(discussion=0){
+  var container = document.getElementById('chat-window');
+
   if(discussion)
   {
     console.log(discussion.id)
@@ -22,7 +24,6 @@ function load_discussion(discussion=0){
         const messages = JSON.parse(data);
         console.log(messages)
         // process messages
-        var container = document.getElementById('chat-window');
         container.innerHTML = '';
         messages.forEach(message => {
           console.log(`Adding message ${message.type}`)

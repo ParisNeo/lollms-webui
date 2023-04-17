@@ -196,7 +196,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
             json.dumps(
                 {
                     "type": "input_message_infos",
-                    "sender": self.personality["name"],
+                    "bot": self.personality["name"],
+                    "user": self.personality["user_name"],
                     "message": message,
                     "id": message_id,
                     "response_id": response_id,
