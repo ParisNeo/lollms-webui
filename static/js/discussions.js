@@ -54,10 +54,10 @@ function populate_discussions_list()
       discussions.forEach(discussion => {
         const buttonWrapper = document.createElement('div');
         //buttonWrapper.classList.add('flex', 'space-x-2', 'mt-2');
-        buttonWrapper.classList.add('flex', 'items-center', 'mt-2', 'px-2', 'py-1', 'text-left');
+        buttonWrapper.classList.add('drop-shadow-sm', 'p-1', 'mx-2', 'my-2', 'flex', 'flex-row', 'space-x-2', 'rounded-lg', 'shadow-lg', 'bg-gray-800', 'hover:bg-gray-700', 'transition-colors', 'duration-300', 'text-left');
         
         const renameButton = document.createElement('button');
-        renameButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded',"w-10","h-10");
+        renameButton.classList.add('bg-gray-500', 'hover:bg-gray-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded',"w-10","h-10");
         const renameImg = document.createElement('img');
         renameImg.src = "/static/images/edit_discussion.png";
         renameButton.title = "Rename discussion";
@@ -86,7 +86,7 @@ function populate_discussions_list()
           });
 
           const renameConfirmButton = document.createElement('button');
-          renameConfirmButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'ml-2');
+          renameConfirmButton.classList.add('bg-gray-500', 'hover:bg-gray-700', 'text-white', 'font-bold', 'py-1', 'px-0', 'rounded', 'ml-2');
           renameConfirmButton.textContent = 'Rename';
           renameConfirmButton.addEventListener('click', () => {
             const newTitle = inputField.value;
@@ -122,7 +122,7 @@ function populate_discussions_list()
           dialog.showModal();
         });
         const deleteButton = document.createElement('button');
-        deleteButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded',"w-10","h-10");
+        deleteButton.classList.add('bg-gray-500', 'hover:bg-gray-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded',"w-10","h-10");
         const deleteImg = document.createElement('img');
         deleteImg.src = "/static/images/delete_discussion.png";
         deleteButton.title = "Delete discussion";
@@ -156,7 +156,7 @@ function populate_discussions_list()
         });
 
         const discussionButton = document.createElement('button');
-        discussionButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'ml-2', 'w-full');
+        discussionButton.classList.add('bg-gray-500', 'hover:bg-gray-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'ml-2', 'w-full');
         discussionButton.textContent = discussion.title;
         discussionButton.title = "Open discussion";
         discussionButton.addEventListener('click', () => {

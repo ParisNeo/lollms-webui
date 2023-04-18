@@ -2,6 +2,14 @@ function update_main(){
   const chatWindow = document.getElementById('chat-window');
   const chatForm = document.getElementById('chat-form');
   const userInput = document.getElementById('user-input');
+  
+  userInput.addEventListener('keydown', function(event) {
+    if (event.shiftKey && event.key === 'Enter') {
+      event.preventDefault();
+      userInput.style.height = userInput.scrollHeight + 'px';
+      userInput.value += '\n';
+    }
+    });
 
   chatForm.addEventListener('submit', event => {
       event.preventDefault();

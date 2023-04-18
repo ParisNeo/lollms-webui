@@ -52,7 +52,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
         buttonsContainer.style.width = '100%';
         buttonsContainer.style.height = '100%';
         const clipboardButton = document.createElement('button');
-        clipboardButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded', "w-10", "h-10");
+        clipboardButton.classList.add('bg-gray-500', 'hover:bg-gray-700', 'text-white', 'font-bold', 'py-0', 'px-0', "w-10", "h-10");
         clipboardButton.style.float = 'right'; // set the float property to right    
         clipboardButton.style.display = 'inline-block'
         clipboardButton.innerHTML = '';
@@ -65,7 +65,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
             copyToClipboard(messageTextElement.innerText)
         })
         const resendButton = document.createElement('button');
-        resendButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded', "w-10", "h-10");
+        resendButton.classList.add('bg-gray-500', 'hover:bg-gray-700', 'text-white', 'font-bold', 'py-0', 'px-0', "w-10", "h-10");
         resendButton.style.float = 'right'; // set the float property to right    
         resendButton.style.display = 'inline-block'
         resendButton.innerHTML = '';
@@ -177,7 +177,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
         });
 
         const editButton = document.createElement('button');
-        editButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded', "w-10", "h-10");
+        editButton.classList.add('bg-gray-500', 'hover:bg-gray-700', 'text-white', 'font-bold', 'py-0', 'px-0', "w-10", "h-10", "rounded-l");
         editButton.style.float = 'right'; // set the float property to right    
         editButton.style.display = 'inline-block'
         editButton.innerHTML = '';
@@ -198,7 +198,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
             //buttonsContainer.style.display = "none"
 
             const saveButton = document.createElement('button');
-            saveButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'my-2', 'ml-2');
+            saveButton.classList.add('bg-gray-500', 'hover:bg-gray-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'my-2', 'ml-2');
             saveButton.innerHTML = 'Save';
             inputBlock.appendChild(inputField)
             inputBlock.appendChild(saveButton)
@@ -230,7 +230,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
         });
 
         const deleteButton = document.createElement('button');
-        deleteButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded', "w-10", "h-10");
+        deleteButton.classList.add('bg-gray-500', 'hover:bg-gray-700', 'text-white', 'font-bold', 'py-0', 'px-0', "w-10", "h-10");
         deleteButton.style.float = 'right'; // set the float property to right    
         deleteButton.style.display = 'inline-block'
         deleteButton.innerHTML = '';
@@ -252,7 +252,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
                 });
         });
         const rank_up = document.createElement('button');
-        rank_up.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded', "w-10", "h-10");
+        rank_up.classList.add('bg-gray-500', 'hover:bg-gray-700', 'text-white', 'font-bold', 'py-0', 'px-0', "w-10", "h-10");
         rank_up.title = "Upvote";
         rank_up.style.float = 'right'; // set the float property to right    
         rank_up.style.display = 'inline-block'
@@ -297,7 +297,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
         });
 
         const rank_down = document.createElement('button');
-        rank_down.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded', "w-10", "h-10");
+        rank_down.classList.add('bg-gray-500', 'hover:bg-gray-700', 'text-white', 'font-bold', 'py-0', 'px-0', "w-10", "h-10");
         rank_down.title = "Downvote";
         rank_down.style.float = 'right'; // set the float property to right    
         rank_down.style.display = 'inline-block'
