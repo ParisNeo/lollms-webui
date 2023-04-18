@@ -322,7 +322,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         app.config['executor'].submit(self.create_chatbot)
 
         # Return a success response
-        return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp, "welcome_message":self.personality["welcome_message"]})
+        return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp, "welcome_message":self.personality["welcome_message"], "sender":self.personality["name"]})
 
     def update_model_params(self):
         data = request.get_json()

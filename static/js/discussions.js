@@ -233,7 +233,7 @@ function populate_menu(){
           // Select the new discussion
           //selectDiscussion(discussionId);
           chatWindow.innerHTML=""
-          addMessage("GPT4ALL", data.welcome_message,0);
+          addMessage(data.sender, data.welcome_message,0);
           
           populate_discussions_list()
           sendbtn.style.display="block";

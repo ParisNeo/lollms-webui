@@ -6,5 +6,8 @@
 from config import load_config, save_config
 
 class Extension():
-    def __init__(self, metadata_file_path:str) -> None:
-        self.config = load_config()
+    def __init__(self, metadata_file_path:str, app) -> None:
+        self.app = app
+        self.metadata_file_path = metadata_file_path
+        self.config = load_config(metadata_file_path)
+

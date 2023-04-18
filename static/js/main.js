@@ -26,9 +26,6 @@ function update_main(){
       waitAnimation.style.display="block";
       console.log("Sending message to bot")
 
-      let hiddenElement = undefined
-      let messageTextElement = undefined
-
       user_msg = addMessage('',message, 0, 0, can_edit=true);
       bot_msg = addMessage('', '', 0, 0, can_edit=true);
 
@@ -81,8 +78,8 @@ function update_main(){
                     bot_msg.setSender(infos.bot);
                     bot_msg.setID(infos.response_id);
 
-                    messageTextElement  = bot_msg.messageTextElement;
-                    hiddenElement       = bot_msg.hiddenElement;
+                    bot_msg.messageTextElement;
+                    bot_msg.hiddenElement;
                     entry_counter ++;
                   }
                   else{
@@ -90,8 +87,8 @@ function update_main(){
                     prefix = "FINAL:";
                     if(text.startsWith(prefix)){
                         text = text.substring(prefix.length);
-                        hiddenElement.innerHTML         = text
-                        messageTextElement.innerHTML    = text
+                        bot_msg.hiddenElement.innerHTML         = text
+                        bot_msg.messageTextElement.innerHTML    = text
                     }
                     else{
                     // For the other enrtries, these are just the text of the chatbot
@@ -99,8 +96,8 @@ function update_main(){
                         txt = hiddenElement.innerHTML;
                         if (char != '\f') {
                             txt += char
-                            hiddenElement.innerHTML         = txt;
-                            messageTextElement.innerHTML    = txt;
+                            bot_msg.hiddenElement.innerHTML         = txt;
+                            bot_msg.messageTextElement.innerHTML    = txt;
                         }
 
                     // scroll to bottom of chat window
