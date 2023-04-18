@@ -200,6 +200,12 @@ exit /b 1
 
 :VENV_SKIP
 
+echo Checking virtual environment.
+if exist ./env (
+    echo Virtual environment already exists.
+    goto VENV_CREATED
+)
+
 REM Create a new virtual environment
 set /p="Creating virtual environment ..." <nul
 python -m venv env >nul 2>&1
@@ -210,8 +216,8 @@ if %ERRORLEVEL% EQU 0 (
     pause
     exit /b 1
 )
-
 :VENV_CREATED
+
 
 REM Activate the virtual environment
 set /p="Activating virtual environment ..." <nul
@@ -232,7 +238,7 @@ if not exist \models (
     md \models
 )
 
-if not exist \models/gpt4all-lora-quantized-ggml.bin (
+if not exist ./models/gpt4all-lora-quantized-ggml.bin (
     echo.
     choice /C YNB /M "The default model file (gpt4all-lora-quantized-ggml.bin) does not exist. Do you want to download it? Press B to download it with a browser (faster)."
     if errorlevel 3 goto DOWNLOAD_WITH_BROWSER

@@ -1,6 +1,6 @@
 flask
 nomic
 pytest
-pyllamacpp
+pyllamacpp==1.0.6
 pyyaml
 markdown
