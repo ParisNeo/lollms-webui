@@ -8,7 +8,7 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
 
 </head>
-<body class="w-screen h-500 bg-primary text-gray-400 flex flex-col bg-gray-900">
+<body class="w-screen h-500 bg-primary text-gray-400 flex flex-col bg-gray-900 h-screen overflow-hidden">
     <div class="w-full h-50 border-b border-accent bg-tertiary text-2xl font-bold flex justify-between items-center px-6 py-6">
         <div class="w-12 h-12"><a href="#main"><img src="{{ url_for('static', filename='images/icon.png') }}"></a></div>
         <h1>GPT4All - WEBUI</h1>
@@ -32,15 +32,15 @@
           </li>
         </ul>
     </div>
-    <div id="main" class="tab-pane overflow-hidden flex flex-row w-full h-full relative flex">
+    <div id="main" class="tab-pane flex flex-row flex-1">
     </div>
-    <div class="tab-pane" id="settings" style="display: none;">
+    <div class="tab-pane flex-1 overflow-auto" id="settings" style="display: none;">
     </div>
-    <div class="tab-pane" id="extensions" style="display: none;">
+    <div class="tab-pane flex-1 overflow-auto" id="extensions" style="display: none;">
     </div>
-    <div class="tab-pane" id="training" style="display: none;">
+    <div class="tab-pane flex-1 overflow-auto" id="training" style="display: none;">
     </div>
-    <div class="tab-pane" id="help" style="display: none;">
+    <div class="tab-pane flex-1 overflow-auto" id="help" style="display: none;">
 
     </div>
     <footer class="border-t border-accent flex">

@@ -84,7 +84,7 @@ if (!userAgent.match(/firefox|fxios/i)) {
     const audio_out_button = document.createElement("button");
     audio_out_button.title = "Listen to message";
     audio_out_button.id = "audio-out-button";
-    audio_out_button.classList.add("audio_btn",'bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded', "w-10", "h-10");
+    audio_out_button.classList.add("audio_btn",'bg-gray-500', 'hover:bg-gray-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded-r', "w-10", "h-10");
     audio_out_button.innerHTML = "🕪";
     audio_out_button.classList.add("audio-out-button");
     container.appendChild(audio_out_button);
@@ -137,69 +137,67 @@ if (!userAgent.match(/firefox|fxios/i)) {
   }
 
   function add_audio_in_ui() {
-    const inputs = document.querySelectorAll("#user-input");
-    inputs.forEach((input) => {
-      // const wrapper = document.createElement("div");
-      // wrapper.classList.add("flex", "items-center");
-      var btn = document.querySelectorAll("#audio_in_tool");
+    const input = document.getElementById("user-input");
+    // const wrapper = document.createElement("div");
+    // wrapper.classList.add("flex", "items-center");
+    var btn = document.querySelectorAll("#audio_in_tool");
 
-      var found = false;
-      // Iterate through the children
-      for (var i = 0; i < btn.length; i++) {
-        var child = btn[i];
-        // Check if the wrapper element contains the current child element
-        if (input.parentNode.parentNode.contains(child)) {
-          found = true;
+    var found = false;
+    // Iterate through the children
+    for (var i = 0; i < btn.length; i++) {
+      var child = btn[i];
+      // Check if the wrapper element contains the current child element
+      if (input.parentNode.parentNode.contains(child)) {
+        found = true;
+      }
+    }
+
+
+    if (!found) {
+      const audio_in_button = document.createElement("button");
+      audio_in_button.title = "Type with your voice";
+      audio_in_button.id = "audio_in_tool";
+      audio_in_button.classList.add("audio_btn");
+      audio_in_button.innerHTML = "🎤";
+
+      input.parentNode.parentNode.insertBefore(
+        audio_in_button,
+        input.parentNode
+      );
+
+      input.classList.add("flex-1");
+      audio_in_button.classList.add("ml-2");
+
+      audio_in_button.addEventListener("click", () => {
+        if (isStarted) {
+          recognition.stop();
+          isStarted = false;
+        } else {
+          recognition.lang = language_select.value;
+          recognition.start();
+          isStarted = true;
         }
+      });
+
+      recognition.addEventListener("result", (event) => {
+        let transcript = "";
+        for (const result of event.results) {
+          transcript += result[0].transcript;
+        }
+        if (transcript != "") {
+          input.value = transcript;
+        }
+      });
+
+      recognition.addEventListener("start", () => {
+        audio_in_button.style.backgroundColor = "red";
+        audio_in_button.style.boxShadow = "2px 2px 0.5px #808080";
+      });
+
+      recognition.addEventListener("end", () => {
+        audio_in_button.style.backgroundColor = "";
+        audio_in_button.style.boxShadow = "";
+      });
       }
-
-
-      if (!found) {
-        const audio_in_button = document.createElement("button");
-        audio_in_button.title = "Type with your voice";
-        audio_in_button.id = "audio_in_tool";
-        audio_in_button.classList.add("audio_btn");
-        audio_in_button.innerHTML = "🎤";
-
-        input.parentNode.parentNode.insertBefore(
-          audio_in_button,
-          input.parentNode
-        );
-
-        input.classList.add("flex-1");
-        audio_in_button.classList.add("ml-2");
-
-        audio_in_button.addEventListener("click", () => {
-          if (isStarted) {
-            recognition.stop();
-            isStarted = false;
-          } else {
-            recognition.lang = language_select.value;
-            recognition.start();
-            isStarted = true;
-          }
-        });
-
-        recognition.addEventListener("result", (event) => {
-          let transcript = "";
-          for (const result of event.results) {
-            transcript += result[0].transcript;
-          }
-          if (transcript != "") {
-            input.value = transcript;
-          }
-        });
-
-        recognition.addEventListener("start", () => {
-          audio_in_button.style.backgroundColor = "red";
-          audio_in_button.style.boxShadow = "2px 2px 0.5px #808080";
-        });
-
-        recognition.addEventListener("end", () => {
-          audio_in_button.style.backgroundColor = "";
-          audio_in_button.style.boxShadow = "";
-        });
-      }
-    });
   }
 }
