@@ -1,29 +1,29 @@
 <div class="h-full overflow-y-auto">
-    <form id="model-params-form" class="bg-gray-700 shadow-md rounded px-8 py-8 pt-6 pb-8 mb-4 text-white">
+    <form id="model-params-form" class="bg-gray-50 dark:bg-gray-700 shadow-md rounded px-8 py-8 pt-6 pb-8 mb-4 text-black dark:text-white">
     <div class="mb-4 flex-row">
         <label class="font-bold" for="model">Model</label>
-        <select class="bg-gray-700 w-96 shadow appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="model" name="model"  value="gpt4all-lora-quantized.bin">
+        <select class="bg-gray-200 dark:bg-gray-700 w-96 shadow appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline">
         </select>
     </div>
     <div class="mb-4 flex-row">
         <label class="font-bold mb-2" for="model">Personalities</label>
-        <select class="bg-gray-700 shadow appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="personalities" name="personalities"  value="gpt4all_chatbot.yaml">
+        <select class="bg-gray-200 dark:bg-gray-700 shadow appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="personalities" name="personalities"  value="gpt4all_chatbot.yaml">
         </select>
     </div>
     <div class="mb-4 flex-row">
         <label class="font-bold mb-2" for="model">Language</label>
-        <select class="bg-gray-700 shadow appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="language" name="language"  value="english">
+        <select class="bg-gray-200 dark:bg-gray-700 shadow appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="language" name="language"  value="english">
         </select>
     </div>
     <div class="mb-4 flex-row">
         <label class="font-bold mb-2" for="model">Voice</label>
-        <select class="bg-gray-700 shadow appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="voice" name="voice"  value="english">
+        <select class="bg-gray-200 dark:bg-gray-700 shadow appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="voice" name="voice"  value="english">
         </select>
     </div>
     
     <div class="mb-4 flex-row">
         <label class="font-bold mb-2" for="seed">Seed</label>
-        <input class="bg-gray-700 shadow appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="seed" type="text" name="seed" value="0">
+        <input class="bg-gray-200 dark:bg-gray-700 shadow appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="seed" type="text" name="seed" value="0">
     </div>
     <div class="mb-4 flex-row">
         <label class="font-bold mb-2" for="temp" id="temperature-value">Temperature (0.1)</label>
@@ -50,7 +50,7 @@
         <input class="slider-value" id="repeat-last-n" type="range" min="0" max="100" step="1" value="40" name="repeat-last-n">
     </div>
     <div class="mb-4">
-        <button type="submit" id="submit-model-params" class="my-1 mx-1 outline-none px-4 bg-accent rounded-md bg-gray-500 hover:bg-gray-300 transition-colors ease-in-out">Update parameters</button>
+        <button type="submit" id="submit-model-params" class="my-1 mx-1 outline-none px-4 bg-accent rounded-md bg-gray-200 hover:bg-gray-300 py-1 dark:bg-gray-500 dark:hover:bg-gray-300 transition-colors ease-in-out">Update parameters</button>
     </div>
     </form>
 </div>
