@@ -1,62 +1,75 @@
 <!DOCTYPE html>
-<html  class="mode-dark">
-<head>
+<html>
+  <head>
     <meta charset="utf-8">
     <title>GPT4All - WEBUI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwindcss.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind-dark.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+  </head>
+<body class="w-screen h-500 bg-primary text-gray-400 flex flex-col bg-gray-200 dark:bg-gray-900 h-screen overflow-hidden">
+  <div class="w-full h-50 border-b-4 border-black dark:border-gray-600 text-2xl font-bold flex justify-between items-center px-6 py-6">
+    <div class="flex">
+      <div class="w-12 h-12"><a href="#main"><img src="{{ url_for('static', filename='images/icon.png') }}"></a></div>
+      <div class="contents">
+        <button id="theme-toggle" type="button" class="ml-5 bg-gray-200 border-black border-2 dark:bg-gray-700 dark:border-white hover:bg-gray-300 dark:hover:bg-gray-500 rounded-lg text-sm p-2.5">
+          <img id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" src="{{ url_for('static', filename='images/dark.svg') }}"></img>
+          <img id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" src="{{ url_for('static', filename='images/light.svg') }}"></img>
+        </button>
+      </div>
+    </div>
+    <h1 class="text-2xl text-black dark:text-white">GPT4ALL - WEBUI</h1>
+  </div>
+  <div class="content-center items-center">
+    <ul class="flex
+    content-center items-center">
+      <li class="mr-1">
+        <a href="#main" class="border-t-4 border-l-2 border-r-2 border-black dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-black dark:text-gray-200 py-2 px-4 rounded-t-md font-medium hover:bg-gray-800 hover:text-white dark:hover:bg-gray-200 dark:hover:text-black" id="main-link">Main</a>
+      </li>
+      <li class="mr-1">
+        <a href="#settings" class="border-t-4 border-l-2 border-r-2 border-black dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-black dark:text-gray-200 py-2 px-4 rounded-t-md font-medium hover:bg-gray-800 hover:text-white dark:hover:bg-gray-200 dark:hover:text-black" id="settings-link">Settings</a>
+      </li>
+      <li class="mr-1">
+        <a href="#extensions" class="border-t-4 border-l-2 border-r-2 border-black dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-black dark:text-gray-200 py-2 px-4 rounded-t-md font-medium hover:bg-gray-800 hover:text-white dark:hover:bg-gray-200 dark:hover:text-black" id="extensions-link">Extensions</a>
+      </li>
+      <li class="mr-1">
+        <a href="#training" class="border-t-4 border-l-2 border-r-2 border-black dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-black dark:text-gray-200 py-2 px-4 rounded-t-md font-medium hover:bg-gray-800 hover:text-white dark:hover:bg-gray-200 dark:hover:text-black" id="training-link">Training</a>
+      </li>
+      <li class="mr-1">
+        <a href="#help" class="border-t-4 border-l-2 border-r-2 border-black dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-black dark:text-gray-200 py-2 px-4 rounded-t-md font-medium hover:bg-gray-800 hover:text-white dark:hover:bg-gray-200 dark:hover:text-black" id="help-link">Help</a>
+      </li>
+    </ul>
+  </div>
+  <div id="main" class="tab-pane flex flex-row flex-1">
+  </div>
+  <div class="tab-pane flex-1 overflow-auto" id="settings" style="display: none;">
+  </div>
+  <div class="tab-pane flex-1 overflow-auto" id="extensions" style="display: none;">
+  </div>
+  <div class="tab-pane flex-1 overflow-auto" id="training" style="display: none;">
+  </div>
+  <div class="tab-pane flex-1 overflow-auto" id="help" style="display: none;">
+  </div>
+  <footer class="border-t border-accent flex">
+  </footer>
 
-</head>
-<body class="w-screen h-500 bg-primary text-gray-400 flex flex-col bg-gray-900 h-screen overflow-hidden">
-    <div class="w-full h-50 border-b border-accent bg-tertiary text-2xl font-bold flex justify-between items-center px-6 py-6">
-        <div class="w-12 h-12"><a href="#main"><img src="{{ url_for('static', filename='images/icon.png') }}"></a></div>
-        <h1>GPT4All - WEBUI</h1>
-    </div>
-    <div class="border-b border-gray-800 content-center items-center">
-        <ul class="flex border-b border-gray-800 content-center items-center">
-          <li class="mr-1">
-            <a href="#main" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:bg-gray-200 hover:text-black" id="main-link">Main</a>
-          </li>
-          <li class="mr-1">
-            <a href="#settings" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:bg-gray-200 hover:text-black" id="settings-link">Settings</a>
-          </li>
-          <li class="mr-1">
-            <a href="#extensions" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:bg-gray-200 hover:text-black" id="extensions-link">Extensions</a>
-          </li>
-          <li class="mr-1">
-            <a href="#training" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:bg-gray-200 hover:text-black" id="training-link">Training</a>
-          </li>
-          <li class="mr-1">
-            <a href="#help" class="bg-gray-700 text-gray-200 py-2 px-4 rounded-t-md font-medium hover:bg-gray-200 hover:text-black" id="help-link">Help</a>
-          </li>
-        </ul>
-    </div>
-    <div id="main" class="tab-pane flex flex-row flex-1">
-    </div>
-    <div class="tab-pane flex-1 overflow-auto" id="settings" style="display: none;">
-    </div>
-    <div class="tab-pane flex-1 overflow-auto" id="extensions" style="display: none;">
-    </div>
-    <div class="tab-pane flex-1 overflow-auto" id="training" style="display: none;">
-    </div>
-    <div class="tab-pane flex-1 overflow-auto" id="help" style="display: none;">
+  <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/marked.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/discussions.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/extensions.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/training.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/help.js') }}"></script>
 
-    </div>
-    <footer class="border-t border-accent flex">
-    </footer>
-    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/marked.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/discussions.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/extensions.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/training.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/help.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/db_export.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/audio.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/tabs.js') }}"></script>
 
-    <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/db_export.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/audio.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/tabs.js') }}"></script>
-    
+  <script src="{{ url_for('static', filename='js/themechecker.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/themetoggle.js') }}"></script>
 </body>
 </html>
