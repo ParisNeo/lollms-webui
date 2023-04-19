@@ -99,7 +99,7 @@ sudo pacman -S curl
 ```
 2. Open terminal/console copy and paste this command and press enter: 
 ```
-mkdir -p ~/gpt4all-ui && curl -L https://raw.githubusercontent.com/nomic-ai/gpt4all-ui/main/mega.sh -o ~/gpt4all-ui/webui.sh && chmod +x ~/gpt4all-ui/webui.sh && ~/gpt4all-ui/webui.sh
+mkdir -p ~/gpt4all-ui && curl -L https://raw.githubusercontent.com/nomic-ai/gpt4all-ui/main/webui.sh -o ~/gpt4all-ui/webui.sh && chmod +x ~/gpt4all-ui/webui.sh && ~/gpt4all-ui/webui.sh
 ```
 > **Note**
 >
