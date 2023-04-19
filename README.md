@@ -47,16 +47,15 @@ Make sure that your CPU supports `AVX2` instruction set. Without it, this applic
 ### Automatic install
 
 1. Open directory on your computer where you want to download/install this application  (This will create new directory: `/gpt4all-ui/`. Make sure a folder with this name does not exist in this direcotry.)
-2. Press and holde `Shift` on your keyboard and `right click` with your mouse inside a folder. Select from a menu `Open Terminal` or `Open to powershell windows here` (This command can hide under `Show more options` in Windows 11).
+2. Press and hold `Shift` on your keyboard and `Right click` with your mouse inside a folder. Select from a menu `Open Terminal` or `Open to powershell windows here` (This command can hide under `Show more options` in Windows 11).
 3. Copy and paste this command and press enter: 
-
+```
+mkdir gpt4all-ui & curl https://raw.githubusercontent.com/nomic-ai/gpt4all-ui/main/webui.bat -o ./gpt4all-ui/webui.bat ; pushd ./gpt4all/ ; Invoke-Expression -Command "./webui.bat"
+```
 > **Note**
 >
 > This command creates new directory `/gpt4all-ui/`, downloads a file [webui.bat](https://raw.githubusercontent.com/nomic-ai/gpt4all-ui/main/webui.bat), changes current work directory to `/gpt4all-ui/` and executes webui.bat that downloads and installs everything that is needed.
 
-```
-mkdir gpt4all-ui & curl https://raw.githubusercontent.com/nomic-ai/gpt4all-ui/main/webui.bat -o ./gpt4all-ui/webui.bat ; pushd ./gpt4all/ ; Invoke-Expression -Command "./webui.bat"
-```
 4. Follow instructions on screen until it launches webui.
 5. To relaunch application double click on `webui.bat` file from Windows explorer as normal user.
 
@@ -82,19 +81,62 @@ git clone https://github.com/nomic-ai/gpt4all-ui.git
 
 ## Linux
 
+### Automatic install
+
+1. Make sure you have installed `curl`. It is needed for the one-liner to work.
+
+`Debian-based:`
+```
+sudo apt install curl 
+```
+`Red Hat-based:`
+```
+sudo dnf install curl 
+```
+`Arch-based:`
+```
+sudo pacman -S curl 
+```
+2. Open terminal/console copy and paste this command and press enter: 
+```
+mkdir -p ~/gpt4all-ui && curl -L https://raw.githubusercontent.com/nomic-ai/gpt4all-ui/main/mega.sh -o ~/gpt4all-ui/webui.sh && chmod +x ~/gpt4all-ui/webui.sh && ~/gpt4all-ui/webui.sh
+```
+> **Note**
+>
+> This command creates new directory `/gpt4all-ui/` in your /home/ direcory, downloads a file [webui.sh](https://raw.githubusercontent.com/nomic-ai/gpt4all-ui/main/webui.sh), makes file executable and executes webui.sh that downloads and installs everything that is needed.
+
+3. Follow instructions on screen until it launches webui.
+4. To relaunch application: 
+```
+bash webui.sh
+```
+
+### Manual Simple install:
+
+1. Download this repository .zip:
+
+![image](https://user-images.githubusercontent.com/80409979/232210909-0ce3dc80-ed34-4b32-b828-e124e3df3ff1.png)
+
+2. Extract contents into a folder.
+3. Install/run application from terminal/console: 
+```
+bash webui.sh
+```
+### Manual Advanced mode:
+
 1. Open terminal/console and install dependencies:
 
 `Debian-based:`
 ```
-sudo apt install git python3 python3-venv
+sudo apt install curl git python3 python3-venv
 ```
 `Red Hat-based:`
 ```
-sudo dnf install git python3
+sudo dnf install curl git python3
 ```
 `Arch-based:`
 ```
-sudo pacman -S git python3
+sudo pacman -S curl git python3
 ```
 
 2. Clone repository:
@@ -106,16 +148,10 @@ git clone https://github.com/nomic-ai/gpt4all-ui.git
 cd gpt4all-ui
 ```
 
-3. Run installation:
+3. Install/run application:
 
 ```bash
-bash ./install.sh
-```
-
-4. Run application:
-
-```bash
-bash ./run.sh
+bash ./webui.sh
 ```
 
 ## MacOS
@@ -141,16 +177,10 @@ git clone https://github.com/nomic-ai/gpt4all-ui.git
 cd gpt4all-ui
 ```
 
-4. Run installation:
+4. Install/run application:
 
 ```bash
-bash ./install.sh
-```
-
-5. Run application:
-
-```bash
-bash ./run.sh
+bash ./webui.sh
 ```
 
 On Linux/MacOS, if you have issues, refer to the details presented [here](docs/Linux_Osx_Install.md)
@@ -170,10 +200,7 @@ Start
 docker compose -f docker-compose.yml up
 ```
 
-Stop
-```
-Ctrl + C
-```
+Stop ` Ctrl ` + ` C `
 
 Start detached (runs in background)
 ```bash
@@ -196,7 +223,6 @@ You can also refuse to download the model during the install procedure and downl
 
 - [GPT4ALL 7B](https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin) or visit [repository](https://huggingface.co/ParisNeo/GPT4All)
 - [GPT4ALL 7B unfiltered](https://huggingface.co/ParisNeo/GPT4All/blob/main/gpt4all-lora-unfiltered-quantized.new.bin) or visit [repository](https://huggingface.co/ParisNeo/GPT4All)
-
 - [Vicuna 7B rev 1](https://huggingface.co/eachadea/legacy-ggml-vicuna-7b-4bit/resolve/main/ggml-vicuna-7b-4bit-rev1.bin) or visit [repository](https://huggingface.co/eachadea/legacy-ggml-vicuna-7b-4bit)  
 - [Vicuna 13B rev 1](https://huggingface.co/eachadea/ggml-vicuna-13b-4bit/resolve/main/ggml-vicuna-13b-4bit-rev1.bin) or visit [repository](https://huggingface.co/eachadea/ggml-vicuna-13b-4bit)
 
@@ -264,16 +290,6 @@ Once the server is running, open your web browser and navigate to http://localho
 
 Make sure to adjust the default values and descriptions of the options to match your specific application.
 
-# Update application To latest version
-
-On Windows, run:
-```bash
-update.bat
-```
-On Linux or OS X, run:
-```bash
-bash update.sh
-```
 # Contribute
 
 This is an open-source project by the community and for the community. Our chatbot is a UI wrapper for Nomic AI's model, which enables natural language processing and machine learning capabilities.
