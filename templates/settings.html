@@ -1,53 +1,53 @@
 <div class="h-full overflow-y-auto">
     <form id="model-params-form" class="bg-gray-700 shadow-md rounded px-8 py-8 pt-6 pb-8 mb-4 text-white">
-    <div class="mb-4">
-        <label class="block font-bold mb-2" for="model">Model</label>
-        <select class="bg-gray-700 shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="model" name="model"  value="gpt4all-lora-quantized.bin">
+    <div class="mb-4 flex-row">
+        <label class="font-bold" for="model">Model</label>
+        <select class="bg-gray-700 w-96 shadow appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="model" name="model"  value="gpt4all-lora-quantized.bin">
         </select>
     </div>
-    <div class="mb-4">
-        <label class="block font-bold mb-2" for="model">Personalities</label>
-        <select class="bg-gray-700 shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="personalities" name="personalities"  value="gpt4all_chatbot.yaml">
+    <div class="mb-4 flex-row">
+        <label class="font-bold mb-2" for="model">Personalities</label>
+        <select class="bg-gray-700 shadow appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="personalities" name="personalities"  value="gpt4all_chatbot.yaml">
         </select>
     </div>
-    <div class="mb-4">
-        <label class="block font-bold mb-2" for="model">Language</label>
-        <select class="bg-gray-700 shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="language" name="language"  value="english">
+    <div class="mb-4 flex-row">
+        <label class="font-bold mb-2" for="model">Language</label>
+        <select class="bg-gray-700 shadow appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="language" name="language"  value="english">
         </select>
     </div>
-    <div class="mb-4">
-        <label class="block font-bold mb-2" for="model">Voice</label>
-        <select class="bg-gray-700 shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="voice" name="voice"  value="english">
+    <div class="mb-4 flex-row">
+        <label class="font-bold mb-2" for="model">Voice</label>
+        <select class="bg-gray-700 shadow appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="voice" name="voice"  value="english">
         </select>
     </div>
     
-    <div class="mb-4">
-        <label class="block font-bold mb-2" for="seed">Seed</label>
-        <input class="bg-gray-700 shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="seed" type="text" name="seed" value="0">
+    <div class="mb-4 flex-row">
+        <label class="font-bold mb-2" for="seed">Seed</label>
+        <input class="bg-gray-700 shadow appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" id="seed" type="text" name="seed" value="0">
     </div>
-    <div class="mb-4">
-        <label class="block font-bold mb-2" for="temp" id="temperature-value">Temperature (0.1)</label>
-        <input class="w-full slider-value" id="temp" type="range" min="0" max="1" step="0.1" value="0.1" name="temp">
+    <div class="mb-4 flex-row">
+        <label class="font-bold mb-2" for="temp" id="temperature-value">Temperature (0.1)</label>
+        <input class="slider-value" id="temp" type="range" min="0" max="1" step="0.1" value="0.1" name="temp">
     </div>
-    <div class="mb-4">
-        <label class="block font-bold mb-2" for="n-predict" id="n-predict-value">N Predict (256)</label>
-        <input class="w-full slider-value" id="n-predict" type="range" min="0" max="2048" step="1" value="256" name="n-predict">
+    <div class="mb-4 flex-row">
+        <label class="font-bold mb-2" for="n-predict" id="n-predict-value">N Predict (256)</label>
+        <input class="slider-value" id="n-predict" type="range" min="0" max="2048" step="1" value="256" name="n-predict">
     </div>
-    <div class="mb-4">
-        <label class="block font-bold mb-2" for="top-k" id="top-k-value">Top K</label>
-        <input class="w-full slider-value" id="top-k" type="range" min="0" max="100" step="1" value="40" name="top-k">
+    <div class="mb-4 flex-row">
+        <label class="font-bold mb-2" for="top-k" id="top-k-value">Top K</label>
+        <input class="slider-value" id="top-k" type="range" min="0" max="100" step="1" value="40" name="top-k">
     </div>
-    <div class="mb-4">
-        <label class="block font-bold mb-2" for="top-p" id="top-p-value">Top P</label>
-        <input class="w-full slider-value" id="top-p" type="range" min="0" max="1" step="0.01" value="0.95" name="top-p">
+    <div class="mb-4 flex-row">
+        <label class="font-bold mb-2" for="top-p" id="top-p-value">Top P</label>
+        <input class="slider-value" id="top-p" type="range" min="0" max="1" step="0.01" value="0.95" name="top-p">
     </div>
-    <div class="mb-4">
-        <label class="block font-bold mb-2" for="repeat-penalty" id="repeat-penalty-value">Repeat penalty</label>
-        <input class="w-full slider-value" id="repeat-penalty" type="range" min="0" max="2" step="0.01" value="1.3" name="repeat-penalty">
+    <div class="mb-4 flex-row">
+        <label class="font-bold mb-2" for="repeat-penalty" id="repeat-penalty-value">Repeat penalty</label>
+        <input class="slider-value" id="repeat-penalty" type="range" min="0" max="2" step="0.01" value="1.3" name="repeat-penalty">
     </div>
-    <div class="mb-4">
-        <label class="block font-bold mb-2" for="repeat-last-n" id="repeat-last-n-value">Repeat last N</label>
-        <input class="w-full slider-value" id="repeat-last-n" type="range" min="0" max="100" step="1" value="40" name="repeat-last-n">
+    <div class="mb-4 flex-row">
+        <label class="font-bold mb-2" for="repeat-last-n" id="repeat-last-n-value">Repeat last N</label>
+        <input class="slider-value" id="repeat-last-n" type="range" min="0" max="100" step="1" value="40" name="repeat-last-n">
     </div>
     <div class="mb-4">
         <button type="submit" id="submit-model-params" class="my-1 mx-1 outline-none px-4 bg-accent rounded-md bg-gray-500 hover:bg-gray-300 transition-colors ease-in-out">Update parameters</button>
