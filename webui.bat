@@ -233,7 +233,7 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
-echo Downloading latest model
+echo Checking models...
 if not exist \models (
     md \models
 )
