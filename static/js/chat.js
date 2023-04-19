@@ -18,7 +18,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
     console.log(id)
     
     const messageElement = document.createElement('div');
-    messageElement.classList.add('bg-secondary', 'drop-shadow-sm', 'p-4', 'mx-6', 'my-4', 'flex', 'flex-col', 'space-x-2', 'rounded-lg', 'shadow-lg', 'bg-gray-800', 'hover:bg-gray-700', 'transition-colors', 'duration-300');
+    messageElement.classList.add('bg-secondary', 'drop-shadow-sm', 'p-4', 'mx-6', 'my-4', 'flex', 'flex-col', 'space-x-2', 'rounded-lg', 'shadow-lg', 'bg-gray-300', 'text-black', 'dark:text-gray-200', 'dark:bg-gray-800', 'hover:bg-gray-400', 'dark:hover:bg-gray-700', 'transition-colors', 'duration-300');
 
     messageElement.id = id
     //messageElement.classList.add(sender);
