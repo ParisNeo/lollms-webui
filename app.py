@@ -384,16 +384,16 @@ class Gpt4AllWebUI(GPT4AllAPI):
             self.config['model'] = model
             self.create_chatbot()
 
-        if self.config['personality_language']!=data["personality_language"]:
-            self.config['personality_language'] = data["personality_language"]
+        if self.config['personality_language']!=personality_language:
+            self.config['personality_language'] = personality_language
             self.personality = load_config(f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}.yaml")
 
-        if self.config['personality_category']!=data["personality_category"]:
-            self.config['personality_category'] = data["personality_category"]
+        if self.config['personality_category']!=personality_category:
+            self.config['personality_category'] = personality_category
             self.personality = load_config(f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}.yaml")
 
-        if self.config['personality']!=data["personality"]:
-            self.config['personality'] = data["personality"]
+        if self.config['personality']!=personality:
+            self.config['personality'] = personality
             self.personality = load_config(f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}.yaml")
 
         self.config['n_predict'] = int(data["nPredict"])
@@ -412,6 +412,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
         print("Parameters changed to:")
         print(f"\tModel:{self.config['model']}")
+        print(f"\tPersonality language:{self.config['personality_language']}")
+        print(f"\tPersonality category:{self.config['personality_category']}")
         print(f"\tPersonality:{self.config['personality']}")
         print(f"\tLanguage:{self.config['language']}")
         print(f"\tVoice:{self.config['voice']}")
