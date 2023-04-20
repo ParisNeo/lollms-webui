@@ -28,7 +28,7 @@ class LLAMACPP(GPTBackend):
         super().__init__(config)
         
         self.model = Model(
-                ggml_model=f"./models/llamacpp/{self.config['model']}", 
+                ggml_model=f"./models/llama_cpp/{self.config['model']}", 
                 n_ctx=self.config['ctx_size'], 
                 seed=self.config['seed'],
                 )

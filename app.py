@@ -410,7 +410,9 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
         save_config(self.config, self.config_file_path)
 
+        print("==============================================")
         print("Parameters changed to:")
+        print(f"\tBackend:{self.config['backend']}")
         print(f"\tModel:{self.config['model']}")
         print(f"\tPersonality language:{self.config['personality_language']}")
         print(f"\tPersonality category:{self.config['personality_category']}")
@@ -424,6 +426,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
         print(f"\top_p:{self.config['top_p']}")
         print(f"\trepeat_penalty:{self.config['repeat_penalty']}")
         print(f"\trepeat_last_n:{self.config['repeat_last_n']}")
+        print("==============================================")
+        
         return jsonify({"status":"ok"})
     
     
