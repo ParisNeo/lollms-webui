@@ -93,7 +93,7 @@ function update_main(){
                     else{
                     // For the other enrtries, these are just the text of the chatbot
                     for (const char of text) {
-                        txt = hiddenElement.innerHTML;
+                        txt = bot_msg.hiddenElement.innerHTML;
                         if (char != '\f') {
                             txt += char
                             bot_msg.hiddenElement.innerHTML         = txt;

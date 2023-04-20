@@ -5,9 +5,13 @@ debug: false
 n_threads: 8
 host: localhost
 language: en-US
+# Supported backends are llamacpp and gpt-j
+backend: llama_cpp
 model: gpt4all-lora-quantized-ggml.bin
 n_predict: 1024
 nb_messages_to_remember: 5
+personality_language: english
+personality_category: general
 personality: gpt4all_chatbot
 port: 9600
 repeat_last_n: 40

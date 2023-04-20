@@ -9,6 +9,13 @@
 # Made by the community for the community
 ######
 
+__author__ = "parisneo"
+__github__ = "https://github.com/nomic-ai/gpt4all-ui"
+__copyright__ = "Copyright 2023, "
+__license__ = "Apache 2.0"
+
+
+
 import argparse
 import json
 import re
@@ -41,7 +48,16 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
 
         self.add_endpoint(
+            "/list_backends", "list_backends", self.list_backends, methods=["GET"]
+        )
+        self.add_endpoint(
             "/list_models", "list_models", self.list_models, methods=["GET"]
+        )
+        self.add_endpoint(
+            "/list_personalities_languages", "list_personalities_languages", self.list_personalities_languages, methods=["GET"]
+        )        
+        self.add_endpoint(
+            "/list_personalities_categories", "list_personalities_categories", self.list_personalities_categories, methods=["GET"]
         )
         self.add_endpoint(
             "/list_personalities", "list_personalities", self.list_personalities, methods=["GET"]
@@ -54,6 +70,9 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.add_endpoint(
             "/list_discussions", "list_discussions", self.list_discussions, methods=["GET"]
         )
+        
+        self.add_endpoint("/set_personality_language", "set_personality_language", self.set_personality_language, methods=["GET"])
+        self.add_endpoint("/set_personality_category", "set_personality_category", self.set_personality_category, methods=["GET"])
         
         
         self.add_endpoint("/", "", self.index, methods=["GET"])
@@ -116,14 +135,30 @@ class Gpt4AllWebUI(GPT4AllAPI):
             "/help", "help", self.help, methods=["GET"]
         )
 
+    def list_backends(self):
+        backends_dir = Path('./pyGpt4All/backends')  # replace with the actual path to the models folder
+        backends = [f.stem for f in backends_dir.glob('*.py') if f.name!="backend" and f.stem!="__init__"]
+        return jsonify(backends)
+
 
     def list_models(self):
-        models_dir = Path('./models')  # replace with the actual path to the models folder
+        models_dir = Path('./models')/self.config["backend"]  # replace with the actual path to the models folder
         models = [f.name for f in models_dir.glob('*.bin')]
         return jsonify(models)
     
+
+    def list_personalities_languages(self):
+        personalities_languages_dir = Path(f'./personalities')  # replace with the actual path to the models folder
+        personalities_languages = [f.stem for f in personalities_languages_dir.iterdir() if f.is_dir()]
+        return jsonify(personalities_languages)
+
+    def list_personalities_categories(self):
+        personalities_categories_dir = Path(f'./personalities/{self.config["personality_language"]}')  # replace with the actual path to the models folder
+        personalities_categories = [f.stem for f in personalities_categories_dir.iterdir() if f.is_dir()]
+        return jsonify(personalities_categories)
+    
     def list_personalities(self):
-        personalities_dir = Path('./personalities')  # replace with the actual path to the models folder
+        personalities_dir = Path(f'./personalities/{self.config["personality_language"]}/{self.config["personality_category"]}')  # replace with the actual path to the models folder
         personalities = [f.stem for f in personalities_dir.glob('*.yaml')]
         return jsonify(personalities)
 
@@ -144,6 +179,16 @@ class Gpt4AllWebUI(GPT4AllAPI):
         discussions = self.db.get_discussions()
         return jsonify(discussions)
 
+
+    def set_personality_language(self):
+        lang = request.args.get('language')
+        self.config['personality_language'] = lang
+        return jsonify({'success':True})
+
+    def set_personality_category(self):
+        category = request.args.get('category')
+        self.config['personality_category'] = category
+        return jsonify({'success':True})
 
     def add_endpoint(
         self,
@@ -247,7 +292,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         return Response(
             stream_with_context(
                 self.parse_to_prompt_stream(message, message_id)
-            )
+            ), content_type='text/plain; charset=utf-8'
         )
     
 
@@ -284,7 +329,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         for message in messages:
             message["content"] = markdown.markdown(message["content"])
         
-        return jsonify(messages)
+        return jsonify(messages), {'Content-Type': 'application/json; charset=utf-8'}
 
     def delete_discussion(self):
         data = request.get_json()
@@ -470,7 +515,7 @@ if __name__ == "__main__":
         if arg_value is not None:
             config[arg_name] = arg_value
 
-    personality = load_config(f"personalities/{config['personality']}.yaml")
+    personality = load_config(f"personalities/{config['personality_language']}/{config['personality_category']}/{config['personality']}.yaml")
 
     executor = ThreadPoolExecutor(max_workers=2)
     app.config['executor'] = executor

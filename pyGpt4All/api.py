@@ -11,11 +11,15 @@ import gc
 import sys
 from queue import Queue
 from datetime import datetime
-from pyllamacpp.model import Model
 from pyGpt4All.db import DiscussionsDB
+from pyGpt4All.backends import BACKENDS_LIST
+__author__ = "parisneo"
+__github__ = "https://github.com/nomic-ai/gpt4all-ui"
+__copyright__ = "Copyright 2023, "
+__license__ = "Apache 2.0"
 
 class GPT4AllAPI():
-    def __init__(self, config:dict, personality:dict, config_file_path) -> None:
+    def __init__(self, config:dict, personality:dict, config_file_path:str) -> None:
         self.config = config
         self.personality = personality
         self.config_file_path = config_file_path
@@ -37,6 +41,9 @@ class GPT4AllAPI():
 
         # This is used to keep track of messages 
         self.full_message_list = []
+
+        # Select backend
+        self.backend = BACKENDS_LIST[self.config["backend"]]
 
         # Build chatbot
         self.chatbot_bindings = self.create_chatbot()
@@ -66,11 +73,7 @@ class GPT4AllAPI():
 
     def create_chatbot(self):
         try:
-            return Model(
-                ggml_model=f"./models/{self.config['model']}", 
-                n_ctx=self.config['ctx_size'], 
-                seed=self.config['seed'],
-                )
+            return self.backend(self.config)
         except Exception as ex:
             print(f"Exception {ex}")
             return None

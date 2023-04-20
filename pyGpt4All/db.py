@@ -1,5 +1,12 @@
 
 import sqlite3
+
+__author__ = "parisneo"
+__github__ = "https://github.com/nomic-ai/gpt4all-ui"
+__copyright__ = "Copyright 2023, "
+__license__ = "Apache 2.0"
+
+
 # =================================== Database ==================================================================
 class DiscussionsDB:
     MSG_TYPE_NORMAL         = 0
@@ -13,6 +20,17 @@ class DiscussionsDB:
         create database schema
         """
         db_version = 2
+        # Verify encoding and change it if it is not complient
+        with sqlite3.connect(self.db_path) as conn:
+            # Execute a PRAGMA statement to get the current encoding of the database
+            cur = conn.execute('PRAGMA encoding')
+            current_encoding = cur.fetchone()[0]
+
+            if current_encoding != 'UTF-8':
+                # The current encoding is not UTF-8, so we need to change it
+                print(f"The current encoding is {current_encoding}, changing to UTF-8...")
+                conn.execute('PRAGMA encoding = "UTF-8"')
+                conn.commit()        
 
         print("Checking discussions database...")
         with sqlite3.connect(self.db_path) as conn:

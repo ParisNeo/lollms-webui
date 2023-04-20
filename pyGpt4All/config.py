@@ -11,6 +11,11 @@
 ######
 import yaml
 
+__author__ = "parisneo"
+__github__ = "https://github.com/nomic-ai/gpt4all-ui"
+__copyright__ = "Copyright 2023, "
+__license__ = "Apache 2.0"
+
 def load_config(file_path):
     with open(file_path, 'r') as stream:
         config = yaml.safe_load(stream)

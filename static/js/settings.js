@@ -3,7 +3,7 @@ fetch('/settings')
 .then(response => response.text())
 .then(html => {
   document.getElementById('settings').innerHTML = html;
-  
+  backendInput = document.getElementById('backend');  
   modelInput = document.getElementById('model');
   personalityInput = document.getElementById('personalities');
   languageInput = document.getElementById('language');
@@ -54,6 +54,7 @@ fetch('/settings')
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
+      backendInput.value = data["backend"]
       modelInput.value = data["model"]
       personalityInput.value = data["personality"]
       languageInput.value = data["language"]
@@ -89,6 +90,7 @@ fetch('/settings')
     // Get form values and put them in an object
     const formValues = {
       seed: seedInput.value,
+      backend: backendInput.value,
       model: modelInput.value,
       personality: personalityInput.value,
       language: languageInput.value,
@@ -129,10 +131,16 @@ fetch('/settings')
 
 function populate_models(){
   // Get a reference to the <select> element
-  const selectElement = document.getElementById('model');
+  const selectBackend = document.getElementById('backend');
+  const selectModel = document.getElementById('model');
 
-  // Fetch the list of .bin files from the models subfolder
-  fetch('/list_models')
+  const selectPersonalityLanguage = document.getElementById('personalities_language');
+  const selectPersonalityCategory = document.getElementById('personalities_category');
+  const selectPersonality = document.getElementById('personalities');
+
+  function populate_backends(){
+    // Fetch the list of .bin files from the models subfolder
+    fetch('/list_backends')
     .then(response => response.json())
     .then(data => {
       if (Array.isArray(data)) {
@@ -141,7 +149,7 @@ function populate_models(){
           const optionElement = document.createElement('option');
           optionElement.value = filename;
           optionElement.textContent = filename;
-          selectElement.appendChild(optionElement);
+          selectBackend.appendChild(optionElement);
         });
 
         // fetch('/get_args')
@@ -153,30 +161,134 @@ function populate_models(){
         console.error('Expected an array, but received:', data);
       }
     });
+  }
 
+  function populate_models(){
+  // Fetch the list of .bin files from the models subfolder
+  fetch('/list_models')
+    .then(response => response.json())
+    .then(data => {
+      if (Array.isArray(data)) {
+        // data is an array
+        data.forEach(filename => {
+          const optionElement = document.createElement('option');
+          optionElement.value = filename;
+          optionElement.textContent = filename;
+          selectModel.appendChild(optionElement);
+        });
+
+        // fetch('/get_args')
+        // .then(response=> response.json())
+        // .then(data=>{
+          
+        // })
+      } else {
+        console.error('Expected an array, but received:', data);
+      }
+    });
+  }
+  function populate_personalities_languages(){
+    selectPersonalityLanguage.innerHTML=""
+    // Fetch the list of .yaml files from the models subfolder
+    fetch('/list_personalities_languages')
+    .then(response => response.json())
+    .then(data => {
+      if (Array.isArray(data)) {
+        // data is an array
+        data.forEach(filename => {
+          const optionElement = document.createElement('option');
+          optionElement.value = filename;
+          optionElement.textContent = filename;
+          selectPersonalityLanguage.appendChild(optionElement);
+        });
+
+        // fetch('/get_args')
+        // .then(response=> response.json())
+        // .then(data=>{
+          
+        // })
+      } else {
+        console.error('Expected an array, but received:', data);
+      }
+    });
+  }
+  function populate_personalities_categories(){
+  selectPersonalityCategory.innerHTML=""
+  // Fetch the list of .yaml files from the models subfolder
+  fetch('/list_personalities_categories')
+  .then(response => response.json())
+  .then(data => {
+    if (Array.isArray(data)) {
+      // data is an array
+      data.forEach(filename => {
+        const optionElement = document.createElement('option');
+        optionElement.value = filename;
+        optionElement.textContent = filename;
+        selectPersonalityCategory.appendChild(optionElement);
+      });
+    } else {
+      console.error('Expected an array, but received:', data);
+    }
+  });
+  }
+  function populate_personalities(){
+  selectPersonality.innerHTML=""
   // Fetch the list of .yaml files from the models subfolder
   fetch('/list_personalities')
   .then(response => response.json())
   .then(data => {
     if (Array.isArray(data)) {
       // data is an array
-      const selectElement = document.getElementById('personalities');
       data.forEach(filename => {
         const optionElement = document.createElement('option');
         optionElement.value = filename;
         optionElement.textContent = filename;
-        selectElement.appendChild(optionElement);
+        selectPersonality.appendChild(optionElement);
       });
-
-      // fetch('/get_args')
-      // .then(response=> response.json())
-      // .then(data=>{
-        
-      // })
     } else {
       console.error('Expected an array, but received:', data);
     }
   });
+  }
+  
+  function set_personality_language(lang, callback) {
+    fetch(`/set_personality_language?language=${lang}`)
+      .then(response => response.json())
+      .then(data => {
+          callback(data);
+      });
+  }
+
+  // Example usage: call another function after set_personality_language returns
+  selectPersonalityLanguage.addEventListener('click', function() {
+    set_personality_language(selectPersonalityLanguage.value, function(data) {
+      console.log('Response received:', data);
+      populate_personalities_categories();
+    });
+  });
+
+  function set_personality_category(category, callback) {
+    fetch(`/set_personality_category?category=${category}`)
+      .then(response => response.json())
+      .then(data => {
+        callback()
+      });
+  }
+
+  // Example usage: call another function after set_personality_category returns
+  selectPersonalityCategory.addEventListener('click', function() {
+    set_personality_category(selectPersonalityCategory.value, function(data) {
+      console.log('Response received:', data);
+      populate_personalities();
+    });
+  });
+
+
+  populate_backends()
+  populate_models()
+  populate_personalities_languages()
+  populate_personalities_categories()
+  populate_personalities()
 
   // Fetch the list of .yaml files from the models subfolder
   fetch('/list_languages')
@@ -184,19 +296,13 @@ function populate_models(){
   .then(data => {
     if (Array.isArray(data)) {
       // data is an array
-      const selectElement = document.getElementById('language');
+      const selectLanguage = document.getElementById('language');
       data.forEach(row => {
         const optionElement = document.createElement('option');
         optionElement.value = row.value;
         optionElement.innerHTML = row.label;
-        selectElement.appendChild(optionElement);
+        selectLanguage.appendChild(optionElement);
       });
-
-      // fetch('/get_args')
-      // .then(response=> response.json())
-      // .then(data=>{
-        
-      // })
     } else {
       console.error('Expected an array, but received:', data);
     }
