@@ -137,7 +137,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
     def list_backends(self):
         backends_dir = Path('./pyGpt4All/backends')  # replace with the actual path to the models folder
-        backends = [f.stem for f in backends_dir.glob('*.py') if f.name!="backend" and f.stem!="__init__"]
+        backends = [f.stem for f in backends_dir.glob('*.py') if f.stem!="backend" and f.stem!="__init__"]
         return jsonify(backends)
 
 
@@ -427,7 +427,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         print(f"\trepeat_penalty:{self.config['repeat_penalty']}")
         print(f"\trepeat_last_n:{self.config['repeat_last_n']}")
         print("==============================================")
-        
+
         return jsonify({"status":"ok"})
     
     
