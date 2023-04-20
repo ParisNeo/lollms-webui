@@ -135,9 +135,10 @@ dmypy.json
 /data
 
 # models
-models/
-!models/.keep
-!models/README.md
+*.ckpt
+*.safetensors
+*.bin
+*.model
 
 # Temporary files
 tmp/
