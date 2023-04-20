@@ -371,16 +371,30 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
     def update_model_params(self):
         data = request.get_json()
+        backend =  str(data["backend"])
         model =  str(data["model"])
+        personality_language =  str(data["personality_language"])
+        personality_category =  str(data["personality_category"])
         personality =  str(data["personality"])
-        if self.config['model'] != model:
+        
+        if self.config['backend']!=backend or  self.config['model'] != model:
             print("New model selected")
+            
+            self.config['backend'] = backend
             self.config['model'] = model
             self.create_chatbot()
 
+        if self.config['personality_language']!=data["personality_language"]:
+            self.config['personality_language'] = data["personality_language"]
+            self.personality = load_config(f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}.yaml")
+
+        if self.config['personality_category']!=data["personality_category"]:
+            self.config['personality_category'] = data["personality_category"]
+            self.personality = load_config(f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}.yaml")
+
         if self.config['personality']!=data["personality"]:
             self.config['personality'] = data["personality"]
-            self.personality = load_config(f"personalities/{self.config['personality']}.yaml")
+            self.personality = load_config(f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}.yaml")
 
         self.config['n_predict'] = int(data["nPredict"])
         self.config['seed'] = int(data["seed"])
