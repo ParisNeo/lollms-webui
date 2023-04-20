@@ -4,4 +4,4 @@ pytest
 pyyaml
 markdown
 pyllamacpp==1.0.6
-gpt4allj 
+gpt4all-j 
