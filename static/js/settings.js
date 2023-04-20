@@ -5,8 +5,8 @@ fetch('/settings')
   document.getElementById('settings').innerHTML = html;
   backendInput = document.getElementById('backend');  
   modelInput = document.getElementById('model');
-  personalityLanguageInput = document.getElementById('personalities_languages');
-  personalityCategoryInput = document.getElementById('personalities_categories');
+  personalityLanguageInput = document.getElementById('personalities_language');
+  personalityCategoryInput = document.getElementById('personalities_category');
   personalityInput = document.getElementById('personalities');
   languageInput = document.getElementById('language');
   voiceInput = document.getElementById('voice');
