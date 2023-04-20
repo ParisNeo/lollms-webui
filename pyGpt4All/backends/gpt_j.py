@@ -48,7 +48,7 @@ class GPT_J(GPTBackend):
         """
         self.model.generate(
             prompt,
-            new_text_callback=new_text_callback,
+            #new_text_callback=new_text_callback,
             n_predict=n_predict,
             temp=self.config['temp'],
             top_k=self.config['top_k'],
@@ -58,3 +58,4 @@ class GPT_J(GPTBackend):
             n_threads=self.config['n_threads'],
             verbose=verbose
         )
+        new_text_callback()
