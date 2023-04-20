@@ -129,7 +129,7 @@ fi
 
 # Checking model
 
-MODEL="./models/gpt4all-lora-quantized-ggml.bin"
+MODEL="./models/llama_cpp/gpt4all-lora-quantized-ggml.bin"
 MODEL_URL="https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin"
 
 if [ -f "$MODEL" ]; then

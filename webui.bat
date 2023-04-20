@@ -238,7 +238,7 @@ if not exist \models (
     md \models
 )
 
-if not exist ./models/llamacpp/gpt4all-lora-quantized-ggml.bin (
+if not exist ./models/llama_cpp/gpt4all-lora-quantized-ggml.bin (
     echo.
     choice /C YNB /M "The default model file (gpt4all-lora-quantized-ggml.bin) does not exist. Do you want to download it? Press B to download it with a browser (faster)."
     if errorlevel 3 goto DOWNLOAD_WITH_BROWSER
@@ -251,14 +251,14 @@ if not exist ./models/llamacpp/gpt4all-lora-quantized-ggml.bin (
 
 :DOWNLOAD_WITH_BROWSER
 start https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin
-echo Link has been opened with the default web browser, make sure to save it into the models folder before continuing. Press any key to continue...
+echo Link has been opened with the default web browser, make sure to save it into the models/llama_cpp folder before continuing. Press any key to continue...
 pause
 goto :CONTINUE
 
 :MODEL_DOWNLOAD
 echo.
 echo Downloading latest model...
-powershell -Command "Invoke-WebRequest -Uri 'https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin' -OutFile %clone_dir%'/models/gpt4all-lora-quantized-ggml.bin'"
+powershell -Command "Invoke-WebRequest -Uri 'https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin' -OutFile %clone_dir%'/models/llama_cpp/gpt4all-lora-quantized-ggml.bin'"
 if errorlevel 1 (
     echo Failed to download model. Please check your internet connection.
     choice /C YN /M "Do you want to try downloading again?"
