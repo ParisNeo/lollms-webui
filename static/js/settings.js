@@ -5,6 +5,8 @@ fetch('/settings')
   document.getElementById('settings').innerHTML = html;
   backendInput = document.getElementById('backend');  
   modelInput = document.getElementById('model');
+  personalityLanguageInput = document.getElementById('personalities_languages');
+  personalityCategoryInput = document.getElementById('personalities_categories');
   personalityInput = document.getElementById('personalities');
   languageInput = document.getElementById('language');
   voiceInput = document.getElementById('voice');
@@ -56,6 +58,8 @@ fetch('/settings')
       console.log(data);
       backendInput.value = data["backend"]
       modelInput.value = data["model"]
+      personalityLanguageInput.value = data["personality_language"]
+      personalityCategoryInput.value = data["personality_category"]
       personalityInput.value = data["personality"]
       languageInput.value = data["language"]
       voiceInput.value = data["voice"]
@@ -92,6 +96,8 @@ fetch('/settings')
       seed: seedInput.value,
       backend: backendInput.value,
       model: modelInput.value,
+      personality_language:personalityLanguageInput.value,
+      personality_category:personalityCategoryInput.value,
       personality: personalityInput.value,
       language: languageInput.value,
       voice: voiceInput.value,
