@@ -12,8 +12,6 @@ While AI is not conscious (yet), it can simulate a sense of self. However, if AI
 
 Another concern is the potential for AI to be used for nefarious purposes, such as cyberattacks or autonomous weapons. As AI becomes more powerful, it could be used to disrupt entire systems and cause widespread harm, potentially even leading to large-scale conflict.
 
-Moreover, AI could take away jobs without creating new ones, leading to mass unemployment. This is not sustainable in the long run, and people may be left without the ability to purchase goods and services. Some people advocate for a universal income, funded by taxing AI and robot usage. While this may seem like a good solution, it could lead to a world similar to that depicted in the movie Wall-E, where humans no longer work and live a meaningless existence.
-
 One of the biggest concerns with AI is its potential to be used for malicious purposes. For example, AI algorithms can be trained to generate fake news, spread propaganda, or even impersonate real people. This is particularly worrisome in the age of social media, where false information can spread rapidly and cause harm.
 
 AI can also be used to target and manipulate individuals. For instance, advertisers can use AI algorithms to collect data on people's online behavior and preferences, and then use this information to create personalized ads that are tailored to their interests. While this may seem harmless on the surface, it can be used to exploit vulnerable individuals, such as those with addiction or mental health issues.
@@ -21,6 +19,8 @@ AI can also be used to target and manipulate individuals. For instance, advertis
 Another way that AI can deceive people is through deepfakes. Deepfakes are videos or images that are manipulated to make it appear as though someone is saying or doing something they never actually did. These can be used to create fake news, manipulate public opinion, or even blackmail individuals.
 
 AI can also be used to create chatbots or virtual assistants that can impersonate real people. These chatbots can be programmed to respond to certain prompts in a way that is designed to deceive or manipulate the person they are interacting with. This can be particularly concerning when it comes to sensitive topics, such as mental health or politics.
+
+Moreover, AI could take away jobs without creating new ones, leading to mass unemployment. This is not sustainable in the long run, and people may be left without the ability to purchase goods and services. Some people advocate for a universal income, funded by taxing AI and robot usage. While this may seem like a good solution, it could lead to a world similar to that depicted in the movie Wall-E, where humans no longer work and live a meaningless existence.
 
 At the same time, AI also has the potential to revolutionize fields like healthcare, transportation, and energy, improving efficiency, reducing costs, and saving lives. For example, AI could be used to analyze medical images and help doctors make more accurate diagnoses, or to optimize traffic flow and reduce congestion on roads.
 
@@ -36,8 +36,20 @@ Another potential benefit of AI is its ability to help us create more efficient 
 
 Moreover, AI can help us unlock new discoveries in fields such as physics, chemistry, and biology, by sifting through vast amounts of data and identifying patterns and correlations that would be difficult or impossible for human researchers to detect. This could lead to breakthroughs in fields such as drug discovery, materials science, and renewable energy.
 
+The issue of people living a meaningless life is a complex one, and it is not necessarily tied to work. Even in a future where AI and automation have taken over most of the work, people may still struggle to find meaning and purpose in their lives. In the movie Wall-E, we see a dystopian future where humans have become overweight and lazy due to the lack of physical activity and meaningful work. They are constantly entertained by screens and have no real purpose or direction in life.
+
+However, it is important to note that finding meaning and purpose in life is a deeply personal and subjective experience. It is not something that can be prescribed or imposed upon individuals. While work can certainly provide a sense of purpose for some people, it is not the only way to find meaning in life.
+
+One way that people could find meaning in a future where AI and automation have taken over most of the work is by engaging in activities that they are passionate about or that align with their values. This could include pursuing hobbies, volunteering, or engaging in creative endeavors such as art, music, or writing.
+
+In addition, spirituality and philosophy could also provide a source of meaning and purpose for individuals. The pursuit of spiritual enlightenment or the exploration of philosophical questions could provide a sense of direction and purpose in life, even in a world where work is no longer necessary.
+
+It is also important to consider the role that community and social connections can play in finding meaning and purpose in life. In the movie Wall-E, the humans are disconnected from each other and live in a sterile, isolated environment. By contrast, in a future where work is no longer necessary, people may have more time and opportunities to connect with others and build meaningful relationships.
+
+As AI continues to advance and replace more jobs, it is important to build a system that allows for financial stability for everyone. One approach could be a universal basic income (UBI), which would provide a fixed income to every citizen regardless of employment status. This would provide a safety net for those who lose their jobs due to automation, and allow them to pursue other opportunities such as education, entrepreneurship, or community service. The UBI could be funded by taxes on companies that benefit from automation, as well as other sources. Additionally, retraining programs could be established to help workers transition to new fields that are less susceptible to automation, such as healthcare, education, and social work. By building a system that supports financial stability in the presence of AI, we can ensure that everyone benefits from the increased productivity and innovation that automation brings, rather than just a select few.
+
 Ultimately, the ethical implications of AI depend on us. We must determine whether we will use this technology for good or bad. AI has the potential for both, and it is up to us to ensure that it is used in a way that benefits humanity.
 
 ## Author
 
-ParisNeo with Help from AI to shape the text
+ParisNeo with Help from AI (conditionned for essai writing) to shape the text.
