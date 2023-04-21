@@ -216,7 +216,8 @@ class DiscussionsDB:
         discussions = []
         for row in db_discussions:
             discussion_id = row[0]
-            discussion = {"id": discussion_id, "messages": []}
+            discussion_title = row[1]
+            discussion = {"id": discussion_id, "title":discussion_title, "messages": []}
             rows = self.select(f"SELECT * FROM message WHERE discussion_id=?",(discussion_id,))
             for message_row in rows:
                 discussion["messages"].append(
