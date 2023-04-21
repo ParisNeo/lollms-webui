@@ -156,14 +156,30 @@ function populate_discussions_list()
         });
 
         const discussionButton = document.createElement('button');
-        discussionButton.classList.add('bg-gray-400', 'hover:bg-gray-800', 'dark:hover:bg-gray-700', 'text-black', 'dark:text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'ml-2', 'w-full');
+        discussionButton.id = discussion.id;
+        discussionButton.classList.add('isButton', 'hover:bg-gray-800', 'dark:hover:bg-gray-700', 'text-black', 'dark:text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'ml-2', 'w-full');
         discussionButton.textContent = discussion.title;
         discussionButton.title = "Open discussion";
+        
+        //WIP, NOT DONE
         discussionButton.addEventListener('click', () => {
           console.log(`Showing messages for discussion ${discussion.id}`);
           load_discussion(discussion);
+          discussionButton.classList.add('activeDiscussion');
+          const btnElList = document.querySelectorAll('.isButton');
         });
-
+        
+        const btnElList = document.querySelectorAll('.isButton');
+        
+        btnElList.forEach(btnEl => {
+          btnEl.addEventListener('click', () => {
+            console.log('Total: ' + btnElList.length + ' discussions');
+      
+            btnEl.querySelector('activeDiscussion')?.classList.remove('activeDiscussion');
+            
+            console.log('hm idk');
+          });
+        })
 
         buttonWrapper.appendChild(renameButton);
         buttonWrapper.appendChild(deleteButton);
@@ -176,7 +192,6 @@ function populate_discussions_list()
   alert('Failed to get discussions');
   });
 }
-
 
 function populate_menu(){
   // adding export discussion button
