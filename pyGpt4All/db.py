@@ -217,7 +217,7 @@ class DiscussionsDB:
         for row in db_discussions:
             discussion_id = row[0]
             discussion = {"id": discussion_id, "messages": []}
-            rows = self.select(f"SELECT * FROM message WHERE discussion_id=?",(discussion_id))
+            rows = self.select(f"SELECT * FROM message WHERE discussion_id=?",(discussion_id,))
             for message_row in rows:
                 discussion["messages"].append(
                     {"sender": message_row[1], "content": message_row[2]}
