@@ -220,8 +220,13 @@ class DiscussionsDB:
             discussion = {"id": discussion_id, "title":discussion_title, "messages": []}
             rows = self.select(f"SELECT * FROM message WHERE discussion_id=?",(discussion_id,))
             for message_row in rows:
+                sender = message_row[1]
+                content = message_row[2]
+                content_type = message_row[3]
+                rank = message_row[4]
+                parent = message_row[5]
                 discussion["messages"].append(
-                    {"sender": message_row[1], "content": message_row[2]}
+                    {"sender": sender, "content": content, "type": content_type, "rank": rank, "parent": parent}
                 )
             discussions.append(discussion)
         return discussions
