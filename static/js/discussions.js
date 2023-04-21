@@ -162,8 +162,13 @@ function populate_discussions_list()
         discussionButton.addEventListener('click', () => {
           console.log(`Showing messages for discussion ${discussion.id}`);
           load_discussion(discussion);
-          discussionButton.classList.add('activeDiscussion');
           const btnElList = document.querySelectorAll('.isButton');
+          btnElList.forEach(element => {
+            if (element.classList.contains('activeDiscussion')) {
+              element.classList.remove('activeDiscussion');
+            }
+          });
+          discussionButton.classList.add('activeDiscussion');
         });
         
         const btnElList = document.querySelectorAll('.isButton');
