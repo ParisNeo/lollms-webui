@@ -46,7 +46,7 @@ function load_discussion(discussion=0){
 function populate_discussions_list()
 {
   // Populate discussions list
-  const discussionsList = document.querySelector('#discussions-list');
+  const discussionsList = document.getElementById('discussions-list');
   discussionsList.innerHTML = "";
   fetch('/list_discussions')
     .then(response => response.json())
@@ -151,9 +151,6 @@ function populate_discussions_list()
         });
 
         deleteButton.appendChild(deleteImg);
-        deleteButton.addEventListener('click', () => {
-
-        });
 
         const discussionButton = document.createElement('button');
         discussionButton.id = discussion.id;

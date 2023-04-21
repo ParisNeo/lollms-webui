@@ -1,4 +1,5 @@
 function db_export(){
+    const chatWindow = document.getElementById('chat-window');
     const exportButton = document.getElementById('export-button');
     exportButton.title = "Export database";
     exportButton.addEventListener('click', () => {
