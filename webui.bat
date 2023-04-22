@@ -104,8 +104,9 @@ if exist GPT4All (
 
 :GET_PERSONALITIES
 REM Download latest personalities
+echo Getting latests personalities
 if not exist tmp\personalities git clone https://github.com/ParisNeo/GPT4All_Personalities.git tmp\personalities
-copy tmp\personalities\* personalities
+xcopy /E /I /Y tmp\personalities\* personalities
 goto :CHECK_PYTHON_INSTALL
 
 :CHECK_PYTHON_INSTALL
