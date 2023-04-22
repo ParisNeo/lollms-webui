@@ -60,6 +60,7 @@ else
     echo Cloning repository...
     rem Clone the Git repository into a temporary directory
     git clone https://github.com/nomic-ai/gpt4all-ui.git ./GPT4All
+    cd GPT4All
   fi
 fi
 echo Pulling latest version...
