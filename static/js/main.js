@@ -2,7 +2,18 @@ function update_main(){
   const chatWindow = document.getElementById('chat-window');
   const chatForm = document.getElementById('chat-form');
   const userInput = document.getElementById('user-input');
-  
+  const stopGeneration = document.querySelector("#stop-generation")
+    
+  stopGeneration.addEventListener('click', (event) =>{
+    event.preventDefault();
+    console.log("Stop clicked");
+    fetch('/stop')
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    });
+      
+  })
   userInput.addEventListener('keydown', function(event) {
     if (event.shiftKey && event.key === 'Enter') {
       event.preventDefault();
@@ -22,8 +33,11 @@ function update_main(){
       // add user message to chat window
       const sendbtn = document.querySelector("#submit-input")
       const waitAnimation = document.querySelector("#wait-animation")
+      const stopGeneration = document.querySelector("#stop-generation")
+      
       sendbtn.style.display="none";
       waitAnimation.style.display="block";
+      stopGeneration.style.display = "block";
       console.log("Sending message to bot")
 
       user_msg = addMessage('',message, 0, 0, can_edit=true);
@@ -44,6 +58,7 @@ function update_main(){
                           if (result.done) {
                               sendbtn.style.display="block";
                               waitAnimation.style.display="none";
+                              stopGeneration.style.display = "none";
                               console.log(result)
                               controller.close();
                               return;

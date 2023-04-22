@@ -237,8 +237,11 @@ function populate_menu(){
     if (discussionName) {
       const sendbtn = document.querySelector("#submit-input")
       const waitAnimation = document.querySelector("#wait-animation")
+      const stopGeneration = document.querySelector("#stop-generation")
       sendbtn.style.display="none";
       waitAnimation.style.display="block";
+      stopGeneration.style.display="block";
+      
 
       // Add the discussion to the discussion list
       const discussionItem = document.createElement('li');
@@ -255,7 +258,8 @@ function populate_menu(){
           populate_discussions_list()
           sendbtn.style.display="block";
           waitAnimation.style.display="none";
-      })
+          stopGeneration.style.display="none";
+        })
       .catch(error => {
         // Handle any errors that occur
         console.error(error);

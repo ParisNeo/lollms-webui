@@ -45,6 +45,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         super().__init__(config, personality, config_file_path)
 
         self.app = _app
+        self.cancel_gen = False
 
 
         self.add_endpoint(
@@ -82,6 +83,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
             "/new_discussion", "new_discussion", self.new_discussion, methods=["GET"]
         )
         self.add_endpoint("/bot", "bot", self.bot, methods=["POST"])
+        self.add_endpoint("/stop", "stop", self.stop, methods=["POST"])
+
         self.add_endpoint("/run_to", "run_to", self.run_to, methods=["POST"])
         self.add_endpoint("/rename", "rename", self.rename, methods=["POST"])
         self.add_endpoint(
@@ -107,6 +110,9 @@ class Gpt4AllWebUI(GPT4AllAPI):
             "/delete_message", "delete_message", self.delete_message, methods=["GET"]
         )
         
+        self.add_endpoint(
+            "/set_backend", "set_backend", self.set_backend, methods=["POST"]
+        )
         
         self.add_endpoint(
             "/update_model_params", "update_model_params", self.update_model_params, methods=["POST"]
@@ -263,6 +269,9 @@ class Gpt4AllWebUI(GPT4AllAPI):
                     time.sleep(0)
             except :
                 time.sleep(0.1)
+            if self.cancel_gen:
+                self.cancel_gen = False
+                app.config['executor'].shutdown(True, True)
 
         self.current_discussion.update_message(response_id, self.bot_says)
         self.full_message_list.append(self.bot_says)
@@ -295,7 +304,10 @@ class Gpt4AllWebUI(GPT4AllAPI):
             ), content_type='text/plain; charset=utf-8'
         )
     
-
+    def stop(self):
+        self.cancel_gen = True
+        return jsonify({"status": "ok"}) 
+           
     def run_to(self):
         data = request.get_json()
         message_id = int(data["id"])
@@ -369,6 +381,21 @@ class Gpt4AllWebUI(GPT4AllAPI):
         # Return a success response
         return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp, "welcome_message":self.personality["welcome_message"], "sender":self.personality["name"]})
 
+    def set_backend(self):
+        data = request.get_json()
+        backend =  str(data["backend"])
+        if self.config['backend']!= backend:
+            print("New model selected")
+            
+            self.config['backend'] = backend
+            models_dir = Path('./models')/self.config["backend"]  # replace with the actual path to the models folder
+            models = [f.name for f in models_dir.glob('*.bin')]
+            if len(models)>0:            
+                self.config['model'] = models[0]
+                self.create_chatbot()
+                return jsonify({"status": "ok"})
+
+
     def update_model_params(self):
         data = request.get_json()
         backend =  str(data["backend"])
@@ -384,17 +411,13 @@ class Gpt4AllWebUI(GPT4AllAPI):
             self.config['model'] = model
             self.create_chatbot()
 
-        if self.config['personality_language']!=personality_language:
-            self.config['personality_language'] = personality_language
-            self.personality = load_config(f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}.yaml")
+        self.config['personality_language'] = personality_language
+        self.config['personality_category'] = personality_category
+        self.config['personality'] = personality
 
-        if self.config['personality_category']!=personality_category:
-            self.config['personality_category'] = personality_category
-            self.personality = load_config(f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}.yaml")
-
-        if self.config['personality']!=personality:
-            self.config['personality'] = personality
-            self.personality = load_config(f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}.yaml")
+        personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}.yaml"
+        print(f"Loading personality : {personality_fn}")
+        self.personality = load_config(personality_fn)
 
         self.config['n_predict'] = int(data["nPredict"])
         self.config['seed'] = int(data["seed"])
@@ -537,7 +560,7 @@ if __name__ == "__main__":
 
     personality = load_config(f"personalities/{config['personality_language']}/{config['personality_category']}/{config['personality']}.yaml")
 
-    executor = ThreadPoolExecutor(max_workers=2)
+    executor = ThreadPoolExecutor(max_workers=6)
     app.config['executor'] = executor
 
     bot = Gpt4AllWebUI(app, config, personality, config_file_path)

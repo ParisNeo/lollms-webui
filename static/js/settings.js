@@ -26,6 +26,28 @@ fetch('/settings')
   repeatPenaltyValue = document.getElementById('repeat-penalty-value');
   repeatLastNValue = document.getElementById('repeat-last-n');
   
+  backendInput.addEventListener('input',() => {
+    console.log(`Backend (${backendInput.value})`)
+    // Use fetch to send form values to Flask endpoint
+    fetch('/set_backend', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({"backend":backendInput.value}),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        populate_settings();
+        alert("Backend set successfully")
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        alert("Error setting configuration")
+      });    
+  })
+
   tempInput.addEventListener('input',() => {
     temperatureValue.textContent =`Temperature(${tempInput.value})`
   })
@@ -50,41 +72,44 @@ fetch('/settings')
     repeatLastNValue.textContent =`Repeat last N(${repeatLastNInput.value})`
   })
   
-  
-  
-  fetch('/get_config')
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-      backendInput.value = data["backend"]
-      modelInput.value = data["model"]
-      personalityLanguageInput.value = data["personality_language"]
-      personalityCategoryInput.value = data["personality_category"]
-      personalityInput.value = data["personality"]
-      languageInput.value = data["language"]
-      voiceInput.value = data["voice"]
-      seedInput.value = data["seed"]
-      tempInput.value = data["temp"]
-      nPredictInput.value = data["n_predict"]
-      topKInput.value = data["top_k"]
-      topPInput.value = data["top_p"]
-  
-      repeatPenaltyInput.textContent  = data["repeat_penalty"]
-      repeatLastNInput.textContent  = data["repeat_last_n"]
-  
-      temperatureValue.textContent =`Temperature(${data["temp"]})`
-      n_predictValue.textContent =`N Predict(${data["n_predict"]})`
-      
-      topkValue.textContent =`Top-K(${data["top_k"]})`
-      toppValue.textContent =`Top-P(${data["top_p"]})`
-  
-      repeatPenaltyValue.textContent =`Repeat penalty(${data["repeat_penalty"]})`
-      repeatLastNValue.textContent =`Repeat last N(${data["repeat_last_n"]})`
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-    });
-  
+    
+  function update_config(){
+    fetch('/get_config')
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        backendInput.value = data["backend"]
+        modelInput.value = data["model"]
+        personalityLanguageInput.value = data["personality_language"]
+        personalityCategoryInput.value = data["personality_category"]
+        personalityInput.value = data["personality"]
+        languageInput.value = data["language"]
+        voiceInput.value = data["voice"]
+        seedInput.value = data["seed"]
+        tempInput.value = data["temp"]
+        nPredictInput.value = data["n_predict"]
+        topKInput.value = data["top_k"]
+        topPInput.value = data["top_p"]
+    
+        repeatPenaltyInput.textContent  = data["repeat_penalty"]
+        repeatLastNInput.textContent  = data["repeat_last_n"]
+    
+        temperatureValue.textContent =`Temperature(${data["temp"]})`
+        n_predictValue.textContent =`N Predict(${data["n_predict"]})`
+        
+        topkValue.textContent =`Top-K(${data["top_k"]})`
+        toppValue.textContent =`Top-P(${data["top_p"]})`
+    
+        repeatPenaltyValue.textContent =`Repeat penalty(${data["repeat_penalty"]})`
+        repeatLastNValue.textContent =`Repeat last N(${data["repeat_last_n"]})`
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+
+  }
+
+  update_config();
   
   const submitButton = document.getElementById('submit-model-params');
   submitButton.addEventListener('click', (event) => {
@@ -135,7 +160,7 @@ fetch('/settings')
   console.error('Error loading settings page:', error);
 });
 
-function populate_models(){
+function populate_settings(){
   // Get a reference to the <select> element
   const selectBackend = document.getElementById('backend');
   const selectModel = document.getElementById('model');
@@ -194,6 +219,7 @@ function populate_models(){
     });
   }
   function populate_personalities_languages(){
+    const selectPersonalityLanguage = document.getElementById('personalities_language');
     selectPersonalityLanguage.innerHTML=""
     // Fetch the list of .yaml files from the models subfolder
     fetch('/list_personalities_languages')
@@ -219,23 +245,24 @@ function populate_models(){
     });
   }
   function populate_personalities_categories(){
-  selectPersonalityCategory.innerHTML=""
-  // Fetch the list of .yaml files from the models subfolder
-  fetch('/list_personalities_categories')
-  .then(response => response.json())
-  .then(data => {
-    if (Array.isArray(data)) {
-      // data is an array
-      data.forEach(filename => {
-        const optionElement = document.createElement('option');
-        optionElement.value = filename;
-        optionElement.textContent = filename;
-        selectPersonalityCategory.appendChild(optionElement);
-      });
-    } else {
-      console.error('Expected an array, but received:', data);
-    }
-  });
+    const selectPersonalityCategory = document.getElementById('personalities_category');
+    selectPersonalityCategory.innerHTML=""
+    // Fetch the list of .yaml files from the models subfolder
+    fetch('/list_personalities_categories')
+    .then(response => response.json())
+    .then(data => {
+      if (Array.isArray(data)) {
+        // data is an array
+        data.forEach(filename => {
+          const optionElement = document.createElement('option');
+          optionElement.value = filename;
+          optionElement.textContent = filename;
+          selectPersonalityCategory.appendChild(optionElement);
+        });
+      } else {
+        console.error('Expected an array, but received:', data);
+      }
+    });
   }
   function populate_personalities(){
   selectPersonality.innerHTML=""
@@ -315,3 +342,4 @@ function populate_models(){
   });
 
 }
+populate_settings()

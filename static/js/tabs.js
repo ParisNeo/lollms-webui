@@ -40,7 +40,7 @@ fetch('/main')
       populateVoicesList();
     }
 
-    populate_models()
+    populate_settings()
 
   })
   .catch(error => {

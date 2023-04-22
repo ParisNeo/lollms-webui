@@ -82,8 +82,11 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
             // add user message to chat window
             const sendbtn = document.querySelector("#submit-input")
             const waitAnimation = document.querySelector("#wait-animation")
+            const stopGeneration = document.querySelector("#stop-generation")
+            
             sendbtn.style.display = "none";
             waitAnimation.style.display = "block";
+            stopGeneration.style.display = "block";
 
             // local stuff
             let messageTextElement_ = undefined
@@ -111,6 +114,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
                                         console.log(result)
                                         sendbtn.style.display = "block";
                                         waitAnimation.style.display = "none";
+                                        stopGeneration.style.display = "none";
                                         hiddenElement_.innerHTML = txt
                                         messageTextElement_.innerHTML = txt
                                         controller.close();
