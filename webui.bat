@@ -268,6 +268,7 @@ goto :CONTINUE
 :MODEL_DOWNLOAD
 echo.
 echo Downloading latest model...
+set clone_dir=%cd%
 powershell -Command "Invoke-WebRequest -Uri 'https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin' -OutFile %clone_dir%'/models/llama_cpp/gpt4all-lora-quantized-ggml.bin'"
 if errorlevel 1 (
     echo Failed to download model. Please check your internet connection.
