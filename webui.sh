@@ -134,7 +134,6 @@ MODEL_URL="https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-qua
 
 if [ -f "$MODEL" ]; then
   echo "File $MODEL already exists. Skipping download."
-  
 else
   echo "File $MODEL does not exist."
   echo "What would you like to do?"
@@ -142,9 +141,9 @@ else
     case $option in
       Download)
         if [ -x "$(command -v wget)" ]; then
-          wget $MODEL_URL -P ./models/
+          wget "$MODEL_URL" -P ./models/
         elif [ -x "$(command -v curl)" ]; then
-          curl -O $MODEL_URL -o $MODEL
+          curl -o "$MODEL" "$MODEL_URL"
         else
           echo "Error: neither wget nor curl is installed. Please install one of them and try again."
           exit 1
@@ -153,27 +152,27 @@ else
         ;;
       "Download using browser")
         if [ -x "$(command -v xdg-open)" ]; then
-          xdg-open $MODEL_URL
+          xdg-open "$MODEL_URL"
         elif [ -x "$(command -v gnome-open)" ]; then
-          gnome-open $MODEL_URL
+          gnome-open "$MODEL_URL"
         elif [ -x "$(command -v kde-open)" ]; then
-          kde-open $MODEL_URL
+          kde-open "$MODEL_URL"
         elif [ -x "$(command -v open)" ]; then
-          open $MODEL_URL
+          open "$MODEL_URL"
         else
           echo "Error: could not detect a default browser. Please open the link in your web browser manually and press any key to continue."
-          read -n 1 -s -r -p "Press any key to continue"
+          read -n 1 -s -r -p "Press any key to continue"$'\n'
         fi
         break
         ;;
       Skip)
         echo "Skipping downloading $MODEL"
-        
         break
         ;;
     esac
   done
 fi
+
 
 # Cleanup
 
