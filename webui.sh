@@ -58,10 +58,8 @@ echo Pulling latest changes
 git pull origin main
 else
 echo Cloning repository...
-git init
-git remote add origin https://github.com/nomic-ai/gpt4all-ui.git
-git pull origin main
-
+git clone https://github.com/nomic-ai/gpt4all-ui.git .
+git pull
 fi
 
 # Download latest personalities

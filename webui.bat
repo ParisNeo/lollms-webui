@@ -84,12 +84,8 @@ goto :GET_PERSONALITIES
 
 :CLONE_REPO
 echo Cloning repository...
-git init
-git remote add origin https://github.com/nomic-ai/gpt4all-ui.git
-git fetch
-git reset origin/main  
-git checkout -t origin/main
-git pull origin main
+git clone https://github.com/nomic-ai/gpt4all-ui.git .
+git pull
 goto :GET_PERSONALITIES
 
 :GET_PERSONALITIES
