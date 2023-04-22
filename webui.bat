@@ -74,19 +74,33 @@ exit /b 1
 :GIT_SKIP
 
 REM Check if repository exists 
-git rev-parse --is-inside-work-tree 
-if errorlevel 1 goto :CLONE_REPO
-if errorlevel = 0 goto :PULL_CHANGES
+echo checking git repository
+if exist ".git" (
+    goto :PULL_CHANGES
+) else (
+    goto :CLONE_REPO
+)
+
 :PULL_CHANGES
 echo Pulling latest changes 
 git pull origin main
 goto :GET_PERSONALITIES
 
 :CLONE_REPO
-echo Cloning repository...
-git clone https://github.com/nomic-ai/gpt4all-ui.git .
-git pull
-goto :GET_PERSONALITIES
+REM Check if repository exists 
+if exist GPT4All (
+    echo GPT4All folder found
+    cd GPT4All
+    echo Pulling latest changes 
+    git pull
+) else (
+    echo Cloning repository...
+    rem Clone the Git repository into a temporary directory
+    git clone https://github.com/nomic-ai/gpt4all-ui.git ./GPT4All
+    cd GPT4All
+    echo Pulling latest changes 
+    git pull
+)
 
 :GET_PERSONALITIES
 REM Download latest personalities

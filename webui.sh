@@ -57,11 +57,16 @@ if [[ -d .git ]] ;then
 echo Pulling latest changes 
 git pull origin main
 else
-echo Cloning repository...
-git clone https://github.com/nomic-ai/gpt4all-ui.git .
-git pull
+  if [[ -d GPT4All ]] ;then
+    cd GPT4All
+  else
+    echo Cloning repository...
+    rem Clone the Git repository into a temporary directory
+    git clone https://github.com/nomic-ai/gpt4all-ui.git ./GPT4All
+  fi
 fi
-
+echo Pulling latest version...
+git pull
 # Download latest personalities
 if ! test -d ./tmp/personalities; then
   git clone https://github.com/ParisNeo/GPT4All_Personalities.git ./tmp/personalities
