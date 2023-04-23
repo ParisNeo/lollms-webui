@@ -19,6 +19,7 @@ __license__ = "Apache 2.0"
 
 
 class LLAMACPP(GPTBackend):
+    file_extension='*.bin'
     def __init__(self, config:dict) -> None:
         """Builds a LLAMACPP backend
 

@@ -5,3 +5,4 @@ pyyaml
 markdown
 pyllamacpp==1.0.6
 gpt4all-j 
+transformers

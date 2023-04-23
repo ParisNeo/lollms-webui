@@ -149,7 +149,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
     def list_models(self):
         models_dir = Path('./models')/self.config["backend"]  # replace with the actual path to the models folder
-        models = [f.name for f in models_dir.glob('*.bin')]
+        models = [f.name for f in models_dir.glob(self.chatbot_bindings.file_extension)]
         return jsonify(models)
     
 
@@ -389,13 +389,14 @@ class Gpt4AllWebUI(GPT4AllAPI):
             
             self.config['backend'] = backend
             models_dir = Path('./models')/self.config["backend"]  # replace with the actual path to the models folder
-            models = [f.name for f in models_dir.glob('*.bin')]
+            models = [f.name for f in models_dir.glob(self.chatbot_bindings.file_extension)]
             if len(models)>0:            
                 self.config['model'] = models[0]
                 self.create_chatbot()
                 return jsonify({"status": "ok"})
 
-
+        return jsonify({"status": "error"})
+    
     def update_model_params(self):
         data = request.get_json()
         backend =  str(data["backend"])

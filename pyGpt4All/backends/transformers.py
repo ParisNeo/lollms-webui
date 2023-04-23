@@ -20,6 +20,7 @@ __license__ = "Apache 2.0"
 
 
 class Transformers(GPTBackend):
+    file_extension='*'
     def __init__(self, config:dict) -> None:
         """Builds a GPT-J backend
 
@@ -28,7 +29,7 @@ class Transformers(GPTBackend):
         """
         super().__init__(config)
         self.config = config
-        self.tokenizer = tokenizer = AutoTokenizer.from_pretrained(f"./models/transformers/{self.config['model']}/tokenizer.model", local_files_only=True)
+        self.tokenizer = tokenizer = AutoTokenizer.from_pretrained(f"./models/transformers/{self.config['model']}/tokenizer.json", local_files_only=True)
         self.model = AutoModelForCausalLM.from_pretrained(f"./models/transformers/{self.config['model']}/model.bin", local_files_only=True)
 
 

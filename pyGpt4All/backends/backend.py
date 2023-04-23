@@ -17,8 +17,10 @@ __license__ = "Apache 2.0"
 
 
 class GPTBackend:
+    file_extension='*.bin'
     def __init__(self, config:dict) -> None:
         self.config = config
+
     def generate(self, 
                  prompt:str,                  
                  n_predict: int = 128,

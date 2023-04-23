@@ -170,6 +170,7 @@ function populate_settings(){
   const selectPersonality = document.getElementById('personalities');
 
   function populate_backends(){
+    selectBackend.innerHTML = "";
     // Fetch the list of .bin files from the models subfolder
     fetch('/list_backends')
     .then(response => response.json())
@@ -265,23 +266,25 @@ function populate_settings(){
     });
   }
   function populate_personalities(){
-  selectPersonality.innerHTML=""
-  // Fetch the list of .yaml files from the models subfolder
-  fetch('/list_personalities')
-  .then(response => response.json())
-  .then(data => {
-    if (Array.isArray(data)) {
-      // data is an array
-      data.forEach(filename => {
-        const optionElement = document.createElement('option');
-        optionElement.value = filename;
-        optionElement.textContent = filename;
-        selectPersonality.appendChild(optionElement);
-      });
-    } else {
-      console.error('Expected an array, but received:', data);
-    }
-  });
+    const selectPersonalityLanguage = document.getElementById('personalities_language');
+      
+    selectPersonality.innerHTML=""
+    // Fetch the list of .yaml files from the models subfolder
+    fetch('/list_personalities')
+    .then(response => response.json())
+    .then(data => {
+      if (Array.isArray(data)) {
+        // data is an array
+        data.forEach(filename => {
+          const optionElement = document.createElement('option');
+          optionElement.value = filename;
+          optionElement.textContent = filename;
+          selectPersonality.appendChild(optionElement);
+        });
+      } else {
+        console.error('Expected an array, but received:', data);
+      }
+    });
   }
   
   function set_personality_language(lang, callback) {
