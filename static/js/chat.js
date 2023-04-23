@@ -29,7 +29,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
     senderElement.innerHTML = sender;
 
     const messageTextElement = document.createElement('div');
-    messageTextElement.classList.add('font-medium', 'text-md');
+    messageTextElement.classList.add('font-medium', 'text-md', 'whitespace-pre-wrap');
     messageTextElement.innerHTML = message;
     // Create a hidden div element needed to buffer responses before commiting them to the visible message
     const hiddenElement = document.createElement('div');
@@ -115,8 +115,6 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
                                         sendbtn.style.display = "block";
                                         waitAnimation.style.display = "none";
                                         stopGeneration.style.display = "none";
-                                        hiddenElement_.innerHTML = txt
-                                        messageTextElement_.innerHTML = txt
                                         controller.close();
                                         return;
                                     }
@@ -153,6 +151,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
                                 entry_counter++;
                                 prefix = "FINAL:";
                                 if(text.startsWith(prefix)){
+                                    console.log("Final text found")
                                     text = text.substring(prefix.length);
                                     hiddenElement.innerHTML         = text
                                     messageTextElement.innerHTML    = text

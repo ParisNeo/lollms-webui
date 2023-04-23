@@ -6,8 +6,8 @@ n_threads: 8
 host: localhost
 language: en-US
 # Supported backends are llamacpp and gpt-j
-backend: llama_cpp
-model: gpt4all-lora-quantized-ggml.bin
+backend: gpt_j
+model: ggml-gpt4all-j.bin
 n_predict: 1024
 nb_messages_to_remember: 5
 personality_language: english
@@ -23,3 +23,4 @@ top_p: 0.95
 voice: ""
 use_gpu: false # Not active yet
 auto_read: false
+use_avx2: true # By default we require using avx2 but if not supported, make sure you remove it from here

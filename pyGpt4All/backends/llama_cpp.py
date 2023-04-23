@@ -27,7 +27,7 @@ class LLAMACPP(GPTBackend):
         Args:
             config (dict): The configuration file
         """
-        super().__init__(config)
+        super().__init__(config, False)
         
         self.model = Model(
                 ggml_model=f"./models/llama_cpp/{self.config['model']}", 

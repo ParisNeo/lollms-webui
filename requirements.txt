@@ -4,5 +4,5 @@ pytest
 pyyaml
 markdown
 pyllamacpp==1.0.6
-gpt4all-j 
+gpt4all-j==0.2.1
 transformers

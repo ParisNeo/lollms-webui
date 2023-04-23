@@ -46,19 +46,14 @@ Make sure that your CPU supports `AVX2` instruction set. Without it, this applic
 
 ### Automatic install
 
-1. Open directory on your computer where you want to download/install this application  (This will create new directory: `/gpt4all-ui/`. Make sure a folder with this name does not exist in this direcotry.)
-2. Press and hold `Shift` on your keyboard and `Right click` with your mouse inside a folder. Select from a menu `Open Terminal` or `Open to powershell windows here` (This command can hide under `Show more options` in Windows 11).
-3. Copy and paste this command and press enter: 
-```
-mkdir gpt4all-ui & curl https://raw.githubusercontent.com/nomic-ai/gpt4all-ui/main/webui.bat -o ./gpt4all-ui/webui.bat ; pushd ./gpt4all/ ; Invoke-Expression -Command "./webui.bat"
-```
-> **Note**
->
-> This command creates new directory `/gpt4all-ui/`, downloads a file [webui.bat](https://raw.githubusercontent.com/nomic-ai/gpt4all-ui/main/webui.bat), changes current work directory to `/gpt4all-ui/` and executes webui.bat that downloads and installs everything that is needed.
+It is advised to have python 3.10 (The official one, not the one from microsoft store) and git installed. Although it should work with any python from 3.7, it is advised to use 3.10 to have the full support as some extensions like the future stable diffusion extension will force you to have 3.10.
 
-4. Follow instructions on screen until it launches webui.
-5. To relaunch application double click on `webui.bat` file from Windows explorer as normal user.
+1. [Goto the latest release section](https://github.com/nomic-ai/gpt4all-ui/releases)
+2. Download the `webui.bat` if you are on windows or `webui.sh` if you are on linux/mac. but the download in a folder you name for example gpt4all-ui
+3. Run the script and wait. It should install everything and start the chatbot
+4. Before running, it may ask you to download a model. Feel free to accept or to download your own models depending on the backends you are using.
 
+Once installed, you should see a new folder called GPT4All. From now on, you can run the app by using webui.bat or webui.sh. The script will check for any new updates
 ### Manual Simple install:
 
 1. Download this repository .zip:
@@ -216,18 +211,29 @@ After that, you can open the application in your browser on http://localhost:960
 
 Now you're ready to work!
 
+# Supported backends
+Two backends are now supported:
+1 - The llama_cpp backend
+2 - The GPT-j backend
+3 - Hugging face's Transformers (under construction)
+
 # Supported models
 You can also refuse to download the model during the install procedure and download it manually.
 
 **For now, we support ggml models that work "out-of-the-box" (tested on Windows 11 and Ubuntu 22.04.2), such as:**
 
+## LLama_cpp models
 - [GPT4ALL 7B](https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin) or visit [repository](https://huggingface.co/ParisNeo/GPT4All)
 - [GPT4ALL 7B unfiltered](https://huggingface.co/ParisNeo/GPT4All/blob/main/gpt4all-lora-unfiltered-quantized.new.bin) or visit [repository](https://huggingface.co/ParisNeo/GPT4All)
 - [Vicuna 7B rev 1](https://huggingface.co/eachadea/legacy-ggml-vicuna-7b-4bit/resolve/main/ggml-vicuna-7b-4bit-rev1.bin) or visit [repository](https://huggingface.co/eachadea/legacy-ggml-vicuna-7b-4bit)  
 - [Vicuna 13B rev 1](https://huggingface.co/eachadea/ggml-vicuna-13b-4bit/resolve/main/ggml-vicuna-13b-4bit-rev1.bin) or visit [repository](https://huggingface.co/eachadea/ggml-vicuna-13b-4bit)
 
-**These models don't work "out-of-the-box" and need to be converted to the right ggml type:**
 
+## GPT-j models
+- [GPT-j 7B](https://gpt4all.io/models/ggml-gpt4all-j.bin)
+
+**These models don't work "out-of-the-box" and need to be converted to the right ggml type:**
+## LLAMACPP models
 - [Vicuna 7B](https://huggingface.co/eachadea/legacy-ggml-vicuna-7b-4bit/resolve/main/ggml-vicuna-7b-4bit.bin) or visit [repository](https://huggingface.co/eachadea/legacy-ggml-vicuna-7b-4bit)
 - [Vicuna 13B q4 v0](https://huggingface.co/eachadea/ggml-vicuna-13b-1.1/resolve/main/ggml-vicuna-13b-1.1-q4_0.bin) or visit [repository](https://huggingface.co/eachadea/ggml-vicuna-13b-1.1/)
 - [Vicuna 13B q4 v1](https://huggingface.co/eachadea/ggml-vicuna-13b-1.1/resolve/main/ggml-vicuna-13b-1.1-q4_1.bin) or visit [repository](https://huggingface.co/eachadea/ggml-vicuna-13b-1.1/)

@@ -29,7 +29,7 @@ class Transformers(GPTBackend):
         Args:
             config (dict): The configuration file
         """
-        super().__init__(config)
+        super().__init__(config, True)
         self.config = config
         self.tokenizer = tokenizer = AutoTokenizer.from_pretrained(f"./models/transformers/{self.config['model']}/tokenizer.json", local_files_only=True)
         self.model = AutoModelForCausalLM.from_pretrained(f"./models/transformers/{self.config['model']}/model.bin", local_files_only=True)

@@ -25,6 +25,7 @@ class GPT4AllAPI():
         self.config = config
         self.personality = personality
         self.config_file_path = config_file_path
+        self.cancel_gen = False
 
         # This is the queue used to stream text to the ui as the bot spits out its response
         self.text_queue = Queue(0)
@@ -57,7 +58,7 @@ class GPT4AllAPI():
         """
         self.prepare_reception()
         self.discussion_messages = "Instruction: Act as gpt4all. A kind and helpful AI bot built to help users solve problems.\nuser: how to build a water rocket?\ngpt4all:"
-        self.chatbot_bindings.generate(
+        text = self.chatbot_bindings.generate(
             self.discussion_messages,
             new_text_callback=self.new_text_callback,
             n_predict=372,
@@ -68,9 +69,10 @@ class GPT4AllAPI():
             repeat_last_n = self.config['repeat_last_n'],
             #seed=self.config['seed'],
             n_threads=self.config['n_threads']
-        )        
-        
+        )   
+        print(text)             
         """
+        
 
         # generation status
         self.generating=False
@@ -87,14 +89,10 @@ class GPT4AllAPI():
         loader = importlib.machinery.SourceFileLoader(module_name, str(absolute_path))
         backend_module = loader.load_module()
         backend_class = getattr(backend_module, backend_module.backend_name)
-        self.backend = backend_class(self.config)
+        self.backend = backend_class
 
     def create_chatbot(self):
-        try:
-            return self.backend(self.config)
-        except Exception as ex:
-            print(f"Exception {ex}")
-            return None
+        return self.backend(self.config)
     
     def condition_chatbot(self, conditionning_message):
         if self.current_discussion is None:
@@ -175,23 +173,73 @@ class GPT4AllAPI():
         
         return discussion_messages # Removes the last return
 
+
+    def remove_text_from_string(self, string, text_to_find):
+        """
+        Removes everything from the first occurrence of the specified text in the string (case-insensitive).
+
+        Parameters:
+        string (str): The original string.
+        text_to_find (str): The text to find in the string.
+
+        Returns:
+        str: The updated string.
+        """
+        index = string.lower().find(text_to_find.lower())
+
+        if index != -1:
+            string = string[:index]
+
+        return string
+
+
+
     def new_text_callback(self, text: str):
+        if self.cancel_gen:
+            return False
         print(text, end="")
         sys.stdout.flush()
-        self.full_text += text
-        if self.is_bot_text_started:
+        if self.chatbot_bindings.inline:
             self.bot_says += text
-            self.text_queue.put(text)
-            
-        #if self.current_message in self.full_text:
-        if len(self.discussion_messages) < len(self.full_text):
-            self.is_bot_text_started = True
+            if not self.personality["user_message_prefix"].lower() in self.bot_says.lower():
+                self.text_queue.put(text)
+                if self.cancel_gen:
+                    print("Generation canceled")
+                    return False
+                else:
+                    return True
+            else:
+                self.bot_says = self.remove_text_from_string(self.bot_says, self.personality["user_message_prefix"].lower())
+                print("The model is halucinating")
+                return False
+        else:
+            self.full_text += text
+            if self.is_bot_text_started:
+                self.bot_says += text
+                if not self.personality["user_message_prefix"].lower() in self.bot_says.lower():
+                    self.text_queue.put(text)
+                    if self.cancel_gen:
+                        print("Generation canceled")
+                        return False
+                    else:
+                        return True
+                else:
+                    self.bot_says = self.remove_text_from_string(self.bot_says, self.personality["user_message_prefix"].lower())
+                    print("The model is halucinating")
+                    self.cancel_gen=True
+                    return False
+                
+            #if self.current_message in self.full_text:
+            if len(self.discussion_messages) < len(self.full_text):
+                self.is_bot_text_started = True
         
     def generate_message(self):
         self.generating=True
         self.text_queue=Queue()
         gc.collect()
-        total_n_predict = len(self.discussion_messages)+self.config['n_predict']
+        total_n_predict = self.config['n_predict']
+        print(f"Generating {total_n_predict} outputs... ")
+        print(f"Input text : {self.discussion_messages}")
         self.chatbot_bindings.generate(
             self.discussion_messages,
             new_text_callback=self.new_text_callback,

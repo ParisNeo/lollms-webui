@@ -87,9 +87,13 @@ fetch('/settings')
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        populate_settings();
-        
-        alert("Backend set successfully")
+        if(data["status"]==="no_models_found"){
+          alert("No models found for this backend. Make sure you select a backend that you have models for or download models from links in our repository")  
+        }
+        else{
+          populate_settings();
+          alert("Backend set successfully")  
+        }
       })
       .catch((error) => {
         console.error('Error:', error);

@@ -28,12 +28,21 @@ class GPT_J(GPTBackend):
         Args:
             config (dict): The configuration file
         """
-        super().__init__(config)
+        super().__init__(config, True)
         self.config = config
-        self.model = Model(
-                ggml_model=f"./models/gptj/{self.config['model']}"
-                )
-
+        if "use_avx2" in self.config and not self.config["use_avx2"]:
+            self.model = Model(
+                    model=f"./models/gpt_j/{self.config['model']}", instructions='avx'
+                    )
+        else:
+            self.model = Model(
+                    model=f"./models/gpt_j/{self.config['model']}"
+                    )
+            
+        
+            
+    def get_num_tokens(self, prompt):
+        return self.model.num_tokens(prompt)
 
     def generate(self, 
                  prompt:str,                  
@@ -49,16 +58,19 @@ class GPT_J(GPTBackend):
             new_text_callback (Callable[[str], None], optional): A callback function that is called everytime a new text element is generated. Defaults to None.
             verbose (bool, optional): If true, the code will spit many informations about the generation process. Defaults to False.
         """
+        num_tokens = self.get_num_tokens(prompt)
+        print(f"Prompt has {num_tokens} tokens")
         self.model.generate(
             prompt,
-            #new_text_callback=new_text_callback,
-            n_predict=n_predict,
+            callback=new_text_callback,
+            n_predict=num_tokens + n_predict,
+            seed=self.config['seed'] if self.config['seed']>0 else -1,
             temp=self.config['temp'],
             top_k=self.config['top_k'],
             top_p=self.config['top_p'],
-            repeat_penalty=self.config['repeat_penalty'],
-            repeat_last_n = self.config['repeat_last_n'],
+            # repeat_penalty=self.config['repeat_penalty'],
+            # repeat_last_n = self.config['repeat_last_n'],
             n_threads=self.config['n_threads'],
-            verbose=verbose
+            #verbose=verbose
         )
-        new_text_callback()
+        #new_text_callback()

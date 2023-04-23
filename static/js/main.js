@@ -2,12 +2,12 @@ function update_main(){
   const chatWindow = document.getElementById('chat-window');
   const chatForm = document.getElementById('chat-form');
   const userInput = document.getElementById('user-input');
-  const stopGeneration = document.querySelector("#stop-generation")
+  const stopGeneration = document.getElementById("stop-generation")
     
   stopGeneration.addEventListener('click', (event) =>{
     event.preventDefault();
     console.log("Stop clicked");
-    fetch('/stop')
+    fetch('/stop_gen')
     .then(response => response.json())
     .then(data => {
         console.log(data);
@@ -43,7 +43,7 @@ function update_main(){
       user_msg = addMessage('',message, 0, 0, can_edit=true);
       bot_msg = addMessage('', '', 0, 0, can_edit=true);
 
-      fetch('/bot', {
+      fetch('/generate', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'

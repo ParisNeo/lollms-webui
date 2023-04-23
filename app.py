@@ -82,8 +82,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.add_endpoint(
             "/new_discussion", "new_discussion", self.new_discussion, methods=["GET"]
         )
-        self.add_endpoint("/bot", "bot", self.bot, methods=["POST"])
-        self.add_endpoint("/stop", "stop", self.stop, methods=["POST"])
+        self.add_endpoint("/generate", "generate", self.generate, methods=["POST"])
+        self.add_endpoint("/stop_gen", "stop_gen", self.stop_gen, methods=["GET"])
 
         self.add_endpoint("/run_to", "run_to", self.run_to, methods=["POST"])
         self.add_endpoint("/rename", "rename", self.rename, methods=["POST"])
@@ -239,7 +239,6 @@ class Gpt4AllWebUI(GPT4AllAPI):
     @stream_with_context
     def parse_to_prompt_stream(self, message, message_id):
         bot_says = ""
-        self.stop = False
 
         # send the message to the bot
         print(f"Received message : {message}")
@@ -264,28 +263,33 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.discussion_messages = self.prepare_query(message_id)
         self.prepare_reception()
         self.generating = True
+        app.config['executor'] = ThreadPoolExecutor(max_workers=1)
         app.config['executor'].submit(self.generate_message)
         while self.generating:
             try:
                 while not self.text_queue.empty():
                     value = self.text_queue.get(False)
-                    yield value#.replace("\n","<br>")
+                    if self.cancel_gen:
+                        self.generating = False
+                        break
+                    yield value
                     time.sleep(0)
-            except :
+            except Exception as ex:
+                print(f"Exception {ex}")
                 time.sleep(0.1)
             if self.cancel_gen:
-                self.cancel_gen = False
-                app.config['executor'].shutdown(True, True)
-
+                self.generating = False
+        print("## Done ##")
+        app.config['executor'].shutdown(True, timeout=5)
         self.current_discussion.update_message(response_id, self.bot_says)
         self.full_message_list.append(self.bot_says)
         bot_says = markdown.markdown(self.bot_says)
 
         yield "FINAL:"+bot_says
+        self.cancel_gen = False
         return bot_says
 
-    def bot(self):
-        self.stop = True
+    def generate(self):
 
         if self.current_discussion is None:
             if self.db.does_last_discussion_have_messages():
@@ -308,14 +312,13 @@ class Gpt4AllWebUI(GPT4AllAPI):
             ), content_type='text/plain; charset=utf-8'
         )
     
-    def stop(self):
+    def stop_gen(self):
         self.cancel_gen = True
         return jsonify({"status": "ok"}) 
            
     def run_to(self):
         data = request.get_json()
         message_id = int(data["id"])
-        self.stop = True
         # Segmented (the user receives the output as it comes)
         # We will first send a json entry that contains the message id and so on, then the text as it goes
         return Response(
@@ -380,6 +383,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
     def new_discussion(self):
         title = request.args.get("title")
         timestamp = self.create_new_discussion(title)
+        app.config['executor'] = ThreadPoolExecutor(max_workers=1)
         app.config['executor'].submit(self.create_chatbot)
 
         # Return a success response
@@ -392,13 +396,15 @@ class Gpt4AllWebUI(GPT4AllAPI):
             print("New backend selected")
             
             self.config['backend'] = backend
-            self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
             models_dir = Path('./models')/self.config["backend"]  # replace with the actual path to the models folder
             models = [f.name for f in models_dir.glob(self.backend.file_extension)]
             if len(models)>0:            
                 self.config['model'] = models[0]
+                self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
                 self.create_chatbot()
                 return jsonify({"status": "ok"})
+            else:
+                return jsonify({"status": "no_models_found"})
 
         return jsonify({"status": "error"})
 
@@ -577,7 +583,7 @@ if __name__ == "__main__":
 
     personality = load_config(f"personalities/{config['personality_language']}/{config['personality_category']}/{config['personality']}.yaml")
 
-    executor = ThreadPoolExecutor(max_workers=6)
+    executor = ThreadPoolExecutor(max_workers=1)
     app.config['executor'] = executor
 
     bot = Gpt4AllWebUI(app, config, personality, config_file_path)
