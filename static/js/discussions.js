@@ -158,7 +158,7 @@ function populate_discussions_list()
         discussionButton.textContent = discussion.title;
         discussionButton.title = "Open discussion";
         
-        //WIP, NOT DONE
+        //Indicates currently selected (Active) discussion
         discussionButton.addEventListener('click', () => {
           console.log(`Showing messages for discussion ${discussion.id}`);
           load_discussion(discussion);
@@ -175,11 +175,7 @@ function populate_discussions_list()
         
         btnElList.forEach(btnEl => {
           btnEl.addEventListener('click', () => {
-            console.log('Total: ' + btnElList.length + ' discussions');
-      
             btnEl.querySelector('activeDiscussion')?.classList.remove('activeDiscussion');
-            
-            console.log('hm idk');
           });
         })
 
