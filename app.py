@@ -115,6 +115,10 @@ class Gpt4AllWebUI(GPT4AllAPI):
         )
         
         self.add_endpoint(
+            "/set_model", "set_model", self.set_model, methods=["POST"]
+        )
+        
+        self.add_endpoint(
             "/update_model_params", "update_model_params", self.update_model_params, methods=["POST"]
         )
 
@@ -385,7 +389,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         data = request.get_json()
         backend =  str(data["backend"])
         if self.config['backend']!= backend:
-            print("New model selected")
+            print("New backend selected")
             
             self.config['backend'] = backend
             self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
@@ -397,6 +401,17 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 return jsonify({"status": "ok"})
 
         return jsonify({"status": "error"})
+
+    def set_model(self):
+        data = request.get_json()
+        model =  str(data["model"])
+        if self.config['model']!= model:
+            print("New model selected")            
+            self.config['model'] = model
+            self.create_chatbot()
+            return jsonify({"status": "ok"})
+
+        return jsonify({"status": "error"})    
     
     def update_model_params(self):
         data = request.get_json()
