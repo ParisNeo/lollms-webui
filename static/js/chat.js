@@ -197,7 +197,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
             const inputField = document.createElement('textarea');
             inputField.type = 'text';
             inputField.classList.add('font-medium', 'resize-y','h-24', 'text-md', 'border', 'border-gray-300', 'p-1');
-            inputField.value = messageTextElement.innerHTML;
+            inputField.value = messageTextElement.innerText;
 
             //buttonsContainer.style.display = "none"
 
@@ -208,7 +208,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
             inputBlock.appendChild(saveButton)
             saveButton.addEventListener('click', () => {
                 const newText = inputField.value;
-                messageTextElement.innerHTML = newText;
+                messageTextElement.innerText = newText;
                 // make request to update message
                 const url = `/update_message?id=${id}&message=${newText}`;
                 fetch(url)
