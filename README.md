@@ -16,6 +16,8 @@ Watch usage videos [Usage Videos](https://www.youtube.com/watch?v=DCBefhJUUh4&ab
 
 Watch settings videos [Usage Videos](https://www.youtube.com/watch?v=7KwR2vdt1t4&t=63s&ab_channel=ParisNeo)
 
+Watch new ui videos [Usage Videos](https://www.youtube.com/watch?v=M7NFajCyZKs&ab_channel=ParisNeo)
+
 ![image](https://user-images.githubusercontent.com/58695202/233015758-2396925c-1721-4a0e-81d1-dcc181a6017b.png)
 
 GPT4All is an exceptional language model, designed and developed by Nomic-AI, a proficient company dedicated to natural language processing. The app uses Nomic-AI's advanced library to communicate with the cutting-edge GPT4All model, which operates locally on the user's PC, ensuring seamless and efficient communication.
