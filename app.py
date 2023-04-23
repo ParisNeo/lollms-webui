@@ -388,6 +388,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
             print("New model selected")
             
             self.config['backend'] = backend
+            self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
             models_dir = Path('./models')/self.config["backend"]  # replace with the actual path to the models folder
             models = [f.name for f in models_dir.glob(self.chatbot_bindings.file_extension)]
             if len(models)>0:            

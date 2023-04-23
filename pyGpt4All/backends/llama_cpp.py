@@ -17,6 +17,7 @@ __github__ = "https://github.com/nomic-ai/gpt4all-ui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
+backend_name = "LLAMACPP"
 
 class LLAMACPP(GPTBackend):
     file_extension='*.bin'

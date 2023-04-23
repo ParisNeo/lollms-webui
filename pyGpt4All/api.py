@@ -12,7 +12,9 @@ import sys
 from queue import Queue
 from datetime import datetime
 from pyGpt4All.db import DiscussionsDB
-from pyGpt4All.backends import BACKENDS_LIST
+from pathlib import Path
+import importlib
+
 __author__ = "parisneo"
 __github__ = "https://github.com/nomic-ai/gpt4all-ui"
 __copyright__ = "Copyright 2023, "
@@ -43,7 +45,9 @@ class GPT4AllAPI():
         self.full_message_list = []
 
         # Select backend
-        self.backend = BACKENDS_LIST[self.config["backend"]]
+        self.BACKENDS_LIST = {f.stem:f for f in (Path("pyGpt4All")/"backends").glob("*.py") if f.stem not in ["__init__","backend"]}
+
+        self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
 
         # Build chatbot
         self.chatbot_bindings = self.create_chatbot()
@@ -70,6 +74,20 @@ class GPT4AllAPI():
 
         # generation status
         self.generating=False
+
+    def load_backend(self, backend_path):
+
+        # define the full absolute path to the module
+        absolute_path = backend_path.resolve()
+
+        # infer the module name from the file path
+        module_name = backend_path.stem
+
+        # use importlib to load the module from the file path
+        loader = importlib.machinery.SourceFileLoader(module_name, str(absolute_path))
+        backend_module = loader.load_module()
+        backend_class = getattr(backend_module, backend_module.backend_name)
+        self.backend = backend_class(self.config)
 
     def create_chatbot(self):
         try:
