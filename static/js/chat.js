@@ -88,10 +88,6 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
             waitAnimation.style.display = "block";
             stopGeneration.style.display = "block";
 
-            // local stuff
-            let messageTextElement_ = undefined
-            let hiddenElement_ = undefined
-
             elements = addMessage("", "", 0, 0, can_edit = true);
             // scroll to bottom of chat window
             chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -144,8 +140,6 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
                                 infos = JSON.parse(text)
                                 elements.setID(infos.response_id)
                                 elements.setSender(infos.bot)
-                                messageTextElement_ = elements['messageTextElement'];
-                                hiddenElement_ = elements['hiddenElement'];
                                 entry_counter++;
                             }
                             else {
@@ -154,22 +148,17 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
                                 if(text.startsWith(prefix)){
                                     console.log("Final text found")
                                     text = text.substring(prefix.length);
-                                    hiddenElement.innerHTML         = text
-                                    messageTextElement.innerHTML    = text
+                                    elements.hiddenElement.innerHTML         = text
+                                    elements.messageTextElement.innerHTML    = text
                                 }
                                 else{
                                     // For the other enrtries, these are just the text of the chatbot
-                                    for (const char of text) {
-                                        txt = hiddenElement_.innerHTML;
-                                        if (char != '\f') {
-                                            txt += char
-                                            hiddenElement_.innerHTML = txt
-                                            messageTextElement_.innerHTML = txt
-                                        }
-
-                                        // scroll to bottom of chat window
-                                        chatWindow.scrollTop = chatWindow.scrollHeight;
-                                    }
+                                    txt = hiddenElement_.innerHTML;
+                                    txt += text
+                                    elements.hiddenElement.innerHTML = txt
+                                    elements.messageTextElement.innerHTML = txt
+                                    // scroll to bottom of chat window
+                                    chatWindow.scrollTop = chatWindow.scrollHeight;
                                 }
                             }
 
