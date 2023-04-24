@@ -10,7 +10,7 @@
 from pathlib import Path
 from typing import Callable
 from pyllamacpp.model import Model
-from pyGpt4All.backends.backend import GPTBackend
+from pyGpt4All.backend import GPTBackend
 
 __author__ = "parisneo"
 __github__ = "https://github.com/nomic-ai/gpt4all-ui"

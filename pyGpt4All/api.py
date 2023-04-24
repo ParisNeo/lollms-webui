@@ -46,7 +46,7 @@ class GPT4AllAPI():
         self.full_message_list = []
 
         # Select backend
-        self.BACKENDS_LIST = {f.stem:f for f in (Path("pyGpt4All")/"backends").glob("*.py") if f.stem not in ["__init__","backend"]}
+        self.BACKENDS_LIST = {f.stem:f for f in Path("backends").iterdir() if f.is_dir()}
 
         self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
 
@@ -86,7 +86,7 @@ class GPT4AllAPI():
         module_name = backend_path.stem
 
         # use importlib to load the module from the file path
-        loader = importlib.machinery.SourceFileLoader(module_name, str(absolute_path))
+        loader = importlib.machinery.SourceFileLoader(module_name, str(absolute_path/"__init__.py"))
         backend_module = loader.load_module()
         backend_class = getattr(backend_module, backend_module.backend_name)
         self.backend = backend_class

@@ -146,8 +146,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
         )
 
     def list_backends(self):
-        backends_dir = Path('./pyGpt4All/backends')  # replace with the actual path to the models folder
-        backends = [f.stem for f in backends_dir.glob('*.py') if f.stem!="backend" and f.stem!="__init__"]
+        backends_dir = Path('./backends')  # replace with the actual path to the models folder
+        backends = [f.stem for f in backends_dir.iterdir() if f.is_dir()]
         return jsonify(backends)
 
 

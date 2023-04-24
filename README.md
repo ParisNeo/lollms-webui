@@ -215,8 +215,8 @@ Now you're ready to work!
 
 # Supported backends
 Two backends are now supported:
-1 - The llama_cpp backend
-2 - The GPT-j backend
+1 - [The llama_cpp backend](https://github.com/nomic-ai/pygpt4all)
+2 - [The GPT-j backend](https://github.com/marella/gpt4all-j)
 3 - Hugging face's Transformers (under construction)
 
 # Supported models
