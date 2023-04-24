@@ -147,7 +147,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
     def list_backends(self):
         backends_dir = Path('./backends')  # replace with the actual path to the models folder
-        backends = [f.stem for f in backends_dir.iterdir() if f.is_dir()]
+        backends = [f.stem for f in backends_dir.iterdir() if f.is_dir() and f.stem!="__pycache__"]
         return jsonify(backends)
 
 
@@ -405,7 +405,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
             if len(models)>0:            
                 self.config['model'] = models[0]
                 self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
-                self.create_chatbot()
+                # Build chatbot
+                self.chatbot_bindings = self.create_chatbot()
                 return jsonify({"status": "ok"})
             else:
                 return jsonify({"status": "no_models_found"})
@@ -418,7 +419,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
         if self.config['model']!= model:
             print("New model selected")            
             self.config['model'] = model
-            self.create_chatbot()
+            # Build chatbot
+            self.chatbot_bindings = self.create_chatbot()
             return jsonify({"status": "ok"})
 
         return jsonify({"status": "error"})    
