@@ -8,21 +8,21 @@
 
 This is a Flask web application that provides a chat UI for interacting with [llamacpp](https://github.com/ggerganov/llama.cpp) based chatbots such as [GPT4all](https://github.com/nomic-ai/gpt4all), vicuna etc...
 
-Follow us on our [Discord server](https://discord.gg/4rR282WJb6).
+Follow us on our [Discord Server](https://discord.gg/4rR282WJb6).
 
-Watch install video [Usage Videos](https://www.youtube.com/watch?v=6kKv6ESnwMk&t=1s&ab_channel=ParisNeo)
+Watch Install Video (Outdated, please use "New UI video") [Old Install Video](https://youtu.be/6kKv6ESnwMk)
 
-Watch usage videos [Usage Videos](https://www.youtube.com/watch?v=DCBefhJUUh4&ab_channel=ParisNeo)
+Watch Usage Videos [Usage Video](https://youtu.be/DCBefhJUUh4)
 
-Watch settings videos [Usage Videos](https://www.youtube.com/watch?v=7KwR2vdt1t4&t=63s&ab_channel=ParisNeo)
+Watch Settings Video [Settings Video](https://youtu.be/7KwR2vdt1t4)
 
-Watch new ui videos [Usage Videos](https://www.youtube.com/watch?v=M7NFajCyZKs&ab_channel=ParisNeo)
+Watch New UI Video [New UI + Install](https://youtu.be/M7NFajCyZKs)
 
-![image](https://user-images.githubusercontent.com/58695202/233015758-2396925c-1721-4a0e-81d1-dcc181a6017b.png)
+![image](https://i.gyazo.com/ef94a5ac9169467a1aec228ef8c36c66.gif)
 
 GPT4All is an exceptional language model, designed and developed by Nomic-AI, a proficient company dedicated to natural language processing. The app uses Nomic-AI's advanced library to communicate with the cutting-edge GPT4All model, which operates locally on the user's PC, ensuring seamless and efficient communication.
 
-If you are interested in learning more about this groundbreaking project, visit their [Github repository](https://github.com/nomic-ai/gpt4all), where you can find comprehensive information regarding the app's functionalities and technical details. Moreover, you can delve deeper into the training process and database by going through their detailed Technical report, available for download at [Technical report](https://s3.amazonaws.com/static.nomic.ai/gpt4all/2023_GPT4All_Technical_Report.pdf).
+If you are interested in learning more about this groundbreaking project, visit their [Github Repository](https://github.com/nomic-ai/gpt4all), where you can find comprehensive information regarding the app's functionalities and technical details. Moreover, you can delve deeper into the training process and database by going through their detailed Technical report, available for download at [Technical report](https://s3.amazonaws.com/static.nomic.ai/gpt4all/2023_GPT4All_Technical_Report.pdf).
 
 One of the app's impressive features is that it allows users to send messages to the chatbot and receive instantaneous responses in real time, ensuring a seamless user experience. Additionally, the app facilitates the exportation of the entire chat history in either text or JSON format, providing greater flexibility to the users.
 
@@ -48,9 +48,9 @@ Make sure that your CPU supports `AVX2` instruction set. Without it, this applic
 
 ### Automatic install
 
-It is advised to have python 3.10 (The official one, not the one from microsoft store) and git installed. Although it should work with any python from 3.7, it is advised to use 3.10 to have the full support as some extensions like the future stable diffusion extension will force you to have 3.10.
+It is advised to have python 3.10 (The official one, not the one from Microsoft Store) and git installed. Although it should work with any python from 3.7, it is advised to use 3.10 to have the full support as some extensions like the future stable diffusion extension will force you to have 3.10.
 
-1. [Goto the latest release section](https://github.com/nomic-ai/gpt4all-ui/releases)
+1. [Go to the latest release section](https://github.com/nomic-ai/gpt4all-ui/releases)
 2. Download the `webui.bat` if you are on windows or `webui.sh` if you are on linux/mac. but the download in a folder you name for example gpt4all-ui
 3. Run the script and wait. It should install everything and start the chatbot
 4. Before running, it may ask you to download a model. Feel free to accept or to download your own models depending on the backends you are using.
