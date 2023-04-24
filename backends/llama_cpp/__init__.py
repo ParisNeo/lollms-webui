@@ -50,15 +50,18 @@ class LLAMACPP(GPTBackend):
             new_text_callback (Callable[[str], None], optional): A callback function that is called everytime a new text element is generated. Defaults to None.
             verbose (bool, optional): If true, the code will spit many informations about the generation process. Defaults to False.
         """
-        self.model.generate(
-            prompt,
-            new_text_callback=new_text_callback,
-            n_predict=n_predict,
-            temp=self.config['temp'],
-            top_k=self.config['top_k'],
-            top_p=self.config['top_p'],
-            repeat_penalty=self.config['repeat_penalty'],
-            repeat_last_n = self.config['repeat_last_n'],
-            n_threads=self.config['n_threads'],
-            verbose=verbose
-        )
+        try:
+            self.model.generate(
+                prompt,
+                new_text_callback=new_text_callback,
+                n_predict=n_predict,
+                temp=self.config['temp'],
+                top_k=self.config['top_k'],
+                top_p=self.config['top_p'],
+                repeat_penalty=self.config['repeat_penalty'],
+                repeat_last_n = self.config['repeat_last_n'],
+                n_threads=self.config['n_threads'],
+                verbose=verbose
+            )
+        except Exception as ex:
+            print(ex)

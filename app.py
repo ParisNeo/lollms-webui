@@ -20,7 +20,7 @@ import argparse
 import json
 import re
 import traceback
-from concurrent.futures import ThreadPoolExecutor
+import threading
 import sys
 from pyGpt4All.db import DiscussionsDB, Discussion
 from flask import (
@@ -263,8 +263,10 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.discussion_messages = self.prepare_query(message_id)
         self.prepare_reception()
         self.generating = True
-        app.config['executor'] = ThreadPoolExecutor(max_workers=1)
-        app.config['executor'].submit(self.generate_message)
+        # app.config['executor'] = ThreadPoolExecutor(max_workers=1)
+        # app.config['executor'].submit(self.generate_message)
+        tpe = threading.Thread(target=self.generate_message)
+        tpe.start()
         while self.generating:
             try:
                 while not self.text_queue.empty():
@@ -279,7 +281,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 time.sleep(0.1)
             if self.cancel_gen:
                 self.generating = False
-        app.config['executor'].shutdown(True)
+        tpe = None
+        gc.collect()
         print("## Done ##")
         self.current_discussion.update_message(response_id, self.bot_says)
         self.full_message_list.append(self.bot_says)
@@ -583,8 +586,8 @@ if __name__ == "__main__":
 
     personality = load_config(f"personalities/{config['personality_language']}/{config['personality_category']}/{config['personality']}.yaml")
 
-    executor = ThreadPoolExecutor(max_workers=1)
-    app.config['executor'] = executor
+    # executor = ThreadPoolExecutor(max_workers=1)
+    # app.config['executor'] = executor
 
     bot = Gpt4AllWebUI(app, config, personality, config_file_path)
 
