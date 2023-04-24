@@ -46,7 +46,7 @@ class GPT4AllAPI():
         self.full_message_list = []
 
         # Select backend
-        self.BACKENDS_LIST = {f.stem:f for f in Path("backends").iterdir() if f.is_dir()}
+        self.BACKENDS_LIST = {f.stem:f for f in Path("backends").iterdir() if f.is_dir()  and f.stem!="__pycache__"}
 
         self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
 

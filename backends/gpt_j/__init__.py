@@ -21,7 +21,7 @@ backend_name = "GPT_J"
 
 
 class GPT_J(GPTBackend):
-    file_extension='*.bin'
+    file_extension='*'
     def __init__(self, config:dict) -> None:
         """Builds a GPT-J backend
 
@@ -60,17 +60,20 @@ class GPT_J(GPTBackend):
         """
         num_tokens = self.get_num_tokens(prompt)
         print(f"Prompt has {num_tokens} tokens")
-        self.model.generate(
-            prompt,
-            callback=new_text_callback,
-            n_predict=num_tokens + n_predict,
-            seed=self.config['seed'] if self.config['seed']>0 else -1,
-            temp=self.config['temp'],
-            top_k=self.config['top_k'],
-            top_p=self.config['top_p'],
-            # repeat_penalty=self.config['repeat_penalty'],
-            # repeat_last_n = self.config['repeat_last_n'],
-            n_threads=self.config['n_threads'],
-            #verbose=verbose
-        )
+        try:
+            self.model.generate(
+                prompt,
+                callback=new_text_callback,
+                n_predict=num_tokens + n_predict,
+                seed=self.config['seed'] if self.config['seed']>0 else -1,
+                temp=self.config['temp'],
+                top_k=self.config['top_k'],
+                top_p=self.config['top_p'],
+                # repeat_penalty=self.config['repeat_penalty'],
+                # repeat_last_n = self.config['repeat_last_n'],
+                n_threads=self.config['n_threads'],
+                #verbose=verbose
+            )
+        except Exception as ex:
+            print(ex)
         #new_text_callback()

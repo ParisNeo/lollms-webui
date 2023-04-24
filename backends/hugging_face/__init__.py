@@ -9,36 +9,32 @@
 ######
 from pathlib import Path
 from typing import Callable
-from transformers import AutoTokenizer
-from transformers import AutoModelForCausalLM
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 from pyGpt4All.backend import GPTBackend
-from transformers import AutoTokenizer, pipeline
-from auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig
-from auto_gptq.eval_tasks import LanguageModelingTask
-
+import torch
+import time
 __author__ = "parisneo"
 __github__ = "https://github.com/nomic-ai/gpt4all-ui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-backend_name = "GPT-Q"
+backend_name = "HuggingFace"
 
 
-class GPT_Q(GPTBackend):
+class HuggingFace(GPTBackend):
     file_extension='*'
     def __init__(self, config:dict) -> None:
-        """Builds a GPT-J backend
+        """Builds a Hugging face backend
 
         Args:
             config (dict): The configuration file
         """
         super().__init__(config, True)
         self.config = config
-        # path = Path("models/hugging_face")/self.config['model']
-        path = "TheBloke/vicuna-13B-1.1-GPTQ-4bit-128g"
-        AutoGPTQForCausalLM.from_pretrained(path, BaseQuantizeConfig())
-        self.model = AutoModelForCausalLM.from_pretrained(path, low_cpu_mem_usage=True)
-        self.tokenizer = AutoTokenizer.from_pretrained(path)
+        path = self.config['model']
+
+        self.model = AutoModelForCausalLM.from_pretrained(Path("models/hugging_face")/path, low_cpu_mem_usage=True)
+        self.tokenizer = AutoTokenizer.from_pretrained(Path("models/hugging_face")/path)
 
         self.generator = pipeline(
             "text-generation",
@@ -48,6 +44,14 @@ class GPT_Q(GPTBackend):
         )
 
 
+    def generate_callback(self, text, new_text_callback):
+        def callback(outputs):
+            generated_text = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+            new_text_callback(generated_text)
+            print(text + generated_text, end="\r")
+            time.sleep(0.5)
+        return callback
+    
     def generate(self, 
                  prompt:str,                  
                  n_predict: int = 128,
@@ -62,20 +66,17 @@ class GPT_Q(GPTBackend):
             new_text_callback (Callable[[str], None], optional): A callback function that is called everytime a new text element is generated. Defaults to None.
             verbose (bool, optional): If true, the code will spit many informations about the generation process. Defaults to False.
         """
-
-        inputs = self.tokenizer(prompt, return_tensors="pt").input_ids
-        while len(inputs<n_predict):
-            outputs = self.model.generate(
-                inputs,
-                max_new_tokens=1,
-                #new_text_callback=new_text_callback,
-                temp=self.config['temp'],
-                top_k=self.config['top_k'],
-                top_p=self.config['top_p'],
-                repeat_penalty=self.config['repeat_penalty'],
-                repeat_last_n = self.config['repeat_last_n'],
-                n_threads=self.config['n_threads'],
-                verbose=verbose
-            )
-            inputs += outputs
-            new_text_callback(self.tokenizer.batch_decode(outputs, skip_special_tokens=True))
+        callback = self.generate_callback(prompt, new_text_callback)
+        outputs = self.generator(
+            prompt, 
+            max_length=100, 
+            do_sample=True, 
+            num_beams=5, 
+            temperature=self.config['temp'], 
+            top_k=self.config['top_k'],
+            top_p=self.config['top_p'],
+            repetition_penalty=self.config['repeat_penalty'],
+            repeat_last_n = self.config['repeat_last_n'],
+            callback=callback
+        )
+        print(outputs)

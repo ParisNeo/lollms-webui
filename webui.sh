@@ -142,7 +142,7 @@ else
     case $option in
       Download)
         if [ -x "$(command -v wget)" ]; then
-          wget "$MODEL_URL" -P ./models/
+          wget "$MODEL_URL" -P ./models/llama_cpp/
         elif [ -x "$(command -v curl)" ]; then
           curl -o "$MODEL" "$MODEL_URL"
         else
