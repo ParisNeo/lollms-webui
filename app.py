@@ -279,7 +279,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 time.sleep(0.1)
             if self.cancel_gen:
                 self.generating = False
-        app.config['executor'].shutdownNow(False)
+        app.config['executor'].shutdown(True)
         print("## Done ##")
         self.current_discussion.update_message(response_id, self.bot_says)
         self.full_message_list.append(self.bot_says)
