@@ -386,9 +386,10 @@ class Gpt4AllWebUI(GPT4AllAPI):
     def new_discussion(self):
         title = request.args.get("title")
         timestamp = self.create_new_discussion(title)
-        app.config['executor'] = ThreadPoolExecutor(max_workers=1)
-        app.config['executor'].submit(self.create_chatbot)
-
+        # app.config['executor'] = ThreadPoolExecutor(max_workers=1)
+        # app.config['executor'].submit(self.create_chatbot)
+        # target=self.create_chatbot()
+        
         # Return a success response
         return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp, "welcome_message":self.personality["welcome_message"], "sender":self.personality["name"]})
 

@@ -1,6 +1,6 @@
 
 function load_discussion(discussion=0){
-  var container = document.getElementById('chat-window');
+  var chatWindow = document.getElementById('chat-window');
 
   if(discussion)
   {
@@ -24,12 +24,14 @@ function load_discussion(discussion=0){
         const messages = JSON.parse(data);
         console.log(messages)
         // process messages
-        container.innerHTML = '';
+        chatWindow.innerHTML = '';
         messages.forEach(message => {
           console.log(`Adding message ${message.type}`)
           if(message.type==0){
             console.log("Showing message")
             addMessage(message.sender, message.content, message.id, message.rank, true);
+            // scroll to bottom of chat window
+            chatWindow.scrollTop = chatWindow.scrollHeight;
           }
         });
           });

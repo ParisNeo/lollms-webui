@@ -93,7 +93,8 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
             let hiddenElement_ = undefined
 
             elements = addMessage("", "", 0, 0, can_edit = true);
-
+            // scroll to bottom of chat window
+            chatWindow.scrollTop = chatWindow.scrollHeight;
             fetch("/run_to", {
                 method: 'POST',
                 headers: {

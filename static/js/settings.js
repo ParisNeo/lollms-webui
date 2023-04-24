@@ -231,6 +231,7 @@ fetch('/settings')
     }
   
     function populate_models(){
+      selectModel.innerHTML=""
     // Fetch the list of .bin files from the models subfolder
     fetch('/list_models')
       .then(response => response.json())

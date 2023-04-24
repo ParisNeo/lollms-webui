@@ -35,6 +35,8 @@ function update_main(){
 
     user_msg = addMessage('',message, 0, 0, can_edit=true);
     bot_msg = addMessage('', '', 0, 0, can_edit=true);
+    // scroll to bottom of chat window
+    chatWindow.scrollTop = chatWindow.scrollHeight;
 
     fetch('/generate', {
         method: 'POST',
