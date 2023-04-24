@@ -11,7 +11,7 @@ COPY ./pyGpt4All/api.py /srv/pyGpt4All/api.py
 COPY ./pyGpt4All/db.py /srv/pyGpt4All/db.py
 COPY ./pyGpt4All/config.py /srv/pyGpt4All/config.py
 COPY ./pyGpt4All/extension.py /srv/pyGpt4All/extension.py
-COPY ./pyGpt4All/backends /srv/pyGpt4All/backends
+COPY ./backends /srv/backends
 COPY ./static /srv/static
 COPY ./templates /srv/templates
 

@@ -100,17 +100,12 @@ function update_main(){
                   }
                   else{
                   // For the other enrtries, these are just the text of the chatbot
-                  for (const char of text) {
-                      txt = bot_msg.hiddenElement.innerHTML;
-                      if (char != '\f') {
-                          txt += char
-                          bot_msg.hiddenElement.innerHTML         = txt;
-                          bot_msg.messageTextElement.innerHTML    = txt;
-                      }
-
+                  txt = bot_msg.hiddenElement.innerHTML;
+                  txt += text
+                  bot_msg.hiddenElement.innerHTML         = txt;
+                  bot_msg.messageTextElement.innerHTML    = txt;
                   // scroll to bottom of chat window
                   chatWindow.scrollTop = chatWindow.scrollHeight;
-                  }
 
                   }
                 }
