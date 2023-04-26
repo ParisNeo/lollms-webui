@@ -21,7 +21,7 @@ backend_name = "GPT_J"
 
 
 class GPT_J(GPTBackend):
-    file_extension='*.bin'
+    file_extension='*'
     def __init__(self, config:dict) -> None:
         """Builds a GPT-J backend
 
