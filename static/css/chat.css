@@ -36,6 +36,10 @@
   }
 }
 
+.activeDiscussion {
+  background-color: #16a34a; /*Equivalent to bg-green-600*/
+}
+
 :root {
     --color-primary-light: #ffffff;
     --color-secondary-light: #f2f2f2;

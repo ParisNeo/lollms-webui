@@ -1,5 +1,14 @@
 flask
+flask_socketio
 nomic
 pytest
-pyllamacpp
 pyyaml
+markdown
+pyllamacpp==1.0.7
+gpt4all-j==0.2.1
+--find-links https://download.pytorch.org/whl/cu117
+torch==2.0.0
+torchvision
+torchaudio
+transformers
+accelerate

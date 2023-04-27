@@ -6,14 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Help | GPT4All-ui</title>
   <!-- Include Tailwind CSS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwindcss.min.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwindcss.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind-dark.min.css') }}">
   <!-- Include custom CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/help.css') }}">
 </head>
 
 <body>
   <!-- Navbar -->
-  <nav class="flex justify-between items-center bg-gray-900 text-white p-4">
+  <nav class="flex justify-between items-center bg-gray-200 dark:bg-gray-900 text-black dark:text-white p-4">
     <a href="/" class="text-lg font-bold">GPT4All-ui</a>
     <!-- Dropdown menu -->
     <div class="relative">
@@ -35,13 +38,13 @@
   </nav>
 
   <!-- Credits section -->
-  <section id="credits" class="mb-8">
+  <section id="credits" class="mb-8 ml-4 text-black dark:text-white">
     <h2 class="text-2xl font-bold mb-4">Credits</h2>
     <p class="mb-4">Here are the developers who worked on this website:</p>
     <ul class="list-disc list-inside mb-4">
       <li>@ParisNeo : Creator of the project and Lead developer</li>
       <li>@AndriyMulyar : CEO of Nomic-ai who offered to link the project as their official ui for GPT4All</li>
-      <li><a href="https://github.com/nomic-ai/gpt4all-ui/graphs/contributors" class="text-blue-100">A number of very talented open-source developers without whom this project wouldn't be as awesome as it is.</a></li>
+      <li><a href="https://github.com/nomic-ai/gpt4all-ui/graphs/contributors" target="_blank" class="text-blue-900 dark:text-blue-600">A number of very talented open-source developers without whom this project wouldn't be as awesome as it is.</a></li>
       <li> We also appreciate the support of the users of this tool who have helped us in various ways.</li>
     </ul>
 
@@ -56,7 +59,7 @@
   </section>
 
   <!-- How to use section -->
-  <section id="how-to-use" class="mb-8">
+  <section id="how-to-use" class="mb-8 ml-4 text-black dark:text-white">
     <h2 class="text-2xl font-bold mb-4">How to use</h2>
     <ol class="list-decimal list-inside mb-4">
       <li>Step 1: Write your prompt.</li>
@@ -75,8 +78,8 @@
 
   <!-- FAQ section -->
   <section id="faq">
-    <h2 class="text-2xl font-bold mb-4">Frequently Asked Questions (FAQ)</h2>
-    <dl class="mb-8">
+    <h2 class="text-2xl font-bold mb-4 ml-4 text-black dark:text-white">Frequently Asked Questions (FAQ)</h2>
+    <dl class="mb-8 ml-4 text-black dark:text-white">
       <div class="mb-4">
         <dt class="font-bold">How to install?</dt>
         <dd>Download the model from the github then use install.bat for windows and install.sh for linux/macOsX.</dd>
@@ -84,8 +87,8 @@
     </dl>
   </section>
   <section id="examples">
-    <h2 class="text-2xl font-bold mb-4">Usage examples</h2>
-    <dl class="mb-8">
+    <h2 class="text-2xl font-bold mb-4 ml-4 text-black dark:text-white">Usage examples</h2>
+    <dl class="mb-8 ml-4 text-black dark:text-white">
       <div class="mb-4">
         <dt class="font-bold">Casual discussion</dt>
         <dd>Hello, my name is (put your name here).</dd>

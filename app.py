@@ -9,14 +9,20 @@
 # Made by the community for the community
 ######
 
+__author__ = "parisneo"
+__github__ = "https://github.com/nomic-ai/gpt4all-ui"
+__copyright__ = "Copyright 2023, "
+__license__ = "Apache 2.0"
+
+
+import logging
 import argparse
 import json
 import re
 import traceback
-from datetime import datetime
-from concurrent.futures import ThreadPoolExecutor
+import threading
 import sys
-from db import DiscussionsDB, Discussion
+from pyGpt4All.db import DiscussionsDB, Discussion
 from flask import (
     Flask,
     Response,
@@ -26,44 +32,57 @@ from flask import (
     stream_with_context,
     send_from_directory
 )
-from pyllamacpp.model import Model
-from queue import Queue
+from flask_socketio import SocketIO, emit
 from pathlib import Path
 import gc
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
+socketio = SocketIO(app)
+# Set the logging level to WARNING or higher
+logging.getLogger('socketio').setLevel(logging.WARNING)
+logging.getLogger('engineio').setLevel(logging.WARNING)
+
 import time
-from config import load_config
+from pyGpt4All.config import load_config, save_config
+from pyGpt4All.api import GPT4AllAPI
+import shutil
+import markdown
 
-class Gpt4AllWebUI:
 
-    def __init__(self, _app, config:dict, personality:dict) -> None:
-        self.config = config
-        self.personality = personality
-        self.current_discussion = None
-        self.current_message_id = 0
+class Gpt4AllWebUI(GPT4AllAPI):
+    def __init__(self, _app, _socketio, config:dict, personality:dict, config_file_path) -> None:
+        super().__init__(config, personality, config_file_path)
+
         self.app = _app
-        self.db_path = config["db_path"]
-        self.db = DiscussionsDB(self.db_path)
-        # If the database is empty, populate it with tables
-        self.db.populate()
+        self.cancel_gen = False
+        self.socketio = _socketio
 
-        # workaround for non interactive mode
-        self.full_message = ""
-        self.full_message_list = []
-        self.prompt_message = ""
-        # This is the queue used to stream text to the ui as the bot spits out its response
-        self.text_queue = Queue(0)
 
         self.add_endpoint(
+            "/list_backends", "list_backends", self.list_backends, methods=["GET"]
+        )
+        self.add_endpoint(
             "/list_models", "list_models", self.list_models, methods=["GET"]
+        )
+        self.add_endpoint(
+            "/list_personalities_languages", "list_personalities_languages", self.list_personalities_languages, methods=["GET"]
+        )        
+        self.add_endpoint(
+            "/list_personalities_categories", "list_personalities_categories", self.list_personalities_categories, methods=["GET"]
         )
         self.add_endpoint(
             "/list_personalities", "list_personalities", self.list_personalities, methods=["GET"]
         )
 
         self.add_endpoint(
+            "/list_languages", "list_languages", self.list_languages, methods=["GET"]
+        )
+        
+        self.add_endpoint(
             "/list_discussions", "list_discussions", self.list_discussions, methods=["GET"]
         )
+        
+        self.add_endpoint("/set_personality_language", "set_personality_language", self.set_personality_language, methods=["GET"])
+        self.add_endpoint("/set_personality_category", "set_personality_category", self.set_personality_category, methods=["GET"])
         
         
         self.add_endpoint("/", "", self.index, methods=["GET"])
@@ -72,7 +91,9 @@ class Gpt4AllWebUI:
         self.add_endpoint(
             "/new_discussion", "new_discussion", self.new_discussion, methods=["GET"]
         )
-        self.add_endpoint("/bot", "bot", self.bot, methods=["POST"])
+        self.add_endpoint("/generate", "generate", self.generate, methods=["POST"])
+        self.add_endpoint("/stop_gen", "stop_gen", self.stop_gen, methods=["GET"])
+
         self.add_endpoint("/run_to", "run_to", self.run_to, methods=["POST"])
         self.add_endpoint("/rename", "rename", self.rename, methods=["POST"])
         self.add_endpoint(
@@ -98,6 +119,13 @@ class Gpt4AllWebUI:
             "/delete_message", "delete_message", self.delete_message, methods=["GET"]
         )
         
+        self.add_endpoint(
+            "/set_backend", "set_backend", self.set_backend, methods=["POST"]
+        )
+        
+        self.add_endpoint(
+            "/set_model", "set_model", self.set_model, methods=["POST"]
+        )
         
         self.add_endpoint(
             "/update_model_params", "update_model_params", self.update_model_params, methods=["POST"]
@@ -125,77 +153,108 @@ class Gpt4AllWebUI:
         self.add_endpoint(
             "/help", "help", self.help, methods=["GET"]
         )
+        
+        
+        
+        # Socket IO stuff    
+        @socketio.on('connect')
+        def test_connect():
+            print('Client connected')
 
-        self.prepare_a_new_chatbot()
+        @socketio.on('disconnect')
+        def test_disconnect():
+            print('Client disconnected')
+
+        @socketio.on('stream-text')
+        def handle_stream_text(data):
+            text = data['prompt']
+            words = text.split()
+            for word in words:
+                emit('stream-word', {'word': word})
+                time.sleep(1)  # sleep for 1 second to simulate processing time
+            emit('stream-end')    
+        
+        
+        @socketio.on('connected')
+        def handle_connection(data):
+            if "data" in data and data["data"]=='Connected!':
+                return
+            if self.current_discussion is None:
+                if self.db.does_last_discussion_have_messages():
+                    self.current_discussion = self.db.create_discussion()
+                else:
+                    self.current_discussion = self.db.load_last_discussion()
+
+            message = data["prompt"]
+            message_id = self.current_discussion.add_message(
+                "user", message, parent=self.current_message_id
+            )
+            message = data["prompt"]
+            self.current_message_id = message_id
+            tpe = threading.Thread(target=self.parse_to_prompt_stream, args=(message, message_id))
+            tpe.start()
+
+            # self.parse_to_prompt_stream(message, message_id)
+            
+            #self.socketio.emit('message', {'data': 'WebSocket connected!'})
+
+            #for i in range(10):
+            #    socketio.emit('message', {'data': 'Message ' + str(i)})  
+
+    def list_backends(self):
+        backends_dir = Path('./backends')  # replace with the actual path to the models folder
+        backends = [f.stem for f in backends_dir.iterdir() if f.is_dir() and f.stem!="__pycache__"]
+        return jsonify(backends)
+
 
     def list_models(self):
-        models_dir = Path('./models')  # replace with the actual path to the models folder
-        models = [f.name for f in models_dir.glob('*.bin')]
+        models_dir = Path('./models')/self.config["backend"]  # replace with the actual path to the models folder
+        models = [f.name for f in models_dir.glob(self.backend.file_extension)]
         return jsonify(models)
     
+
+    def list_personalities_languages(self):
+        personalities_languages_dir = Path(f'./personalities')  # replace with the actual path to the models folder
+        personalities_languages = [f.stem for f in personalities_languages_dir.iterdir() if f.is_dir()]
+        return jsonify(personalities_languages)
+
+    def list_personalities_categories(self):
+        personalities_categories_dir = Path(f'./personalities/{self.config["personality_language"]}')  # replace with the actual path to the models folder
+        personalities_categories = [f.stem for f in personalities_categories_dir.iterdir() if f.is_dir()]
+        return jsonify(personalities_categories)
+    
     def list_personalities(self):
-        personalities_dir = Path('./personalities')  # replace with the actual path to the models folder
-        personalities = [f.name for f in personalities_dir.glob('*.yaml')]
+        personalities_dir = Path(f'./personalities/{self.config["personality_language"]}/{self.config["personality_category"]}')  # replace with the actual path to the models folder
+        personalities = [f.stem for f in personalities_dir.glob('*.yaml')]
         return jsonify(personalities)
+
+    def list_languages(self):
+        lanuguages= [
+        { "value": "en-US", "label": "English" },
+        { "value": "fr-FR", "label": "Français" },
+        { "value": "ar-AR", "label": "العربية" },
+        { "value": "it-IT", "label": "Italiano" },
+        { "value": "de-DE", "label": "Deutsch" },
+        { "value": "nl-XX", "label": "Dutch" },
+        { "value": "zh-CN", "label": "中國人" }
+        ]
+        return jsonify(lanuguages)
+
 
     def list_discussions(self):
         discussions = self.db.get_discussions()
         return jsonify(discussions)
 
 
-    def prepare_a_new_chatbot(self):
-        # Create chatbot
-        self.chatbot_bindings = self.create_chatbot()
-        
+    def set_personality_language(self):
+        lang = request.args.get('language')
+        self.config['personality_language'] = lang
+        return jsonify({'success':True})
 
-    def create_chatbot(self):
-        return Model(
-            ggml_model=f"./models/{self.config['model']}", 
-            n_ctx=self.config['ctx_size'], 
-            seed=self.config['seed'],
-            )
-
-    def condition_chatbot(self, conditionning_message):
-        if self.current_discussion is None:
-            self.current_discussion = self.db.load_last_discussion()
-        
-        message_id = self.current_discussion.add_message(
-            "conditionner", 
-            conditionning_message, 
-            DiscussionsDB.MSG_TYPE_CONDITIONNING,
-            0,
-            self.current_message_id
-        )
-        self.current_message_id = message_id
-        if self.personality["welcome_message"]!="":
-            message_id = self.current_discussion.add_message(
-                self.personality["name"], self.personality["welcome_message"], 
-                DiscussionsDB.MSG_TYPE_NORMAL,
-                0,
-                self.current_message_id
-            )
-        
-            self.current_message_id = message_id
-        return message_id
-
-    def prepare_query(self):
-        self.bot_says = ""
-        self.full_text = ""
-        self.is_bot_text_started = False
-        #self.current_message = message
-
-    def new_text_callback(self, text: str):
-        print(text, end="")
-        sys.stdout.flush()
-        self.full_text += text
-        if self.is_bot_text_started:
-            self.bot_says += text
-            self.full_message += text
-            self.text_queue.put(text)
-            
-        #if self.current_message in self.full_text:
-        if len(self.prompt_message) < len(self.full_text):
-            self.is_bot_text_started = True
+    def set_personality_category(self):
+        category = request.args.get('category')
+        self.config['personality_category'] = category
+        return jsonify({'success':True})
 
     def add_endpoint(
         self,
@@ -211,7 +270,7 @@ class Gpt4AllWebUI:
         )
 
     def index(self):
-        return render_template("chat.html")
+        return render_template("index.html")
 
     def format_message(self, message):
         # Look for a code block within the message
@@ -230,78 +289,50 @@ class Gpt4AllWebUI:
         return jsonify(self.db.export_to_json())
 
     def export_discussion(self):
-        return jsonify(self.full_message)
+        return jsonify({"discussion_text":self.get_discussion_to()})
     
-    def generate_message(self):
-        self.generating=True
-        self.text_queue=Queue()
-        gc.collect()
 
-        self.chatbot_bindings.generate(
-            self.prompt_message,#self.full_message,#self.current_message,
-            new_text_callback=self.new_text_callback,
-            n_predict=len(self.current_message)+self.config['n_predict'],
-            temp=self.config['temp'],
-            top_k=self.config['top_k'],
-            top_p=self.config['top_p'],
-            repeat_penalty=self.config['repeat_penalty'],
-            repeat_last_n = self.config['repeat_last_n'],
-            #seed=self.config['seed'],
-            n_threads=8
-        )
-        self.generating=False
-
-    @stream_with_context
     def parse_to_prompt_stream(self, message, message_id):
         bot_says = ""
-        self.stop = False
 
         # send the message to the bot
         print(f"Received message : {message}")
         # First we need to send the new message ID to the client
         response_id = self.current_discussion.add_message(
-            self.personality["name"], ""
+            self.personality["name"], "", parent = message_id
         )  # first the content is empty, but we'll fill it at the end
-        yield (
-            json.dumps(
+        socketio.emit('infos',
                 {
                     "type": "input_message_infos",
-                    "message": message,
+                    "bot": self.personality["name"],
+                    "user": self.personality["user_name"],
+                    "message":markdown.markdown(message),
                     "id": message_id,
                     "response_id": response_id,
                 }
-            )
-        )
+            )  
 
-        self.current_message = self.personality["message_prefix"] + message + self.personality["message_suffix"]
-        self.full_message += self.current_message
-        self.full_message_list.append(self.current_message)
-        
-        if len(self.full_message_list) > self.config["nb_messages_to_remember"]:
-            self.prompt_message = self.personality["personality_conditionning"]+ '\n'.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
-        else:
-            self.prompt_message = self.full_message
-        self.prepare_query()
+
+        # prepare query and reception
+        self.discussion_messages = self.prepare_query(message_id)
+        self.prepare_reception()
         self.generating = True
-        app.config['executor'].submit(self.generate_message)
-        while self.generating or not self.text_queue.empty():
-            try:
-                value = self.text_queue.get(False)
-                yield value
-            except :
-                time.sleep(1)
-
-
-
+        # app.config['executor'] = ThreadPoolExecutor(max_workers=1)
+        # app.config['executor'].submit(self.generate_message)
+        self.generate_message()
+        print("## Done ##")
         self.current_discussion.update_message(response_id, self.bot_says)
         self.full_message_list.append(self.bot_says)
-        #yield self.bot_says# .encode('utf-8').decode('utf-8')
-        # TODO : change this to use the yield version in order to send text word by word
+        bot_says = markdown.markdown(self.bot_says)
 
-        return "\n".join(bot_says)
+        socketio.emit('final', {'data': bot_says})
+        self.cancel_gen = False
+        return bot_says
+    
+    
+  
 
-    def bot(self):
-        self.stop = True
+    def generate(self):
 
         if self.current_discussion is None:
             if self.db.does_last_discussion_have_messages():
@@ -309,36 +340,33 @@ class Gpt4AllWebUI:
             else:
                 self.current_discussion = self.db.load_last_discussion()
 
+        message = request.json["message"]
         message_id = self.current_discussion.add_message(
-            "user", request.json["message"], parent=self.current_message_id
+            "user", message, parent=self.current_message_id
         )
         message = f"{request.json['message']}"
         self.current_message_id = message_id
+
         # Segmented (the user receives the output as it comes)
         # We will first send a json entry that contains the message id and so on, then the text as it goes
         return Response(
             stream_with_context(
                 self.parse_to_prompt_stream(message, message_id)
-            )
+            ), content_type='text/plain; charset=utf-8'
         )
     
-
+    def stop_gen(self):
+        self.cancel_gen = True
+        return jsonify({"status": "ok"}) 
+           
     def run_to(self):
         data = request.get_json()
-        message_id = data["id"]
-
-        self.stop = True
-        message_id = self.current_discussion.add_message(
-            "user", request.json["message"], parent=message_id
-        )
-
-        message = f"{request.json['message']}"
-
+        message_id = int(data["id"])
         # Segmented (the user receives the output as it comes)
         # We will first send a json entry that contains the message id and so on, then the text as it goes
         return Response(
             stream_with_context(
-                self.parse_to_prompt_stream(message, message_id)
+                self.parse_to_prompt_stream("",message_id)
             )
         )
 
@@ -347,24 +375,6 @@ class Gpt4AllWebUI:
         title = data["title"]
         self.current_discussion.rename(title)
         return "renamed successfully"
-
-    def restore_discussion(self, full_message):
-        self.prompt_message = full_message
-
-        if len(self.full_message_list)>5:
-            self.prompt_message = "\n".join(self.full_message_list[-5:])
-
-        self.chatbot_bindings.generate(
-            self.prompt_message,#full_message,
-            new_text_callback=self.new_text_callback,
-            n_predict=0,#len(full_message),
-            temp=self.config['temp'],
-            top_k=self.config['top_k'],
-            top_p=self.config['top_p'],
-            repeat_penalty= self.config['repeat_penalty'],
-            repeat_last_n = self.config['repeat_last_n'],
-            n_threads=8
-        )
 
     def load_discussion(self):
         data = request.get_json()
@@ -377,19 +387,11 @@ class Gpt4AllWebUI:
                 self.current_discussion = Discussion(discussion_id, self.db)
             else:
                 self.current_discussion = self.db.create_discussion()
-        
         messages = self.current_discussion.get_messages()
-        
-        self.full_message = ""
-        self.full_message_list = []
         for message in messages:
-            if message['sender']!="conditionner":
-                self.full_message += message['sender'] + ": " + message['content'] + "\n"
-                self.full_message_list.append(message['sender'] + ": " + message['content'])
-                self.current_message_id=message['id']
-        app.config['executor'].submit(self.restore_discussion, self.full_message)
-
-        return jsonify(messages)
+            message["content"] = markdown.markdown(message["content"])
+        
+        return jsonify(messages), {'Content-Type': 'application/json; charset=utf-8'}
 
     def delete_discussion(self):
         data = request.get_json()
@@ -423,31 +425,74 @@ class Gpt4AllWebUI:
 
     def new_discussion(self):
         title = request.args.get("title")
-        self.current_discussion = self.db.create_discussion(title)
-        # Get the current timestamp
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        app.config['executor'].submit(self.prepare_a_new_chatbot)
-
-        self.full_message =""
-
-        # Chatbot conditionning
-        self.condition_chatbot(self.personality["personality_conditionning"])
-
-
+        timestamp = self.create_new_discussion(title)
+        # app.config['executor'] = ThreadPoolExecutor(max_workers=1)
+        # app.config['executor'].submit(self.create_chatbot)
+        # target=self.create_chatbot()
+        
         # Return a success response
-        return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp, "welcome_message":self.personality["welcome_message"]})
+        return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp, "welcome_message":self.personality["welcome_message"], "sender":self.personality["name"]})
 
-    def update_model_params(self):
+    def set_backend(self):
+        data = request.get_json()
+        backend =  str(data["backend"])
+        if self.config['backend']!= backend:
+            print("New backend selected")
+            
+            self.config['backend'] = backend
+            models_dir = Path('./models')/self.config["backend"]  # replace with the actual path to the models folder
+            models = [f.name for f in models_dir.glob(self.backend.file_extension)]
+            if len(models)>0:            
+                self.config['model'] = models[0]
+                self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
+                # Build chatbot
+                self.chatbot_bindings = self.create_chatbot()
+                return jsonify({"status": "ok"})
+            else:
+                return jsonify({"status": "no_models_found"})
+
+        return jsonify({"status": "error"})
+
+    def set_model(self):
         data = request.get_json()
         model =  str(data["model"])
-        if self.config['model'] != model:
-            print("New model selected")
+        if self.config['model']!= model:
+            print("New model selected")            
             self.config['model'] = model
-            self.prepare_a_new_chatbot()
+            # Build chatbot
+            self.chatbot_bindings = self.create_chatbot()
+            return jsonify({"status": "ok"})
+
+        return jsonify({"status": "error"})    
+    
+    def update_model_params(self):
+        data = request.get_json()
+        backend =  str(data["backend"])
+        model =  str(data["model"])
+        personality_language =  str(data["personality_language"])
+        personality_category =  str(data["personality_category"])
+        personality =  str(data["personality"])
+        
+        if self.config['backend']!=backend or  self.config['model'] != model:
+            print("New model selected")
+            
+            self.config['backend'] = backend
+            self.config['model'] = model
+            self.create_chatbot()
+
+        self.config['personality_language'] = personality_language
+        self.config['personality_category'] = personality_category
+        self.config['personality'] = personality
+
+        personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}.yaml"
+        print(f"Loading personality : {personality_fn}")
+        self.personality = load_config(personality_fn)
 
         self.config['n_predict'] = int(data["nPredict"])
         self.config['seed'] = int(data["seed"])
+        self.config['model'] = str(data["model"])
+        self.config['voice'] = str(data["voice"])
+        self.config['language'] = str(data["language"])
         
         self.config['temp'] = float(data["temp"])
         self.config['top_k'] = int(data["topK"])
@@ -455,7 +500,17 @@ class Gpt4AllWebUI:
         self.config['repeat_penalty'] = float(data["repeatPenalty"])
         self.config['repeat_last_n'] = int(data["repeatLastN"])
 
+        save_config(self.config, self.config_file_path)
+
+        print("==============================================")
         print("Parameters changed to:")
+        print(f"\tBackend:{self.config['backend']}")
+        print(f"\tModel:{self.config['model']}")
+        print(f"\tPersonality language:{self.config['personality_language']}")
+        print(f"\tPersonality category:{self.config['personality_category']}")
+        print(f"\tPersonality:{self.config['personality']}")
+        print(f"\tLanguage:{self.config['language']}")
+        print(f"\tVoice:{self.config['voice']}")
         print(f"\tTemperature:{self.config['temp']}")
         print(f"\tNPredict:{self.config['n_predict']}")
         print(f"\tSeed:{self.config['seed']}")
@@ -463,6 +518,8 @@ class Gpt4AllWebUI:
         print(f"\top_p:{self.config['top_p']}")
         print(f"\trepeat_penalty:{self.config['repeat_penalty']}")
         print(f"\trepeat_last_n:{self.config['repeat_last_n']}")
+        print("==============================================")
+
         return jsonify({"status":"ok"})
     
     
@@ -513,6 +570,12 @@ if __name__ == "__main__":
         help="Number of tokens to predict at each step.",
     )
     parser.add_argument(
+        "--n_threads",
+        type=int,
+        default=None,
+        help="Number of threads to use.",
+    )
+    parser.add_argument(
         "--top_k", type=int, default=None, help="Value for the top-k sampling."
     )
     parser.add_argument(
@@ -549,6 +612,13 @@ if __name__ == "__main__":
     parser.set_defaults(debug=False)
     args = parser.parse_args()
 
+    # The default configuration must be kept unchanged as it is committed to the repository, 
+    # so we have to make a copy that is not comitted
+    if args.config=="default":
+        args.config = "local_default"
+        if not Path(f"configs/local_default.yaml").exists():
+            print("No local configuration file found. Building from scratch")
+            shutil.copy(f"configs/default.yaml", f"configs/local_default.yaml")
     config_file_path = f"configs/{args.config}.yaml"
     config = load_config(config_file_path)
 
@@ -557,12 +627,11 @@ if __name__ == "__main__":
         if arg_value is not None:
             config[arg_name] = arg_value
 
-    personality = load_config(f"personalities/{config['personality']}.yaml")
+    personality = load_config(f"personalities/{config['personality_language']}/{config['personality_category']}/{config['personality']}.yaml")
 
-    executor = ThreadPoolExecutor(max_workers=2)
-    app.config['executor'] = executor
-
-    bot = Gpt4AllWebUI(app, config, personality)
+    # executor = ThreadPoolExecutor(max_workers=1)
+    # app.config['executor'] = executor
+    bot = Gpt4AllWebUI(app, socketio, config, personality, config_file_path)
 
     if config["debug"]:
         app.run(debug=True, host=config["host"], port=config["port"])

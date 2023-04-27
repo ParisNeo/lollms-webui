@@ -1,5 +1,7 @@
 
 function load_discussion(discussion=0){
+  var chatWindow = document.getElementById('chat-window');
+
   if(discussion)
   {
     console.log(discussion.id)
@@ -22,13 +24,14 @@ function load_discussion(discussion=0){
         const messages = JSON.parse(data);
         console.log(messages)
         // process messages
-        var container = document.getElementById('chat-window');
-        container.innerHTML = '';
+        chatWindow.innerHTML = '';
         messages.forEach(message => {
           console.log(`Adding message ${message.type}`)
           if(message.type==0){
             console.log("Showing message")
             addMessage(message.sender, message.content, message.id, message.rank, true);
+            // scroll to bottom of chat window
+            chatWindow.scrollTop = chatWindow.scrollHeight;
           }
         });
           });
@@ -45,7 +48,7 @@ function load_discussion(discussion=0){
 function populate_discussions_list()
 {
   // Populate discussions list
-  const discussionsList = document.querySelector('#discussions-list');
+  const discussionsList = document.getElementById('discussions-list');
   discussionsList.innerHTML = "";
   fetch('/list_discussions')
     .then(response => response.json())
@@ -53,24 +56,25 @@ function populate_discussions_list()
       discussions.forEach(discussion => {
         const buttonWrapper = document.createElement('div');
         //buttonWrapper.classList.add('flex', 'space-x-2', 'mt-2');
-        buttonWrapper.classList.add('flex', 'items-center', 'mt-2', 'px-2', 'py-1', 'text-left');
+        buttonWrapper.classList.add('drop-shadow-sm', 'p-1', 'mx-2', 'my-2', 'flex', 'flex-row', 'space-x-2', 'rounded-lg', 'shadow-lg', 'bg-gray-200', 'dark:bg-gray-800', 'transition-colors', 'duration-300', 'text-left');
         
         const renameButton = document.createElement('button');
-        renameButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded',"w-10","h-10");
+        renameButton.classList.add('bg-gray-400', 'hover:bg-gray-800', 'dark:hover:bg-gray-700', 'text-white', 'dark:text-white', 'font-bold', 'py-0', 'px-0', 'rounded',"w-10","h-10");
         const renameImg = document.createElement('img');
         renameImg.src = "/static/images/edit_discussion.png";
+        renameButton.title = "Rename discussion";
         renameImg.classList.add('py-2', 'px-2', 'rounded', 'w-15', 'h-15');
         renameButton.appendChild(renameImg);
 
         //renameButton.style.backgroundImage = "/rename_discussion.svg"; //.textContent = 'Rename';
         renameButton.addEventListener('click', () => {
           const dialog = document.createElement('dialog');
-          dialog.classList.add('bg-white', 'rounded', 'p-4');
+          dialog.classList.add('bg-gray-500', 'text-white', 'rounded', 'p-4');
 
           const inputLabel = document.createElement('label');
           inputLabel.textContent = 'New name: ';
           const inputField = document.createElement('input');
-          inputField.classList.add('border', 'border-gray-400', 'rounded', 'py-1', 'px-2');
+          inputField.classList.add('border', "px-2", "mx-2", 'bg-gray-800', 'border-gray-400', 'rounded', 'py-1', 'px-2');
           inputField.setAttribute('type', 'text');
           inputField.setAttribute('name', 'title');
           inputField.setAttribute('value', discussion.title);
@@ -84,7 +88,7 @@ function populate_discussions_list()
           });
 
           const renameConfirmButton = document.createElement('button');
-          renameConfirmButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'ml-2');
+          renameConfirmButton.classList.add('bg-gray-500', 'hover:bg-gray-700', 'text-white', 'dark:text-white', 'font-bold', 'py-1', 'px-0', 'rounded', 'ml-2');
           renameConfirmButton.textContent = 'Rename';
           renameConfirmButton.addEventListener('click', () => {
             const newTitle = inputField.value;
@@ -120,9 +124,10 @@ function populate_discussions_list()
           dialog.showModal();
         });
         const deleteButton = document.createElement('button');
-        deleteButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-0', 'px-0', 'rounded',"w-10","h-10");
+        deleteButton.classList.add('bg-gray-400', 'hover:bg-gray-800', 'dark:hover:bg-gray-700', 'text-black', 'dark:text-white', 'font-bold', 'py-0', 'px-0', 'rounded',"w-10","h-10");
         const deleteImg = document.createElement('img');
         deleteImg.src = "/static/images/delete_discussion.png";
+        deleteButton.title = "Delete discussion";
         deleteImg.classList.add('py-2', 'px-2', 'rounded', 'w-15', 'h-15');
 
         deleteButton.addEventListener('click', () => {
@@ -148,18 +153,33 @@ function populate_discussions_list()
         });
 
         deleteButton.appendChild(deleteImg);
-        deleteButton.addEventListener('click', () => {
-
-        });
 
         const discussionButton = document.createElement('button');
-        discussionButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'ml-2', 'w-full');
+        discussionButton.id = discussion.id;
+        discussionButton.classList.add('isButton', 'hover:bg-gray-800', 'dark:hover:bg-gray-700', 'text-black', 'dark:text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'ml-2', 'w-full');
         discussionButton.textContent = discussion.title;
+        discussionButton.title = "Open discussion";
+        
+        //Indicates currently selected (Active) discussion
         discussionButton.addEventListener('click', () => {
           console.log(`Showing messages for discussion ${discussion.id}`);
           load_discussion(discussion);
+          const btnElList = document.querySelectorAll('.isButton');
+          btnElList.forEach(element => {
+            if (element.classList.contains('activeDiscussion')) {
+              element.classList.remove('activeDiscussion');
+            }
+          });
+          discussionButton.classList.add('activeDiscussion');
         });
-
+        
+        const btnElList = document.querySelectorAll('.isButton');
+        
+        btnElList.forEach(btnEl => {
+          btnEl.addEventListener('click', () => {
+            btnEl.querySelector('activeDiscussion')?.classList.remove('activeDiscussion');
+          });
+        })
 
         buttonWrapper.appendChild(renameButton);
         buttonWrapper.appendChild(deleteButton);
@@ -173,68 +193,78 @@ function populate_discussions_list()
   });
 }
 
-
-// adding export discussion button
-const exportDiscussionButton = document.querySelector('#export-discussion-button');
-
-exportDiscussionButton.addEventListener('click', () => {
-  fetch(`/export_discussion`)
-  .then(response => response.text())
-  .then(data => {
-    const filename = window.prompt('Please enter a filename:', 'discussion.txt');
-    if (filename !== null) {
-      const text = data.replace(/\n/g, "\r\n");
-      const blob = new Blob([text], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      link.click();
-      URL.revokeObjectURL(url);
-    }
-  }).catch(function(error){
-
-  });  
-});
-const actionBtns = document.querySelector('#action-buttons');
-actionBtns.appendChild(exportDiscussionButton);
-
-const newDiscussionBtn = document.querySelector('#new-discussion-btn');
-const resetDBButton = document.querySelector('#reset-discussions-btn');
-resetDBButton.addEventListener('click', () => {
-
-});
-newDiscussionBtn.addEventListener('click', () => {
-  const chatWindow = document.getElementById('chat-window');
-
-  const discussionName = prompt('Enter a name for the new discussion:');
-  if (discussionName) {
-    const sendbtn = document.querySelector("#submit-input")
-    const waitAnimation = document.querySelector("#wait-animation")
-    sendbtn.style.display="none";
-    waitAnimation.style.display="block";
-
-    // Add the discussion to the discussion list
-    const discussionItem = document.createElement('li');
-    discussionItem.textContent = discussionName;
-    fetch(`/new_discussion?title=${discussionName}`)
+function populate_menu(){
+  // adding export discussion button
+  const exportDiscussionButton = document.querySelector('#export-discussion-button');
+  exportDiscussionButton.title = "Export discussion to a file";
+  exportDiscussionButton.addEventListener('click', () => {
+    fetch(`/export_discussion`)
     .then(response => response.json())
     .then(data => {
-        console.log(`New chat ${data.welcome_message}`)
-        // Select the new discussion
-        //selectDiscussion(discussionId);
-        chatWindow.innerHTML=""
-        addMessage("GPT4ALL", data.welcome_message,0);
-        
-        populate_discussions_list()
-        sendbtn.style.display="block";
-        waitAnimation.style.display="none";
-    })
-    .catch(error => {
-      // Handle any errors that occur
-      console.error(error);
-    });
-    
+      discussion_text = data["discussion_text"]
+      copyToClipboard(discussion_text)
+      const filename = window.prompt('Please enter a filename:', 'discussion.txt');
+      if (filename !== null) {
+        const text = discussion_text;
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+    }).catch(function(error){
 
-  }
-});
+    });  
+  });
+  const actionBtns = document.querySelector('#action-buttons');
+  actionBtns.appendChild(exportDiscussionButton);
+
+  const newDiscussionBtn = document.querySelector('#new-discussion-btn');
+  newDiscussionBtn.title = "Create new discussion";
+  const resetDBButton = document.querySelector('#reset-discussions-btn');
+  resetDBButton.title = "Reset all discussions/database";
+  resetDBButton.addEventListener('click', () => {
+
+  });
+  newDiscussionBtn.addEventListener('click', () => {
+    const chatWindow = document.getElementById('chat-window');
+
+    const discussionName = prompt('Enter a name for the new discussion:');
+    if (discussionName) {
+      const sendbtn = document.querySelector("#submit-input")
+      const waitAnimation = document.querySelector("#wait-animation")
+      const stopGeneration = document.querySelector("#stop-generation")
+      sendbtn.style.display="none";
+      waitAnimation.style.display="block";
+      stopGeneration.style.display="block";
+      
+
+      // Add the discussion to the discussion list
+      const discussionItem = document.createElement('li');
+      discussionItem.textContent = discussionName;
+      fetch(`/new_discussion?title=${discussionName}`)
+      .then(response => response.json())
+      .then(data => {
+          console.log(`New chat ${data.welcome_message}`)
+          // Select the new discussion
+          //selectDiscussion(discussionId);
+          chatWindow.innerHTML=""
+          addMessage(data.sender, data.welcome_message,0);
+          
+          populate_discussions_list()
+          sendbtn.style.display="block";
+          waitAnimation.style.display="none";
+          stopGeneration.style.display="none";
+        })
+      .catch(error => {
+        // Handle any errors that occur
+        console.error(error);
+      });
+      
+
+    }
+  });
+
+}

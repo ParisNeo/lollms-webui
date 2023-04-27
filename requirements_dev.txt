@@ -1,0 +1,9 @@
+flask
+flask_socketio
+nomic
+pytest
+pyyaml
+markdown
+pyllamacpp==1.0.7
+gpt4all-j 
+transformers
