@@ -38,85 +38,49 @@ function update_main(){
     // scroll to bottom of chat window
     chatWindow.scrollTop = chatWindow.scrollHeight;
 
-    fetch('/generate', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ message })
-    }).then(function(response) {
-        const stream = new ReadableStream({
-            start(controller) {
-                const reader = response.body.getReader();
-                function push() {
-                    reader.read().then(function(result) {
-                        if (result.done) {
-                            sendbtn.style.display="block";
-                            waitAnimation.style.display="none";
-                            stopGeneration.style.display = "none";
-                            console.log(result)
-                            controller.close();
-                            return;
-                        }
-                        controller.enqueue(result.value);
-                        push();
-                    })
-                }
-                push();
-            }
-        });
-        const textDecoder = new TextDecoder();
-        const readableStreamDefaultReader = stream.getReader();
-        let entry_counter = 0
-        function readStream() {
-            readableStreamDefaultReader.read().then(function(result) {
-                if (result.done) {
-                    return;
-                }
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+    entry_counter = 0;
 
-                text = textDecoder.decode(result.value);
-
-                // The server will first send a json containing information about the message just sent
-                if(entry_counter==0)
-                {
-                  // We parse it and
-                  infos = JSON.parse(text);
-
-                  user_msg.setSender(infos.user);
-                  user_msg.setMessage(infos.message);
-                  user_msg.setID(infos.id);
-                  bot_msg.setSender(infos.bot);
-                  bot_msg.setID(infos.response_id);
-
-                  bot_msg.messageTextElement;
-                  bot_msg.hiddenElement;
-                  entry_counter ++;
-                }
-                else{
-                  entry_counter ++;   
-                  prefix = "FINAL:";
-                  if(text.startsWith(prefix)){
-                      text = text.substring(prefix.length);
-                      bot_msg.hiddenElement.innerHTML         = text
-                      bot_msg.messageTextElement.innerHTML    = text
-                  }
-                  else{
-                  // For the other enrtries, these are just the text of the chatbot
-                  txt = bot_msg.hiddenElement.innerHTML;
-                  txt += text
-                  bot_msg.hiddenElement.innerHTML         = txt;
-                  bot_msg.messageTextElement.innerHTML    = txt;
-                  // scroll to bottom of chat window
-                  chatWindow.scrollTop = chatWindow.scrollHeight;
-
-                  }
-                }
-
-                readStream();
-            });
-        }
-        readStream();
+    socket.on('connect', function() {
+        socket.emit('connected', {prompt: message});
+        entry_counter = 0;
     });
+    socket.on('disconnect', function() {
+      
+      entry_counter = 0;
+    });
+    socket.on()
+
+    socket.on('infos', function(msg) {
+      user_msg.setSender(msg.user);
+      user_msg.setMessage(msg.message);
+      user_msg.setID(msg.id);
+      bot_msg.setSender(msg.bot);
+      bot_msg.setID(msg.response_id);
+    });
+
+    socket.on('message', function(msg) {
+          text = msg.data;
+          console.log(text)
+          // For the other enrtries, these are just the text of the chatbot
+          txt = bot_msg.hiddenElement.innerHTML;
+          txt += text
+          bot_msg.hiddenElement.innerHTML         = txt;
+          bot_msg.messageTextElement.innerHTML    = txt;
+          // scroll to bottom of chat window
+          chatWindow.scrollTop = chatWindow.scrollHeight;
+    });
+
+    socket.on('final',function(msg){
+      text = msg.data;
+      bot_msg.hiddenElement.innerHTML         = text
+      bot_msg.messageTextElement.innerHTML    = text
+      sendbtn.style.display="block";
+      waitAnimation.style.display="none";
+      stopGeneration.style.display = "none";
+      socket.disconnect();
+    });
+    //socket.emit('stream-text', {text: text});
   }
   chatForm.addEventListener('submit', event => {
       event.preventDefault();

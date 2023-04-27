@@ -202,7 +202,7 @@ class GPT4AllAPI():
         if self.chatbot_bindings.inline:
             self.bot_says += text
             if not self.personality["user_message_prefix"].lower() in self.bot_says.lower():
-                self.text_queue.put(text)
+                self.socketio.emit('message', {'data': text});
                 if self.cancel_gen:
                     print("Generation canceled")
                     return False
@@ -235,7 +235,6 @@ class GPT4AllAPI():
         
     def generate_message(self):
         self.generating=True
-        self.text_queue=Queue()
         gc.collect()
         total_n_predict = self.config['n_predict']
         print(f"Generating {total_n_predict} outputs... ")
