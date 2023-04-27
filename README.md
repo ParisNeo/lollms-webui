@@ -56,132 +56,8 @@ It is advised to have python 3.10 (The official one, not the one from Microsoft 
 4. Before running, it may ask you to download a model. Feel free to accept or to download your own models depending on the backends you are using.
 
 Once installed, you should see a new folder called GPT4All. From now on, you can run the app by using webui.bat or webui.sh. The script will check for any new updates
-### Manual Simple install:
 
-1. Download this repository .zip:
-
-![image](https://user-images.githubusercontent.com/80409979/232210909-0ce3dc80-ed34-4b32-b828-e124e3df3ff1.png)
-
-2. Extract contents into a folder.
-3. Install/run application by double clicking on `webui.bat` file from Windows Explorer as normal user.
-
-### Manual Advanced mode:
-
-1. Install [git](https://git-scm.com/download/win).
-2. Open Terminal/PowerShell and navigate to a folder you want to clone this repository.
-
-```bash
-git clone https://github.com/nomic-ai/gpt4all-ui.git
-```
-
-4. Install/run application by double clicking on `webui.bat` file from Windows explorer as normal user.
-
-## Linux
-
-### Automatic install
-
-1. Make sure you have installed `curl`. It is needed for the one-liner to work.
-
-`Debian-based:`
-```
-sudo apt install curl 
-```
-`Red Hat-based:`
-```
-sudo dnf install curl 
-```
-`Arch-based:`
-```
-sudo pacman -S curl 
-```
-2. Open terminal/console copy and paste this command and press enter: 
-```
-mkdir -p ~/gpt4all-ui && curl -L https://raw.githubusercontent.com/nomic-ai/gpt4all-ui/main/webui.sh -o ~/gpt4all-ui/webui.sh && chmod +x ~/gpt4all-ui/webui.sh && cd ~/gpt4all-ui && ./webui.sh
-```
-> **Note**
->
-> This command creates new directory `/gpt4all-ui/` in your /home/ direcory, downloads a file [webui.sh](https://raw.githubusercontent.com/nomic-ai/gpt4all-ui/main/webui.sh), makes file executable and executes webui.sh that downloads and installs everything that is needed.
-
-3. Follow instructions on screen until it launches webui.
-4. To relaunch application: 
-```
-bash webui.sh
-```
-
-### Manual Simple install:
-
-1. Download this repository .zip:
-
-![image](https://user-images.githubusercontent.com/80409979/232210909-0ce3dc80-ed34-4b32-b828-e124e3df3ff1.png)
-
-2. Extract contents into a folder.
-3. Install/run application from terminal/console: 
-```
-bash webui.sh
-```
-### Manual Advanced mode:
-
-1. Open terminal/console and install dependencies:
-
-`Debian-based:`
-```
-sudo apt install curl git python3 python3-venv
-```
-`Red Hat-based:`
-```
-sudo dnf install curl git python3
-```
-`Arch-based:`
-```
-sudo pacman -S curl git python3
-```
-
-2. Clone repository:
-
-```bash
-git clone https://github.com/nomic-ai/gpt4all-ui.git
-```
-```bash
-cd gpt4all-ui
-```
-
-3. Install/run application:
-
-```bash
-bash ./webui.sh
-```
-
-## MacOS
-
-1. Open terminal/console and install `brew`:
-
-```
-$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-
-2. Install dependencies:
-
-```
-brew install git python3
-```
-
-3. Clone repository:
-
-```bash
-git clone https://github.com/nomic-ai/gpt4all-ui.git
-```
-```bash
-cd gpt4all-ui
-```
-
-4. Install/run application:
-
-```bash
-bash ./webui.sh
-```
-
-On Linux/MacOS, if you have issues, refer to the details presented [here](docs/Linux_Osx_Install.md)
-These scripts will create a Python virtual environment and install the required dependencies. It will also download the models and install them.
+[If you want to use a more advanced install procedure, please click here](docs/AdvancedInstallInstructions.md)
 
 ## Docker Compose
 Make sure to put models the inside the `models` directory.
@@ -230,9 +106,11 @@ You can also refuse to download the model during the install procedure and downl
 - [Vicuna 7B rev 1](https://huggingface.co/eachadea/legacy-ggml-vicuna-7b-4bit/resolve/main/ggml-vicuna-7b-4bit-rev1.bin) or visit [repository](https://huggingface.co/eachadea/legacy-ggml-vicuna-7b-4bit)  
 - [Vicuna 13B rev 1](https://huggingface.co/eachadea/ggml-vicuna-13b-4bit/resolve/main/ggml-vicuna-13b-4bit-rev1.bin) or visit [repository](https://huggingface.co/eachadea/ggml-vicuna-13b-4bit)
 
+We also support GPT-j models out of the box
 
 ## GPT-j models
 - [GPT-j 7B](https://gpt4all.io/models/ggml-gpt4all-j.bin)
+
 
 **These models don't work "out-of-the-box" and need to be converted to the right ggml type:**
 ## LLAMACPP models
@@ -241,7 +119,7 @@ You can also refuse to download the model during the install procedure and downl
 - [Vicuna 13B q4 v1](https://huggingface.co/eachadea/ggml-vicuna-13b-1.1/resolve/main/ggml-vicuna-13b-1.1-q4_1.bin) or visit [repository](https://huggingface.co/eachadea/ggml-vicuna-13b-1.1/)
 - [ALPACA 7B](https://huggingface.co/Sosaka/Alpaca-native-4bit-ggml/resolve/main/ggml-alpaca-7b-q4.bin) or visit [repository](https://huggingface.co/Sosaka/Alpaca-native-4bit-ggml/)
 
-Just download the model into the `models` folder and start using the tool.
+Just download the model into the `models/<backend name>` folder and start using the tool.
 
 # Build custom personalities and share them
 
