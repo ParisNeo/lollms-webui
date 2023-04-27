@@ -32,7 +32,7 @@ from flask import (
     stream_with_context,
     send_from_directory
 )
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, emit
 from pathlib import Path
 import gc
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
@@ -150,6 +150,53 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.add_endpoint(
             "/help", "help", self.help, methods=["GET"]
         )
+        
+        
+        
+        # Socket IO stuff    
+        @socketio.on('connect')
+        def test_connect():
+            print('Client connected')
+
+        @socketio.on('disconnect')
+        def test_disconnect():
+            print('Client disconnected')
+
+        @socketio.on('stream-text')
+        def handle_stream_text(data):
+            text = data['prompt']
+            words = text.split()
+            for word in words:
+                emit('stream-word', {'word': word})
+                time.sleep(1)  # sleep for 1 second to simulate processing time
+            emit('stream-end')    
+        
+        
+        @socketio.on('connected')
+        def handle_connection(data):
+            if "data" in data and data["data"]=='Connected!':
+                return
+            if self.current_discussion is None:
+                if self.db.does_last_discussion_have_messages():
+                    self.current_discussion = self.db.create_discussion()
+                else:
+                    self.current_discussion = self.db.load_last_discussion()
+
+            message = data["prompt"]
+            message_id = self.current_discussion.add_message(
+                "user", message, parent=self.current_message_id
+            )
+            message = data["prompt"]
+            self.current_message_id = message_id
+            tpe = threading.Thread(target=self.parse_to_prompt_stream, args=(message, message_id))
+            tpe.start()
+
+            # self.parse_to_prompt_stream(message, message_id)
+            
+            #self.socketio.emit('message', {'data': 'WebSocket connected!'})
+
+            #for i in range(10):
+            #    socketio.emit('message', {'data': 'Message ' + str(i)})  
 
     def list_backends(self):
         backends_dir = Path('./backends')  # replace with the actual path to the models folder
@@ -242,7 +289,6 @@ class Gpt4AllWebUI(GPT4AllAPI):
         return jsonify({"discussion_text":self.get_discussion_to()})
     
 
-    @stream_with_context
     def parse_to_prompt_stream(self, message, message_id):
         bot_says = ""
 
@@ -252,8 +298,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         response_id = self.current_discussion.add_message(
             self.personality["name"], "", parent = message_id
         )  # first the content is empty, but we'll fill it at the end
-        yield (
-            json.dumps(
+        socketio.emit('infos',
                 {
                     "type": "input_message_infos",
                     "bot": self.personality["name"],
@@ -262,8 +307,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
                     "id": message_id,
                     "response_id": response_id,
                 }
-            )
-        )
+            )  
+
 
         # prepare query and reception
         self.discussion_messages = self.prepare_query(message_id)
@@ -271,41 +316,18 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.generating = True
         # app.config['executor'] = ThreadPoolExecutor(max_workers=1)
         # app.config['executor'].submit(self.generate_message)
-        tpe = threading.Thread(target=self.generate_message)
-        tpe.start()
-        while self.generating:
-            try:
-                while not self.text_queue.empty():
-                    value = self.text_queue.get(False)
-                    if self.cancel_gen:
-                        self.generating = False
-                        break
-                    yield value
-                    time.sleep(0)
-            except Exception as ex:
-                print(f"Exception {ex}")
-                time.sleep(0.1)
-            if self.cancel_gen:
-                self.generating = False
-        tpe = None
-        gc.collect()
+        self.generate_message()
         print("## Done ##")
         self.current_discussion.update_message(response_id, self.bot_says)
         self.full_message_list.append(self.bot_says)
         bot_says = markdown.markdown(self.bot_says)
 
-        yield "FINAL:"+bot_says
+        socketio.emit('final', {'data': bot_says})
         self.cancel_gen = False
         return bot_says
     
     
-    # Socket IO stuff    
-    @socketio.on('connected')
-    def handle_connection(self, data):
-        self.socketio.emit('message', {'data': 'WebSocket connected!'})
-
-        for i in range(10):
-            socketio.emit('message', {'data': 'Message ' + str(i)})    
+  
 
     def generate(self):
 
