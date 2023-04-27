@@ -15,7 +15,7 @@ __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
 
-
+import logging
 import argparse
 import json
 import re
@@ -37,6 +37,9 @@ from pathlib import Path
 import gc
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
 socketio = SocketIO(app)
+# Set the logging level to WARNING or higher
+logging.getLogger('socketio').setLevel(logging.WARNING)
+logging.getLogger('engineio').setLevel(logging.WARNING)
 
 import time
 from pyGpt4All.config import load_config, save_config
