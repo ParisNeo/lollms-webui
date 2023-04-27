@@ -32,20 +32,26 @@ from flask import (
     stream_with_context,
     send_from_directory
 )
+from flask_socketio import SocketIO
 from pathlib import Path
 import gc
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
+socketio = SocketIO(app)
+
 import time
 from pyGpt4All.config import load_config, save_config
 from pyGpt4All.api import GPT4AllAPI
 import shutil
 import markdown
+
+
 class Gpt4AllWebUI(GPT4AllAPI):
-    def __init__(self, _app, config:dict, personality:dict, config_file_path) -> None:
+    def __init__(self, _app, _socketio, config:dict, personality:dict, config_file_path) -> None:
         super().__init__(config, personality, config_file_path)
 
         self.app = _app
         self.cancel_gen = False
+        self.socketio = _socketio
 
 
         self.add_endpoint(
@@ -291,6 +297,15 @@ class Gpt4AllWebUI(GPT4AllAPI):
         yield "FINAL:"+bot_says
         self.cancel_gen = False
         return bot_says
+    
+    
+    # Socket IO stuff    
+    @socketio.on('connected')
+    def handle_connection(self, data):
+        self.socketio.emit('message', {'data': 'WebSocket connected!'})
+
+        for i in range(10):
+            socketio.emit('message', {'data': 'Message ' + str(i)})    
 
     def generate(self):
 
@@ -591,8 +606,7 @@ if __name__ == "__main__":
 
     # executor = ThreadPoolExecutor(max_workers=1)
     # app.config['executor'] = executor
-
-    bot = Gpt4AllWebUI(app, config, personality, config_file_path)
+    bot = Gpt4AllWebUI(app, socketio, config, personality, config_file_path)
 
     if config["debug"]:
         app.run(debug=True, host=config["host"], port=config["port"])

@@ -1,9 +1,10 @@
 flask
+flask_socketio
 nomic
 pytest
 pyyaml
 markdown
-pyllamacpp==1.0.6
+pyllamacpp==1.0.7
 gpt4all-j==0.2.1
 --find-links https://download.pytorch.org/whl/cu117
 torch==2.0.0
