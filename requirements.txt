@@ -1,4 +1,5 @@
 flask
+flask_socketio
 nomic
 pytest
 pyyaml
