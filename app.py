@@ -14,7 +14,7 @@ __github__ = "https://github.com/nomic-ai/gpt4all-ui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-
+import os
 import logging
 import argparse
 import json
@@ -37,9 +37,13 @@ from pathlib import Path
 import gc
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
 socketio = SocketIO(app)
+app.config['SECRET_KEY'] = 'secret!'
 # Set the logging level to WARNING or higher
 logging.getLogger('socketio').setLevel(logging.WARNING)
 logging.getLogger('engineio').setLevel(logging.WARNING)
+# Suppress Flask's default console output
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 import time
 from pyGpt4All.config import load_config, save_config
@@ -91,10 +95,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.add_endpoint(
             "/new_discussion", "new_discussion", self.new_discussion, methods=["GET"]
         )
-        self.add_endpoint("/generate", "generate", self.generate, methods=["POST"])
         self.add_endpoint("/stop_gen", "stop_gen", self.stop_gen, methods=["GET"])
 
-        self.add_endpoint("/run_to", "run_to", self.run_to, methods=["POST"])
         self.add_endpoint("/rename", "rename", self.rename, methods=["POST"])
         self.add_endpoint(
             "/load_discussion", "load_discussion", self.load_discussion, methods=["POST"]
@@ -158,27 +160,15 @@ class Gpt4AllWebUI(GPT4AllAPI):
         
         # Socket IO stuff    
         @socketio.on('connect')
-        def test_connect():
+        def connect():
             print('Client connected')
 
         @socketio.on('disconnect')
-        def test_disconnect():
+        def disconnect():
             print('Client disconnected')
-
-        @socketio.on('stream-text')
-        def handle_stream_text(data):
-            text = data['prompt']
-            words = text.split()
-            for word in words:
-                emit('stream-word', {'word': word})
-                time.sleep(1)  # sleep for 1 second to simulate processing time
-            emit('stream-end')    
         
-        
-        @socketio.on('connected')
-        def handle_connection(data):
-            if "data" in data and data["data"]=='Connected!':
-                return
+        @socketio.on('generate_msg')
+        def generate_msg(data):
             if self.current_discussion is None:
                 if self.db.does_last_discussion_have_messages():
                     self.current_discussion = self.db.create_discussion()
@@ -194,12 +184,16 @@ class Gpt4AllWebUI(GPT4AllAPI):
             tpe = threading.Thread(target=self.parse_to_prompt_stream, args=(message, message_id))
             tpe.start()
 
-            # self.parse_to_prompt_stream(message, message_id)
-            
-            #self.socketio.emit('message', {'data': 'WebSocket connected!'})
+        @socketio.on('generate_msg_from')
+        def handle_connection(data):
+            message_id = int(data['id'])
+            message = data["prompt"]
+            self.current_message_id = message_id
+            tpe = threading.Thread(target=self.parse_to_prompt_stream, args=(message, message_id))
+            tpe.start()
 
-            #for i in range(10):
-            #    socketio.emit('message', {'data': 'Message ' + str(i)})  
+
+
 
     def list_backends(self):
         backends_dir = Path('./backends')  # replace with the actual path to the models folder
@@ -297,79 +291,45 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
         # send the message to the bot
         print(f"Received message : {message}")
-        # First we need to send the new message ID to the client
-        response_id = self.current_discussion.add_message(
-            self.personality["name"], "", parent = message_id
-        )  # first the content is empty, but we'll fill it at the end
-        socketio.emit('infos',
-                {
-                    "type": "input_message_infos",
-                    "bot": self.personality["name"],
-                    "user": self.personality["user_name"],
-                    "message":markdown.markdown(message),
-                    "id": message_id,
-                    "response_id": response_id,
-                }
-            )  
+        if self.current_discussion:
+            # First we need to send the new message ID to the client
+            response_id = self.current_discussion.add_message(
+                self.personality["name"], "", parent = message_id
+            )  # first the content is empty, but we'll fill it at the end
+            socketio.emit('infos',
+                    {
+                        "type": "input_message_infos",
+                        "bot": self.personality["name"],
+                        "user": self.personality["user_name"],
+                        "message":markdown.markdown(message),
+                        "id": message_id,
+                        "response_id": response_id,
+                    }
+            );
 
 
-        # prepare query and reception
-        self.discussion_messages = self.prepare_query(message_id)
-        self.prepare_reception()
-        self.generating = True
-        # app.config['executor'] = ThreadPoolExecutor(max_workers=1)
-        # app.config['executor'].submit(self.generate_message)
-        self.generate_message()
-        print("## Done ##")
-        self.current_discussion.update_message(response_id, self.bot_says)
-        self.full_message_list.append(self.bot_says)
-        bot_says = markdown.markdown(self.bot_says)
-
-        socketio.emit('final', {'data': bot_says})
-        self.cancel_gen = False
-        return bot_says
+            # prepare query and reception
+            self.discussion_messages = self.prepare_query(message_id)
+            self.prepare_reception()
+            self.generating = True
+            # app.config['executor'] = ThreadPoolExecutor(max_workers=1)
+            # app.config['executor'].submit(self.generate_message)
+            print("## Generate message ##")
+            self.generate_message()
+            print("## Done ##")
+            self.current_discussion.update_message(response_id, self.bot_says)
+            self.full_message_list.append(self.bot_says)
+            self.cancel_gen = False
+            return bot_says
+        else:
+            print("## Done ##")
+            return ""
     
-    
-  
-
-    def generate(self):
-
-        if self.current_discussion is None:
-            if self.db.does_last_discussion_have_messages():
-                self.current_discussion = self.db.create_discussion()
-            else:
-                self.current_discussion = self.db.load_last_discussion()
-
-        message = request.json["message"]
-        message_id = self.current_discussion.add_message(
-            "user", message, parent=self.current_message_id
-        )
-        message = f"{request.json['message']}"
-        self.current_message_id = message_id
-
-        # Segmented (the user receives the output as it comes)
-        # We will first send a json entry that contains the message id and so on, then the text as it goes
-        return Response(
-            stream_with_context(
-                self.parse_to_prompt_stream(message, message_id)
-            ), content_type='text/plain; charset=utf-8'
-        )
-    
+     
     def stop_gen(self):
         self.cancel_gen = True
         return jsonify({"status": "ok"}) 
            
-    def run_to(self):
-        data = request.get_json()
-        message_id = int(data["id"])
-        # Segmented (the user receives the output as it comes)
-        # We will first send a json entry that contains the message id and so on, then the text as it goes
-        return Response(
-            stream_with_context(
-                self.parse_to_prompt_stream("",message_id)
-            )
-        )
-
     def rename(self):
         data = request.get_json()
         title = data["title"]
@@ -419,8 +379,11 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
     def delete_message(self):
         discussion_id = request.args.get("id")
-        new_rank = self.current_discussion.delete_message(discussion_id)
-        return jsonify({"new_rank": new_rank})
+        if self.current_discussion is None:
+            return jsonify({"status": False,"message":"No discussion is selected"})
+        else:
+            new_rank = self.current_discussion.delete_message(discussion_id)
+            return jsonify({"status":True,"new_rank": new_rank})
 
 
     def new_discussion(self):

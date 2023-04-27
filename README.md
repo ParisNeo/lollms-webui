@@ -106,6 +106,16 @@ You can also refuse to download the model during the install procedure and downl
 - [Vicuna 7B rev 1](https://huggingface.co/eachadea/legacy-ggml-vicuna-7b-4bit/resolve/main/ggml-vicuna-7b-4bit-rev1.bin) or visit [repository](https://huggingface.co/eachadea/legacy-ggml-vicuna-7b-4bit)  
 - [Vicuna 13B rev 1](https://huggingface.co/eachadea/ggml-vicuna-13b-4bit/resolve/main/ggml-vicuna-13b-4bit-rev1.bin) or visit [repository](https://huggingface.co/eachadea/ggml-vicuna-13b-4bit)
 
+-[ggml-gpt4all-j-v1.3-groovy](https://gpt4all.io/models/ggml-gpt4all-j-v1.3-groovy.bin)
+-[ggml-gpt4all-j-v1.2-jazzy](https://gpt4all.io/models/ggml-gpt4all-j-v1.2-jazzy.bin)
+-[ggml-gpt4all-l13b-snoozy](https://gpt4all.io/models/ggml-gpt4all-l13b-snoozy.bin)
+
+-[ggml-gpt4all-j-v1.1-breezy](https://gpt4all.io/models/ggml-gpt4all-j-v1.1-breezy.bin)
+-[ggml-gpt4all-j](https://gpt4all.io/models/ggml-gpt4all-j.bin)
+-[ggml-vicuna-7b-1.1-q4_2](https://gpt4all.io/models/ggml-vicuna-7b-1.1-q4_2.bin)
+-[ggml-vicuna-13b-1.1-q4_2](https://gpt4all.io/models/ggml-vicuna-13b-1.1-q4_2.bin)
+
+
 We also support GPT-j models out of the box
 
 ## GPT-j models

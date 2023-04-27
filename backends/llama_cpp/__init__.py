@@ -35,6 +35,8 @@ class LLAMACPP(GPTBackend):
                 seed=self.config['seed'],
                 )
 
+    def stop_generation(self):
+        self.model._grab_text_callback()
 
     def generate(self, 
                  prompt:str,                  

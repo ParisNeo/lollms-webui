@@ -14,8 +14,6 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
     const chatWindow = document.getElementById('chat-window');
     const chatForm = document.getElementById('chat-form');
     const userInput = document.getElementById('user-input');
-
-    console.log(id)
     
     const messageElement = document.createElement('div');
     messageElement.classList.add('bg-secondary', 'drop-shadow-sm', 'p-4', 'mx-6', 'my-4', 'flex', 'flex-col', 'space-x-2', 'rounded-lg', 'shadow-lg', 'bg-gray-300', 'text-black', 'dark:text-gray-200', 'dark:bg-gray-800', 'hover:bg-gray-400', 'dark:hover:bg-gray-700', 'transition-colors', 'duration-300');
@@ -88,85 +86,14 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
             waitAnimation.style.display = "block";
             stopGeneration.style.display = "block";
 
-            elements = addMessage("", "", 0, 0, can_edit = true);
+            globals.bot_msg = addMessage("", "", 0, 0, can_edit = true);
+            globals.user_msg = undefined
             // scroll to bottom of chat window
             chatWindow.scrollTop = chatWindow.scrollHeight;
-            fetch("/run_to", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    id: messageElement.id,
-                    message: message
-                })
-            })
-                .then(function (response) {
-                    const stream = new ReadableStream({
-                        start(controller) {
-                            const reader = response.body.getReader();
-                            function push() {
-                                reader.read().then(function (result) {
-                                    if (result.done) {
-                                        console.log(result)
-                                        sendbtn.style.display = "block";
-                                        waitAnimation.style.display = "none";
-                                        stopGeneration.style.display = "none";
-                                        controller.close();
-                                        return;
-                                    }
-                                    controller.enqueue(result.value);
-                                    push();
-                                })
-                            }
-                            push();
-                        }
-                    });
-                    const textDecoder = new TextDecoder();
-                    const readableStreamDefaultReader = stream.getReader();
-                    let entry_counter = 0
-                    function readStream() {
-                        readableStreamDefaultReader.read().then(function (result) {
-                            if (result.done) {
-                                console.log(result)
-                                return;
-                            }
+            send_message('generate_msg_from',{prompt: message, id: messageElement.id})
+            entry_counter = 0;
+        
 
-                            text = textDecoder.decode(result.value);
-
-                            // The server will first send a json containing information about the message just sent
-                            if (entry_counter == 0) {
-                                // We parse it and
-                                infos = JSON.parse(text)
-                                elements.setID(infos.response_id)
-                                elements.setSender(infos.bot)
-                                entry_counter++;
-                            }
-                            else {
-                                entry_counter++;
-                                prefix = "FINAL:";
-                                if(text.startsWith(prefix)){
-                                    console.log("Final text found")
-                                    text = text.substring(prefix.length);
-                                    elements.hiddenElement.innerHTML         = text
-                                    elements.messageTextElement.innerHTML    = text
-                                }
-                                else{
-                                    // For the other enrtries, these are just the text of the chatbot
-                                    txt = hiddenElement_.innerHTML;
-                                    txt += text
-                                    elements.hiddenElement.innerHTML = txt
-                                    elements.messageTextElement.innerHTML = txt
-                                    // scroll to bottom of chat window
-                                    chatWindow.scrollTop = chatWindow.scrollHeight;
-                                }
-                            }
-
-                            readStream();
-                        });
-                    }
-                    readStream();
-                });
         });
 
         const editButton = document.createElement('button');

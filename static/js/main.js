@@ -1,10 +1,72 @@
+var globals={
+  chatWindow:undefined,
+  chatForm:undefined,
+  userInput:undefined,
+  stopGeneration:undefined,
+  sendbtn:undefined,
+  waitAnimation:undefined
+}
+
+function send_message(service_name, parameters){
+  var socket = io.connect('http://' + document.domain + ':' + location.port);
+  globals.socket = socket
+  socket.on('connect', function() {
+      globals.sendbtn.style.display="block";
+      globals.waitAnimation.style.display="none";
+      globals.stopGeneration.style.display = "none";
+      entry_counter = 0;
+
+  });
+  socket.on('disconnect', function() {
+    console.log("disconnected")
+    entry_counter = 0;
+  });
+
+
+  socket.on('infos', function(msg) {
+    if(globals.user_msg){
+      globals.user_msg.setSender(msg.user);
+      globals.user_msg.setMessage(msg.message);
+      globals.user_msg.setID(msg.id);
+    }
+    globals.bot_msg.setSender(msg.bot);
+    globals.bot_msg.setID(msg.response_id);
+  });
+
+  socket.on('waiter', function(msg) {
+    globals.bot_msg.messageTextElement.innerHTML    = `Remaining words ${Math.floor(msg.wait * 100)}%`;    
+  });
+  
+  socket.on('message', function(msg) {
+        text = msg.data;
+        // For the other enrtries, these are just the text of the chatbot
+        globals.bot_msg.messageTextElement.innerHTML    = text;
+        // scroll to bottom of chat window
+        globals.chatWindow.scrollTop = globals.chatWindow.scrollHeight;
+  });
+
+  socket.on('final',function(msg){
+    text = msg.data;
+    globals.bot_msg.hiddenElement.innerHTML         = text
+    globals.bot_msg.messageTextElement.innerHTML    = text
+    globals.sendbtn.style.display="block";
+    globals.waitAnimation.style.display="none";
+    globals.stopGeneration.style.display = "none";
+  });  
+  setTimeout(()=>{
+    globals.socket.emit(service_name, parameters);
+  },1000);
+}
+
 function update_main(){
-  const chatWindow = document.getElementById('chat-window');
-  const chatForm = document.getElementById('chat-form');
-  const userInput = document.getElementById('user-input');
-  const stopGeneration = document.getElementById("stop-generation")
-    
-  stopGeneration.addEventListener('click', (event) =>{
+  globals.chatWindow = document.getElementById('chat-window');
+  globals.chatForm = document.getElementById('chat-form');
+  globals.userInput = document.getElementById('user-input');
+  globals.stopGeneration = document.getElementById("stop-generation")
+  globals.sendbtn = document.querySelector("#submit-input")
+  globals.waitAnimation = document.querySelector("#wait-animation")
+  
+  globals.stopGeneration.addEventListener('click', (event) =>{
     event.preventDefault();
     console.log("Stop clicked");
     fetch('/stop_gen')
@@ -20,73 +82,29 @@ function update_main(){
     console.log("Submitting")
   
     // get user input and clear input field
-    message = userInput.value;
-    userInput.value = '';
-    
-    // add user message to chat window
-    const sendbtn = document.querySelector("#submit-input")
-    const waitAnimation = document.querySelector("#wait-animation")
-    const stopGeneration = document.querySelector("#stop-generation")
-    
-    sendbtn.style.display="none";
-    waitAnimation.style.display="block";
-    stopGeneration.style.display = "block";
+    message = globals.userInput.value;
+    globals.userInput.value = '';    
+    globals.sendbtn.style.display="none";
+    globals.waitAnimation.style.display="block";
+    globals.stopGeneration.style.display = "block";
     console.log("Sending message to bot")
 
-    user_msg = addMessage('',message, 0, 0, can_edit=true);
-    bot_msg = addMessage('', '', 0, 0, can_edit=true);
+    globals.user_msg = addMessage('',message, 0, 0, can_edit=true);
+    globals.bot_msg = addMessage('', '', 0, 0, can_edit=true);
     // scroll to bottom of chat window
-    chatWindow.scrollTop = chatWindow.scrollHeight;
+    globals.chatWindow.scrollTop = globals.chatWindow.scrollHeight;
 
-    var socket = io.connect('http://' + document.domain + ':' + location.port);
     entry_counter = 0;
+    send_message('generate_msg',{prompt: message})
 
-    socket.on('connect', function() {
-        socket.emit('connected', {prompt: message});
-        entry_counter = 0;
-    });
-    socket.on('disconnect', function() {
-      
-      entry_counter = 0;
-    });
-    socket.on()
 
-    socket.on('infos', function(msg) {
-      user_msg.setSender(msg.user);
-      user_msg.setMessage(msg.message);
-      user_msg.setID(msg.id);
-      bot_msg.setSender(msg.bot);
-      bot_msg.setID(msg.response_id);
-    });
-
-    socket.on('message', function(msg) {
-          text = msg.data;
-          console.log(text)
-          // For the other enrtries, these are just the text of the chatbot
-          txt = bot_msg.hiddenElement.innerHTML;
-          txt += text
-          bot_msg.hiddenElement.innerHTML         = txt;
-          bot_msg.messageTextElement.innerHTML    = txt;
-          // scroll to bottom of chat window
-          chatWindow.scrollTop = chatWindow.scrollHeight;
-    });
-
-    socket.on('final',function(msg){
-      text = msg.data;
-      bot_msg.hiddenElement.innerHTML         = text
-      bot_msg.messageTextElement.innerHTML    = text
-      sendbtn.style.display="block";
-      waitAnimation.style.display="none";
-      stopGeneration.style.display = "none";
-      socket.disconnect();
-    });
     //socket.emit('stream-text', {text: text});
   }
-  chatForm.addEventListener('submit', event => {
+  globals.chatForm.addEventListener('submit', event => {
       event.preventDefault();
       submit_form();
   });  
-  userInput.addEventListener("keyup", function(event) {
+  globals.userInput.addEventListener("keyup", function(event) {
     // Check if Enter key was pressed while holding Shift
     // Also check if Shift + Ctrl keys were pressed while typing
     // These combinations override the submit action
@@ -99,9 +117,9 @@ function update_main(){
     // Restore original functionality for the remaining cases
     else if (!shiftPressed && ctrlPressed) {
       setTimeout(() => {
-        userInput.focus();
+        globals.userInput.focus();
         contentEditable.value += event.data;
-        lastValue.innerHTML = userInput.value;
+        lastValue.innerHTML = globals.userInput.value;
       }, 0);
     }
   });
