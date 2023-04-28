@@ -1,4 +1,5 @@
 var globals={
+  is_generating:false,
   chatWindow:undefined,
   chatForm:undefined,
   userInput:undefined,
@@ -10,11 +11,19 @@ var globals={
 function send_message(service_name, parameters){
   var socket = io.connect('http://' + document.domain + ':' + location.port);
   globals.socket = socket
+  globals.is_generating = false
   socket.on('connect', function() {
       globals.sendbtn.style.display="block";
       globals.waitAnimation.style.display="none";
       globals.stopGeneration.style.display = "none";
       entry_counter = 0;
+      if(globals.is_generating){
+        globals.socket.disconnect()
+      }
+      else{
+        globals.socket.emit(service_name, parameters);
+        globals.is_generating = true
+      }
 
   });
   socket.on('disconnect', function() {
@@ -55,9 +64,6 @@ function send_message(service_name, parameters){
     globals.waitAnimation.style.display="none";
     globals.stopGeneration.style.display = "none";
   });  
-  setTimeout(()=>{
-    globals.socket.emit(service_name, parameters);
-  },1000);
 }
 
 function update_main(){
