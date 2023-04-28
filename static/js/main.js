@@ -40,7 +40,8 @@ function send_message(service_name, parameters){
   socket.on('message', function(msg) {
         text = msg.data;
         // For the other enrtries, these are just the text of the chatbot
-        globals.bot_msg.messageTextElement.innerHTML    = text;
+
+        globals.bot_msg.messageTextElement.innerHTML    = marked.marked(text);
         // scroll to bottom of chat window
         globals.chatWindow.scrollTop = globals.chatWindow.scrollHeight;
   });
@@ -48,7 +49,8 @@ function send_message(service_name, parameters){
   socket.on('final',function(msg){
     text = msg.data;
     globals.bot_msg.hiddenElement.innerHTML         = text
-    globals.bot_msg.messageTextElement.innerHTML    = text
+    globals.bot_msg.messageTextElement.innerHTML    = marked.marked(text)
+
     globals.sendbtn.style.display="block";
     globals.waitAnimation.style.display="none";
     globals.stopGeneration.style.display = "none";

@@ -40,14 +40,22 @@ echo Checking internet connection
 ping google.com -n 1 >nul 2>&1
 if errorlevel 1 (
     echo Internet connection not available
+    goto NO_INTERNET
+) else (
+	goto INTERNET_OK
+)
+:NO_INTERNET
+
+if exist GPT4All (
+    echo GPT4All folder found
+    cd GPT4All
     set /p="Activating virtual environment ..." <nul
     call env\Scripts\activate.bat
-
-    goto END
 )
+goto END
+
+:INTERNET_OK
 echo \e[32mInternet connection working fine
-
-
 
 
 REM Check if Git is installed
@@ -254,13 +262,13 @@ if %ERRORLEVEL% neq 0 (
     pause
     exit /b 1
 )
-echo \033[32m Internet Connection working fine
 
 echo Checking models...
 if not exist \models (
     md \models
 )
-dir "./models/llama_cpp/*.bin" /b >nul 2>&1
+
+dir ".\models\llama_cpp\*.bin" /b 2>&1
 if errorlevel 1 (
     echo.
     choice /C YNB /M "The default model file (gpt4all-lora-quantized-ggml.bin) does not exist. Do you want to download it? Press B to download it with a browser (faster)."

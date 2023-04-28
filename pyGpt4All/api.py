@@ -13,7 +13,6 @@ from datetime import datetime
 from pyGpt4All.db import DiscussionsDB
 from pathlib import Path
 import importlib
-import markdown
 
 __author__ = "parisneo"
 __github__ = "https://github.com/nomic-ai/gpt4all-ui"
@@ -200,7 +199,7 @@ class GPT4AllAPI():
         if self.chatbot_bindings.inline:
             self.bot_says += text
             if not self.personality["user_message_prefix"].lower() in self.bot_says.lower():
-                self.socketio.emit('message', {'data': markdown.markdown(self.bot_says)});
+                self.socketio.emit('message', {'data': self.bot_says});
                 if self.cancel_gen:
                     print("Generation canceled")
                     return False
@@ -216,7 +215,7 @@ class GPT4AllAPI():
             if self.is_bot_text_started:
                 self.bot_says += text
                 if not self.personality["user_message_prefix"].lower() in self.bot_says.lower():
-                    self.socketio.emit('message', {'data': markdown.markdown(self.bot_says)});
+                    self.socketio.emit('message', {'data': self.bot_says});
                     #self.socketio.emit('message', {'data': text});
                     if self.cancel_gen:
                         print("Generation canceled")

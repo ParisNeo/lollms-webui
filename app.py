@@ -301,7 +301,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
                         "type": "input_message_infos",
                         "bot": self.personality["name"],
                         "user": self.personality["user_name"],
-                        "message":markdown.markdown(message),
+                        "message":message,#markdown.markdown(message),
                         "id": message_id,
                         "response_id": response_id,
                     }
@@ -348,8 +348,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
             else:
                 self.current_discussion = self.db.create_discussion()
         messages = self.current_discussion.get_messages()
-        for message in messages:
-            message["content"] = markdown.markdown(message["content"])
+        #for message in messages:
+        #    message["content"] =  markdown.markdown(message["content"])
         
         return jsonify(messages), {'Content-Type': 'application/json; charset=utf-8'}
 
