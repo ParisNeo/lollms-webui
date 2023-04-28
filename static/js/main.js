@@ -116,13 +116,5 @@ function update_main(){
     if ((!shiftPressed) && event.key === "Enter") {
         submit_form();
     }
-    // Restore original functionality for the remaining cases
-    else if (!shiftPressed && ctrlPressed) {
-      setTimeout(() => {
-        globals.userInput.focus();
-        contentEditable.value += event.data;
-        lastValue.innerHTML = globals.userInput.value;
-      }, 0);
-    }
   });
 }
