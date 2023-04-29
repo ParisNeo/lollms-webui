@@ -51,7 +51,7 @@ Make sure that your CPU supports `AVX2` instruction set. Without it, this applic
 It is advised to have python 3.10 (The official one, not the one from Microsoft Store) and git installed. Although it should work with any python from 3.7, it is advised to use 3.10 to have the full support as some extensions like the future stable diffusion extension will force you to have 3.10.
 
 1. [Go to the latest release section](https://github.com/nomic-ai/gpt4all-ui/releases)
-2. Download the `webui.bat` if you are on windows or `webui.sh` if you are on linux/mac. Put this file in a folder you for example `/gpt4all-ui/` because when you run it, all the necessary files will be downloaded into that folder.
+2. Download the `webui.bat` if you are on windows or `webui.sh` if you are on linux/mac. Put this file in a folder for example `/gpt4all-ui/`, because when you run it, all the necessary files will be downloaded into that folder.
 3. Run the script and wait. It should install everything and start the chatbot. Chatbot will be avaliable from web browser `http://localhost:9600`.
 > **Note**
 > During installtion, it may ask you to download a model. Feel free to accept or to download your own models depending on the backends you are using.
