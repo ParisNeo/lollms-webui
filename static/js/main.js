@@ -41,11 +41,11 @@ function send_message(service_name, parameters){
     }
     globals.bot_msg.setSender(msg.bot);
     globals.bot_msg.setID(msg.response_id);
-    globals.bot_msg.messageTextElement.innerHTML    = `Generating answer. Please satnd by...`;    
+    globals.bot_msg.messageTextElement.innerHTML    = `Generating answer. Please stand by...`;    
   });
 
   socket.on('waiter', function(msg) {
-    globals.bot_msg.messageTextElement.innerHTML    = `Generating answer. Please satnd by...`;    
+    globals.bot_msg.messageTextElement.innerHTML    = `Generating answer. Please stand by...`;    
   });
   
   socket.on('message', function(msg) {
