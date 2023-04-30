@@ -131,10 +131,26 @@ We also support GPT-j models out of the box
 - [ALPACA 7B](https://huggingface.co/Sosaka/Alpaca-native-4bit-ggml/resolve/main/ggml-alpaca-7b-q4.bin) or visit [repository](https://huggingface.co/Sosaka/Alpaca-native-4bit-ggml/)
 
 Just download the model into the `models/<backend name>` folder and start using the tool.
+# Personalities
 
+You can find hundreds of personalities in my personal [Personalities repository](https://github.com/ParisNeo/PyAIPersonality). This new personalities format can be used for any third party applications, it builds a simple structure and format to define personalities. This format is evolutive and new fields and assets will be added in the future like personality voice or 3d animated character with prebaked motions that should allow AI to be more alive. The format is baked to support old versions while adding new capabilities for new versions making it ideal as a personality defintition format.
+
+## Personality install
+if you are on windows you can install new personalities directly using the `add_personality.bat` code:
+```bash
+add_personality.bat
+```
+
+```bash
+bash add_personality.sh
+```
+
+Please don't forget to take time and give a Star if you like the project. This helps the visibility of the project.
 # Build custom personalities and share them
 
-To build a new personality, create a new file with the name of the personality inside the `personalities` folder. You can look at `gpt4all_chatbot.yaml` file as an example. Then you can fill the fields with the description, conditionning, etc. of your personality. Then save the file.
+To build a new personality, create a new file with the name of the personality inside the `personalities` folder. You can look at `gpt4all` personality as an example. Then you can fill the fields with the description, conditionning, etc. of your personality. Add a logo to your personality (avatar). Then save the file. I personally use stable diffusion to generate the avatars.
+
+
 
 You can launch the application using the personality in two ways:
 - Change it permanently by putting the name of the personality inside your configuration file
