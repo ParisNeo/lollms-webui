@@ -30,7 +30,8 @@ class LLAMACPP(GPTBackend):
         super().__init__(config, False)
         
         self.model = Model(
-                ggml_model=f"./models/llama_cpp/{self.config['model']}", 
+                ggml_model=f"./models/llama_cpp/{self.config['model']}",
+                prompt_context="", prompt_prefix="", prompt_suffix="", anti_prompts= [],
                 n_ctx=self.config['ctx_size'], 
                 seed=self.config['seed'],
                 )
@@ -53,17 +54,17 @@ class LLAMACPP(GPTBackend):
             verbose (bool, optional): If true, the code will spit many informations about the generation process. Defaults to False.
         """
         try:
-            self.model.generate(
-                prompt,
-                new_text_callback=new_text_callback,
-                n_predict=n_predict,
-                temp=self.config['temp'],
-                top_k=self.config['top_k'],
-                top_p=self.config['top_p'],
-                repeat_penalty=self.config['repeat_penalty'],
-                repeat_last_n = self.config['repeat_last_n'],
-                n_threads=self.config['n_threads'],
-                verbose=verbose
-            )
+            self.model.reset()
+            for tok in self.model.generate(prompt, 
+                                           n_predict=n_predict,                                           
+                                            temp=self.config['temp'],
+                                            top_k=self.config['top_k'],
+                                            top_p=self.config['top_p'],
+                                            repeat_penalty=self.config['repeat_penalty'],
+                                            repeat_last_n = self.config['repeat_last_n'],
+                                            n_threads=self.config['n_threads'],
+                                           ):
+                if not new_text_callback(tok):
+                    return
         except Exception as ex:
             print(ex)

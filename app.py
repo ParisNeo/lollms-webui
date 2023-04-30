@@ -35,8 +35,11 @@ from flask import (
 from flask_socketio import SocketIO, emit
 from pathlib import Path
 import gc
+from geventwebsocket.handler import WebSocketHandler
+from gevent.pywsgi import WSGIServer
+
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
-socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode='gevent')
 app.config['SECRET_KEY'] = 'secret!'
 # Set the logging level to WARNING or higher
 logging.getLogger('socketio').setLevel(logging.WARNING)
@@ -314,15 +317,25 @@ class Gpt4AllWebUI(GPT4AllAPI):
             self.generating = True
             # app.config['executor'] = ThreadPoolExecutor(max_workers=1)
             # app.config['executor'].submit(self.generate_message)
-            print("## Generate message ##")
+            print("## Generating message ##")
             self.generate_message()
+
+            print()
             print("## Done ##")
+            print()
+
+            # Send final message
+            self.socketio.emit('final', {'data': self.bot_says})
+
             self.current_discussion.update_message(response_id, self.bot_says)
             self.full_message_list.append(self.bot_says)
             self.cancel_gen = False
             return bot_says
         else:
+            #No discussion available
+            print()
             print("## Done ##")
+            print()
             return ""
     
      
@@ -596,7 +609,26 @@ if __name__ == "__main__":
     # app.config['executor'] = executor
     bot = Gpt4AllWebUI(app, socketio, config, personality, config_file_path)
 
+
+    # chong Define custom WebSocketHandler with error handling 
+    class CustomWebSocketHandler(WebSocketHandler):
+        def handle_error(self, environ, start_response, e):
+            # Handle the error here
+            print("WebSocket error:", e)
+            super().handle_error(environ, start_response, e)
+
+    # chong -add socket server
+    http_server = WSGIServer((config["host"], config["port"]), app, handler_class=CustomWebSocketHandler)
+    http_server = WSGIServer((config["host"], config["port"]), app, handler_class=WebSocketHandler)
+    
     if config["debug"]:
-        app.run(debug=True, host=config["host"], port=config["port"])
+        socketio.run(app,debug=True,  host=config["host"], port=config["port"])
     else:
-        app.run(host=config["host"], port=config["port"])
+        socketio.run(app, host=config["host"], port=config["port"])
+
+
+
+    # if config["debug"]:
+    #     app.run(debug=True, host=config["host"], port=config["port"])
+    # else:
+    #     app.run(host=config["host"], port=config["port"])

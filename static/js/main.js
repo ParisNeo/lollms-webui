@@ -13,9 +13,6 @@ function send_message(service_name, parameters){
   globals.socket = socket
   globals.is_generating = false
   socket.on('connect', function() {
-      globals.sendbtn.style.display="block";
-      globals.waitAnimation.style.display="none";
-      globals.stopGeneration.style.display = "none";
       entry_counter = 0;
       if(globals.is_generating){
         globals.socket.disconnect()
@@ -29,6 +26,10 @@ function send_message(service_name, parameters){
   socket.on('disconnect', function() {
     console.log("disconnected")
     entry_counter = 0;
+    console.log("Disconnected")
+    globals.sendbtn.style.display="block";
+    globals.waitAnimation.style.display="none";
+    globals.stopGeneration.style.display = "none";    
   });
 
 
@@ -40,10 +41,11 @@ function send_message(service_name, parameters){
     }
     globals.bot_msg.setSender(msg.bot);
     globals.bot_msg.setID(msg.response_id);
+    globals.bot_msg.messageTextElement.innerHTML    = `Generating answer. Please satnd by...`;    
   });
 
   socket.on('waiter', function(msg) {
-    globals.bot_msg.messageTextElement.innerHTML    = `Remaining words ${Math.floor(msg.wait * 100)}%`;    
+    globals.bot_msg.messageTextElement.innerHTML    = `Generating answer. Please satnd by...`;    
   });
   
   socket.on('message', function(msg) {
@@ -59,10 +61,8 @@ function send_message(service_name, parameters){
     text = msg.data;
     globals.bot_msg.hiddenElement.innerHTML         = text
     globals.bot_msg.messageTextElement.innerHTML    = marked.marked(text)
+    socket.disconnect()
 
-    globals.sendbtn.style.display="block";
-    globals.waitAnimation.style.display="none";
-    globals.stopGeneration.style.display = "none";
   });  
 }
 

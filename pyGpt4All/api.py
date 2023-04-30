@@ -196,45 +196,18 @@ class GPT4AllAPI():
         print(text, end="")
         sys.stdout.flush()
         
-        if self.chatbot_bindings.inline:
-            self.bot_says += text
-            if not self.personality["user_message_prefix"].lower() in self.bot_says.lower():
-                self.socketio.emit('message', {'data': self.bot_says});
-                if self.cancel_gen:
-                    print("Generation canceled")
-                    return False
-                else:
-                    return True
-            else:
-                self.bot_says = self.remove_text_from_string(self.bot_says, self.personality["user_message_prefix"].lower())
-                print("The model is halucinating")
-                self.socketio.emit('final', {'data': self.bot_says})
+        self.bot_says += text
+        if not self.personality["user_message_prefix"].strip().lower() in self.bot_says.lower():
+            self.socketio.emit('message', {'data': self.bot_says});
+            if self.cancel_gen:
+                print("Generation canceled")
                 return False
-        else:
-            self.full_text += text
-            if self.is_bot_text_started:
-                self.bot_says += text
-                if not self.personality["user_message_prefix"].lower() in self.bot_says.lower():
-                    self.socketio.emit('message', {'data': self.bot_says});
-                    #self.socketio.emit('message', {'data': text});
-                    if self.cancel_gen:
-                        print("Generation canceled")
-                        self.socketio.emit('final', {'data': self.bot_says})
-                        return False
-                    else:
-                        return True
-                else:
-                    self.bot_says = self.remove_text_from_string(self.bot_says, self.personality["user_message_prefix"].lower())
-                    print("The model is halucinating")
-                    self.socketio.emit('final', {'data': self.bot_says})
-                    self.cancel_gen=True
-                    return False
-                
-            #if self.current_message in self.full_text:
-            if len(self.discussion_messages) < len(self.full_text):
-                self.is_bot_text_started = True
             else:
-                self.socketio.emit('waiter', {'wait': (len(self.discussion_messages)-len(self.full_text))/len(self.discussion_messages)});
+                return True
+        else:
+            self.bot_says = self.remove_text_from_string(self.bot_says, self.personality["user_message_prefix"].strip())
+            print("The model is halucinating")
+            return False
         
     def generate_message(self):
         self.generating=True
