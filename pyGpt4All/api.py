@@ -13,6 +13,7 @@ from datetime import datetime
 from pyGpt4All.db import DiscussionsDB
 from pathlib import Path
 import importlib
+from pyaipersonality import AIPersonality
 
 __author__ = "parisneo"
 __github__ = "https://github.com/nomic-ai/gpt4all-ui"
@@ -20,7 +21,7 @@ __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
 class GPT4AllAPI():
-    def __init__(self, config:dict, personality:dict, config_file_path:str) -> None:
+    def __init__(self, config:dict, personality:AIPersonality, config_file_path:str) -> None:
         self.config = config
         self.personality = personality
         self.config_file_path = config_file_path
@@ -49,27 +50,6 @@ class GPT4AllAPI():
         # Build chatbot
         self.chatbot_bindings = self.create_chatbot()
         print("Chatbot created successfully")
-
-        # tests the model
-        """
-        self.prepare_reception()
-        self.discussion_messages = "Instruction: Act as gpt4all. A kind and helpful AI bot built to help users solve problems.\nuser: how to build a water rocket?\ngpt4all:"
-        text = self.chatbot_bindings.generate(
-            self.discussion_messages,
-            new_text_callback=self.new_text_callback,
-            n_predict=372,
-            temp=self.config['temp'],
-            top_k=self.config['top_k'],
-            top_p=self.config['top_p'],
-            repeat_penalty=self.config['repeat_penalty'],
-            repeat_last_n = self.config['repeat_last_n'],
-            #seed=self.config['seed'],
-            n_threads=self.config['n_threads']
-        )   
-        print(text)             
-        """
-        
-
         # generation status
         self.generating=False
 
@@ -102,10 +82,10 @@ class GPT4AllAPI():
             0
         )
         self.current_message_id = message_id
-        if self.personality["welcome_message"]!="":
-            if self.personality["welcome_message"]!="":
+        if self.personality.welcome_message!="":
+            if self.personality.welcome_message!="":
                 message_id = self.current_discussion.add_message(
-                    self.personality["name"], self.personality["welcome_message"], 
+                    self.personality.name, self.personality.welcome_message, 
                     DiscussionsDB.MSG_TYPE_NORMAL,
                     0,
                     self.current_message_id
@@ -126,7 +106,7 @@ class GPT4AllAPI():
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # Chatbot conditionning
-        self.condition_chatbot(self.personality["personality_conditionning"])
+        self.condition_chatbot(self.personality.personality_conditionning)
         return timestamp
 
     def prepare_query(self, message_id=-1):
@@ -135,19 +115,19 @@ class GPT4AllAPI():
         for message in messages:
             if message["id"]<= message_id or message_id==-1: 
                 if message["type"]!=self.db.MSG_TYPE_CONDITIONNING:
-                    if message["sender"]==self.personality["name"]:
-                        self.full_message_list.append(self.personality["ai_message_prefix"]+message["content"])
+                    if message["sender"]==self.personality.name:
+                        self.full_message_list.append(self.personality.ai_message_prefix+message["content"])
                     else:
-                        self.full_message_list.append(self.personality["user_message_prefix"] + message["content"])
+                        self.full_message_list.append(self.personality.user_message_prefix + message["content"])
 
-        link_text = self.personality["link_text"]
+        link_text = self.personality.link_text
 
         if len(self.full_message_list) > self.config["nb_messages_to_remember"]:
-            discussion_messages = self.personality["personality_conditionning"]+ link_text.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
+            discussion_messages = self.personality.personality_conditioning+ link_text.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
         else:
-            discussion_messages = self.personality["personality_conditionning"]+ link_text.join(self.full_message_list)
+            discussion_messages = self.personality.personality_conditioning+ link_text.join(self.full_message_list)
         
-        discussion_messages += link_text + self.personality["ai_message_prefix"]
+        discussion_messages += link_text + self.personality.ai_message_prefix
         return discussion_messages # Removes the last return
 
     def get_discussion_to(self, message_id=-1):
@@ -156,17 +136,17 @@ class GPT4AllAPI():
         for message in messages:
             if message["id"]<= message_id or message_id==-1: 
                 if message["type"]!=self.db.MSG_TYPE_CONDITIONNING:
-                    if message["sender"]==self.personality["name"]:
-                        self.full_message_list.append(self.personality["ai_message_prefix"]+message["content"])
+                    if message["sender"]==self.personality.name:
+                        self.full_message_list.append(self.personality.ai_message_prefix+message["content"])
                     else:
-                        self.full_message_list.append(self.personality["user_message_prefix"] + message["content"])
+                        self.full_message_list.append(self.personality.user_message_prefix + message["content"])
 
-        link_text = self.personality["link_text"]
+        link_text = self.personality.link_text
 
         if len(self.full_message_list) > self.config["nb_messages_to_remember"]:
-            discussion_messages = self.personality["personality_conditionning"]+ link_text.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
+            discussion_messages = self.personality.personality_conditionning+ link_text.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
         else:
-            discussion_messages = self.personality["personality_conditionning"]+ link_text.join(self.full_message_list)
+            discussion_messages = self.personality.personality_conditionning+ link_text.join(self.full_message_list)
         
         return discussion_messages # Removes the last return
 
@@ -197,7 +177,7 @@ class GPT4AllAPI():
         sys.stdout.flush()
         
         self.bot_says += text
-        if not self.personality["user_message_prefix"].strip().lower() in self.bot_says.lower():
+        if not self.personality.user_message_prefix.strip().lower() in self.bot_says.lower():
             self.socketio.emit('message', {'data': self.bot_says});
             if self.cancel_gen:
                 print("Generation canceled")
@@ -205,7 +185,7 @@ class GPT4AllAPI():
             else:
                 return True
         else:
-            self.bot_says = self.remove_text_from_string(self.bot_says, self.personality["user_message_prefix"].strip())
+            self.bot_says = self.remove_text_from_string(self.bot_says, self.personality.user_message_prefix.strip())
             print("The model is halucinating")
             return False
         

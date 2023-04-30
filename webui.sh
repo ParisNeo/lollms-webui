@@ -68,11 +68,6 @@ if ping -q -c 1 google.com >/dev/null 2>&1; then
     fi
     echo Pulling latest version...
     git pull
-    # Download latest personalities
-    if ! test -d ./tmp/personalities; then
-      git clone https://github.com/ParisNeo/GPT4All_Personalities.git ./tmp/personalities
-    fi
-    cp ./tmp/personalities/* ./personalities/
 
     # Install Python 3.10 and pip
     echo -n "Checking for python3.10..."

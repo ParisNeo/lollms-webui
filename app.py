@@ -22,6 +22,7 @@ import re
 import traceback
 import threading
 import sys
+from pyaipersonality import AIPersonality
 from pyGpt4All.db import DiscussionsDB, Discussion
 from flask import (
     Flask,
@@ -222,7 +223,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
     
     def list_personalities(self):
         personalities_dir = Path(f'./personalities/{self.config["personality_language"]}/{self.config["personality_category"]}')  # replace with the actual path to the models folder
-        personalities = [f.stem for f in personalities_dir.glob('*.yaml')]
+        personalities = [f.stem for f in personalities_dir.iterdir() if f.is_dir()]
         return jsonify(personalities)
 
     def list_languages(self):
@@ -297,13 +298,13 @@ class Gpt4AllWebUI(GPT4AllAPI):
         if self.current_discussion:
             # First we need to send the new message ID to the client
             response_id = self.current_discussion.add_message(
-                self.personality["name"], "", parent = message_id
+                self.personality.name, "", parent = message_id
             )  # first the content is empty, but we'll fill it at the end
             socketio.emit('infos',
                     {
                         "type": "input_message_infos",
-                        "bot": self.personality["name"],
-                        "user": self.personality["user_name"],
+                        "bot": self.personality.name,
+                        "user": self.personality.user_name,
                         "message":message,#markdown.markdown(message),
                         "id": message_id,
                         "response_id": response_id,
@@ -407,7 +408,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         # target=self.create_chatbot()
         
         # Return a success response
-        return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp, "welcome_message":self.personality["welcome_message"], "sender":self.personality["name"]})
+        return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp, "welcome_message":self.personality.welcome_message, "sender":self.personality.name})
 
     def set_backend(self):
         data = request.get_json()
@@ -460,9 +461,9 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.config['personality_category'] = personality_category
         self.config['personality'] = personality
 
-        personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}.yaml"
+        personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
         print(f"Loading personality : {personality_fn}")
-        self.personality = load_config(personality_fn)
+        self.personality = AIPersonality(personality_fn)
 
         self.config['n_predict'] = int(data["nPredict"])
         self.config['seed'] = int(data["seed"])
@@ -603,7 +604,7 @@ if __name__ == "__main__":
         if arg_value is not None:
             config[arg_name] = arg_value
 
-    personality = load_config(f"personalities/{config['personality_language']}/{config['personality_category']}/{config['personality']}.yaml")
+    personality = AIPersonality(f"personalities/{config['personality_language']}/{config['personality_category']}/{config['personality']}")
 
     # executor = ThreadPoolExecutor(max_workers=1)
     # app.config['executor'] = executor
@@ -621,6 +622,9 @@ if __name__ == "__main__":
     http_server = WSGIServer((config["host"], config["port"]), app, handler_class=CustomWebSocketHandler)
     http_server = WSGIServer((config["host"], config["port"]), app, handler_class=WebSocketHandler)
     
+    url = f'http://{config["host"]}:{config["port"]}'
+    
+    print(f"Please open your browser and go to {url} to view the ui")
     if config["debug"]:
         socketio.run(app,debug=True,  host=config["host"], port=config["port"])
     else:

@@ -12,7 +12,7 @@ n_predict: 1024
 nb_messages_to_remember: 5
 personality_language: english
 personality_category: general
-personality: gpt4all_chatbot
+personality: gpt4all
 port: 9600
 repeat_last_n: 40
 repeat_penalty: 1.2

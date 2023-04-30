@@ -104,7 +104,7 @@ if exist ".git" (
 :PULL_CHANGES
 echo Pulling latest changes 
 git pull origin main
-goto :GET_PERSONALITIES
+goto :CHECK_PYTHON_INSTALL
 
 :CLONE_REPO
 REM Check if repository exists 
@@ -121,12 +121,6 @@ if exist GPT4All (
     echo Pulling latest changes 
     git pull
 )
-
-:GET_PERSONALITIES
-REM Download latest personalities
-if not exist tmp\personalities git clone https://github.com/ParisNeo/GPT4All_Personalities.git tmp\personalities
-xcopy /s tmp\personalities\* personalities /Y
-goto :CHECK_PYTHON_INSTALL
 
 :CHECK_PYTHON_INSTALL
 REM Check if Python is installed
