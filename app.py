@@ -630,8 +630,8 @@ if __name__ == "__main__":
         print("debug mode:false")
         
     http_server = WSGIServer((config["host"], config["port"]), app, handler_class=WebSocketHandler)
-
-    # if config["debug"]:
-    #     app.run(debug=True, host=config["host"], port=config["port"])
-    # else:
-    #     app.run(host=config["host"], port=config["port"])
+    http_server.serve_forever()
+    #if config["debug"]:
+    #    app.run(debug=True, host=config["host"], port=config["port"])
+    #else:
+    #    app.run(host=config["host"], port=config["port"])
