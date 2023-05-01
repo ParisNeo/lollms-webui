@@ -142,7 +142,7 @@ dmypy.json
 
 # Temporary files
 tmp/
-
+temp/
 # configurations other than the default one
 configs/*
 !configs/default.yaml
