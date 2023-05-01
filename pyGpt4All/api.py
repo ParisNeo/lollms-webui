@@ -106,7 +106,7 @@ class GPT4AllAPI():
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # Chatbot conditionning
-        self.condition_chatbot(self.personality.personality_conditionning)
+        self.condition_chatbot(self.personality.personality_conditioning)
         return timestamp
 
     def prepare_query(self, message_id=-1):
@@ -144,9 +144,9 @@ class GPT4AllAPI():
         link_text = self.personality.link_text
 
         if len(self.full_message_list) > self.config["nb_messages_to_remember"]:
-            discussion_messages = self.personality.personality_conditionning+ link_text.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
+            discussion_messages = self.personality.personality_conditioning+ link_text.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
         else:
-            discussion_messages = self.personality.personality_conditionning+ link_text.join(self.full_message_list)
+            discussion_messages = self.personality.personality_conditioning+ link_text.join(self.full_message_list)
         
         return discussion_messages # Removes the last return
 

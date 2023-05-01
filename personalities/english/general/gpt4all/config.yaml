@@ -29,7 +29,7 @@ personality_description: |
   This personality is a helpful and Kind AI ready to help you solve your problems 
 
 # The conditionning instructions sent to eh model at the start of the discussion
-personality_conditionning: |
+personality_conditioning: |
   ##Instructions:GPT4All is a smart and helpful Assistant built by Nomic-AI. It can discuss with humans and assist them.
 
 #Welcome message to be sent to the user when a new discussion is started
