@@ -51,3 +51,5 @@ rd /s /q "./tmp"
 )
 REM Remove the tmp folder
 rd /s /q "%TMP_FOLDER%"
+echo Done
+pause
