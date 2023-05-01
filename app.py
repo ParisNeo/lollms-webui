@@ -40,7 +40,7 @@ from geventwebsocket.handler import WebSocketHandler
 from gevent.pywsgi import WSGIServer
 
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
-socketio = SocketIO(app, async_mode='gevent')
+socketio = SocketIO(app, async_mode='gevent', ping_timeout=30, ping_interval=15)
 app.config['SECRET_KEY'] = 'secret!'
 # Set the logging level to WARNING or higher
 logging.getLogger('socketio').setLevel(logging.WARNING)
@@ -617,20 +617,20 @@ if __name__ == "__main__":
             # Handle the error here
             print("WebSocket error:", e)
             super().handle_error(environ, start_response, e)
-
-    # chong -add socket server
-    http_server = WSGIServer((config["host"], config["port"]), app, handler_class=CustomWebSocketHandler)
-    http_server = WSGIServer((config["host"], config["port"]), app, handler_class=WebSocketHandler)
     
     url = f'http://{config["host"]}:{config["port"]}'
     
     print(f"Please open your browser and go to {url} to view the ui")
+
+    # chong -add socket server    
+    app.config['debug'] = config["debug"]
+
     if config["debug"]:
-        socketio.run(app,debug=True,  host=config["host"], port=config["port"])
+        print("debug mode:true")    
     else:
-        socketio.run(app, host=config["host"], port=config["port"])
-
-
+        print("debug mode:false")
+        
+    http_server = WSGIServer((config["host"], config["port"]), app, handler_class=WebSocketHandler)
 
     # if config["debug"]:
     #     app.run(debug=True, host=config["host"], port=config["port"])
