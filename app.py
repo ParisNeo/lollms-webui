@@ -610,7 +610,6 @@ if __name__ == "__main__":
     # app.config['executor'] = executor
     bot = Gpt4AllWebUI(app, socketio, config, personality, config_file_path)
 
-
     # chong Define custom WebSocketHandler with error handling 
     class CustomWebSocketHandler(WebSocketHandler):
         def handle_error(self, environ, start_response, e):
