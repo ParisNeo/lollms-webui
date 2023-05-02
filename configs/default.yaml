@@ -24,3 +24,4 @@ voice: ""
 use_gpu: false # Not active yet
 auto_read: false
 use_avx2: true # By default we require using avx2 but if not supported, make sure you remove it from here
+use_new_ui: false # By default use old ui

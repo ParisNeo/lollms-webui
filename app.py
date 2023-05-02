@@ -41,6 +41,7 @@ from gevent.pywsgi import WSGIServer
 
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
 socketio = SocketIO(app, async_mode='gevent', ping_timeout=30, ping_interval=15)
+
 app.config['SECRET_KEY'] = 'secret!'
 # Set the logging level to WARNING or higher
 logging.getLogger('socketio').setLevel(logging.WARNING)
@@ -64,6 +65,9 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.cancel_gen = False
         self.socketio = _socketio
 
+        if "use_new_ui" in self.config:
+            if self.config["use_new_ui"]:
+                app.template_folder = "web/dist"
 
         self.add_endpoint(
             "/list_backends", "list_backends", self.list_backends, methods=["GET"]
@@ -94,6 +98,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
         
         
         self.add_endpoint("/", "", self.index, methods=["GET"])
+        self.add_endpoint("/<path:filename>", "serve_static", self.serve_static, methods=["GET"])
+        
         self.add_endpoint("/export_discussion", "export_discussion", self.export_discussion, methods=["GET"])
         self.add_endpoint("/export", "export", self.export, methods=["GET"])
         self.add_endpoint(
@@ -268,6 +274,20 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
     def index(self):
         return render_template("index.html")
+    
+    def serve_static(self, filename):
+        root_dir = os.getcwd()
+        if "use_new_ui" in self.config:
+            if self.config["use_new_ui"]:
+                path = os.path.join(root_dir, 'web/dist/')+"/".join(filename.split("/")[:-1])
+            else:
+                path = os.path.join(root_dir, 'static/')+"/".join(filename.split("/")[:-1])
+        else:
+            path = os.path.join(root_dir, 'static/')+"/".join(filename.split("/")[:-1])
+                            
+        fn = filename.split("/")[-1]
+        return send_from_directory(path, fn)
+
 
     def format_message(self, message):
         # Look for a code block within the message
