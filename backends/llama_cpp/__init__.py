@@ -30,8 +30,8 @@ class LLAMACPP(GPTBackend):
         super().__init__(config, False)
         
         self.model = Model(
-                ggml_model=f"./models/llama_cpp/{self.config['model']}",
-                prompt_context="", prompt_prefix="", prompt_suffix="", anti_prompts= [],
+                model_path=f"./models/llama_cpp/{self.config['model']}",
+                prompt_context="", prompt_prefix="", prompt_suffix="",
                 n_ctx=self.config['ctx_size'], 
                 seed=self.config['seed'],
                 )

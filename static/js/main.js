@@ -81,6 +81,7 @@ function update_main(){
     .then(response => response.json())
     .then(data => {
         console.log(data);
+        socket.disconnect()
     });
       
   })
