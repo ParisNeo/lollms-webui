@@ -90,9 +90,7 @@ function addMessage(sender, message, id, rank = 0, can_edit = false) {
             globals.user_msg = undefined
             // scroll to bottom of chat window
             chatWindow.scrollTop = chatWindow.scrollHeight;
-            send_message('generate_msg_from',{prompt: message, id: messageElement.id})
-            entry_counter = 0;
-        
+            send_message('generate_msg_from',{prompt: message, id: messageElement.id})        
 
         });
 

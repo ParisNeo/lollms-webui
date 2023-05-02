@@ -158,3 +158,8 @@ databases/*
 # extensions
 extensions/
 !extensions/.keep
+
+# backends
+backends/
+!backends/llama_cpp
+!backends/__init__.py

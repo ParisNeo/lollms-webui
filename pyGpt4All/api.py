@@ -181,6 +181,7 @@ class GPT4AllAPI():
             self.socketio.emit('message', {'data': self.bot_says});
             if self.cancel_gen:
                 print("Generation canceled")
+                self.cancel_gen = False
                 return False
             else:
                 return True

@@ -337,6 +337,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
             print()
             print("## Done ##")
             print()
+            self.cancel_gen = False
             return ""
     
      
