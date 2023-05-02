@@ -39,3 +39,9 @@ class GPTBackend:
             verbose (bool, optional): If true, the code will spit many informations about the generation process. Defaults to False.
         """
         pass
+    @staticmethod
+    def list_models(config:dict):
+        """Lists the models for this backend
+        """
+        models_dir = Path('./models')/config["backend"]  # replace with the actual path to the models folder
+        return [f.name for f in models_dir.glob(GPTBackend.file_extension)]

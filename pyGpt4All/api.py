@@ -45,7 +45,7 @@ class GPT4AllAPI():
         # Select backend
         self.BACKENDS_LIST = {f.stem:f for f in Path("backends").iterdir() if f.is_dir()  and f.stem!="__pycache__"}
 
-        self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
+        self.backend =self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
 
         # Build chatbot
         self.chatbot_bindings = self.create_chatbot()
@@ -65,7 +65,7 @@ class GPT4AllAPI():
         loader = importlib.machinery.SourceFileLoader(module_name, str(absolute_path/"__init__.py"))
         backend_module = loader.load_module()
         backend_class = getattr(backend_module, backend_module.backend_name)
-        self.backend = backend_class
+        return backend_class
 
     def create_chatbot(self):
         return self.backend(self.config)
