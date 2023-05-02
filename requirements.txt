@@ -4,7 +4,7 @@ nomic
 pytest
 pyyaml
 markdown
-pyllamacpp==2.0.0
+pyllamacpp
 gpt4all-j==0.2.1
 --find-links https://download.pytorch.org/whl/cu117
 torch==2.0.0
