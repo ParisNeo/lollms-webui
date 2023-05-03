@@ -90,7 +90,7 @@ import io from 'socket.io-client';
 import axios from "axios";
 import { nextTick } from 'vue'
 
-axios.defaults.baseURL = '/api/';
+//axios.defaults.baseURL = '/api/'; // Use this for external development not for production
 import websocket from '@/services/websocket.js';
 
 export default {
