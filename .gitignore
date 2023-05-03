@@ -165,3 +165,5 @@ extensions/
 backends/
 !backends/llama_cpp
 !backends/__init__.py
+web/.env.build
+web/.env.dev

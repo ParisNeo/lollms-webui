@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./index.html","./src/**/*.{vue,js,ts,jsx,tsx}"],
+  content: ["./index.html","./src/**/*.{vue,js,ts,jsx,tsx}", 'node_modules/flowbite-vue/**/*.{js,jsx,ts,tsx}'],
   darkMode:'class',
   theme: {
     extend: {
@@ -30,6 +30,8 @@ module.exports = {
       
     },
   },
-  plugins: [],
+  plugins: [
+    require('flowbite/plugin')
+]
 }
 

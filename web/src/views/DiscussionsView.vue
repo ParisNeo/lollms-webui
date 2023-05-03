@@ -5,20 +5,22 @@
         <div
             class="z-10 sticky top-0 flex-row p-2 flex items-center gap-3 flex-0 bg-bg-light-tone dark:bg-bg-dark-tone mt-0 px-4  shadow-md">
             <!-- CONTROL PANEL -->
-            <div class=" text-2xl  hover:text-secondary duration-75 active:scale-90 " title="Create new discussion">
+            <button class=" text-2xl  hover:text-secondary duration-75 active:scale-90 " title="Create new discussion"
+                type="button" @click="createNewDiscussionShow">
                 <i data-feather="plus"></i>
-            </div>
-            <div class=" text-2xl  hover:text-secondary duration-75 active:scale-90 "
+            </button>
+            <button class=" text-2xl  hover:text-secondary duration-75 active:scale-90 "
                 title="Reset database, remove all discussions">
                 <i data-feather="refresh-ccw"></i>
-            </div>
-            <div class=" text-2xl  hover:text-secondary duration-75 active:scale-90 " title="Export database">
+            </button>
+            <button class=" text-2xl  hover:text-secondary duration-75 active:scale-90 " title="Export database"
+                type="button">
                 <i data-feather="database"></i>
-            </div>
-            <div class=" text-2xl  hover:text-secondary duration-75 active:scale-90 rotate-90"
-                title="Export discussion to a file">
+            </button>
+            <button class=" text-2xl  hover:text-secondary duration-75 active:scale-90 rotate-90"
+                title="Export discussion to a file" type="button">
                 <i data-feather="log-out"></i>
-            </div>
+            </button>
 
             <!-- SEARCH BAR -->
             <form>
@@ -41,6 +43,25 @@
                         @input="filterDiscussions()">
                 </div>
             </form>
+            <!-- Create discussion -->
+            <ModalSimple :ShowModal="showCreateDiscussionModal">
+                <template v-slot:header>
+                    <p>Create new discussion</p>
+                </template>
+                <template v-slot:body>
+                    <div class="mb-6">
+                        <label for="default-input" class="block mb-2 text-sm font-medium ">Enter discussion title:</label>
+                        <input type="text" id="default-input"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    </div>
+                </template>
+                <template v-slot:footer>
+                    <div class="flex justify-between">
+                        <button type="button"
+                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Create</button>
+                    </div>
+                </template>
+            </ModalSimple>
         </div>
         <div class="relative overflow-y-scroll no-scrollbar">
             <!-- DISCUSSION LIST -->
@@ -86,7 +107,7 @@
 </style>
 
 <script>
-import io from 'socket.io-client';
+
 import axios from "axios";
 import { nextTick } from 'vue'
 
@@ -108,7 +129,8 @@ export default {
             discussionArr: [],
             loading: false,
             filterTitle: "",
-            filterInProgress: false
+            filterInProgress: false,
+            showCreateDiscussionModal: false
         }
     },
     methods: {
@@ -217,6 +239,10 @@ export default {
             const lastMsg = this.discussionArr[this.discussionArr.length - 1]
             lastMsg.content = content.data
         },
+        createNewDiscussionShow(){
+            console.log("aa",this.showCreateDiscussionModal)
+            this.showCreateDiscussionModal=true
+        }
 
     },
     async created() {
@@ -236,7 +262,8 @@ export default {
         Discussion,
         Message,
         ChatBox,
-        WelcomeComponent
+        WelcomeComponent,
+        ModalSimple
     }, watch: {
         filterTitle(newVal, oldVal) {
             if (newVal == "") {
@@ -255,5 +282,14 @@ import Discussion from '../components/Discussion.vue';
 import Message from '../components/Message.vue';
 import ChatBox from '../components/ChatBox.vue'
 import WelcomeComponent from '../components/WelcomeComponent.vue'
+import ModalSimple from '../components/ModalSimple.vue'
 import feather from 'feather-icons'
+
+import { onMounted } from 'vue'
+import { initFlowbite } from 'flowbite'
+
+// initialize components based on data attribute selectors
+onMounted(() => {
+    initFlowbite();
+})
 </script>
