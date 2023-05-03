@@ -1,13 +1,14 @@
 import { fileURLToPath, URL } from 'node:url'
 
-import { defineConfig } from 'vite'
+import { defineConfig,loadEnv  } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
-require('dotenv').config()
-require('dotenv').config({ path: `.env.local`, override: true });
-
 // https://vitejs.dev/config/
-export default defineConfig({
+export default ({ mode }) => {
+  // Load app-level env vars to node-level env vars.
+  process.env = {...process.env, ...loadEnv(mode, process.cwd())};
+  
+  return defineConfig({
   
   plugins: [
     vue()
@@ -26,6 +27,5 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
-  },
-
-})
+  }
+})}
