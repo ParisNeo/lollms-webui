@@ -20,9 +20,9 @@ export default defineConfig({
   server: {
     proxy: {
       "/api/": {
-        target: process.env.GPT4ALL_API,
-        changeOrigin: process.env.GPT4ALL_API_CHANGE_ORIGIN,
-        secure: process.env.GPT4ALL_API_SECURE,
+        target: process.env.VITE_GPT4ALL_API,
+        changeOrigin: process.env.VITE_GPT4ALL_API_CHANGE_ORIGIN,
+        secure: process.env.VITE_GPT4ALL_API_SECURE,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },

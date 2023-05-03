@@ -68,11 +68,11 @@
         <!-- CHAT AREA -->
         <div>
             <Message v-for="(msg, index) in discussionArr" :key="index" :message="msg"
-                @click="scrollToElement($event.target)" />
+                @click="scrollToElement($event.target)" :id="'msg-' + msg.id" />
 
             <WelcomeComponent v-if="discussionArr.length < 1" />
 
-            <ChatBox v-if="discussionArr.length > 1" />
+            <ChatBox v-if="discussionArr.length > 1" @messageSentEvent="sendMsg" />
 
         </div>
 
@@ -89,6 +89,10 @@
 import io from 'socket.io-client';
 import axios from "axios";
 import { nextTick } from 'vue'
+
+axios.defaults.baseURL = '/api/';
+import websocket from '@/services/websocket.js';
+
 export default {
 
     setup() {
@@ -163,21 +167,71 @@ export default {
 
         },
         scrollToElement(el) {
-
-
             if (el) {
 
                 el.scrollIntoView({ behavior: 'smooth', block: "center", inline: "nearest" });
             }
-        }
+        },
+        createMsg(msgObj) {
+            // From websocket.on("infos")
+
+            // Create user input message
+            let usrMessage = {
+                content: msgObj.message,
+                id: msgObj.message,
+                //parent: 10,
+                rank: 0,
+                sender: msgObj.user,
+                //type: 0
+            }
+            this.discussionArr.push(usrMessage)
+            nextTick(() => {
+                const userMsgElement = document.getElementById('msg-' + msgObj.message)
+                this.scrollToElement(userMsgElement)
+
+            })
+
+            // Create response message
+            let responseMessage = {
+                content: "..typing",
+                id: msgObj.response_id,
+                //parent: 10,
+                rank: 0,
+                sender: msgObj.bot,
+                //type: 0
+            }
+            this.discussionArr.push(responseMessage)
+            nextTick(() => {
+                const responseMessageElement = document.getElementById('msg-' + msgObj.response_id)
+                this.scrollToElement(responseMessageElement)
+            })
+
+        },
+        sendMsg(msg) {
+            //console.log("Message sent:", msg)
+            websocket.emit('generate_msg', { prompt: msg });
+
+        },
+        steamMessageContent(content) {
+            //console.log("Message obj recieved:", content)
+            const lastMsg = this.discussionArr[this.discussionArr.length - 1]
+            lastMsg.content = content.data
+        },
+
     },
-    async mounted() {
+    async created() {
+
+        // Constructor
         this.list = await this.list_discussions()
         this.tempList = this.list
         nextTick(() => {
             feather.replace()
-
         })
+
+        // WebSocket responses
+        websocket.on("infos", this.createMsg)
+        websocket.on("message", this.steamMessageContent)
+
     }, components: {
         Discussion,
         Message,
