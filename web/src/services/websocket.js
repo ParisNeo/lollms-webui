@@ -4,7 +4,7 @@
 // All websocket stuff can be found here.
 import io from 'socket.io-client';  
 
-const socket = new io('http://' + document.domain + ':' + location.port);
+const socket = new io(import.meta.env.VITE_GPT4ALL_API );
 
 socket.onopen = () => {
   console.log('WebSocket connection established.');

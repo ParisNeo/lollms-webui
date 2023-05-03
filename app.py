@@ -40,7 +40,7 @@ from geventwebsocket.handler import WebSocketHandler
 from gevent.pywsgi import WSGIServer
 
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
-socketio = SocketIO(app, async_mode='gevent', ping_timeout=30, ping_interval=15)
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent', ping_timeout=30, ping_interval=15)
 
 app.config['SECRET_KEY'] = 'secret!'
 # Set the logging level to WARNING or higher
