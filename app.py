@@ -108,6 +108,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.add_endpoint("/stop_gen", "stop_gen", self.stop_gen, methods=["GET"])
 
         self.add_endpoint("/rename", "rename", self.rename, methods=["POST"])
+        self.add_endpoint("/edit_title", "edit_title", self.edit_title, methods=["POST"])
         self.add_endpoint(
             "/load_discussion", "load_discussion", self.load_discussion, methods=["POST"]
         )
@@ -370,7 +371,15 @@ class Gpt4AllWebUI(GPT4AllAPI):
         title = data["title"]
         self.current_discussion.rename(title)
         return "renamed successfully"
-
+    
+    def edit_title(self):
+        data = request.get_json()
+        title = data["title"]
+        discussion_id = data["id"]
+        self.current_discussion = Discussion(discussion_id, self.db)
+        self.current_discussion.rename(title)
+        return "title renamed successfully"
+    
     def load_discussion(self):
         data = request.get_json()
         if "id" in data:
