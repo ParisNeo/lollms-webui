@@ -91,4 +91,4 @@ This method exports all discussions and messages in the database to a JSON file.
 
 
 ## Database diagram
-[](scheme.png)
+![scheme](scheme.png)
