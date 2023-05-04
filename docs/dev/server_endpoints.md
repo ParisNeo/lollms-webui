@@ -5,38 +5,38 @@ This Flask server provides various endpoints to manage and interact with the cha
 
 ##  Endpoints:
 
-"/list_backends": GET request endpoint to list all the available backends.
-"/list_models": GET request endpoint to list all the available models.
-"/list_personalities_languages": GET request endpoint to list all the available personality languages.
-"/list_personalities_categories": GET request endpoint to list all the available personality categories.
-"/list_personalities": GET request endpoint to list all the available personalities.
-"/list_languages": GET request endpoint to list all the available languages.
-"/list_discussions": GET request endpoint to list all the available discussions.
-"/set_personality_language": GET request endpoint to set the personality language.
-"/set_personality_category": GET request endpoint to set the personality category.
-"/": GET request endpoint to display the index page.
-"/path:filename": GET request endpoint to serve static files.
-"/export_discussion": GET request endpoint to export the current discussion.
-"/export": GET request endpoint to export the chatbot's data.
-"/new_discussion": GET request endpoint to create a new discussion.
-"/stop_gen": GET request endpoint to stop the chatbot from generating responses.
-"/rename": POST request endpoint to rename a discussion.
-"/edit_title": POST request endpoint to edit the title of a discussion.
-"/load_discussion": POST request endpoint to load a discussion.
-"/delete_discussion": POST request endpoint to delete a discussion.
-"/update_message": GET request endpoint to update a message.
-"/message_rank_up": GET request endpoint to rank up a message.
-"/message_rank_down": GET request endpoint to rank down a message.
-"/delete_message": GET request endpoint to delete a message.
-"/set_backend": POST request endpoint to set the backend.
-"/set_model": POST request endpoint to set the model.
-"/update_model_params": POST request endpoint to update the model parameters.
-"/get_config": GET request endpoint to get the chatbot's configuration.
-"/extensions": GET request endpoint to list all the available extensions.
-"/training": GET request endpoint to start the training process.
-"/main": GET request endpoint to start the chatbot.
-"/settings": GET request endpoint to display the settings page.
-"/help": GET request endpoint to display the help page.
+- "/list_backends": GET request endpoint to list all the available backends.
+- "/list_models": GET request endpoint to list all the available models.
+- "/list_personalities_languages": GET request endpoint to list all the available personality languages.
+- "/list_personalities_categories": GET request endpoint to list all the available personality categories.
+- "/list_personalities": GET request endpoint to list all the available personalities.
+- "/list_languages": GET request endpoint to list all the available languages.
+- "/list_discussions": GET request endpoint to list all the available discussions.
+- "/set_personality_language": GET request endpoint to set the personality language.
+- "/set_personality_category": GET request endpoint to set the personality category.
+- "/": GET request endpoint to display the index page.
+- "/path:filename": GET request endpoint to serve static files.
+- "/export_discussion": GET request endpoint to export the current discussion.
+- "/export": GET request endpoint to export the chatbot's data.
+- "/new_discussion": GET request endpoint to create a new discussion.
+- "/stop_gen": GET request endpoint to stop the chatbot from generating responses.
+- "/rename": POST request endpoint to rename a discussion.
+- "/edit_title": POST request endpoint to edit the title of a discussion.
+- "/load_discussion": POST request endpoint to load a discussion.
+- "/delete_discussion": POST request endpoint to delete a discussion.
+- "/update_message": GET request endpoint to update a message.
+- "/message_rank_up": GET request endpoint to rank up a message.
+- "/message_rank_down": GET request endpoint to rank down a message.
+- "/delete_message": GET request endpoint to delete a message.
+- "/set_backend": POST request endpoint to set the backend.
+- "/set_model": POST request endpoint to set the model.
+- "/update_model_params": POST request endpoint to update the model parameters.
+- "/get_config": GET request endpoint to get the chatbot's configuration.
+- "/extensions": GET request endpoint to list all the available extensions.
+- "/training": GET request endpoint to start the training process.
+- "/main": GET request endpoint to start the chatbot.
+- "/settings": GET request endpoint to display the settings page.
+- "/help": GET request endpoint to display the help page.
 
 # Socketio endpoints
 These are the WebSocket server endpoints that are used to handle real-time communication between the client and server using the SocketIO library.
