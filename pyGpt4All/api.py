@@ -178,7 +178,7 @@ class GPT4AllAPI():
         
         self.bot_says += text
         if not self.personality.detect_antiprompt(self.bot_says):
-            self.socketio.emit('message', {'data': self.bot_says});
+            self.socketio.emit('message', {'data': self.bot_says})
             if self.cancel_gen:
                 print("Generation canceled")
                 self.cancel_gen = False
@@ -200,7 +200,7 @@ class GPT4AllAPI():
             self.discussion_messages,
             new_text_callback=self.new_text_callback,
             n_predict=total_n_predict,
-            temp=self.config['temp'],
+            temp=self.config['temperature'],
             top_k=self.config['top_k'],
             top_p=self.config['top_p'],
             repeat_penalty=self.config['repeat_penalty'],

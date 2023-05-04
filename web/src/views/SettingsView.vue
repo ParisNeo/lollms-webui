@@ -68,7 +68,7 @@
                 <div class="flex flex-col align-bottom ">
                     <div class="relative">
                         <p class="absolute left-0 mt-6">
-                            <label for="temp" class=" text-sm font-medium">
+                            <label for="temperature" class=" text-sm font-medium">
                                 Temperature:
                             </label>
                         </p>
@@ -80,7 +80,7 @@
 
                     </div>
 
-                    <input id="temp" type="range" v-model="configFile.temp" min="0" max="5" step="0.1"
+                    <input id="temperature" type="range" v-model="configFile.temp" min="0" max="5" step="0.1"
                         class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                 </div>
             </div>

@@ -5,6 +5,7 @@
 ![GitHub stars](https://img.shields.io/github/stars/nomic-ai/GPT4All-ui)
 ![GitHub forks](https://img.shields.io/github/forks/nomic-ai/GPT4All-ui)
 [![Discord](https://img.shields.io/discord/1092918764925882418?color=7289da&label=Discord&logo=discord&logoColor=ffffff)](https://discord.gg/4rR282WJb6)
+[![Twitter Follow](https://img.shields.io/twitter/follow/SpaceNerduino?style=social)](https://twitter.com/SpaceNerduino)
 
 This is a Flask web application that provides a chat UI for interacting with [llamacpp](https://github.com/ggerganov/llama.cpp), gpt-j, gpt-q as well as Hugging face based language models uch as [GPT4all](https://github.com/nomic-ai/gpt4all), vicuna etc...
 
@@ -195,7 +196,7 @@ On Linux/MacOS more details can be found [here](docs/Linux_Osx_Usage.md)
 *   `--top-p`: the cumulative probability threshold for top-p sampling (default: 0.90)
 *   `--repeat-penalty`: the penalty to apply for repeated n-grams (default: 1.3)
 *   `--repeat-last-n`: the number of tokens to use for detecting repeated n-grams (default: 64)
-*   `--ctx-size`: the maximum context size to use for generating responses (default: 2048)
+*   `--ctx-size`: the maximum context size to use for generating responses (default: 512)
 
 Note: All options are optional and have default values.
 

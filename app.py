@@ -203,7 +203,83 @@ class Gpt4AllWebUI(GPT4AllAPI):
             tpe = threading.Thread(target=self.parse_to_prompt_stream, args=(message, message_id))
             tpe.start()
 
+        # Settings (data: {"setting_name":<the setting name>,"setting_value":<the setting value>})
+        @socketio.on('update_setting')
+        def update_setting(data):
 
+            setting_name = int(data['setting_name'])
+            if setting_name== "temperature":
+                self.config["temperature"]=float(data['setting_value'])
+            elif setting_name== "top_k":
+                self.config["top_k"]=int(data['setting_value'])
+            elif setting_name== "top_p":
+                self.config["top_p"]=float(data['setting_value'])
+                
+            elif setting_name== "n_predict":
+                self.config["n_predict"]=int(data['setting_value'])
+            elif setting_name== "n_threads":
+                self.config["n_threads"]=int(data['setting_value'])
+            elif setting_name== "ctx_size":
+                self.config["ctx_size"]=int(data['setting_value'])
+            elif setting_name== "repeat_penalty":
+                self.config["repeat_penalty"]=float(data['setting_value'])
+            elif setting_name== "repeat_last_n":
+                self.config["repeat_last_n"]=int(data['setting_value'])
+
+
+            elif setting_name== "language":
+                self.config["language"]=data['setting_value']
+
+            elif setting_name== "personality_language":
+                self.config["personality_language"]=data['setting_value']
+            elif setting_name== "personality_category":
+                self.config["personality_category"]=data['setting_value']
+            elif setting_name== "personality":
+                self.config["personality"]=data['setting_value']
+                
+
+
+            elif setting_name== "model":
+                self.config["model"]=data['setting_value']
+                print("New model selected")            
+                # Build chatbot
+                self.chatbot_bindings = self.create_chatbot()
+
+            elif setting_name== "backend":
+                print("New backend selected")            
+                if self.config['backend']!= data['setting_value']:
+                    print("New backend selected")
+                    self.config["backend"]=data['setting_value']
+                    
+                    backend_ =self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
+                    models = backend_.list_models(self.config)
+                    if len(models)>0:      
+                        self.backend = backend_
+                        self.config['model'] = models[0]
+                        # Build chatbot
+                        self.chatbot_bindings = self.create_chatbot()
+                        self.socketio.emit('update_setting', {'setting_name': data['setting_name'], "status":True});
+                        return
+                    else:
+                        self.socketio.emit('update_setting', {'setting_name': data['setting_name'], "status":False});
+                        return
+
+
+
+            else:
+                self.socketio.emit('update_setting', {'setting_name': data['setting_name'], "status":False});
+                return
+
+            # Tell that the setting was changed
+            self.socketio.emit('update_setting', {'setting_name': data['setting_name'], "status":True});
+
+
+        # Settings (data: {"setting_name":<the setting name>,"setting_value":<the setting value>})
+        @socketio.on('save_settings')
+        def save_settings(data):
+            save_config(self.config, self.config_file_path)
+            # Tell that the setting was changed
+            self.socketio.emit('save_settings', {"status":True});
 
 
     def list_backends(self):
@@ -501,7 +577,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.config['voice'] = str(data["voice"])
         self.config['language'] = str(data["language"])
         
-        self.config['temp'] = float(data["temp"])
+        self.config['temperature'] = float(data["temperature"])
         self.config['top_k'] = int(data["topK"])
         self.config['top_p'] = float(data["topP"])
         self.config['repeat_penalty'] = float(data["repeatPenalty"])
@@ -518,7 +594,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         print(f"\tPersonality:{self.config['personality']}")
         print(f"\tLanguage:{self.config['language']}")
         print(f"\tVoice:{self.config['voice']}")
-        print(f"\tTemperature:{self.config['temp']}")
+        print(f"\tTemperature:{self.config['temperature']}")
         print(f"\tNPredict:{self.config['n_predict']}")
         print(f"\tSeed:{self.config['seed']}")
         print(f"\top_k:{self.config['top_k']}")
@@ -621,13 +697,24 @@ if __name__ == "__main__":
 
     # The default configuration must be kept unchanged as it is committed to the repository, 
     # so we have to make a copy that is not comitted
+    default_config = load_config(f"configs/default.yaml")
+
     if args.config=="default":
         args.config = "local_default"
         if not Path(f"configs/local_default.yaml").exists():
             print("No local configuration file found. Building from scratch")
             shutil.copy(f"configs/default.yaml", f"configs/local_default.yaml")
+
     config_file_path = f"configs/{args.config}.yaml"
     config = load_config(config_file_path)
+
+    if "version" not in config or int(config["version"])<int(default_config["version"]):
+        #Upgrade old configuration files to new format
+        print("Configuration file is very old. Replacing with default configuration")
+        for key, value in default_config.items():
+            if key not in config:
+                config[key] = value
+        save_config(config, config_file_path)
 
     # Override values in config with command-line arguments
     for arg_name, arg_value in vars(args).items():

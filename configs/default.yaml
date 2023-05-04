@@ -1,3 +1,4 @@
+version: 2
 config: default
 ctx_size: 512
 db_path: databases/database.db
@@ -17,7 +18,7 @@ port: 9600
 repeat_last_n: 40
 repeat_penalty: 1.2
 seed: 0
-temp: 0.9
+temperature: 0.9
 top_k: 50
 top_p: 0.95
 voice: ""

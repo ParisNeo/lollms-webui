@@ -57,7 +57,7 @@ class LLAMACPP(GPTBackend):
             self.model.reset()
             for tok in self.model.generate(prompt, 
                                            n_predict=n_predict,                                           
-                                            temp=self.config['temp'],
+                                            temp=self.config['temperature'],
                                             top_k=self.config['top_k'],
                                             top_p=self.config['top_p'],
                                             repeat_penalty=self.config['repeat_penalty'],

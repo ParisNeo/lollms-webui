@@ -21,7 +21,7 @@ fetch('/settings')
   languageInput = document.getElementById('language');
   voiceInput = document.getElementById('voice');
   seedInput = document.getElementById('seed');
-  tempInput = document.getElementById('temp');
+  tempInput = document.getElementById('temperature');
   nPredictInput = document.getElementById('n-predict');
   topKInput = document.getElementById('top-k');
   topPInput = document.getElementById('top-p');
@@ -51,7 +51,7 @@ fetch('/settings')
         languageInput.value = data["language"]
         voiceInput.value = data["voice"]
         seedInput.value = data["seed"]
-        tempInput.value = data["temp"]
+        tempInput.value = data["temperature"]
         nPredictInput.value = data["n_predict"]
         topKInput.value = data["top_k"]
         topPInput.value = data["top_p"]
@@ -59,7 +59,7 @@ fetch('/settings')
         repeatPenaltyInput.textContent  = data["repeat_penalty"]
         repeatLastNInput.textContent  = data["repeat_last_n"]
     
-        temperatureValue.textContent =`Temperature(${data["temp"]})`
+        temperatureValue.textContent =`Temperature(${data["temperature"]})`
         n_predictValue.textContent =`N Predict(${data["n_predict"]})`
         
         topkValue.textContent =`Top-K(${data["top_k"]})`
