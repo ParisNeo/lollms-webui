@@ -111,7 +111,7 @@
 import axios from "axios";
 import { nextTick } from 'vue'
 
-//axios.defaults.baseURL = '/api/'; // Use this for external development not for production
+axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL // Use this for external development not for production
 import websocket from '@/services/websocket.js';
 
 export default {
