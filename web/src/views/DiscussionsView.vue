@@ -6,7 +6,7 @@
             class="z-10 sticky top-0 flex-row p-2 flex items-center gap-3 flex-0 bg-bg-light-tone dark:bg-bg-dark-tone mt-0 px-4  shadow-md">
             <!-- CONTROL PANEL -->
             <button class=" text-2xl  hover:text-secondary duration-75 active:scale-90 " title="Create new discussion"
-                type="button" @click="createNewDiscussionShow">
+                type="button" @click="createNewDiscussion()">
                 <i data-feather="plus"></i>
             </button>
             <button class=" text-2xl  hover:text-secondary duration-75 active:scale-90 "
@@ -43,33 +43,15 @@
                         @input="filterDiscussions()">
                 </div>
             </form>
-            <!-- Create discussion -->
-            <ModalSimple :ShowModal="showCreateDiscussionModal">
-                <template v-slot:header>
-                    <p>Create new discussion</p>
-                </template>
-                <template v-slot:body>
-                    <div class="mb-6">
-                        <label for="default-input" class="block mb-2 text-sm font-medium ">Enter discussion title:</label>
-                        <input type="text" id="default-input"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                    </div>
-                </template>
-                <template v-slot:footer>
-                    <div class="flex justify-between">
-                        <button type="button"
-                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Create</button>
-                    </div>
-                </template>
-            </ModalSimple>
+
         </div>
         <div class="relative overflow-y-scroll no-scrollbar">
             <!-- DISCUSSION LIST -->
             <div class="mx-4 flex-grow" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''">
 
-                <Discussion v-for="(item, index) in list" :key="index" :id="item.id" :title="item.title"
+                <Discussion v-for="(item, index) in list" :key="index" :id="item.id" :title="item.title" ref="discussionList"
                     :selected="currentDiscussion.id == item.id" :loading="currentDiscussion.id == item.id && loading"
-                    @click="selectDiscussion(item)" />
+                    @select="selectDiscussion(item)" @delete="deleteDiscussion(item.id)" @editTitle="editTitle" />
 
                 <div v-if="list.length < 1"
                     class=" gap-2 py-2 my-2 hover:shadow-md hover:bg-primary-light dark:hover:bg-primary rounded-md p-2 duration-75 group cursor-pointer">
@@ -93,7 +75,7 @@
 
             <WelcomeComponent v-if="discussionArr.length < 1" />
 
-            <ChatBox v-if="discussionArr.length > 1" @messageSentEvent="sendMsg" />
+            <ChatBox v-if="discussionArr.length > 0" @messageSentEvent="sendMsg" />
 
         </div>
 
@@ -107,12 +89,6 @@
 </style>
 
 <script>
-
-import axios from "axios";
-import { nextTick } from 'vue'
-
-//axios.defaults.baseURL = '/api/'; // Use this for external development not for production
-import websocket from '@/services/websocket.js';
 
 export default {
 
@@ -139,7 +115,8 @@ export default {
                 const res = await axios.get("/list_discussions");
 
                 if (res) {
-
+                    this.list = res.data
+                    this.tempList = this.list
                     return res.data
 
                 }
@@ -152,17 +129,68 @@ export default {
         },
         async load_discussion(id) {
             try {
-
-
                 if (id) {
                     this.loading = true
                     const res = await axios.post("/load_discussion", {
                         id: id
                     });
-
+                    this.loading = false
                     if (res) {
-                        this.discussionArr = res.data
-                        this.loading = false
+
+                        this.discussionArr = res.data.filter((item) => item.sender != "conditionner") // Filter out the conditionner entries
+
+                    }
+                }
+
+            } catch (error) {
+                console.log(error)
+                this.loading = false
+            }
+
+        },
+        async new_discussion(title) {
+            try {
+                const res = await axios.get("/new_discussion", { params: { title: title } });
+
+                if (res) {
+                    return res.data
+
+                }
+            } catch (error) {
+                console.log(error)
+                return {}
+            }
+        },
+        async delete_discussion(id) {
+            try {
+                if (id) {
+                    this.loading = true
+                    const res = await axios.post("/delete_discussion", {
+                        id: id
+                    });
+                    this.loading = false
+                }
+
+            } catch (error) {
+                console.log(error)
+                this.loading = false
+            }
+
+        },
+        async edit_title(discussion_id, new_title) {
+            try {
+                if (discussion_id) {
+                    this.loading = true
+                    const res = await axios.post("/edit_title", {
+                        id: discussion_id,
+                        title: new_title
+                    });
+                    this.loading = false
+                    if (res.status == 200) {
+                        const index = this.list.findIndex(x => x.id == discussion_id);
+                        const discussionItem = this.list[index]
+                        discussionItem.title = new_title
+                        this.tempList = this.list
                     }
                 }
 
@@ -183,12 +211,20 @@ export default {
                 }, 100)
             }
         },
-        selectDiscussion(item) {
+        async selectDiscussion(item) {
             this.currentDiscussion = item
-            this.load_discussion(item.id)
+            await this.load_discussion(item.id)
+
+            if (this.discussionArr.length > 1) {
+
+                if (this.currentDiscussion.title === "" || this.currentDiscussion.title === null ) {
+                    this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
+                }
+            }
 
         },
         scrollToElement(el) {
+
             if (el) {
 
                 el.scrollIntoView({ behavior: 'smooth', block: "center", inline: "nearest" });
@@ -228,28 +264,72 @@ export default {
                 this.scrollToElement(responseMessageElement)
             })
 
+            if (this.currentDiscussion.title === "" || this.currentDiscussion.title === null) {
+                this.changeTitleUsingUserMSG(this.currentDiscussion.id, usrMessage.content)
+            }
+
         },
         sendMsg(msg) {
-            //console.log("Message sent:", msg)
+
             websocket.emit('generate_msg', { prompt: msg });
 
         },
         steamMessageContent(content) {
-            //console.log("Message obj recieved:", content)
+
             const lastMsg = this.discussionArr[this.discussionArr.length - 1]
             lastMsg.content = content.data
         },
-        createNewDiscussionShow(){
-            console.log("aa",this.showCreateDiscussionModal)
-            this.showCreateDiscussionModal=true
-        }
+        async changeTitleUsingUserMSG(id, msg) {
+            const index = this.list.findIndex(x => x.id == id);
+            const discussionItem = this.list[index]
+            if (msg) {
+                discussionItem.title = msg
+                this.tempList = this.list
+            }
+            await this.edit_title(id,msg)
+
+        },
+        async createNewDiscussion() {
+
+            const res = await this.new_discussion()
+            await this.list_discussions()
+            const index = this.list.findIndex(x => x.id == res.id);
+            const discussionItem = this.list[index]
+            this.selectDiscussion(discussionItem)
+            nextTick(() => {
+                const selectedDisElement = document.getElementById('dis-' + res.id)
+                this.scrollToElement(selectedDisElement)
+
+            })
+
+        },
+        async deleteDiscussion(id) {
+            const index = this.list.findIndex(x => x.id == id);
+            const discussionItem = this.list[index]
+            discussionItem.loading=true
+            this.delete_discussion(id)
+            if (this.currentDiscussion.id == id) {
+                this.currentDiscussion = {}
+            }
+            await this.list_discussions()
+        },
+        async editTitle(newTitleObj) {
+            //const index = this.$refs.discussionList.findIndex(x => x.id == newTitleObj.id);
+            //const discussionItem = this.$refs.discussionList[index]
+            //console.log(JSON.stringify(discussionItem))
+            //discussionItem.loading.value=true
+            //console.log(discussionItem.title)
+            await this.edit_title(newTitleObj.id, newTitleObj.title)
+
+        },
+
 
     },
     async created() {
 
         // Constructor
-        this.list = await this.list_discussions()
-        this.tempList = this.list
+        await this.list_discussions()
+
         nextTick(() => {
             feather.replace()
         })
@@ -263,7 +343,7 @@ export default {
         Message,
         ChatBox,
         WelcomeComponent,
-        ModalSimple
+
     }, watch: {
         filterTitle(newVal, oldVal) {
             if (newVal == "") {
@@ -282,8 +362,13 @@ import Discussion from '../components/Discussion.vue';
 import Message from '../components/Message.vue';
 import ChatBox from '../components/ChatBox.vue'
 import WelcomeComponent from '../components/WelcomeComponent.vue'
-import ModalSimple from '../components/ModalSimple.vue'
+
 import feather from 'feather-icons'
+
+import axios from "axios";
+import { nextTick } from 'vue';
+
+import websocket from '@/services/websocket.js';
 
 import { onMounted } from 'vue'
 import { initFlowbite } from 'flowbite'
@@ -292,4 +377,7 @@ import { initFlowbite } from 'flowbite'
 onMounted(() => {
     initFlowbite();
 })
+
+axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL;
+
 </script>

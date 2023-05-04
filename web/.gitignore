@@ -25,3 +25,6 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+
+# REST Client files (VSCODE extension for making GET POST requests easy and fst from text files)
+*.http
