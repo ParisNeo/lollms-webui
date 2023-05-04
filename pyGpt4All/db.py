@@ -19,7 +19,7 @@ class DiscussionsDB:
         """
         create database schema
         """
-        db_version = 2
+        db_version = 3
         # Verify encoding and change it if it is not complient
         with sqlite3.connect(self.db_path) as conn:
             # Execute a PRAGMA statement to get the current encoding of the database
@@ -52,10 +52,11 @@ class DiscussionsDB:
                 schema_table_exist = True
             try:
                 cursor.execute("""
-                        CREATE TABLE discussion (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            title TEXT
-                        )
+                    CREATE TABLE discussion (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        title TEXT,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
                     """)
             except Exception:
                 discussion_table_exist=True        
@@ -68,8 +69,10 @@ class DiscussionsDB:
                             type INT NOT NULL,
                             rank INT NOT NULL,
                             parent INT,
+                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                             discussion_id INTEGER NOT NULL,
-                            FOREIGN KEY (discussion_id) REFERENCES discussion(id)
+                            FOREIGN KEY (discussion_id) REFERENCES discussion(id),
+                            FOREIGN KEY (parent) REFERENCES message(id)
                         )
                     """
                     )
@@ -94,6 +97,9 @@ class DiscussionsDB:
                     cursor.execute("ALTER TABLE message ADD COLUMN type INT DEFAULT 0") # Added in V1
                     cursor.execute("ALTER TABLE message ADD COLUMN rank INT DEFAULT 0") # Added in V1
                     cursor.execute("ALTER TABLE message ADD COLUMN parent INT DEFAULT 0") # Added in V2
+                    cursor.execute("ALTER TABLE message ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V3
+                    cursor.execute("ALTER TABLE discussion ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V3
+                    
             # Upgrade the schema to version 1
             elif version < 2:
                 print(f"Upgrading schema to version {db_version}...")
@@ -101,6 +107,18 @@ class DiscussionsDB:
                 if message_table_exist:
                     try:
                         cursor.execute("ALTER TABLE message ADD COLUMN parent INT DEFAULT 0") # Added in V2
+                        cursor.execute("ALTER TABLE message ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V3
+                        cursor.execute("ALTER TABLE discussion ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V3
+                    except :
+                        pass
+            # Upgrade the schema to version 1
+            elif version < 3:
+                print(f"Upgrading schema to version {db_version}...")
+                # Add the 'created_at' column to the 'message' table
+                if message_table_exist:
+                    try:
+                        cursor.execute("ALTER TABLE message ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V3
+                        cursor.execute("ALTER TABLE discussion ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V3
                     except :
                         pass
             # Update the schema version

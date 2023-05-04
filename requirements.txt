@@ -14,4 +14,4 @@ transformers
 accelerate
 gevent
 gevent-websocket
-pyaipersonality
+pyaipersonality==0.0.5

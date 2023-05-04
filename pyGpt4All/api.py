@@ -177,7 +177,7 @@ class GPT4AllAPI():
         sys.stdout.flush()
         
         self.bot_says += text
-        if not self.personality.user_message_prefix.strip().lower() in self.bot_says.lower():
+        if not self.personality.detect_antiprompt(self.bot_says):
             self.socketio.emit('message', {'data': self.bot_says});
             if self.cancel_gen:
                 print("Generation canceled")
