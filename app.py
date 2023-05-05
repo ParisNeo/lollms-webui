@@ -236,6 +236,9 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 self.config["personality_category"]=data['setting_value']
             elif setting_name== "personality":
                 self.config["personality"]=data['setting_value']
+            elif setting_name== "override_personality_model_parameters":
+                self.config["override_personality_model_parameters"]=bool(data['setting_value'])
+                
                 
 
 

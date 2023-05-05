@@ -1,4 +1,4 @@
-version: 2
+version: 3
 config: default
 ctx_size: 512
 db_path: databases/database.db
@@ -12,7 +12,7 @@ model: gpt4all-lora-quantized-ggml.bin
 n_predict: 1024
 nb_messages_to_remember: 5
 personality_language: english
-personality_category: general
+personality_category: generic
 personality: gpt4all
 port: 9600
 repeat_last_n: 40
@@ -26,3 +26,4 @@ use_gpu: false # Not active yet
 auto_read: false
 use_avx2: true # By default we require using avx2 but if not supported, make sure you remove it from here
 use_new_ui: false # By default use old ui
+override_personality_model_parameters: false #if true the personality parameters are overriden by those of the configuration (may affect personality behaviour) 
