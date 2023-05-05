@@ -5,16 +5,25 @@
             <div
                 class="flex items-center gap-2 px-3 py-3 rounded-lg bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel shadow-lg  ">
 
-                <textarea id="chat" rows="1"
+                <textarea id="chat" rows="1" v-model="message"
                     class="block min-h-11  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="Send message..." @keydown.enter.exact="submitOnEnter($event)"></textarea>
-                <button type="submit" on on-click=""
-                    class="inline-flex justify-center p-2 rounded-full cursor-pointer hover:text-primary duration-75 active:scale-90">
+                
+                 <!-- BUTTONS -->
+                    <div class="inline-flex justify-center  rounded-full cursor-pointer">
 
-                    <i data-feather="send" class=" w-6 h-6 m-1"></i>
+                    <button v-if="!loading" type="button" @click="submit"
+                        class=" w-6 hover:text-primary duration-75 active:scale-90">
 
-                    <span class="sr-only">Send message</span>
-                </button>
+                        <i data-feather="send"></i>
+
+                        <span class="sr-only">Send message</span>
+                    </button>
+                    <div v-if="loading" title="Waiting for reply">
+                        <Spinner size="6" />
+
+                    </div>
+                </div>
             </div>
         </form>
     </div>
@@ -28,8 +37,18 @@ import feather from 'feather-icons'
 export default {
     name: 'ChatBox',
     emits: ["messageSentEvent"],
+    props: {
+
+        loading: false
+
+    },
     setup() {
         return {}
+    },
+    data() {
+        return {
+            message: ""
+        }
     },
     methods: {
         sendMessageEvent(msg) {
@@ -43,13 +62,20 @@ export default {
                 console.log("enter detected");
                 if (!event.repeat) {
 
-                    this.sendMessageEvent(event.target.value)
-                    event.target.value="" // Clear input field
+                    this.sendMessageEvent(this.message)
+                    this.message = "" // Clear input field
                 }
 
             }
         },
-    }, 
+        submit() {
+            if (this.message) {
+                this.sendMessageEvent(this.message)
+                this.message = ""
+            }
+
+        }
+    },
     mounted() {
         nextTick(() => {
             feather.replace()
@@ -59,4 +85,7 @@ export default {
 
     }
 }
+</script>
+<script setup>
+import { Spinner } from 'flowbite-vue'
 </script>
