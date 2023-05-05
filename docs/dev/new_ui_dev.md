@@ -4,7 +4,7 @@ The new UI is build using Node.js VUE3 + Vite. It uses tailwindcss, feathericons
 
 ## Todo's
 
-- Add ability to select multiple discussions to export or delete
+- Add ability to select multiple discussions to export or delete [WIP]
 - Add toast messages for errors and successes
 - Populate settings with settings controls [WIP]
 - Connect Settings to backend, ability to save changes
@@ -17,12 +17,14 @@ The new UI is build using Node.js VUE3 + Vite. It uses tailwindcss, feathericons
 - Create stop generating button
 - Fix the generated message formatting - add line breaks, also for user input messages.
 - Add ability for users to style the whole UI, either changing Hue or changing every color manually.
-- Maybe try to set the chat message box to float to the bottom (always on the bottom of the screen)
+- Maybe try to set the chatbox to float to the bottom (always on the bottom of the screen)
 - Create a panel in the Settings tab to create new personalities
 - Need to fix when user inputs message it shows up in the discussion array and then add new message for bot that is typing.
 - Need to investigate performance of websocket when message is being streamed back to the UI
 - On first launch of the UI force users to create "User" personality, to be used as "User" for any or all input messages.
-- Fix up the discussion array to filter out the messages by type not by count. (conditionner and )
+- Connect delete / export discussions to backend functions.
+- Need to fix when deleting multiple discussions to not loose loading animation for each discussion when list gets updated
+- Need to add loading feedback for when a new discussion is being created
 
 ## Done
 
@@ -31,5 +33,6 @@ The new UI is build using Node.js VUE3 + Vite. It uses tailwindcss, feathericons
 - Make search filter work [DONE]
 - Add clear filter button to search input field [DONE]
 - Add modal to ask user if you sure about to delete [DONE but in different way]
-
+- Fix up the discussion array to filter out the messages by type not by count. (conditionner and )[DONE]
+- Add title of current discussion to page [DONE]
 
