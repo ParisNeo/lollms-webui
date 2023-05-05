@@ -1,7 +1,39 @@
+# GPT4ALL-UI Web interface VUE3 development log, todo's and more
+
+## Installation for development
+
+You must have [Node.js](https://nodejs.org/en) installed on your computer. 
+
+```
+cd  /web/
+npm install
+```
+## Testing, running, debugging
+
+After that to run development server locally and test the web page at http://localhost:5173/:
+
+```
+npm run dev
+```
+
+> Note
+> To run the developmen environment you need to create copy of the `.env` file and name it either `.env.development` or if that dont work then `.env.dev`. Set `VITE_GPT4ALL_API_BASEURL = /api/ ` in the `.env.development`. 
+> Run your gpt backend by launching `webui.bat` or bash `webui.sh`.
+
+## Building frontend - UI
+
+```
+npm run build
+```
+
+This will update `/dist/` folder with all the files. Also the build will show you if there are errors or not in your vue code.
+
+> Note
+> Make sure you test the built files too, because sometimes the builder dont catch all the errors, and if a component is not refernced it might not load in the built version, but it loads fine in development environment
+
 # UI development log, todo's and more
 
-The new UI is build using Node.js VUE3 + Vite. It uses tailwindcss, feathericons, openfonts and flowbite-vue components.
-
+Here we keep track of things to implement and stuff we need to do.
 ## Todo's
 
 - Add ability to select multiple discussions to export or delete [WIP]
@@ -35,4 +67,3 @@ The new UI is build using Node.js VUE3 + Vite. It uses tailwindcss, feathericons
 - Add modal to ask user if you sure about to delete [DONE but in different way]
 - Fix up the discussion array to filter out the messages by type not by count. (conditionner and )[DONE]
 - Add title of current discussion to page [DONE]
-
