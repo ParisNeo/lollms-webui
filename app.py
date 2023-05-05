@@ -99,6 +99,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
         
         self.add_endpoint("/", "", self.index, methods=["GET"])
         self.add_endpoint("/<path:filename>", "serve_static", self.serve_static, methods=["GET"])
+        self.add_endpoint("/personalities/<path:filename>", "serve_personalities", self.serve_personalities, methods=["GET"])
+        
         
         self.add_endpoint("/export_discussion", "export_discussion", self.export_discussion, methods=["GET"])
         self.add_endpoint("/export", "export", self.export, methods=["GET"])
@@ -364,6 +366,13 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 path = os.path.join(root_dir, 'static/')+"/".join(filename.split("/")[:-1])
         else:
             path = os.path.join(root_dir, 'static/')+"/".join(filename.split("/")[:-1])
+                            
+        fn = filename.split("/")[-1]
+        return send_from_directory(path, fn)
+
+    def serve_personalities(self, filename):
+        root_dir = os.getcwd()
+        path = os.path.join(root_dir, 'personalities/')+"/".join(filename.split("/")[:-1])
                             
         fn = filename.split("/")[-1]
         return send_from_directory(path, fn)
