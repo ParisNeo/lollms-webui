@@ -309,8 +309,12 @@ class Gpt4AllWebUI(GPT4AllAPI):
         return jsonify(personalities_categories)
     
     def list_personalities(self):
-        personalities_dir = Path(f'./personalities/{self.config["personality_language"]}/{self.config["personality_category"]}')  # replace with the actual path to the models folder
-        personalities = [f.stem for f in personalities_dir.iterdir() if f.is_dir()]
+        try:
+            personalities_dir = Path(f'./personalities/{self.config["personality_language"]}/{self.config["personality_category"]}')  # replace with the actual path to the models folder
+            personalities = [f.stem for f in personalities_dir.iterdir() if f.is_dir()]
+        except:
+            personalities=[]
+            print("nope")
         return jsonify(personalities)
 
     def list_languages(self):

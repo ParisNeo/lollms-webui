@@ -151,7 +151,6 @@ configs/*
 
 # personalities other than the default one
 personalities/*
-!personalities/english/general/gpt4all_chatbot/config.yaml
 
 # personalities other than the default one
 databases/*
