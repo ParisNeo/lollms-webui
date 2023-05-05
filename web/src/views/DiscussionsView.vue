@@ -49,9 +49,10 @@
             <!-- DISCUSSION LIST -->
             <div class="mx-4 flex-grow" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''">
 
-                <Discussion v-for="(item, index) in list" :key="index" :id="item.id" :title="item.title" ref="discussionList"
-                    :selected="currentDiscussion.id == item.id" :loading="currentDiscussion.id == item.id && loading"
-                    @select="selectDiscussion(item)" @delete="deleteDiscussion(item.id)" @editTitle="editTitle" />
+                <Discussion v-for="(item, index) in list" :key="index" :id="item.id" :title="item.title"
+                    ref="discussionList" :selected="currentDiscussion.id == item.id"
+                    :loading="currentDiscussion.id == item.id && loading" @select="selectDiscussion(item)"
+                    @delete="deleteDiscussion(item.id)" @editTitle="editTitle" />
 
                 <div v-if="list.length < 1"
                     class=" gap-2 py-2 my-2 hover:shadow-md hover:bg-primary-light dark:hover:bg-primary rounded-md p-2 duration-75 group cursor-pointer">
@@ -99,14 +100,13 @@ export default {
     data() {
 
         return {
-            list: [],
-            tempList: [],
-            currentDiscussion: Number,
+            list: [], // Discussion list
+            tempList: [], // Copy of Discussion list (used for keeping the original list during filtering discussions/searching action)
+            currentDiscussion: {}, // Current/selected discussion id
             discussionArr: [],
             loading: false,
             filterTitle: "",
             filterInProgress: false,
-            showCreateDiscussionModal: false
         }
     },
     methods: {
@@ -125,7 +125,6 @@ export default {
                 return []
             }
 
-
         },
         async load_discussion(id) {
             try {
@@ -137,8 +136,14 @@ export default {
                     this.loading = false
                     if (res) {
 
-                        this.discussionArr = res.data.filter((item) => item.sender != "conditionner") // Filter out the conditionner entries
+                        // Filter out the user and bot entries
+                        this.discussionArr = res.data.filter((item) => item.type = "0")
+                        const lastMessage = this.discussionArr[this.discussionArr.length-1]
+                        nextTick(() => {
+                            const selectedElement = document.getElementById('msg-' + lastMessage.id)
+                            this.scrollToElement(selectedElement)
 
+                        })
                     }
                 }
 
@@ -201,6 +206,9 @@ export default {
 
         },
         filterDiscussions() {
+
+            // Search bar in for filtering discussions by title (serch)
+
             if (!this.filterInProgress) {
                 this.filterInProgress = true
                 setTimeout(() => {
@@ -212,15 +220,26 @@ export default {
             }
         },
         async selectDiscussion(item) {
+
+            // When discussion is selected it loads the discussion array
+
             this.currentDiscussion = item
+
+            localStorage.setItem("selected_discussion",this.currentDiscussion.id)
+
             await this.load_discussion(item.id)
 
             if (this.discussionArr.length > 1) {
 
-                if (this.currentDiscussion.title === "" || this.currentDiscussion.title === null ) {
+                if (this.currentDiscussion.title === "" || this.currentDiscussion.title === null) {
                     this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
                 }
             }
+            nextTick(() => {
+                const selectedDisElement = document.getElementById('dis-' + item.id)
+                this.scrollToElement(selectedDisElement)
+
+            })
 
         },
         scrollToElement(el) {
@@ -271,25 +290,37 @@ export default {
         },
         sendMsg(msg) {
 
+            // Sends message to backend
+
             websocket.emit('generate_msg', { prompt: msg });
 
         },
         steamMessageContent(content) {
 
+            // Streams response message content from backend
+
             const lastMsg = this.discussionArr[this.discussionArr.length - 1]
             lastMsg.content = content.data
         },
         async changeTitleUsingUserMSG(id, msg) {
+
+            // If discussion is untitled or title is null then it sets the title to first user message.
+
             const index = this.list.findIndex(x => x.id == id);
             const discussionItem = this.list[index]
             if (msg) {
                 discussionItem.title = msg
                 this.tempList = this.list
             }
-            await this.edit_title(id,msg)
+            await this.edit_title(id, msg)
 
         },
         async createNewDiscussion() {
+
+            // Creates new discussion on backend, 
+            // gets new discussion list, selects 
+            // newly created discussion, 
+            // scrolls to the discussion
 
             const res = await this.new_discussion()
             await this.list_discussions()
@@ -303,10 +334,24 @@ export default {
             })
 
         },
+        loadLastUsedDiscussion() {
+            // Checks local storage for last selected discussion
+            const id = localStorage.getItem("selected_discussion")
+            if (id) {
+                const index = this.list.findIndex(x => x.id == id);
+                const discussionItem = this.list[index]
+                this.selectDiscussion(discussionItem)
+            
+            }
+
+        },
         async deleteDiscussion(id) {
+
+            // Deletes discussion from backend and frontend
+
             const index = this.list.findIndex(x => x.id == id);
             const discussionItem = this.list[index]
-            discussionItem.loading=true
+            discussionItem.loading = true
             this.delete_discussion(id)
             if (this.currentDiscussion.id == id) {
                 this.currentDiscussion = {}
@@ -328,8 +373,10 @@ export default {
     async created() {
 
         // Constructor
+
         await this.list_discussions()
 
+this.loadLastUsedDiscussion()
         nextTick(() => {
             feather.replace()
         })
