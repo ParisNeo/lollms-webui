@@ -1,21 +1,5 @@
 # GPT4ALL-UI Web interface VUE3
 
-## Todo's
-
-- Fix discussion list width so that it stays static and dont resize depending on message contents [DONE]
-- Add chat input field [DONE]
-- Add ability to select multiple discussions to export or delete
-- Add modal to ask user if you sure about to delete
-- Add toast messages for errors and successes
-- Populate settings with settings controls [WIP]
-- Make search filter work [DONE]
-- Add clear filter button to search input field [DONE]
-- Add DB switcher (im thinking in the settings view)
-- Make the UI work good on mobile
-- Scroll to bottom
-- Scroll to top
-- Need to fix colors for `<input />` fields
-
 ## Dependencies for development
 
 You mus have [Node.js](https://nodejs.org/en) installed on your computer. 
