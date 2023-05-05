@@ -11,7 +11,7 @@
         <p v-if="!editTitle" :title="title" class="truncate w-full">{{ title ? title === "untitled" ? "New discussion" : title : "New discussion" }}</p>
 
         <input v-if="editTitle" type="text" id="title-box" class="bg-bg-light dark:bg-bg-dark rounded-md border-0 w-full -m-1 p-1"
-            :value="title" required  @input="chnageTitle($event.target.value)" @click.stop>
+            :value="title" required @keydown.enter.exact="editTitleEvent()" @keydown.esc.exact="editTitleMode = false "  @input="chnageTitle($event.target.value)" @click.stop>
 
         <!-- CONTROL BUTTONS -->
         <div class="flex items-center flex-1 max-h-6">
