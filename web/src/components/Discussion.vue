@@ -143,12 +143,6 @@ export default {
         checkBoxValue(newval, oldval) {
             this.checkBoxValue_local = newval
 
-        },
-        selected(newval, oldval) {
-            if (newval) {
-                const realTitle= this.title ? this.title === "untitled" ? "New discussion" : this.title : "New discussion" 
-                document.title = 'GPT4ALL - WEBUI - '+ realTitle
-            }
         }
     }
 }
