@@ -733,8 +733,11 @@ if __name__ == "__main__":
         if arg_value is not None:
             config[arg_name] = arg_value
 
-    personality = AIPersonality(f"personalities/{config['personality_language']}/{config['personality_category']}/{config['personality']}")
-
+    try:
+        personality = AIPersonality(f"personalities/{config['personality_language']}/{config['personality_category']}/{config['personality']}")
+    except:
+        print("Personality file not found. Please verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+        personality = AIPersonality()
     # executor = ThreadPoolExecutor(max_workers=1)
     # app.config['executor'] = executor
     bot = Gpt4AllWebUI(app, socketio, config, personality, config_file_path)
