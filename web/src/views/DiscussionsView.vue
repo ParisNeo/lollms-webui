@@ -45,7 +45,7 @@
             </form>
 
         </div>
-        <div class="relative overflow-y-scroll no-scrollbar">
+        <div id="dis-list" class="relative overflow-y-scroll no-scrollbar">
             <!-- DISCUSSION LIST -->
             <div class="mx-4 flex-grow" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''">
 
@@ -67,7 +67,7 @@
         </div>
 
     </div>
-    <div class="overflow-y-scroll flex flex-col no-scrollbar flex-grow "
+    <div id="msg-list" class="overflow-y-scroll flex flex-col no-scrollbar flex-grow "
         :class="loading ? 'opacity-20 pointer-events-none' : ''">
         <!-- CHAT AREA -->
         <div>
@@ -137,13 +137,16 @@ export default {
                     if (res) {
 
                         // Filter out the user and bot entries
-                        this.discussionArr = res.data.filter((item) => item.type = "0")
-                        const lastMessage = this.discussionArr[this.discussionArr.length-1]
-                        nextTick(() => {
-                            const selectedElement = document.getElementById('msg-' + lastMessage.id)
-                            this.scrollToElement(selectedElement)
+                        this.discussionArr = res.data.filter((item) => item.type == 0)
+                        const lastMessage = this.discussionArr[this.discussionArr.length - 1]
+                        if (lastMessage) {
+                            nextTick(() => {
+                                const selectedElement = document.getElementById('msg-' + lastMessage.id)
+                                this.scrollToElement(selectedElement)
 
-                        })
+                            })
+                        }
+
                     }
                 }
 
@@ -225,7 +228,7 @@ export default {
 
             this.currentDiscussion = item
 
-            localStorage.setItem("selected_discussion",this.currentDiscussion.id)
+            localStorage.setItem("selected_discussion", this.currentDiscussion.id)
 
             await this.load_discussion(item.id)
 
@@ -341,7 +344,7 @@ export default {
                 const index = this.list.findIndex(x => x.id == id);
                 const discussionItem = this.list[index]
                 this.selectDiscussion(discussionItem)
-            
+
             }
 
         },
@@ -376,7 +379,8 @@ export default {
 
         await this.list_discussions()
 
-this.loadLastUsedDiscussion()
+        this.loadLastUsedDiscussion()
+
         nextTick(() => {
             feather.replace()
         })
