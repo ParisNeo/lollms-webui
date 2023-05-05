@@ -197,7 +197,7 @@ On Linux/MacOS more details can be found [here](docs/Linux_Osx_Usage.md)
 *   `--top-p`: the cumulative probability threshold for top-p sampling (default: 0.90)
 *   `--repeat-penalty`: the penalty to apply for repeated n-grams (default: 1.3)
 *   `--repeat-last-n`: the number of tokens to use for detecting repeated n-grams (default: 64)
-*   `--ctx-size`: the maximum context size to use for generating responses (default: 512)
+*   `--ctx-size`: the maximum context size to use for generating responses (default: 2048)
 
 Note: All options are optional and have default values.
 

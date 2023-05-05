@@ -1,6 +1,6 @@
 version: 3
 config: default
-ctx_size: 512
+ctx_size: 2048
 db_path: databases/database.db
 debug: false
 n_threads: 8
