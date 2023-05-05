@@ -49,36 +49,36 @@
             </div>
             <hr v-if="isCheckbox" class="h-px bg-bg-light p-0 mb-4 px-4 mx-4 border-0 dark:bg-bg-dark">
             <div v-if="isCheckbox" class="flex flex-row flex-grow p-4 pt-0 items-center">
-                
+
                 <!-- CHECK BOX OPERATIONS -->
                 <div class="flex flex-row flex-grow  gap-3">
                     Selected: {{ list.filter((item) => item.checkBoxValue == true).length }}
                 </div>
                 <div class="flex flex-row gap-3">
 
-                
-                <button class="text-2xl hover:text-secondary duration-75 active:scale-90 " title="Select All" type="button"
-                    @click.stop="selectAllDiscussions">
-                    <i data-feather="list"></i>
-                </button>
-                <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
-                    title="Export selected to a file" type="button">
-                    <i data-feather="log-out"></i>
-                </button>
-                <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Remove selected"
-                    type="button">
-                    <i data-feather="trash"></i>
-                </button>
-            </div>
+
+                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90 " title="Select All"
+                        type="button" @click.stop="selectAllDiscussions">
+                        <i data-feather="list"></i>
+                    </button>
+                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
+                        title="Export selected to a file" type="button">
+                        <i data-feather="log-out"></i>
+                    </button>
+                    <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Remove selected"
+                        type="button">
+                        <i data-feather="trash"></i>
+                    </button>
+                </div>
             </div>
         </div>
         <div class="relative overflow-y-scroll no-scrollbar">
             <!-- DISCUSSION LIST -->
             <div class="mx-4 flex-grow" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''">
                 <Discussion v-for="(item, index) in list" :key="index" :id="item.id" :title="item.title"
-                    :selected="currentDiscussion.id == item.id" :loading="item.loading"
-                    :isCheckbox="isCheckbox" :checkBoxValue="item.checkBoxValue" @select="selectDiscussion(item)"
-                    @delete="deleteDiscussion(item.id)" @editTitle="editTitle" @checked="checkUncheckDiscussion" />
+                    :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"
+                    :checkBoxValue="item.checkBoxValue" @select="selectDiscussion(item)" @delete="deleteDiscussion(item.id)"
+                    @editTitle="editTitle" @checked="checkUncheckDiscussion" />
 
                 <div v-if="list.length < 1"
                     class="gap-2 py-2 my-2 hover:shadow-md hover:bg-primary-light dark:hover:bg-primary rounded-md p-2 duration-75 group cursor-pointer">
@@ -148,12 +148,12 @@ export default {
             try {
                 if (id) {
                     this.loading = true
-                    this.setDiscussionLoading(id,this.loading)
+                    this.setDiscussionLoading(id, this.loading)
                     const res = await axios.post('/load_discussion', {
                         id: id
                     })
                     this.loading = false
-                    this.setDiscussionLoading(id,this.loading)
+                    this.setDiscussionLoading(id, this.loading)
                     if (res) {
                         // Filter out the user and bot entries
                         this.discussionArr = res.data.filter((item) => item.type == 0)
@@ -169,7 +169,7 @@ export default {
             } catch (error) {
                 console.log(error)
                 this.loading = false
-                this.setDiscussionLoading(id,this.loading)
+                this.setDiscussionLoading(id, this.loading)
             }
         },
         async new_discussion(title) {
@@ -188,30 +188,30 @@ export default {
             try {
                 if (id) {
                     this.loading = true
-                    this.setDiscussionLoading(id,this.loading)
+                    this.setDiscussionLoading(id, this.loading)
                     const res = await axios.post('/delete_discussion', {
                         id: id
                     })
                     this.loading = false
-                    this.setDiscussionLoading(id,this.loading)
+                    this.setDiscussionLoading(id, this.loading)
                 }
             } catch (error) {
                 console.log(error)
                 this.loading = false
-                this.setDiscussionLoading(id,this.loading)
+                this.setDiscussionLoading(id, this.loading)
             }
         },
         async edit_title(id, new_title) {
             try {
                 if (id) {
                     this.loading = true
-                    this.setDiscussionLoading(id,this.loading)
+                    this.setDiscussionLoading(id, this.loading)
                     const res = await axios.post('/edit_title', {
                         id: id,
                         title: new_title
                     })
                     this.loading = false
-                    this.setDiscussionLoading(id,this.loading)
+                    this.setDiscussionLoading(id, this.loading)
                     if (res.status == 200) {
                         const index = this.list.findIndex((x) => x.id == id)
                         const discussionItem = this.list[index]
@@ -222,7 +222,7 @@ export default {
             } catch (error) {
                 console.log(error)
                 this.loading = false
-                this.setDiscussionLoading(id,this.loading)
+                this.setDiscussionLoading(id, this.loading)
             }
         },
         filterDiscussions() {
@@ -240,6 +240,8 @@ export default {
             // When discussion is selected it loads the discussion array
 
             this.currentDiscussion = item
+
+            this.setPageTitle(item)
 
             localStorage.setItem('selected_discussion', this.currentDiscussion.id)
 
@@ -271,7 +273,7 @@ export default {
             //     "id": 112,
             //     "response_id": 113
             // }
-            
+
             // Create user input message
             let usrMessage = {
                 content: msgObj.message,
@@ -305,14 +307,14 @@ export default {
             if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
                 this.changeTitleUsingUserMSG(this.currentDiscussion.id, usrMessage.content)
             }
-             
+
             this.isGenerating = false
-            this.setDiscussionLoading(this.currentDiscussion.id,this.isGenerating)
+            this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
         },
         sendMsg(msg) {
             // Sends message to backend
             this.isGenerating = true
-            this.setDiscussionLoading(this.currentDiscussion.id,this.isGenerating)
+            this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
             websocket.emit('generate_msg', { prompt: msg })
         },
         steamMessageContent(content) {
@@ -354,12 +356,12 @@ export default {
             if (id) {
                 const index = this.list.findIndex((x) => x.id == id)
                 const discussionItem = this.list[index]
-                if(discussionItem){
+                if (discussionItem) {
                     this.selectDiscussion(discussionItem)
                 }
             }
         },
-         async deleteDiscussion(id) {
+        async deleteDiscussion(id) {
             // Deletes discussion from backend and frontend
 
             const index = this.list.findIndex((x) => x.id == id)
@@ -368,9 +370,10 @@ export default {
             await this.delete_discussion(id)
             if (this.currentDiscussion.id == id) {
                 this.currentDiscussion = {}
-                this.discussionArr=[]
+                this.discussionArr = []
+                this.setPageTitle()
             }
-            this.list.splice(this.list.findIndex(item => item.id==id),1)
+            this.list.splice(this.list.findIndex(item => item.id == id), 1)
 
             this.createDiscussionList(this.list)
             //await this.list_discussions()
@@ -423,15 +426,32 @@ export default {
 
             }
         },
-        setDiscussionLoading(id,loading){
+        setDiscussionLoading(id, loading) {
             const index = this.list.findIndex((x) => x.id == id)
             const discussionItem = this.list[index]
             discussionItem.loading = loading
+        },
+        setPageTitle(item) {
+            // item is either title:String or {id:Number, title:String}
+            if (item) {
+                if (item.id) {
+                    const realTitle = item.title ? item.title === "untitled" ? "New discussion" : item.title : "New discussion"
+                    document.title = 'GPT4ALL - WEBUI - ' + realTitle
+                } else {
+                    const title = item || "Welcome"
+                    document.title = 'GPT4ALL - WEBUI - ' + title
+                }
+            } else {
+                const title = item || "Welcome"
+                document.title = 'GPT4ALL - WEBUI - ' + title
+            }
+
+
         }
     },
     async created() {
         // Constructor
-
+        this.setPageTitle()
         await this.list_discussions()
 
         this.loadLastUsedDiscussion()
@@ -475,7 +495,8 @@ export default {
             if (!newval) {
                 this.isSelectAll = false
             }
-        }
+        },
+
     }
 }
 </script>
