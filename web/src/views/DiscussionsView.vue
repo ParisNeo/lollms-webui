@@ -45,7 +45,7 @@
             </form>
 
         </div>
-        <div id="dis-list" class="relative overflow-y-scroll no-scrollbar">
+        <div  class="relative overflow-y-scroll no-scrollbar">
             <!-- DISCUSSION LIST -->
             <div class="mx-4 flex-grow" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''">
 
@@ -67,7 +67,7 @@
         </div>
 
     </div>
-    <div id="msg-list" class="overflow-y-scroll flex flex-col no-scrollbar flex-grow "
+    <div class="overflow-y-scroll flex flex-col no-scrollbar flex-grow "
         :class="loading ? 'opacity-20 pointer-events-none' : ''">
         <!-- CHAT AREA -->
         <div>
@@ -107,6 +107,7 @@ export default {
             loading: false,
             filterTitle: "",
             filterInProgress: false,
+            isCreated:false
         }
     },
     methods: {
@@ -380,6 +381,7 @@ export default {
         await this.list_discussions()
 
         this.loadLastUsedDiscussion()
+        this.isCreated=true
 
         nextTick(() => {
             feather.replace()
@@ -389,7 +391,18 @@ export default {
         websocket.on("infos", this.createMsg)
         websocket.on("message", this.steamMessageContent)
 
-    }, components: {
+    },activated(){
+
+        // This lifecycle hook runs every time you switch from other page back to this page (vue-router)
+        // To fix scrolling back to last message, this hook is needed.
+        // If anyone knows hor to fix scroll issue when changing pages, please do fix it :D
+
+        if(this.isCreated){
+            this.loadLastUsedDiscussion()
+        }
+
+    },
+     components: {
         Discussion,
         Message,
         ChatBox,
@@ -417,7 +430,7 @@ import WelcomeComponent from '../components/WelcomeComponent.vue'
 import feather from 'feather-icons'
 
 import axios from "axios";
-import { nextTick } from 'vue';
+import { nextTick, onActivated } from 'vue';
 
 import websocket from '@/services/websocket.js';
 
