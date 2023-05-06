@@ -244,10 +244,11 @@
 import axios from "axios";
 import MessageBox from "@/components/MessageBox.vue";
 import YesNoDialog from "@/components/YesNoDialog.vue";
-
+axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
     components: {
         MessageBox,
+        YesNoDialog
     },    
     setup() {
 
