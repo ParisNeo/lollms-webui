@@ -105,17 +105,22 @@
             </div>
         </div>
     </div>
-    <div class="overflow-y-scroll flex flex-col no-scrollbar flex-grow">
-        <!-- :class="loading ? 'opacity-20 pointer-events-none' : ''"> -->
+    <div class="overflow-y-scroll flex flex-col no-scrollbar flex-grow " id="messages-list">
+
         <!-- CHAT AREA -->
         <div>
             <Message v-for="(msg, index) in discussionArr" :key="index" :message="msg"
-                @click="scrollToElement($event.target)" :id="'msg-' + msg.id" />
+                @click="scrollToElement($event.target)" :id="'msg-' + msg.id" ref="messages" />
 
             <WelcomeComponent v-if="discussionArr.length < 1" />
 
-            <ChatBox v-if="discussionArr.length > 0" @messageSentEvent="sendMsg" :loading="isGenerating" />
+
         </div>
+        <div class=" sticky bottom-0">
+            <ChatBox v-if="discussionArr.length > 0" @messageSentEvent="sendMsg" :loading="isGenerating"
+                @stopGenerating="stopGenerating" />
+        </div>
+
     </div>
 </template>
 <style scoped>
@@ -176,8 +181,10 @@ export default {
                         const lastMessage = this.discussionArr[this.discussionArr.length - 1]
                         if (lastMessage) {
                             nextTick(() => {
-                                const selectedElement = document.getElementById('msg-' + lastMessage.id)
-                                this.scrollToElement(selectedElement)
+                                // const selectedElement = document.getElementById('msg-' + lastMessage.id)
+                                // this.scrollToElement(selectedElement)
+                                const msgList = document.getElementById('messages-list')
+                                this.scrollBottom(msgList)
                             })
                         }
                     }
@@ -241,6 +248,18 @@ export default {
                 this.setDiscussionLoading(id, this.loading)
             }
         },
+        async stop_gen() {
+            try {
+                const res = await axios.get('/stop_gen')
+
+                if (res) {
+                    return res.data
+                }
+            } catch (error) {
+                console.log("Error: Could not stop generating", error)
+                return {}
+            }
+        },
         filterDiscussions() {
             // Search bar in for filtering discussions by title (serch)
 
@@ -277,23 +296,28 @@ export default {
             }
         },
         scrollToElement(el) {
-            //console.log("scroll", el.id)
+           
             if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' })
+                el.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
+            } else {
+                console.log("Error: scrollToElement")
             }
         },
-        createMsg(msgObj) {
-            // From socket.on("infos")
-            // {
-            //     "type": "input_message_infos",
-            //     "bot": "gpt4all",
-            //     "user": "user",
-            //     "message": "giv emoney",
-            //     "id": 112,
-            //     "response_id": 113
-            // }
-
-            // Create user input message
+        scrollBottom(el) {
+           
+            if (el) {
+                el.scrollTo(
+                    {
+                        top: el.scrollHeight,
+                        behavior: "smooth",
+                    }
+                )
+            } else {
+                console.log("Error: scrollBottom")
+            }
+           
+        },
+        createUserMsg(msgObj) {
             let usrMessage = {
                 content: msgObj.message,
                 id: msgObj.id,
@@ -304,10 +328,25 @@ export default {
             }
             this.discussionArr.push(usrMessage)
             nextTick(() => {
-                const userMsgElement = document.getElementById('msg-' + msgObj.message)
-                this.scrollToElement(userMsgElement)
-            })
+                const msgList = document.getElementById('messages-list')
 
+                this.scrollBottom(msgList)
+
+            })
+        },
+        updateLastUserMsg(msgObj) {
+
+            const lastMsg = this.discussionArr[this.discussionArr.length - 1]
+            lastMsg.content = msgObj.message
+            lastMsg.id = msgObj.id
+            // lastMsg.parent=msgObj.parent
+            lastMsg.rank = msgObj.rank
+            lastMsg.sender = msgObj.user
+            // lastMsg.type=msgObj.type
+        },
+        createBotMsg(msgObj) {
+            // Update previous message with reponse user data
+            this.updateLastUserMsg(msgObj)
             // Create response message
             let responseMessage = {
                 content: '..typing',
@@ -319,27 +358,39 @@ export default {
             }
             this.discussionArr.push(responseMessage)
             nextTick(() => {
-                const responseMessageElement = document.getElementById('msg-' + msgObj.response_id)
-                this.scrollToElement(responseMessageElement)
-                this.chime.play()
+                const msgList = document.getElementById('messages-list')
+
+                this.scrollBottom(msgList)
+
             })
 
             if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
                 this.changeTitleUsingUserMSG(this.currentDiscussion.id, usrMessage.content)
             }
 
-            this.isGenerating = false
-            this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
         },
         sendMsg(msg) {
             // Sends message to backend
             this.isGenerating = true
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
             socket.emit('generate_msg', { prompt: msg })
+
+            // Create new User message
+            // Temp data
+            let usrMessage = {
+                message: msg,
+                id: this.discussionArr[this.discussionArr.length - 1].id + 1,
+                //parent: 10,
+                rank: 0,
+                user: "user"
+                //type: 0
+            }
+            this.createUserMsg(usrMessage)
+
         },
         steamMessageContent(content) {
             // Streams response message content from backend
-
+            //console.log(content)
             const lastMsg = this.discussionArr[this.discussionArr.length - 1]
             lastMsg.content = content.data
         },
@@ -400,7 +451,7 @@ export default {
         },
         async deleteDiscussionMulti() {
             // Delete selected discussions
-            
+
             const deleteList = this.selectedDiscussions
 
             for (let i = 0; i < deleteList.length; i++) {
@@ -414,7 +465,7 @@ export default {
                 }
                 this.list.splice(this.list.findIndex(item => item.id == discussionItem.id), 1)
             }
-            this.tempList=this.list
+            this.tempList = this.list
             this.isCheckbox = false
             console.log("Multi delete done")
         },
@@ -486,14 +537,24 @@ export default {
                 document.title = 'GPT4ALL - WEBUI - ' + title
             }
 
-
+        },
+        stopGenerating() {
+            this.stop_gen()
+            this.isGenerating = false
+            console.log("Stopped generating")
+        },
+        finalMsgEvent(data) {
+            console.log("final", data)
+            this.isGenerating = false
+            this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
+            this.chime.play()
         }
     },
     async created() {
         // Constructor
         //const chime = require('../assets/chime_aud.wav')
-        
-       
+
+
         this.setPageTitle()
         await this.list_discussions()
 
@@ -505,8 +566,9 @@ export default {
         })
 
         // socket responses
-        socket.on('infos', this.createMsg)
+        socket.on('infos', this.createBotMsg)
         socket.on('message', this.steamMessageContent)
+        socket.on("final", this.finalMsgEvent)
     },
     activated() {
         // This lifecycle hook runs every time you switch from other page back to this page (vue-router)
@@ -575,7 +637,7 @@ import WelcomeComponent from '../components/WelcomeComponent.vue'
 import feather from 'feather-icons'
 
 import axios from 'axios'
-import { nextTick } from 'vue'
+import { nextTick, ref } from 'vue'
 
 import { socket, state } from '@/services/websocket.js'
 
