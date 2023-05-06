@@ -51,12 +51,10 @@
             <div v-if="isCheckbox" class="flex flex-row flex-grow p-4 pt-0 items-center">
 
                 <!-- CHECK BOX OPERATIONS -->
-                <div class="flex flex-row flex-grow  gap-3">
-                    Selected: {{ list.filter((item) => item.checkBoxValue == true).length }}
+                <div class="flex flex-row flex-grow gap-3">
+                    <p v-if="selectedDiscussions > 0">Selected: {{ selectedDiscussions }}</p>
                 </div>
-                <div class="flex flex-row gap-3">
-
-
+                <div class="flex flex-row  gap-3">
                     <button class="text-2xl hover:text-secondary duration-75 active:scale-90 " title="Select All"
                         type="button" @click.stop="selectAllDiscussions">
                         <i data-feather="list"></i>
@@ -65,10 +63,26 @@
                         title="Export selected to a file" type="button">
                         <i data-feather="log-out"></i>
                     </button>
-                    <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Remove selected"
-                        type="button">
-                        <i data-feather="trash"></i>
-                    </button>
+                    <div v-if="selectedDiscussions > 0" class="flex flex-row gap-3">
+                        <!-- DELETE MULTIPLE -->
+                        <button v-if="!showConfirmation" class="text-2xl hover:text-red-600 duration-75 active:scale-90 "
+                            title="Remove selected" type="button" @click.stop="showConfirmation = true">
+                            <i data-feather="trash"></i>
+                        </button>
+                        <!-- DELETE CONFIRM -->
+                        <div v-if="showConfirmation"
+                            class="flex gap-3 flex-1 items-center justify-end  group-hover:visible duration-75">
+                            <button class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                                title="Confirm removal" type="button" @click.stop="">
+                                <i data-feather="check"></i>
+                            </button>
+                            <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Cancel removal"
+                                type="button" @click.stop="showConfirmation = false">
+                                <i data-feather="x"></i>
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -126,6 +140,7 @@ export default {
             isGenerating: false,
             isCheckbox: false,
             isSelectAll: false,
+            showConfirmation: false,
 
         }
     },
@@ -140,7 +155,7 @@ export default {
                     return res.data
                 }
             } catch (error) {
-                console.log(error)
+                console.log("Error: Could not list discussions", error)
                 return []
             }
         },
@@ -180,7 +195,7 @@ export default {
                     return res.data
                 }
             } catch (error) {
-                console.log(error)
+                console.log("Error: Could not create new discussion", error)
                 return {}
             }
         },
@@ -196,7 +211,7 @@ export default {
                     this.setDiscussionLoading(id, this.loading)
                 }
             } catch (error) {
-                console.log(error)
+                console.log("Error: Could not delete discussion", error)
                 this.loading = false
                 this.setDiscussionLoading(id, this.loading)
             }
@@ -220,7 +235,7 @@ export default {
                     }
                 }
             } catch (error) {
-                console.log(error)
+                console.log("Error: Could not edit title", error)
                 this.loading = false
                 this.setDiscussionLoading(id, this.loading)
             }
@@ -237,25 +252,28 @@ export default {
             }
         },
         async selectDiscussion(item) {
-            // When discussion is selected it loads the discussion array
+            if (item) {
 
-            this.currentDiscussion = item
+                // When discussion is selected it loads the discussion array
 
-            this.setPageTitle(item)
+                this.currentDiscussion = item
 
-            localStorage.setItem('selected_discussion', this.currentDiscussion.id)
+                this.setPageTitle(item)
 
-            await this.load_discussion(item.id)
+                localStorage.setItem('selected_discussion', this.currentDiscussion.id)
 
-            if (this.discussionArr.length > 1) {
-                if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
-                    this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
+                await this.load_discussion(item.id)
+
+                if (this.discussionArr.length > 1) {
+                    if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
+                        this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
+                    }
                 }
+                nextTick(() => {
+                    const selectedDisElement = document.getElementById('dis-' + item.id)
+                    this.scrollToElement(selectedDisElement)
+                })
             }
-            nextTick(() => {
-                const selectedDisElement = document.getElementById('dis-' + item.id)
-                this.scrollToElement(selectedDisElement)
-            })
         },
         scrollToElement(el) {
             //console.log("scroll", el.id)
@@ -264,7 +282,7 @@ export default {
             }
         },
         createMsg(msgObj) {
-            // From websocket.on("infos")
+            // From socket.on("infos")
             // {
             //     "type": "input_message_infos",
             //     "bot": "gpt4all",
@@ -315,7 +333,7 @@ export default {
             // Sends message to backend
             this.isGenerating = true
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
-            websocket.emit('generate_msg', { prompt: msg })
+            socket.emit('generate_msg', { prompt: msg })
         },
         steamMessageContent(content) {
             // Streams response message content from backend
@@ -461,14 +479,15 @@ export default {
             feather.replace()
         })
 
-        // WebSocket responses
-        websocket.on('infos', this.createMsg)
-        websocket.on('message', this.steamMessageContent)
+        // socket responses
+        socket.on('infos', this.createMsg)
+        socket.on('message', this.steamMessageContent)
     },
     activated() {
         // This lifecycle hook runs every time you switch from other page back to this page (vue-router)
         // To fix scrolling back to last message, this hook is needed.
         // If anyone knows hor to fix scroll issue when changing pages, please do fix it :D
+        console.log("Websocket connected (activated)", this.socketConnected)
 
         if (this.isCreated) {
             this.loadLastUsedDiscussion()
@@ -496,7 +515,28 @@ export default {
                 this.isSelectAll = false
             }
         },
+        socketConnected(newval, oldval) {
+            console.log("Websocket connected (watch)", newval)
+        },
+        showConfirmation() {
+            nextTick(() => {
+                feather.replace()
 
+            })
+        },
+
+    },
+    computed: {
+        socketConnected() {
+            return state.connected
+        },
+        selectedDiscussions() {
+            nextTick(() => {
+                feather.replace()
+
+            })
+            return this.list.filter((item) => item.checkBoxValue == true).length
+        }
     }
 }
 </script>
@@ -512,7 +552,7 @@ import feather from 'feather-icons'
 import axios from 'axios'
 import { nextTick } from 'vue'
 
-import websocket from '@/services/websocket.js'
+import { socket, state } from '@/services/websocket.js'
 
 import { onMounted } from 'vue'
 import { initFlowbite } from 'flowbite'
