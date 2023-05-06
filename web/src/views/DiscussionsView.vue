@@ -108,16 +108,16 @@
     <div class="overflow-y-scroll flex flex-col no-scrollbar flex-grow " id="messages-list">
 
         <!-- CHAT AREA -->
-        <div>
+        <div class="flex flex-col flex-grow">
             <Message v-for="(msg, index) in discussionArr" :key="index" :message="msg"
                 @click="scrollToElement($event.target)" :id="'msg-' + msg.id" ref="messages" />
 
-            <WelcomeComponent v-if="discussionArr.length < 1" />
+            <WelcomeComponent v-if="!currentDiscussion.id" />
 
 
         </div>
         <div class=" sticky bottom-0">
-            <ChatBox v-if="discussionArr.length > 0" @messageSentEvent="sendMsg" :loading="isGenerating"
+            <ChatBox v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
                 @stopGenerating="stopGenerating" />
         </div>
 
