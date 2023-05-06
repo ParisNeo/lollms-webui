@@ -2,6 +2,7 @@
 // Author : ParisNeo
 // Description :
 // All websocket stuff can be found here.
+// More info can be found here https://socket.io/how-to/use-with-vue
 import io from 'socket.io-client';  
 
 const socket = new io(import.meta.env.VITE_GPT4ALL_API );
