@@ -166,7 +166,7 @@ fetch('/settings')
       personality: personalityInput.value,
       language: languageInput.value,
       voice: voiceInput.value,
-      temp: tempInput.value,
+      temperature: tempInput.value,
       nPredict: nPredictInput.value,
       topK: topKInput.value,
       topP: topPInput.value,
