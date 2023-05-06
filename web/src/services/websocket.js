@@ -27,12 +27,12 @@ socket.onerror = (error) => {
 
 socket.on("connect", () => {
   state.connected = true;
-  console.log('WebSocket connected.');
+  console.log('WebSocket connected (websocket)');
 });
 
 socket.on("disconnect", () => {
   state.connected = false;
-  console.log('WebSocket disonnected.');
+  console.log('WebSocket disonnected (websocket)');
   
 });
 
