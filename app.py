@@ -187,6 +187,9 @@ class Gpt4AllWebUI(GPT4AllAPI):
             "/save_settings", "save_settings", self.save_settings, methods=["POST"]
         )
 
+        self.add_endpoint(
+            "/get_current_personality", "get_current_personality", self.get_current_personality, methods=["GET"]
+        )
         
         # =========================================================================================
         # Socket IO stuff    
@@ -233,14 +236,12 @@ class Gpt4AllWebUI(GPT4AllAPI):
         # Tell that the setting was changed
         self.socketio.emit('save_settings', {"status":True})
         return jsonify({"status":True})
+    
 
-    def save_settings(self):
-        save_config(self.config, self.config_file_path)
-        if self.config["debug"]:
-            print("Configuration saved")
-        # Tell that the setting was changed
-        self.socketio.emit('save_settings', {"status":True})
-        return jsonify({"status":True})
+    def get_current_personality(self):
+        return jsonify({"personality":self.personality.__dict__()})
+    
+    
 
     # Settings (data: {"setting_name":<the setting name>,"setting_value":<the setting value>})
     def update_setting(self):
