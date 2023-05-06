@@ -141,6 +141,7 @@ export default {
             isCheckbox: false,
             isSelectAll: false,
             showConfirmation: false,
+            chime: new Audio("chime_aud.wav")
 
         }
     },
@@ -320,6 +321,7 @@ export default {
             nextTick(() => {
                 const responseMessageElement = document.getElementById('msg-' + msgObj.response_id)
                 this.scrollToElement(responseMessageElement)
+                this.chime.play()
             })
 
             if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
@@ -489,6 +491,9 @@ export default {
     },
     async created() {
         // Constructor
+        //const chime = require('../assets/chime_aud.wav')
+        
+       
         this.setPageTitle()
         await this.list_discussions()
 
