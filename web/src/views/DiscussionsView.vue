@@ -108,16 +108,16 @@
     <div class="overflow-y-scroll flex flex-col no-scrollbar flex-grow " id="messages-list">
 
         <!-- CHAT AREA -->
-        <div>
+        <div class="flex flex-col flex-grow">
             <Message v-for="(msg, index) in discussionArr" :key="index" :message="msg"
                 @click="scrollToElement($event.target)" :id="'msg-' + msg.id" ref="messages" />
 
-            <WelcomeComponent v-if="discussionArr.length < 1" />
+            <WelcomeComponent v-if="!currentDiscussion.id" />
 
 
         </div>
         <div class=" sticky bottom-0">
-            <ChatBox v-if="discussionArr.length > 0" @messageSentEvent="sendMsg" :loading="isGenerating"
+            <ChatBox v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
                 @stopGenerating="stopGenerating" />
         </div>
 
@@ -212,7 +212,7 @@ export default {
                 if (id) {
                     this.loading = true
                     this.setDiscussionLoading(id, this.loading)
-                    const res = await axios.post('/delete_discussion', {
+                    await axios.post('/delete_discussion', {
                         id: id
                     })
                     this.loading = false
@@ -365,7 +365,7 @@ export default {
             })
 
             if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
-                this.changeTitleUsingUserMSG(this.currentDiscussion.id, usrMessage.content)
+                this.changeTitleUsingUserMSG(this.currentDiscussion.id, msgObj.content)
             }
 
         },
@@ -445,8 +445,8 @@ export default {
         async deleteDiscussion(id) {
             // Deletes discussion from backend and frontend
 
-            const index = this.list.findIndex((x) => x.id == id)
-            const discussionItem = this.list[index]
+            //const index = this.list.findIndex((x) => x.id == id)
+            //const discussionItem = this.list[index]
             //discussionItem.loading = true
             await this.delete_discussion(id)
             if (this.currentDiscussion.id == id) {
@@ -558,6 +558,9 @@ export default {
             this.isGenerating = false
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
             this.chime.play()
+        },
+        copyToClipBoard(){
+            
         }
     },
     async created() {
@@ -597,14 +600,14 @@ export default {
         WelcomeComponent
     },
     watch: {
-        filterTitle(newVal, oldVal) {
+        filterTitle(newVal) {
             if (newVal == '') {
                 this.filterInProgress = true
                 this.list = this.tempList
                 this.filterInProgress = false
             }
         },
-        isCheckbox(newval, oldval) {
+        isCheckbox(newval) {
             nextTick(() => {
                 feather.replace()
             })
@@ -612,7 +615,7 @@ export default {
                 this.isSelectAll = false
             }
         },
-        socketConnected(newval, oldval) {
+        socketConnected(newval) {
             console.log("Websocket connected (watch)", newval)
         },
         showConfirmation() {
@@ -647,7 +650,7 @@ import WelcomeComponent from '../components/WelcomeComponent.vue'
 import feather from 'feather-icons'
 
 import axios from 'axios'
-import { nextTick, ref } from 'vue'
+import { nextTick } from 'vue'
 
 import { socket, state } from '@/services/websocket.js'
 
