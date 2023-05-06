@@ -52,7 +52,7 @@
 
                 <!-- CHECK BOX OPERATIONS -->
                 <div class="flex flex-row flex-grow gap-3">
-                    <p v-if="selectedDiscussions > 0">Selected: {{ selectedDiscussions }}</p>
+                    <p v-if="selectedDiscussions.length > 0">Selected: {{ selectedDiscussions.length }}</p>
                 </div>
                 <div class="flex flex-row  gap-3">
                     <button class="text-2xl hover:text-secondary duration-75 active:scale-90 " title="Select All"
@@ -63,7 +63,7 @@
                         title="Export selected to a file" type="button">
                         <i data-feather="log-out"></i>
                     </button>
-                    <div v-if="selectedDiscussions > 0" class="flex flex-row gap-3">
+                    <div v-if="selectedDiscussions.length > 0" class="flex flex-row gap-3">
                         <!-- DELETE MULTIPLE -->
                         <button v-if="!showConfirmation" class="text-2xl hover:text-red-600 duration-75 active:scale-90 "
                             title="Remove selected" type="button" @click.stop="showConfirmation = true">
@@ -73,7 +73,7 @@
                         <div v-if="showConfirmation"
                             class="flex gap-3 flex-1 items-center justify-end  group-hover:visible duration-75">
                             <button class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                                title="Confirm removal" type="button" @click.stop="">
+                                title="Confirm removal" type="button" @click.stop="deleteDiscussionMulti">
                                 <i data-feather="check"></i>
                             </button>
                             <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Cancel removal"
@@ -384,7 +384,7 @@ export default {
 
             const index = this.list.findIndex((x) => x.id == id)
             const discussionItem = this.list[index]
-            discussionItem.loading = true
+            //discussionItem.loading = true
             await this.delete_discussion(id)
             if (this.currentDiscussion.id == id) {
                 this.currentDiscussion = {}
@@ -395,6 +395,26 @@ export default {
 
             this.createDiscussionList(this.list)
             //await this.list_discussions()
+        },
+        async deleteDiscussionMulti() {
+            // Delete selected discussions
+            
+            const deleteList = this.selectedDiscussions
+
+            for (let i = 0; i < deleteList.length; i++) {
+                const discussionItem = deleteList[i]
+                //discussionItem.loading = true
+                await this.delete_discussion(discussionItem.id)
+                if (this.currentDiscussion.id == discussionItem.id) {
+                    this.currentDiscussion = {}
+                    this.discussionArr = []
+                    this.setPageTitle()
+                }
+                this.list.splice(this.list.findIndex(item => item.id == discussionItem.id), 1)
+            }
+            this.tempList=this.list
+            this.isCheckbox = false
+            console.log("Multi delete done")
         },
         async editTitle(newTitleObj) {
 
@@ -535,7 +555,7 @@ export default {
                 feather.replace()
 
             })
-            return this.list.filter((item) => item.checkBoxValue == true).length
+            return this.list.filter((item) => item.checkBoxValue == true)
         }
     }
 }
