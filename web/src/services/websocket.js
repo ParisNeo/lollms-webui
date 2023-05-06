@@ -4,6 +4,11 @@
 // All websocket stuff can be found here.
 // More info can be found here https://socket.io/how-to/use-with-vue
 import io from 'socket.io-client';  
+import { reactive } from "vue";
+
+const state = reactive({
+  connected: false,
+});
 
 const socket = new io(import.meta.env.VITE_GPT4ALL_API );
 
@@ -17,6 +22,18 @@ socket.onclose = (event) => {
 
 socket.onerror = (error) => {
   console.error('WebSocket error:', error);
+  socket.disconnect()
 };
 
-export default socket;
+socket.on("connect", () => {
+  state.connected = true;
+  console.log('WebSocket connected.');
+});
+
+socket.on("disconnect", () => {
+  state.connected = false;
+  console.log('WebSocket disonnected.');
+  
+});
+
+export  {socket, state};
