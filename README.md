@@ -60,7 +60,7 @@ It is advised to have python 3.10 (The official one, not the one from Microsoft 
 
 Once installed, you can run the app by using `webui.bat` or `webui.sh`. The script will check for any new updates
 
-[If you want to use a more advanced install procedure, please click here](docs/AdvancedInstallInstructions.md)
+[If you want to use a more advanced install procedure, please click here](docs/usage/AdvancedInstallInstructions.md)
 
 ## Docker Compose
 Make sure to put models the inside the `models` directory.
@@ -181,7 +181,7 @@ To run the Flask server, execute the following command:
 python app.py [--config CONFIG] [--personality PERSONALITY] [--port PORT] [--host HOST] [--temp TEMP] [--n_threads N_THREADS] [--n_predict N_PREDICT] [--top_k TOP_K] [--top_p TOP_P] [--repeat_penalty REPEAT_PENALTY] [--repeat_last_n REPEAT_LAST_N] [--ctx_size CTX_SIZE]
 ```
 
-On Linux/MacOS more details can be found [here](docs/Linux_Osx_Usage.md)
+On Linux/MacOS more details can be found [here](docs/usage/Linux_Osx_Usage.md)
 
 ## Options
 *   `--config`: the configuration file to be used. It contains default configurations. The script parameters will override the configurations inside the configuration file. It must be placed in configs folder (default: default.yaml)
@@ -201,7 +201,7 @@ On Linux/MacOS more details can be found [here](docs/Linux_Osx_Usage.md)
 
 Note: All options are optional and have default values.
 
-Once the server is running, open your web browser and navigate to http://localhost:9600 (or http://your host name:your port number if you have selected different values for those) to access the chatbot UI. To use the app, open a web browser and navigate to this URL.
+Once the server is running, open your web browser and navigate to http://localhost:9600 (or http://your-host-name:your-port-number if you have selected different values for those) to access the chatbot UI. To use the app, open a web browser and navigate to this URL.
 
 Make sure to adjust the default values and descriptions of the options to match your specific application.
 
@@ -215,11 +215,11 @@ Before contributing, please take a moment to review our [code of conduct](./CODE
 
 ### Reporting Bugs
 
-If you find a bug or other issue with our chatbot, please report it by [opening an issue](https://github.com/your-username/your-chatbot/issues/new). Be sure to provide as much detail as possible, including steps to reproduce the issue and any relevant error messages.
+If you find a bug or other issue with our chatbot, please report it by [opening an issue](https://github.com/nomic-ai/gpt4all-ui/issues/new). Be sure to provide as much detail as possible, including steps to reproduce the issue and any relevant error messages.
 
 ### Suggesting Features
 
-If you have an idea for a new feature or improvement to our chatbot, we encourage you to [open an issue](https://github.com/your-username/your-chatbot/issues/new) to discuss it. We welcome feedback and ideas from the community and will consider all suggestions that align with our project goals.
+If you have an idea for a new feature or improvement to our chatbot, we encourage you to [open an issue](https://github.com/nomic-ai/gpt4all-ui/issues/new) to discuss it. We welcome feedback and ideas from the community and will consider all suggestions that align with our project goals.
 
 ### Contributing Code
 
