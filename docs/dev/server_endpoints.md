@@ -6,12 +6,100 @@ This Flask server provides various endpoints to manage and interact with the cha
 ##  Endpoints:
 
 - "/list_backends": GET request endpoint to list all the available backends.
+```
+[
+  "llama_cpp"
+]
+```
+
 - "/list_models": GET request endpoint to list all the available models.
+```
+[
+  "ggml-alpaca-7b-q4.bin",
+  "ggml-vicuna-13b-1.1-q4_0.bin",
+  "ggml-vicuna-13b-1.1-q4_1.bin",
+  "ggml-vicuna-13b-4bit-rev1.bin",
+  "ggml-vicuna-7b-4bit-rev1.bin",
+  "ggml-vicuna-7b-4bit.bin",
+  "gpt4all-lora-quantized-ggml.bin",
+  "gpt4all-lora-quantized.bin",
+  "gpt4all-lora-unfiltered-quantized.bin"
+]
+```
 - "/list_personalities_languages": GET request endpoint to list all the available personality languages.
+```
+[
+  "english",
+  "french"
+]
+```
+
 - "/list_personalities_categories": GET request endpoint to list all the available personality categories.
+```
+[
+  "art",
+  "creativity",
+  "funny_learning",
+  "general",
+  "tools"
+]
+```
+
 - "/list_personalities": GET request endpoint to list all the available personalities.
+```
+[
+  "Computing advisor"
+]
+```
+
 - "/list_languages": GET request endpoint to list all the available languages.
+```
+[
+  {
+    "label": "English",
+    "value": "en-US"
+  },
+  {
+    "label": "Fran\u00e7ais",
+    "value": "fr-FR"
+  },
+  {
+    "label": "\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+    "value": "ar-AR"
+  },
+  {
+    "label": "Italiano",
+    "value": "it-IT"
+  },
+  {
+    "label": "Deutsch",
+    "value": "de-DE"
+  },
+  {
+    "label": "Dutch",
+    "value": "nl-XX"
+  },
+  {
+    "label": "\u4e2d\u570b\u4eba",
+    "value": "zh-CN"
+  }
+]
+```
+
 - "/list_discussions": GET request endpoint to list all the available discussions.
+```
+[
+  {
+    "id": 9,
+    "title": "is dog a god?"
+  },
+  {
+    "id": 10,
+    "title": "untitled"
+  }
+]
+```
+
 - "/set_personality_language": GET request endpoint to set the personality language.
 - "/set_personality_category": GET request endpoint to set the personality category.
 - "/": GET request endpoint to display the index page.
@@ -20,9 +108,52 @@ This Flask server provides various endpoints to manage and interact with the cha
 - "/export": GET request endpoint to export the chatbot's data.
 - "/new_discussion": GET request endpoint to create a new discussion.
 - "/stop_gen": GET request endpoint to stop the chatbot from generating responses.
+```
+{
+  "status": "ok"
+}
+```
+
 - "/rename": POST request endpoint to rename a discussion.
 - "/edit_title": POST request endpoint to edit the title of a discussion.
 - "/load_discussion": POST request endpoint to load a discussion.
+```
+[
+  {
+    "content": "##Instructions:\\nGPT4All is a smart and helpful Assistant built by Nomic-AI. It can discuss with humans and assist them.\n",
+    "id": 23,
+    "parent": 0,
+    "rank": 0,
+    "sender": "conditionner",
+    "type": 1
+  },
+  {
+    "content": "Welcome! I am GPT4All A free and open assistant. What can I do for you today?",
+    "id": 24,
+    "parent": 23,
+    "rank": 0,
+    "sender": "gpt4all",
+    "type": 0
+  },
+  {
+    "content": "is dog a god?",
+    "id": 25,
+    "parent": 24,
+    "rank": 0,
+    "sender": "user",
+    "type": 0
+  },
+  {
+    "content": "That depends on your definition of 'God'. In some religions, dogs are considered sacred and divine creatures. But in others, they may not be seen as gods or deities at all.",
+    "id": 26,
+    "parent": 25,
+    "rank": 0,
+    "sender": "gpt4all",
+    "type": 0
+  }
+]
+```
+
 - "/delete_discussion": POST request endpoint to delete a discussion.
 - "/update_message": GET request endpoint to update a message.
 - "/message_rank_up": GET request endpoint to rank up a message.
@@ -32,6 +163,39 @@ This Flask server provides various endpoints to manage and interact with the cha
 - "/set_model": POST request endpoint to set the model.
 - "/update_model_params": POST request endpoint to update the model parameters.
 - "/get_config": GET request endpoint to get the chatbot's configuration.
+```
+{
+  "auto_read": false,
+  "backend": "llama_cpp",
+  "config": "local_default",
+  "ctx_size": 2048,
+  "db_path": "databases/database.db",
+  "debug": false,
+  "host": "localhost",
+  "language": "en-US",
+  "model": "gpt4all-lora-quantized-ggml.bin",
+  "n_predict": 1024,
+  "n_threads": 8,
+  "nb_messages_to_remember": 5,
+  "override_personality_model_parameters": false,
+  "personality": "Computing advisor",
+  "personality_category": "Helpers",
+  "personality_language": "english",
+  "port": 9600,
+  "repeat_last_n": 40,
+  "repeat_penalty": 1.2,
+  "seed": 0,
+  "temperature": 0.9,
+  "top_k": 50,
+  "top_p": 0.95,
+  "use_avx2": true,
+  "use_gpu": false,
+  "use_new_ui": true,
+  "version": 3,
+  "voice": ""
+}
+```
+
 - "/extensions": GET request endpoint to list all the available extensions.
 - "/training": GET request endpoint to start the training process.
 - "/main": GET request endpoint to start the chatbot.
