@@ -371,22 +371,32 @@ export default {
         },
         sendMsg(msg) {
             // Sends message to backend
-            this.isGenerating = true
-            this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
-            socket.emit('generate_msg', { prompt: msg })
+            this.isGenerating = true;
+            this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
+            axios.get('/get_generation_status', {}).then((res) => {
+            if (res) {
+                console.log(res.data.status);
+                if(!res.data.status){
+                    socket.emit('generate_msg', { prompt: msg });
 
-            // Create new User message
-            // Temp data
-            let usrMessage = {
-                message: msg,
-                id: this.discussionArr[this.discussionArr.length - 1].id + 1,
-                //parent: 10,
-                rank: 0,
-                user: "user"
-                //type: 0
+                    // Create new User message
+                    // Temp data
+                    let usrMessage = {
+                    message: msg,
+                    id: this.discussionArr[this.discussionArr.length - 1].id + 1,
+                    rank: 0,
+                    user: "user"
+                    };
+                    this.createUserMsg(usrMessage);
+
+                }
+                else{
+                    console.log("Already generating");
+                }
             }
-            this.createUserMsg(usrMessage)
-
+            }).catch((error) => {
+            console.log("Error: Could not get generation status", error);
+            });
         },
         steamMessageContent(content) {
             // Streams response message content from backend

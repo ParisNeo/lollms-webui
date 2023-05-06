@@ -69,6 +69,12 @@ class Gpt4AllWebUI(GPT4AllAPI):
             if self.config["use_new_ui"]:
                 app.template_folder = "web/dist"
 
+
+        # =========================================================================================
+        # Endpoints
+        # =========================================================================================
+
+
         self.add_endpoint(
             "/list_backends", "list_backends", self.list_backends, methods=["GET"]
         )
@@ -169,9 +175,22 @@ class Gpt4AllWebUI(GPT4AllAPI):
             "/help", "help", self.help, methods=["GET"]
         )
         
+        self.add_endpoint(
+            "/get_generation_status", "get_generation_status", self.get_generation_status, methods=["GET"]
+        )
         
+        self.add_endpoint(
+            "/update_setting", "update_setting", self.update_setting, methods=["POST"]
+        )
+
+        self.add_endpoint(
+            "/save_settings", "save_settings", self.save_settings, methods=["POST"]
+        )
+
         
+        # =========================================================================================
         # Socket IO stuff    
+        # =========================================================================================
         @socketio.on('connect')
         def connect():
             print('Client connected')
@@ -194,7 +213,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
             )
             message = data["prompt"]
             self.current_message_id = message_id
-            tpe = threading.Thread(target=self.parse_to_prompt_stream, args=(message, message_id))
+            tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
             tpe.start()
 
         @socketio.on('generate_msg_from')
@@ -202,90 +221,99 @@ class Gpt4AllWebUI(GPT4AllAPI):
             message_id = int(data['id'])
             message = data["prompt"]
             self.current_message_id = message_id
-            tpe = threading.Thread(target=self.parse_to_prompt_stream, args=(message, message_id))
+            tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
             tpe.start()
 
-        # Settings (data: {"setting_name":<the setting name>,"setting_value":<the setting value>})
-        @socketio.on('update_setting')
-        def update_setting(data):
 
-            setting_name = int(data['setting_name'])
-            if setting_name== "temperature":
-                self.config["temperature"]=float(data['setting_value'])
-            elif setting_name== "top_k":
-                self.config["top_k"]=int(data['setting_value'])
-            elif setting_name== "top_p":
-                self.config["top_p"]=float(data['setting_value'])
+
+
+    def save_settings(self):
+        save_config(self.config, self.config_file_path)
+        if self.config["debug"]:
+            print("Configuration saved")
+        # Tell that the setting was changed
+        self.socketio.emit('save_settings', {"status":True})
+        return jsonify({"status":True})
+
+    # Settings (data: {"setting_name":<the setting name>,"setting_value":<the setting value>})
+    def update_setting(self):
+        data = request.get_json()
+        setting_name = data['setting_name']
+        if setting_name== "temperature":
+            self.config["temperature"]=float(data['setting_value'])
+        elif setting_name== "n_predict":
+            self.config["n_predict"]=int(data['setting_value'])
+        elif setting_name== "top_k":
+            self.config["top_k"]=int(data['setting_value'])
+        elif setting_name== "top_p":
+            self.config["top_p"]=float(data['setting_value'])
+            
+        elif setting_name== "repeat_penalty":
+            self.config["repeat_penalty"]=float(data['setting_value'])
+        elif setting_name== "repeat_last_n":
+            self.config["repeat_last_n"]=int(data['setting_value'])
+
+        elif setting_name== "n_threads":
+            self.config["n_threads"]=int(data['setting_value'])
+        elif setting_name== "ctx_size":
+            self.config["ctx_size"]=int(data['setting_value'])
+
+
+        elif setting_name== "language":
+            self.config["language"]=data['setting_value']
+
+        elif setting_name== "personality_language":
+            self.config["personality_language"]=data['setting_value']
+        elif setting_name== "personality_category":
+            self.config["personality_category"]=data['setting_value']
+        elif setting_name== "personality":
+            self.config["personality"]=data['setting_value']
+        elif setting_name== "override_personality_model_parameters":
+            self.config["override_personality_model_parameters"]=bool(data['setting_value'])
+            
+            
+
+
+        elif setting_name== "model":
+            self.config["model"]=data['setting_value']
+            print("New model selected")            
+            # Build chatbot
+            self.chatbot_bindings = self.create_chatbot()
+
+        elif setting_name== "backend":
+            print("New backend selected")            
+            if self.config['backend']!= data['setting_value']:
+                print("New backend selected")
+                self.config["backend"]=data['setting_value']
                 
-            elif setting_name== "n_predict":
-                self.config["n_predict"]=int(data['setting_value'])
-            elif setting_name== "n_threads":
-                self.config["n_threads"]=int(data['setting_value'])
-            elif setting_name== "ctx_size":
-                self.config["ctx_size"]=int(data['setting_value'])
-            elif setting_name== "repeat_penalty":
-                self.config["repeat_penalty"]=float(data['setting_value'])
-            elif setting_name== "repeat_last_n":
-                self.config["repeat_last_n"]=int(data['setting_value'])
-
-
-            elif setting_name== "language":
-                self.config["language"]=data['setting_value']
-
-            elif setting_name== "personality_language":
-                self.config["personality_language"]=data['setting_value']
-            elif setting_name== "personality_category":
-                self.config["personality_category"]=data['setting_value']
-            elif setting_name== "personality":
-                self.config["personality"]=data['setting_value']
-            elif setting_name== "override_personality_model_parameters":
-                self.config["override_personality_model_parameters"]=bool(data['setting_value'])
-                
-                
-
-
-            elif setting_name== "model":
-                self.config["model"]=data['setting_value']
-                print("New model selected")            
-                # Build chatbot
-                self.chatbot_bindings = self.create_chatbot()
-
-            elif setting_name== "backend":
-                print("New backend selected")            
-                if self.config['backend']!= data['setting_value']:
-                    print("New backend selected")
-                    self.config["backend"]=data['setting_value']
-                    
-                    backend_ =self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
-                    models = backend_.list_models(self.config)
-                    if len(models)>0:      
-                        self.backend = backend_
-                        self.config['model'] = models[0]
-                        # Build chatbot
-                        self.chatbot_bindings = self.create_chatbot()
-                        self.socketio.emit('update_setting', {'setting_name': data['setting_name'], "status":True});
-                        return
-                    else:
-                        self.socketio.emit('update_setting', {'setting_name': data['setting_name'], "status":False});
-                        return
-
-
-
+                backend_ =self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
+                models = backend_.list_models(self.config)
+                if len(models)>0:      
+                    self.backend = backend_
+                    self.config['model'] = models[0]
+                    # Build chatbot
+                    self.chatbot_bindings = self.create_chatbot()
+                    if self.config["debug"]:
+                        print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
+                    return jsonify({'setting_name': data['setting_name'], "status":True})
+                else:
+                    if self.config["debug"]:
+                        print(f"Configuration {data['setting_name']} couldn't be set to {data['setting_value']}")
+                    return jsonify({'setting_name': data['setting_name'], "status":False})
             else:
-                self.socketio.emit('update_setting', {'setting_name': data['setting_name'], "status":False});
-                return
+                if self.config["debug"]:
+                    print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
+                return jsonify({'setting_name': data['setting_name'], "status":True})
 
-            # Tell that the setting was changed
-            self.socketio.emit('update_setting', {'setting_name': data['setting_name'], "status":True});
+        else:
+            if self.config["debug"]:
+                print(f"Configuration {data['setting_name']} couldn't be set to {data['setting_value']}")
+            return jsonify({'setting_name': data['setting_name'], "status":False})
 
-
-        # Settings (data: {"setting_name":<the setting name>,"setting_value":<the setting value>})
-        @socketio.on('save_settings')
-        def save_settings(data):
-            save_config(self.config, self.config_file_path)
-            # Tell that the setting was changed
-            self.socketio.emit('save_settings', {"status":True});
-
+        if self.config["debug"]:
+            print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
+        # Tell that the setting was changed
+        return jsonify({'setting_name': data['setting_name'], "status":True})
 
     def list_backends(self):
         backends_dir = Path('./backends')  # replace with the actual path to the models folder
@@ -314,7 +342,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
             personalities = [f.stem for f in personalities_dir.iterdir() if f.is_dir()]
         except:
             personalities=[]
-            print("nope")
+            if self.config["debug"]:
+                print("No personalities found. Using default one")
         return jsonify(personalities)
 
     def list_languages(self):
@@ -402,7 +431,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         return jsonify({"discussion_text":self.get_discussion_to()})
     
 
-    def parse_to_prompt_stream(self, message, message_id):
+    def start_message_generation(self, message, message_id):
         bot_says = ""
 
         # send the message to the bot
@@ -452,7 +481,9 @@ class Gpt4AllWebUI(GPT4AllAPI):
             self.cancel_gen = False
             return ""
     
-     
+    def get_generation_status(self):
+        return jsonify({"status":self.generating}) 
+    
     def stop_gen(self):
         self.cancel_gen = True
         print("Stop generation received")
@@ -699,6 +730,7 @@ if __name__ == "__main__":
         "--debug",
         dest="debug",
         action="store_true",
+        default=None,
         help="launch Flask server in debug mode",
     )
     parser.add_argument(
@@ -708,7 +740,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "--db_path", type=str, default=None, help="Database path"
     )
-    parser.set_defaults(debug=False)
     args = parser.parse_args()
 
     # The default configuration must be kept unchanged as it is committed to the repository, 
