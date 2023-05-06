@@ -51,12 +51,10 @@
             <div v-if="isCheckbox" class="flex flex-row flex-grow p-4 pt-0 items-center">
 
                 <!-- CHECK BOX OPERATIONS -->
-                <div class="flex flex-row flex-grow  gap-3">
-                    Selected: {{ list.filter((item) => item.checkBoxValue == true).length }}
+                <div class="flex flex-row flex-grow gap-3">
+                    <p v-if="selectedDiscussions.length > 0">Selected: {{ selectedDiscussions.length }}</p>
                 </div>
-                <div class="flex flex-row gap-3">
-
-
+                <div class="flex flex-row  gap-3">
                     <button class="text-2xl hover:text-secondary duration-75 active:scale-90 " title="Select All"
                         type="button" @click.stop="selectAllDiscussions">
                         <i data-feather="list"></i>
@@ -65,10 +63,26 @@
                         title="Export selected to a file" type="button">
                         <i data-feather="log-out"></i>
                     </button>
-                    <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Remove selected"
-                        type="button">
-                        <i data-feather="trash"></i>
-                    </button>
+                    <div v-if="selectedDiscussions.length > 0" class="flex flex-row gap-3">
+                        <!-- DELETE MULTIPLE -->
+                        <button v-if="!showConfirmation" class="text-2xl hover:text-red-600 duration-75 active:scale-90 "
+                            title="Remove selected" type="button" @click.stop="showConfirmation = true">
+                            <i data-feather="trash"></i>
+                        </button>
+                        <!-- DELETE CONFIRM -->
+                        <div v-if="showConfirmation"
+                            class="flex gap-3 flex-1 items-center justify-end  group-hover:visible duration-75">
+                            <button class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                                title="Confirm removal" type="button" @click.stop="deleteDiscussionMulti">
+                                <i data-feather="check"></i>
+                            </button>
+                            <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Cancel removal"
+                                type="button" @click.stop="showConfirmation = false">
+                                <i data-feather="x"></i>
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -91,17 +105,22 @@
             </div>
         </div>
     </div>
-    <div class="overflow-y-scroll flex flex-col no-scrollbar flex-grow">
-        <!-- :class="loading ? 'opacity-20 pointer-events-none' : ''"> -->
+    <div class="overflow-y-scroll flex flex-col no-scrollbar flex-grow " id="messages-list">
+
         <!-- CHAT AREA -->
         <div>
             <Message v-for="(msg, index) in discussionArr" :key="index" :message="msg"
-                @click="scrollToElement($event.target)" :id="'msg-' + msg.id" />
+                @click="scrollToElement($event.target)" :id="'msg-' + msg.id" ref="messages" />
 
             <WelcomeComponent v-if="discussionArr.length < 1" />
 
-            <ChatBox v-if="discussionArr.length > 0" @messageSentEvent="sendMsg" :loading="isGenerating" />
+
         </div>
+        <div class=" sticky bottom-0">
+            <ChatBox v-if="discussionArr.length > 0" @messageSentEvent="sendMsg" :loading="isGenerating"
+                @stopGenerating="stopGenerating" />
+        </div>
+
     </div>
 </template>
 <style scoped>
@@ -126,6 +145,8 @@ export default {
             isGenerating: false,
             isCheckbox: false,
             isSelectAll: false,
+            showConfirmation: false,
+            chime: new Audio("chime_aud.wav")
 
         }
     },
@@ -140,7 +161,7 @@ export default {
                     return res.data
                 }
             } catch (error) {
-                console.log(error)
+                console.log("Error: Could not list discussions", error)
                 return []
             }
         },
@@ -160,8 +181,10 @@ export default {
                         const lastMessage = this.discussionArr[this.discussionArr.length - 1]
                         if (lastMessage) {
                             nextTick(() => {
-                                const selectedElement = document.getElementById('msg-' + lastMessage.id)
-                                this.scrollToElement(selectedElement)
+                                // const selectedElement = document.getElementById('msg-' + lastMessage.id)
+                                // this.scrollToElement(selectedElement)
+                                const msgList = document.getElementById('messages-list')
+                                this.scrollBottom(msgList)
                             })
                         }
                     }
@@ -180,7 +203,7 @@ export default {
                     return res.data
                 }
             } catch (error) {
-                console.log(error)
+                console.log("Error: Could not create new discussion", error)
                 return {}
             }
         },
@@ -196,7 +219,7 @@ export default {
                     this.setDiscussionLoading(id, this.loading)
                 }
             } catch (error) {
-                console.log(error)
+                console.log("Error: Could not delete discussion", error)
                 this.loading = false
                 this.setDiscussionLoading(id, this.loading)
             }
@@ -220,9 +243,21 @@ export default {
                     }
                 }
             } catch (error) {
-                console.log(error)
+                console.log("Error: Could not edit title", error)
                 this.loading = false
                 this.setDiscussionLoading(id, this.loading)
+            }
+        },
+        async stop_gen() {
+            try {
+                const res = await axios.get('/stop_gen')
+
+                if (res) {
+                    return res.data
+                }
+            } catch (error) {
+                console.log("Error: Could not stop generating", error)
+                return {}
             }
         },
         filterDiscussions() {
@@ -237,44 +272,52 @@ export default {
             }
         },
         async selectDiscussion(item) {
-            // When discussion is selected it loads the discussion array
+            if (item) {
 
-            this.currentDiscussion = item
+                // When discussion is selected it loads the discussion array
 
-            this.setPageTitle(item)
+                this.currentDiscussion = item
 
-            localStorage.setItem('selected_discussion', this.currentDiscussion.id)
+                this.setPageTitle(item)
 
-            await this.load_discussion(item.id)
+                localStorage.setItem('selected_discussion', this.currentDiscussion.id)
 
-            if (this.discussionArr.length > 1) {
-                if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
-                    this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
+                await this.load_discussion(item.id)
+
+                if (this.discussionArr.length > 1) {
+                    if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
+                        this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
+                    }
                 }
+                nextTick(() => {
+                    const selectedDisElement = document.getElementById('dis-' + item.id)
+                    this.scrollToElement(selectedDisElement)
+                })
             }
-            nextTick(() => {
-                const selectedDisElement = document.getElementById('dis-' + item.id)
-                this.scrollToElement(selectedDisElement)
-            })
         },
         scrollToElement(el) {
-            //console.log("scroll", el.id)
+           
             if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' })
+                el.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
+            } else {
+                console.log("Error: scrollToElement")
             }
         },
-        createMsg(msgObj) {
-            // From websocket.on("infos")
-            // {
-            //     "type": "input_message_infos",
-            //     "bot": "gpt4all",
-            //     "user": "user",
-            //     "message": "giv emoney",
-            //     "id": 112,
-            //     "response_id": 113
-            // }
-
-            // Create user input message
+        scrollBottom(el) {
+           
+            if (el) {
+                el.scrollTo(
+                    {
+                        top: el.scrollHeight,
+                        behavior: "smooth",
+                    }
+                )
+            } else {
+                console.log("Error: scrollBottom")
+            }
+           
+        },
+        createUserMsg(msgObj) {
             let usrMessage = {
                 content: msgObj.message,
                 id: msgObj.id,
@@ -285,10 +328,25 @@ export default {
             }
             this.discussionArr.push(usrMessage)
             nextTick(() => {
-                const userMsgElement = document.getElementById('msg-' + msgObj.message)
-                this.scrollToElement(userMsgElement)
-            })
+                const msgList = document.getElementById('messages-list')
 
+                this.scrollBottom(msgList)
+
+            })
+        },
+        updateLastUserMsg(msgObj) {
+
+            const lastMsg = this.discussionArr[this.discussionArr.length - 1]
+            lastMsg.content = msgObj.message
+            lastMsg.id = msgObj.id
+            // lastMsg.parent=msgObj.parent
+            lastMsg.rank = msgObj.rank
+            lastMsg.sender = msgObj.user
+            // lastMsg.type=msgObj.type
+        },
+        createBotMsg(msgObj) {
+            // Update previous message with reponse user data
+            this.updateLastUserMsg(msgObj)
             // Create response message
             let responseMessage = {
                 content: '..typing',
@@ -300,26 +358,39 @@ export default {
             }
             this.discussionArr.push(responseMessage)
             nextTick(() => {
-                const responseMessageElement = document.getElementById('msg-' + msgObj.response_id)
-                this.scrollToElement(responseMessageElement)
+                const msgList = document.getElementById('messages-list')
+
+                this.scrollBottom(msgList)
+
             })
 
             if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
                 this.changeTitleUsingUserMSG(this.currentDiscussion.id, usrMessage.content)
             }
 
-            this.isGenerating = false
-            this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
         },
         sendMsg(msg) {
             // Sends message to backend
             this.isGenerating = true
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
-            websocket.emit('generate_msg', { prompt: msg })
+            socket.emit('generate_msg', { prompt: msg })
+
+            // Create new User message
+            // Temp data
+            let usrMessage = {
+                message: msg,
+                id: this.discussionArr[this.discussionArr.length - 1].id + 1,
+                //parent: 10,
+                rank: 0,
+                user: "user"
+                //type: 0
+            }
+            this.createUserMsg(usrMessage)
+
         },
         steamMessageContent(content) {
             // Streams response message content from backend
-
+            //console.log(content)
             const lastMsg = this.discussionArr[this.discussionArr.length - 1]
             lastMsg.content = content.data
         },
@@ -366,7 +437,7 @@ export default {
 
             const index = this.list.findIndex((x) => x.id == id)
             const discussionItem = this.list[index]
-            discussionItem.loading = true
+            //discussionItem.loading = true
             await this.delete_discussion(id)
             if (this.currentDiscussion.id == id) {
                 this.currentDiscussion = {}
@@ -377,6 +448,26 @@ export default {
 
             this.createDiscussionList(this.list)
             //await this.list_discussions()
+        },
+        async deleteDiscussionMulti() {
+            // Delete selected discussions
+
+            const deleteList = this.selectedDiscussions
+
+            for (let i = 0; i < deleteList.length; i++) {
+                const discussionItem = deleteList[i]
+                //discussionItem.loading = true
+                await this.delete_discussion(discussionItem.id)
+                if (this.currentDiscussion.id == discussionItem.id) {
+                    this.currentDiscussion = {}
+                    this.discussionArr = []
+                    this.setPageTitle()
+                }
+                this.list.splice(this.list.findIndex(item => item.id == discussionItem.id), 1)
+            }
+            this.tempList = this.list
+            this.isCheckbox = false
+            console.log("Multi delete done")
         },
         async editTitle(newTitleObj) {
 
@@ -446,11 +537,24 @@ export default {
                 document.title = 'GPT4ALL - WEBUI - ' + title
             }
 
-
+        },
+        stopGenerating() {
+            this.stop_gen()
+            this.isGenerating = false
+            console.log("Stopped generating")
+        },
+        finalMsgEvent(data) {
+            console.log("final", data)
+            this.isGenerating = false
+            this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
+            this.chime.play()
         }
     },
     async created() {
         // Constructor
+        //const chime = require('../assets/chime_aud.wav')
+
+
         this.setPageTitle()
         await this.list_discussions()
 
@@ -461,14 +565,16 @@ export default {
             feather.replace()
         })
 
-        // WebSocket responses
-        websocket.on('infos', this.createMsg)
-        websocket.on('message', this.steamMessageContent)
+        // socket responses
+        socket.on('infos', this.createBotMsg)
+        socket.on('message', this.steamMessageContent)
+        socket.on("final", this.finalMsgEvent)
     },
     activated() {
         // This lifecycle hook runs every time you switch from other page back to this page (vue-router)
         // To fix scrolling back to last message, this hook is needed.
         // If anyone knows hor to fix scroll issue when changing pages, please do fix it :D
+        console.log("Websocket connected (activated)", this.socketConnected)
 
         if (this.isCreated) {
             this.loadLastUsedDiscussion()
@@ -496,7 +602,28 @@ export default {
                 this.isSelectAll = false
             }
         },
+        socketConnected(newval, oldval) {
+            console.log("Websocket connected (watch)", newval)
+        },
+        showConfirmation() {
+            nextTick(() => {
+                feather.replace()
 
+            })
+        },
+
+    },
+    computed: {
+        socketConnected() {
+            return state.connected
+        },
+        selectedDiscussions() {
+            nextTick(() => {
+                feather.replace()
+
+            })
+            return this.list.filter((item) => item.checkBoxValue == true)
+        }
     }
 }
 </script>
@@ -510,9 +637,9 @@ import WelcomeComponent from '../components/WelcomeComponent.vue'
 import feather from 'feather-icons'
 
 import axios from 'axios'
-import { nextTick } from 'vue'
+import { nextTick, ref } from 'vue'
 
-import websocket from '@/services/websocket.js'
+import { socket, state } from '@/services/websocket.js'
 
 import { onMounted } from 'vue'
 import { initFlowbite } from 'flowbite'
