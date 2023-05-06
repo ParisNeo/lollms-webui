@@ -235,11 +235,12 @@
         </div>
     </div>
 
-
+   
 </template>
 
 <script>
 import axios from "axios";
+import MessageBox from "@/components/MessageBox.vue";
 export default {
     setup() {
 
@@ -251,9 +252,11 @@ export default {
     data() {
 
         return {
+            // Accordeon stuff     
             bec_collapsed: true,
             pc_collapsed: true,
             mc_collapsed: true,
+            // Settings stuff
             backendsArr: [],
             modelsArr: [],
             persLangArr: [],
@@ -264,6 +267,7 @@ export default {
 
         }
     }, methods: {
+        // Refresh stuff
         refresh(){
             this.api_get_req("list_backends").then(response=>{this.backendsArr = response})
             this.api_get_req("list_models").then(response=>{this.modelsArr = response})
@@ -273,8 +277,9 @@ export default {
             this.api_get_req("list_languages").then(response=>{this.langArr = response})
             this.api_get_req("get_config").then(response=>{this.configFile = response})
         },
+        // Accordeon stuff
         toggleAccordion() {
-        this.showAccordion = !this.showAccordion;
+            this.showAccordion = !this.showAccordion;
         },
         update_setting(setting_name, setting_value, next=undefined){
             axios.post('/update_setting', {'setting_name':setting_name, 'setting_value':setting_value})
@@ -292,10 +297,17 @@ export default {
             axios.post('/save_settings', {})
             .then((res) => {
                 if (res) {
+                    if(res.status)
+                        this.$refs.messageBox.showMessage("Settings saved")
+                    else
+                        this.$refs.messageBox.showMessage("Couldn't save settings!")
                     return res.data;
                 }
             })
-            .catch(error=>{return {'status':false}});
+            .catch(error=>{
+                console.log(error)
+                return {'status':false}
+            });
 
         },
         update_backend(value){
