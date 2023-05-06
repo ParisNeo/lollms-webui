@@ -226,6 +226,13 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
 
 
+    def save_settings(self):
+        save_config(self.config, self.config_file_path)
+        if self.config["debug"]:
+            print("Configuration saved")
+        # Tell that the setting was changed
+        self.socketio.emit('save_settings', {"status":True})
+        return jsonify({"status":True})
 
     def save_settings(self):
         save_config(self.config, self.config_file_path)
@@ -340,10 +347,10 @@ class Gpt4AllWebUI(GPT4AllAPI):
         try:
             personalities_dir = Path(f'./personalities/{self.config["personality_language"]}/{self.config["personality_category"]}')  # replace with the actual path to the models folder
             personalities = [f.stem for f in personalities_dir.iterdir() if f.is_dir()]
-        except:
+        except Exception as ex:
             personalities=[]
             if self.config["debug"]:
-                print("No personalities found. Using default one")
+                print(f"No personalities found. Using default one {ex}")
         return jsonify(personalities)
 
     def list_languages(self):
@@ -409,20 +416,6 @@ class Gpt4AllWebUI(GPT4AllAPI):
                             
         fn = filename.split("/")[-1]
         return send_from_directory(path, fn)
-
-
-    def format_message(self, message):
-        # Look for a code block within the message
-        pattern = re.compile(r"(```.*?```)", re.DOTALL)
-        match = pattern.search(message)
-
-        # If a code block is found, replace it with a <code> tag
-        if match:
-            code_block = match.group(1)
-            message = message.replace(code_block, f"<code>{code_block[3:-3]}</code>")
-
-        # Return the formatted message
-        return message
 
     def export(self):
         return jsonify(self.db.export_to_json())

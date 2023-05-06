@@ -64,7 +64,7 @@
                 <label for="persLang" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                     Personalities Languages:
                 </label>
-                <select id="persLang"
+                <select id="persLang" @change="update_setting('personality_language', $event.target.value, refresh)"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                     <option v-for="item in persLangArr">{{ item }}</option>
@@ -75,7 +75,7 @@
                 <label for="persCat" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                     Personalities Category:
                 </label>
-                <select id="persCat"
+                <select id="persCat" @change="update_setting('personality_category', $event.target.value, refresh)"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                     <option v-for="item in persCatgArr">{{ item }}</option>
@@ -84,9 +84,9 @@
             </div>
             <div class="m-2">
                 <label for="persona" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    Persona:
+                    Personality:
                 </label>
-                <select id="persona"
+                <select id="persona" @change="update_setting('personality', $event.target.value, refresh)"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                     <option v-for="item in persArr">{{ item }}</option>
@@ -263,19 +263,30 @@ export default {
             configFile: {},
 
         }
-    }, methods: {    
+    }, methods: {
+        refresh(){
+            this.api_get_req("list_backends").then(response=>{this.backendsArr = response})
+            this.api_get_req("list_models").then(response=>{this.modelsArr = response})
+            this.api_get_req("list_personalities_languages").then(response=>{this.persLangArr = response})
+            this.api_get_req("list_personalities_categories").then(response=>{this.persCatgArr = response})
+            this.api_get_req("list_personalities").then(response=>{this.persArr = response})
+            this.api_get_req("list_languages").then(response=>{this.langArr = response})
+            this.api_get_req("get_config").then(response=>{this.configFile = response})
+        },
         toggleAccordion() {
         this.showAccordion = !this.showAccordion;
         },
-        update_setting(setting_name, setting_value){
+        update_setting(setting_name, setting_value, next=undefined){
             axios.post('/update_setting', {'setting_name':setting_name, 'setting_value':setting_value})
             .then((res) => {
                 if (res) {
+                    if(next!==undefined){
+                        next()
+                    }
                     return res.data;
                 }
             })
             .catch(error=>{return {'status':false}});
-
         },
         save_configuration(){
             axios.post('/save_settings', {})
@@ -310,6 +321,7 @@ export default {
 
 
         },
+
     }, async mounted() {
         this.backendsArr = await this.api_get_req("list_backends")
         this.modelsArr = await this.api_get_req("list_models")
