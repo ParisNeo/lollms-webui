@@ -270,11 +270,43 @@ class Gpt4AllWebUI(GPT4AllAPI):
             self.config["language"]=data['setting_value']
 
         elif setting_name== "personality_language":
-            self.config["personality_language"]=data['setting_value']
+            back_language = self.config["personality_language"]
+            if self.config["personality_language"]!=data['setting_value']:
+                self.config["personality_language"]=data['setting_value']
+                cats = self.list_personalities_categories()
+                if len(cats)>0:
+                    back_category = self.config["personality_category"]
+                    self.config["personality_category"]=cats[0]
+                    pers = json.loads(self.list_personalities().data.decode("utf8"))
+                    if len(pers)>0:
+                        self.config["personality"]=pers[0]
+                        personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
+                        self.personality.load_personality(personality_fn)
+                    else:
+                        self.config["personality_language"]=back_language
+                        self.config["personality_category"]=back_category
+                        return jsonify({'setting_name': data['setting_name'], "status":False})
+                else:
+                    self.config["personality_language"]=back_language
+                    return jsonify({'setting_name': data['setting_name'], "status":False})
+                
         elif setting_name== "personality_category":
-            self.config["personality_category"]=data['setting_value']
+            back_category = self.config["personality_category"]
+            if self.config["personality_category"]!=data['setting_value']:
+                self.config["personality_category"]=data['setting_value']
+                pers = json.loads(self.list_personalities().data.decode("utf8"))
+                if len(pers)>0:
+                    self.config["personality"]=pers[0]
+                    personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
+                    self.personality.load_personality(personality_fn)
+                else:
+                    self.config["personality_category"]=back_category
+                    return jsonify({'setting_name': data['setting_name'], "status":False})
+
         elif setting_name== "personality":
             self.config["personality"]=data['setting_value']
+            personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
+            self.personality.load_personality(personality_fn)
         elif setting_name== "override_personality_model_parameters":
             self.config["override_personality_model_parameters"]=bool(data['setting_value'])
             

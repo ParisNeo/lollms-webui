@@ -10,7 +10,7 @@
                 </button>
             </div>
             <div class="overflow-y-scroll flex-col no-scrollbar shadow-lg bg-bg-light-tone dark:bg-bg-dark-tone ">
-                <button title="Reset configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90 mr-2" @click="save_configuration()">
+                <button title="Reset configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90 mr-2" @click="reset_configuration()">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -234,14 +234,21 @@
             </div>        
         </div>
     </div>
-
+    
+    <YesNoDialog ref="yesNoDialog" />
+    <MessageBox ref="messageBox" />
    
 </template>
 
 <script>
 import axios from "axios";
 import MessageBox from "@/components/MessageBox.vue";
+import YesNoDialog from "@/components/YesNoDialog.vue";
+
 export default {
+    components: {
+        MessageBox,
+    },    
     setup() {
 
 
@@ -267,6 +274,10 @@ export default {
 
         }
     }, methods: {
+        // messagebox ok stuff
+        onMessageBoxOk() {
+            console.log("OK button clicked");
+        },
         // Refresh stuff
         refresh(){
             this.api_get_req("list_backends").then(response=>{this.backendsArr = response})
@@ -306,9 +317,36 @@ export default {
             })
             .catch(error=>{
                 console.log(error)
+                this.$refs.messageBox.showMessage("Couldn't save settings!")
                 return {'status':false}
             });
 
+        },
+        reset_configuration(){
+            this.$refs.yesNoDialog.askQuestion("Are you sure?<br>This will delete all your configurations and get back to default configuration.").then(response=>{
+            if (response) {
+                // User clicked Yes
+                axios.post('/reset_settings', {})
+                .then((res) => {
+                    if (res) {
+                        if(res.status)
+                            this.$refs.messageBox.showMessage("Settings have been reset correctly")
+                        else
+                            this.$refs.messageBox.showMessage("Couldn't reset settings!")
+                        return res.data;
+                    }
+                })
+                .catch(error=>{
+                    console.log(error)
+                    this.$refs.messageBox.showMessage("Couldn't reset settings!")
+                    return {'status':false}
+                });            
+            // Perform delete operation
+            } else {
+                // User clicked No
+                // Do nothing
+            }
+        });
         },
         update_backend(value){
             res = update_setting('backend', value)
