@@ -109,8 +109,10 @@
 
         <!-- CHAT AREA -->
         <div class="flex flex-col flex-grow">
+             <!-- REMOVED @click="scrollToElement($event.target)" -->
             <Message v-for="(msg, index) in discussionArr" :key="index" :message="msg"
-                @click="scrollToElement($event.target)" :id="'msg-' + msg.id" ref="messages" @copy="copyToClipBoard" />
+                 :id="'msg-' + msg.id" ref="messages" @copy="copyToClipBoard"
+                @delete="deleteMessage" @rankUp="rankUpMessage" @rankDown="rankDownMessage" @updateMessage="updateMessage"/>
 
             <WelcomeComponent v-if="!currentDiscussion.id" />
 
@@ -256,6 +258,18 @@ export default {
                 this.setDiscussionLoading(id, this.loading)
             }
         },
+        async delete_message(id) {
+            try {
+                const res = await axios.get('/delete_message', { params: { id: id } })
+
+                if (res) {
+                    return res.data
+                }
+            } catch (error) {
+                console.log("Error: Could delete message", error)
+                return {}
+            }
+        },
         async stop_gen() {
             try {
                 const res = await axios.get('/stop_gen')
@@ -265,6 +279,42 @@ export default {
                 }
             } catch (error) {
                 console.log("Error: Could not stop generating", error)
+                return {}
+            }
+        },
+        async message_rank_up(id) {
+            try {
+                const res = await axios.get('/message_rank_up', { params: { id: id } })
+
+                if (res) {
+                    return res.data
+                }
+            } catch (error) {
+                console.log("Error: Could not rank up message", error)
+                return {}
+            }
+        },
+        async message_rank_down(id) {
+            try {
+                const res = await axios.get('/message_rank_down', { params: { id: id } })
+
+                if (res) {
+                    return res.data
+                }
+            } catch (error) {
+                console.log("Error: Could not rank down message", error)
+                return {}
+            }
+        },
+        async update_message(id, message) {
+            try {
+                const res = await axios.get('/update_message', { params: { id: id, message:message } })
+
+                if (res) {
+                    return res.data
+                }
+            } catch (error) {
+                console.log("Error: Could not update message", error)
                 return {}
             }
         },
@@ -422,7 +472,7 @@ export default {
                 this.tempList = this.list
                 await this.edit_title(id, msg)
             }
-            
+
         },
         async createNewDiscussion() {
             // Creates new discussion on backend,
@@ -488,6 +538,18 @@ export default {
             this.tempList = this.list
             this.isCheckbox = false
             console.log("Multi delete done")
+        },
+        async deleteMessage(msgId) {
+
+            await this.delete_message(msgId).then(() => {
+
+                this.discussionArr.splice(this.discussionArr.findIndex(item => item.id == msgId), 1)
+
+            }).catch(() => {
+
+                console.log("Error: Could not delete message")
+            })
+
         },
         async editTitle(newTitleObj) {
 
@@ -556,6 +618,40 @@ export default {
                 const title = item || "Welcome"
                 document.title = 'GPT4ALL - WEBUI - ' + title
             }
+
+        },
+        async rankUpMessage(msgId) {
+            await this.message_rank_up(msgId).then((res) => {
+                
+                const message = this.discussionArr[this.discussionArr.findIndex(item => item.id == msgId)]
+                message.rank= res.new_rank
+            }).catch(() => {
+
+                console.log("Error: Could not rank up message")
+            })
+
+        },
+        async rankDownMessage(msgId) {
+            await this.message_rank_down(msgId).then((res) => {
+                
+                const message = this.discussionArr[this.discussionArr.findIndex(item => item.id == msgId)]
+                message.rank= res.new_rank
+            }).catch(() => {
+
+                console.log("Error: Could not rank down message")
+            })
+
+        },
+        async updateMessage(msgId, msg) {
+            await this.update_message(msgId, msg).then(() => {
+                
+                const message = this.discussionArr[this.discussionArr.findIndex(item => item.id == msgId)]
+                message.content= msg
+                
+            }).catch(() => {
+
+                console.log("Error: Could not update message")
+            })
 
         },
         stopGenerating() {
