@@ -1,22 +1,19 @@
 <template>
-    <div :class="['markdown', isDarkMode ? 'dark' : 'light']">
-      <div v-html="renderedMarkdown"></div>
+    <div>
+      <div v-html="renderedMarkdown" class=""></div>
     </div>
   </template>
   
   <script>
   import MarkdownIt from 'markdown-it';
   import emoji from 'markdown-it-emoji';
+  import hljs from 'highlight.js';
   
   export default {
     props: {
       markdownText: {
         type: String,
         required: true
-      },
-      isDarkMode: {
-        type: Boolean,
-        default: false
       }
     },
     data() {
@@ -25,43 +22,68 @@
       };
     },
     mounted() {
-      this.renderMarkdown();
+      const markdownIt = new MarkdownIt({
+        highlight: (str, lang) => {
+          if (lang && hljs.getLanguage(lang)) {
+            try {
+              return (
+                '<pre class="hljs rounded-lg dark:bg-primary shadow-lg"><code>' +
+                hljs.highlight(lang, str, true).value +
+                '</code></pre>'
+              );
+            } catch (__) {}
+          }
+          return (
+            '<pre class="hljs rounded-lg dark:bg-primary shadow-lg"><code>' +
+            markdownIt.utils.escapeHtml(str) +
+            '</code></pre>'
+          );
+        }
+      }).use(emoji);
+  
+      this.renderedMarkdown = markdownIt.render(this.markdownText);
     },
     watch: {
       markdownText(newText) {
-        this.renderMarkdown(newText);
-      },
-      isDarkMode() {
-        this.renderMarkdown();
-      }
-    },
-    methods: {
-      renderMarkdown(text) {
-        const markdownIt = new MarkdownIt().use(emoji);
-        this.renderedMarkdown = markdownIt.render(text || this.markdownText);
+        const markdownIt = new MarkdownIt({
+          highlight: (str, lang) => {
+            if (lang && hljs.getLanguage(lang)) {
+              try {
+                return (
+                  '<pre class="hljs rounded-lg dark:bg-primary shadow-lg"><code>' +
+                  hljs.highlight(lang, str, true).value +
+                  '</code></pre>'
+                );
+              } catch (__) {}
+            }
+            return (
+              '<pre class="hljs rounded-lg dark:bg-primary shadow-lg"><code>' +
+              markdownIt.utils.escapeHtml(str) +
+              '</code></pre>'
+            );
+          }
+        }).use(emoji);
+  
+        this.renderedMarkdown = markdownIt.render(newText);
       }
     }
   };
   </script>
   
-  <style scoped>
-  .markdown {
-    /* Add Tailwind CSS classes for general styling */
-    padding: 1rem;
-    box-shadow: sm;
-    border-radius: 5px;
+  <style>
+  /* Add styles for code highlighting */
+  .hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+    background: #f5f5f5;
   }
   
-  .light {
-    /* Add Tailwind CSS classes for light mode */
-    background-color: #ffffff;
-    color: #000000;
-  }
-  
-  .dark {
-    /* Add Tailwind CSS classes for dark mode */
-    background-color: #1a202c;
-    color: #ffffff;
+  .hljs code {
+    display: inline;
+    padding: 0;
+    border: none;
+    background: none;
   }
   </style>
   
