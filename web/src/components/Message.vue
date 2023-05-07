@@ -21,7 +21,7 @@
                 <i data-feather="edit"></i>
             </div>
             <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2"
-                title="Copy message to clipboard">
+                title="Copy message to clipboard" @click.stop="copyContentToClipboard()">
                 <i data-feather="copy"></i>
             </div>
             <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2"
@@ -55,6 +55,7 @@ import feather from 'feather-icons'
 import MarkdownRenderer from './MarkdownRenderer.vue';
 export default {
     name: 'Message',
+    emits: ['copy'],
     components: {
         MarkdownRenderer
     },
@@ -71,6 +72,11 @@ export default {
                 feather.replace()
 
             })
-    },
+    },methods:{
+        copyContentToClipboard(){
+            this.$emit('copy', this.message.content)
+            navigator.clipboard.writeText(this.message.content);
+        }
+    }
 }
 </script>
