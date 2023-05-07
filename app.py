@@ -239,7 +239,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
     
 
     def get_current_personality(self):
-        return jsonify({"personality":self.personality.__dict__()})
+        return jsonify({"personality":self.personality.as_json()})
     
     
 

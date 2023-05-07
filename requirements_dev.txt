@@ -7,4 +7,4 @@ markdown
 pyllamacpp==2.0.0
 gpt4all-j 
 transformers
-pyaipersonality>=0.0.10
+pyaipersonality>=0.0.11
