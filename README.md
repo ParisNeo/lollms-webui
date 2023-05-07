@@ -118,6 +118,11 @@ You can also refuse to download the model during the install procedure and downl
 - [ggml-vicuna-7b-1.1-q4_2](https://gpt4all.io/models/ggml-vicuna-7b-1.1-q4_2.bin)
 - [ggml-vicuna-13b-1.1-q4_2](https://gpt4all.io/models/ggml-vicuna-13b-1.1-q4_2.bin)
 
+- [wizard-vicuna-13B.ggml.q4_2](https://huggingface.co/TheBloke/wizard-vicuna-13B-GGML/resolve/main/wizard-vicuna-13B.ggml.q4_2.bin)
+- [WizardLM-7B-uncensored.ggml.q4_0](https://huggingface.co/TheBloke/WizardLM-7B-uncensored-GGML/resolve/main/WizardLM-7B-uncensored.ggml.q4_0.bin)
+- [wizardLM-7B.ggml.q4_2.bin](https://huggingface.co/TheBloke/wizardLM-7B-GGML/resolve/main/wizardLM-7B.ggml.q4_2.bin)
+
+
 
 We also support GPT-j models out of the box
 
