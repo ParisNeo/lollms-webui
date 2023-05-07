@@ -11,7 +11,8 @@
         </div>
         <div class="-mt-4  ml-10 mr-0 pt-1 px-2 max-w-screen-2xl  ">
             <!-- CONTENT/MESSAGE -->
-            {{ message.content }}
+            <markdown-renderer :markdown-text="message.content"></markdown-renderer>
+
         </div>
         <div class="invisible group-hover:visible flex flex-row mt-3 -mb-2">
             <!-- MESSAGE CONTROLS -->
@@ -44,15 +45,19 @@
                     :class="message.rank > 0 ? 'bg-secondary' : 'bg-red-600'" title="Rank">{{ message.rank }}
                 </div>
             </div>
-        </div>
+        </div>        
     </div>
 </template>
 
 <script>
 import {nextTick} from 'vue'
 import feather from 'feather-icons'
+import MarkdownRenderer from './MarkdownRenderer.vue';
 export default {
     name: 'Message',
+    components: {
+        MarkdownRenderer
+    },
     props: {
         message: Object
     },

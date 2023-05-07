@@ -167,3 +167,4 @@ backends/
 web/.env.build
 web/.env.dev
 web/.env.development
+node_modules/

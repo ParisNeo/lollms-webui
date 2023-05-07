@@ -400,7 +400,7 @@ export default {
         },
         steamMessageContent(content) {
             // Streams response message content from backend
-            //console.log(content)
+            console.log(content)
             const lastMsg = this.discussionArr[this.discussionArr.length - 1]
             lastMsg.content = content.data
         },
