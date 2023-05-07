@@ -195,6 +195,7 @@ This Flask server provides various endpoints to manage and interact with the cha
   "voice": ""
 }
 ```
+- "/get_current_personality": GET request endpoint to get all information about current personality
 
 - "/extensions": GET request endpoint to list all the available extensions.
 - "/training": GET request endpoint to start the training process.
