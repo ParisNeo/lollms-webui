@@ -16,8 +16,6 @@
             </div>
             <!-- SAVE AND RESET -->
             <div v-if="!showConfirmation" class="flex gap-3 flex-1 items-center ">
-
-
                 <button title="Save configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90"
                     @click="showConfirmation=true">
                     <i data-feather="save"></i>
