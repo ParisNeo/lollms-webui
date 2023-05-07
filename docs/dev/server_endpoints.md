@@ -195,7 +195,43 @@ This Flask server provides various endpoints to manage and interact with the cha
   "voice": ""
 }
 ```
+
 - "/get_current_personality": GET request endpoint to get all information about current personality
+```
+{
+  "personality": {
+    "ai_message_prefix": "###gpt4all:\n",
+    "anti_prompts": [
+      "###user",
+      "### user",
+      "###gpt4all",
+      "### gpt4all"
+    ],
+    "assets_list": [
+      "personalities\\english\\generic\\gpt4all\\assets\\logo.png"
+    ],
+    "author": "ParisNeo",
+    "category": "General",
+    "dependencies": [],
+    "disclaimer": "",
+    "language": "en_XX",
+    "link_text": "\n",
+    "model_n_predicts": 1024,
+    "model_repeat_last_n": 40,
+    "model_repeat_penalty": 1.0,
+    "model_temperature": 0.6,
+    "model_top_k": 50,
+    "model_top_p": 0.9,
+    "name": "gpt4all",
+    "personality_conditioning": "## Information:\nAssistant's name is gpt4all\nToday's date is {{date}}\n## Instructions:\nYour mission is to assist user to perform various tasks and answer his questions\n",
+    "personality_description": "This personality is a helpful and Kind AI ready to help you solve your problems \n",
+    "user_message_prefix": "###user:\n",
+    "user_name": "user",
+    "version": "1.0.0",
+    "welcome_message": "Welcome! My name is gpt4all.\nHow can I help you today?\n"
+  }
+}
+```
 
 - "/extensions": GET request endpoint to list all the available extensions.
 - "/training": GET request endpoint to start the training process.
