@@ -1,21 +1,18 @@
 <template>
     <div class="overflow-y-scroll flex flex-col no-scrollbar shadow-lg  w-full bg-bg-light-tone dark:bg-bg-dark-tone ">
-        <div class="flex flex-row justify-start">
-            <div class="overflow-y-scroll flex-col no-scrollbar shadow-lg bg-bg-light-tone dark:bg-bg-dark-tone ">
-                <button title="Save configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90 mr-2" @click="save_configuration()">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3Z"></path>
-                    <path d="M17 8L12 13L7 8"></path>
-                </svg>
-                </button>
-            </div>
-            <div class="overflow-y-scroll flex-col no-scrollbar shadow-lg bg-bg-light-tone dark:bg-bg-dark-tone ">
-                <button title="Reset configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90 mr-2" @click="reset_configuration()">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-                </button>
-            </div>
+        <!-- CONTROL PANEL -->
+        <div class="flex-row p-4 pt-0 flex items-center gap-3 flex-0">
+            <button title="Save configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90" @click="save_configuration()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3Z"></path>
+                <path d="M17 8L12 13L7 8"></path>
+            </svg>
+            </button>
+            <button title="Reset configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90" @click="reset_configuration()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            </button>
         </div>
 
         <div class="flex flex-row">
@@ -324,7 +321,7 @@ export default {
 
         },
         reset_configuration(){
-            this.$refs.yesNoDialog.askQuestion("Are you sure?<br>This will delete all your configurations and get back to default configuration.").then(response=>{
+            this.$refs.yesNoDialog.askQuestion("Are you sure?\nThis will delete all your configurations and get back to default configuration.").then(response=>{
             if (response) {
                 // User clicked Yes
                 axios.post('/reset_settings', {})

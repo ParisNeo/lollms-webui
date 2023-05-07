@@ -24,6 +24,8 @@ class GPT4AllAPI():
     def __init__(self, config:dict, personality:AIPersonality, config_file_path:str) -> None:
         self.config = config
         self.personality = personality
+        if config["debug"]:
+            print(print(f"{personality}"))
         self.config_file_path = config_file_path
         self.cancel_gen = False
 
@@ -195,7 +197,7 @@ class GPT4AllAPI():
         gc.collect()
         total_n_predict = self.config['n_predict']
         print(f"Generating {total_n_predict} outputs... ")
-        print(f"Input text : {self.discussion_messages}")
+        print(f"Input text :\n{self.discussion_messages}")
         if self.config["override_personality_model_parameters"]:
             self.chatbot_bindings.generate(
                 self.discussion_messages,
@@ -206,7 +208,7 @@ class GPT4AllAPI():
                 top_p=self.config['top_p'],
                 repeat_penalty=self.config['repeat_penalty'],
                 repeat_last_n = self.config['repeat_last_n'],
-                #seed=self.config['seed'],
+                seed=self.config['seed'],
                 n_threads=self.config['n_threads']
             )
         else:

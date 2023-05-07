@@ -300,6 +300,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
                     self.config["personality"]=pers[0]
                     personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
                     self.personality.load_personality(personality_fn)
+                    if self.config["debug"]:
+                        print(self.personality)
                 else:
                     self.config["personality_category"]=back_category
                     return jsonify({'setting_name': data['setting_name'], "status":False})
@@ -795,9 +797,12 @@ if __name__ == "__main__":
             config[arg_name] = arg_value
 
     try:
-        personality = AIPersonality(f"personalities/{config['personality_language']}/{config['personality_category']}/{config['personality']}")
-    except:
+        personality_path = f"personalities/{config['personality_language']}/{config['personality_category']}/{config['personality']}"
+        personality = AIPersonality(personality_path)
+    except Exception as ex:
         print("Personality file not found. Please verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+        if config["debug"]:
+            print(ex)
         personality = AIPersonality()
     # executor = ThreadPoolExecutor(max_workers=1)
     # app.config['executor'] = executor
