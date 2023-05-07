@@ -383,7 +383,7 @@ export default {
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
             axios.get('/get_generation_status', {}).then((res) => {
                 if (res) {
-                    console.log(res.data.status);
+                    //console.log(res.data.status);
                     if (!res.data.status) {
                         socket.emit('generate_msg', { prompt: msg });
 
@@ -391,7 +391,7 @@ export default {
                         // Temp data
                         let usrMessage = {
                             message: msg,
-                            id: this.discussionArr[this.discussionArr.length - 1].id + 1,
+                            id: 0,
                             rank: 0,
                             user: "user"
                         };
@@ -408,7 +408,7 @@ export default {
         },
         steamMessageContent(content) {
             // Streams response message content from backend
-            console.log(content)
+            //console.log(content)
             const lastMsg = this.discussionArr[this.discussionArr.length - 1]
             lastMsg.content = content.data
         },
@@ -420,8 +420,9 @@ export default {
             if (msg) {
                 discussionItem.title = msg
                 this.tempList = this.list
+                await this.edit_title(id, msg)
             }
-            await this.edit_title(id, msg)
+            
         },
         async createNewDiscussion() {
             // Creates new discussion on backend,
@@ -438,6 +439,7 @@ export default {
                 const selectedDisElement = document.getElementById('dis-' + res.id)
                 this.scrollToElement(selectedDisElement)
             })
+            //console.log("disc",JSON.stringify(discussionItem))
         },
         loadLastUsedDiscussion() {
             // Checks local storage for last selected discussion
