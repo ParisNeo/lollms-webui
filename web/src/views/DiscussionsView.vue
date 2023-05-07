@@ -110,7 +110,7 @@
         <!-- CHAT AREA -->
         <div class="flex flex-col flex-grow">
             <Message v-for="(msg, index) in discussionArr" :key="index" :message="msg"
-                @click="scrollToElement($event.target)" :id="'msg-' + msg.id" ref="messages" />
+                @click="scrollToElement($event.target)" :id="'msg-' + msg.id" ref="messages" @copy="copyToClipBoard" />
 
             <WelcomeComponent v-if="!currentDiscussion.id" />
 
@@ -122,6 +122,14 @@
         </div>
 
     </div>
+    <Toast :showProp="isCopiedToClipboard" @close="isCopiedToClipboard = false">
+        <div
+            class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
+            <i data-feather="check"></i>
+            <span class="sr-only">Check icon</span>
+        </div>
+        <div class="ml-3 text-sm font-normal">Message content copied to clipboard!</div>
+    </Toast>
 </template>
 <style scoped>
 .height-64 {
@@ -146,8 +154,8 @@ export default {
             isCheckbox: false,
             isSelectAll: false,
             showConfirmation: false,
-            chime: new Audio("chime_aud.wav")
-
+            chime: new Audio("chime_aud.wav"),
+            isCopiedToClipboard: false
         }
     },
     methods: {
@@ -296,7 +304,7 @@ export default {
             }
         },
         scrollToElement(el) {
-           
+
             if (el) {
                 el.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
             } else {
@@ -304,7 +312,7 @@ export default {
             }
         },
         scrollBottom(el) {
-           
+
             if (el) {
                 el.scrollTo(
                     {
@@ -315,7 +323,7 @@ export default {
             } else {
                 console.log("Error: scrollBottom")
             }
-           
+
         },
         createUserMsg(msgObj) {
             let usrMessage = {
@@ -374,33 +382,33 @@ export default {
             this.isGenerating = true;
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
             axios.get('/get_generation_status', {}).then((res) => {
-            if (res) {
-                console.log(res.data.status);
-                if(!res.data.status){
-                    socket.emit('generate_msg', { prompt: msg });
+                if (res) {
+                    //console.log(res.data.status);
+                    if (!res.data.status) {
+                        socket.emit('generate_msg', { prompt: msg });
 
-                    // Create new User message
-                    // Temp data
-                    let usrMessage = {
-                    message: msg,
-                    id: this.discussionArr[this.discussionArr.length - 1].id + 1,
-                    rank: 0,
-                    user: "user"
-                    };
-                    this.createUserMsg(usrMessage);
+                        // Create new User message
+                        // Temp data
+                        let usrMessage = {
+                            message: msg,
+                            id: 0,
+                            rank: 0,
+                            user: "user"
+                        };
+                        this.createUserMsg(usrMessage);
 
+                    }
+                    else {
+                        console.log("Already generating");
+                    }
                 }
-                else{
-                    console.log("Already generating");
-                }
-            }
             }).catch((error) => {
-            console.log("Error: Could not get generation status", error);
+                console.log("Error: Could not get generation status", error);
             });
         },
         steamMessageContent(content) {
             // Streams response message content from backend
-            console.log(content)
+            //console.log(content)
             const lastMsg = this.discussionArr[this.discussionArr.length - 1]
             lastMsg.content = content.data
         },
@@ -412,8 +420,9 @@ export default {
             if (msg) {
                 discussionItem.title = msg
                 this.tempList = this.list
+                await this.edit_title(id, msg)
             }
-            await this.edit_title(id, msg)
+            
         },
         async createNewDiscussion() {
             // Creates new discussion on backend,
@@ -430,6 +439,7 @@ export default {
                 const selectedDisElement = document.getElementById('dis-' + res.id)
                 this.scrollToElement(selectedDisElement)
             })
+            //console.log("disc",JSON.stringify(discussionItem))
         },
         loadLastUsedDiscussion() {
             // Checks local storage for last selected discussion
@@ -559,8 +569,16 @@ export default {
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
             this.chime.play()
         },
-        copyToClipBoard(){
-            
+        copyToClipBoard(content) {
+
+            this.isCopiedToClipboard = true
+            nextTick(() => {
+                feather.replace()
+
+            })
+        },
+        closeToast() {
+            this.isCopiedToClipboard = false
         }
     },
     async created() {
@@ -597,7 +615,8 @@ export default {
         Discussion,
         Message,
         ChatBox,
-        WelcomeComponent
+        WelcomeComponent,
+        Toast
     },
     watch: {
         filterTitle(newVal) {
@@ -646,6 +665,7 @@ import Discussion from '../components/Discussion.vue'
 import Message from '../components/Message.vue'
 import ChatBox from '../components/ChatBox.vue'
 import WelcomeComponent from '../components/WelcomeComponent.vue'
+import Toast from '../components/Toast.vue'
 
 import feather from 'feather-icons'
 
