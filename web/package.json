@@ -14,6 +14,7 @@
     "feather-icons": "^4.29.0",
     "flowbite": "^1.6.5",
     "flowbite-vue": "^0.0.10",
+    "highlight.js": "^11.8.0",
     "markdown-it": "^13.0.1",
     "markdown-it-emoji": "^2.0.2",
     "socket.io-client": "^4.6.1",
