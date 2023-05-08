@@ -425,7 +425,7 @@ export default {
             if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
                 this.changeTitleUsingUserMSG(this.currentDiscussion.id, msgObj.content)
             }
-
+            console.log("infos",msgObj)
         },
         sendMsg(msg) {
             // Sends message to backend
