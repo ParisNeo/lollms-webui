@@ -495,7 +495,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
             print()
 
             # Send final message
-            self.socketio.emit('final', {'data': self.bot_says})
+            self.socketio.emit('final', {'data': self.bot_says, 'response_id':response_id, 'parent':self.current_message_id, 'discussion_id':self.current_discussion.discussion_id})
+
 
             self.current_discussion.update_message(response_id, self.bot_says)
             self.full_message_list.append(self.bot_says)

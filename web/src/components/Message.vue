@@ -40,7 +40,7 @@
                 @click.stop="copyContentToClipboard()">
                 <i data-feather="copy"></i>
             </div>
-            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" title="Resend message">
+            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" title="Resend message" @click.stop="resendMessage()">
                 <i data-feather="refresh-cw"></i>
             </div>
             <!-- DELETE CONFIRMATION -->
@@ -83,7 +83,7 @@ import feather from 'feather-icons'
 import MarkdownRenderer from './MarkdownRenderer.vue';
 export default {
     name: 'Message',
-    emits: ['copy', 'delete', 'rankUp', 'rankDown','updateMessage'],
+    emits: ['copy', 'delete', 'rankUp', 'rankDown','updateMessage','resendMessage'],
     components: {
         MarkdownRenderer
     },
@@ -127,6 +127,9 @@ export default {
         updateMessage() {
             this.$emit('updateMessage', this.message.id, this.new_message_content)
             this.editMsgMode = false
+        },
+        resendMessage(){
+            this.$emit('resendMessage', this.message.id, this.new_message_content)
         },
         getImgUrl() {
 

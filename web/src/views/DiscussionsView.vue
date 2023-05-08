@@ -109,10 +109,10 @@
 
         <!-- CHAT AREA -->
         <div class="flex flex-col flex-grow">
-             <!-- REMOVED @click="scrollToElement($event.target)" -->
-            <Message v-for="(msg, index) in discussionArr" :key="index" :message="msg"
-                 :id="'msg-' + msg.id" ref="messages" @copy="copyToClipBoard"
-                @delete="deleteMessage" @rankUp="rankUpMessage" @rankDown="rankDownMessage" @updateMessage="updateMessage"/>
+            <!-- REMOVED @click="scrollToElement($event.target)" -->
+            <Message v-for="(msg, index) in discussionArr" :key="index" :message="msg" :id="'msg-' + msg.id" ref="messages"
+                @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage" @rankDown="rankDownMessage"
+                @updateMessage="updateMessage" @resendMessage="resendMessage" />
 
             <WelcomeComponent v-if="!currentDiscussion.id" />
 
@@ -308,7 +308,7 @@ export default {
         },
         async update_message(id, message) {
             try {
-                const res = await axios.get('/update_message', { params: { id: id, message:message } })
+                const res = await axios.get('/update_message', { params: { id: id, message: message } })
 
                 if (res) {
                     return res.data
@@ -409,7 +409,7 @@ export default {
             let responseMessage = {
                 content: '..typing',
                 id: msgObj.response_id,
-                //parent: 10,
+                parent: msgObj.id,
                 rank: 0,
                 sender: msgObj.bot
                 //type: 0
@@ -458,9 +458,22 @@ export default {
         },
         steamMessageContent(content) {
             // Streams response message content from backend
-            //console.log(content)
-            const lastMsg = this.discussionArr[this.discussionArr.length - 1]
-            lastMsg.content = content.data
+            //console.log("stream", JSON.stringify(content))
+            const parent = content.parent
+            const discussion_id = content.discussion_id
+            if (this.currentDiscussion.id = discussion_id) {
+                const index = this.discussionArr.findIndex((x) => x.parent == parent)
+                const messageItem = this.discussionArr[index]
+                if (messageItem) {
+                    messageItem.content = content.data
+                    //console.log(parent, index, discussion_id, content.data)
+                }
+
+            }
+
+
+            //const lastMsg = this.discussionArr[this.discussionArr.length - 1]
+            //lastMsg.content = content.data
         },
         async changeTitleUsingUserMSG(id, msg) {
             // If discussion is untitled or title is null then it sets the title to first user message.
@@ -622,9 +635,9 @@ export default {
         },
         async rankUpMessage(msgId) {
             await this.message_rank_up(msgId).then((res) => {
-                
+
                 const message = this.discussionArr[this.discussionArr.findIndex(item => item.id == msgId)]
-                message.rank= res.new_rank
+                message.rank = res.new_rank
             }).catch(() => {
 
                 console.log("Error: Could not rank up message")
@@ -633,9 +646,9 @@ export default {
         },
         async rankDownMessage(msgId) {
             await this.message_rank_down(msgId).then((res) => {
-                
+
                 const message = this.discussionArr[this.discussionArr.findIndex(item => item.id == msgId)]
-                message.rank= res.new_rank
+                message.rank = res.new_rank
             }).catch(() => {
 
                 console.log("Error: Could not rank down message")
@@ -644,15 +657,35 @@ export default {
         },
         async updateMessage(msgId, msg) {
             await this.update_message(msgId, msg).then(() => {
-                
+
                 const message = this.discussionArr[this.discussionArr.findIndex(item => item.id == msgId)]
-                message.content= msg
-                
+                message.content = msg
+
             }).catch(() => {
 
                 console.log("Error: Could not update message")
             })
 
+        },
+        resendMessage(msgId, msg) {
+            // Resend message
+            this.isGenerating = true;
+            this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
+            axios.get('/get_generation_status', {}).then((res) => {
+                if (res) {
+                    //console.log(res.data.status);
+                    if (!res.data.status) {
+                        socket.emit('generate_msg_from', { prompt: msg, id: msgId });
+
+
+                    }
+                    else {
+                        console.log("Already generating");
+                    }
+                }
+            }).catch((error) => {
+                console.log("Error: Could not get generation status", error);
+            });
         },
         stopGenerating() {
             this.stop_gen()
@@ -696,6 +729,7 @@ export default {
         socket.on('infos', this.createBotMsg)
         socket.on('message', this.steamMessageContent)
         socket.on("final", this.finalMsgEvent)
+
     },
     activated() {
         // This lifecycle hook runs every time you switch from other page back to this page (vue-router)
