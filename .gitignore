@@ -163,6 +163,7 @@ extensions/
 # backends
 backends/
 !backends/llama_cpp
+!backends/gptj
 !backends/__init__.py
 web/.env.build
 web/.env.dev

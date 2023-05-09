@@ -28,7 +28,7 @@ if(globals.user_msg){
     globals.user_msg.setID(msg.id);
 }
 globals.bot_msg.setSender(msg.bot);
-globals.bot_msg.setID(msg.response_id);
+globals.bot_msg.setID(msg.ai_message_id);
 globals.bot_msg.messageTextElement.innerHTML    = `Generating answer. Please stand by...`;    
 });
 

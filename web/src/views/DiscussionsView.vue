@@ -408,7 +408,7 @@ export default {
             // Create response message
             let responseMessage = {
                 content: '..typing',
-                id: msgObj.response_id,
+                id: msgObj.ai_message_id,
                 parent: msgObj.id,
                 rank: 0,
                 sender: msgObj.bot
@@ -468,7 +468,6 @@ export default {
                     messageItem.content = content.data
                     //console.log(parent, index, discussion_id, content.data)
                 }
-
             }
 
 
@@ -694,6 +693,18 @@ export default {
         },
         finalMsgEvent(data) {
             console.log("final", data)
+
+            // Last message contains halucination suppression so we need to update the message content too
+            const parent = content.parent
+            const discussion_id = content.discussion_id
+            if (this.currentDiscussion.id = discussion_id) {
+                const index = this.discussionArr.findIndex((x) => x.parent == parent)
+                const messageItem = this.discussionArr[index]
+                if (messageItem) {
+                    messageItem.content = content.data
+                }
+            }
+
             this.isGenerating = false
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
             this.chime.play()

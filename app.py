@@ -212,10 +212,10 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
             message = data["prompt"]
             message_id = self.current_discussion.add_message(
-                "user", message, parent=self.current_message_id
+                "user", message, parent=self.message_id
             )
-            message = data["prompt"]
-            self.current_message_id = message_id
+
+            self.current_user_message_id = message_id
             tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
             tpe.start()
 
@@ -223,7 +223,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         def handle_connection(data):
             message_id = int(data['id'])
             message = data["prompt"]
-            self.current_message_id = message_id
+            self.current_user_message_id = message_id
             tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
             tpe.start()
 
@@ -466,8 +466,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
         print(f"Received message : {message}")
         if self.current_discussion:
             # First we need to send the new message ID to the client
-            response_id = self.current_discussion.add_message(
-                self.personality.name, "", parent = message_id
+            self.current_ai_message_id = self.current_discussion.add_message(
+                self.personality.name, "", parent = self.current_user_message_id
             )  # first the content is empty, but we'll fill it at the end
             socketio.emit('infos',
                     {
@@ -475,10 +475,10 @@ class Gpt4AllWebUI(GPT4AllAPI):
                         "bot": self.personality.name,
                         "user": self.personality.user_name,
                         "message":message,#markdown.markdown(message),
-                        "id": message_id,
-                        "response_id": response_id,
+                        "user_message_id": self.current_user_message_id,
+                        "ai_message_id": self.current_ai_message_id,
                     }
-            );
+            )
 
 
             # prepare query and reception
@@ -495,16 +495,21 @@ class Gpt4AllWebUI(GPT4AllAPI):
             print()
 
             # Send final message
-            self.socketio.emit('final', {'data': self.bot_says, 'response_id':response_id, 'parent':self.current_message_id, 'discussion_id':self.current_discussion.discussion_id})
+            self.socketio.emit('final', {
+                                            'data': self.bot_says, 
+                                            'ai_message_id':self.current_ai_message_id, 
+                                            'parent':self.current_user_message_id, 'discussion_id':self.current_discussion.discussion_id
+                                        }
+                               )
 
 
-            self.current_discussion.update_message(response_id, self.bot_says)
+            self.current_discussion.update_message(self.current_ai_message_id, self.bot_says)
             self.full_message_list.append(self.bot_says)
             self.cancel_gen = False
             return bot_says
         else:
             #No discussion available
-            print()
+            print("No discussion selected!!!")
             print("## Done ##")
             print()
             self.cancel_gen = False

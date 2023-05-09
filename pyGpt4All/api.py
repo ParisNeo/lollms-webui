@@ -31,7 +31,9 @@ class GPT4AllAPI():
 
         # Keeping track of current discussion and message
         self.current_discussion = None
-        self.current_message_id = 0
+        self._current_user_message_id = 0
+        self._current_ai_message_id = 0
+        self._message_id = 0
 
         self.db_path = config["db_path"]
 
@@ -55,6 +57,28 @@ class GPT4AllAPI():
         # generation status
         self.generating=False
 
+    #properties
+    @property
+    def message_id(self):
+        return self._message_id
+
+    @property
+    def current_user_message_id(self):
+        return self._current_user_message_id
+    @current_user_message_id.setter
+    def current_user_message_id(self, id):
+        self._current_user_message_id=id
+        self._message_id = id
+    @property
+    def current_ai_message_id(self):
+        return self._current_ai_message_id
+    @current_ai_message_id.setter
+    def current_ai_message_id(self, id):
+        self._current_ai_message_id=id
+        self._message_id = id
+
+
+
     def load_backend(self, backend_path):
 
         # define the full absolute path to the module
@@ -75,32 +99,22 @@ class GPT4AllAPI():
     def condition_chatbot(self, conditionning_message):
         if self.current_discussion is None:
             self.current_discussion = self.db.load_last_discussion()
-        
-        message_id = self.current_discussion.add_message(
-            "conditionner", 
-            conditionning_message, 
-            DiscussionsDB.MSG_TYPE_CONDITIONNING,
-            0,
-            0
-        )
-        self.current_message_id = message_id
+    
         if self.personality.welcome_message!="":
-            if self.personality.welcome_message!="":
-                message_id = self.current_discussion.add_message(
-                    self.personality.name, self.personality.welcome_message, 
-                    DiscussionsDB.MSG_TYPE_NORMAL,
-                    0,
-                    self.current_message_id
-                )
+            message_id = self.current_discussion.add_message(
+                self.personality.name, self.personality.welcome_message, 
+                DiscussionsDB.MSG_TYPE_NORMAL,
+                0,
+                -1
+            )
         
-            self.current_message_id = message_id
+            self.current_ai_message_id = message_id
         return message_id
 
     def prepare_reception(self):
         self.bot_says = ""
         self.full_text = ""
         self.is_bot_text_started = False
-        #self.current_message = message
 
     def create_new_discussion(self, title):
         self.current_discussion = self.db.create_discussion(title)
@@ -116,7 +130,7 @@ class GPT4AllAPI():
         self.full_message_list = []
         for message in messages:
             if message["id"]<= message_id or message_id==-1: 
-                if message["type"]!=self.db.MSG_TYPE_CONDITIONNING:
+                if message["type"]==self.db.MSG_TYPE_NORMAL:
                     if message["sender"]==self.personality.name:
                         self.full_message_list.append(self.personality.ai_message_prefix+message["content"])
                     else:
@@ -180,7 +194,13 @@ class GPT4AllAPI():
         
         self.bot_says += text
         if not self.personality.detect_antiprompt(self.bot_says):
-            self.socketio.emit('message', {'data': self.bot_says, 'parent':self.current_message_id, 'discussion_id':self.current_discussion.discussion_id})
+            self.socketio.emit('message', {
+                                            'data': self.bot_says, 
+                                            'user_message_id':self.current_user_message_id, 
+                                            'ai_message_id':self.current_ai_message_id, 
+                                            'discussion_id':self.current_discussion.discussion_id
+                                        }
+                                )
             if self.cancel_gen:
                 print("Generation canceled")
                 self.cancel_gen = False
