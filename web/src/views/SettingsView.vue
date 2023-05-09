@@ -48,7 +48,7 @@
                     <select id="backend" @change="update_backend($event.target.value)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <option v-for="item in backendsArr">{{ item }}</option>
+                        <option v-for="item in backendsArr" :selected="item===configFile.backend">{{ item }}</option>
 
                     </select>
                 </div>
@@ -59,7 +59,7 @@
                     <select id="model"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <option v-for="item in modelsArr">{{ item }}</option>
+                        <option v-for="item in modelsArr" :selected="item===configFile.model">{{ item }}</option>
 
                     </select>
                 </div>
@@ -87,7 +87,7 @@
                     <select id="persLang" @change="update_setting('personality_language', $event.target.value, refresh)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <option v-for="item in persLangArr">{{ item }}</option>
+                        <option v-for="item in persLangArr" :selected="item===configFile.personality_language">{{ item }}</option>
 
                     </select>
                 </div>
@@ -98,7 +98,7 @@
                     <select id="persCat" @change="update_setting('personality_category', $event.target.value, refresh)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <option v-for="item in persCatgArr">{{ item }}</option>
+                        <option v-for="item in persCatgArr" :selected="item===configFile.personality_category">{{ item }}</option>
 
                     </select>
                 </div>
@@ -109,7 +109,7 @@
                     <select id="persona" @change="update_setting('personality', $event.target.value, refresh)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <option v-for="item in persArr">{{ item }}</option>
+                        <option v-for="item in persArr" :selected="item===configFile.personality">{{ item }}</option>
 
                     </select>
                 </div>
@@ -317,21 +317,28 @@ export default {
         },
         // Refresh stuff
         refresh() {
-            this.api_get_req("list_backends").then(response => { this.backendsArr = response })
-            this.api_get_req("list_models").then(response => { this.modelsArr = response })
-            this.api_get_req("list_personalities_languages").then(response => { this.persLangArr = response })
-            this.api_get_req("list_personalities_categories").then(response => { this.persCatgArr = response })
-            this.api_get_req("list_personalities").then(response => { this.persArr = response })
-            this.api_get_req("list_languages").then(response => { this.langArr = response })
+            // No need to refresh all lists because they never change during using application. 
+            // On settings change only config file chnages.
+            //
+            //this.api_get_req("list_backends").then(response => { this.backendsArr = response })
+            //this.api_get_req("list_models").then(response => { this.modelsArr = response })
+            //this.api_get_req("list_personalities_languages").then(response => { this.persLangArr = response })
+            //this.api_get_req("list_personalities_categories").then(response => { this.persCatgArr = response })
+            //this.api_get_req("list_personalities").then(response => { this.persArr = response })
+            //this.api_get_req("list_languages").then(response => { this.langArr = response })
             this.api_get_req("get_config").then(response => { this.configFile = response })
         },
         // Accordeon stuff
         toggleAccordion() {
             this.showAccordion = !this.showAccordion;
         },
-        update_setting(setting_name, setting_value, next = undefined) {
-            axios.post('/update_setting', { 'setting_name': setting_name, 'setting_value': setting_value })
-                .then((res) => {
+        update_setting(setting_name_val, setting_value_val, next) {
+            const obj = { 
+                setting_name: setting_name_val, 
+                setting_value: setting_value_val 
+            }
+            console.log("change",setting_name_val,setting_value_val,obj)
+            axios.post('/update_setting', obj).then((res) => {
                     if (res) {
                         if (next !== undefined) {
                             next()
@@ -415,13 +422,15 @@ export default {
             feather.replace()
 
         })
+        this.configFile = await this.api_get_req("get_config")
+
         this.backendsArr = await this.api_get_req("list_backends")
         this.modelsArr = await this.api_get_req("list_models")
         this.persLangArr = await this.api_get_req("list_personalities_languages")
         this.persCatgArr = await this.api_get_req("list_personalities_categories")
         this.persArr = await this.api_get_req("list_personalities")
         this.langArr = await this.api_get_req("list_languages")
-        this.configFile = await this.api_get_req("get_config")
+        
     },
     watch: {
         bec_collapsed() {
