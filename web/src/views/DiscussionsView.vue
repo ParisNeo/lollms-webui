@@ -348,8 +348,11 @@ export default {
                     }
                 }
                 nextTick(() => {
-                    const selectedDisElement = document.getElementById('dis-' + item.id)
-                    this.scrollToElement(selectedDisElement)
+                    // const selectedDisElement = document.getElementById('dis-' + item.id)
+                    // this.scrollToElement(selectedDisElement)
+                    const msgList = document.getElementById('messages-list')
+
+                    this.scrollBottom(msgList)
                 })
             }
         },
@@ -396,7 +399,7 @@ export default {
 
             const lastMsg = this.discussionArr[this.discussionArr.length - 1]
             lastMsg.content = msgObj.message
-            lastMsg.id = msgObj.id
+            lastMsg.id = msgObj.user_message_id
             // lastMsg.parent=msgObj.parent
             lastMsg.rank = msgObj.rank
             lastMsg.sender = msgObj.user
@@ -404,15 +407,25 @@ export default {
         },
         createBotMsg(msgObj) {
             // Update previous message with reponse user data
+            //
+            // msgObj
+            //
+            // "type": "input_message_infos",
+            // "bot": self.personality.name,
+            // "user": self.personality.user_name,
+            // "message":message,#markdown.markdown(message),
+            // "user_message_id": self.current_user_message_id,
+            // "ai_message_id": self.current_ai_message_id,
+
             this.updateLastUserMsg(msgObj)
             // Create response message
             let responseMessage = {
-                content: '..typing',
+                content: "..typing",//msgObj.message,
                 id: msgObj.ai_message_id,
-                parent: msgObj.id,
+                parent: msgObj.user_message_id,
                 rank: 0,
-                sender: msgObj.bot
-                //type: 0
+                sender: msgObj.bot,
+                //type: msgObj.type
             }
             this.discussionArr.push(responseMessage)
             nextTick(() => {
@@ -423,9 +436,13 @@ export default {
             })
 
             if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
-                this.changeTitleUsingUserMSG(this.currentDiscussion.id, msgObj.content)
+                if (msgObj.type == "input_message_infos") {
+                    // This is a user input
+                    this.changeTitleUsingUserMSG(this.currentDiscussion.id, msgObj.message)
+
+                }
             }
-            console.log("infos",msgObj)
+            console.log("infos", msgObj)
         },
         sendMsg(msg) {
             // Sends message to backend
@@ -456,18 +473,19 @@ export default {
                 console.log("Error: Could not get generation status", error);
             });
         },
-        steamMessageContent(content) {
+        steamMessageContent(msgObj) {
             // Streams response message content from backend
             //console.log("stream", JSON.stringify(content))
-            const parent = content.parent
-            const discussion_id = content.discussion_id
+            const parent = msgObj.user_message_id
+            const discussion_id = msgObj.discussion_id
             if (this.currentDiscussion.id = discussion_id) {
-                const index = this.discussionArr.findIndex((x) => x.parent == parent)
+                const index = this.discussionArr.findIndex((x) => x.parent == parent && x.id == msgObj.ai_message_id)
                 const messageItem = this.discussionArr[index]
                 if (messageItem) {
-                    messageItem.content = content.data
-                    //console.log(parent, index, discussion_id, content.data)
+                    messageItem.content = msgObj.data
+                    //console.log("user-msg-id",parent, "ai-msg-id",msgObj.ai_message_id, index, discussion_id, msgObj.data)
                 }
+
             }
 
 
@@ -691,17 +709,17 @@ export default {
             this.isGenerating = false
             console.log("Stopped generating")
         },
-        finalMsgEvent(data) {
-            console.log("final", data)
+        finalMsgEvent(msgObj) {
+            console.log("final", msgObj)
 
             // Last message contains halucination suppression so we need to update the message content too
-            const parent = content.parent
-            const discussion_id = content.discussion_id
+            const parent = msgObj.parent
+            const discussion_id = msgObj.discussion_id
             if (this.currentDiscussion.id = discussion_id) {
-                const index = this.discussionArr.findIndex((x) => x.parent == parent)
+                const index = this.discussionArr.findIndex((x) => x.parent == parent && x.id == msgObj.ai_message_id)
                 const messageItem = this.discussionArr[index]
                 if (messageItem) {
-                    messageItem.content = content.data
+                    messageItem.content = msgObj.data
                 }
             }
 
