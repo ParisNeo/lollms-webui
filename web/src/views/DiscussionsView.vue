@@ -420,7 +420,7 @@ export default {
             this.updateLastUserMsg(msgObj)
             // Create response message
             let responseMessage = {
-                content: "..typing",//msgObj.message,
+                content: "✍ please stand by ...",//msgObj.message,
                 id: msgObj.ai_message_id,
                 parent: msgObj.user_message_id,
                 rank: 0,
