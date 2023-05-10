@@ -13,7 +13,7 @@
         </div>
         <div class="-mt-4  ml-10 mr-0 pt-1 px-2 ">
             <!-- CONTENT/MESSAGE -->
-            <markdown-renderer v-if="!editMsgMode" :markdown-text="message.content"></markdown-renderer>
+            <MarkdownRenderer v-if="!editMsgMode" :markdown-text="message.content"></MarkdownRenderer>
             <textarea v-if="editMsgMode" rows="4"
                 class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Enter message here..." v-model="new_message_content"></textarea>
