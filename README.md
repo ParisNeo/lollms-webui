@@ -50,7 +50,9 @@ Make sure that your CPU supports `AVX2` instruction set. Without it, this applic
 
 ### Automatic install
 
-It is advised to have python 3.10 (The official one, not the one from Microsoft Store) and git installed. Although it should work with any python from 3.7, it is advised to use 3.10 to have the full support as some extensions like the future stable diffusion extension will force you to have 3.10.
+> **Note**
+>
+>It is mandatory to have python [3.10](https://www.python.org/downloads/release/python-31010/) (The official one, not the one from Microsoft Store) and [git](https://git-scm.com/download/win) installed.
 
 1. [Go to the latest release section](https://github.com/nomic-ai/gpt4all-ui/releases)
 2. Download the `webui.bat` if you are on windows or `webui.sh` if you are on linux/mac. Put this file in a folder for example `/gpt4all-ui/`, because when you run it, all the necessary files will be downloaded into that folder.

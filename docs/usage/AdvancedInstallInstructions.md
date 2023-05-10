@@ -1,4 +1,9 @@
 ## Windows 10 and 11
+
+> **Note**
+>
+>It is mandatory to have python [3.10](https://www.python.org/downloads/release/python-31010/) (The official one, not the one from Microsoft Store) and [git](https://git-scm.com/download/win) installed.
+
 ### Manual Simple install:
 
 1. Download this repository .zip:
