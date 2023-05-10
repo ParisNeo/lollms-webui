@@ -4,29 +4,31 @@
         <!-- LEFT SIDE PANEL -->
         <div class="z-10 sticky top-0 flex-col  bg-bg-light-tone dark:bg-bg-dark-tone shadow-md">
             <!-- SEARCH BAR -->
-            <form class="flex-row p-4  items-center gap-3 flex-0 w-full">
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <div class="scale-75">
-                            <i data-feather="search"></i>
+            <div class="flex-row pt-2 items-center gap-3 flex-0 w-full">
+                <div  v-if="isSearch"  class="px-4 pb-2  pt-2">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <div class="scale-75">
+                                <i data-feather="search"></i>
+                            </div>
                         </div>
-                    </div>
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                        <div class="hover:text-secondary duration-75 active:scale-90"
-                            :class="filterTitle ? 'visible' : 'invisible'" title="Clear" @click="filterTitle = ''">
-                            <i data-feather="x"></i>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                            <div class="hover:text-secondary duration-75 active:scale-90"
+                                :class="filterTitle ? 'visible' : 'invisible'" title="Clear" @click="filterTitle = ''">
+                                <i data-feather="x"></i>
+                            </div>
                         </div>
-                    </div>
 
-                    <input type="search" id="default-search"
-                        class="block w-full p-2 pl-10 pr-10 text-sm border border-gray-300 rounded-lg bg-bg-light focus:ring-secondary focus:border-secondary dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-secondary dark:focus:border-secondary"
-                        placeholder="Search..." title="Filter discussions by title" v-model="filterTitle"
-                        @input="filterDiscussions()" />
+                        <input type="search" id="default-search"
+                            class="block w-full p-2 pl-10 pr-10 text-sm border border-gray-300 rounded-lg bg-bg-light focus:ring-secondary focus:border-secondary dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-secondary dark:focus:border-secondary"
+                            placeholder="Search..." title="Filter discussions by title" v-model="filterTitle"
+                            @input="filterDiscussions()" />
+                    </div>
                 </div>
-            </form>
+            </div>
 
             <!-- CONTROL PANEL -->
-            <div class="flex-row p-4 pt-0 flex items-center gap-3 flex-0">
+            <div class="flex-row p-4 pt-2 flex items-center gap-3 flex-0">
 
                 <!-- MAIN BUTTONS -->
                 <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Create new discussion"
@@ -44,6 +46,10 @@
                 <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Export database"
                     type="button">
                     <i data-feather="database"></i>
+                </button>
+                <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Filter discussions"
+                    type="button" @click="isSearch = !isSearch">
+                    <i data-feather="search"></i>
                 </button>
 
             </div>
@@ -157,7 +163,8 @@ export default {
             isSelectAll: false,
             showConfirmation: false,
             chime: new Audio("chime_aud.wav"),
-            isCopiedToClipboard: false
+            isCopiedToClipboard: false,
+            isSearch: false,
         }
     },
     methods: {
@@ -797,6 +804,12 @@ export default {
             console.log("Websocket connected (watch)", newval)
         },
         showConfirmation() {
+            nextTick(() => {
+                feather.replace()
+
+            })
+        },
+        isSearch() {
             nextTick(() => {
                 feather.replace()
 
