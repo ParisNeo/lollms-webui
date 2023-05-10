@@ -63,6 +63,18 @@
 
                     </select>
                 </div>
+                <div class="space-y-4">
+                    <model-entry
+                        v-for="(model, index) in models"
+                        :key="index"
+                        :title="model.title"
+                        :icon="model.icon"
+                        :path="model.path"
+                        :description="model.description"
+                        :is-installed="model.isInstalled"
+                        :on-toggle-install="toggleInstall"
+                    />
+                </div>
             </div>
         </div>
 
@@ -279,11 +291,13 @@ import feather from 'feather-icons'
 import { nextTick } from 'vue'
 import MessageBox from "@/components/MessageBox.vue";
 import YesNoDialog from "@/components/YesNoDialog.vue";
+import ModelEntry from '@/components/ModelEntry.vue';
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
     components: {
         MessageBox,
-        YesNoDialog
+        YesNoDialog,
+        ModelEntry
     },
     setup() {
 
@@ -295,6 +309,8 @@ export default {
     data() {
 
         return {
+            // Models zoo installer stuff
+            models: [],
             // Accordeon stuff     
             bec_collapsed: false,
             pc_collapsed: false,
@@ -310,7 +326,33 @@ export default {
             showConfirmation:false
 
         }
+    },
+    created() {
+        this.fetchModels();
     }, methods: {
+        fetchModels() {
+        axios.get('/get_available_models')
+            .then(response => {
+            this.models = response.data;
+            })
+            .catch(error => {
+            console.log(error);
+            });
+        },
+        // Model installation
+        toggleInstall(isInstalled, path) {
+        const endpoint = isInstalled ? '/uninstall_model' : '/install_model';
+        axios.post(endpoint, { path })
+            .then((response) => {
+            console.log(response.data.status);
+            // Update the isInstalled property of the corresponding model
+            const index = this.models.findIndex((model) => model.path === path);
+            this.$set(this.models[index], 'isInstalled', isInstalled);
+            })
+            .catch((error) => {
+            console.error(error);
+            });
+        },
         // messagebox ok stuff
         onMessageBoxOk() {
             console.log("OK button clicked");
