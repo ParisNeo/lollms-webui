@@ -13,9 +13,10 @@
         </div>
         <div class="-mt-4  ml-10 mr-0 pt-1 px-2 ">
             <!-- CONTENT/MESSAGE -->
-            <MarkdownRenderer v-if="!editMsgMode" :markdown-text="message.content"></MarkdownRenderer>
-            <textarea v-if="editMsgMode" rows="4"
+            <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :markdown-text="message.content"></MarkdownRenderer>
+            <textarea v-if="editMsgMode" ref="mdTextarea" :rows="4"
                 class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                :style="{minHeight:mdRenderHeight+`px`}"
                 placeholder="Enter message here..." v-model="new_message_content"></textarea>
         </div>
         <div class="invisible group-hover:visible flex flex-row mt-3 -mb-2">
@@ -98,6 +99,7 @@ export default {
             showConfirmation: false,
             editMsgMode: false,
             deleteMsgMode: false,
+            mdRenderHeight:Number
 
         }
     }, mounted() {
@@ -105,8 +107,12 @@ export default {
         this.new_message_content = this.message.content
         nextTick(() => {
             feather.replace()
-
+           
+        this.mdRenderHeight=this.$refs.mdRender.$el.offsetHeight
+           
+            
         })
+        
     }, methods: {
         copyContentToClipboard() {
             this.$emit('copy', this.message.content)
@@ -145,17 +151,16 @@ export default {
         showConfirmation() {
             nextTick(() => {
                 feather.replace()
-
+               
             })
         },
-        content(val) {
-            this.new_message_content = this.message.content
-        
-        },
+
         editMsgMode(val){
+           
             if(!val){
                 this.new_message_content = this.message.content 
             }
+
             nextTick(() => {
                 feather.replace()
 
@@ -167,12 +172,8 @@ export default {
 
             })
         },
-    },
-    computed: {
-        content() {
-            return this.message.content
-        }
     }
+
 
 }
 </script>

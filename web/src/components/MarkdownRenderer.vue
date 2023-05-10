@@ -24,29 +24,23 @@ export default {
   },
   mounted() {
     const markdownIt = new MarkdownIt({
-      html: false,        // Enable HTML tags in source
-      xhtmlOut: true,        // Use '/' to close single tags (<br />).
-      // This is only for full CommonMark compatibility.
-      breaks: true,        // Convert '\n' in paragraphs into <br>
-      // langPrefix: 'language-',  // CSS language prefix for fenced blocks. Can be
-      // useful for external highlighters.
-      linkify: true,        // Autoconvert URL-like text to links
-
-      // Enable some language-neutral replacement + quotes beautification
-      // For the full list of replacements, see https://github.com/markdown-it/markdown-it/blob/master/lib/rules_core/replacements.js
+      html: false,        
+      xhtmlOut: true,        
+      breaks: true,
+      linkify: true,
       typographer: true,
       highlight: (str, lang) => {
         if (lang && hljs.getLanguage(lang)) {
           try {
             return (
-              '<pre class="hljs rounded-lg dark:bg-bg-dark-code-block bg-bg-light-code-block shadow-lg"><code>' +
+              '<pre class="hljs p-4 overflow-x-auto  rounded-lg dark:bg-bg-dark-code-block bg-bg-light-code-block shadow-lg"><code>' +
               hljs.highlight(lang, str, true).value +
               '</code></pre>'
             );
           } catch (__) { }
         }
         return (
-          '<pre class="hljs rounded-lg dark:bg-bg-dark-code-block bg-bg-light-code-block shadow-lg"><code>' +
+          '<pre class="hljs p-4 overflow-x-auto rounded-lg dark:bg-bg-dark-code-block bg-bg-light-code-block shadow-lg"><code>' +
           markdownIt.utils.escapeHtml(str) +
           '</code></pre>'
         );
@@ -62,14 +56,14 @@ export default {
           if (lang && hljs.getLanguage(lang)) {
             try {
               return (
-                '<pre class="hljs rounded-lg dark:bg-bg-dark-code-block bg-bg-light-code-block shadow-lg"><code>' +
+                '<pre class="hljs p-4 overflow-x-auto rounded-lg dark:bg-bg-dark-code-block bg-bg-light-code-block shadow-lg"><code>' +
                 hljs.highlight(lang, str, true).value +
                 '</code></pre>'
               );
             } catch (__) { }
           }
           return (
-            '<pre class="hljs rounded-lg dark:bg-bg-dark-code-block bg-bg-light-code-block shadow-lg"><code>' +
+            '<pre class="hljs p-4 overflow-x-auto rounded-lg dark:bg-bg-dark-code-block bg-bg-light-code-block shadow-lg"><code>' +
             markdownIt.utils.escapeHtml(str) +
             '</code></pre>'
           );
@@ -81,21 +75,4 @@ export default {
   }
 };
 </script>
-  
-<style>
-/* Add styles for code highlighting */
-.hljs {
-  display: block;
-  overflow-x: auto;
-  padding: 0.5em;
-  background: #f5f5f5;
-}
-
-.hljs code {
-  display: inline;
-  padding: 0;
-  border: none;
-  background: none;
-}
-</style>
   
