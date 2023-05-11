@@ -375,8 +375,11 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
 
     def list_models(self):
-        models = self.backend.list_models(self.config)
-        return jsonify(models)
+        if self.backend is not None:
+            models = self.backend.list_models(self.config)
+            return jsonify(models)
+        else:
+            return jsonify([])
     
 
     def list_personalities_languages(self):
@@ -707,7 +710,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
             filename = model['filename']
             filesize = model['filesize']
             path = f'https://gpt4all.io/models/{filename}'
-            is_installed = Path(f'/models.llamacpp/{filename}').is_file()
+            is_installed = Path(f'/models/{self.config["backend"]}/{filename}').is_file()
             models.append({
                 'title': model['filename'],
                 'icon': '/icons/default.png',  # Replace with the path to the model icon
@@ -852,6 +855,7 @@ if __name__ == "__main__":
         for key, value in default_config.items():
             if key not in config:
                 config[key] = value
+        config["version"]=int(default_config["version"])
         save_config(config, config_file_path)
 
     # Override values in config with command-line arguments

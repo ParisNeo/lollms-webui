@@ -162,6 +162,7 @@ extensions/
 
 # backends
 backends/
+!backends/gpt4all
 !backends/llama_cpp
 !backends/gptj
 !backends/__init__.py

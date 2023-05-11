@@ -49,11 +49,21 @@ class GPT4AllAPI():
         # Select backend
         self.BACKENDS_LIST = {f.stem:f for f in Path("backends").iterdir() if f.is_dir()  and f.stem!="__pycache__"}
 
-        self.backend =self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
+        if self.config["backend"] is None:
+            self.backend = "gpt4all"
+        else:
+            try:
+                self.backend = self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
+                # Build chatbot
+                self.chatbot_bindings = self.create_chatbot()
+                print("Chatbot created successfully")
 
-        # Build chatbot
-        self.chatbot_bindings = self.create_chatbot()
-        print("Chatbot created successfully")
+            except Exception:
+                self.config["backend"] = None
+                self.config["model"] = None
+                self.backend = "gpt4all"
+                print("No Models found, please select a backend and download a model for this tool to work")
+
         # generation status
         self.generating=False
 

@@ -7,6 +7,7 @@ markdown
 pyllamacpp==2.1.1
 gpt4all-j
 pygptj
+pygpt4all
 --find-links https://download.pytorch.org/whl/cu117
 torch==2.0.0
 torchvision
