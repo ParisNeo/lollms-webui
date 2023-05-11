@@ -11,7 +11,7 @@
         <input
           type="radio"
           :checked="selected"
-          :disabled="!isInstalled" <!-- Disable radio button if not installed -->
+          :disabled="!isInstalled"
           @change="handleSelection"
         />
         {{ title }}

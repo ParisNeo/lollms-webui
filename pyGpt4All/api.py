@@ -51,6 +51,7 @@ class GPT4AllAPI():
 
         if self.config["backend"] is None:
             self.backend = "gpt4all"
+            self.backend = self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
         else:
             try:
                 self.backend = self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
@@ -59,9 +60,9 @@ class GPT4AllAPI():
                 print("Chatbot created successfully")
 
             except Exception:
-                self.config["backend"] = None
+                self.config["backend"] = "gpt4all"
+                self.backend = self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
                 self.config["model"] = None
-                self.backend = "gpt4all"
                 print("No Models found, please select a backend and download a model for this tool to work")
 
         # generation status
