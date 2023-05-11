@@ -26,14 +26,14 @@
                     <i data-feather="database"></i>
                 </button>
                 <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Filter discussions"
-                    type="button" @click="isSearch = !isSearch" :class="isSearch ? 'text-secondary':''">
+                    type="button" @click="isSearch = !isSearch" :class="isSearch ? 'text-secondary' : ''">
                     <i data-feather="search"></i>
                 </button>
 
             </div>
-                        <!-- SEARCH BAR -->
-                        <div class="flex-row  items-center gap-3 flex-0 w-full">
-                <div  v-if="isSearch"  class="p-4 pt-2">
+            <!-- SEARCH BAR -->
+            <div class="flex-row  items-center gap-3 flex-0 w-full">
+                <div v-if="isSearch" class="p-4 pt-2">
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                             <div class="scale-75">
@@ -139,6 +139,18 @@
         </div>
         <div class="ml-3 text-sm font-normal">Message content copied to clipboard!</div>
     </Toast>
+    <!-- SCROLL TO TOP/BOTTOM -->
+    <button v-if="!isDiscussionBottom"
+        class=" rounded-full p-2 absolute right-12 bottom-28 text-2xl bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel hover:text-primary duration-75 active:scale-90 "
+        title="Scroll to bottom" type="button" @click.stop="scrollDiscussion">
+        <i data-feather="arrow-down"></i>
+    </button>
+    <button v-else
+        class=" rounded-full p-2 absolute right-12 bottom-28 text-2xl bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel hover:text-primary duration-75 active:scale-90 "
+        title="Scroll to top" type="button" @click.stop="scrollDiscussion">
+        <i data-feather="arrow-up"></i>
+    </button>
+
 </template>
 <style scoped>
 .height-64 {
@@ -166,6 +178,7 @@ export default {
             chime: new Audio("chime_aud.wav"),
             isCopiedToClipboard: false,
             isSearch: false,
+            isDiscussionBottom: false,
         }
     },
     methods: {
@@ -356,8 +369,7 @@ export default {
                     }
                 }
                 nextTick(() => {
-                    // const selectedDisElement = document.getElementById('dis-' + item.id)
-                    // this.scrollToElement(selectedDisElement)
+
                     const msgList = document.getElementById('messages-list')
 
                     this.scrollBottom(msgList)
@@ -378,6 +390,21 @@ export default {
                 el.scrollTo(
                     {
                         top: el.scrollHeight,
+                        behavior: "smooth",
+                    }
+                )
+            } else {
+                console.log("Error: scrollBottom")
+            }
+
+        },
+
+        scrollTop(el) {
+
+            if (el) {
+                el.scrollTo(
+                    {
+                        top: 0,
                         behavior: "smooth",
                     }
                 )
@@ -745,6 +772,27 @@ export default {
         },
         closeToast() {
             this.isCopiedToClipboard = false
+        },
+        scrollDiscussion() {
+            if (this.isDiscussionBottom) {
+
+
+                nextTick(() => {
+                    feather.replace()
+                    const msgList = document.getElementById('messages-list')
+
+                    this.scrollTop(msgList)
+                })
+            } else {
+
+                nextTick(() => {
+                    feather.replace()
+                    const msgList = document.getElementById('messages-list')
+
+                    this.scrollBottom(msgList)
+                })
+            }
+            this.isDiscussionBottom=!this.isDiscussionBottom
         }
     },
     async created() {
@@ -811,6 +859,12 @@ export default {
             })
         },
         isSearch() {
+            nextTick(() => {
+                feather.replace()
+
+            })
+        },
+        isDiscussionBottom() {
             nextTick(() => {
                 feather.replace()
 
