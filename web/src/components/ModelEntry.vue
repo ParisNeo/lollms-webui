@@ -53,6 +53,7 @@ export default {
     isInstalled: Boolean,
     onInstall: Function,
     onUninstall: Function,
+    onSelected: Function,
     selected: Boolean
   },
   data() {
@@ -75,7 +76,8 @@ export default {
     },
     handleSelection() {
       if (this.isInstalled && !this.selected) {
-        this.$emit('update:selected', true);
+        this.selected=true;
+        onSelected(this);
       }
     }
   }

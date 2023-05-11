@@ -230,27 +230,33 @@ class Gpt4AllWebUI(GPT4AllAPI):
             response = requests.get(model_path, stream=True)
             file_size = int(response.headers.get('Content-Length'))
             downloaded_size = 0
-            CHUNK_SIZE = 4096
+            CHUNK_SIZE = 8192
 
             def download_chunk(url, start_byte, end_byte, fileobj):
                 headers = {'Range': f'bytes={start_byte}-{end_byte}'}
                 response = requests.get(url, headers=headers, stream=True)
+                downloaded_bytes = 0
 
                 for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
                     if chunk:
                         fileobj.seek(start_byte)
                         fileobj.write(chunk)
+                        downloaded_bytes += len(chunk)
                         start_byte += len(chunk)
+
+                return downloaded_bytes
+
 
             def download_file(url, file_path, num_threads=4):
                 response = requests.head(url)
                 file_size = int(response.headers.get('Content-Length'))
+                chunk_size = file_size // num_threads
+                progress = 0
 
                 with open(file_path, 'wb') as fileobj:
                     with tqdm(total=file_size, unit='B', unit_scale=True, unit_divisor=1024) as pbar:
                         with ThreadPoolExecutor(max_workers=num_threads) as executor:
                             futures = []
-                            chunk_size = file_size // num_threads
 
                             for i in range(num_threads):
                                 start_byte = i * chunk_size
@@ -258,8 +264,10 @@ class Gpt4AllWebUI(GPT4AllAPI):
                                 futures.append(executor.submit(download_chunk, url, start_byte, end_byte, fileobj))
 
                             for future in tqdm(as_completed(futures), total=num_threads):
-                                future.result()
-                                pbar.update(chunk_size)
+                                downloaded_bytes = future.result()
+                                progress += downloaded_bytes
+                                pbar.update(downloaded_bytes)
+                                socketio.emit('install_progress', {'status': 'progress', 'progress': progress})
 
             # Usage example
             download_file(model_path, installation_path, num_threads=4)
