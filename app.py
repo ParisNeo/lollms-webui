@@ -38,6 +38,7 @@ from pathlib import Path
 import gc
 from geventwebsocket.handler import WebSocketHandler
 from gevent.pywsgi import WSGIServer
+import requests
 
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent', ping_timeout=30, ping_interval=15)
@@ -154,6 +155,16 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
         self.add_endpoint(
             "/get_config", "get_config", self.get_config, methods=["GET"]
+        )
+        
+        self.add_endpoint(
+            "/get_available_models", "get_available_models", self.get_available_models, methods=["GET"]
+        )
+        self.add_endpoint(
+            "/install_model", "install_model", self.install_model, methods=["POST"]
+        )
+        self.add_endpoint(
+            "/uninstall_model", "uninstall_model", self.uninstall_model, methods=["POST"]
         )
 
         self.add_endpoint(
@@ -686,6 +697,52 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
         return jsonify({"status":"ok"})
     
+    
+    def get_available_models(self):
+        response = requests.get(f' https://gpt4all.io/models/models.json')
+        model_list = response.json()
+
+        models = []
+        for model in model_list:
+            filename = model['filename']
+            filesize = model['filesize']
+            path = f'https://gpt4all.io/models/{filename}'
+            is_installed = Path(f'/models.llamacpp/{filename}').is_file()
+            models.append({
+                'title': model['filename'],
+                'icon': '/icons/default.png',  # Replace with the path to the model icon
+                'description': model['description'],
+                'isInstalled': is_installed,
+                'path': path,
+                'filesize': filesize,
+            })
+        return jsonify(models)
+
+    def install_model(self):
+        model_path = request.json.get('path')
+        installation_dir = Path('/models/llamacpp/')
+        filename = Path(model_path).name
+        installation_path = installation_dir / filename
+
+        if installation_path.exists():
+            return jsonify({'status': 'Already installed'})
+        
+        response = requests.get(model_path)
+        with open(installation_path, 'wb') as f:
+            f.write(response.content)        
+        return jsonify({'status':True})
+
+    def uninstall_model(self):
+        model_path = request.json.get('path')
+        installation_dir = Path('/models/llamacpp/')
+        filename = Path(model_path).name
+        installation_path = installation_dir / filename
+
+        if not installation_path.exists():
+            return jsonify({'status':False})
+
+        installation_path.unlink()        
+        return jsonify({'status':True})
     
     def get_config(self):
         return jsonify(self.config)
