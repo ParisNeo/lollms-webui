@@ -347,6 +347,7 @@ export default {
                 });
         },
         onSelected(model_object){
+            console.log("Selected model")
             update_setting('model', model_object.title)
         },
         // Model installation

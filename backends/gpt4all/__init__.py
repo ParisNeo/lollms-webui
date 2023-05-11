@@ -17,12 +17,12 @@ __github__ = "https://github.com/nomic-ai/gpt4all-ui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-backend_name = "LLAMACPP"
+backend_name = "GPT4ALL"
 
-class LLAMACPP(GPTBackend):
+class GPT4ALL(GPTBackend):
     file_extension='*.bin'
     def __init__(self, config:dict) -> None:
-        """Builds a LLAMACPP backend
+        """Builds a GPT4ALL backend
 
         Args:
             config (dict): The configuration file
@@ -30,7 +30,7 @@ class LLAMACPP(GPTBackend):
         super().__init__(config, False)
         
         self.model = Model(
-                model_path=f"./models/llama_cpp/{self.config['model']}",
+                model_path=f"./models/gpt4all/{self.config['model']}",
                 prompt_context="", prompt_prefix="", prompt_suffix="",
                 n_ctx=self.config['ctx_size'], 
                 seed=self.config['seed'],
