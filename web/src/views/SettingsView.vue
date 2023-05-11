@@ -70,7 +70,8 @@
                     <div class="overflow-y-auto max-h-96 no-scrollbar p-2">
                         <model-entry v-for="(model, index) in models" :key="index" :title="model.title" :icon="model.icon"
                             :path="model.path" :description="model.description" :is-installed="model.isInstalled"
-                            :on-toggle-install="toggleInstall" />
+                            :on-install="onInstall"
+                            :on-uninstall="onUninstall" />
                     </div>
                 </div>
             </div>
@@ -292,6 +293,7 @@ import { nextTick } from 'vue'
 import MessageBox from "@/components/MessageBox.vue";
 import YesNoDialog from "@/components/YesNoDialog.vue";
 import ModelEntry from '@/components/ModelEntry.vue';
+import { socket, state } from '@/services/websocket.js'
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
     components: {
@@ -309,6 +311,8 @@ export default {
     data() {
 
         return {
+            // Websocket
+            socket: socket,
             // Models zoo installer stuff
             models: [],
             // Accordeon stuff     
@@ -340,18 +344,63 @@ export default {
                 });
         },
         // Model installation
-        toggleInstall(isInstalled, path) {
-            const endpoint = isInstalled ? '/uninstall_model' : '/install_model';
-            axios.post(endpoint, { path })
-                .then((response) => {
-                    console.log(response.data.status);
-                    // Update the isInstalled property of the corresponding model
-                    const index = this.models.findIndex((model) => model.path === path);
-                    this.$set(this.models[index], 'isInstalled', isInstalled);
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
+        onInstall(model_object) {
+            let isInstalled = model_object.isInstalled
+            let path = model_object.path
+            this.showProgress = true;
+            this.progress = 0;
+            console.log("installing...")
+
+            const progressListener = (response) => {
+                if (response.status === 'progress') {
+                this.progress = message.progress;
+                } else if (message.status === 'succeeded') {
+                // Installation completed
+                model_object.installing = false;
+                this.showProgress = false;
+                // Update the isInstalled property of the corresponding model
+                const index = this.models.findIndex((model) => model.path === path);
+                this.models[index].isInstalled = true;
+
+                this.socket.off('install_progress', progressListener);
+                } else if (message.status === 'failed') {
+                // Installation failed or encountered an error
+                model_object.installing = false;
+                this.showProgress = false;
+                this.socket.off('install_progress', progressListener);
+                console.error('Installation failed:', message.error);
+                }
+            };
+            this.socket.on('install_progress', progressListener);            
+            this.socket.emit('install_model', { path: path });
+            
+
+        },
+        onUninstall(model_object) {
+            console.log("uninstalling model...")
+            const progressListener = (response) => {
+                if (response.status === 'progress') {
+                    this.progress = message.progress;
+                } else if (message.status === 'succeeded') {
+                // Installation completed
+                model_object.uninstalling = false;
+
+                this.showProgress = false;
+                // Update the isInstalled property of the corresponding model
+                const index = this.models.findIndex((model) => model.path === path);
+                this.models[index].isInstalled = false;
+
+                this.socket.off('install_progress', progressListener);
+                } else if (message.status === 'failed') {
+                // Installation failed or encountered an error
+                model_object.uninstalling = false;
+                this.showProgress = false;
+                this.socket.off('install_progress', progressListener);
+                console.error('Installation failed:', message.error);
+                }
+            };
+            this.socket.on('install_progress', progressListener);            
+            this.socket.emit('uninstall_model', { path: model_object.path });
         },
         // messagebox ok stuff
         onMessageBoxOk() {
