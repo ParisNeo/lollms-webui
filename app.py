@@ -707,7 +707,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
             filename = model['filename']
             filesize = model['filesize']
             path = f'https://gpt4all.io/models/{filename}'
-            is_installed = Path(f'/models.llamacpp/{filename}').is_file()
+            is_installed = Path(f'models/llama_cpp/{filename}').is_file()
             models.append({
                 'title': model['filename'],
                 'icon': '/icons/default.png',  # Replace with the path to the model icon
@@ -720,7 +720,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
     def install_model(self):
         model_path = request.json.get('path')
-        installation_dir = Path('/models/llamacpp/')
+        installation_dir = Path('models/llama_cpp/')
         filename = Path(model_path).name
         installation_path = installation_dir / filename
 
@@ -734,7 +734,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
     def uninstall_model(self):
         model_path = request.json.get('path')
-        installation_dir = Path('/models/llamacpp/')
+        installation_dir = Path('models/llama_cpp/')
         filename = Path(model_path).name
         installation_path = installation_dir / filename
 
