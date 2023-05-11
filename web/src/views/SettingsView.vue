@@ -1,11 +1,11 @@
 <template>
-    <div class="container overflow-y-scroll flex flex-col no-scrollbar shadow-lg p-1 pt-0 ">
+    <div class="container overflow-y-scroll flex flex-col no-scrollbar shadow-lg p-10 pt-0 ">
         <!-- CONTROL PANEL -->
-        <div class="flex flex-row mb-2 p-3 gap-3 w-full rounded-b-lg bg-bg-light-tone dark:bg-bg-dark-tone  shadow-lg">
+        <div class="sticky top-0 z-10 flex flex-row mb-2 p-3 gap-3 w-full rounded-b-lg bg-bg-light-tone dark:bg-bg-dark-tone  shadow-lg">
             <!-- SAVE CONFIG -->
             <div v-if="showConfirmation" class="flex gap-3 flex-1 items-center duration-75">
-                <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Cancel"
-                    type="button" @click.stop="showConfirmation = false">
+                <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Cancel" type="button"
+                    @click.stop="showConfirmation = false">
                     <i data-feather="x"></i>
                 </button>
                 <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Confirm save changes"
@@ -17,7 +17,7 @@
             <!-- SAVE AND RESET -->
             <div v-if="!showConfirmation" class="flex gap-3 flex-1 items-center ">
                 <button title="Save configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                    @click="showConfirmation=true">
+                    @click="showConfirmation = true">
                     <i data-feather="save"></i>
                 </button>
                 <button title="Reset configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90"
@@ -48,7 +48,7 @@
                     <select id="backend" @change="update_backend($event.target.value)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <option v-for="item in backendsArr" :selected="item===configFile.backend">{{ item }}</option>
+                        <option v-for="item in backendsArr" :selected="item === configFile.backend">{{ item }}</option>
 
                     </select>
                 </div>
@@ -59,21 +59,19 @@
                     <select id="model"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <option v-for="item in modelsArr" :selected="item===configFile.model">{{ item }}</option>
+                        <option v-for="item in modelsArr" :selected="item === configFile.model">{{ item }}</option>
 
                     </select>
                 </div>
-                <div class="space-y-4">
-                    <model-entry
-                        v-for="(model, index) in models"
-                        :key="index"
-                        :title="model.title"
-                        :icon="model.icon"
-                        :path="model.path"
-                        :description="model.description"
-                        :is-installed="model.isInstalled"
-                        :on-toggle-install="toggleInstall"
-                    />
+                <div v-if="models.length > 0" class="my-2">
+                    <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Install more models:
+                    </label>
+                    <div class="overflow-y-auto max-h-96 no-scrollbar p-2">
+                        <model-entry v-for="(model, index) in models" :key="index" :title="model.title" :icon="model.icon"
+                            :path="model.path" :description="model.description" :is-installed="model.isInstalled"
+                            :on-toggle-install="toggleInstall" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -83,7 +81,7 @@
             class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
             <div class="flex flex-row">
                 <button @click.stop="pc_collapsed = !pc_collapsed"
-                class="text-2xl hover:text-primary duration-75  p-2 -m-2 w-full text-left active:translate-y-1">
+                    class="text-2xl hover:text-primary duration-75  p-2 -m-2 w-full text-left active:translate-y-1">
 
                     <!-- <i data-feather="chevron-right"></i> -->
 
@@ -99,7 +97,8 @@
                     <select id="persLang" @change="update_setting('personality_language', $event.target.value, refresh)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <option v-for="item in persLangArr" :selected="item===configFile.personality_language">{{ item }}</option>
+                        <option v-for="item in persLangArr" :selected="item === configFile.personality_language">{{ item }}
+                        </option>
 
                     </select>
                 </div>
@@ -110,7 +109,8 @@
                     <select id="persCat" @change="update_setting('personality_category', $event.target.value, refresh)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <option v-for="item in persCatgArr" :selected="item===configFile.personality_category">{{ item }}</option>
+                        <option v-for="item in persCatgArr" :selected="item === configFile.personality_category">{{ item }}
+                        </option>
 
                     </select>
                 </div>
@@ -121,7 +121,7 @@
                     <select id="persona" @change="update_setting('personality', $event.target.value, refresh)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <option v-for="item in persArr" :selected="item===configFile.personality">{{ item }}</option>
+                        <option v-for="item in persArr" :selected="item === configFile.personality">{{ item }}</option>
 
                     </select>
                 </div>
@@ -133,7 +133,7 @@
             class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
             <div class="flex flex-row">
                 <button @click.stop="mc_collapsed = !mc_collapsed"
-                class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1">
+                    class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1">
                     <!-- <i data-feather="chevron-right"></i> -->
 
                     <h3 class="text-lg font-semibold cursor-pointer select-none "
@@ -323,7 +323,7 @@ export default {
             persArr: [],
             langArr: [],
             configFile: {},
-            showConfirmation:false
+            showConfirmation: false
 
         }
     },
@@ -331,27 +331,27 @@ export default {
         this.fetchModels();
     }, methods: {
         fetchModels() {
-        axios.get('/get_available_models')
-            .then(response => {
-            this.models = response.data;
-            })
-            .catch(error => {
-            console.log(error);
-            });
+            axios.get('/get_available_models')
+                .then(response => {
+                    this.models = response.data;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
         },
         // Model installation
         toggleInstall(isInstalled, path) {
-        const endpoint = isInstalled ? '/uninstall_model' : '/install_model';
-        axios.post(endpoint, { path })
-            .then((response) => {
-            console.log(response.data.status);
-            // Update the isInstalled property of the corresponding model
-            const index = this.models.findIndex((model) => model.path === path);
-            this.$set(this.models[index], 'isInstalled', isInstalled);
-            })
-            .catch((error) => {
-            console.error(error);
-            });
+            const endpoint = isInstalled ? '/uninstall_model' : '/install_model';
+            axios.post(endpoint, { path })
+                .then((response) => {
+                    console.log(response.data.status);
+                    // Update the isInstalled property of the corresponding model
+                    const index = this.models.findIndex((model) => model.path === path);
+                    this.$set(this.models[index], 'isInstalled', isInstalled);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
         },
         // messagebox ok stuff
         onMessageBoxOk() {
@@ -375,23 +375,23 @@ export default {
             this.showAccordion = !this.showAccordion;
         },
         update_setting(setting_name_val, setting_value_val, next) {
-            const obj = { 
-                setting_name: setting_name_val, 
-                setting_value: setting_value_val 
+            const obj = {
+                setting_name: setting_name_val,
+                setting_value: setting_value_val
             }
-            console.log("change",setting_name_val,setting_value_val,obj)
+            console.log("change", setting_name_val, setting_value_val, obj)
             axios.post('/update_setting', obj).then((res) => {
-                    if (res) {
-                        if (next !== undefined) {
-                            next()
-                        }
-                        return res.data;
+                if (res) {
+                    if (next !== undefined) {
+                        next()
                     }
-                })
+                    return res.data;
+                }
+            })
                 .catch(error => { return { 'status': false } });
         },
         save_configuration() {
-            this.showConfirmation=false
+            this.showConfirmation = false
             axios.post('/save_settings', {})
                 .then((res) => {
                     if (res) {
@@ -472,7 +472,7 @@ export default {
         this.persCatgArr = await this.api_get_req("list_personalities_categories")
         this.persArr = await this.api_get_req("list_personalities")
         this.langArr = await this.api_get_req("list_languages")
-        
+
     },
     watch: {
         bec_collapsed() {
@@ -493,7 +493,7 @@ export default {
 
             })
         },
-        showConfirmation(){
+        showConfirmation() {
             nextTick(() => {
                 feather.replace()
 

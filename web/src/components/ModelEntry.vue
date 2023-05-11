@@ -1,11 +1,14 @@
 <template>
-    <div class="flex items-center space-x-4 py-4">
+    <div class="flex items-center p-4 hover:bg-primary-light  rounded-lg mb-2 shadow-lg">
+      
+
+
       <div class="flex-shrink-0">
         <i :class="`fas ${icon} text-xl`"></i>
       </div>
       <div class="flex-1">
         <h3 class="font-bold text-lg">{{ title }}</h3>
-        <p class="text-gray-600">{{ description }}</p>
+        <p class="opacity-80">{{ description }}</p>
       </div>
       <div class="flex-shrink-0">
         <button
@@ -16,6 +19,7 @@
           {{ isInstalled ? 'Uninstall' : 'Install' }}
         </button>
       </div>
+    
     </div>
   </template>
   
