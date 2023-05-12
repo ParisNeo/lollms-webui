@@ -26,14 +26,14 @@
                     <i data-feather="database"></i>
                 </button>
                 <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Filter discussions"
-                    type="button" @click="isSearch = !isSearch" :class="isSearch ? 'text-secondary':''">
+                    type="button" @click="isSearch = !isSearch" :class="isSearch ? 'text-secondary' : ''">
                     <i data-feather="search"></i>
                 </button>
 
             </div>
-                        <!-- SEARCH BAR -->
-                        <div class="flex-row  items-center gap-3 flex-0 w-full">
-                <div  v-if="isSearch"  class="p-4 pt-2">
+            <!-- SEARCH BAR -->
+            <div class="flex-row  items-center gap-3 flex-0 w-full">
+                <div v-if="isSearch" class="p-4 pt-2">
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                             <div class="scale-75">
@@ -112,10 +112,10 @@
             </div>
         </div>
     </div>
-    <div class="overflow-y-scroll flex flex-col no-scrollbar flex-grow " id="messages-list">
+    <div class="overflow-y-auto flex flex-col scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary flex-grow active:scrollbar-thumb-secondary" id="messages-list">
 
         <!-- CHAT AREA -->
-        <div class="flex flex-col flex-grow">
+        <div class="container flex flex-col flex-grow pt-4 pb-10">
             <!-- REMOVED @click="scrollToElement($event.target)" -->
             <Message v-for="(msg, index) in discussionArr" :key="index" :message="msg" :id="'msg-' + msg.id" ref="messages"
                 @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage" @rankDown="rankDownMessage"
@@ -139,6 +139,7 @@
         </div>
         <div class="ml-3 text-sm font-normal">Message content copied to clipboard!</div>
     </Toast>
+    
 </template>
 <style scoped>
 .height-64 {
@@ -166,6 +167,7 @@ export default {
             chime: new Audio("chime_aud.wav"),
             isCopiedToClipboard: false,
             isSearch: false,
+            isDiscussionBottom: false,
         }
     },
     methods: {
@@ -196,15 +198,7 @@ export default {
                     if (res) {
                         // Filter out the user and bot entries
                         this.discussionArr = res.data.filter((item) => item.type == 0)
-                        const lastMessage = this.discussionArr[this.discussionArr.length - 1]
-                        if (lastMessage) {
-                            nextTick(() => {
-                                // const selectedElement = document.getElementById('msg-' + lastMessage.id)
-                                // this.scrollToElement(selectedElement)
-                                const msgList = document.getElementById('messages-list')
-                                this.scrollBottom(msgList)
-                            })
-                        }
+
                     }
                 }
             } catch (error) {
@@ -356,11 +350,11 @@ export default {
                     }
                 }
                 nextTick(() => {
-                    // const selectedDisElement = document.getElementById('dis-' + item.id)
-                    // this.scrollToElement(selectedDisElement)
+
                     const msgList = document.getElementById('messages-list')
 
                     this.scrollBottom(msgList)
+
                 })
             }
         },
@@ -378,6 +372,21 @@ export default {
                 el.scrollTo(
                     {
                         top: el.scrollHeight,
+                        behavior: "smooth",
+                    }
+                )
+            } else {
+                console.log("Error: scrollBottom")
+            }
+
+        },
+
+        scrollTop(el) {
+
+            if (el) {
+                el.scrollTo(
+                    {
+                        top: 0,
                         behavior: "smooth",
                     }
                 )
@@ -745,7 +754,9 @@ export default {
         },
         closeToast() {
             this.isCopiedToClipboard = false
-        }
+        },
+        
+        
     },
     async created() {
         // Constructor
