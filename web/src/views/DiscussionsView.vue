@@ -112,10 +112,10 @@
             </div>
         </div>
     </div>
-    <div class="overflow-y-scroll flex flex-col no-scrollbar flex-grow " id="messages-list">
+    <div class="overflow-y-auto flex flex-col scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary flex-grow active:scrollbar-thumb-secondary" id="messages-list">
 
         <!-- CHAT AREA -->
-        <div class="flex flex-col flex-grow">
+        <div class="container flex flex-col flex-grow pt-4 pb-10">
             <!-- REMOVED @click="scrollToElement($event.target)" -->
             <Message v-for="(msg, index) in discussionArr" :key="index" :message="msg" :id="'msg-' + msg.id" ref="messages"
                 @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage" @rankDown="rankDownMessage"
@@ -139,18 +139,7 @@
         </div>
         <div class="ml-3 text-sm font-normal">Message content copied to clipboard!</div>
     </Toast>
-    <!-- SCROLL TO TOP/BOTTOM -->
-    <button v-if="!isDiscussionBottom"
-        class=" rounded-full p-2 absolute right-12 bottom-28 text-2xl bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel hover:text-primary duration-75 active:scale-90 "
-        title="Scroll to bottom" type="button" @click.stop="scrollDiscussion">
-        <i data-feather="arrow-down"></i>
-    </button>
-    <button v-else
-        class=" rounded-full p-2 absolute right-12 bottom-28 text-2xl bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel hover:text-primary duration-75 active:scale-90 "
-        title="Scroll to top" type="button" @click.stop="scrollDiscussion">
-        <i data-feather="arrow-up"></i>
-    </button>
-
+    
 </template>
 <style scoped>
 .height-64 {
@@ -209,15 +198,7 @@ export default {
                     if (res) {
                         // Filter out the user and bot entries
                         this.discussionArr = res.data.filter((item) => item.type == 0)
-                        const lastMessage = this.discussionArr[this.discussionArr.length - 1]
-                        if (lastMessage) {
-                            nextTick(() => {
-                                // const selectedElement = document.getElementById('msg-' + lastMessage.id)
-                                // this.scrollToElement(selectedElement)
-                                const msgList = document.getElementById('messages-list')
-                                this.scrollBottom(msgList)
-                            })
-                        }
+
                     }
                 }
             } catch (error) {
@@ -373,6 +354,7 @@ export default {
                     const msgList = document.getElementById('messages-list')
 
                     this.scrollBottom(msgList)
+
                 })
             }
         },
@@ -773,27 +755,8 @@ export default {
         closeToast() {
             this.isCopiedToClipboard = false
         },
-        scrollDiscussion() {
-            if (this.isDiscussionBottom) {
-
-
-                nextTick(() => {
-                    feather.replace()
-                    const msgList = document.getElementById('messages-list')
-
-                    this.scrollTop(msgList)
-                })
-            } else {
-
-                nextTick(() => {
-                    feather.replace()
-                    const msgList = document.getElementById('messages-list')
-
-                    this.scrollBottom(msgList)
-                })
-            }
-            this.isDiscussionBottom=!this.isDiscussionBottom
-        }
+        
+        
     },
     async created() {
         // Constructor
@@ -859,12 +822,6 @@ export default {
             })
         },
         isSearch() {
-            nextTick(() => {
-                feather.replace()
-
-            })
-        },
-        isDiscussionBottom() {
             nextTick(() => {
                 feather.replace()
 
