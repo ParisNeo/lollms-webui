@@ -22,6 +22,7 @@ import re
 import traceback
 import threading
 import sys
+from tqdm import tqdm
 from pyaipersonality import AIPersonality
 from pyGpt4All.db import DiscussionsDB, Discussion
 from flask import (
@@ -39,6 +40,7 @@ import gc
 from geventwebsocket.handler import WebSocketHandler
 from gevent.pywsgi import WSGIServer
 import requests
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent', ping_timeout=30, ping_interval=15)
@@ -160,12 +162,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.add_endpoint(
             "/get_available_models", "get_available_models", self.get_available_models, methods=["GET"]
         )
-        self.add_endpoint(
-            "/install_model", "install_model", self.install_model, methods=["POST"]
-        )
-        self.add_endpoint(
-            "/uninstall_model", "uninstall_model", self.uninstall_model, methods=["POST"]
-        )
+
 
         self.add_endpoint(
             "/extensions", "extensions", self.extensions, methods=["GET"]
@@ -212,6 +209,85 @@ class Gpt4AllWebUI(GPT4AllAPI):
         @socketio.on('disconnect')
         def disconnect():
             print('Client disconnected')
+
+        @socketio.on('install_model')
+        def install_model(data):
+            model_path = data["path"]
+            progress = 0
+            installation_dir = Path(f'./models/{self.config["backend"]}/')
+            filename = Path(model_path).name
+            installation_path = installation_dir / filename
+            print("Model install requested")
+            print(f"Model path : {model_path}")
+
+            if installation_path.exists():
+                print("Error: Model already exists")
+                data.installing = False
+                socketio.emit('install_progress',{'status': 'failed', 'error': 'model already exists'})
+            
+            socketio.emit('install_progress',{'status': 'progress', 'progress': progress})
+
+            response = requests.get(model_path, stream=True)
+            file_size = int(response.headers.get('Content-Length'))
+            downloaded_size = 0
+            CHUNK_SIZE = 8192
+
+            def download_chunk(url, start_byte, end_byte, fileobj):
+                headers = {'Range': f'bytes={start_byte}-{end_byte}'}
+                response = requests.get(url, headers=headers, stream=True)
+                downloaded_bytes = 0
+
+                for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
+                    if chunk:
+                        fileobj.seek(start_byte)
+                        fileobj.write(chunk)
+                        downloaded_bytes += len(chunk)
+                        start_byte += len(chunk)
+
+                return downloaded_bytes
+
+
+            def download_file(url, file_path, num_threads=4):
+                response = requests.head(url)
+                file_size = int(response.headers.get('Content-Length'))
+                chunk_size = file_size // num_threads
+                progress = 0
+
+                with open(file_path, 'wb') as fileobj:
+                    with tqdm(total=file_size, unit='B', unit_scale=True, unit_divisor=1024) as pbar:
+                        with ThreadPoolExecutor(max_workers=num_threads) as executor:
+                            futures = []
+
+                            for i in range(num_threads):
+                                start_byte = i * chunk_size
+                                end_byte = start_byte + chunk_size - 1 if i < num_threads - 1 else file_size - 1
+                                futures.append(executor.submit(download_chunk, url, start_byte, end_byte, fileobj))
+
+                            for future in tqdm(as_completed(futures), total=num_threads):
+                                downloaded_bytes = future.result()
+                                progress += downloaded_bytes
+                                pbar.update(downloaded_bytes)
+                                socketio.emit('install_progress', {'status': 'progress', 'progress': progress})
+
+            # Usage example
+            download_file(model_path, installation_path, num_threads=4)
+
+            socketio.emit('install_progress',{'status': 'succeeded', 'error': ''})
+            
+        @socketio.on('uninstall_model')
+        def uninstall_model(data):
+            model_path = data['path']
+            installation_dir = Path(f'./models/{self.config["backend"]}/')
+            filename = Path(model_path).name
+            installation_path = installation_dir / filename
+
+            if not installation_path.exists():
+                socketio.emit('install_progress',{'status': 'failed', 'error': ''})
+
+            installation_path.unlink()
+            socketio.emit('install_progress',{'status': 'succeeded', 'error': ''})
+            
+
         
         @socketio.on('generate_msg')
         def generate_msg(data):
@@ -702,7 +778,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
     
     
     def get_available_models(self):
-        response = requests.get(f' https://gpt4all.io/models/models.json')
+        response = requests.get(f'https://gpt4all.io/models/models.json')
         model_list = response.json()
 
         models = []
@@ -710,7 +786,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
             filename = model['filename']
             filesize = model['filesize']
             path = f'https://gpt4all.io/models/{filename}'
-            is_installed = Path(f'/models/{self.config["backend"]}/{filename}').is_file()
+            local_path = Path(f'./models/{self.config["backend"]}/{filename}')
+            is_installed = local_path.exists()
             models.append({
                 'title': model['filename'],
                 'icon': '/icons/default.png',  # Replace with the path to the model icon
@@ -721,31 +798,6 @@ class Gpt4AllWebUI(GPT4AllAPI):
             })
         return jsonify(models)
 
-    def install_model(self):
-        model_path = request.json.get('path')
-        installation_dir = Path('/models/llamacpp/')
-        filename = Path(model_path).name
-        installation_path = installation_dir / filename
-
-        if installation_path.exists():
-            return jsonify({'status': 'Already installed'})
-        
-        response = requests.get(model_path)
-        with open(installation_path, 'wb') as f:
-            f.write(response.content)        
-        return jsonify({'status':True})
-
-    def uninstall_model(self):
-        model_path = request.json.get('path')
-        installation_dir = Path('/models/llamacpp/')
-        filename = Path(model_path).name
-        installation_path = installation_dir / filename
-
-        if not installation_path.exists():
-            return jsonify({'status':False})
-
-        installation_path.unlink()        
-        return jsonify({'status':True})
     
     def get_config(self):
         return jsonify(self.config)

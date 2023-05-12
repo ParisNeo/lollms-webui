@@ -59,7 +59,7 @@ class GPT4AllAPI():
                 self.chatbot_bindings = self.create_chatbot()
                 print("Chatbot created successfully")
 
-            except Exception:
+            except Exception as ex:
                 self.config["backend"] = "gpt4all"
                 self.backend = self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
                 self.config["model"] = None
