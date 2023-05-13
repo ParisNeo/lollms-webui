@@ -450,12 +450,16 @@ export default {
             axios.post('/update_setting', obj).then((res) => {
                 if (res) {
                     if (next !== undefined) {
-                        next()
+                        next(res)
                     }
                     return res.data;
                 }
             })
                 .catch(error => { return { 'status': false } });
+        },
+        update_backend(value) {
+            console.log("Upgrading backend")
+            res = this.update_setting('backend', value, (res)=>{console.log("Backend changed"); })
         },
         save_configuration() {
             this.showConfirmation = false
@@ -502,13 +506,7 @@ export default {
                 }
             });
         },
-        update_backend(value) {
-            res = update_setting('backend', value)
-            if (res.status) {
-                console.log("Backend changed")
-            }
 
-        },
         async api_get_req(endpoint) {
             try {
                 const res = await axios.get("/" + endpoint);

@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Callable
 from pygpt4all import GPT4All as Model
 from pyGpt4All.backend import GPTBackend
+import yaml
 
 __author__ = "parisneo"
 __github__ = "https://github.com/nomic-ai/gpt4all-ui"
@@ -21,6 +22,7 @@ backend_name = "GPT4ALL"
 
 class GPT4ALL(GPTBackend):
     file_extension='*.bin'
+    
     def __init__(self, config:dict) -> None:
         """Builds a GPT4ALL backend
 
@@ -68,3 +70,14 @@ class GPT4ALL(GPTBackend):
                     return
         except Exception as ex:
             print(ex)
+
+    @staticmethod
+    def get_available_models():
+        # Create the file path relative to the child class's directory
+        backend_path = Path(__file__).parent
+        file_path = backend_path/"models.yaml"
+
+        with open(file_path, 'r') as file:
+            yaml_data = yaml.safe_load(file)
+        
+        return yaml_data

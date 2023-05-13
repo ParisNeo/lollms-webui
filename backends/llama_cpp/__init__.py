@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Callable
 from pyllamacpp.model import Model
 from pyGpt4All.backend import GPTBackend
+import yaml
 
 __author__ = "parisneo"
 __github__ = "https://github.com/nomic-ai/gpt4all-ui"
@@ -68,3 +69,14 @@ class LLAMACPP(GPTBackend):
                     return
         except Exception as ex:
             print(ex)
+            
+    @staticmethod
+    def get_available_models():
+        # Create the file path relative to the child class's directory
+        backend_path = Path(__file__).parent
+        file_path = backend_path/"models.yaml"
+
+        with open(file_path, 'r') as file:
+            yaml_data = yaml.safe_load(file)
+        
+        return yaml_data

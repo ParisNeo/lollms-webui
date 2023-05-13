@@ -109,7 +109,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.add_endpoint("/", "", self.index, methods=["GET"])
         self.add_endpoint("/<path:filename>", "serve_static", self.serve_static, methods=["GET"])
         self.add_endpoint("/personalities/<path:filename>", "serve_personalities", self.serve_personalities, methods=["GET"])
-        
+            
         
         self.add_endpoint("/export_discussion", "export_discussion", self.export_discussion, methods=["GET"])
         self.add_endpoint("/export", "export", self.export, methods=["GET"])
@@ -778,8 +778,13 @@ class Gpt4AllWebUI(GPT4AllAPI):
     
     
     def get_available_models(self):
-        response = requests.get(f'https://gpt4all.io/models/models.json')
-        model_list = response.json()
+        """Get the available models
+
+        Returns:
+            _type_: _description_
+        """
+        
+        model_list = self.backend.get_available_models()
 
         models = []
         for model in model_list:

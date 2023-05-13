@@ -9,6 +9,9 @@
 ######
 from pathlib import Path
 from typing import Callable
+import inspect
+import yaml
+import sys
 
 __author__ = "parisneo"
 __github__ = "https://github.com/nomic-ai/gpt4all-ui"
@@ -18,6 +21,7 @@ __license__ = "Apache 2.0"
 
 class GPTBackend:
     file_extension='*.bin'
+    backend_path = Path(__file__).parent
     def __init__(self, config:dict, inline:bool) -> None:
         self.config = config
         self.inline = inline
@@ -45,3 +49,13 @@ class GPTBackend:
         """
         models_dir = Path('./models')/config["backend"]  # replace with the actual path to the models folder
         return [f.name for f in models_dir.glob(GPTBackend.file_extension)]
+    @staticmethod
+    def get_available_models():
+        # Create the file path relative to the child class's directory
+        backend_path = Path(__file__).parent
+        file_path = backend_path/"models.yaml"
+
+        with open(file_path, 'r') as file:
+            yaml_data = yaml.safe_load(file)
+        
+        return yaml_data
