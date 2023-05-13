@@ -112,7 +112,7 @@
             </div>
         </div>
     </div>
-    <div class="overflow-y-auto flex flex-col scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary flex-grow active:scrollbar-thumb-secondary" id="messages-list">
+    <div class="overflow-y-auto flex flex-col flex-grow  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" id="messages-list">
 
         <!-- CHAT AREA -->
         <div class="container flex flex-col flex-grow pt-4 pb-10">
