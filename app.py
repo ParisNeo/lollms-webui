@@ -302,7 +302,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 print("New backend selected")
                 self.config["backend"]=data['setting_value']
                 
-                backend_, model_ =self.process.rebuild_model(self.config)
+                backend_ =self.process.rebuild_backend(self.config)
                 models = backend_.list_models(self.config)
                 if len(models)>0:      
                     self.backend = backend_
@@ -589,7 +589,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         save_config(self.config, self.config_file_path)
         
         self.process.set_config(self.config)
-        self.backend, self.model = self.process.rebuild_model()
+        self.backend = self.process.rebuild_backend()
 
         print("==============================================")
         print("Parameters changed to:")

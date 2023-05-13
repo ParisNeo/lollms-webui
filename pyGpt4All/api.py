@@ -84,23 +84,15 @@ class ModelProcess:
     def clear_queue(self):
         self.clear_queue_queue.put(('clear_queue',))
     
-    def rebuild_model(self, config):
+    def rebuild_backend(self, config):
         try:
             backend = self.load_backend(Path("backends")/config["backend"])
             print("Backend loaded successfully")
-            try:
-                model = backend(config)
-                print("Model created successfully")
-            except Exception as ex:
-                print("Couldn't build model")
-                print(ex)
-                model = None
         except Exception as ex:
             print("Couldn't build backend")
             print(ex)
             backend = None
-            model = None
-        return backend, model
+        return backend
             
     def _rebuild_model(self):
         try:
@@ -257,7 +249,7 @@ class GPT4AllAPI():
         self.process.start()
         self.config = config
         
-        self.backend, self.model = self.process.rebuild_model(self.config)
+        self.backend = self.process.rebuild_backend(self.config)
         self.personality = self.process.rebuild_personality()
         if config["debug"]:
             print(print(f"{self.personality}"))
@@ -442,7 +434,7 @@ class GPT4AllAPI():
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # Chatbot conditionning
-        self.condition_chatbot(self.personality.personality_conditioning)
+        self.condition_chatbot()
         return timestamp
 
     def prepare_query(self, message_id=-1):
