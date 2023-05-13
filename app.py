@@ -20,7 +20,6 @@ import argparse
 import json
 import re
 import traceback
-import threading
 import sys
 from tqdm import tqdm
 from pyaipersonality import AIPersonality
@@ -41,9 +40,12 @@ from geventwebsocket.handler import WebSocketHandler
 from gevent.pywsgi import WSGIServer
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent', ping_timeout=30, ping_interval=15)
+socketio = SocketIO(app,  cors_allowed_origins="*", async_mode='gevent', ping_timeout=60, ping_interval=15)
 
 app.config['SECRET_KEY'] = 'secret!'
 # Set the logging level to WARNING or higher
@@ -61,12 +63,12 @@ import markdown
 
 
 class Gpt4AllWebUI(GPT4AllAPI):
-    def __init__(self, _app, _socketio, config:dict, personality:dict, config_file_path) -> None:
-        super().__init__(config, personality, config_file_path)
+    def __init__(self, _app, _socketio, config:dict, config_file_path) -> None:
+        super().__init__(config, _socketio, config_file_path)
 
         self.app = _app
         self.cancel_gen = False
-        self.socketio = _socketio
+        
 
         if "use_new_ui" in self.config:
             if self.config["use_new_ui"]:
@@ -109,7 +111,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.add_endpoint("/", "", self.index, methods=["GET"])
         self.add_endpoint("/<path:filename>", "serve_static", self.serve_static, methods=["GET"])
         self.add_endpoint("/personalities/<path:filename>", "serve_personalities", self.serve_personalities, methods=["GET"])
-            
+
         
         self.add_endpoint("/export_discussion", "export_discussion", self.export_discussion, methods=["GET"])
         self.add_endpoint("/export", "export", self.export, methods=["GET"])
@@ -199,121 +201,6 @@ class Gpt4AllWebUI(GPT4AllAPI):
             "/get_current_personality", "get_current_personality", self.get_current_personality, methods=["GET"]
         )
         
-        # =========================================================================================
-        # Socket IO stuff    
-        # =========================================================================================
-        @socketio.on('connect')
-        def connect():
-            print('Client connected')
-
-        @socketio.on('disconnect')
-        def disconnect():
-            print('Client disconnected')
-
-        @socketio.on('install_model')
-        def install_model(data):
-            model_path = data["path"]
-            progress = 0
-            installation_dir = Path(f'./models/{self.config["backend"]}/')
-            filename = Path(model_path).name
-            installation_path = installation_dir / filename
-            print("Model install requested")
-            print(f"Model path : {model_path}")
-
-            if installation_path.exists():
-                print("Error: Model already exists")
-                data.installing = False
-                socketio.emit('install_progress',{'status': 'failed', 'error': 'model already exists'})
-            
-            socketio.emit('install_progress',{'status': 'progress', 'progress': progress})
-
-            response = requests.get(model_path, stream=True)
-            file_size = int(response.headers.get('Content-Length'))
-            downloaded_size = 0
-            CHUNK_SIZE = 8192
-
-            def download_chunk(url, start_byte, end_byte, fileobj):
-                headers = {'Range': f'bytes={start_byte}-{end_byte}'}
-                response = requests.get(url, headers=headers, stream=True)
-                downloaded_bytes = 0
-
-                for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
-                    if chunk:
-                        fileobj.seek(start_byte)
-                        fileobj.write(chunk)
-                        downloaded_bytes += len(chunk)
-                        start_byte += len(chunk)
-
-                return downloaded_bytes
-
-
-            def download_file(url, file_path, num_threads=4):
-                response = requests.head(url)
-                file_size = int(response.headers.get('Content-Length'))
-                chunk_size = file_size // num_threads
-                progress = 0
-
-                with open(file_path, 'wb') as fileobj:
-                    with tqdm(total=file_size, unit='B', unit_scale=True, unit_divisor=1024) as pbar:
-                        with ThreadPoolExecutor(max_workers=num_threads) as executor:
-                            futures = []
-
-                            for i in range(num_threads):
-                                start_byte = i * chunk_size
-                                end_byte = start_byte + chunk_size - 1 if i < num_threads - 1 else file_size - 1
-                                futures.append(executor.submit(download_chunk, url, start_byte, end_byte, fileobj))
-
-                            for future in tqdm(as_completed(futures), total=num_threads):
-                                downloaded_bytes = future.result()
-                                progress += downloaded_bytes
-                                pbar.update(downloaded_bytes)
-                                socketio.emit('install_progress', {'status': 'progress', 'progress': progress})
-
-            # Usage example
-            download_file(model_path, installation_path, num_threads=4)
-
-            socketio.emit('install_progress',{'status': 'succeeded', 'error': ''})
-            
-        @socketio.on('uninstall_model')
-        def uninstall_model(data):
-            model_path = data['path']
-            installation_dir = Path(f'./models/{self.config["backend"]}/')
-            filename = Path(model_path).name
-            installation_path = installation_dir / filename
-
-            if not installation_path.exists():
-                socketio.emit('install_progress',{'status': 'failed', 'error': ''})
-
-            installation_path.unlink()
-            socketio.emit('install_progress',{'status': 'succeeded', 'error': ''})
-            
-
-        
-        @socketio.on('generate_msg')
-        def generate_msg(data):
-            if self.current_discussion is None:
-                if self.db.does_last_discussion_have_messages():
-                    self.current_discussion = self.db.create_discussion()
-                else:
-                    self.current_discussion = self.db.load_last_discussion()
-
-            message = data["prompt"]
-            message_id = self.current_discussion.add_message(
-                "user", message, parent=self.message_id
-            )
-
-            self.current_user_message_id = message_id
-            tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
-            tpe.start()
-
-        @socketio.on('generate_msg_from')
-        def handle_connection(data):
-            message_id = int(data['id'])
-            message = data["prompt"]
-            self.current_user_message_id = message_id
-            tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
-            tpe.start()
-
 
 
     def save_settings(self):
@@ -405,9 +292,9 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
         elif setting_name== "model":
             self.config["model"]=data['setting_value']
-            print("New model selected")            
+            print("update_settings : New model selected")            
             # Build chatbot
-            self.chatbot_bindings = self.create_chatbot()
+            self.process.set_config(self.config)
 
         elif setting_name== "backend":
             print("New backend selected")            
@@ -415,13 +302,13 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 print("New backend selected")
                 self.config["backend"]=data['setting_value']
                 
-                backend_ =self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
+                backend_, model_ =self.process.rebuild_model(self.config)
                 models = backend_.list_models(self.config)
                 if len(models)>0:      
                     self.backend = backend_
                     self.config['model'] = models[0]
                     # Build chatbot
-                    self.chatbot_bindings = self.create_chatbot()
+                    self.process.set_config(self.config)
                     if self.config["debug"]:
                         print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
                     return jsonify({'setting_name': data['setting_name'], "status":True})
@@ -441,6 +328,9 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
         if self.config["debug"]:
             print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
+            
+        print("Configuration updated")
+        self.process.set_config(self.config)
         # Tell that the setting was changed
         return jsonify({'setting_name': data['setting_name'], "status":True})
 
@@ -549,69 +439,15 @@ class Gpt4AllWebUI(GPT4AllAPI):
         return jsonify({"discussion_text":self.get_discussion_to()})
     
 
-    def start_message_generation(self, message, message_id):
-        bot_says = ""
-
-        # send the message to the bot
-        print(f"Received message : {message}")
-        if self.current_discussion:
-            # First we need to send the new message ID to the client
-            self.current_ai_message_id = self.current_discussion.add_message(
-                self.personality.name, "", parent = self.current_user_message_id
-            )  # first the content is empty, but we'll fill it at the end
-            socketio.emit('infos',
-                    {
-                        "type": "input_message_infos",
-                        "bot": self.personality.name,
-                        "user": self.personality.user_name,
-                        "message":message,#markdown.markdown(message),
-                        "user_message_id": self.current_user_message_id,
-                        "ai_message_id": self.current_ai_message_id,
-                    }
-            )
-
-
-            # prepare query and reception
-            self.discussion_messages = self.prepare_query(message_id)
-            self.prepare_reception()
-            self.generating = True
-            # app.config['executor'] = ThreadPoolExecutor(max_workers=1)
-            # app.config['executor'].submit(self.generate_message)
-            print("## Generating message ##")
-            self.generate_message()
-
-            print()
-            print("## Done ##")
-            print()
-
-            # Send final message
-            self.socketio.emit('final', {
-                                            'data': self.bot_says, 
-                                            'ai_message_id':self.current_ai_message_id, 
-                                            'parent':self.current_user_message_id, 'discussion_id':self.current_discussion.discussion_id
-                                        }
-                               )
-
-
-            self.current_discussion.update_message(self.current_ai_message_id, self.bot_says)
-            self.full_message_list.append(self.bot_says)
-            self.cancel_gen = False
-            return bot_says
-        else:
-            #No discussion available
-            print("No discussion selected!!!")
-            print("## Done ##")
-            print()
-            self.cancel_gen = False
-            return ""
-    
+            
     def get_generation_status(self):
-        return jsonify({"status":self.generating}) 
+        return jsonify({"status":self.process.is_generating.value==1}) 
     
     def stop_gen(self):
         self.cancel_gen = True
         print("Stop generation received")
-        return jsonify({"status": "ok"}) 
+        return jsonify({"status": "ok"})         
+
            
     def rename(self):
         data = request.get_json()
@@ -680,9 +516,6 @@ class Gpt4AllWebUI(GPT4AllAPI):
     def new_discussion(self):
         title = request.args.get("title")
         timestamp = self.create_new_discussion(title)
-        # app.config['executor'] = ThreadPoolExecutor(max_workers=1)
-        # app.config['executor'].submit(self.create_chatbot)
-        # target=self.create_chatbot()
         
         # Return a success response
         return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp, "welcome_message":self.personality.welcome_message, "sender":self.personality.name})
@@ -700,7 +533,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 self.backend = backend_
                 self.config['model'] = models[0]
                 # Build chatbot
-                self.chatbot_bindings = self.create_chatbot()
+                self.process.set_config(self.config)
                 return jsonify({"status": "ok"})
             else:
                 return jsonify({"status": "no_models_found"})
@@ -711,10 +544,10 @@ class Gpt4AllWebUI(GPT4AllAPI):
         data = request.get_json()
         model =  str(data["model"])
         if self.config['model']!= model:
-            print("New model selected")            
+            print("set_model: New model selected")            
             self.config['model'] = model
             # Build chatbot
-            self.chatbot_bindings = self.create_chatbot()
+            self.process.set_config(self.config)
             return jsonify({"status": "ok"})
 
         return jsonify({"status": "error"})    
@@ -728,11 +561,11 @@ class Gpt4AllWebUI(GPT4AllAPI):
         personality =  str(data["personality"])
         
         if self.config['backend']!=backend or  self.config['model'] != model:
-            print("New model selected")
+            print("update_model_params: New model selected")
             
             self.config['backend'] = backend
             self.config['model'] = model
-            self.create_chatbot()
+            self.process.set_config(self.config)
 
         self.config['personality_language'] = personality_language
         self.config['personality_category'] = personality_category
@@ -740,7 +573,6 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
         personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
         print(f"Loading personality : {personality_fn}")
-        self.personality = AIPersonality(personality_fn)
 
         self.config['n_predict'] = int(data["nPredict"])
         self.config['seed'] = int(data["seed"])
@@ -755,6 +587,9 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.config['repeat_last_n'] = int(data["repeatLastN"])
 
         save_config(self.config, self.config_file_path)
+        
+        self.process.set_config(self.config)
+        self.backend, self.model = self.process.rebuild_model()
 
         print("==============================================")
         print("Parameters changed to:")
@@ -789,8 +624,12 @@ class Gpt4AllWebUI(GPT4AllAPI):
         models = []
         for model in model_list:
             filename = model['filename']
+            server = model['server']
             filesize = model['filesize']
-            path = f'https://gpt4all.io/models/{filename}'
+            if server.endswith("/"):
+                path = f'{server}{filename}'
+            else:
+                path = f'{server}/{filename}'
             local_path = Path(f'./models/{self.config["backend"]}/{filename}')
             is_installed = local_path.exists()
             models.append({
@@ -920,17 +759,9 @@ if __name__ == "__main__":
         if arg_value is not None:
             config[arg_name] = arg_value
 
-    try:
-        personality_path = f"personalities/{config['personality_language']}/{config['personality_category']}/{config['personality']}"
-        personality = AIPersonality(personality_path)
-    except Exception as ex:
-        print("Personality file not found. Please verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
-        if config["debug"]:
-            print(ex)
-        personality = AIPersonality()
     # executor = ThreadPoolExecutor(max_workers=1)
     # app.config['executor'] = executor
-    bot = Gpt4AllWebUI(app, socketio, config, personality, config_file_path)
+    bot = Gpt4AllWebUI(app, socketio, config, config_file_path)
 
     # chong Define custom WebSocketHandler with error handling 
     class CustomWebSocketHandler(WebSocketHandler):
@@ -953,7 +784,3 @@ if __name__ == "__main__":
         
     http_server = WSGIServer((config["host"], config["port"]), app, handler_class=WebSocketHandler)
     http_server.serve_forever()
-    #if config["debug"]:
-    #    app.run(debug=True, host=config["host"], port=config["port"])
-    #else:
-    #    app.run(host=config["host"], port=config["port"])

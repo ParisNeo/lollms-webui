@@ -148,6 +148,7 @@
 </style>
 
 <script>
+
 export default {
     setup() { },
     data() {
@@ -831,7 +832,7 @@ export default {
     },
     computed: {
         socketConnected() {
-            return state.connected
+            return true
         },
         selectedDiscussions() {
             nextTick(() => {
@@ -856,7 +857,7 @@ import feather from 'feather-icons'
 import axios from 'axios'
 import { nextTick } from 'vue'
 
-import { socket, state } from '@/services/websocket.js'
+import socket from '@/services/websocket.js'
 
 import { onMounted } from 'vue'
 import { initFlowbite } from 'flowbite'

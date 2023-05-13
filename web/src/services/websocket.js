@@ -3,12 +3,9 @@
 // Description :
 // All websocket stuff can be found here.
 // More info can be found here https://socket.io/how-to/use-with-vue
-import io from 'socket.io-client';  
-import { reactive } from "vue";
+import { createApp } from 'vue';
+import io from 'socket.io-client';
 
-const state = reactive({
-  connected: false,
-});
 
 const socket = new io(import.meta.env.VITE_GPT4ALL_API );
 
@@ -26,14 +23,18 @@ socket.onerror = (error) => {
 };
 
 socket.on("connect", () => {
-  state.connected = true;
   console.log('WebSocket connected (websocket)');
 });
 
 socket.on("disconnect", () => {
-  state.connected = false;
   console.log('WebSocket disonnected (websocket)');
-  
 });
 
-export  {socket, state};
+const app = createApp(/* your root component */);
+
+app.config.globalProperties.$socket = socket;
+
+app.mount(/* your root element */);
+
+export default socket;
+

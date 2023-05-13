@@ -13,6 +13,7 @@
         />
         {{ title }}
       </h3>
+      <a :href="path">{{ title }}</a>
       <p class="opacity-80">{{ description }}</p>
     </div>
     <div class="flex-shrink-0">
@@ -24,13 +25,17 @@
       >
         <template v-if="installing">
           <div class="flex items-center space-x-2">
-            <div class="h-2 w-20 bg-gray-300 rounded"></div>
+            <div class="h-2 w-20 bg-gray-300 rounded">
+              <div :style="{ width: progress + '%' }" class="h-full bg-green-500"></div>
+            </div>
             <span>Installing...</span>
           </div>
         </template>
         <template v-else-if="uninstalling">
           <div class="flex items-center space-x-2">
-            <div class="h-2 w-20 bg-gray-300 rounded"></div>
+            <div class="h-2 w-20 bg-gray-300 rounded">
+              <div :style="{ width: progress + '%' }" class="h-full bg-green-500"></div>
+            </div>
             <span>Uninstalling...</span>
           </div>
         </template>
@@ -43,9 +48,13 @@
 </template>
 
 <script>
-import { socket, state } from '@/services/websocket.js'
+import socket from '@/services/websocket.js'
 export default {
   props: {
+    progress: {
+      type: Number,
+      default: 0
+    },
     title: String,
     icon: String,
     path: String,
@@ -76,8 +85,8 @@ export default {
     },
     handleSelection() {
       if (this.isInstalled && !this.selected) {
+        this.onSelected(this);
         this.selected=true;
-        onSelected(this);
       }
     }
   }

@@ -14,18 +14,253 @@ from pyGpt4All.db import DiscussionsDB
 from pathlib import Path
 import importlib
 from pyaipersonality import AIPersonality
+import multiprocessing as mp
+import threading
+import time
+import requests
+import urllib.request
 
 __author__ = "parisneo"
 __github__ = "https://github.com/nomic-ai/gpt4all-ui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-class GPT4AllAPI():
-    def __init__(self, config:dict, personality:AIPersonality, config_file_path:str) -> None:
+
+
+class ModelProcess:
+    def __init__(self, config=None):
         self.config = config
-        self.personality = personality
+        self.generate_queue = mp.Queue()
+        self.generation_queue = mp.Queue()
+        self.cancel_queue = mp.Queue(maxsize=1)
+        self.clear_queue_queue = mp.Queue(maxsize=1)
+        self.set_config_queue = mp.Queue(maxsize=1)
+        self.started_queue = mp.Queue()
+        self.process = None
+        self.is_generating  = mp.Value('i', 0)
+        self.ready = False
+            
+    def load_backend(self, backend_path):
+
+        # define the full absolute path to the module
+        absolute_path = backend_path.resolve()
+
+        # infer the module name from the file path
+        module_name = backend_path.stem
+
+        # use importlib to load the module from the file path
+        loader = importlib.machinery.SourceFileLoader(module_name, str(absolute_path/"__init__.py"))
+        backend_module = loader.load_module()
+        backend_class = getattr(backend_module, backend_module.backend_name)
+        return backend_class
+
+    def start(self):
+        if self.process is None:
+            self.process = mp.Process(target=self._run)
+            self.process.start()
+
+    def stop(self):
+        if self.process is not None:
+            self.generate_queue.put(None)
+            self.process.join()
+            self.process = None
+
+    def set_backend(self, backend_path):
+        self.backend = backend_path
+
+    def set_model(self, model_path):
+        self.model = model_path
+        
+    def set_config(self, config):
+        self.set_config_queue.put(config)
+        
+
+    def generate(self, prompt, id, n_predict):
+        self.generate_queue.put((prompt, id, n_predict))
+
+    def cancel_generation(self):
+        self.cancel_queue.put(('cancel',))
+
+    def clear_queue(self):
+        self.clear_queue_queue.put(('clear_queue',))
+    
+    def rebuild_model(self, config):
+        try:
+            backend = self.load_backend(Path("backends")/config["backend"])
+            print("Backend loaded successfully")
+            try:
+                model = backend(config)
+                print("Model created successfully")
+            except Exception as ex:
+                print("Couldn't build model")
+                print(ex)
+                model = None
+        except Exception as ex:
+            print("Couldn't build backend")
+            print(ex)
+            backend = None
+            model = None
+        return backend, model
+            
+    def _rebuild_model(self):
+        try:
+            self.backend = self.load_backend(Path("backends")/self.config["backend"])
+            print("Backend loaded successfully")
+            try:
+                model_file = Path("models")/self.config["backend"]/self.config["model"]
+                print(f"Loading model : {model_file}")
+                self.model = self.backend(self.config)
+                print("Model created successfully")
+            except Exception as ex:
+                print("Couldn't build model")
+                print(ex)
+                self.model = None
+        except Exception as ex:
+            print("Couldn't build backend")
+            print(ex)
+            self.backend = None
+            self.model = None
+
+    def rebuild_personality(self):
+        try:
+            personality_path = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
+            personality = AIPersonality(personality_path)
+        except Exception as ex:
+            print("Personality file not found. Please verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+            if self.config["debug"]:
+                print(ex)
+            personality = AIPersonality()
+        return personality
+    
+    def _rebuild_personality(self):
+        try:
+            personality_path = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
+            self.personality = AIPersonality(personality_path)
+        except Exception as ex:
+            print("Personality file not found. Please verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+            if self.config["debug"]:
+                print(ex)
+            self.personality = AIPersonality()
+            
+    def _run(self):        
+        self._rebuild_model()
+        self._rebuild_personality()
+        self._generate("I",0,1)
+        print()
+        print("Ready to receive data")
+        print(f"Listening on :http://{self.config['host']}:{self.config['port']}")
+        self.ready = True
+        
+        while True:
+            self._check_cancel_queue()
+            self._check_clear_queue()
+
+            command = self.generate_queue.get()
+            if command is None:
+                break
+
+            if self.cancel_queue.empty() and self.clear_queue_queue.empty():
+                self.is_generating.value = 1
+                self.started_queue.put(1)
+                self._generate(*command)
+                while not self.generation_queue.empty():
+                    time.sleep(1)
+                self.is_generating.value = 0
+ 
+    def _generate(self, prompt, id, n_predict):
+        self.id = id        
+        if self.config["override_personality_model_parameters"]:
+            self.model.generate(
+                prompt,
+                new_text_callback=self._callback,
+                n_predict=n_predict,
+                temp=self.config['temperature'],
+                top_k=self.config['top_k'],
+                top_p=self.config['top_p'],
+                repeat_penalty=self.config['repeat_penalty'],
+                repeat_last_n = self.config['repeat_last_n'],
+                seed=self.config['seed'],
+                n_threads=self.config['n_threads']
+            )
+        else:
+            self.model.generate(
+                prompt,
+                new_text_callback=self._callback,
+                n_predict=n_predict,
+                temp=self.personality.model_temperature,
+                top_k=self.personality.model_top_k,
+                top_p=self.personality.model_top_p,
+                repeat_penalty=self.personality.model_repeat_penalty,
+                repeat_last_n = self.personality.model_repeat_last_n,
+                #seed=self.config['seed'],
+                n_threads=self.config['n_threads']
+            )
+        
+    def _callback(self, text):
+        if not self.ready:
+            print(".",end="")
+            sys.stdout.flush()
+            return True
+        else:
+            # Stream the generated text to the main process
+            self.generation_queue.put((text,self.id))
+            self._check_cancel_queue()
+            self._check_clear_queue()        
+            # if stop generation is detected then stop
+            if self.is_generating.value==1:
+                return True
+            else:
+                return False
+
+    def _check_cancel_queue(self):
+        while not self.cancel_queue.empty():
+            command = self.cancel_queue.get()
+            if command is not None:
+                self._cancel_generation()
+
+    def _check_clear_queue(self):
+        while not self.clear_queue_queue.empty():
+            command = self.clear_queue_queue.get()
+            if command is not None:
+                self._clear_queue()
+
+    def _check_set_config_queue(self):
+        while not self.set_config_queue.empty():
+            config = self.set_config_queue.get()
+            if config is not None:
+                self._set_config(config)
+
+    def _cancel_generation(self):
+        self.is_generating.value = 0
+            
+    def _clear_queue(self):
+        while not self.generate_queue.empty():
+            self.generate_queue.get()
+
+    def _set_config(self, config):
+        bk_cfg = self.config
+        self.config = config
+        # verify that the backend is the same
+        if self.config["backend"]!=bk_cfg["backend"] or self.config["model"]!=bk_cfg["model"]:
+            self._rebuild_model()
+            
+        # verify that the personality is the same
+        if self.config["personality"]!=bk_cfg["personality"] or self.config["personality_category"]!=bk_cfg["personality_category"] or self.config["personality_language"]!=bk_cfg["personality_language"]:
+            self._rebuild_personality()
+
+
+class GPT4AllAPI():
+    def __init__(self, config:dict, socketio, config_file_path:str) -> None:
+        self.socketio = socketio
+        #Create and launch the process
+        self.process = ModelProcess(config)
+        self.process.start()
+        self.config = config
+        
+        self.backend, self.model = self.process.rebuild_model(self.config)
+        self.personality = self.process.rebuild_personality()
         if config["debug"]:
-            print(print(f"{personality}"))
+            print(print(f"{self.personality}"))
         self.config_file_path = config_file_path
         self.cancel_gen = False
 
@@ -45,26 +280,84 @@ class GPT4AllAPI():
 
         # This is used to keep track of messages 
         self.full_message_list = []
+        
+        # =========================================================================================
+        # Socket IO stuff    
+        # =========================================================================================
+        @socketio.on('connect')
+        def connect():
+            print('Client connected')
 
-        # Select backend
-        self.BACKENDS_LIST = {f.stem:f for f in Path("backends").iterdir() if f.is_dir()  and f.stem!="__pycache__"}
+        @socketio.on('disconnect')
+        def disconnect():
+            print('Client disconnected')
 
-        if self.config["backend"] is None:
-            self.backend = "gpt4all"
-            self.backend = self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
-        else:
-            try:
-                self.backend = self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
-                # Build chatbot
-                self.chatbot_bindings = self.create_chatbot()
-                print("Chatbot created successfully")
+        @socketio.on('install_model')
+        def install_model(data):
+            def install_model_():
+                print("Install model triggered")
+                model_path = data["path"]
+                progress = 0
+                installation_dir = Path(f'./models/{self.config["backend"]}/')
+                filename = Path(model_path).name
+                installation_path = installation_dir / filename
+                print("Model install requested")
+                print(f"Model path : {model_path}")
 
-            except Exception as ex:
-                self.config["backend"] = "gpt4all"
-                self.backend = self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
-                self.config["model"] = None
-                print("No Models found, please select a backend and download a model for this tool to work")
+                if installation_path.exists():
+                    print("Error: Model already exists")
+                    data.installing = False
+                    socketio.emit('install_progress',{'status': 'failed', 'error': 'model already exists'})
+                
+                socketio.emit('install_progress',{'status': 'progress', 'progress': progress})
+                
+                def callback(progress):
+                    socketio.emit('install_progress',{'status': 'progress', 'progress': progress})
+                    
+                self.download_file(model_path, installation_path, callback)
+                socketio.emit('install_progress',{'status': 'succeeded', 'error': ''})
+            tpe = threading.Thread(target=install_model_, args=())
+            tpe.start()
+            
+        @socketio.on('uninstall_model')
+        def uninstall_model(data):
+            model_path = data['path']
+            installation_dir = Path(f'./models/{self.config["backend"]}/')
+            filename = Path(model_path).name
+            installation_path = installation_dir / filename
 
+            if not installation_path.exists():
+                socketio.emit('install_progress',{'status': 'failed', 'error': 'The model does not exist'})
+
+            installation_path.unlink()
+            socketio.emit('install_progress',{'status': 'succeeded', 'error': ''})
+            
+
+        
+        @socketio.on('generate_msg')
+        def generate_msg(data):
+            if self.current_discussion is None:
+                if self.db.does_last_discussion_have_messages():
+                    self.current_discussion = self.db.create_discussion()
+                else:
+                    self.current_discussion = self.db.load_last_discussion()
+
+            message = data["prompt"]
+            message_id = self.current_discussion.add_message(
+                "user", message, parent=self.message_id
+            )
+
+            self.current_user_message_id = message_id
+            tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
+            tpe.start()
+
+        @socketio.on('generate_msg_from')
+        def handle_connection(data):
+            message_id = int(data['id'])
+            message = data["prompt"]
+            self.current_user_message_id = message_id
+            tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
+            tpe.start()
         # generation status
         self.generating=False
 
@@ -89,6 +382,24 @@ class GPT4AllAPI():
         self._message_id = id
 
 
+    def download_file(self, url, installation_path, callback=None):
+        """
+        Downloads a file from a URL and displays the download progress using tqdm.
+
+        Args:
+            url (str): The URL of the file to download.
+            callback (function, optional): A callback function to be called during the download
+                with the progress percentage as an argument. Defaults to None.
+        """
+        def report_hook(count, block_size, total_size):
+            if callback is not None:
+                percentage = (count * block_size / total_size) * 100
+                callback(percentage)
+
+        urllib.request.urlretrieve(url, installation_path, reporthook=report_hook)
+        
+        if callback is not None:
+            callback(100.0)
 
     def load_backend(self, backend_path):
 
@@ -104,10 +415,8 @@ class GPT4AllAPI():
         backend_class = getattr(backend_module, backend_module.backend_name)
         return backend_class
 
-    def create_chatbot(self):
-        return self.backend(self.config)
     
-    def condition_chatbot(self, conditionning_message):
+    def condition_chatbot(self):
         if self.current_discussion is None:
             self.current_discussion = self.db.load_last_discussion()
     
@@ -196,14 +505,10 @@ class GPT4AllAPI():
 
         return string
 
-
-    def new_text_callback(self, text: str):
-        if self.cancel_gen:
-            return False
-        print(text, end="")
+    def process_chunk(self, chunk):
+        print(chunk[0],end="")
         sys.stdout.flush()
-        
-        self.bot_says += text
+        self.bot_says += chunk[0]
         if not self.personality.detect_antiprompt(self.bot_says):
             self.socketio.emit('message', {
                                             'data': self.bot_says, 
@@ -214,45 +519,66 @@ class GPT4AllAPI():
                                 )
             if self.cancel_gen:
                 print("Generation canceled")
+                self.process.cancel_generation()
                 self.cancel_gen = False
-                return False
-            else:
-                return True
         else:
             self.bot_says = self.remove_text_from_string(self.bot_says, self.personality.user_message_prefix.strip())
+            self.process.cancel_generation()
             print("The model is halucinating")
-            return False
-        
-    def generate_message(self):
-        self.generating=True
-        gc.collect()
-        total_n_predict = self.config['n_predict']
-        print(f"Generating {total_n_predict} outputs... ")
-        print(f"Input text :\n{self.discussion_messages}")
-        if self.config["override_personality_model_parameters"]:
-            self.chatbot_bindings.generate(
-                self.discussion_messages,
-                new_text_callback=self.new_text_callback,
-                n_predict=total_n_predict,
-                temp=self.config['temperature'],
-                top_k=self.config['top_k'],
-                top_p=self.config['top_p'],
-                repeat_penalty=self.config['repeat_penalty'],
-                repeat_last_n = self.config['repeat_last_n'],
-                seed=self.config['seed'],
-                n_threads=self.config['n_threads']
+            
+    def start_message_generation(self, message, message_id):
+        bot_says = ""
+
+        # send the message to the bot
+        print(f"Received message : {message}")
+        if self.current_discussion:
+            # First we need to send the new message ID to the client
+            self.current_ai_message_id = self.current_discussion.add_message(
+                self.personality.name, "", parent = self.current_user_message_id
+            )  # first the content is empty, but we'll fill it at the end
+            self.socketio.emit('infos',
+                    {
+                        "type": "input_message_infos",
+                        "bot": self.personality.name,
+                        "user": self.personality.user_name,
+                        "message":message,#markdown.markdown(message),
+                        "user_message_id": self.current_user_message_id,
+                        "ai_message_id": self.current_ai_message_id,
+                    }
             )
+
+            # prepare query and reception
+            self.discussion_messages = self.prepare_query(message_id)
+            self.prepare_reception()
+            self.generating = True
+            print("## Generating message ##")
+            self.process.generate(self.discussion_messages, message_id, n_predict = self.config['n_predict'])
+            self.process.started_queue.get()
+            while(self.process.is_generating.value):  # Simulating other commands being issued
+                while not self.process.generation_queue.empty():
+                    self.process_chunk(self.process.generation_queue.get())
+
+            print()
+            print("## Done ##")
+            print()
+
+            # Send final message
+            self.socketio.emit('final', {
+                                            'data': self.bot_says, 
+                                            'ai_message_id':self.current_ai_message_id, 
+                                            'parent':self.current_user_message_id, 'discussion_id':self.current_discussion.discussion_id
+                                        }
+                                )
+
+            self.current_discussion.update_message(self.current_ai_message_id, self.bot_says)
+            self.full_message_list.append(self.bot_says)
+            self.cancel_gen = False      
+            return bot_says
         else:
-            self.chatbot_bindings.generate(
-                self.discussion_messages,
-                new_text_callback=self.new_text_callback,
-                n_predict=total_n_predict,
-                temp=self.personality.model_temperature,
-                top_k=self.personality.model_top_k,
-                top_p=self.personality.model_top_p,
-                repeat_penalty=self.personality.model_repeat_penalty,
-                repeat_last_n = self.personality.model_repeat_last_n,
-                #seed=self.config['seed'],
-                n_threads=self.config['n_threads']
-            )
-        self.generating=False
+            #No discussion available
+            print("No discussion selected!!!")
+            print("## Done ##")
+            print()
+            self.cancel_gen = False
+            return ""
+    

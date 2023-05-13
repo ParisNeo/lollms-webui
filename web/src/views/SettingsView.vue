@@ -171,7 +171,7 @@
                         </div>
 
                         <input id="temperature" @change="update_setting('temperature', $event.target.value)" type="range"
-                            v-model="configFile.temp" min="0" max="5" step="0.1"
+                            v-model="configFile.temperature" min="0" max="5" step="0.1"
                             class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     </div>
                 </div>
@@ -297,7 +297,7 @@ import { nextTick } from 'vue'
 import MessageBox from "@/components/MessageBox.vue";
 import YesNoDialog from "@/components/YesNoDialog.vue";
 import ModelEntry from '@/components/ModelEntry.vue';
-import { socket, state } from '@/services/websocket.js'
+import socket from '@/services/websocket.js'
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
     components: {
@@ -315,8 +315,6 @@ export default {
     data() {
 
         return {
-            // Websocket
-            socket: socket,
             // Models zoo installer stuff
             models: [],
             // Accordeon stuff     
@@ -348,40 +346,40 @@ export default {
         },
         onSelected(model_object){
             console.log("Selected model")
-            update_setting('model', model_object.title)
+            this.update_setting('model', model_object.title, (res)=>{console.log("Model selected"); })
         },
         // Model installation
         onInstall(model_object) {
-            let isInstalled = model_object.isInstalled
-            let path = model_object.path
+            let path = model_object.path;
             this.showProgress = true;
             this.progress = 0;
-            console.log("installing...")
+            console.log("installing...");
 
+            // Use an arrow function for progressListener
             const progressListener = (response) => {
+                console.log("received something");
                 if (response.status === 'progress') {
-                this.progress = message.progress;
+                    console.log(`Progress = ${response.progress}`);
+                    this.progress = response.progress;
                 } else if (response.status === 'succeeded') {
-                // Installation completed
-                model_object.installing = false;
-                this.showProgress = false;
-                // Update the isInstalled property of the corresponding model
-                const index = this.models.findIndex((model) => model.path === path);
-                this.models[index].isInstalled = true;
+                    socket.off('install_progress', progressListener);
+                    // Update the isInstalled property of the corresponding model
+                    const index = this.models.findIndex((model) => model.path === path);
+                    this.models[index].isInstalled = true;
+                    this.showProgress = false;
 
-                this.socket.off('install_progress', progressListener);
                 } else if (response.status === 'failed') {
-                // Installation failed or encountered an error
-                model_object.installing = false;
-                this.showProgress = false;
-                this.socket.off('install_progress', progressListener);
-                console.error('Installation failed:', message.error);
+                    socket.off('install_progress', progressListener);
+                    // Installation failed or encountered an error
+                    model_object.installing = false;
+                    this.showProgress = false;
+                    console.error('Installation failed:', message.error);
                 }
             };
-            this.socket.on('install_progress', progressListener);            
-            this.socket.emit('install_model', { path: path });
-            
 
+            socket.on('install_progress', progressListener);
+            socket.emit('install_model', { path: path });
+            console.log("Started installation, please wait");
         },
         onUninstall(model_object) {
             console.log("uninstalling model...")
@@ -389,24 +387,23 @@ export default {
                 if (response.status === 'progress') {
                     this.progress = message.progress;
                 } else if (response.status === 'succeeded') {
+                    console.log(model_object)
                     // Installation completed
                     model_object.uninstalling = false;
-
+                    socket.off('install_progress', progressListener);
                     this.showProgress = false;
-                    // Update the isInstalled property of the corresponding model
-                    model_object.isInstalled = false;
-
-                    this.socket.off('install_progress', progressListener);
+                    const index = this.models.findIndex((model) => model.path === model_object.path);
+                    this.models[index].isInstalled = false;
                 } else if (response.status === 'failed') {
                     // Installation failed or encountered an error
                     model_object.uninstalling = false;
                     this.showProgress = false;
-                    this.socket.off('install_progress', progressListener);
+                    socket.off('install_progress', progressListener);
                     console.error('Installation failed:', message.error);
                 }
             };
-            this.socket.on('install_progress', progressListener);            
-            this.socket.emit('uninstall_model', { path: model_object.path });
+            socket.on('install_progress', progressListener);            
+            socket.emit('uninstall_model', { path: model_object.path });
         },
         // messagebox ok stuff
         onMessageBoxOk() {
@@ -426,7 +423,7 @@ export default {
             this.api_get_req("get_config").then(response => { 
                 this.configFile = response 
                 console.log("selecting model")
-                self.models.forEach(model => {
+                this.models.forEach(model => {
                     console.log(`${model} -> ${response["model"]}`)
                     if(model.title==response["model"]){
                         model.selected=true;
@@ -459,7 +456,7 @@ export default {
         },
         update_backend(value) {
             console.log("Upgrading backend")
-            res = this.update_setting('backend', value, (res)=>{console.log("Backend changed"); })
+            this.update_setting('backend', value, (res)=>{console.log("Backend changed"); this.fetchModels(); })
         },
         save_configuration() {
             this.showConfirmation = false
