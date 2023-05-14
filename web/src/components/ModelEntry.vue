@@ -26,9 +26,9 @@
         <template v-if="installing">
           <div class="flex items-center space-x-2">
             <div class="h-2 w-20 bg-gray-300 rounded">
-              <div :style="{ width: progress + '%' }" class="h-full bg-green-500"></div>
+              <div :style="{ width: progress + '%'}" class="h-full bg-red-500 rounded"></div>
             </div>
-            <span>Installing...</span>
+            <span>Installing...{{ Math.floor(progress) }}%</span>
           </div>
         </template>
         <template v-else-if="uninstalling">
@@ -51,10 +51,6 @@
 import socket from '@/services/websocket.js'
 export default {
   props: {
-    progress: {
-      type: Number,
-      default: 0
-    },
     title: String,
     icon: String,
     path: String,
@@ -67,6 +63,7 @@ export default {
   },
   data() {
     return {
+      progress: 0,
       installing: false,
       uninstalling: false
     };
