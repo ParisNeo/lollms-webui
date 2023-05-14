@@ -13,7 +13,7 @@ from accelerate import init_empty_weights
 from accelerate import load_checkpoint_and_dispatch
 from transformers import AutoTokenizer
 from transformers import AutoConfig, AutoModelForCausalLM
-from pyGpt4All.backend import GPTBackend
+from gpt4all_api.backend import GPTBackend
 import torch
 
 __author__ = "parisneo"
@@ -38,10 +38,6 @@ class HuggingFace(GPTBackend):
         config_path = AutoConfig.from_pretrained(config["model"])
         self.tokenizer = AutoTokenizer.from_pretrained(config["model"])
         self.model = AutoModelForCausalLM.from_pretrained(config["model"], load_in_8bit=True, device_map='auto')
-
-
-    def stop_generation(self):
-        self.model._grab_text_callback()
 
     def generate(self, 
                  prompt:str,                  

@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Callable
 from transformers import AutoTokenizer, TextGenerationPipeline
 from auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig
-from pyGpt4All.backend import GPTBackend
+from gpt4all_api.backend import GPTBackend
 import torch
 import yaml
 
@@ -37,11 +37,6 @@ class GPTQ(GPTBackend):
         # load quantized model, currently only support cpu or single gpu
         self.model = AutoGPTQForCausalLM.from_pretrained(self.model_dir, BaseQuantizeConfig())
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_dir, use_fast=True    )
-
-
-
-    def stop_generation(self):
-        self.model._grab_text_callback()
 
     def generate(self, 
                  prompt:str,                  

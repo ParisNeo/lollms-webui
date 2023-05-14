@@ -34,9 +34,6 @@ class GptJ(GPTBackend):
                 prompt_context="", prompt_prefix="", prompt_suffix=""
                 )
 
-    def stop_generation(self):
-        self.model._grab_text_callback()
-
     def generate(self, 
                  prompt:str,                  
                  n_predict: int = 128,

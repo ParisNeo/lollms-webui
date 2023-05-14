@@ -34,9 +34,6 @@ class GPTJ(GPTBackend):
                 model=f"./models/llama_cpp/{self.config['model']}", avx2 = self.config["use_avx2"]
                 )
 
-    def stop_generation(self):
-        self.model._grab_text_callback()
-
     def generate(self, 
                  prompt:str,                  
                  n_predict: int = 128,

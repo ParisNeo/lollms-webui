@@ -35,9 +35,6 @@ class GPT4ALL(GPTBackend):
                 model_path=f"./models/gpt_4all/{self.config['model']}",
         )
 
-    def stop_generation(self):
-        self.model._grab_text_callback()
-
     def generate(self, 
                  prompt:str,                  
                  n_predict: int = 128,

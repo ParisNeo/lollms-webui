@@ -167,34 +167,39 @@ class ModelProcess:
                 time.sleep(1)
                 print(ex)
     def _generate(self, prompt, id, n_predict):
-        self.id = id        
-        if self.config["override_personality_model_parameters"]:
-            self.model.generate(
-                prompt,
-                new_text_callback=self._callback,
-                n_predict=n_predict,
-                temp=self.config['temperature'],
-                top_k=self.config['top_k'],
-                top_p=self.config['top_p'],
-                repeat_penalty=self.config['repeat_penalty'],
-                repeat_last_n = self.config['repeat_last_n'],
-                seed=self.config['seed'],
-                n_threads=self.config['n_threads']
-            )
+        if self.model is not None:
+            self.id = id
+            if self.config["override_personality_model_parameters"]:
+                self.model.generate(
+                    prompt,
+                    new_text_callback=self._callback,
+                    n_predict=n_predict,
+                    temp=self.config['temperature'],
+                    top_k=self.config['top_k'],
+                    top_p=self.config['top_p'],
+                    repeat_penalty=self.config['repeat_penalty'],
+                    repeat_last_n = self.config['repeat_last_n'],
+                    seed=self.config['seed'],
+                    n_threads=self.config['n_threads']
+                )
+            else:
+                self.model.generate(
+                    prompt,
+                    new_text_callback=self._callback,
+                    n_predict=n_predict,
+                    temp=self.personality.model_temperature,
+                    top_k=self.personality.model_top_k,
+                    top_p=self.personality.model_top_p,
+                    repeat_penalty=self.personality.model_repeat_penalty,
+                    repeat_last_n = self.personality.model_repeat_last_n,
+                    #seed=self.config['seed'],
+                    n_threads=self.config['n_threads']
+                )
         else:
-            self.model.generate(
-                prompt,
-                new_text_callback=self._callback,
-                n_predict=n_predict,
-                temp=self.personality.model_temperature,
-                top_k=self.personality.model_top_k,
-                top_p=self.personality.model_top_p,
-                repeat_penalty=self.personality.model_repeat_penalty,
-                repeat_last_n = self.personality.model_repeat_last_n,
-                #seed=self.config['seed'],
-                n_threads=self.config['n_threads']
-            )
-        
+            print("No model is installed or selected. Please make sure to install a model and select it inside your configuration before attempting to communicate with the model.")
+            print("To do this: Install the model to your models/<backend name> folder.")
+            print("Then set your model information in your local configuration file that you can find in configs/local_default.yaml")
+            print("You can also use the ui to set your model in the settings page.")
     def _callback(self, text):
         if not self.ready:
             print(".",end="")
