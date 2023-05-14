@@ -5,15 +5,9 @@
     </div>
     <div class="flex-1">
       <h3 class="font-bold text-lg">
-        <input
-          type="radio"
-          :checked="selected"
-          :disabled="!isInstalled"
-          @change="handleSelection"
-        />
         {{ title }}
       </h3>
-      <a :href="path">{{ title }}</a>
+      <a :href="path" title="Download this manually (faster) and put it in the models/<your backend> folder then refresh">{{ title }}</a>
       <p class="opacity-80">{{ description }}</p>
     </div>
     <div class="flex-shrink-0">

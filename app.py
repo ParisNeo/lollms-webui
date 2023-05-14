@@ -527,7 +527,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
             print("New backend selected")
             
             self.config['backend'] = backend
-            backend_ =self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
+            backend_ =self.process.load_backend(Path("backends")/config["backend"])
             models = backend_.list_models(self.config)
             if len(models)>0:      
                 self.backend = backend_

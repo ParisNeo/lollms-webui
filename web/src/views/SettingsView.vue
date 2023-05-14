@@ -52,21 +52,32 @@
 
                     </select>
                 </div>
+                <div class="m-2">
+                    <label for="model" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Model:
+                    </label>
+                    <select id="model" @change="update_model($event.target.value)"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                        <option v-for="item in modelsArr" :selected="item === configFile.model">{{ item }}</option>
+
+                    </select>
+                </div>                
             </div>
         </div>
         <div
             class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
             <div class="flex flex-row ">
-                <button @click.stop="bec_collapsed = !bec_collapsed"
+                <button @click.stop="mzc_collapsed = !mzc_collapsed"
                     class="text-2xl hover:text-primary duration-75  p-2 -m-2 w-full text-left active:translate-y-1">
                     <!-- <i data-feather="chevron-right"></i> -->
 
                     <h3 class="text-lg font-semibold cursor-pointer select-none "
-                        @click.stop="bec_collapsed = !bec_collapsed">
+                        @click.stop="mzc_collapsed = !mzc_collapsed">
                         Models zoo</h3>
                 </button>
             </div>
-            <div :class="{ 'hidden': bec_collapsed }" class="flex flex-col mb-2 p-2">
+            <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 p-2">
                 <div v-if="models.length > 0" class="my-2">
                     <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Install more models:
@@ -132,7 +143,29 @@
                 </div>
             </div>
         </div>
+        <div
+            class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+            <div class="flex flex-row ">
+                <button @click.stop="pzc_collapsed = !pzc_collapsed"
+                    class="text-2xl hover:text-primary duration-75  p-2 -m-2 w-full text-left active:translate-y-1">
+                    <!-- <i data-feather="chevron-right"></i> -->
 
+                    <h3 class="text-lg font-semibold cursor-pointer select-none "
+                        @click.stop="pzc_collapsed = !pzc_collapsed">
+                        Personalities zoo</h3>
+                </button>
+            </div>
+            <div :class="{ 'hidden': pzc_collapsed }" class="flex flex-col mb-2 p-2">
+                <div v-if="models.length > 0" class="my-2">
+                    <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Install more models:
+                    </label>
+                    <div class="overflow-y-auto max-h-96 no-scrollbar p-2">
+
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- MODEL -->
         <div
             class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
@@ -297,13 +330,15 @@ import { nextTick } from 'vue'
 import MessageBox from "@/components/MessageBox.vue";
 import YesNoDialog from "@/components/YesNoDialog.vue";
 import ModelEntry from '@/components/ModelEntry.vue';
+import PersonalityViewer from '@/components/PersonalityViewer.vue';
 import socket from '@/services/websocket.js'
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
     components: {
         MessageBox,
         YesNoDialog,
-        ModelEntry
+        ModelEntry,
+        PersonalityViewer
     },
     setup() {
 
@@ -317,12 +352,16 @@ export default {
         return {
             // Models zoo installer stuff
             models: [],
+            personalities:[],
             // Accordeon stuff     
-            bec_collapsed: false,
-            pc_collapsed: false,
-            mc_collapsed: false,
+            bec_collapsed: true,
+            mzc_collapsed: true, // models zoo
+            pzc_collapsed: true, // personalities zoo
+            pc_collapsed: true,
+            mc_collapsed: true,
             // Settings stuff
             backendsArr: [],
+            modelsArr: [],
             persLangArr: [],
             persCatgArr: [],
             persArr: [],
@@ -458,6 +497,10 @@ export default {
             console.log("Upgrading backend")
             this.update_setting('backend', value, (res)=>{console.log("Backend changed"); this.fetchModels(); })
         },
+        update_model(value) {
+            console.log("Upgrading model")
+            this.update_setting('model', value, (res)=>{console.log("Model changed"); this.fetchModels(); })
+        },
         save_configuration() {
             this.showConfirmation = false
             axios.post('/save_settings', {})
@@ -529,6 +572,7 @@ export default {
         this.configFile = await this.api_get_req("get_config")
 
         this.backendsArr = await this.api_get_req("list_backends")
+        this.modelsArr =  await this.api_get_req("list_models")
         this.persLangArr = await this.api_get_req("list_personalities_languages")
         this.persCatgArr = await this.api_get_req("list_personalities_categories")
         this.persArr = await this.api_get_req("list_personalities")
