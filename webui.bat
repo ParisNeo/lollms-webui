@@ -262,46 +262,6 @@ if not exist \models (
     md \models
 )
 
-dir ".\models\llama_cpp\*.bin" /b 2>&1
-if errorlevel 1 (
-    echo.
-    choice /C YNB /M "The default model file (gpt4all-lora-quantized-ggml.bin) does not exist. Do you want to download it? Press B to download it with a browser (faster)."
-    if errorlevel 3 goto DOWNLOAD_WITH_BROWSER
-    if errorlevel 2 goto DOWNLOAD_SKIP
-    if errorlevel 1 goto MODEL_DOWNLOAD
-) ELSE (
-    echo Model already installed
-    goto CONTINUE
-)
-
-:DOWNLOAD_WITH_BROWSER
-start https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin
-echo Link has been opened with the default web browser, make sure to save it into the models/llama_cpp folder before continuing. Press any key to continue...
-pause
-goto :CONTINUE
-
-:MODEL_DOWNLOAD
-echo.
-echo Downloading latest model...
-set clone_dir=%cd%
-powershell -Command "Invoke-WebRequest -Uri 'https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin' -OutFile %clone_dir%'/models/llama_cpp/gpt4all-lora-quantized-ggml.bin'"
-if errorlevel 1 (
-    echo Failed to download model. Please check your internet connection.
-    choice /C YN /M "Do you want to try downloading again?"
-    if errorlevel 2 goto DOWNLOAD_SKIP
-    if errorlevel 1 goto MODEL_DOWNLOAD
-) else (
-    echo Model successfully downloaded.
-)
-goto :CONTINUE
-
-:DOWNLOAD_SKIP
-echo.
-echo Skipping download of model file...
-goto :CONTINUE
-
-:CONTINUE
-
 :END
 if exist "./tmp"  (
 echo Cleaning tmp folder
