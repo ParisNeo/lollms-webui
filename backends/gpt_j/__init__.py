@@ -30,10 +30,8 @@ class GptJ(GPTBackend):
         super().__init__(config, False)
         
         self.model = Model(
-                model_path=f"./models/llama_cpp/{self.config['model']}",
-                prompt_context="", prompt_prefix="", prompt_suffix="",
-                n_ctx=self.config['ctx_size'], 
-                seed=self.config['seed'],
+                model_path=f"./models/gpt_j/{self.config['model']}",
+                prompt_context="", prompt_prefix="", prompt_suffix=""
                 )
 
     def stop_generation(self):
@@ -60,8 +58,8 @@ class GptJ(GPTBackend):
                                             temp=self.config['temperature'],
                                             top_k=self.config['top_k'],
                                             top_p=self.config['top_p'],
-                                            repeat_penalty=self.config['repeat_penalty'],
-                                            repeat_last_n = self.config['repeat_last_n'],
+                                            #repeat_penalty=self.config['repeat_penalty'],
+                                            #repeat_last_n = self.config['repeat_last_n'],
                                             n_threads=self.config['n_threads'],
                                            ):
                 if not new_text_callback(tok):
