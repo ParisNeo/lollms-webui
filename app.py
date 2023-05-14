@@ -589,7 +589,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
         save_config(self.config, self.config_file_path)
         
         self.process.set_config(self.config)
-        self.backend = self.process.rebuild_backend()
+        # Fixed missing argument
+        self.backend = self.process.rebuild_backend(self.config)
 
         print("==============================================")
         print("Parameters changed to:")
