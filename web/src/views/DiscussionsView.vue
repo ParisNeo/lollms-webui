@@ -427,40 +427,44 @@ export default {
             // Update previous message with reponse user data
             //
             // msgObj
-            //
+            // "status": "if the model is not ready this will inform the user that he can't promt the model"
             // "type": "input_message_infos",
             // "bot": self.personality.name,
             // "user": self.personality.user_name,
             // "message":message,#markdown.markdown(message),
             // "user_message_id": self.current_user_message_id,
             // "ai_message_id": self.current_ai_message_id,
-
-            this.updateLastUserMsg(msgObj)
-            // Create response message
-            let responseMessage = {
-                content: "✍ please stand by ...",//msgObj.message,
-                id: msgObj.ai_message_id,
-                parent: msgObj.user_message_id,
-                rank: 0,
-                sender: msgObj.bot,
-                //type: msgObj.type
-            }
-            this.discussionArr.push(responseMessage)
-            nextTick(() => {
-                const msgList = document.getElementById('messages-list')
-
-                this.scrollBottom(msgList)
-
-            })
-
-            if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
-                if (msgObj.type == "input_message_infos") {
-                    // This is a user input
-                    this.changeTitleUsingUserMSG(this.currentDiscussion.id, msgObj.message)
-
+            if(msg["status"]=="generation_started"){
+                this.updateLastUserMsg(msgObj)
+                // Create response message
+                let responseMessage = {
+                    content: "✍ please stand by ...",//msgObj.message,
+                    id: msgObj.ai_message_id,
+                    parent: msgObj.user_message_id,
+                    rank: 0,
+                    sender: msgObj.bot,
+                    //type: msgObj.type
                 }
+                this.discussionArr.push(responseMessage)
+                nextTick(() => {
+                    const msgList = document.getElementById('messages-list')
+
+                    this.scrollBottom(msgList)
+
+                })
+
+                if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
+                    if (msgObj.type == "input_message_infos") {
+                        // This is a user input
+                        this.changeTitleUsingUserMSG(this.currentDiscussion.id, msgObj.message)
+
+                    }
+                }
+                console.log("infos", msgObj)                
             }
-            console.log("infos", msgObj)
+            else{
+                alert("It seems that no model has been loaded. Please download and install a model first, then try again.");
+            }
         },
         sendMsg(msg) {
             // Sends message to backend

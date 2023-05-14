@@ -38,6 +38,7 @@ class ModelProcess:
         self.started_queue = mp.Queue()
         self.process = None
         self.is_generating  = mp.Value('i', 0)
+        self.model_ready  = mp.Value('i', 0)
         self.ready = False
             
     def load_backend(self, backend_path):
@@ -103,6 +104,7 @@ class ModelProcess:
                 model_file = Path("models")/self.config["backend"]/self.config["model"]
                 print(f"Loading model : {model_file}")
                 self.model = self.backend(self.config)
+                self.model_ready.value = 1
                 print("Model created successfully")
             except Exception as ex:
                 print("Couldn't build model")
@@ -138,12 +140,15 @@ class ModelProcess:
     def _run(self):        
         self._rebuild_model()
         self._rebuild_personality()
-        self._generate("I",0,1)
-        print()
-        print("Ready to receive data")
-        print(f"Listening on :http://{self.config['host']}:{self.config['port']}")
+        if self.model_ready.value == 1:
+            self._generate("I",0,1)
+            print()
+            print("Ready to receive data")
+        else:
+            print("No model loaded. Waiting for new configuration instructions")
+                    
         self.ready = True
-        
+        print(f"Listening on :http://{self.config['host']}:{self.config['port']}")
         while True:
             try:
                 self._check_set_config_queue()
@@ -342,20 +347,33 @@ class GPT4AllAPI():
         
         @socketio.on('generate_msg')
         def generate_msg(data):
-            if self.current_discussion is None:
-                if self.db.does_last_discussion_have_messages():
-                    self.current_discussion = self.db.create_discussion()
-                else:
-                    self.current_discussion = self.db.load_last_discussion()
+            if self.process.model_ready.value==1:
+                if self.current_discussion is None:
+                    if self.db.does_last_discussion_have_messages():
+                        self.current_discussion = self.db.create_discussion()
+                    else:
+                        self.current_discussion = self.db.load_last_discussion()
 
-            message = data["prompt"]
-            message_id = self.current_discussion.add_message(
-                "user", message, parent=self.message_id
-            )
+                message = data["prompt"]
+                message_id = self.current_discussion.add_message(
+                    "user", message, parent=self.message_id
+                )
 
-            self.current_user_message_id = message_id
-            tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
-            tpe.start()
+                self.current_user_message_id = message_id
+                tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
+                tpe.start()
+            else:
+                self.socketio.emit('infos',
+                        {
+                            "status":'model_not_ready',
+                            "type": "input_message_infos",
+                            "bot": self.personality.name,
+                            "user": self.personality.user_name,
+                            "message":"",
+                            "user_message_id": self.current_user_message_id,
+                            "ai_message_id": self.current_ai_message_id,
+                        }
+                )
 
         @socketio.on('generate_msg_from')
         def handle_connection(data):
@@ -397,16 +415,19 @@ class GPT4AllAPI():
             callback (function, optional): A callback function to be called during the download
                 with the progress percentage as an argument. Defaults to None.
         """
-        def report_hook(count, block_size, total_size):
+        try:
+            def report_hook(count, block_size, total_size):
+                if callback is not None:
+                    percentage = (count * block_size / total_size) * 100
+                    callback(percentage)
+
+            urllib.request.urlretrieve(url, installation_path, reporthook=report_hook)
+            
             if callback is not None:
-                percentage = (count * block_size / total_size) * 100
-                callback(percentage)
-
-        urllib.request.urlretrieve(url, installation_path, reporthook=report_hook)
-        
-        if callback is not None:
-            callback(100.0)
-
+                callback(100.0)
+        except:
+            print("Couldn't download file")
+            
     def load_backend(self, backend_path):
 
         # define the full absolute path to the module
@@ -544,6 +565,7 @@ class GPT4AllAPI():
             )  # first the content is empty, but we'll fill it at the end
             self.socketio.emit('infos',
                     {
+                        "status":'generation_started',
                         "type": "input_message_infos",
                         "bot": self.personality.name,
                         "user": self.personality.user_name,
