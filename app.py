@@ -623,23 +623,26 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
         models = []
         for model in model_list:
-            filename = model['filename']
-            server = model['server']
-            filesize = model['filesize']
-            if server.endswith("/"):
-                path = f'{server}{filename}'
-            else:
-                path = f'{server}/{filename}'
-            local_path = Path(f'./models/{self.config["backend"]}/{filename}')
-            is_installed = local_path.exists()
-            models.append({
-                'title': model['filename'],
-                'icon': '/icons/default.png',  # Replace with the path to the model icon
-                'description': model['description'],
-                'isInstalled': is_installed,
-                'path': path,
-                'filesize': filesize,
-            })
+            try:
+                filename = model['filename']
+                server = model['server']
+                filesize = model['filesize']
+                if server.endswith("/"):
+                    path = f'{server}{filename}'
+                else:
+                    path = f'{server}/{filename}'
+                local_path = Path(f'./models/{self.config["backend"]}/{filename}')
+                is_installed = local_path.exists()
+                models.append({
+                    'title': model['filename'],
+                    'icon': '/icons/default.png',  # Replace with the path to the model icon
+                    'description': model['description'],
+                    'isInstalled': is_installed,
+                    'path': path,
+                    'filesize': filesize,
+                })
+            except:
+                print(f"Problem with model : {model}")
         return jsonify(models)
 
     

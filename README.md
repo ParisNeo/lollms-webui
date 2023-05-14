@@ -97,10 +97,11 @@ Now you're ready to work!
 
 # Supported backends
 Two backends are now supported:
-1 - [The llama_cpp backend by Abdeladim](https://github.com/abdeladim-s/pyllamacpp)
-2 - [The GPT-j backend by Abdeladim](https://github.com/abdeladim-s/pygptj)
-3 - [The GPT-j backend by marella](https://github.com/marella/gpt4all-j)
-4 - Hugging face's Transformers (under construction)
+
+1- [The llama_cpp backend by Abdeladim](https://github.com/abdeladim-s/pyllamacpp)
+2- [The GPT-j backend by Abdeladim](https://github.com/abdeladim-s/pygptj)
+3- [The GPT-j backend by marella](https://github.com/marella/gpt4all-j)
+4- Hugging face's Transformers (under construction)
 
 # Supported models
 You can also refuse to download the model during the install procedure and download it manually.
