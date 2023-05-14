@@ -110,6 +110,7 @@ if ping -q -c 1 google.com >/dev/null 2>&1; then
     else
       echo "is created"
     fi
+fi
 
 
 # Activate the virtual environment
