@@ -10,7 +10,7 @@
 from pathlib import Path
 from typing import Callable
 from gpt4allj import Model
-from pyGpt4All.backend import GPTBackend
+from gpt4all_api.backend import GPTBackend
 import yaml
 
 __author__ = "parisneo"

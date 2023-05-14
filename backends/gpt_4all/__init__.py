@@ -9,7 +9,7 @@
 ######
 from pathlib import Path
 from typing import Callable
-from pyllamacpp.model import Model
+from gpt4all import GPT4All
 from gpt4all_api.backend import GPTBackend
 import yaml
 
@@ -18,24 +18,22 @@ __github__ = "https://github.com/nomic-ai/gpt4all-ui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-backend_name = "LLAMACPP"
+backend_name = "GPT4ALL"
 
-class LLAMACPP(GPTBackend):
+class GPT4ALL(GPTBackend):
     file_extension='*.bin'
+    
     def __init__(self, config:dict) -> None:
-        """Builds a LLAMACPP backend
+        """Builds a GPT4ALL backend
 
         Args:
             config (dict): The configuration file
         """
         super().__init__(config, False)
-        
-        self.model = Model(
-                model_path=f"./models/llama_cpp/{self.config['model']}",
-                prompt_context="", prompt_prefix="", prompt_suffix="",
-                n_ctx=self.config['ctx_size'], 
-                seed=self.config['seed'],
-                )
+        self.model = GPT4All.get_model_from_name(self.config['model'])
+        self.model.load_model(
+                model_path=f"./models/gpt_4all/{self.config['model']}",
+        )
 
     def stop_generation(self):
         self.model._grab_text_callback()
@@ -55,7 +53,6 @@ class LLAMACPP(GPTBackend):
             verbose (bool, optional): If true, the code will spit many informations about the generation process. Defaults to False.
         """
         try:
-            self.model.reset()
             for tok in self.model.generate(prompt, 
                                            n_predict=n_predict,                                           
                                             temp=self.config['temperature'],
@@ -63,13 +60,13 @@ class LLAMACPP(GPTBackend):
                                             top_p=self.config['top_p'],
                                             repeat_penalty=self.config['repeat_penalty'],
                                             repeat_last_n = self.config['repeat_last_n'],
-                                            n_threads=self.config['n_threads'],
+                                            # n_threads=self.config['n_threads'],
                                            ):
                 if not new_text_callback(tok):
                     return
         except Exception as ex:
             print(ex)
-            
+
     @staticmethod
     def get_available_models():
         # Create the file path relative to the child class's directory

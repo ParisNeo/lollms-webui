@@ -9,22 +9,20 @@
 ######
 from pathlib import Path
 from typing import Callable
-from pygpt4all import GPT4All as Model
-from pyGpt4All.backend import GPTBackend
-import yaml
+from pygptj.model import Model
+from gpt4all_api.backend import GPTBackend
 
 __author__ = "parisneo"
 __github__ = "https://github.com/nomic-ai/gpt4all-ui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-backend_name = "GPT4ALL"
+backend_name = "GptJ"
 
-class GPT4ALL(GPTBackend):
+class GptJ(GPTBackend):
     file_extension='*.bin'
-    
     def __init__(self, config:dict) -> None:
-        """Builds a GPT4ALL backend
+        """Builds a LLAMACPP backend
 
         Args:
             config (dict): The configuration file
@@ -32,7 +30,7 @@ class GPT4ALL(GPTBackend):
         super().__init__(config, False)
         
         self.model = Model(
-                model_path=f"./models/gpt4all/{self.config['model']}",
+                model_path=f"./models/llama_cpp/{self.config['model']}",
                 prompt_context="", prompt_prefix="", prompt_suffix="",
                 n_ctx=self.config['ctx_size'], 
                 seed=self.config['seed'],
@@ -70,14 +68,3 @@ class GPT4ALL(GPTBackend):
                     return
         except Exception as ex:
             print(ex)
-
-    @staticmethod
-    def get_available_models():
-        # Create the file path relative to the child class's directory
-        backend_path = Path(__file__).parent
-        file_path = backend_path/"models.yaml"
-
-        with open(file_path, 'r') as file:
-            yaml_data = yaml.safe_load(file)
-        
-        return yaml_data

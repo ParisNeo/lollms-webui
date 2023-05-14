@@ -10,7 +10,7 @@
 import gc
 import sys
 from datetime import datetime
-from pyGpt4All.db import DiscussionsDB
+from gpt4all_api.db import DiscussionsDB
 from pathlib import Path
 import importlib
 from pyaipersonality import AIPersonality
@@ -96,6 +96,7 @@ class ModelProcess:
             
     def _rebuild_model(self):
         try:
+            print("Rebuilding model")
             self.backend = self.load_backend(Path("backends")/self.config["backend"])
             print("Backend loaded successfully")
             try:
@@ -144,21 +145,27 @@ class ModelProcess:
         self.ready = True
         
         while True:
-            self._check_cancel_queue()
-            self._check_clear_queue()
+            try:
+                self._check_set_config_queue()
+                self._check_cancel_queue()
+                self._check_clear_queue()
 
-            command = self.generate_queue.get()
-            if command is None:
-                break
+                if not self.generate_queue.empty():
+                    command = self.generate_queue.get()
+                    if command is None:
+                        break
 
-            if self.cancel_queue.empty() and self.clear_queue_queue.empty():
-                self.is_generating.value = 1
-                self.started_queue.put(1)
-                self._generate(*command)
-                while not self.generation_queue.empty():
-                    time.sleep(1)
-                self.is_generating.value = 0
- 
+                    if self.cancel_queue.empty() and self.clear_queue_queue.empty():
+                        self.is_generating.value = 1
+                        self.started_queue.put(1)
+                        self._generate(*command)
+                        while not self.generation_queue.empty():
+                            time.sleep(1)
+                        self.is_generating.value = 0
+                time.sleep(1)
+            except Exception as ex:
+                time.sleep(1)
+                print(ex)
     def _generate(self, prompt, id, n_predict):
         self.id = id        
         if self.config["override_personality_model_parameters"]:
@@ -196,6 +203,7 @@ class ModelProcess:
         else:
             # Stream the generated text to the main process
             self.generation_queue.put((text,self.id))
+            self._check_set_config_queue()
             self._check_cancel_queue()
             self._check_clear_queue()        
             # if stop generation is detected then stop
@@ -232,6 +240,7 @@ class ModelProcess:
     def _set_config(self, config):
         bk_cfg = self.config
         self.config = config
+        print("Changing configuration")
         # verify that the backend is the same
         if self.config["backend"]!=bk_cfg["backend"] or self.config["model"]!=bk_cfg["model"]:
             self._rebuild_model()

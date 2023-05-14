@@ -23,7 +23,7 @@ import traceback
 import sys
 from tqdm import tqdm
 from pyaipersonality import AIPersonality
-from pyGpt4All.db import DiscussionsDB, Discussion
+from gpt4all_api.db import DiscussionsDB, Discussion
 from flask import (
     Flask,
     Response,
@@ -56,8 +56,8 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 import time
-from pyGpt4All.config import load_config, save_config
-from pyGpt4All.api import GPT4AllAPI
+from gpt4all_api.config import load_config, save_config
+from gpt4all_api.api import GPT4AllAPI
 import shutil
 import markdown
 

@@ -86,7 +86,6 @@ export default {
     handleSelection() {
       if (this.isInstalled && !this.selected) {
         this.onSelected(this);
-        this.$set(this, 'selected', true);
       }
     }
   }
