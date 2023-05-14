@@ -360,7 +360,7 @@ export default {
                 console.log("received something");
                 if (response.status === 'progress') {
                     console.log(`Progress = ${response.progress}`);
-                    this.progress = response.progress;
+                    model_object.progress = response.progress
                 } else if (response.status === 'succeeded') {
                     socket.off('install_progress', progressListener);
                     // Update the isInstalled property of the corresponding model
@@ -373,7 +373,7 @@ export default {
                     // Installation failed or encountered an error
                     model_object.installing = false;
                     this.showProgress = false;
-                    console.error('Installation failed:', message.error);
+                    console.error('Installation failed:', response.error);
                 }
             };
 
@@ -385,7 +385,7 @@ export default {
             console.log("uninstalling model...")
             const progressListener = (response) => {
                 if (response.status === 'progress') {
-                    this.progress = message.progress;
+                    this.progress = response.progress;
                 } else if (response.status === 'succeeded') {
                     console.log(model_object)
                     // Installation completed

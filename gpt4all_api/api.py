@@ -19,6 +19,7 @@ import threading
 import time
 import requests
 import urllib.request
+from tqdm import tqdm 
 
 __author__ = "parisneo"
 __github__ = "https://github.com/nomic-ai/gpt4all-ui"
@@ -317,7 +318,6 @@ class GPT4AllAPI():
 
                 if installation_path.exists():
                     print("Error: Model already exists")
-                    data.installing = False
                     socketio.emit('install_progress',{'status': 'failed', 'error': 'model already exists'})
                 
                 socketio.emit('install_progress',{'status': 'progress', 'progress': progress})
@@ -408,25 +408,41 @@ class GPT4AllAPI():
 
     def download_file(self, url, installation_path, callback=None):
         """
-        Downloads a file from a URL and displays the download progress using tqdm.
+        Downloads a file from a URL, reports the download progress using a callback function, and displays a progress bar.
 
         Args:
             url (str): The URL of the file to download.
+            installation_path (str): The path where the file should be saved.
             callback (function, optional): A callback function to be called during the download
                 with the progress percentage as an argument. Defaults to None.
         """
         try:
-            def report_hook(count, block_size, total_size):
-                if callback is not None:
-                    percentage = (count * block_size / total_size) * 100
-                    callback(percentage)
+            response = requests.get(url, stream=True)
 
-            urllib.request.urlretrieve(url, installation_path, reporthook=report_hook)
-            
+            # Get the file size from the response headers
+            total_size = int(response.headers.get('content-length', 0))
+
+            with open(installation_path, 'wb') as file:
+                downloaded_size = 0
+                with tqdm(total=total_size, unit='B', unit_scale=True, ncols=80) as progress_bar:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        if chunk:
+                            file.write(chunk)
+                            downloaded_size += len(chunk)
+                            if callback is not None:
+                                percentage = (downloaded_size / total_size) * 100
+                                callback(percentage)
+                            progress_bar.update(len(chunk))
+
             if callback is not None:
                 callback(100.0)
-        except:
-            print("Couldn't download file")
+
+            print("File downloaded successfully")
+        except Exception as e:
+            print("Couldn't download file:", str(e))
+
+
+
             
     def load_backend(self, backend_path):
 
