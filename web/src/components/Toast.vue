@@ -5,6 +5,16 @@
             role="alert">
             <div class="flex flex-row">
                 <slot>
+                <div v-if="success"
+                    class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
+                    <i data-feather="check"></i>
+                    <span class="sr-only">Check icon</span>
+                </div>
+                <div v-if="!success" class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
+                    <i data-feather="x"></i>
+                    <span class="sr-only">Cross icon</span>
+                </div>             
+                <div class="ml-3 text-sm font-normal">{{ message }}</div>
 
                 </slot>
             </div>
@@ -19,6 +29,7 @@
                         clip-rule="evenodd"></path>
                 </svg>
             </button>
+
         </div>
     </div>
 </template>
@@ -34,12 +45,23 @@ export default {
     data() {
         return {
             show: false,
+            success: true,
+            message: ''
         };
     },
     methods: {
         close() {
             this.$emit('close')
             this.show = false
+        },
+        showToast(message, duration_s=3, success= true){
+            this.success = success;
+            this.message = message;
+            this.show = true;
+            setTimeout(() => {
+                    this.$emit('close')
+                    this.show = false
+                }, duration_s*1000);            
         }
     },
     watch: {
