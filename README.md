@@ -41,7 +41,7 @@ It's worth noting that the model has recently been launched, and it's expected t
 
 # Installation and running
 
-Make sure that your CPU supports `AVX2` instruction set. Without it, this application won't run out of the box. To check your CPU features, please visit the website of your CPU manufacturer for more information and look for `Instruction set extension: AVX2`.
+Make sure that your CPU supports `AVX2` instruction set. Without it, this application won't run out of the box (for the pyllamacpp backend). To check your CPU features, please visit the website of your CPU manufacturer for more information and look for `Instruction set extension: AVX2`.
 > **Note**
 >
 >Default model `gpt4all-lora-quantized-ggml.bin` is roughly 4GB in size.
@@ -59,6 +59,7 @@ Make sure that your CPU supports `AVX2` instruction set. Without it, this applic
 3. Run the script and wait. It should install everything and start the chatbot. Chatbot will be avaliable from web browser `http://localhost:9600`.
 > **Note**
 > During installtion, it may ask you to download a model. Feel free to accept or to download your own models depending on the backends you are using.
+
 
 Once installed, you can run the app by using `webui.bat` or `webui.sh`. The script will check for any new updates
 
@@ -144,14 +145,18 @@ Just download the model into the `models/<backend name>` folder and start using 
 
 You can find hundreds of personalities in my personal [Personalities repository](https://github.com/ParisNeo/PyAIPersonality). This new personalities format can be used for any third party applications, it builds a simple structure and format to define personalities. This format is evolutive and new fields and assets will be added in the future like personality voice or 3d animated character with prebaked motions that should allow AI to be more alive. The format is baked to support old versions while adding new capabilities for new versions making it ideal as a personality defintition format.
 
-## Personality install
-if you are on windows you can install new personalities directly using the `add_personality.bat` code:
-```bash
-add_personality.bat
-```
+### How to Install Personalities from the Zoo
 
-```bash
-bash add_personality.sh
+1. Navigate to the root directory of your repository.
+2. Run either `installations/add_personality.bat` or `installations/add_personality.sh`, depending on your operating system.
+3. Select the desired language, category, and personality from the provided options.
+4. The selected personality will be added to the list of available options.
+5. Choose the current personality:
+   - Option 1: Use the UI by going to "Settings" and selecting "Personalities".
+   - Option 2: Update the configuration file `configs/default_local.yaml` with the appropriate language, category, and personality name.
+
+Note: Ensure that you have the necessary permissions and dependencies installed before performing the above steps.
+
 ```
 
 Please don't forget to take time and give a Star if you like the project. This helps the visibility of the project.

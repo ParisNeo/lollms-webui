@@ -1,44 +1,19 @@
-- bestGPTJ: 'true'
-  description: Current best commercially licensable model based on GPT-J and trained
-    by Nomic AI on the latest curated GPT4All dataset.
-  filename: ggml-gpt4all-j-v1.3-groovy.bin
-  filesize: '3785248281'
-  isDefault: 'true'
-  md5sum: 81a09a0ddf89690372fc296ff7f625af
-  server: https://gpt4all.io/models/
+- bestLlama: 'false'
+  description: The model who started it all
+  filename: gpt4all-lora-quantized-ggml.new.bin
+  md5sum: 91f886b68fbce697e9a3cd501951e455
+  server: https://huggingface.co/ParisNeo/GPT4All/resolve/main/
+- bestLlama: 'false'
+  description: The model who started it all (uncensored version)
+  filename: gpt4all-lora-unfiltered-quantized.new.bin
+  md5sum: 91f886b68fbce697e9a3cd501951e455
+  server: https://huggingface.co/ParisNeo/GPT4All/resolve/main/
 - bestLlama: 'true'
   description: Current best non-commercially licensable model based on Llama 13b and
     trained by Nomic AI on the latest curated GPT4All dataset.
   filename: ggml-gpt4all-l13b-snoozy.bin
   filesize: '8136770688'
   md5sum: 91f886b68fbce697e9a3cd501951e455
-  server: https://gpt4all.io/models/
-- bestMPT: 'true'
-  description: Current best non-commercially licensable chat model based on MPT and
-    trained by Mosaic ML.
-  filename: ggml-mpt-7b-chat.bin
-  filesize: '4854401050'
-  isDefault: 'true'
-  md5sum: 756249d3d6abe23bde3b1ae272628640
-  requires: 2.4.1
-  server: https://gpt4all.io/models/
-- description: A commercially licensable model based on GPT-J and trained by Nomic
-    AI on the v2 GPT4All dataset.
-  filename: ggml-gpt4all-j-v1.2-jazzy.bin
-  filesize: '3785248281'
-  md5sum: 879344aaa9d62fdccbda0be7a09e7976
-  server: https://gpt4all.io/models/
-- description: A commercially licensable model based on GPT-J and trained by Nomic
-    AI on the v1 GPT4All dataset.
-  filename: ggml-gpt4all-j-v1.1-breezy.bin
-  filesize: '3785248281'
-  md5sum: 61d48a82cb188cceb14ebb8082bfec37
-  server: https://gpt4all.io/models/
-- description: A commercially licensable model based on GPT-J and trained by Nomic
-    AI on the v0 GPT4All dataset.
-  filename: ggml-gpt4all-j.bin
-  filesize: '3785248281'
-  md5sum: 5b5a3f9b858d33b29b52b89692415595
   server: https://gpt4all.io/models/
 - description: A non-commercially licensable model based on Llama 7b and trained by
     teams from UC Berkeley, CMU, Stanford, MBZUAI, and UC San Diego.
@@ -64,22 +39,9 @@
   filesize: '8136777088'
   md5sum: 6cb4ee297537c9133bddab9692879de0
   server: https://gpt4all.io/models/
-- description: A commercially licensable model base pre-trained by Mosaic ML.
-  filename: ggml-mpt-7b-base.bin
-  filesize: '4854401028'
-  md5sum: 120c32a51d020066288df045ef5d52b9
-  requires: 2.4.1
-  server: https://gpt4all.io/models/
 - description: A non-commercially licensable model based on Vicuna 13b, fine-tuned
     on ~180,000 instructions, trained by Nous Research.
   filename: ggml-nous-gpt4-vicuna-13b.bin
   filesize: '8136777088'
   md5sum: d5eafd5b0bd0d615cfd5fd763f642dfe
-  server: https://gpt4all.io/models/
-- description: A commericially licensable instruct model based on MPT and trained
-    by Mosaic ML.
-  filename: ggml-mpt-7b-instruct.bin
-  filesize: '4854401028'
-  md5sum: 1cfa4958f489f0a0d1ffdf6b37322809
-  requires: 2.4.1
   server: https://gpt4all.io/models/
