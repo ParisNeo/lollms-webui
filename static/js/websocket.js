@@ -14,7 +14,7 @@ var globals={
     waitAnimation:undefined
 }
   
-var socket = io.connect('http://' + document.domain + ':' + location.port);
+var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
 socket.on('connect', function() {
 });
@@ -22,14 +22,24 @@ socket.on('disconnect', function() {
 console.log("Disconnected")
 });
 socket.on('infos', function(msg) {
-if(globals.user_msg){
-    globals.user_msg.setSender(msg.user);
-    globals.user_msg.setMessage(msg.message);
-    globals.user_msg.setID(msg.id);
-}
-globals.bot_msg.setSender(msg.bot);
-globals.bot_msg.setID(msg.ai_message_id);
-globals.bot_msg.messageTextElement.innerHTML    = `Generating answer. Please stand by...`;    
+    console.log(msg)
+    if(msg["status"]=="generation_started"){
+        if(globals.user_msg){
+            globals.user_msg.setSender(msg.user);
+            globals.user_msg.setMessage(msg.message);
+            globals.user_msg.setID(msg.id);
+        }
+        globals.bot_msg.setSender(msg.bot);
+        globals.bot_msg.setID(msg.ai_message_id);
+        globals.bot_msg.messageTextElement.innerHTML    = `Generating answer. Please stand by...`;    
+    }
+    else{
+        globals.sendbtn.style.display="block";
+        globals.waitAnimation.style.display="none";
+        globals.stopGeneration.style.display = "none";
+        globals.is_generating = false         
+        alert("It seems that no model has been loaded. Please download and install a model first, then try again.");
+    }
 });
 
 socket.on('waiter', function(msg) {

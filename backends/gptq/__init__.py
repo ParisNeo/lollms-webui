@@ -9,33 +9,34 @@
 ######
 from pathlib import Path
 from typing import Callable
-from pyllamacpp.model import Model
+from transformers import AutoTokenizer, TextGenerationPipeline
+from auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig
 from gpt4all_api.backend import GPTBackend
+import torch
 import yaml
 
 __author__ = "parisneo"
-__github__ = "https://github.com/nomic-ai/gpt4all-ui"
+__github__ = "https://github.com/ParisNeo/GPTQ_backend"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-backend_name = "LLAMACPP"
+backend_name = "GPTQ"
 
-class LLAMACPP(GPTBackend):
-    file_extension='*.bin'
+class GPTQ(GPTBackend):
+    file_extension='*'
     def __init__(self, config:dict) -> None:
-        """Builds a LLAMACPP backend
+        """Builds a GPTQ backend
 
         Args:
             config (dict): The configuration file
         """
         super().__init__(config, False)
         
-        self.model = Model(
-                model_path=f"./models/llama_cpp/{self.config['model']}",
-                prompt_context="", prompt_prefix="", prompt_suffix="",
-                n_ctx=self.config['ctx_size'], 
-                seed=self.config['seed'],
-                )
+        self.model_dir = f'{config["model"]}'
+
+        # load quantized model, currently only support cpu or single gpu
+        self.model = AutoGPTQForCausalLM.from_pretrained(self.model_dir, BaseQuantizeConfig())
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_dir, use_fast=True    )
 
     def generate(self, 
                  prompt:str,                  
@@ -52,10 +53,13 @@ class LLAMACPP(GPTBackend):
             verbose (bool, optional): If true, the code will spit many informations about the generation process. Defaults to False.
         """
         try:
+            tok = self.tokenizer.decode(self.model.generate(**self.tokenizer(prompt, return_tensors="pt").to("cuda:0"))[0])
+            new_text_callback(tok)
+            """
             self.model.reset()
             for tok in self.model.generate(prompt, 
                                            n_predict=n_predict,                                           
-                                            temp=self.config['temperature'],
+                                            temp=self.config['temp'],
                                             top_k=self.config['top_k'],
                                             top_p=self.config['top_p'],
                                             repeat_penalty=self.config['repeat_penalty'],
@@ -64,9 +68,21 @@ class LLAMACPP(GPTBackend):
                                            ):
                 if not new_text_callback(tok):
                     return
+            """
         except Exception as ex:
             print(ex)
             
+    @staticmethod
+    def list_models(config:dict):
+        """Lists the models for this backend
+        """
+        
+        return [
+            "EleutherAI/gpt-j-6b",
+            "opt-125m-4bit"  
+            "TheBloke/medalpaca-13B-GPTQ-4bit",
+            "TheBloke/stable-vicuna-13B-GPTQ",
+        ]
     @staticmethod
     def get_available_models():
         # Create the file path relative to the child class's directory

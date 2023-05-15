@@ -131,13 +131,7 @@
         </div>
 
     </div>
-    <Toast :showProp="isCopiedToClipboard" @close="isCopiedToClipboard = false">
-        <div
-            class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
-            <i data-feather="check"></i>
-            <span class="sr-only">Check icon</span>
-        </div>
-        <div class="ml-3 text-sm font-normal">Message content copied to clipboard!</div>
+    <Toast  ref="toast">
     </Toast>
     
 </template>
@@ -148,6 +142,7 @@
 </style>
 
 <script>
+
 export default {
     setup() { },
     data() {
@@ -165,7 +160,7 @@ export default {
             isSelectAll: false,
             showConfirmation: false,
             chime: new Audio("chime_aud.wav"),
-            isCopiedToClipboard: false,
+            showToast: false,
             isSearch: false,
             isDiscussionBottom: false,
         }
@@ -426,40 +421,48 @@ export default {
             // Update previous message with reponse user data
             //
             // msgObj
-            //
+            // "status": "if the model is not ready this will inform the user that he can't promt the model"
             // "type": "input_message_infos",
             // "bot": self.personality.name,
             // "user": self.personality.user_name,
             // "message":message,#markdown.markdown(message),
             // "user_message_id": self.current_user_message_id,
             // "ai_message_id": self.current_ai_message_id,
-
-            this.updateLastUserMsg(msgObj)
-            // Create response message
-            let responseMessage = {
-                content: "✍ please stand by ...",//msgObj.message,
-                id: msgObj.ai_message_id,
-                parent: msgObj.user_message_id,
-                rank: 0,
-                sender: msgObj.bot,
-                //type: msgObj.type
-            }
-            this.discussionArr.push(responseMessage)
-            nextTick(() => {
-                const msgList = document.getElementById('messages-list')
-
-                this.scrollBottom(msgList)
-
-            })
-
-            if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
-                if (msgObj.type == "input_message_infos") {
-                    // This is a user input
-                    this.changeTitleUsingUserMSG(this.currentDiscussion.id, msgObj.message)
-
+            console.log(msgObj);
+            if(msgObj["status"]=="generation_started"){
+                this.updateLastUserMsg(msgObj)
+                // Create response message
+                let responseMessage = {
+                    content: "✍ please stand by ...",//msgObj.message,
+                    id: msgObj.ai_message_id,
+                    parent: msgObj.user_message_id,
+                    rank: 0,
+                    sender: msgObj.bot,
+                    //type: msgObj.type
                 }
+                this.discussionArr.push(responseMessage)
+                nextTick(() => {
+                    const msgList = document.getElementById('messages-list')
+
+                    this.scrollBottom(msgList)
+
+                })
+
+                if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
+                    if (msgObj.type == "input_message_infos") {
+                        // This is a user input
+                        this.changeTitleUsingUserMSG(this.currentDiscussion.id, msgObj.message)
+
+                    }
+                }
+                console.log("infos", msgObj)                
             }
-            console.log("infos", msgObj)
+            else{
+                this.$refs.toast.showToast("It seems that no model has been loaded. Please download and install a model first, then try again.",4, false)
+                this.isGenerating = false
+                this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
+                this.chime.play()
+            }
         },
         sendMsg(msg) {
             // Sends message to backend
@@ -745,15 +748,14 @@ export default {
             this.chime.play()
         },
         copyToClipBoard(content) {
-
-            this.isCopiedToClipboard = true
+            this.$refs.toast.showToast("Copied to clipboard successfully")
             nextTick(() => {
                 feather.replace()
 
             })
         },
         closeToast() {
-            this.isCopiedToClipboard = false
+            this.showToast = false
         },
         
         
@@ -831,7 +833,7 @@ export default {
     },
     computed: {
         socketConnected() {
-            return state.connected
+            return true
         },
         selectedDiscussions() {
             nextTick(() => {
@@ -856,7 +858,7 @@ import feather from 'feather-icons'
 import axios from 'axios'
 import { nextTick } from 'vue'
 
-import { socket, state } from '@/services/websocket.js'
+import socket from '@/services/websocket.js'
 
 import { onMounted } from 'vue'
 import { initFlowbite } from 'flowbite'

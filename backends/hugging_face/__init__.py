@@ -9,33 +9,35 @@
 ######
 from pathlib import Path
 from typing import Callable
-from pyllamacpp.model import Model
+from accelerate import init_empty_weights
+from accelerate import load_checkpoint_and_dispatch
+from transformers import AutoTokenizer
+from transformers import AutoConfig, AutoModelForCausalLM
 from gpt4all_api.backend import GPTBackend
-import yaml
+import torch
 
 __author__ = "parisneo"
-__github__ = "https://github.com/nomic-ai/gpt4all-ui"
+__github__ = "https://github.com/ParisNeo/GPTQ_backend"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-backend_name = "LLAMACPP"
+backend_name = "HuggingFace"
 
-class LLAMACPP(GPTBackend):
-    file_extension='*.bin'
+class HuggingFace(GPTBackend):
+    file_extension='*'
     def __init__(self, config:dict) -> None:
-        """Builds a LLAMACPP backend
+        """Builds a HuggingFace backend
 
         Args:
             config (dict): The configuration file
         """
         super().__init__(config, False)
-        
-        self.model = Model(
-                model_path=f"./models/llama_cpp/{self.config['model']}",
-                prompt_context="", prompt_prefix="", prompt_suffix="",
-                n_ctx=self.config['ctx_size'], 
-                seed=self.config['seed'],
-                )
+
+
+        # load quantized model, currently only support cpu or single gpu
+        config_path = AutoConfig.from_pretrained(config["model"])
+        self.tokenizer = AutoTokenizer.from_pretrained(config["model"])
+        self.model = AutoModelForCausalLM.from_pretrained(config["model"], load_in_8bit=True, device_map='auto')
 
     def generate(self, 
                  prompt:str,                  
@@ -52,10 +54,13 @@ class LLAMACPP(GPTBackend):
             verbose (bool, optional): If true, the code will spit many informations about the generation process. Defaults to False.
         """
         try:
+            tok = self.tokenizer.decode(self.model.generate(**self.tokenizer(prompt, return_tensors="pt").to("cuda:0"))[0])
+            new_text_callback(tok)
+            """
             self.model.reset()
             for tok in self.model.generate(prompt, 
                                            n_predict=n_predict,                                           
-                                            temp=self.config['temperature'],
+                                            temp=self.config['temp'],
                                             top_k=self.config['top_k'],
                                             top_p=self.config['top_p'],
                                             repeat_penalty=self.config['repeat_penalty'],
@@ -64,16 +69,15 @@ class LLAMACPP(GPTBackend):
                                            ):
                 if not new_text_callback(tok):
                     return
+            """
         except Exception as ex:
             print(ex)
             
     @staticmethod
-    def get_available_models():
-        # Create the file path relative to the child class's directory
-        backend_path = Path(__file__).parent
-        file_path = backend_path/"models.yaml"
-
-        with open(file_path, 'r') as file:
-            yaml_data = yaml.safe_load(file)
+    def list_models(config:dict):
+        """Lists the models for this backend
+        """
         
-        return yaml_data
+        return [
+            "EleutherAI/gpt-j-6B"
+        ]

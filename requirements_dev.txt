@@ -6,6 +6,6 @@ pyyaml
 markdown
 pyllamacpp==2.0.0
 gpt4all-j 
-pygpt4all
+gpt4all
 transformers
 pyaipersonality>=0.0.11

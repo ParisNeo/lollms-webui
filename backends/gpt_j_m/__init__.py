@@ -2,6 +2,7 @@
 # Project       : GPT4ALL-UI
 # File          : backend.py
 # Author        : ParisNeo with the help of the community
+# Underlying backend : Abdeladim's pygptj backend
 # Supported by Nomic-AI
 # Licence       : Apache 2.0
 # Description   : 
@@ -9,20 +10,21 @@
 ######
 from pathlib import Path
 from typing import Callable
-from pygpt4all import GPT4All as Model
-from pyGpt4All.backend import GPTBackend
+from gpt4allj import Model
+from gpt4all_api.backend import GPTBackend
+import yaml
 
 __author__ = "parisneo"
 __github__ = "https://github.com/nomic-ai/gpt4all-ui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-backend_name = "GPT4ALL"
+backend_name = "GPTJ"
 
-class GPT4ALL(GPTBackend):
+class GPTJ(GPTBackend):
     file_extension='*.bin'
     def __init__(self, config:dict) -> None:
-        """Builds a GPT4ALL backend
+        """Builds a LLAMACPP backend
 
         Args:
             config (dict): The configuration file
@@ -30,14 +32,8 @@ class GPT4ALL(GPTBackend):
         super().__init__(config, False)
         
         self.model = Model(
-                model_path=f"./models/gpt4all/{self.config['model']}",
-                prompt_context="", prompt_prefix="", prompt_suffix="",
-                n_ctx=self.config['ctx_size'], 
-                seed=self.config['seed'],
+                model=f"./models/llama_cpp/{self.config['model']}", avx2 = self.config["use_avx2"]
                 )
-
-    def stop_generation(self):
-        self.model._grab_text_callback()
 
     def generate(self, 
                  prompt:str,                  
@@ -55,16 +51,30 @@ class GPT4ALL(GPTBackend):
         """
         try:
             self.model.reset()
-            for tok in self.model.generate(prompt, 
-                                           n_predict=n_predict,                                           
-                                            temp=self.config['temperature'],
+            for tok in self.model.generate(
+                                            prompt, 
+                                            seed=self.config['seed'],
+                                            n_threads=self.config['n_threads'],
+                                            n_predict=n_predict,
                                             top_k=self.config['top_k'],
                                             top_p=self.config['top_p'],
+                                            temp=self.config['temperature'],
                                             repeat_penalty=self.config['repeat_penalty'],
-                                            repeat_last_n = self.config['repeat_last_n'],
-                                            n_threads=self.config['n_threads'],
+                                            repeat_last_n=self.config['repeat_last_n'],
+                                            n_batch=8,
+                                            reset=True,
                                            ):
                 if not new_text_callback(tok):
                     return
         except Exception as ex:
             print(ex)
+    @staticmethod
+    def get_available_models():
+        # Create the file path relative to the child class's directory
+        backend_path = Path(__file__).parent
+        file_path = backend_path/"models.yaml"
+
+        with open(file_path, 'r') as file:
+            yaml_data = yaml.safe_load(file)
+        
+        return yaml_data

@@ -52,21 +52,32 @@
 
                     </select>
                 </div>
+                <div class="m-2">
+                    <label for="model" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Model:
+                    </label>
+                    <select id="model" @change="update_model($event.target.value)"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                        <option v-for="item in modelsArr" :selected="item === configFile.model">{{ item }}</option>
+
+                    </select>
+                </div>                
             </div>
         </div>
         <div
             class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
             <div class="flex flex-row ">
-                <button @click.stop="bec_collapsed = !bec_collapsed"
+                <button @click.stop="mzc_collapsed = !mzc_collapsed"
                     class="text-2xl hover:text-primary duration-75  p-2 -m-2 w-full text-left active:translate-y-1">
                     <!-- <i data-feather="chevron-right"></i> -->
 
                     <h3 class="text-lg font-semibold cursor-pointer select-none "
-                        @click.stop="bec_collapsed = !bec_collapsed">
+                        @click.stop="mzc_collapsed = !mzc_collapsed">
                         Models zoo</h3>
                 </button>
             </div>
-            <div :class="{ 'hidden': bec_collapsed }" class="flex flex-col mb-2 p-2">
+            <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 p-2">
                 <div v-if="models.length > 0" class="my-2">
                     <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Install more models:
@@ -132,7 +143,29 @@
                 </div>
             </div>
         </div>
+        <div
+            class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+            <div class="flex flex-row ">
+                <button @click.stop="pzc_collapsed = !pzc_collapsed"
+                    class="text-2xl hover:text-primary duration-75  p-2 -m-2 w-full text-left active:translate-y-1">
+                    <!-- <i data-feather="chevron-right"></i> -->
 
+                    <h3 class="text-lg font-semibold cursor-pointer select-none "
+                        @click.stop="pzc_collapsed = !pzc_collapsed">
+                        Personalities zoo</h3>
+                </button>
+            </div>
+            <div :class="{ 'hidden': pzc_collapsed }" class="flex flex-col mb-2 p-2">
+                <div v-if="models.length > 0" class="my-2">
+                    <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Install more models:
+                    </label>
+                    <div class="overflow-y-auto max-h-96 no-scrollbar p-2">
+
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- MODEL -->
         <div
             class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
@@ -171,7 +204,7 @@
                         </div>
 
                         <input id="temperature" @change="update_setting('temperature', $event.target.value)" type="range"
-                            v-model="configFile.temp" min="0" max="5" step="0.1"
+                            v-model="configFile.temperature" min="0" max="5" step="0.1"
                             class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     </div>
                 </div>
@@ -297,13 +330,15 @@ import { nextTick } from 'vue'
 import MessageBox from "@/components/MessageBox.vue";
 import YesNoDialog from "@/components/YesNoDialog.vue";
 import ModelEntry from '@/components/ModelEntry.vue';
-import { socket, state } from '@/services/websocket.js'
+import PersonalityViewer from '@/components/PersonalityViewer.vue';
+import socket from '@/services/websocket.js'
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
     components: {
         MessageBox,
         YesNoDialog,
-        ModelEntry
+        ModelEntry,
+        PersonalityViewer
     },
     setup() {
 
@@ -315,16 +350,18 @@ export default {
     data() {
 
         return {
-            // Websocket
-            socket: socket,
             // Models zoo installer stuff
             models: [],
+            personalities:[],
             // Accordeon stuff     
-            bec_collapsed: false,
-            pc_collapsed: false,
-            mc_collapsed: false,
+            bec_collapsed: true,
+            mzc_collapsed: true, // models zoo
+            pzc_collapsed: true, // personalities zoo
+            pc_collapsed: true,
+            mc_collapsed: true,
             // Settings stuff
             backendsArr: [],
+            modelsArr: [],
             persLangArr: [],
             persCatgArr: [],
             persArr: [],
@@ -348,65 +385,64 @@ export default {
         },
         onSelected(model_object){
             console.log("Selected model")
-            update_setting('model', model_object.title)
+            this.update_setting('model', model_object.title, (res)=>{console.log("Model selected"); })
         },
         // Model installation
         onInstall(model_object) {
-            let isInstalled = model_object.isInstalled
-            let path = model_object.path
+            let path = model_object.path;
             this.showProgress = true;
             this.progress = 0;
-            console.log("installing...")
+            console.log("installing...");
 
+            // Use an arrow function for progressListener
             const progressListener = (response) => {
+                console.log("received something");
                 if (response.status === 'progress') {
-                this.progress = message.progress;
+                    console.log(`Progress = ${response.progress}`);
+                    model_object.progress = response.progress
                 } else if (response.status === 'succeeded') {
-                // Installation completed
-                model_object.installing = false;
-                this.showProgress = false;
-                // Update the isInstalled property of the corresponding model
-                const index = this.models.findIndex((model) => model.path === path);
-                this.models[index].isInstalled = true;
+                    socket.off('install_progress', progressListener);
+                    // Update the isInstalled property of the corresponding model
+                    const index = this.models.findIndex((model) => model.path === path);
+                    this.models[index].isInstalled = true;
+                    this.showProgress = false;
 
-                this.socket.off('install_progress', progressListener);
                 } else if (response.status === 'failed') {
-                // Installation failed or encountered an error
-                model_object.installing = false;
-                this.showProgress = false;
-                this.socket.off('install_progress', progressListener);
-                console.error('Installation failed:', message.error);
+                    socket.off('install_progress', progressListener);
+                    // Installation failed or encountered an error
+                    model_object.installing = false;
+                    this.showProgress = false;
+                    console.error('Installation failed:', response.error);
                 }
             };
-            this.socket.on('install_progress', progressListener);            
-            this.socket.emit('install_model', { path: path });
-            
 
+            socket.on('install_progress', progressListener);
+            socket.emit('install_model', { path: path });
+            console.log("Started installation, please wait");
         },
         onUninstall(model_object) {
             console.log("uninstalling model...")
             const progressListener = (response) => {
                 if (response.status === 'progress') {
-                    this.progress = message.progress;
+                    this.progress = response.progress;
                 } else if (response.status === 'succeeded') {
+                    console.log(model_object)
                     // Installation completed
                     model_object.uninstalling = false;
-
+                    socket.off('install_progress', progressListener);
                     this.showProgress = false;
-                    // Update the isInstalled property of the corresponding model
-                    model_object.isInstalled = false;
-
-                    this.socket.off('install_progress', progressListener);
+                    const index = this.models.findIndex((model) => model.path === model_object.path);
+                    this.models[index].isInstalled = false;
                 } else if (response.status === 'failed') {
                     // Installation failed or encountered an error
                     model_object.uninstalling = false;
                     this.showProgress = false;
-                    this.socket.off('install_progress', progressListener);
+                    socket.off('install_progress', progressListener);
                     console.error('Installation failed:', message.error);
                 }
             };
-            this.socket.on('install_progress', progressListener);            
-            this.socket.emit('uninstall_model', { path: model_object.path });
+            socket.on('install_progress', progressListener);            
+            socket.emit('uninstall_model', { path: model_object.path });
         },
         // messagebox ok stuff
         onMessageBoxOk() {
@@ -426,7 +462,7 @@ export default {
             this.api_get_req("get_config").then(response => { 
                 this.configFile = response 
                 console.log("selecting model")
-                self.models.forEach(model => {
+                this.models.forEach(model => {
                     console.log(`${model} -> ${response["model"]}`)
                     if(model.title==response["model"]){
                         model.selected=true;
@@ -450,12 +486,20 @@ export default {
             axios.post('/update_setting', obj).then((res) => {
                 if (res) {
                     if (next !== undefined) {
-                        next()
+                        next(res)
                     }
                     return res.data;
                 }
             })
                 .catch(error => { return { 'status': false } });
+        },
+        update_backend(value) {
+            console.log("Upgrading backend")
+            this.update_setting('backend', value, (res)=>{console.log("Backend changed"); this.fetchModels(); })
+        },
+        update_model(value) {
+            console.log("Upgrading model")
+            this.update_setting('model', value, (res)=>{console.log("Model changed"); this.fetchModels(); })
         },
         save_configuration() {
             this.showConfirmation = false
@@ -502,13 +546,7 @@ export default {
                 }
             });
         },
-        update_backend(value) {
-            res = update_setting('backend', value)
-            if (res.status) {
-                console.log("Backend changed")
-            }
 
-        },
         async api_get_req(endpoint) {
             try {
                 const res = await axios.get("/" + endpoint);
@@ -534,6 +572,7 @@ export default {
         this.configFile = await this.api_get_req("get_config")
 
         this.backendsArr = await this.api_get_req("list_backends")
+        this.modelsArr =  await this.api_get_req("list_models")
         this.persLangArr = await this.api_get_req("list_personalities_languages")
         this.persCatgArr = await this.api_get_req("list_personalities_categories")
         this.persArr = await this.api_get_req("list_personalities")

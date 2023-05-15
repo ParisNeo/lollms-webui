@@ -5,14 +5,9 @@
     </div>
     <div class="flex-1">
       <h3 class="font-bold text-lg">
-        <input
-          type="radio"
-          :checked="selected"
-          :disabled="!isInstalled"
-          @change="handleSelection"
-        />
         {{ title }}
       </h3>
+      <a :href="path" title="Download this manually (faster) and put it in the models/<your backend> folder then refresh">{{ title }}</a>
       <p class="opacity-80">{{ description }}</p>
     </div>
     <div class="flex-shrink-0">
@@ -24,13 +19,17 @@
       >
         <template v-if="installing">
           <div class="flex items-center space-x-2">
-            <div class="h-2 w-20 bg-gray-300 rounded"></div>
-            <span>Installing...</span>
+            <div class="h-2 w-20 bg-gray-300 rounded">
+              <div :style="{ width: progress + '%'}" class="h-full bg-red-500 rounded"></div>
+            </div>
+            <span>Installing...{{ Math.floor(progress) }}%</span>
           </div>
         </template>
         <template v-else-if="uninstalling">
           <div class="flex items-center space-x-2">
-            <div class="h-2 w-20 bg-gray-300 rounded"></div>
+            <div class="h-2 w-20 bg-gray-300 rounded">
+              <div :style="{ width: progress + '%' }" class="h-full bg-green-500"></div>
+            </div>
             <span>Uninstalling...</span>
           </div>
         </template>
@@ -43,7 +42,7 @@
 </template>
 
 <script>
-import { socket, state } from '@/services/websocket.js'
+import socket from '@/services/websocket.js'
 export default {
   props: {
     title: String,
@@ -58,6 +57,7 @@ export default {
   },
   data() {
     return {
+      progress: 0,
       installing: false,
       uninstalling: false
     };
@@ -76,8 +76,7 @@ export default {
     },
     handleSelection() {
       if (this.isInstalled && !this.selected) {
-        this.selected=true;
-        onSelected(this);
+        this.onSelected(this);
       }
     }
   }
