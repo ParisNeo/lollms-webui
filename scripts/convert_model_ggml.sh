@@ -1,5 +1,5 @@
 #!/bin/bash
-## Untested script
+## Untested Linux shell script
 #
 FILENAME="../models/alpaca"
 TOKENIZER="../models/alpaca/alpaca_tokenizer.model"
