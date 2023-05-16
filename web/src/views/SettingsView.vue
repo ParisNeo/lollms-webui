@@ -477,6 +477,7 @@ export default {
         // Refresh stuff
         refresh() {
             
+            console.log("Refreshing")
             // No need to refresh all lists because they never change during using application. 
             // On settings change only config file chnages.
             //
