@@ -476,14 +476,15 @@ export default {
         },
         // Refresh stuff
         refresh() {
+            
             // No need to refresh all lists because they never change during using application. 
             // On settings change only config file chnages.
             //
             //this.api_get_req("list_backends").then(response => { this.backendsArr = response })
-            //this.api_get_req("list_models").then(response => { this.modelsArr = response })
+            this.api_get_req("list_models").then(response => { this.modelsArr = response })
             //this.api_get_req("list_personalities_languages").then(response => { this.persLangArr = response })
-            //this.api_get_req("list_personalities_categories").then(response => { this.persCatgArr = response })
-            //this.api_get_req("list_personalities").then(response => { this.persArr = response })
+            this.api_get_req("list_personalities_categories").then(response => { this.persCatgArr = response })
+            this.api_get_req("list_personalities").then(response => { this.persArr = response })
             //this.api_get_req("list_languages").then(response => { this.langArr = response })
             this.api_get_req("get_config").then(response => { 
                 this.configFile = response 

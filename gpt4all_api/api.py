@@ -106,7 +106,7 @@ class ModelProcess:
                 print(f"Loading model : {model_file}")
                 self.model = self.backend(self.config)
                 self.model_ready.value = 1
-                print("Model created successfully")
+                print("Model created successfully\ntesting the model, please wait ...")
             except Exception as ex:
                 print("Couldn't build model")
                 print(ex)
@@ -472,6 +472,8 @@ class GPT4AllAPI():
             )
         
             self.current_ai_message_id = message_id
+        else:
+            message_id = 0
         return message_id
 
     def prepare_reception(self):
@@ -492,12 +494,23 @@ class GPT4AllAPI():
         messages = self.current_discussion.get_messages()
         self.full_message_list = []
         for message in messages:
-            if message["id"]<= message_id or message_id==-1: 
+            if message["id"]< message_id or message_id==-1: 
                 if message["type"]==self.db.MSG_TYPE_NORMAL:
                     if message["sender"]==self.personality.name:
                         self.full_message_list.append(self.personality.ai_message_prefix+message["content"])
                     else:
                         self.full_message_list.append(self.personality.user_message_prefix + message["content"])
+            else:
+                break
+        if self.personality.processor is not None:
+            preprocessed_prompt = self.personality.processor.process_model_input(message["content"])
+        else:
+            preprocessed_prompt = message["content"]
+        if preprocessed_prompt is not None:
+            self.full_message_list.append(self.personality.user_message_prefix+preprocessed_prompt+self.personality.link_text+self.personality.ai_message_prefix)
+        else:
+            self.full_message_list.append(self.personality.user_message_prefix+preprocessed_prompt+self.personality.link_text+self.personality.ai_message_prefix)
+
 
         link_text = self.personality.link_text
 
