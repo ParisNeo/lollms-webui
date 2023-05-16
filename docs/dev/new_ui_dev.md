@@ -36,27 +36,29 @@ This will update `/dist/` folder with all the files. Also the build will show yo
 Here we keep track of things to implement and stuff we need to do.
 ## Todo's
 
-- Add ability to select multiple discussions to export or delete [WIP]
+- Add ability to select multiple discussions to export [WIP]
 - Add toast messages for errors and successes
-- Populate settings with settings controls [WIP]
-- Connect Settings to backend, ability to save changes
 - Add DB switcher (im thinking in the settings view)
 - Make the UI work good on mobile
-- Scroll to bottom
-- Scroll to top
 - Need to fix colors for `<input />` fields
 - Create status bar for backend to display if something is generating on the backend
-- Create stop generating button
-- Fix the generated message formatting - add line breaks, also for user input messages.
 - Add ability for users to style the whole UI, either changing Hue or changing every color manually.
-- Maybe try to set the chatbox to float to the bottom (always on the bottom of the screen)
 - Create a panel in the Settings tab to create new personalities
-- Need to fix when user inputs message it shows up in the discussion array and then add new message for bot that is typing.
 - Need to investigate performance of websocket when message is being streamed back to the UI
 - On first launch of the UI force users to create "User" personality, to be used as "User" for any or all input messages.
-- Connect delete / export discussions to backend functions.
-- Need to fix when deleting multiple discussions to not loose loading animation for each discussion when list gets updated
-- Need to add loading feedback for when a new discussion is being created
+- Add drag n drop files into messages, images gets parsed as images, ability to load images from messages from DB.
+- Send files to backend - images, other files for parsing data.
+- Ability to reorder Discussions, add tags, categories
+- Export whole DB
+- Reset whole DB
+- Add text to speech to messages and chatbox
+- Add indicator to messages when non-comercial model was used. 
+- Ability to export messages that are for commercial use or open source model messages Only.
+- Ability to hide non commercial model messages.
+- Feature - bot council where you add multiple bots to discussion, give them a topic and maybe max message count or something and they ponder about the topic then summerize it all.
+- Feature voice chat with bot and voice output from bot - whisper + bard?
+- Feature under selected discussion show more options to select and add more bots, select model per discussion or per bot, tweak settings per bot or per model.
+- Easy share personality via export to a file, then drag and drop on to the webui and youre done.
 
 ## Done
 
@@ -67,3 +69,15 @@ Here we keep track of things to implement and stuff we need to do.
 - Add modal to ask user if you sure about to delete [DONE but in different way]
 - Fix up the discussion array to filter out the messages by type not by count. (conditionner and )[DONE]
 - Add title of current discussion to page [DONE]
+- Populate settings with settings controls [DONE]
+- Connect Settings to backend, ability to save changes [DONE]
+- Scroll to bottom [SCROLLBAR]
+- Scroll to top [SCROLLBAR]
+- Create stop generating button [DONE]
+- Fix the generated message formatting - add line breaks, also for user input messages. [DONE]
+- Maybe try to set the chatbox to float to the bottom (always on the bottom of the screen) [DONE]
+- Need to fix when user inputs message it shows up in the discussion array and then add new message for bot that is typing. [DONE]
+- Connect delete / export discussions to backend functions.[DONE]
+- Need to fix when deleting multiple discussions to not loose loading animation for each discussion when list gets updated [DONE]
+- Need to add loading feedback for when a new discussion is being created [DONE]
+- Add ability to select multiple discussions to delete [DONE]
