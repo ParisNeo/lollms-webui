@@ -28,6 +28,58 @@ __license__ = "Apache 2.0"
 
 
 
+import subprocess
+import pkg_resources
+
+
+# ===========================================================
+# Manage automatic install scripts
+
+def is_package_installed(package_name):
+    try:
+        dist = pkg_resources.get_distribution(package_name)
+        return True
+    except pkg_resources.DistributionNotFound:
+        return False
+
+
+def install_package(package_name):
+    try:
+        # Check if the package is already installed
+        __import__(package_name)
+        print(f"{package_name} is already installed.")
+    except ImportError:
+        print(f"{package_name} is not installed. Installing...")
+        
+        # Install the package using pip
+        subprocess.check_call(["pip", "install", package_name])
+        
+        print(f"{package_name} has been successfully installed.")
+
+
+def parse_requirements_file(requirements_path):
+    with open(requirements_path, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                # Skip empty and commented lines
+                continue
+            package_name, _, version_specifier = line.partition('==')
+            package_name, _, version_specifier = line.partition('>=')
+            if is_package_installed(package_name):
+                # The package is already installed
+                print(f"{package_name} is already installed.")
+            else:
+                # The package is not installed, install it
+                if version_specifier:
+                    install_package(f"{package_name}{version_specifier}")
+                else:
+                    install_package(package_name)
+
+
+# ===========================================================
+
+
 class ModelProcess:
     def __init__(self, config=None):
         self.config = config
@@ -42,7 +94,11 @@ class ModelProcess:
         self.model_ready  = mp.Value('i', 0)
         self.ready = False
             
-    def load_backend(self, backend_path):
+    def load_backend(self, backend_path:Path):
+        # first find out if there is a requirements.txt file
+        requirements_file = backend_path/"requirements.txt"
+        if requirements_file.exists():
+            parse_requirements_file(requirements_file)        
 
         # define the full absolute path to the module
         absolute_path = backend_path.resolve()
@@ -88,6 +144,7 @@ class ModelProcess:
     
     def rebuild_backend(self, config):
         try:
+            
             backend = self.load_backend(Path("backends")/config["backend"])
             print("Backend loaded successfully")
         except Exception as ex:
@@ -239,6 +296,7 @@ class ModelProcess:
         while not self.set_config_queue.empty():
             config = self.set_config_queue.get()
             if config is not None:
+                print("Inference process : Setting configuration")
                 self._set_config(config)
 
     def _cancel_generation(self):

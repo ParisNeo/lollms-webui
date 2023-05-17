@@ -7,6 +7,10 @@
 # Licence       : Apache 2.0
 # Description   : 
 # This is an interface class for GPT4All-ui backends.
+
+# This backend is a wrapper to marella's backend
+# Follow him on his github project : https://github.com/marella/gpt4all-j 
+
 ######
 from pathlib import Path
 from typing import Callable

@@ -1,0 +1,29 @@
+- bestLlama: 'true'
+  license: Non commercial
+  description: The official open assistant 30B model finally here
+  filename: OpenAssistant-SFT-7-Llama-30B.ggml.q4_0.bin
+  sha256: 32fd44c685fbf429810db593e2db8aa42a7e1be2cd3571b6005d53b029acfcf5
+  server: https://huggingface.co/TheBloke/OpenAssistant-SFT-7-Llama-30B-GGML/resolve/main/
+
+- bestLlama: 'true'
+  license: Non commercial
+  description: The wizardVicuna model 13B
+  filename: wizard-vicuna-13B.ggml.q4_0.bin
+  sha256: 32fd44c685fbf429810db593e2db8aa42a7e1be2cd3571b6005d53b029acfcf5
+  server: https://huggingface.co/TheBloke/wizard-vicuna-13B-GGML/resolve/main/
+
+- bestLlama: 'true'
+  license: Non commercial
+  description: The wizardLM model 7B
+  filename: WizardLM-7B-uncensored.ggml.q4_0.bin
+  sha256: b1e53a3c3a9389b9c5d81e0813cfb90ebaff6acad1733fad08cd28974fa3ac30
+  server: https://huggingface.co/TheBloke/WizardLM-7B-uncensored-GGML/resolve/main/
+
+- bestLlama: 'true'
+  license: Non commercial
+  description: The wizardLM model uncensored
+  filename: WizardLM-7B-uncensored.ggml.q4_0.bin
+  md5sum: b1e53a3c3a9389b9c5d81e0813cfb90ebaff6acad1733fad08cd28974fa3ac30
+  server: https://huggingface.co/TheBloke/WizardLM-7B-uncensored-GGML/resolve/main/
+
+
