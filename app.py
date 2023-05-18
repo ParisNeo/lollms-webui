@@ -45,7 +45,7 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
-socketio = SocketIO(app,  cors_allowed_origins="*", async_mode='gevent', ping_timeout=60, ping_interval=15)
+socketio = SocketIO(app,  cors_allowed_origins="*", async_mode='gevent', ping_timeout=200, ping_interval=15)
 
 app.config['SECRET_KEY'] = 'secret!'
 # Set the logging level to WARNING or higher
