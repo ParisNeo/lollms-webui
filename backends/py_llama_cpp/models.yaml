@@ -1,0 +1,11 @@
+- bestLlama: 'true'
+  description: The official open assistant 30B model finally here
+  filename: OpenAssistant-SFT-7-Llama-30B.ggml.q4_0.bin
+  md5sum: 91f886b68fbce697e9a3cd501951e455
+  server: https://huggingface.co/TheBloke/OpenAssistant-SFT-7-Llama-30B-GGML/resolve/main/
+
+- bestLlama: 'true'
+  description: Stable vicuna 13B
+  filename: stable-vicuna-13B.ggml.q5_1.bin
+  md5sum: 91f886b68fbce697e9a3cd501951e455
+  server: https://huggingface.co/TheBloke/stable-vicuna-13B-GGML/resolve/main/

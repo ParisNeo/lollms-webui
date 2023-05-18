@@ -13,6 +13,7 @@
                     <i data-feather="check"></i>
                 </button>
 
+
             </div>
             <!-- SAVE AND RESET -->
             <div v-if="!showConfirmation" class="flex gap-3 flex-1 items-center ">
@@ -23,6 +24,10 @@
                 <button title="Reset configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90"
                     @click="reset_configuration()">
                     <i data-feather="refresh-ccw"></i>
+                </button>
+                <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Collapse / Expand all panels"
+                    type="button" @click.stop="all_collapsed=!all_collapsed">
+                    <i data-feather="list"></i>
                 </button>
             </div>
 
@@ -68,23 +73,23 @@
             </div>
         </div>
         <div
-            class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
-            <div class="flex flex-row ">
+            class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+            <div class="flex flex-row p-3">
                 <button @click.stop="mzc_collapsed = !mzc_collapsed"
                     class="text-2xl hover:text-primary duration-75  p-2 -m-2 w-full text-left active:translate-y-1">
-                    <!-- <i data-feather="chevron-right"></i> -->
+                  
 
                     <h3 class="text-lg font-semibold cursor-pointer select-none "
                         @click.stop="mzc_collapsed = !mzc_collapsed">
                         Models zoo</h3>
                 </button>
             </div>
-            <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 p-2">
-                <div v-if="models.length > 0" class="my-2">
+            <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                <div v-if="models.length > 0" class="mb-2">
                     <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Install more models:
                     </label>
-                    <div class="overflow-y-auto max-h-96 no-scrollbar p-2">
+                    <div ref="modelZoo" class="overflow-y-auto no-scrollbar p-2 pb-0" :class="mzl_collapsed ? '':'max-h-96'">
                         <model-entry v-for="(model, index) in models" :key="index" :title="model.title" :icon="model.icon"
                             :path="model.path" :description="model.description" :is-installed="model.isInstalled"
                             :on-install="onInstall"
@@ -92,7 +97,17 @@
                             :on-selected="onSelected" />
                     </div>
                 </div>
+                 <!-- EXPAND / COLLAPSE BUTTON -->
+                <button v-if="mzl_collapsed" class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg " title="Collapse"
+                    type="button" @click="mzl_collapsed = !mzl_collapsed">
+                    <i  data-feather="chevron-up" ></i>  
+                </button>
+                <button v-else class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg " title="Expand"
+                    type="button" @click="mzl_collapsed = !mzl_collapsed">
+                    <i  data-feather="chevron-down" ></i>  
+                </button>
             </div>
+
         </div>
         <!-- PERSONALITY -->
         <div
@@ -361,12 +376,16 @@ export default {
             // Models zoo installer stuff
             models: [],
             personalities:[],
-            // Accordeon stuff     
+            // Accordeon stuff 
+            collapsedArr:[],
+            all_collapsed:true,    
             bec_collapsed: true,
             mzc_collapsed: true, // models zoo
             pzc_collapsed: true, // personalities zoo
             pc_collapsed: true,
             mc_collapsed: true,
+            // Zoo accordeoon
+            mzl_collapsed:false,
             // Settings stuff
             backendsArr: [],
             modelsArr: [],
@@ -382,6 +401,13 @@ export default {
     created() {
         this.fetchModels();
     }, methods: {
+        collapseAll(val){
+            this.bec_collapsed=val
+            this.mzc_collapsed=val
+            this.pzc_collapsed=val
+            this.pc_collapsed=val
+            this.mc_collapsed=val
+        },
         fetchModels() {
             axios.get('/get_available_models')
                 .then(response => {
@@ -460,14 +486,16 @@ export default {
         },
         // Refresh stuff
         refresh() {
+            
+            console.log("Refreshing")
             // No need to refresh all lists because they never change during using application. 
             // On settings change only config file chnages.
             //
             //this.api_get_req("list_backends").then(response => { this.backendsArr = response })
-            //this.api_get_req("list_models").then(response => { this.modelsArr = response })
+            this.api_get_req("list_models").then(response => { this.modelsArr = response })
             //this.api_get_req("list_personalities_languages").then(response => { this.persLangArr = response })
-            //this.api_get_req("list_personalities_categories").then(response => { this.persCatgArr = response })
-            //this.api_get_req("list_personalities").then(response => { this.persArr = response })
+            this.api_get_req("list_personalities_categories").then(response => { this.persCatgArr = response })
+            this.api_get_req("list_personalities").then(response => { this.persArr = response })
             //this.api_get_req("list_languages").then(response => { this.langArr = response })
             this.api_get_req("get_config").then(response => { 
                 this.configFile = response 
@@ -616,7 +644,22 @@ export default {
                 feather.replace()
 
             })
+        },
+        mzl_collapsed() {
+            
+            nextTick(() => {
+                feather.replace()
+
+            })
+        },
+        all_collapsed(val) {
+            this.collapseAll(val)
+            nextTick(() => {
+                feather.replace()
+
+            })
         }
+
     }
 }
 </script>

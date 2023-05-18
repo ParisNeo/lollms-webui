@@ -1,0 +1,7 @@
+- bestGPTJ: 'true'
+  description: Current best commercially licensable model based on GPT-J and trained
+    by Nomic AI on the latest curated GPT4All dataset.
+  filename: ggml-gpt4all-j-v1.3-groovy.bin
+  filesize: '3785248281'
+  isDefault: 'true'
+  md5sum: 81a09a0ddf89690372fc296ff7f625af

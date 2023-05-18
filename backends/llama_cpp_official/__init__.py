@@ -6,12 +6,17 @@
 # Licence       : Apache 2.0
 # Description   : 
 # This is an interface class for GPT4All-ui backends.
+
+# This backend is a wrapper to the official llamacpp python bindings
+# Follow him on his github project : https://github.com/abetlen/llama-cpp-python
+
 ######
 from pathlib import Path
 from typing import Callable
-from pyllamacpp.model import Model
+from llama_cpp import Llama
 from gpt4all_api.backend import GPTBackend
 import yaml
+import random
 
 __author__ = "parisneo"
 __github__ = "https://github.com/nomic-ai/gpt4all-ui"
@@ -29,13 +34,11 @@ class LLAMACPP(GPTBackend):
             config (dict): The configuration file
         """
         super().__init__(config, False)
-        
-        self.model = Model(
-                model_path=f"./models/llama_cpp/{self.config['model']}",
-                prompt_context="", prompt_prefix="", prompt_suffix="",
-                n_ctx=self.config['ctx_size'], 
-                seed=self.config['seed'],
-                )
+        seed = config["seed"]
+        if seed <=0:
+            seed = random.randint(1, 2**31)
+            
+        self.model = Llama(model_path=f"./models/llama_cpp_official/{self.config['model']}", n_gpu_layers=40, seed=seed)
 
     def generate(self, 
                  prompt:str,                  
@@ -53,17 +56,20 @@ class LLAMACPP(GPTBackend):
         """
         try:
             self.model.reset()
-            for tok in self.model.generate(prompt, 
-                                           n_predict=n_predict,                                           
+            tokens = self.model.tokenize(prompt.encode())
+            count = 0
+            for tok in self.model.generate(tokens, 
                                             temp=self.config['temperature'],
                                             top_k=self.config['top_k'],
                                             top_p=self.config['top_p'],
                                             repeat_penalty=self.config['repeat_penalty'],
-                                            repeat_last_n = self.config['repeat_last_n'],
-                                            n_threads=self.config['n_threads'],
                                            ):
-                if not new_text_callback(tok):
+                if count >= n_predict or (tok == self.model.token_eos()):
+                    break
+                word = self.model.detokenize([tok]).decode()
+                if not new_text_callback(word):
                     return
+                count += 1
         except Exception as ex:
             print(ex)
             

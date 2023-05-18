@@ -4,7 +4,6 @@ nomic
 pytest
 pyyaml
 markdown
-pyllamacpp==2.1.1
 gpt4all-j
 pygptj
 gpt4all
@@ -16,4 +15,5 @@ transformers
 accelerate
 gevent
 gevent-websocket
-pyaipersonality>=0.0.11
+pyaipersonality>=0.0.12
+ctransformers

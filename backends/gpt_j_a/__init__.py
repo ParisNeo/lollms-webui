@@ -7,6 +7,10 @@
 # Licence       : Apache 2.0
 # Description   : 
 # This is an interface class for GPT4All-ui backends.
+
+# This backend is a wrapper to abdeladim's backend
+# Follow him on his github project : https://github.com/abdeladim-s/pygptj
+
 ######
 from pathlib import Path
 from typing import Callable
