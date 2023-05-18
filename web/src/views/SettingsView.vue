@@ -53,7 +53,8 @@
                     <select id="backend" @change="update_backend($event.target.value)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <option v-for="item in backendsArr" :selected="item === configFile.backend">{{ item }}</option>
+                        <!-- <option v-for="item in backendsArr" :selected="item === configFile.backend">{{ item }}</option> -->
+                        <option v-for="item in backendsArr" :key="item === configFile.backend">{{ item }}</option>
 
                     </select>
                 </div>
@@ -64,7 +65,8 @@
                     <select id="model" @change="update_model($event.target.value)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <option v-for="item in modelsArr" :selected="item === configFile.model">{{ item }}</option>
+                        <!-- <option v-for="item in modelsArr" :selected="item === configFile.model">{{ item }}</option> -->
+                        <option v-for="item in modelsArr" :key="item === configFile.model">{{ item }}</option>
 
                     </select>
                 </div>                
@@ -128,7 +130,9 @@
                     <select id="persLang" @change="update_setting('personality_language', $event.target.value, refresh)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <option v-for="item in persLangArr" :selected="item === configFile.personality_language">{{ item }}
+                        <!-- <option v-for="item in persLangArr" :selected="item === configFile.personality_language">{{ item }} -->
+                        <option v-for="item in persLangArr" :key="item === configFile.personality_language">{{ item }}
+
                         </option>
 
                     </select>
@@ -140,7 +144,9 @@
                     <select id="persCat" @change="update_setting('personality_category', $event.target.value, refresh)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <option v-for="item in persCatgArr" :selected="item === configFile.personality_category">{{ item }}
+                        <!-- <option v-for="item in persCatgArr" :selected="item === configFile.personality_category">{{ item }} -->
+                        <option v-for="item in persCatgArr" :key="item === configFile.personality_category">{{ item }}
+                        
                         </option>
 
                     </select>
@@ -152,7 +158,8 @@
                     <select id="persona" @change="update_setting('personality', $event.target.value, refresh)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <option v-for="item in persArr" :selected="item === configFile.personality">{{ item }}</option>
+                        <!-- <option v-for="item in persArr" :selected="item === configFile.personality">{{ item }}</option> -->
+                        <option v-for="item in persArr" :key="item === configFile.personality">{{ item }}</option>
 
                     </select>
                 </div>
@@ -353,6 +360,7 @@ export default {
         MessageBox,
         YesNoDialog,
         ModelEntry,
+        // eslint-disable-next-line vue/no-unused-components
         PersonalityViewer
     },
     setup() {
@@ -411,6 +419,7 @@ export default {
         },
         onSelected(model_object){
             console.log("Selected model")
+            // eslint-disable-next-line no-unused-vars
             this.update_setting('model', model_object.title, (res)=>{console.log("Model selected"); })
         },
         // Model installation
@@ -464,6 +473,7 @@ export default {
                     model_object.uninstalling = false;
                     this.showProgress = false;
                     socket.off('install_progress', progressListener);
+                    // eslint-disable-next-line no-undef
                     console.error('Installation failed:', message.error);
                 }
             };
@@ -519,14 +529,17 @@ export default {
                     return res.data;
                 }
             })
+                // eslint-disable-next-line no-unused-vars
                 .catch(error => { return { 'status': false } });
         },
         update_backend(value) {
             console.log("Upgrading backend")
+            // eslint-disable-next-line no-unused-vars
             this.update_setting('backend', value, (res)=>{console.log("Backend changed"); this.fetchModels(); })
         },
         update_model(value) {
             console.log("Upgrading model")
+            // eslint-disable-next-line no-unused-vars
             this.update_setting('model', value, (res)=>{console.log("Model changed"); this.fetchModels(); })
         },
         save_configuration() {
