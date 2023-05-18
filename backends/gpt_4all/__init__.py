@@ -40,6 +40,30 @@ class GPT4ALL(GPTBackend):
                 model_path=f"./models/gpt_4all/{self.config['model']}",
         )
 
+
+    def tokenize(self, prompt):
+        """
+        Tokenizes the given prompt using the model's tokenizer.
+
+        Args:
+            prompt (str): The input prompt to be tokenized.
+
+        Returns:
+            list: A list of tokens representing the tokenized prompt.
+        """
+        return None
+
+    def detokenize(self, tokens_list):
+        """
+        Detokenizes the given list of tokens using the model's tokenizer.
+
+        Args:
+            tokens_list (list): A list of tokens to be detokenized.
+
+        Returns:
+            str: The detokenized text as a string.
+        """
+        return None
     def generate(self, 
                  prompt:str,                  
                  n_predict: int = 128,
@@ -63,6 +87,7 @@ class GPT4ALL(GPTBackend):
                                             repeat_penalty=self.config['repeat_penalty'],
                                             repeat_last_n = self.config['repeat_last_n'],
                                             # n_threads=self.config['n_threads'],
+                                            streaming=True
                                            ):
                 if not new_text_callback(tok):
                     return

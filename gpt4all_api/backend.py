@@ -43,6 +43,30 @@ class GPTBackend:
             verbose (bool, optional): If true, the code will spit many informations about the generation process. Defaults to False.
         """
         pass
+    def tokenize(self, prompt):
+        """
+        Tokenizes the given prompt using the model's tokenizer.
+
+        Args:
+            prompt (str): The input prompt to be tokenized.
+
+        Returns:
+            list: A list of tokens representing the tokenized prompt.
+        """
+        pass
+
+    def detokenize(self, tokens_list):
+        """
+        Detokenizes the given list of tokens using the model's tokenizer.
+
+        Args:
+            tokens_list (list): A list of tokens to be detokenized.
+
+        Returns:
+            str: The detokenized text as a string.
+        """
+        pass
+
     @staticmethod
     def list_models(config:dict):
         """Lists the models for this backend
@@ -59,3 +83,4 @@ class GPTBackend:
             yaml_data = yaml.safe_load(file)
         
         return yaml_data
+
