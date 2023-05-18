@@ -58,27 +58,20 @@
             <div v-if="isCheckbox" class="flex flex-row flex-grow p-4 pt-0 items-center">
 
                 <!-- CHECK BOX OPERATIONS -->
-                <div class="flex flex-row flex-grow gap-3">
+                <div class="flex flex-row flex-grow ">
                     <p v-if="selectedDiscussions.length > 0">Selected: {{ selectedDiscussions.length }}</p>
                 </div>
-                <div class="flex flex-row  gap-3">
-                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90 " title="Select All"
-                        type="button" @click.stop="selectAllDiscussions">
-                        <i data-feather="list"></i>
-                    </button>
-                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
-                        title="Export selected to a file" type="button">
-                        <i data-feather="log-out"></i>
-                    </button>
-                    <div v-if="selectedDiscussions.length > 0" class="flex flex-row gap-3">
+                <div class="flex flex-row ">
+
+                    <div v-if="selectedDiscussions.length > 0" class="flex gap-3">
                         <!-- DELETE MULTIPLE -->
-                        <button v-if="!showConfirmation" class="text-2xl hover:text-red-600 duration-75 active:scale-90 "
+                        <button v-if="!showConfirmation" class="flex mx-3 flex-1 text-2xl hover:text-red-600 duration-75 active:scale-90 "
                             title="Remove selected" type="button" @click.stop="showConfirmation = true">
                             <i data-feather="trash"></i>
                         </button>
                         <!-- DELETE CONFIRM -->
                         <div v-if="showConfirmation"
-                            class="flex gap-3 flex-1 items-center justify-end  group-hover:visible duration-75">
+                            class="flex gap-3 mx-3 flex-1 items-center justify-end  group-hover:visible duration-75">
                             <button class="text-2xl hover:text-secondary duration-75 active:scale-90"
                                 title="Confirm removal" type="button" @click.stop="deleteDiscussionMulti">
                                 <i data-feather="check"></i>
@@ -89,7 +82,18 @@
                             </button>
                         </div>
                     </div>
+                    <div class="flex gap-3">
 
+                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
+                            title="Export selected to a file" type="button">
+                            <i data-feather="log-out"></i>
+                        </button>
+                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90 " title="Select All"
+                            type="button" @click.stop="selectAllDiscussions">
+                            <i data-feather="list"></i>
+                        </button>
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -112,7 +116,8 @@
             </div>
         </div>
     </div>
-    <div class="overflow-y-auto flex flex-col flex-grow  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" id="messages-list">
+    <div class="overflow-y-auto flex flex-col flex-grow  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+        id="messages-list">
 
         <!-- CHAT AREA -->
         <div class="container flex flex-col flex-grow pt-4 pb-10">
@@ -131,9 +136,8 @@
         </div>
 
     </div>
-    <Toast  ref="toast">
+    <Toast ref="toast">
     </Toast>
-    
 </template>
 <style scoped>
 .height-64 {
@@ -429,7 +433,7 @@ export default {
             // "user_message_id": self.current_user_message_id,
             // "ai_message_id": self.current_ai_message_id,
             console.log(msgObj);
-            if(msgObj["status"]=="generation_started"){
+            if (msgObj["status"] == "generation_started") {
                 this.updateLastUserMsg(msgObj)
                 // Create response message
                 let responseMessage = {
@@ -455,10 +459,10 @@ export default {
 
                     }
                 }
-                console.log("infos", msgObj)                
+                console.log("infos", msgObj)
             }
-            else{
-                this.$refs.toast.showToast("It seems that no model has been loaded. Please download and install a model first, then try again.",4, false)
+            else {
+                this.$refs.toast.showToast("It seems that no model has been loaded. Please download and install a model first, then try again.", 4, false)
                 this.isGenerating = false
                 this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
                 this.chime.play()
@@ -757,8 +761,8 @@ export default {
         closeToast() {
             this.showToast = false
         },
-        
-        
+
+
     },
     async created() {
         // Constructor
