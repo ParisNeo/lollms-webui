@@ -93,7 +93,7 @@ class LLAMACPP(GPTBackend):
                     break
                 word = self.model.detokenize([tok]).decode()
                 if not new_text_callback(word):
-                    return
+                    break
                 count += 1
         except Exception as ex:
             print(ex)

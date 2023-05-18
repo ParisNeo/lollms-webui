@@ -94,6 +94,9 @@ class ModelProcess:
         self.is_generating  = mp.Value('i', 0)
         self.model_ready  = mp.Value('i', 0)
         self.ready = False
+        
+        self.id=0
+        self.n_predict=2048
 
         self.reset_config_result()
 
@@ -221,7 +224,8 @@ class ModelProcess:
         self._rebuild_model()
         self._rebuild_personality()
         if self.model_ready.value == 1:
-            self._generate("I",0,1)
+            self.n_predict = 1
+            self._generate("I")
             print()
             print("Ready to receive data")
         else:
@@ -243,7 +247,15 @@ class ModelProcess:
                     if self.cancel_queue.empty() and self.clear_queue_queue.empty():
                         self.is_generating.value = 1
                         self.started_queue.put(1)
-                        self._generate(*command)
+                        self.id=command[1]
+                        self.n_predict=command[2]
+                        if self.personality.processor is not None:
+                            if self.personality.processor_cfg is not None:
+                                if "custom_workflow" in self.personality.processor_cfg:
+                                    if self.personality.processor_cfg["custom_workflow"]:
+                                        self.personality.processor.run_workflow(self._generate, command[0])
+
+                        self._generate(command[0])
                         while not self.generation_queue.empty():
                             time.sleep(1)
                         self.is_generating.value = 0
@@ -251,14 +263,15 @@ class ModelProcess:
             except Exception as ex:
                 time.sleep(1)
                 print(ex)
-    def _generate(self, prompt, id, n_predict):
+
+    def _generate(self, prompt):
         if self.model is not None:
-            self.id = id
+            self.id = self.id
             if self.config["override_personality_model_parameters"]:
                 self.model.generate(
                     prompt,
                     new_text_callback=self._callback,
-                    n_predict=n_predict,
+                    n_predict=self.n_predict,
                     temp=self.config['temperature'],
                     top_k=self.config['top_k'],
                     top_p=self.config['top_p'],
@@ -271,7 +284,7 @@ class ModelProcess:
                 self.model.generate(
                     prompt,
                     new_text_callback=self._callback,
-                    n_predict=n_predict,
+                    n_predict=self.n_predict,
                     temp=self.personality.model_temperature,
                     top_k=self.personality.model_top_k,
                     top_p=self.personality.model_top_p,
@@ -285,6 +298,7 @@ class ModelProcess:
             print("To do this: Install the model to your models/<backend name> folder.")
             print("Then set your model information in your local configuration file that you can find in configs/local_default.yaml")
             print("You can also use the ui to set your model in the settings page.")
+
     def _callback(self, text):
         if not self.ready:
             print(".",end="")
@@ -585,6 +599,7 @@ class GPT4AllAPI():
                         self.full_message_list.append(self.personality.user_message_prefix + message["content"])
             else:
                 break
+
         if self.personality.processor is not None:
             preprocessed_prompt = self.personality.processor.process_model_input(message["content"])
         else:
