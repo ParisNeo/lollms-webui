@@ -88,13 +88,26 @@ class ModelProcess:
         self.cancel_queue = mp.Queue(maxsize=1)
         self.clear_queue_queue = mp.Queue(maxsize=1)
         self.set_config_queue = mp.Queue(maxsize=1)
+        self.set_config_result_queue = mp.Queue(maxsize=1)
         self.started_queue = mp.Queue()
         self.process = None
         self.is_generating  = mp.Value('i', 0)
         self.model_ready  = mp.Value('i', 0)
         self.ready = False
-            
-    def load_backend(self, backend_path:Path):
+
+        self.reset_config_result()
+
+    def reset_config_result(self):
+        self._set_config_result = {
+            'status': 'succeeded',
+            'backend_status':'ok',
+            'model_status':'ok',
+            'personality_status':'ok',
+            'errors':[]
+            }
+        
+    def load_backend(self, backend_name:str):
+        backend_path = Path("backends")/backend_name
         # first find out if there is a requirements.txt file
         requirements_file = backend_path/"requirements.txt"
         if requirements_file.exists():
@@ -131,7 +144,10 @@ class ModelProcess:
         
     def set_config(self, config):
         self.set_config_queue.put(config)
-        
+        # Wait for it t o be consumed
+        while self.set_config_result_queue.empty():
+            time.sleep(0.5)
+        return self.set_config_result_queue.get()
 
     def generate(self, prompt, id, n_predict):
         self.generate_queue.put((prompt, id, n_predict))
@@ -144,19 +160,20 @@ class ModelProcess:
     
     def rebuild_backend(self, config):
         try:
-            
-            backend = self.load_backend(Path("backends")/config["backend"])
+            backend = self.load_backend(config["backend"])
             print("Backend loaded successfully")
         except Exception as ex:
             print("Couldn't build backend")
             print(ex)
             backend = None
+            self._set_config_result['backend_status'] ='failed'
+            self._set_config_result['errors'].append(f"couldn't build backend:{ex}")
         return backend
             
     def _rebuild_model(self):
         try:
             print("Rebuilding model")
-            self.backend = self.load_backend(Path("backends")/self.config["backend"])
+            self.backend = self.load_backend(self.config["backend"])
             print("Backend loaded successfully")
             try:
                 model_file = Path("models")/self.config["backend"]/self.config["model"]
@@ -168,6 +185,8 @@ class ModelProcess:
                 print("Couldn't build model")
                 print(ex)
                 self.model = None
+                self._set_config_result['model_status'] ='failed'
+                self._set_config_result['errors'].append(f"couldn't build model:{ex}")
         except Exception as ex:
             print("Couldn't build backend")
             print(ex)
@@ -183,6 +202,7 @@ class ModelProcess:
             if self.config["debug"]:
                 print(ex)
             personality = AIPersonality()
+            
         return personality
     
     def _rebuild_personality(self):
@@ -194,6 +214,8 @@ class ModelProcess:
             if self.config["debug"]:
                 print(ex)
             self.personality = AIPersonality()
+            self._set_config_result['personality_status'] ='failed'
+            self._set_config_result['errors'].append(f"couldn't load personality:{ex}")
             
     def _run(self):        
         self._rebuild_model()
@@ -297,7 +319,9 @@ class ModelProcess:
             config = self.set_config_queue.get()
             if config is not None:
                 print("Inference process : Setting configuration")
+                self.reset_config_result()
                 self._set_config(config)
+                self.set_config_result_queue.put(self._set_config_result)
 
     def _cancel_generation(self):
         self.is_generating.value = 0
@@ -502,7 +526,8 @@ class GPT4AllAPI():
 
 
             
-    def load_backend(self, backend_path):
+    def load_backend(self, backend_name):
+        backend_path = Path("backends")/backend_name
 
         # define the full absolute path to the module
         absolute_path = backend_path.resolve()

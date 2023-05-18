@@ -51,9 +51,8 @@ app.config['SECRET_KEY'] = 'secret!'
 # Set the logging level to WARNING or higher
 logging.getLogger('socketio').setLevel(logging.WARNING)
 logging.getLogger('engineio').setLevel(logging.WARNING)
-# Suppress Flask's default console output
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
+logging.getLogger('werkzeug').setLevel(logging.ERROR)
+logging.basicConfig(level=logging.WARNING)
 
 import time
 from gpt4all_api.config import load_config, save_config
@@ -192,6 +191,10 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.add_endpoint(
             "/update_setting", "update_setting", self.update_setting, methods=["POST"]
         )
+        self.add_endpoint(
+            "/apply_settings", "apply_settings", self.apply_settings, methods=["POST"]
+        )
+        
 
         self.add_endpoint(
             "/save_settings", "save_settings", self.save_settings, methods=["POST"]
@@ -293,29 +296,16 @@ class Gpt4AllWebUI(GPT4AllAPI):
         elif setting_name== "model":
             self.config["model"]=data['setting_value']
             print("update_settings : New model selected")            
-            # Build chatbot
-            self.process.set_config(self.config)
 
         elif setting_name== "backend":
-            print("New backend selected")            
             if self.config['backend']!= data['setting_value']:
                 print("New backend selected")
                 self.config["backend"]=data['setting_value']
-                
-                backend_ =self.process.rebuild_backend(self.config)
-                models = backend_.list_models(self.config)
-                if len(models)>0:      
-                    self.backend = backend_
-                    self.config['model'] = models[0]
-                    # Build chatbot
-                    self.process.set_config(self.config)
-                    if self.config["debug"]:
-                        print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
-                    return jsonify({'setting_name': data['setting_name'], "status":True})
-                else:
-                    if self.config["debug"]:
-                        print(f"Configuration {data['setting_name']} couldn't be set to {data['setting_value']}")
-                    return jsonify({'setting_name': data['setting_name'], "status":False})
+                try:
+                    self.backend = self.process.load_backend(self.config["backend"])
+                except Exception as ex:
+                    print("Couldn't build backend")
+                    return jsonify({'setting_name': data['setting_name'], "status":False, 'error':str(ex)})
             else:
                 if self.config["debug"]:
                     print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
@@ -330,9 +320,12 @@ class Gpt4AllWebUI(GPT4AllAPI):
             print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
             
         print("Configuration updated")
-        self.process.set_config(self.config)
         # Tell that the setting was changed
         return jsonify({'setting_name': data['setting_name'], "status":True})
+
+
+    def apply_settings(self):
+        return jsonify(self.process.set_config(self.config))
 
     def list_backends(self):
         backends_dir = Path('./backends')  # replace with the actual path to the models folder
@@ -527,7 +520,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
             print("New backend selected")
             
             self.config['backend'] = backend
-            backend_ =self.process.load_backend(Path("backends")/config["backend"])
+            backend_ =self.process.load_backend(config["backend"])
             models = backend_.list_models(self.config)
             if len(models)>0:      
                 self.backend = backend_
@@ -619,15 +612,18 @@ class Gpt4AllWebUI(GPT4AllAPI):
         Returns:
             _type_: _description_
         """
-        
+        if self.backend is None:
+            return jsonify([])
         model_list = self.backend.get_available_models()
 
         models = []
         for model in model_list:
             try:
-                filename = model['filename']
-                server = model['server']
-                filesize = model['filesize']
+                filename = model.get('filename',"")
+                server = model.get('server',"")
+                image_url = model.get("image_url", '/icons/default.png')
+                filesize = int(model.get('filesize',0))
+                description = model.get('description',"")
                 if server.endswith("/"):
                     path = f'{server}{filename}'
                 else:
@@ -635,14 +631,17 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 local_path = Path(f'./models/{self.config["backend"]}/{filename}')
                 is_installed = local_path.exists()
                 models.append({
-                    'title': model['filename'],
-                    'icon': '/icons/default.png',  # Replace with the path to the model icon
-                    'description': model['description'],
+                    'title': filename,
+                    'icon': image_url,  # Replace with the path to the model icon
+                    'description': description,
                     'isInstalled': is_installed,
                     'path': path,
                     'filesize': filesize,
                 })
-            except:
+            except Exception as ex:
+                print("#################################")
+                print(ex)
+                print("#################################")
                 print(f"Problem with model : {model}")
         return jsonify(models)
 

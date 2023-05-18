@@ -37,11 +37,9 @@
             class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
             <div class="flex flex-row ">
                 <button @click.stop="bec_collapsed = !bec_collapsed"
-                    class="text-2xl hover:text-primary duration-75  p-2 -m-2 w-full text-left active:translate-y-1">
-                    <!-- <i data-feather="chevron-right"></i> -->
-
-                    <h3 class="text-lg font-semibold cursor-pointer select-none "
-                        @click.stop="bec_collapsed = !bec_collapsed">
+                    class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
+                    <i :data-feather="mzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
+                    <h3 class="text-lg font-semibold cursor-pointer select-none">
                         Backend Configuration</h3>
                 </button>
             </div>
@@ -53,9 +51,7 @@
                     <select id="backend" @change="update_backend($event.target.value)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <!-- <option v-for="item in backendsArr" :selected="item === configFile.backend">{{ item }}</option> -->
-                        <option v-for="item in backendsArr" :key="item === configFile.backend">{{ item }}</option>
-
+                        <option v-for="item in backendsArr" :selected="item === configFile.backend">{{ item }}</option>
                     </select>
                 </div>
                 <div class="m-2">
@@ -65,22 +61,25 @@
                     <select id="model" @change="update_model($event.target.value)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <!-- <option v-for="item in modelsArr" :selected="item === configFile.model">{{ item }}</option> -->
-                        <option v-for="item in modelsArr" :key="item === configFile.model">{{ item }}</option>
+                        <option v-for="item in modelsArr" :selected="item === configFile.model">{{ item }}</option>
 
                     </select>
-                </div>                
+                </div>          
+                <div class="m-2">
+                    <button @click="applyConfiguration" class="bg-blue-500 text-white py-2 px-4 rounded">
+                        Apply Configuration
+                    </button>
+                    <div v-if="isLoading" class="loader"></div>
+                </div>                      
             </div>
         </div>
         <div
             class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
             <div class="flex flex-row p-3">
                 <button @click.stop="mzc_collapsed = !mzc_collapsed"
-                    class="text-2xl hover:text-primary duration-75  p-2 -m-2 w-full text-left active:translate-y-1">
-                  
-
-                    <h3 class="text-lg font-semibold cursor-pointer select-none "
-                        @click.stop="mzc_collapsed = !mzc_collapsed">
+                class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
+                    <i :data-feather="mzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
+                    <h3 class="text-lg font-semibold cursor-pointer select-none">
                         Models zoo</h3>
                 </button>
             </div>
@@ -114,11 +113,9 @@
             class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
             <div class="flex flex-row">
                 <button @click.stop="pc_collapsed = !pc_collapsed"
-                    class="text-2xl hover:text-primary duration-75  p-2 -m-2 w-full text-left active:translate-y-1">
-
-                    <!-- <i data-feather="chevron-right"></i> -->
-
-                    <h3 class="text-lg font-semibold cursor-pointer select-none" @click.stop="pc_collapsed = !pc_collapsed">
+                    class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
+                    <i :data-feather="pc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
+                    <h3 class="text-lg font-semibold cursor-pointer select-none">
                         Personality Configuration</h3>
                 </button>
             </div>
@@ -130,8 +127,7 @@
                     <select id="persLang" @change="update_setting('personality_language', $event.target.value, refresh)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <!-- <option v-for="item in persLangArr" :selected="item === configFile.personality_language">{{ item }} -->
-                        <option v-for="item in persLangArr" :key="item === configFile.personality_language">{{ item }}
+                        <option v-for="item in persLangArr" :selected="item === configFile.personality_language">{{ item }}
 
                         </option>
 
@@ -144,8 +140,7 @@
                     <select id="persCat" @change="update_setting('personality_category', $event.target.value, refresh)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <!-- <option v-for="item in persCatgArr" :selected="item === configFile.personality_category">{{ item }} -->
-                        <option v-for="item in persCatgArr" :key="item === configFile.personality_category">{{ item }}
+                        <option v-for="item in persCatgArr" :selected="item === configFile.personality_category">{{ item }}
                         
                         </option>
 
@@ -158,8 +153,7 @@
                     <select id="persona" @change="update_setting('personality', $event.target.value, refresh)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <!-- <option v-for="item in persArr" :selected="item === configFile.personality">{{ item }}</option> -->
-                        <option v-for="item in persArr" :key="item === configFile.personality">{{ item }}</option>
+                        <option v-for="item in persArr" :selected="item === configFile.personality">{{ item }}</option>
 
                     </select>
                 </div>
@@ -169,12 +163,11 @@
             class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
             <div class="flex flex-row ">
                 <button @click.stop="pzc_collapsed = !pzc_collapsed"
-                    class="text-2xl hover:text-primary duration-75  p-2 -m-2 w-full text-left active:translate-y-1">
-                    <!-- <i data-feather="chevron-right"></i> -->
-
-                    <h3 class="text-lg font-semibold cursor-pointer select-none "
-                        @click.stop="pzc_collapsed = !pzc_collapsed">
-                        Personalities zoo</h3>
+                        class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
+                    <i :data-feather="mc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
+                    <h3 class="text-lg font-semibold cursor-pointer select-none">
+                    Personalities zoo
+                    </h3>
                 </button>
             </div>
             <div :class="{ 'hidden': pzc_collapsed }" class="flex flex-col mb-2 p-2">
@@ -193,11 +186,9 @@
             class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
             <div class="flex flex-row">
                 <button @click.stop="mc_collapsed = !mc_collapsed"
-                    class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1">
-                    <!-- <i data-feather="chevron-right"></i> -->
-
-                    <h3 class="text-lg font-semibold cursor-pointer select-none "
-                        @click.stop="mc_collapsed = !mc_collapsed">
+                class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
+                    <i :data-feather="mc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
+                    <h3 class="text-lg font-semibold cursor-pointer select-none">
                         Model Configuration</h3>
                 </button>
             </div>
@@ -343,6 +334,8 @@
 
     <YesNoDialog ref="yesNoDialog" />
     <MessageBox ref="messageBox" />
+    <Toast  ref="toast" />
+
 </template>
 
 <script>
@@ -351,6 +344,7 @@ import feather from 'feather-icons'
 import { nextTick } from 'vue'
 import MessageBox from "@/components/MessageBox.vue";
 import YesNoDialog from "@/components/YesNoDialog.vue";
+import Toast from '../components/Toast.vue'
 import ModelEntry from '@/components/ModelEntry.vue';
 import PersonalityViewer from '@/components/PersonalityViewer.vue';
 import socket from '@/services/websocket.js'
@@ -361,7 +355,8 @@ export default {
         YesNoDialog,
         ModelEntry,
         // eslint-disable-next-line vue/no-unused-components
-        PersonalityViewer
+        PersonalityViewer,
+        Toast
     },
     setup() {
 
@@ -394,7 +389,9 @@ export default {
             persArr: [],
             langArr: [],
             configFile: {},
-            showConfirmation: false
+            showConfirmation: false,
+            showToast: false,
+            isLoading: false
 
         }
     },
@@ -409,8 +406,10 @@ export default {
             this.mc_collapsed=val
         },
         fetchModels() {
+            console.log("Fetching models")
             axios.get('/get_available_models')
                 .then(response => {
+                    console.log(`Models list recovered successfuly: ${response.data}`)
                     this.models = response.data;
                 })
                 .catch(error => {
@@ -510,6 +509,7 @@ export default {
                     }
                 }); 
             })
+            this.fetchModels(); 
         },
         // Accordeon stuff
         toggleAccordion() {
@@ -522,25 +522,44 @@ export default {
             }
             console.log("change", setting_name_val, setting_value_val, obj)
             axios.post('/update_setting', obj).then((res) => {
+                console.log("Update setting done")
                 if (res) {
+                    console.log("res is ok")
                     if (next !== undefined) {
+                        console.log("Calling next")
                         next(res)
                     }
                     return res.data;
                 }
             })
-                // eslint-disable-next-line no-unused-vars
-                .catch(error => { return { 'status': false } });
+            // eslint-disable-next-line no-unused-vars
+            .catch(error => { return { 'status': false } });
         },
         update_backend(value) {
             console.log("Upgrading backend")
             // eslint-disable-next-line no-unused-vars
-            this.update_setting('backend', value, (res)=>{console.log("Backend changed"); this.fetchModels(); })
+            this.update_setting('backend', value, (res)=>{
+                this.refresh();
+                console.log("Backend changed"); 
+                console.log(res);
+                this.$refs.toast.showToast("Backend changed.",4, true)
+            })
         },
         update_model(value) {
             console.log("Upgrading model")
             // eslint-disable-next-line no-unused-vars
             this.update_setting('model', value, (res)=>{console.log("Model changed"); this.fetchModels(); })
+        },
+        applyConfiguration() {
+            this.isLoading = true;
+            axios.post('/apply_settings').then((res) => {
+                this.isLoading = false;
+                console.log(res.data)
+                if(res.data.status==="succeeded"){
+                    console.log("applying configuration succeeded")
+                    this.$refs.toast.showToast("Configuration changed successfully.",4, true)
+                }
+            })
         },
         save_configuration() {
             this.showConfirmation = false
@@ -604,6 +623,9 @@ export default {
 
 
         },
+        closeToast() {
+            this.showToast = false
+        },
 
     }, async mounted() {
         nextTick(() => {
@@ -664,3 +686,27 @@ export default {
 }
 </script>
 
+
+<style>
+.loader {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 2s linear infinite;
+  margin-left: 8px;
+  display: inline-block;
+}
+.height-64 {
+    min-height: 64px;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>

@@ -119,7 +119,7 @@
             <!-- REMOVED @click="scrollToElement($event.target)" -->
             <!-- Removed reference to copyToClipBoard() ; function was moved to Message.vue -->
             <Message v-for="(msg, index) in discussionArr" :key="index" :message="msg" :id="'msg-' + msg.id" ref="messages"
-                @delete="deleteMessage" @rankUp="rankUpMessage" @rankDown="rankDownMessage"
+                @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage" @rankDown="rankDownMessage"
                 @updateMessage="updateMessage" @resendMessage="resendMessage" />
 
             <WelcomeComponent v-if="!currentDiscussion.id" />
@@ -749,14 +749,14 @@ export default {
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
             this.chime.play()
         },
-        //copyToClipBoard(content) {
+        copyToClipBoard(content) {
 
-          //  this.$refs.toast.showToast("Copied to clipboard successfully")
-          //  nextTick(() => {
-          //      feather.replace()
+            this.$refs.toast.showToast("Copied to clipboard successfully")
+            nextTick(() => {
+                feather.replace()
 
-          //  })
-        //},
+            })
+        },
         closeToast() {
             this.showToast = false
         },
