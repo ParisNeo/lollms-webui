@@ -83,6 +83,7 @@ import { nextTick } from 'vue'
 import feather from 'feather-icons'
 import MarkdownRenderer from './MarkdownRenderer.vue';
 export default {
+    // eslint-disable-next-line vue/multi-word-component-names
     name: 'Message',
     emits: ['copy', 'delete', 'rankUp', 'rankDown','updateMessage','resendMessage'],
     components: {

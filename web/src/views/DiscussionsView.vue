@@ -117,8 +117,9 @@
         <!-- CHAT AREA -->
         <div class="container flex flex-col flex-grow pt-4 pb-10">
             <!-- REMOVED @click="scrollToElement($event.target)" -->
+            <!-- Removed reference to copyToClipBoard() ; function was moved to Message.vue -->
             <Message v-for="(msg, index) in discussionArr" :key="index" :message="msg" :id="'msg-' + msg.id" ref="messages"
-                @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage" @rankDown="rankDownMessage"
+                @delete="deleteMessage" @rankUp="rankUpMessage" @rankDown="rankDownMessage"
                 @updateMessage="updateMessage" @resendMessage="resendMessage" />
 
             <WelcomeComponent v-if="!currentDiscussion.id" />
@@ -498,7 +499,8 @@ export default {
             //console.log("stream", JSON.stringify(content))
             const parent = msgObj.user_message_id
             const discussion_id = msgObj.discussion_id
-            if (this.currentDiscussion.id = discussion_id) {
+            // next statement - incorrect comparison: was '=' and should be '=='
+            if (this.currentDiscussion.id == discussion_id) {
                 const index = this.discussionArr.findIndex((x) => x.parent == parent && x.id == msgObj.ai_message_id)
                 const messageItem = this.discussionArr[index]
                 if (messageItem) {
@@ -735,7 +737,7 @@ export default {
             // Last message contains halucination suppression so we need to update the message content too
             const parent = msgObj.parent
             const discussion_id = msgObj.discussion_id
-            if (this.currentDiscussion.id = discussion_id) {
+            if (this.currentDiscussion.id == discussion_id) {
                 const index = this.discussionArr.findIndex((x) => x.parent == parent && x.id == msgObj.ai_message_id)
                 const messageItem = this.discussionArr[index]
                 if (messageItem) {
@@ -747,13 +749,14 @@ export default {
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
             this.chime.play()
         },
-        copyToClipBoard(content) {
-            this.$refs.toast.showToast("Copied to clipboard successfully")
-            nextTick(() => {
-                feather.replace()
+        //copyToClipBoard(content) {
 
-            })
-        },
+          //  this.$refs.toast.showToast("Copied to clipboard successfully")
+          //  nextTick(() => {
+          //      feather.replace()
+
+          //  })
+        //},
         closeToast() {
             this.showToast = false
         },
