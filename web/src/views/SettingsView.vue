@@ -12,8 +12,6 @@
                     type="button" @click.stop="save_configuration()">
                     <i data-feather="check"></i>
                 </button>
-
-
             </div>
             <!-- SAVE AND RESET -->
             <div v-if="!showConfirmation" class="flex gap-3 flex-1 items-center ">
@@ -30,6 +28,12 @@
                     <i data-feather="list"></i>
                 </button>
             </div>
+            <div class="m-2">
+                    <button @click="applyConfiguration" class="bg-blue-500 text-white py-2 px-4 rounded">
+                        Apply Configuration
+                    </button>
+                    <div v-if="isLoading" class="loader"></div>
+            </div>                      
 
         </div>
         <!-- BACKEND -->
@@ -65,12 +69,6 @@
 
                     </select>
                 </div>          
-                <div class="m-2">
-                    <button @click="applyConfiguration" class="bg-blue-500 text-white py-2 px-4 rounded">
-                        Apply Configuration
-                    </button>
-                    <div v-if="isLoading" class="loader"></div>
-                </div>                      
             </div>
         </div>
         <div
