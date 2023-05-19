@@ -38,7 +38,9 @@ class LLAMACPP(GPTBackend):
         if seed <=0:
             seed = random.randint(1, 2**31)
             
-        self.model = Llama(model_path=f"./models/llama_cpp_official/{self.config['model']}", n_ctx=self.config["ctx_size"], n_gpu_layers=40, seed=seed)
+        if not "n_gpu_layers" in self.config:
+            self.config["n_gpu_layers"] = 40
+        self.model = Llama(model_path=f"./models/llama_cpp_official/{self.config['model']}", n_ctx=self.config["ctx_size"], n_gpu_layers=self.config["n_gpu_layers"], seed=seed)
 
 
     def tokenize(self, prompt):
