@@ -25,11 +25,29 @@
                     type="button">
                     <i data-feather="database"></i>
                 </button>
+                <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
+                    title="Import discussions" type="button" @click.stop="">
+                    <i data-feather="log-in"></i>
+                </button>
                 <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Filter discussions"
                     type="button" @click="isSearch = !isSearch" :class="isSearch ? 'text-secondary' : ''">
                     <i data-feather="search"></i>
                 </button>
-
+                <div v-if="loading" title="Loading.." class="flex flex-row flex-grow justify-end">
+                    <!-- SPINNER -->
+                    <div role="status">
+                        <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101"
+                            fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                fill="currentColor" />
+                            <path
+                                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                fill="currentFill" />
+                        </svg>
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
             </div>
             <!-- SEARCH BAR -->
             <div class="flex-row  items-center gap-3 flex-0 w-full">
@@ -58,27 +76,21 @@
             <div v-if="isCheckbox" class="flex flex-row flex-grow p-4 pt-0 items-center">
 
                 <!-- CHECK BOX OPERATIONS -->
-                <div class="flex flex-row flex-grow gap-3">
+                <div class="flex flex-row flex-grow ">
                     <p v-if="selectedDiscussions.length > 0">Selected: {{ selectedDiscussions.length }}</p>
                 </div>
-                <div class="flex flex-row  gap-3">
-                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90 " title="Select All"
-                        type="button" @click.stop="selectAllDiscussions">
-                        <i data-feather="list"></i>
-                    </button>
-                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
-                        title="Export selected to a file" type="button">
-                        <i data-feather="log-out"></i>
-                    </button>
-                    <div v-if="selectedDiscussions.length > 0" class="flex flex-row gap-3">
+                <div class="flex flex-row ">
+
+                    <div v-if="selectedDiscussions.length > 0" class="flex gap-3">
                         <!-- DELETE MULTIPLE -->
-                        <button v-if="!showConfirmation" class="text-2xl hover:text-red-600 duration-75 active:scale-90 "
+                        <button v-if="!showConfirmation"
+                            class="flex mx-3 flex-1 text-2xl hover:text-red-600 duration-75 active:scale-90 "
                             title="Remove selected" type="button" @click.stop="showConfirmation = true">
                             <i data-feather="trash"></i>
                         </button>
                         <!-- DELETE CONFIRM -->
                         <div v-if="showConfirmation"
-                            class="flex gap-3 flex-1 items-center justify-end  group-hover:visible duration-75">
+                            class="flex gap-3 mx-3 flex-1 items-center justify-end  group-hover:visible duration-75">
                             <button class="text-2xl hover:text-secondary duration-75 active:scale-90"
                                 title="Confirm removal" type="button" @click.stop="deleteDiscussionMulti">
                                 <i data-feather="check"></i>
@@ -89,7 +101,18 @@
                             </button>
                         </div>
                     </div>
+                    <div class="flex gap-3">
 
+                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
+                            title="Export selected to a file" type="button" @click.stop="exportDiscussions">
+                            <i data-feather="log-out"></i>
+                        </button>
+                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90 " title="Select All"
+                            type="button" @click.stop="selectAllDiscussions">
+                            <i data-feather="list"></i>
+                        </button>
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -112,7 +135,8 @@
             </div>
         </div>
     </div>
-    <div class="overflow-y-auto flex flex-col flex-grow  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" id="messages-list">
+    <div class="overflow-y-auto flex flex-col flex-grow  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+        id="messages-list">
 
         <!-- CHAT AREA -->
         <div class="container flex flex-col flex-grow pt-4 pb-10">
@@ -132,9 +156,8 @@
         </div>
 
     </div>
-    <Toast  ref="toast">
+    <Toast ref="toast">
     </Toast>
-    
 </template>
 <style scoped>
 .height-64 {
@@ -316,6 +339,23 @@ export default {
                 return {}
             }
         },
+        async export_multiple_discussions(discussionIdArr) {
+            try {
+                if (discussionIdArr.length > 0) {
+                    const res = await axios.post('/export_multiple_discussions', {
+                        discussions: discussionIdArr
+                    })
+
+                    if (res) {
+                        return res.data
+                    }
+                }
+
+            } catch (error) {
+                console.log("Error: Could not export multiple discussions", error)
+                return {}
+            }
+        },
         filterDiscussions() {
             // Search bar in for filtering discussions by title (serch)
 
@@ -331,18 +371,20 @@ export default {
             if (item) {
 
                 // When discussion is selected it loads the discussion array
+                if (this.currentDiscussion.id != item.id) {
 
-                this.currentDiscussion = item
+                    this.currentDiscussion = item
 
-                this.setPageTitle(item)
+                    this.setPageTitle(item)
 
-                localStorage.setItem('selected_discussion', this.currentDiscussion.id)
+                    localStorage.setItem('selected_discussion', this.currentDiscussion.id)
 
-                await this.load_discussion(item.id)
+                    await this.load_discussion(item.id)
 
-                if (this.discussionArr.length > 1) {
-                    if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
-                        this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
+                    if (this.discussionArr.length > 1) {
+                        if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
+                            this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
+                        }
                     }
                 }
                 nextTick(() => {
@@ -430,7 +472,7 @@ export default {
             // "user_message_id": self.current_user_message_id,
             // "ai_message_id": self.current_ai_message_id,
             console.log(msgObj);
-            if(msgObj["status"]=="generation_started"){
+            if (msgObj["status"] == "generation_started") {
                 this.updateLastUserMsg(msgObj)
                 // Create response message
                 let responseMessage = {
@@ -456,10 +498,10 @@ export default {
 
                     }
                 }
-                console.log("infos", msgObj)                
+                console.log("infos", msgObj)
             }
-            else{
-                this.$refs.toast.showToast("It seems that no model has been loaded. Please download and install a model first, then try again.",4, false)
+            else {
+                this.$refs.toast.showToast("It seems that no model has been loaded. Please download and install a model first, then try again.", 4, false)
                 this.isGenerating = false
                 this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
                 this.chime.play()
@@ -531,8 +573,9 @@ export default {
             // gets new discussion list, selects
             // newly created discussion,
             // scrolls to the discussion
-
+            this.loading = true
             const res = await this.new_discussion()
+            this.loading = false
             await this.list_discussions()
             const index = this.list.findIndex((x) => x.id == res.id)
             const discussionItem = this.list[index]
@@ -760,12 +803,65 @@ export default {
         closeToast() {
             this.showToast = false
         },
-        
-        
+        saveJSONtoFile(jsonData, filename) {
+            filename = filename || "data.json"
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(new Blob([JSON.stringify(jsonData, null, 2)], {
+                type: "text/plain"
+            }));
+            a.setAttribute("download", filename);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        },
+        async exportDiscussions() {
+            // Export selected discussions
+
+            const discussionIdArr = this.list.filter((item) => item.checkBoxValue == true).map((item) => {
+                return item.id
+            })
+
+            if (discussionIdArr.length > 0) {
+                console.log("export", discussionIdArr)
+                let dateObj = new Date()
+
+                const year = dateObj.getFullYear();
+                const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
+                const day = dateObj.getDate().toString().padStart(2, "0");
+                const hours = dateObj.getHours().toString().padStart(2, "0");
+                const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+                const seconds = dateObj.getSeconds().toString().padStart(2, "0");
+                const formattedDate =
+                    year +
+                    "." +
+                    month +
+                    "." +
+                    day +
+                    "." +
+                    hours +
+                    "" +
+                    minutes +
+                    "" +
+                    seconds;
+
+                const filename = 'discussions_export_' + formattedDate + '.json'
+                this.loading = true
+                const res = await this.export_multiple_discussions(discussionIdArr)
+
+                if (res.data) {
+                    this.saveJSONtoFile(res.data, filename)
+
+                }
+                this.loading = false
+            }
+
+        }
+
+
     },
     async created() {
         // Constructor
-        //const chime = require('../assets/chime_aud.wav')
+
 
 
         this.setPageTitle()

@@ -23,7 +23,7 @@
         <p v-if="!editTitle" :title="title" class="truncate w-full">{{ title ? title === "untitled" ? "New discussion" :
             title : "New discussion" }}</p>
 
-        <input v-if="editTitle" type="text" id="title-box"
+        <input v-if="editTitle" type="text" id="title-box" ref="titleBox"
             class="bg-bg-light dark:bg-bg-dark rounded-md border-0 w-full -m-1 p-1" :value="title" required
             @keydown.enter.exact="editTitleEvent()" @keydown.esc.exact="editTitleMode = false"
             @input="chnageTitle($event.target.value)" @click.stop>
@@ -139,6 +139,15 @@ export default {
 
             this.showConfirmation = newval
             this.editTitle = newval
+            if (newval) {
+
+
+                nextTick(() => {
+                    this.$refs.titleBox.focus()
+
+                })
+            }
+
         },
         checkBoxValue(newval, oldval) {
             this.checkBoxValue_local = newval
