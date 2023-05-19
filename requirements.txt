@@ -1,12 +1,8 @@
 flask
 flask_socketio
-nomic
 pytest
 pyyaml
 markdown
-gpt4all-j
-pygptj
-gpt4all
 --find-links https://download.pytorch.org/whl/cu117
 torch==2.0.0
 torchvision
@@ -16,4 +12,3 @@ accelerate
 gevent
 gevent-websocket
 pyaipersonality>=0.0.14
-ctransformers
