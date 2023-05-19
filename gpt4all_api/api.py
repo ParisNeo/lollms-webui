@@ -253,7 +253,10 @@ class ModelProcess:
                             if self.personality.processor_cfg is not None:
                                 if "custom_workflow" in self.personality.processor_cfg:
                                     if self.personality.processor_cfg["custom_workflow"]:
-                                        self.personality.processor.run_workflow(self._generate, command[1], command[0])
+                                        output = self.personality.processor.run_workflow(self._generate, command[1], command[0])
+                                        self._callback(output)
+                                        self.is_generating.value = 0
+                                        continue
 
                         self._generate(command[0], self._callback)
                         while not self.generation_queue.empty():
