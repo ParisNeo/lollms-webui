@@ -664,9 +664,9 @@ class GPT4AllAPI():
         return string
 
     def process_chunk(self, chunk):
-        print(chunk[0],end="")
+        print(chunk,end="")
         sys.stdout.flush()
-        self.bot_says += chunk[0]
+        self.bot_says += chunk
         if not self.personality.detect_antiprompt(self.bot_says):
             self.socketio.emit('message', {
                                             'data': self.bot_says, 
@@ -714,8 +714,12 @@ class GPT4AllAPI():
             self.process.generate(self.discussion_messages, self.current_message, message_id, n_predict = self.config['n_predict'])
             self.process.started_queue.get()
             while(self.process.is_generating.value):  # Simulating other commands being issued
+                chunk = ""
                 while not self.process.generation_queue.empty():
-                    self.process_chunk(self.process.generation_queue.get())
+                    chk, tok = self.process.generation_queue.get()
+                    chunk += chk
+                if chunk!="":
+                    self.process_chunk(chunk)
 
             print()
             print("## Done ##")
