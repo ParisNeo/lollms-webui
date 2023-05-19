@@ -183,7 +183,7 @@ class ModelProcess:
                 print(f"Loading model : {model_file}")
                 self.model = self.backend(self.config)
                 self.model_ready.value = 1
-                print("Model created successfully\ntesting the model, please wait ...")
+                print("Model created successfully\n")
             except Exception as ex:
                 print("Couldn't build model")
                 print(ex)

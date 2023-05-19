@@ -1,5 +1,7 @@
 - bestLlama: 'true'
   license: Non commercial
+  owner: TheBloke
+  link: https://huggingface.co/TheBloke
   description: The official open assistant 30B model finally here
   filename: OpenAssistant-SFT-7-Llama-30B.ggml.q4_0.bin
   sha256: 32fd44c685fbf429810db593e2db8aa42a7e1be2cd3571b6005d53b029acfcf5
