@@ -81,6 +81,7 @@ class LLAMACPP(GPTBackend):
         """
         try:
             self.model.reset()
+            output = ""
             tokens = self.model.tokenize(prompt.encode())
             count = 0
             for tok in self.model.generate(tokens, 
@@ -92,12 +93,14 @@ class LLAMACPP(GPTBackend):
                 if count >= n_predict or (tok == self.model.token_eos()):
                     break
                 word = self.model.detokenize([tok]).decode()
-                if not new_text_callback(word):
-                    break
+                if new_text_callback is not None:
+                    if not new_text_callback(word):
+                        break
+                output += word
                 count += 1
         except Exception as ex:
             print(ex)
-            
+        return output           
     @staticmethod
     def get_available_models():
         # Create the file path relative to the child class's directory

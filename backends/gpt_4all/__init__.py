@@ -79,6 +79,7 @@ class GPT4ALL(GPTBackend):
             verbose (bool, optional): If true, the code will spit many informations about the generation process. Defaults to False.
         """
         try:
+            output = ""
             for tok in self.model.generate(prompt, 
                                            n_predict=n_predict,                                           
                                             temp=self.config['temperature'],
@@ -89,10 +90,13 @@ class GPT4ALL(GPTBackend):
                                             # n_threads=self.config['n_threads'],
                                             streaming=True
                                            ):
-                if not new_text_callback(tok):
-                    return
+                output += tok
+                if new_text_callback is not None:
+                    if not new_text_callback(tok):
+                        return output
         except Exception as ex:
             print(ex)
+        return output
 
     @staticmethod
     def get_available_models():

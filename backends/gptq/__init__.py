@@ -76,7 +76,9 @@ class GPTQ(GPTBackend):
         """
         try:
             tok = self.tokenizer.decode(self.model.generate(**self.tokenizer(prompt, return_tensors="pt").to("cuda:0"))[0])
-            new_text_callback(tok)
+            if new_text_callback is not None:
+                new_text_callback(tok)
+            output = tok
             """
             self.model.reset()
             for tok in self.model.generate(prompt, 
@@ -93,6 +95,7 @@ class GPTQ(GPTBackend):
             """
         except Exception as ex:
             print(ex)
+        return output
             
     @staticmethod
     def list_models(config:dict):

@@ -99,6 +99,7 @@ class GPTJ(GPTBackend):
         try:
             self.model.reset()
             tokens = self.model.tokenize(prompt.encode())
+            output = ""
             for tok in self.model.generate(
                                             tokens, 
                                             seed=self.config['seed'],
@@ -112,11 +113,14 @@ class GPTJ(GPTBackend):
                                             n_batch=8,
                                             reset=True,
                                            ):
-                if not new_text_callback(self.model.detokenize(tok)):
-                    return
+                word = self.model.detokenize(tok)
+                if new_text_callback is not None:
+                    if not new_text_callback(word):
+                        return output
+                output += word
         except Exception as ex:
             print(ex)
-            
+        return output            
             
     @staticmethod
     def get_available_models():

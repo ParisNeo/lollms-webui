@@ -77,6 +77,7 @@ class GptJ(GPTBackend):
         """
         try:
             self.model.reset()
+            output = ""
             for tok in self.model.generate(prompt, 
                                            n_predict=n_predict,                                           
                                             temp=self.config['temperature'],
@@ -86,7 +87,10 @@ class GptJ(GPTBackend):
                                             #repeat_last_n = self.config['repeat_last_n'],
                                             n_threads=self.config['n_threads'],
                                            ):
-                if not new_text_callback(tok):
-                    return
+                output += tok
+                if new_text_callback is not None:
+                    if not new_text_callback(tok):
+                        return output
         except Exception as ex:
             print(ex)
+        return output

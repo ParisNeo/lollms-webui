@@ -77,6 +77,7 @@ class GPTJ(GPTBackend):
         """
         try:
             self.model.reset()
+            output = ""
             for tok in self.model.generate(
                                             prompt, 
                                             seed=self.config['seed'],
@@ -90,10 +91,13 @@ class GPTJ(GPTBackend):
                                             n_batch=8,
                                             reset=True,
                                            ):
-                if not new_text_callback(tok):
-                    return
+                output += tok
+                if new_text_callback is not None:
+                    if not new_text_callback(tok):
+                        return output
         except Exception as ex:
             print(ex)
+        return output
     @staticmethod
     def get_available_models():
         # Create the file path relative to the child class's directory

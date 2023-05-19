@@ -152,8 +152,8 @@ class ModelProcess:
             time.sleep(0.5)
         return self.set_config_result_queue.get()
 
-    def generate(self, prompt, id, n_predict):
-        self.generate_queue.put((prompt, id, n_predict))
+    def generate(self, full_prompt, prompt, id, n_predict):
+        self.generate_queue.put((full_prompt, prompt, id, n_predict))
 
     def cancel_generation(self):
         self.cancel_queue.put(('cancel',))
@@ -247,15 +247,15 @@ class ModelProcess:
                     if self.cancel_queue.empty() and self.clear_queue_queue.empty():
                         self.is_generating.value = 1
                         self.started_queue.put(1)
-                        self.id=command[1]
-                        self.n_predict=command[2]
+                        self.id=command[2]
+                        self.n_predict=command[3]
                         if self.personality.processor is not None:
                             if self.personality.processor_cfg is not None:
                                 if "custom_workflow" in self.personality.processor_cfg:
                                     if self.personality.processor_cfg["custom_workflow"]:
-                                        self.personality.processor.run_workflow(self._generate, command[0])
+                                        self.personality.processor.run_workflow(self._generate, command[1], command[0])
 
-                        self._generate(command[0])
+                        self._generate(command[0], self._callback)
                         while not self.generation_queue.empty():
                             time.sleep(1)
                         self.is_generating.value = 0
@@ -264,13 +264,13 @@ class ModelProcess:
                 time.sleep(1)
                 print(ex)
 
-    def _generate(self, prompt):
+    def _generate(self, prompt, callback=None):
         if self.model is not None:
             self.id = self.id
             if self.config["override_personality_model_parameters"]:
-                self.model.generate(
+                output = self.model.generate(
                     prompt,
-                    new_text_callback=self._callback,
+                    new_text_callback=callback,
                     n_predict=self.n_predict,
                     temp=self.config['temperature'],
                     top_k=self.config['top_k'],
@@ -281,9 +281,9 @@ class ModelProcess:
                     n_threads=self.config['n_threads']
                 )
             else:
-                self.model.generate(
+                output = self.model.generate(
                     prompt,
-                    new_text_callback=self._callback,
+                    new_text_callback=callback,
                     n_predict=self.n_predict,
                     temp=self.personality.model_temperature,
                     top_k=self.personality.model_top_k,
@@ -298,6 +298,8 @@ class ModelProcess:
             print("To do this: Install the model to your models/<backend name> folder.")
             print("Then set your model information in your local configuration file that you can find in configs/local_default.yaml")
             print("You can also use the ui to set your model in the settings page.")
+            output = ""
+        return output
 
     def _callback(self, text):
         if not self.ready:
@@ -607,7 +609,7 @@ class GPT4AllAPI():
         if preprocessed_prompt is not None:
             self.full_message_list.append(self.personality.user_message_prefix+preprocessed_prompt+self.personality.link_text+self.personality.ai_message_prefix)
         else:
-            self.full_message_list.append(self.personality.user_message_prefix+preprocessed_prompt+self.personality.link_text+self.personality.ai_message_prefix)
+            self.full_message_list.append(self.personality.user_message_prefix+message["content"]+self.personality.link_text+self.personality.ai_message_prefix)
 
 
         link_text = self.personality.link_text
@@ -617,8 +619,7 @@ class GPT4AllAPI():
         else:
             discussion_messages = self.personality.personality_conditioning+ link_text.join(self.full_message_list)
         
-        discussion_messages += link_text + self.personality.ai_message_prefix
-        return discussion_messages # Removes the last return
+        return discussion_messages, message["content"]
 
     def get_discussion_to(self, message_id=-1):
         messages = self.current_discussion.get_messages()
@@ -703,11 +704,11 @@ class GPT4AllAPI():
             )
 
             # prepare query and reception
-            self.discussion_messages = self.prepare_query(message_id)
+            self.discussion_messages, self.current_message = self.prepare_query(message_id)
             self.prepare_reception()
             self.generating = True
-            print("## Generating message ##")
-            self.process.generate(self.discussion_messages, message_id, n_predict = self.config['n_predict'])
+            print(">Generating message")
+            self.process.generate(self.discussion_messages, self.current_message, message_id, n_predict = self.config['n_predict'])
             self.process.started_queue.get()
             while(self.process.is_generating.value):  # Simulating other commands being issued
                 while not self.process.generation_queue.empty():
