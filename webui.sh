@@ -121,7 +121,7 @@ echo "is active"
 # Install the required packages
 echo "Installing requirements..."
 python3.10 -m pip install pip --upgrade
-python3.10 -m pip install -r requirements.txt
+python3.10 -m pip install --upgrade -r requirements.txt
 
 if [ $? -ne 0 ]; then
   echo "Failed to install required packages. Please check your internet connection and try again."
