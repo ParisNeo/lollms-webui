@@ -201,7 +201,7 @@ class ModelProcess:
             personality_path = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
             personality = AIPersonality(personality_path)
         except Exception as ex:
-            print("Personality file not found. Please verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+            print(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
             if self.config["debug"]:
                 print(ex)
             personality = AIPersonality()
@@ -213,19 +213,21 @@ class ModelProcess:
             personality_path = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
             self.personality = AIPersonality(personality_path)
         except Exception as ex:
-            print("Personality file not found. Please verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+            print(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
             if self.config["debug"]:
                 print(ex)
             self.personality = AIPersonality()
             self._set_config_result['personality_status'] ='failed'
             self._set_config_result['errors'].append(f"couldn't load personality:{ex}")
-            
+    
+    def step_callback(self, text, message_type):
+        self.generation_queue.put((text,self.id, message_type))
     def _run(self):        
         self._rebuild_model()
         self._rebuild_personality()
         if self.model_ready.value == 1:
             self.n_predict = 1
-            self._generate("I")
+            self._generate("I",1)
             print()
             print("Ready to receive data")
         else:
@@ -253,12 +255,12 @@ class ModelProcess:
                             if self.personality.processor_cfg is not None:
                                 if "custom_workflow" in self.personality.processor_cfg:
                                     if self.personality.processor_cfg["custom_workflow"]:
-                                        output = self.personality.processor.run_workflow(self._generate, command[1], command[0])
+                                        output = self.personality.processor.run_workflow(self._generate, command[1], command[0], self.step_callback)
                                         self._callback(output)
                                         self.is_generating.value = 0
                                         continue
 
-                        self._generate(command[0], self._callback)
+                        self._generate(command[0], self.n_predict, self._callback)
                         while not self.generation_queue.empty():
                             time.sleep(1)
                         self.is_generating.value = 0
@@ -267,14 +269,14 @@ class ModelProcess:
                 time.sleep(1)
                 print(ex)
 
-    def _generate(self, prompt, callback=None):
+    def _generate(self, prompt, n_predict=50, callback=None):
         if self.model is not None:
             self.id = self.id
             if self.config["override_personality_model_parameters"]:
                 output = self.model.generate(
                     prompt,
                     new_text_callback=callback,
-                    n_predict=self.n_predict,
+                    n_predict=n_predict,
                     temp=self.config['temperature'],
                     top_k=self.config['top_k'],
                     top_p=self.config['top_p'],
