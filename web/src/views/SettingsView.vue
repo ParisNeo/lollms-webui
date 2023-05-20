@@ -1,7 +1,8 @@
 <template>
     <div class="container overflow-y-scroll flex flex-col no-scrollbar shadow-lg p-10 pt-0 ">
         <!-- CONTROL PANEL -->
-        <div class="sticky top-0 z-10 flex flex-row mb-2 p-3 gap-3 w-full rounded-b-lg bg-bg-light-tone dark:bg-bg-dark-tone  shadow-lg">
+        <div
+            class="sticky top-0 z-10 flex flex-row mb-2 p-3 gap-3 w-full rounded-b-lg bg-bg-light-tone dark:bg-bg-dark-tone  shadow-lg">
             <!-- SAVE CONFIG -->
             <div v-if="showConfirmation" class="flex gap-3 flex-1 items-center duration-75">
                 <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Cancel" type="button"
@@ -23,21 +24,48 @@
                     @click="reset_configuration()">
                     <i data-feather="refresh-ccw"></i>
                 </button>
-                <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Collapse / Expand all panels"
-                    type="button" @click.stop="all_collapsed=!all_collapsed">
+                <button class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                    title="Collapse / Expand all panels" type="button" @click.stop="all_collapsed = !all_collapsed">
                     <i data-feather="list"></i>
                 </button>
             </div>
-            <div class="m-2">
-                    <button @click="applyConfiguration" class="bg-blue-500 text-white py-2 px-4 rounded">
-                        Apply Configuration
-                    </button>
-                    <div v-if="isLoading" class="loader"></div>
-            </div>                      
+            <div class="flex gap-3 flex-1 items-center justify-end">
 
+
+                <div v-if="!isModelSelected" class="text-red-600 flex gap-3 items-center">
+                    <i data-feather="alert-triangle"></i>
+                    No model selected!
+                </div>
+                <div v-if="settingsChanged" class="flex gap-3 items-center">
+
+                    Apply changes:
+                    <button v-if="!isLoading" class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                        title="Apply changes" type="button" @click.stop="applyConfiguration()">
+                        <i data-feather="check"></i>
+                    </button>
+                    <!-- SPINNER -->
+                    <div v-if="isLoading" role="status">
+                        <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101"
+                            fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                fill="currentColor" />
+                            <path
+                                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                fill="currentFill" />
+                        </svg>
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <!-- <button @click="applyConfiguration" class="bg-primary text-white py-1 px-4 rounded">
+                    Apply Configuration
+                    <div v-if="isLoading" class="loader"></div>    v-if="settingsChanged"
+                </button> -->
+                </div>
+            </div>
         </div>
         <!-- BACKEND -->
-        <div
+        <!-- DISABLED FOR NOW -->
+        <!-- <div
             class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
             <div class="flex flex-row ">
                 <button @click.stop="bec_collapsed = !bec_collapsed"
@@ -62,46 +90,59 @@
                     <label for="model" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Model:
                     </label>
-                    <select id="model" @change="update_model($event.target.value)" @mouseup="update_model($event.target.value)" 
+                    <select id="model" @change="update_model($event.target.value)"
+                        @mouseup="update_model($event.target.value)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                         <option v-for="item in modelsArr" :selected="item === configFile.model">{{ item }}</option>
 
                     </select>
-                </div>          
+                </div>
             </div>
-        </div>
+        </div> -->
         <div
             class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
             <div class="flex flex-row p-3">
                 <button @click.stop="mzc_collapsed = !mzc_collapsed"
-                class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
+                    class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
                     <i :data-feather="mzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
                     <h3 class="text-lg font-semibold cursor-pointer select-none">
                         Models zoo</h3>
                 </button>
             </div>
             <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                <div class="mx-2 mb-4">
+                    <label for="backend" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Backend:
+                    </label>
+                    <select id="backend" @change="update_backend($event.target.value)"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                        <option v-for="item in backendsArr" :selected="item === configFile.backend">{{ item }}</option>
+                    </select>
+                </div>
                 <div v-if="models.length > 0" class="mb-2">
                     <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Install more models:
+                        Models:
                     </label>
-                    <div ref="modelZoo" class="overflow-y-auto no-scrollbar p-2 pb-0" :class="mzl_collapsed ? '':'max-h-96'">
+                    <div ref="modelZoo" class="overflow-y-auto no-scrollbar p-2 pb-0"
+                        :class="mzl_collapsed ? '' : 'max-h-96'">
                         <model-entry v-for="(model, index) in models" :key="index" :title="model.title" :icon="model.icon"
                             :path="model.path" :description="model.description" :is-installed="model.isInstalled"
-                            :on-install="onInstall"
-                            :on-uninstall="onUninstall"
-                            :on-selected="onSelected" />
+                            :on-install="onInstall" :on-uninstall="onUninstall" :on-selected="onSelected"
+                            :selected="model.title === configFile.model" />
                     </div>
                 </div>
-                 <!-- EXPAND / COLLAPSE BUTTON -->
-                <button v-if="mzl_collapsed" class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg " title="Collapse"
-                    type="button" @click="mzl_collapsed = !mzl_collapsed">
-                    <i  data-feather="chevron-up" ></i>  
+                <!-- EXPAND / COLLAPSE BUTTON -->
+                <button v-if="mzl_collapsed"
+                    class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
+                    title="Collapse" type="button" @click="mzl_collapsed = !mzl_collapsed">
+                    <i data-feather="chevron-up"></i>
                 </button>
-                <button v-else class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg " title="Expand"
-                    type="button" @click="mzl_collapsed = !mzl_collapsed">
-                    <i  data-feather="chevron-down" ></i>  
+                <button v-else
+                    class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
+                    title="Expand" type="button" @click="mzl_collapsed = !mzl_collapsed">
+                    <i data-feather="chevron-down"></i>
                 </button>
             </div>
 
@@ -139,7 +180,7 @@
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                         <option v-for="item in persCatgArr" :selected="item === configFile.personality_category">{{ item }}
-                        
+
                         </option>
 
                     </select>
@@ -161,10 +202,10 @@
             class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
             <div class="flex flex-row ">
                 <button @click.stop="pzc_collapsed = !pzc_collapsed"
-                        class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
+                    class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
                     <i :data-feather="mc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
                     <h3 class="text-lg font-semibold cursor-pointer select-none">
-                    Personalities zoo
+                        Personalities zoo
                     </h3>
                 </button>
             </div>
@@ -184,7 +225,7 @@
             class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
             <div class="flex flex-row">
                 <button @click.stop="mc_collapsed = !mc_collapsed"
-                class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
+                    class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
                     <i :data-feather="mc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
                     <h3 class="text-lg font-semibold cursor-pointer select-none">
                         Model Configuration</h3>
@@ -332,8 +373,7 @@
 
     <YesNoDialog ref="yesNoDialog" />
     <MessageBox ref="messageBox" />
-    <Toast  ref="toast" />
-
+    <Toast ref="toast" />
 </template>
 
 <script>
@@ -356,32 +396,25 @@ export default {
         PersonalityViewer,
         Toast
     },
-    setup() {
-
-
-        return {
-
-        }
-    },
     data() {
 
         return {
             // Models zoo installer stuff
             models: [],
-            personalities:[],
+            personalities: [],
             // Accordeon stuff 
-            collapsedArr:[],
-            all_collapsed:true,    
+            collapsedArr: [],
+            all_collapsed: true,
             bec_collapsed: true,
             mzc_collapsed: true, // models zoo
             pzc_collapsed: true, // personalities zoo
             pc_collapsed: true,
             mc_collapsed: true,
             // Zoo accordeoon
-            mzl_collapsed:false,
+            mzl_collapsed: false,
             // Settings stuff
             backendsArr: [],
-            modelsArr: [],
+            modelsArr: [], // not used anymore but still have references in some methods
             persLangArr: [],
             persCatgArr: [],
             persArr: [],
@@ -389,19 +422,21 @@ export default {
             configFile: {},
             showConfirmation: false,
             showToast: false,
-            isLoading: false
+            isLoading: false,
+            settingsChanged: false,
+            isModelSelected: false
 
         }
     },
     created() {
-        this.fetchModels();
+
     }, methods: {
-        collapseAll(val){
-            this.bec_collapsed=val
-            this.mzc_collapsed=val
-            this.pzc_collapsed=val
-            this.pc_collapsed=val
-            this.mc_collapsed=val
+        collapseAll(val) {
+            this.bec_collapsed = val
+            this.mzc_collapsed = val
+            this.pzc_collapsed = val
+            this.pc_collapsed = val
+            this.mc_collapsed = val
         },
         fetchModels() {
             console.log("Fetching models")
@@ -414,12 +449,32 @@ export default {
                     console.log(error);
                 });
         },
-        onSelected(model_object){
+        onSelected(model_object) {
             console.log("Selected model")
             // eslint-disable-next-line no-unused-vars
-            this.update_setting('model', model_object.title, (res)=>{console.log("Model selected"); })
+            if (model_object) {
+                if (model_object.isInstalled) {
+                    if (this.configFile.model != model_object.title) {
+                        this.update_model(model_object.title)
+                        this.configFile.model = model_object.title
+                        this.$refs.toast.showToast("Model:\n" + model_object.title + "\nselected", 4, true)
+                        this.settingsChanged = true
+                        this.isModelSelected = true
+                    }
+
+                } else {
+                    this.$refs.toast.showToast("Model:\n" + model_object.title + "\nis not installed", 4, false)
+                }
+                nextTick(() => {
+                    feather.replace()
+
+                })
+            }
+
+            //this.update_setting('model', model_object.title, (res)=>{console.log("Model selected"); })
         },
         // Model installation
+
         onInstall(model_object) {
             let path = model_object.path;
             this.showProgress = true;
@@ -474,7 +529,7 @@ export default {
                     console.error('Installation failed:', message.error);
                 }
             };
-            socket.on('install_progress', progressListener);            
+            socket.on('install_progress', progressListener);
             socket.emit('uninstall_model', { path: model_object.path });
         },
         // messagebox ok stuff
@@ -483,7 +538,7 @@ export default {
         },
         // Refresh stuff
         refresh() {
-            
+
             console.log("Refreshing")
             // No need to refresh all lists because they never change during using application. 
             // On settings change only config file chnages.
@@ -494,20 +549,22 @@ export default {
             this.api_get_req("list_personalities_categories").then(response => { this.persCatgArr = response })
             this.api_get_req("list_personalities").then(response => { this.persArr = response })
             //this.api_get_req("list_languages").then(response => { this.langArr = response })
-            this.api_get_req("get_config").then(response => { 
-                this.configFile = response 
+            this.api_get_req("get_config").then(response => {
+                this.configFile = response
                 console.log("selecting model")
                 this.models.forEach(model => {
                     console.log(`${model} -> ${response["model"]}`)
-                    if(model.title==response["model"]){
-                        model.selected=true;
+                    if (model.title == response["model"]) {
+                        model.selected = true;
+
                     }
-                    else{
-                        model.selected=false;
+                    else {
+                        model.selected = false;
                     }
-                }); 
+                });
             })
-            this.fetchModels(); 
+
+            this.fetchModels();
         },
         // Accordeon stuff
         toggleAccordion() {
@@ -530,33 +587,63 @@ export default {
                     return res.data;
                 }
             })
-            // eslint-disable-next-line no-unused-vars
-            .catch(error => { return { 'status': false } });
+                // eslint-disable-next-line no-unused-vars
+                .catch(error => { return { 'status': false } });
         },
         update_backend(value) {
+
             console.log("Upgrading backend")
             // eslint-disable-next-line no-unused-vars
-            this.update_setting('backend', value, (res)=>{
+            this.update_setting('backend', value, (res) => {
                 this.refresh();
-                console.log("Backend changed"); 
+                console.log("Backend changed");
                 console.log(res);
-                this.$refs.toast.showToast("Backend changed.",4, true)
+                this.$refs.toast.showToast("Backend changed.", 4, true)
+                this.settingsChanged = true
+
+                nextTick(() => {
+                    feather.replace()
+
+                })
+                // If backend changes then reset model
+                this.update_model(null)
             })
+
         },
         update_model(value) {
+            if (!value) this.isModelSelected = false
+
             console.log("Upgrading model")
             // eslint-disable-next-line no-unused-vars
-            this.update_setting('model', value, (res)=>{console.log("Model changed"); this.fetchModels(); })
+            this.update_setting('model', value, (res) => { console.log("Model changed"); this.fetchModels(); })
         },
         applyConfiguration() {
+            if (!this.configFile.model) {
+                console.log("applying configuration failed")
+                    this.$refs.toast.showToast("Configuration changed failed.\nPlease select model first", 4, false)
+                    nextTick(() => {
+                    feather.replace()
+
+                })
+                return
+            }
             this.isLoading = true;
             axios.post('/apply_settings').then((res) => {
                 this.isLoading = false;
                 console.log(res.data)
-                if(res.data.status==="succeeded"){
+                if (res.data.status === "succeeded") {
                     console.log("applying configuration succeeded")
-                    this.$refs.toast.showToast("Configuration changed successfully.",4, true)
+                    this.$refs.toast.showToast("Configuration changed successfully.", 4, true)
+                    this.settingsChanged = false
+                } else {
+                    console.log("applying configuration failed")
+                    this.$refs.toast.showToast("Configuration changed failed.", 4, false)
+
                 }
+                nextTick(() => {
+                    feather.replace()
+
+                })
             })
         },
         save_configuration() {
@@ -616,7 +703,7 @@ export default {
                 }
             } catch (error) {
                 console.log(error)
-                return []
+                return
             }
 
 
@@ -631,9 +718,12 @@ export default {
 
         })
         this.configFile = await this.api_get_req("get_config")
-
+        if (this.configFile.model) {
+            this.isModelSelected = true
+        }
+        this.fetchModels();
         this.backendsArr = await this.api_get_req("list_backends")
-        this.modelsArr =  await this.api_get_req("list_models")
+        this.modelsArr = await this.api_get_req("list_models")
         this.persLangArr = await this.api_get_req("list_personalities_languages")
         this.persCatgArr = await this.api_get_req("list_personalities_categories")
         this.persArr = await this.api_get_req("list_personalities")
@@ -666,7 +756,7 @@ export default {
             })
         },
         mzl_collapsed() {
-            
+
             nextTick(() => {
                 feather.replace()
 
@@ -678,7 +768,23 @@ export default {
                 feather.replace()
 
             })
+        },
+        settingsChanged() {
+            nextTick(() => {
+                feather.replace()
+
+            })
+        },
+        isModelSelected(val) {
+
+            console.log('iss selected:', val)
         }
+        // configFile(){
+        //     nextTick(() => {
+        //         feather.replace()
+
+        //     }) 
+        // }
 
     }
 }
@@ -687,24 +793,27 @@ export default {
 
 <style>
 .loader {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #3498db;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  animation: spin 2s linear infinite;
-  margin-left: 8px;
-  display: inline-block;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    animation: spin 2s linear infinite;
+    margin-left: 8px;
+    display: inline-block;
 }
+
 .height-64 {
     min-height: 64px;
 }
+
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 </style>

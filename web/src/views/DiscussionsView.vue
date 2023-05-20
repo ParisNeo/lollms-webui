@@ -536,13 +536,17 @@ export default {
                 console.log("Error: Could not get generation status", error);
             });
         },
-        steamMessageContent(msgObj) {
+        streamMessageContent(msgObj) {
             // Streams response message content from backend
             //console.log("stream", JSON.stringify(content))
             const parent = msgObj.user_message_id
             const discussion_id = msgObj.discussion_id
             // next statement - incorrect comparison: was '=' and should be '=='
+            
+            this.setDiscussionLoading(discussion_id, true );
             if (this.currentDiscussion.id == discussion_id) {
+                
+                this.isGenerating = true;
                 const index = this.discussionArr.findIndex((x) => x.parent == parent && x.id == msgObj.ai_message_id)
                 const messageItem = this.discussionArr[index]
                 if (messageItem) {
@@ -876,7 +880,7 @@ export default {
 
         // socket responses
         socket.on('infos', this.createBotMsg)
-        socket.on('message', this.steamMessageContent)
+        socket.on('message', this.streamMessageContent)
         socket.on("final", this.finalMsgEvent)
 
     },
