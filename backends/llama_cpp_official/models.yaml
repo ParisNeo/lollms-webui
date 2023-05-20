@@ -15,18 +15,11 @@
   server: https://huggingface.co/TheBloke/wizard-vicuna-13B-GGML/resolve/main/
   sha256: 32fd44c685fbf429810db593e2db8aa42a7e1be2cd3571b6005d53b029acfcf5
 - bestLlama: 'true'
-  description: The wizardLM model 7B
+  description: The wizardLM model 7B uncensored
   filename: WizardLM-7B-uncensored.ggml.q4_0.bin
   license: Non commercial
   link: https://huggingface.co/TheBloke/WizardLM-7B-uncensored-GGML/resolve/main/
   owner: TheBloke
   server: https://huggingface.co/TheBloke/WizardLM-7B-uncensored-GGML/resolve/main/
   sha256: b1e53a3c3a9389b9c5d81e0813cfb90ebaff6acad1733fad08cd28974fa3ac30
-- bestLlama: 'true'
-  description: The wizardLM model uncensored
-  filename: WizardLM-7B-uncensored.ggml.q4_0.bin
-  license: Non commercial
-  link: https://huggingface.co/TheBloke/WizardLM-7B-uncensored-GGML/resolve/main/
-  md5sum: b1e53a3c3a9389b9c5d81e0813cfb90ebaff6acad1733fad08cd28974fa3ac30
-  owner: TheBloke
-  server: https://huggingface.co/TheBloke/WizardLM-7B-uncensored-GGML/resolve/main/
+
