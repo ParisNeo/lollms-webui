@@ -470,6 +470,7 @@ class GPT4AllAPI():
                         {
                             "status":'model_not_ready',
                             "type": "input_message_infos",
+                            'logo': self.personality.logo
                             "bot": self.personality.name,
                             "user": self.personality.user_name,
                             "message":"",
