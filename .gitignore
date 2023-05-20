@@ -167,3 +167,8 @@ node_modules/
 
 # Google chrome files
 *.crdownload
+
+# outputs folder
+outputs
+# junk stuff
+./src

@@ -222,6 +222,7 @@ class ModelProcess:
     
     def step_callback(self, text, message_type):
         self.generation_queue.put((text,self.id, message_type))
+        
     def _run(self):        
         self._rebuild_model()
         self._rebuild_personality()
@@ -308,8 +309,7 @@ class ModelProcess:
 
     def _callback(self, text):
         if not self.ready:
-            print(".",end="")
-            sys.stdout.flush()
+            print(".",end="", flush=True)
             return True
         else:
             # Stream the generated text to the main process
@@ -667,8 +667,7 @@ class GPT4AllAPI():
         return string
 
     def process_chunk(self, chunk):
-        print(chunk,end="")
-        sys.stdout.flush()
+        print(chunk,end="", flush=True)
         self.bot_says += chunk
         if not self.personality.detect_antiprompt(self.bot_says):
             self.socketio.emit('message', {

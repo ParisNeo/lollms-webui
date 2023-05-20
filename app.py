@@ -518,18 +518,28 @@ class Gpt4AllWebUI(GPT4AllAPI):
     def update_message(self):
         discussion_id = request.args.get("id")
         new_message = request.args.get("message")
-        self.current_discussion.update_message(discussion_id, new_message)
-        return jsonify({"status": "ok"})
+        try:
+            self.current_discussion.update_message(discussion_id, new_message)
+            return jsonify({"status": "ok"})
+        except Exception as ex:
+            return jsonify({"status": "nok", "error":str(ex)})
+
 
     def message_rank_up(self):
         discussion_id = request.args.get("id")
-        new_rank = self.current_discussion.message_rank_up(discussion_id)
-        return jsonify({"new_rank": new_rank})
+        try:
+            new_rank = self.current_discussion.message_rank_up(discussion_id)
+            return jsonify({"status": "ok", "new_rank": new_rank})
+        except Exception as ex:
+            return jsonify({"status": "nok", "error":str(ex)})
 
     def message_rank_down(self):
         discussion_id = request.args.get("id")
-        new_rank = self.current_discussion.message_rank_down(discussion_id)
-        return jsonify({"new_rank": new_rank})
+        try:
+            new_rank = self.current_discussion.message_rank_down(discussion_id)
+            return jsonify({"status": "ok", "new_rank": new_rank})
+        except Exception as ex:
+            return jsonify({"status": "nok", "error":str(ex)})
 
     def delete_message(self):
         discussion_id = request.args.get("id")
