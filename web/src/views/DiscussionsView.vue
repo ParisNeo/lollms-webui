@@ -536,7 +536,7 @@ export default {
                 console.log("Error: Could not get generation status", error);
             });
         },
-        steamMessageContent(msgObj) {
+        streamMessageContent(msgObj) {
             // Streams response message content from backend
             //console.log("stream", JSON.stringify(content))
             const parent = msgObj.user_message_id
@@ -876,7 +876,7 @@ export default {
 
         // socket responses
         socket.on('infos', this.createBotMsg)
-        socket.on('message', this.steamMessageContent)
+        socket.on('message', this.streamMessageContent)
         socket.on("final", this.finalMsgEvent)
 
     },
