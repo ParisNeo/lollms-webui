@@ -14,7 +14,7 @@
                     <i data-feather="x"></i>
                     <span class="sr-only">Cross icon</span>
                 </div>             
-                <div class="ml-3 text-sm font-normal">{{ message }}</div>
+                <span class="ml-3 text-sm font-normal whitespace-pre">{{ message }}</span>
 
                 </slot>
             </div>
@@ -58,6 +58,7 @@ export default {
             this.success = success;
             this.message = message;
             this.show = true;
+
             setTimeout(() => {
                     this.$emit('close')
                     this.show = false
@@ -72,7 +73,9 @@ export default {
                     this.$emit('close')
                     this.show = false
                 }, 3000);
+                
             }
+
         }
     }
 }

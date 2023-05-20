@@ -81,7 +81,7 @@
                     class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
                     <i :data-feather="mzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
                     <h3 class="text-lg font-semibold cursor-pointer select-none">
-                        Models configuration</h3>
+                        Model configuration</h3>
                 </button>
             </div>
             <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
@@ -432,8 +432,17 @@ export default {
             console.log("Selected model")
             // eslint-disable-next-line no-unused-vars
             if (model_object) {
-                this.update_model(model_object.title)
-                this.configFile.model = model_object.title
+                if (model_object.isInstalled) {
+                    this.update_model(model_object.title)
+                    this.configFile.model = model_object.title
+                    this.$refs.toast.showToast("Model:\n" + model_object.title + "\nselected", 4, true)
+                } else {
+                    this.$refs.toast.showToast("Model:\n" + model_object.title + "\nis not installed", 4, false)
+                }
+                nextTick(() => {
+                    feather.replace()
+
+                })
             }
 
             //this.update_setting('model', model_object.title, (res)=>{console.log("Model selected"); })
@@ -576,7 +585,16 @@ export default {
                 if (res.data.status === "succeeded") {
                     console.log("applying configuration succeeded")
                     this.$refs.toast.showToast("Configuration changed successfully.", 4, true)
+
+                }else{
+                    console.log("applying configuration failed")
+                    this.$refs.toast.showToast("Configuration changed failed.", 4, false)
+
                 }
+                nextTick(() => {
+                    feather.replace()
+
+                })
             })
         },
         save_configuration() {
@@ -651,7 +669,8 @@ export default {
 
         })
         this.configFile = await this.api_get_req("get_config")
-        this.fetchModels();
+        this.models = await this.api_get_req("get_available_models")
+        //this.fetchModels();
         this.backendsArr = await this.api_get_req("list_backends")
         this.modelsArr = await this.api_get_req("list_models")
         this.persLangArr = await this.api_get_req("list_personalities_languages")
@@ -729,4 +748,5 @@ export default {
     100% {
         transform: rotate(360deg);
     }
-}</style>
+}
+</style>
