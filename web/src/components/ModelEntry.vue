@@ -7,10 +7,10 @@
       <h3 class="font-bold text-lg">
         {{ title }}
       </h3>
-      <div @click.stop class="flex flex-shrink-0">
+      <div class="flex flex-shrink-0">
 
      
-      <a :href="path"
+      <a :href="path" @click.stop 
       class="flex hover:text-secondary duration-75 active:scale-90"
         title="Download this manually (faster) and put it in the models/<your backend> folder then refresh">
           
