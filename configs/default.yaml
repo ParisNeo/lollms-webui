@@ -28,4 +28,3 @@ auto_read: false
 use_avx2: true # By default we require using avx2 but if not supported, make sure you remove it from here
 use_new_ui: false # By default use old ui
 override_personality_model_parameters: false #if true the personality parameters are overriden by those of the configuration (may affect personality behaviour) 
-debug: false

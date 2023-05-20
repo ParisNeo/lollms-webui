@@ -163,6 +163,7 @@ class ModelProcess:
     
     def rebuild_backend(self, config):
         try:
+            print(" ******************* Building Backend from main Process *************************")
             backend = self.load_backend(config["backend"])
             print("Backend loaded successfully")
         except Exception as ex:
@@ -175,7 +176,7 @@ class ModelProcess:
             
     def _rebuild_model(self):
         try:
-            print("Rebuilding model")
+            print(" ******************* Building Backend from generation Process *************************")
             self.backend = self.load_backend(self.config["backend"])
             print("Backend loaded successfully")
             try:
@@ -198,8 +199,10 @@ class ModelProcess:
 
     def rebuild_personality(self):
         try:
+            print(" ******************* Building Personality from main Process *************************")
             personality_path = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
-            personality = AIPersonality(personality_path)
+            personality = AIPersonality(personality_path, run_scripts=False)
+            print(f" ************ Personality {personality.name} is ready (Main process) ***************************")
         except Exception as ex:
             print(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
             if self.config["debug"]:
@@ -210,10 +213,14 @@ class ModelProcess:
     
     def _rebuild_personality(self):
         try:
+            print(" ******************* Building Personality from generation Process *************************")
             personality_path = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
             self.personality = AIPersonality(personality_path)
+            print(f" ************ Personality {self.personality.name} is ready (generation process) ***************************")
         except Exception as ex:
-            print(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+            print(f"Personality file not found or is corrupted ({personality_path}).")
+            print(f"Please verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+            print(f"Exception: {ex}")
             if self.config["debug"]:
                 print(ex)
             self.personality = AIPersonality()
@@ -256,6 +263,7 @@ class ModelProcess:
                             if self.personality.processor_cfg is not None:
                                 if "custom_workflow" in self.personality.processor_cfg:
                                     if self.personality.processor_cfg["custom_workflow"]:
+                                        print("Running workflow")
                                         output = self.personality.processor.run_workflow(self._generate, command[1], command[0], self.step_callback)
                                         self._callback(output)
                                         self.is_generating.value = 0
