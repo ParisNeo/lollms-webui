@@ -144,6 +144,7 @@ export default {
                 return userImgPlaceholder;
 
             }
+            if this.message.
 
             return botImgPlaceholder;
         }

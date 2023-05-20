@@ -36,6 +36,7 @@ from flask import (
 from flask_socketio import SocketIO, emit
 from pathlib import Path
 import gc
+import yaml
 from geventwebsocket.handler import WebSocketHandler
 from gevent.pywsgi import WSGIServer
 import requests
@@ -205,6 +206,10 @@ class Gpt4AllWebUI(GPT4AllAPI):
         )
         
 
+        self.add_endpoint(
+            "/get_all_personalities", "get_all_personalities", self.get_all_personalities, methods=["GET"]
+        )
+        
 
     def save_settings(self):
         save_config(self.config, self.config_file_path)
@@ -218,8 +223,38 @@ class Gpt4AllWebUI(GPT4AllAPI):
     def get_current_personality(self):
         return jsonify({"personality":self.personality.as_dict()})
     
-    
+    def get_all_personalities(self):
+        personalities_folder = Path("./personalities")
+        personalities = {}
+        for language_folder in personalities_folder.iterdir():
+            if language_folder.is_dir():
+                personalities[language_folder.name] = {}
+                for category_folder in language_folder.iterdir():
+                    if category_folder.is_dir():
+                        personalities[language_folder.name][category_folder.name] = []
+                        for personality_folder in category_folder.iterdir():
+                            if personality_folder.is_dir():
+                                personality_info = {}
+                                config_path = personality_folder / 'config.yaml'
+                                with open(config_path) as config_file:
+                                    config_data = yaml.load(config_file, Loader=yaml.FullLoader)
+                                    personality_info['name'] = personality_folder.name
+                                    personality_info['description'] = config_data['description']
+                                    personality_info['author'] = config_data['creator']
+                                    personality_info['version'] = config_data['version']
+                                scripts_path = personality_folder / 'scripts'
+                                personality_info['has_scripts'] = scripts_path.is_dir()
+                                assets_path = personality_folder / 'assets'
+                                logo_path = assets_path / 'logo.png'
+                                gif_logo_path = assets_path / 'logo.gif'
+                                personality_info['has_logo'] = logo_path.is_file() or gif_logo_path.is_file()
+                                if logo_path.is_file():
+                                    personality_info['icon_file'] = 'logo.png'
+                                elif gif_logo_path.is_file():
+                                    personality_info['icon_file'] = 'logo.gif'
+                                personalities[language_folder.name][category_folder.name].append(personality_info)
 
+        return json.dumps(personalities)
     # Settings (data: {"setting_name":<the setting name>,"setting_value":<the setting value>})
     def update_setting(self):
         data = request.get_json()
@@ -468,8 +503,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
             else:
                 self.current_discussion = self.db.create_discussion()
         messages = self.current_discussion.get_messages()
-        #for message in messages:
-        #    message["content"] =  markdown.markdown(message["content"])
+
         
         return jsonify(messages), {'Content-Type': 'application/json; charset=utf-8'}
 
