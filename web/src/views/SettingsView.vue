@@ -29,11 +29,15 @@
                     <i data-feather="list"></i>
                 </button>
             </div>
-            <div class="m-2">
+            <div v-if="settingsChanged" class="">
                 <button @click="applyConfiguration" class="bg-blue-500 text-white py-2 px-4 rounded">
                     Apply Configuration
+                    <div v-if="isLoading" class="loader"></div>
                 </button>
-                <div v-if="isLoading" class="loader"></div>
+                <button @click="refresh" class="bg-blue-500 text-white py-2 px-4 rounded">
+                    X
+                  
+                </button>
             </div>
 
         </div>
@@ -81,7 +85,7 @@
                     class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
                     <i :data-feather="mzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
                     <h3 class="text-lg font-semibold cursor-pointer select-none">
-                        Model configuration</h3>
+                        Models zoo</h3>
                 </button>
             </div>
             <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
@@ -370,13 +374,6 @@ export default {
         PersonalityViewer,
         Toast
     },
-    setup() {
-
-
-        return {
-
-        }
-    },
     data() {
 
         return {
@@ -395,7 +392,7 @@ export default {
             mzl_collapsed: false,
             // Settings stuff
             backendsArr: [],
-            modelsArr: [],
+            modelsArr: [], // not used anymore but still have references in some methods
             persLangArr: [],
             persCatgArr: [],
             persArr: [],
@@ -403,7 +400,8 @@ export default {
             configFile: {},
             showConfirmation: false,
             showToast: false,
-            isLoading: false
+            isLoading: false,
+            settingsChanged: false
 
         }
     },
@@ -433,9 +431,13 @@ export default {
             // eslint-disable-next-line no-unused-vars
             if (model_object) {
                 if (model_object.isInstalled) {
-                    this.update_model(model_object.title)
-                    this.configFile.model = model_object.title
-                    this.$refs.toast.showToast("Model:\n" + model_object.title + "\nselected", 4, true)
+                    if (this.configFile.model != model_object.title) {
+                        this.update_model(model_object.title)
+                        this.configFile.model = model_object.title
+                        this.$refs.toast.showToast("Model:\n" + model_object.title + "\nselected", 4, true)
+                        this.settingsChanged = true
+                    }
+
                 } else {
                     this.$refs.toast.showToast("Model:\n" + model_object.title + "\nis not installed", 4, false)
                 }
@@ -536,6 +538,7 @@ export default {
                     }
                 });
             })
+
             this.fetchModels();
         },
         // Accordeon stuff
@@ -563,6 +566,7 @@ export default {
                 .catch(error => { return { 'status': false } });
         },
         update_backend(value) {
+
             console.log("Upgrading backend")
             // eslint-disable-next-line no-unused-vars
             this.update_setting('backend', value, (res) => {
@@ -570,7 +574,15 @@ export default {
                 console.log("Backend changed");
                 console.log(res);
                 this.$refs.toast.showToast("Backend changed.", 4, true)
+                this.settingsChanged = true
+                nextTick(() => {
+                    feather.replace()
+
+                })
+                // If backend changes then reset model
+                this.update_model(null)
             })
+
         },
         update_model(value) {
             console.log("Upgrading model")
@@ -585,8 +597,8 @@ export default {
                 if (res.data.status === "succeeded") {
                     console.log("applying configuration succeeded")
                     this.$refs.toast.showToast("Configuration changed successfully.", 4, true)
-
-                }else{
+                    this.settingsChanged = false
+                } else {
                     console.log("applying configuration failed")
                     this.$refs.toast.showToast("Configuration changed failed.", 4, false)
 
@@ -654,7 +666,7 @@ export default {
                 }
             } catch (error) {
                 console.log(error)
-                return []
+                return
             }
 
 
@@ -669,8 +681,8 @@ export default {
 
         })
         this.configFile = await this.api_get_req("get_config")
-        this.models = await this.api_get_req("get_available_models")
-        //this.fetchModels();
+
+        this.fetchModels();
         this.backendsArr = await this.api_get_req("list_backends")
         this.modelsArr = await this.api_get_req("list_models")
         this.persLangArr = await this.api_get_req("list_personalities_languages")
