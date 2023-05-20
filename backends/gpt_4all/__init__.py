@@ -37,7 +37,7 @@ class GPT4ALL(GPTBackend):
         super().__init__(config, False)
         self.model = GPT4All.get_model_from_name(self.config['model'])
         self.model.load_model(
-                model_path=f"./models/gpt_4all/{self.config['model']}",
+                model_path=f"./models/gpt_4all/{self.config['model']}"
         )
 
 
@@ -88,7 +88,7 @@ class GPT4ALL(GPTBackend):
                                             repeat_penalty=self.config['repeat_penalty'],
                                             repeat_last_n = self.config['repeat_last_n'],
                                             # n_threads=self.config['n_threads'],
-                                            streaming=True
+                                            streaming=True,
                                            ):
                 output += tok
                 if new_text_callback is not None:
