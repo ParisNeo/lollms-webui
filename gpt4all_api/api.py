@@ -313,7 +313,7 @@ class ModelProcess:
             return True
         else:
             # Stream the generated text to the main process
-            self.generation_queue.put((text,self.id))
+            self.generation_queue.put((text,self.id, 0))
             self._check_set_config_queue()
             self._check_cancel_queue()
             self._check_clear_queue()        
@@ -719,7 +719,7 @@ class GPT4AllAPI():
             while(self.process.is_generating.value):  # Simulating other commands being issued
                 chunk = ""
                 while not self.process.generation_queue.empty():
-                    chk, tok = self.process.generation_queue.get()
+                    chk, tok, message_type = self.process.generation_queue.get()
                     chunk += chk
                 if chunk!="":
                     self.process_chunk(chunk)
