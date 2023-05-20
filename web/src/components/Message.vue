@@ -144,7 +144,8 @@ export default {
                 return userImgPlaceholder;
 
             }
-            if this.message.
+            console.log("Message data")
+            console.log(this.message)
 
             return botImgPlaceholder;
         }
