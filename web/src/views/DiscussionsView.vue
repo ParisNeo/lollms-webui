@@ -542,7 +542,11 @@ export default {
             const parent = msgObj.user_message_id
             const discussion_id = msgObj.discussion_id
             // next statement - incorrect comparison: was '=' and should be '=='
+            
+            this.setDiscussionLoading(discussion_id, true );
             if (this.currentDiscussion.id == discussion_id) {
+                
+                this.isGenerating = true;
                 const index = this.discussionArr.findIndex((x) => x.parent == parent && x.id == msgObj.ai_message_id)
                 const messageItem = this.discussionArr[index]
                 if (messageItem) {
