@@ -14,7 +14,7 @@
                     <i data-feather="x"></i>
                     <span class="sr-only">Cross icon</span>
                 </div>             
-                <span class="ml-3 text-sm font-normal whitespace-pre">{{ message }}</span>
+                <span class="ml-3 text-sm font-normal whitespace-pre-wrap">{{ message }}</span>
 
                 </slot>
             </div>
