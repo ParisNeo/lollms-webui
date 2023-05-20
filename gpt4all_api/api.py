@@ -220,8 +220,8 @@ class ModelProcess:
             self._set_config_result['personality_status'] ='failed'
             self._set_config_result['errors'].append(f"couldn't load personality:{ex}")
     
-    def step_callback(self, text, type):
-        print(f"Step callback : {text}")
+    def step_callback(self, text, message_type):
+        self.generation_queue.put((text,self.id, message_type))
     def _run(self):        
         self._rebuild_model()
         self._rebuild_personality()
