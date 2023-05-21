@@ -1,3 +1,11 @@
+- LLAMA: 'true'
+  description: GGML format model files for the original LLaMa
+  filename: llama-7b.ggmlv3.q4_0.bin
+  license: Apache-2.0
+  owner_link: https://huggingface.co/TheBloke/
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/LLaMa-7B-GGML/resolve/main/
+  sha256: ec2f2d1f0dfb73b72a4cbac7fa121abbe04c37ab327125a38248f930c0f09ddf
 - MPT-7B: 'true'
   description: MPT-7B
   filename: mpt-7b.ggmlv3.q5_1.bin
