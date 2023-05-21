@@ -10,7 +10,7 @@ class Install:
         install_file = current_dir / ".installed"
 
         if not install_file.exists():
-            print("-------------- cTransformers backend -------------------------------")
+            print("-------------- GPT4All backend by nomic-ai -------------------------------")
             print("This is the first time you are using this backend.")
             print("Installing ...")
             try:
@@ -26,13 +26,14 @@ class Install:
                 self.reinstall_pytorch_with_cuda()
             # Step 2: Install dependencies using pip from requirements.txt
             requirements_file = current_dir / "requirements.txt"
-            subprocess.run(["pip", "install", "--upgrade", "--no-cache-dir", "-r", str(requirements_file)])
-
+            subprocess.run(["pip", "install", "--no-cache-dir", "-r", str(requirements_file)])
+            
             # Create ther models folder
             models_folder = Path("./models/c_transformers")
             models_folder.mkdir(exist_ok=True, parents=True)
             
             #Create the install file 
+            
             with open(install_file,"w") as f:
                 f.write("ok")
             print("Installed successfully")
