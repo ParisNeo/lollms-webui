@@ -4,7 +4,7 @@
 # Author        : ParisNeo with the help of the community
 # Underlying backend : Abdeladim's pygptj backend
 # Supported by Nomic-AI
-# Licence       : Apache 2.0
+# license       : Apache 2.0
 # Description   : 
 # This is an interface class for GPT4All-ui backends.
 

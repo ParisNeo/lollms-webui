@@ -4,10 +4,11 @@
       <i :class="`fas ${icon} text-xl`"></i>
     </div>
     <div class="flex-1">
-      <h3 class="font-bold text-lg">
+      <h3 class="font-bold font-large text-lg">
         {{ title }}
       </h3>
       <div class="flex flex-shrink-0">
+        <b>Manual download:&nbsp;</b>
         <a :href="path" @click.stop 
         class="flex hover:text-secondary duration-75 active:scale-90"
           title="Download this manually (faster) and put it in the models/<your backend> folder then refresh">
@@ -16,9 +17,19 @@
         </a>
       </div>
       <div class="flex flex-shrink-0">
-        <i data-feather="link" class="w-5 p-1">Licence: </i>
-          {{ licence }}
+        <b>License:&nbsp;</b>
+          {{ license }}
       </div>
+      <div class="flex flex-shrink-0">
+        <b>Owner:&nbsp;</b>
+        <a :href="owner_link"  target="_blank" @click.stop 
+        class="flex hover:text-secondary duration-75 active:scale-90"
+          title="Owner's profile">
+          <i data-feather="link" class="w-5 p-1"></i>
+          {{ owner }}
+        </a>
+      </div>      
+      <b>Description:&nbsp;</b><br>
       <p class="opacity-80">{{ description }}</p>
     </div>
     <div class="flex-shrink-0">
@@ -58,7 +69,8 @@ export default {
     icon: String,
     path: String,
     owner: String,
-    licence: String,
+    owner_link: String,
+    license: String,
     description: String,
     isInstalled: Boolean,
     onInstall: Function,

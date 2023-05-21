@@ -3,7 +3,7 @@
 # File          : config.py
 # Author        : ParisNeo with the help of the community
 # Supported by Nomic-AI
-# Licence       : Apache 2.0
+# license       : Apache 2.0
 # Description   : 
 # A front end Flask application for llamacpp models.
 # The official GPT4All Web ui

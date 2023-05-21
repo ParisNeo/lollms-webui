@@ -3,7 +3,7 @@
 # File          : api.py
 # Author        : ParisNeo with the help of the community
 # Supported by Nomic-AI
-# Licence       : Apache 2.0
+# license       : Apache 2.0
 # Description   : 
 # A simple api to communicate with gpt4all-ui and its models.
 ######

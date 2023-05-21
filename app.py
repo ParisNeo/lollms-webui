@@ -2,7 +2,7 @@
 # Project       : GPT4ALL-UI
 # Author        : ParisNeo with the help of the community
 # Supported by Nomic-AI
-# Licence       : Apache 2.0
+# license       : Apache 2.0
 # Description   : 
 # A front end Flask application for llamacpp models.
 # The official GPT4All Web ui
@@ -687,6 +687,9 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 filename = model.get('filename',"")
                 server = model.get('server',"")
                 image_url = model.get("image_url", '/icons/default.png')
+                license = model.get("license", 'unknown')
+                owner = model.get("owner", 'unknown')
+                owner_link = model.get("owner_link", 'https://github.com/ParisNeo')
                 filesize = int(model.get('filesize',0))
                 description = model.get('description',"")
                 if server.endswith("/"):
@@ -698,6 +701,9 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 models.append({
                     'title': filename,
                     'icon': image_url,  # Replace with the path to the model icon
+                    'license': license,
+                    'owner': owner,
+                    'owner_link': owner_link,
                     'description': description,
                     'isInstalled': is_installed,
                     'path': path,

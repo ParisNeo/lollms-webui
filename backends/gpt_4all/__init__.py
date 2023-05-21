@@ -3,7 +3,7 @@
 # File          : backend.py
 # Author        : ParisNeo with the help of the community
 # Supported by Nomic-AI
-# Licence       : Apache 2.0
+# license       : Apache 2.0
 # Description   : 
 # This is an interface class for GPT4All-ui backends.
 

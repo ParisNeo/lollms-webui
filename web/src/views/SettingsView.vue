@@ -128,7 +128,7 @@
                     <div ref="modelZoo" class="overflow-y-auto no-scrollbar p-2 pb-0"
                         :class="mzl_collapsed ? '' : 'max-h-96'">
                         <model-entry v-for="(model, index) in models" :key="index" :title="model.title" :icon="model.icon"
-                            :path="model.path" :description="model.description" :is-installed="model.isInstalled"
+                            :path="model.path" :owner="model.owner" :owner_link="model.owner_link" :license="model.license" :description="model.description" :is-installed="model.isInstalled"
                             :on-install="onInstall" :on-uninstall="onUninstall" :on-selected="onSelected"
                             :selected="model.title === configFile.model" />
                     </div>
@@ -449,7 +449,7 @@ export default {
             console.log("Fetching models")
             axios.get('/get_available_models')
                 .then(response => {
-                    console.log(`Models list recovered successfuly: ${response.data}`)
+                    console.log(`Models list recovered successfuly: ${JSON.stringify(response.data)}`)
                     this.models = response.data;
                 })
                 .catch(error => {
