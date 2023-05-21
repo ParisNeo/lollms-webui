@@ -173,3 +173,6 @@ node_modules/
 outputs
 # junk stuff
 ./src
+
+# ignore installation files
+.installed
