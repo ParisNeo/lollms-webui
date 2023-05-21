@@ -14,19 +14,3 @@
   owner: CRD716
   server: https://huggingface.co/CRD716/ggml-vicuna-1.1-quantized/resolve/main/
   sha256: 67efec973a81151a55e55f8e747b455354979492978b2f9f22a342c6d841e6b7
-- bestLlama: 'true'
-  description: Manticore 12B quantized on 4 bits
-  filename: ggml-manticore-13B-q4_0.bin
-  license: Non commercial
-  owner_link: https://huggingface.co/CRD716
-  owner: CRD716
-  server: https://huggingface.co/CRD716/manticore-13b/resolve/main/
-  sha256: 910f3e73dc5797753313a950989c54a30342780311d64c3d4b8a37b12dd50336
-- bestLlama: 'true'
-  description: Original weights of GPT4ALL
-  filename: gpt4all-lora-quantized-ggml.new.bin
-  license: Non commercial
-  owner_link: https://huggingface.co/ParisNeo
-  owner: ParisNeo
-  server: https://huggingface.co/ParisNeo/GPT4All/resolve/main/
-  sha256: da588cda4bd870b8f25ee239910de7f85a82bf25d58d7ad0b10965e877f8a1cd
