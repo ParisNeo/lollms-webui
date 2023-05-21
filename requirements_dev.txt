@@ -1,3 +1,4 @@
+tqdm
 flask
 flask_socketio
 nomic
