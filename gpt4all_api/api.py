@@ -7,8 +7,6 @@
 # Description   : 
 # A simple api to communicate with gpt4all-ui and its models.
 ######
-import gc
-import sys
 from datetime import datetime
 from gpt4all_api.db import DiscussionsDB
 from pathlib import Path
@@ -18,8 +16,8 @@ import multiprocessing as mp
 import threading
 import time
 import requests
-import urllib.request
 from tqdm import tqdm 
+import traceback
 
 __author__ = "parisneo"
 __github__ = "https://github.com/nomic-ai/gpt4all-ui"
@@ -112,6 +110,7 @@ class ModelProcess:
     def load_backend(self, backend_name:str, install=False):
         backend_path = Path("backends")/backend_name
         if install:
+            print("Installing the backend")
             # first find out if there is a requirements.txt file
             install_file_name="install.py"
             install_script_path = backend_path / install_file_name        
@@ -176,6 +175,7 @@ class ModelProcess:
             backend = self.load_backend(config["backend"], install=False)
             print("Backend loaded successfully")
         except Exception as ex:
+            traceback.print_exc()
             print("Couldn't build backend")
             print(ex)
             backend = None
@@ -195,12 +195,14 @@ class ModelProcess:
                 self.model_ready.value = 1
                 print("Model created successfully\n")
             except Exception as ex:
+                traceback.print_exc()
                 print("Couldn't build model")
                 print(ex)
                 self.model = None
                 self._set_config_result['model_status'] ='failed'
                 self._set_config_result['errors'].append(f"couldn't build model:{ex}")
         except Exception as ex:
+            traceback.print_exc()
             print("Couldn't build backend")
             print(ex)
             self.backend = None
