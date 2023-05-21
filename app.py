@@ -22,6 +22,8 @@ import re
 import traceback
 import sys
 from tqdm import tqdm
+import subprocess
+import signal
 from pyaipersonality import AIPersonality
 from gpt4all_api.db import DiscussionsDB, Discussion
 from flask import (
@@ -211,6 +213,16 @@ class Gpt4AllWebUI(GPT4AllAPI):
             "/get_all_personalities", "get_all_personalities", self.get_all_personalities, methods=["GET"]
         )
         
+        self.add_endpoint(
+            "/reset", "reset", self.reset, methods=["GET"]
+        )
+        
+        
+    def reset(self):
+        os.kill(os.getpid(), signal.SIGINT)  # Send the interrupt signal to the current process
+        subprocess.Popen(['python', 'your_app.py'])  # Restart the app using subprocess
+
+        return 'App is resetting...'
 
     def save_settings(self):
         save_config(self.config, self.config_file_path)
@@ -481,6 +493,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
     
     def stop_gen(self):
         self.cancel_gen = True
+        self.process.cancel_generation()
         print("Stop generation received")
         return jsonify({"status": "ok"})         
 

@@ -3,12 +3,6 @@ flask_socketio
 pytest
 pyyaml
 markdown
---find-links https://download.pytorch.org/whl/cu117
-torch==2.0.0
-torchvision
-torchaudio
-transformers
-accelerate
 gevent
 gevent-websocket
 pyaipersonality>=0.0.14

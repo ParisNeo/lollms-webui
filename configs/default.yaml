@@ -1,7 +1,8 @@
 version: 4
+user_name: user
 config: default
 ctx_size: 2048
-n_gpu_layers: 40
+n_gpu_layers: 20 #Depends on your GPU size
 db_path: databases/database.db
 debug: false
 n_threads: 8

@@ -44,6 +44,10 @@ class GPTJ(GPTBackend):
             model_type='dolly-v2'
         elif 'starcoder' in self.config['model']:
             model_type='starcoder'
+        elif 'llama' in self.config['model']:
+            model_type='llama'
+        elif 'mpt' in self.config['model']:
+            model_type='mpt'
         else:
             print("The model you are using is not supported by this backend")
             return
@@ -97,27 +101,33 @@ class GPTJ(GPTBackend):
             verbose (bool, optional): If true, the code will spit many informations about the generation process. Defaults to False.
         """
         try:
-            self.model.reset()
-            tokens = self.model.tokenize(prompt.encode())
             output = ""
+            self.model.reset()
+            tokens = self.model.tokenize(prompt)
+            count = 0
             for tok in self.model.generate(
-                                            tokens, 
-                                            seed=self.config['seed'],
-                                            n_threads=self.config['n_threads'],
-                                            n_predict=n_predict,
+                                            tokens,
                                             top_k=self.config['top_k'],
                                             top_p=self.config['top_p'],
-                                            temp=self.config['temperature'],
-                                            repeat_penalty=self.config['repeat_penalty'],
-                                            repeat_last_n=self.config['repeat_last_n'],
-                                            n_batch=8,
+                                            temperature=self.config['temperature'],
+                                            repetition_penalty=self.config['repeat_penalty'],
+                                            seed=self.config['seed'],
+                                            batch_size=1,
+                                            threads = self.config['n_threads'],
                                             reset=True,
                                            ):
+                
+
+                if count >= n_predict or self.model.is_eos_token(tok):
+                    break
                 word = self.model.detokenize(tok)
                 if new_text_callback is not None:
                     if not new_text_callback(word):
-                        return output
+                        break
                 output += word
+                count += 1
+                
+                
         except Exception as ex:
             print(ex)
         return output            

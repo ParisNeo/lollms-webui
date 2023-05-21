@@ -8,15 +8,16 @@
         {{ title }}
       </h3>
       <div class="flex flex-shrink-0">
-
-     
-      <a :href="path" @click.stop 
-      class="flex hover:text-secondary duration-75 active:scale-90"
-        title="Download this manually (faster) and put it in the models/<your backend> folder then refresh">
-          
+        <a :href="path" @click.stop 
+        class="flex hover:text-secondary duration-75 active:scale-90"
+          title="Download this manually (faster) and put it in the models/<your backend> folder then refresh">
           <i data-feather="link" class="w-5 p-1"></i>
           {{ title }}
         </a>
+      </div>
+      <div class="flex flex-shrink-0">
+        <i data-feather="link" class="w-5 p-1">Licence: </i>
+          {{ licence }}
       </div>
       <p class="opacity-80">{{ description }}</p>
     </div>
@@ -56,6 +57,8 @@ export default {
     title: String,
     icon: String,
     path: String,
+    owner: String,
+    licence: String,
     description: String,
     isInstalled: Boolean,
     onInstall: Function,

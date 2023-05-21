@@ -109,12 +109,21 @@ class ModelProcess:
             'errors':[]
             }
         
-    def load_backend(self, backend_name:str):
+    def load_backend(self, backend_name:str, install=False):
         backend_path = Path("backends")/backend_name
-        # first find out if there is a requirements.txt file
-        requirements_file = backend_path/"requirements.txt"
-        if requirements_file.exists():
-            parse_requirements_file(requirements_file)        
+        if install:
+            # first find out if there is a requirements.txt file
+            install_file_name="install.py"
+            install_script_path = backend_path / install_file_name        
+            if install_script_path.exists():
+                module_name = install_file_name[:-3]  # Remove the ".py" extension
+                module_spec = importlib.util.spec_from_file_location(module_name, str(install_script_path))
+                module = importlib.util.module_from_spec(module_spec)
+                module_spec.loader.exec_module(module)
+                if hasattr(module, "Install"):
+                    self._install = module.Install(self)
+                else:
+                    self._install = None
 
         # define the full absolute path to the module
         absolute_path = backend_path.resolve()
@@ -164,7 +173,7 @@ class ModelProcess:
     def rebuild_backend(self, config):
         try:
             print(" ******************* Building Backend from main Process *************************")
-            backend = self.load_backend(config["backend"])
+            backend = self.load_backend(config["backend"], install=False)
             print("Backend loaded successfully")
         except Exception as ex:
             print("Couldn't build backend")
@@ -177,7 +186,7 @@ class ModelProcess:
     def _rebuild_model(self):
         try:
             print(" ******************* Building Backend from generation Process *************************")
-            self.backend = self.load_backend(self.config["backend"])
+            self.backend = self.load_backend(self.config["backend"], install=True)
             print("Backend loaded successfully")
             try:
                 model_file = Path("models")/self.config["backend"]/self.config["model"]
@@ -554,24 +563,7 @@ class GPT4AllAPI():
             print("Couldn't download file:", str(e))
 
 
-
-            
-    def load_backend(self, backend_name):
-        backend_path = Path("backends")/backend_name
-
-        # define the full absolute path to the module
-        absolute_path = backend_path.resolve()
-
-        # infer the module name from the file path
-        module_name = backend_path.stem
-
-        # use importlib to load the module from the file path
-        loader = importlib.machinery.SourceFileLoader(module_name, str(absolute_path/"__init__.py"))
-        backend_module = loader.load_module()
-        backend_class = getattr(backend_module, backend_module.backend_name)
-        return backend_class
-
-    
+   
     def condition_chatbot(self):
         if self.current_discussion is None:
             self.current_discussion = self.db.load_last_discussion()

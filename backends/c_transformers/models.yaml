@@ -1,7 +1,24 @@
-- bestGPTJ: 'true'
-  description: Current best commercially licensable model based on GPT-J and trained
-    by Nomic AI on the latest curated GPT4All dataset.
-  filename: ggml-gpt4all-j-v1.3-groovy.bin
-  filesize: '3785248281'
-  isDefault: 'true'
-  md5sum: 81a09a0ddf89690372fc296ff7f625af
+- MPT-7B: 'true'
+  description: MPT-7B
+  filename: mpt-7b.ggmlv3.q5_1.bin
+  license: Apache-2.0
+  link: https://huggingface.co/TheBloke/MPT-7B-GGML/resolve/main/
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/MPT-7B-GGML/resolve/main/
+  sha256: c947c38405921a199c603fed2ed63486811777ba370bb51c40c3132e5cfe84e5
+- MPT-7B-Instruct: 'true'
+  description: MPT-7B-Instruct
+  filename: mpt-7b-instruct.ggmlv3.q5_1.bin
+  license: Apache-2.0
+  link: https://huggingface.co/TheBloke/MPT-7B-Instruct-GGML/resolve/main/
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/MPT-7B-Instruct-GGML/resolve/main/
+  sha256: a4d17a39ac277d48a3d55aa74b36a4e6e1b891b58937a838243fad549d26c686
+- MPT-7B-Storywriter: 'true'
+  description: MPT-7B-Storywriter
+  filename: mpt-7b-storywriter.ggmlv3.q5_1.bin
+  license: Apache-2.0
+  link: https://huggingface.co/TheBloke/MPT-7B-Storywriter-GGML/resolve/main/
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/MPT-7B-Storywriter-GGML/resolve/main/
+  sha256: 3b7dd7aa7508cc8cb4e262fe4b93214826f38d18d04059075e05837457f5402

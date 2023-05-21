@@ -196,6 +196,13 @@
 
                     </select>
                 </div>
+                <div class="m-2">
+                        <button @click="applyConfiguration" class="bg-blue-500 text-white py-2 px-4 rounded">
+                            Apply Configuration
+                        </button>
+                        <div v-if="isLoading" class="loader"></div>
+                </div>                      
+
             </div>
         </div>
         <div
@@ -623,7 +630,6 @@ export default {
                     this.$refs.toast.showToast("Configuration changed failed.\nPlease select model first", 4, false)
                     nextTick(() => {
                     feather.replace()
-
                 })
                 return
             }
@@ -637,7 +643,7 @@ export default {
                     this.settingsChanged = false
                 } else {
                     console.log("applying configuration failed")
-                    this.$refs.toast.showToast("Configuration changed failed.", 4, false)
+                    this.$refs.toast.showToast("Configuration change failed.", 4, false)
 
                 }
                 nextTick(() => {
@@ -651,8 +657,9 @@ export default {
             axios.post('/save_settings', {})
                 .then((res) => {
                     if (res) {
-                        if (res.status)
+                        if (res.status){
                             this.$refs.messageBox.showMessage("Settings saved!")
+                        }
                         else
                             this.$refs.messageBox.showMessage("Error: Couldn't save settings!")
                         return res.data;
