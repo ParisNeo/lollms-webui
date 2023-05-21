@@ -14,6 +14,18 @@
   owner: TheBloke
   server: https://huggingface.co/TheBloke/wizardLM-7B-GGML/resolve/main/
   sha256: ea35e30a7c140485b856d0919284ce59e4ca47c1b8af037ea8b7ba05ef291c43
+- LLAMA: 'true'
+  description: GGML format model files for Wizard LM 7B model
+  filename: koala-7b.ggml.unquantized.pr613.bin 
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke/
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/koala-7b-ggml-unquantized/resolve/main/
+  sha256: c478ceced3b38800cb768225b1e759a32c9e89bd33606fb38eeff3b811e28371
+
+
+
+  
 - MPT-7B: 'true'
   description: MPT-7B
   filename: mpt-7b.ggmlv3.q5_1.bin

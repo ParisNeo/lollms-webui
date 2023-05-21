@@ -44,7 +44,7 @@ class GPTJ(GPTBackend):
             model_type='dolly-v2'
         elif 'starcoder' in self.config['model']:
             model_type='starcoder'
-        elif 'llama' in self.config['model']:
+        elif 'llama' in self.config['model'] or 'wizardLM' in self.config['model']:
             model_type='llama'
         elif 'mpt' in self.config['model']:
             model_type='mpt'
