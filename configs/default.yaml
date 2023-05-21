@@ -14,7 +14,7 @@ model: null
 n_predict: 1024
 nb_messages_to_remember: 5
 personality_language: english
-personality_category: generic
+personality_category: default
 personality: gpt4all
 port: 9600
 repeat_last_n: 40
