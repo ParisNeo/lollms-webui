@@ -515,6 +515,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
     def load_discussion(self):
         print("Loading discussion")
         data = request.get_json()
+        print("Recovered json data")
         if "id" in data:
             discussion_id = data["id"]
             self.current_discussion = Discussion(discussion_id, self.db)
