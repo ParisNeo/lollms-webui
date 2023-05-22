@@ -176,3 +176,5 @@ outputs
 
 # ignore installation files
 .installed
+
+test.http
