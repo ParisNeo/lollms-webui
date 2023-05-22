@@ -1,3 +1,9 @@
+- md5sum: 679fc463f01388ea2d339664af0a0836
+  filename: ggml-wizard-13b-uncensored.bin
+  filesize: 8136777088
+  owner: Nomic AI
+  owner_link: https://gpt4all.io
+  description: A non-commercially licensable model based on Wizard Vicuna 13b.
 - bestGPTJ: 'true'
   description: Current best commercially licensable model based on GPT-J and trained
     by Nomic AI on the latest curated GPT4All dataset.
