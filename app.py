@@ -513,6 +513,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         return "title renamed successfully"
     
     def load_discussion(self):
+        print("Loading discussion")
         data = request.get_json()
         if "id" in data:
             discussion_id = data["id"]
@@ -523,6 +524,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 self.current_discussion = Discussion(discussion_id, self.db)
             else:
                 self.current_discussion = self.db.create_discussion()
+        print(f"Discussion id :{discussion_id}")
         messages = self.current_discussion.get_messages()
 
         
