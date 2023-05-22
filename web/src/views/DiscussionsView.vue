@@ -692,6 +692,8 @@ export default {
                     }
                     return newItem
 
+                }).sort(function(a,b){
+                    return b.id - a.id
                 })
                 this.list = newDisList
                 this.tempList = newDisList
