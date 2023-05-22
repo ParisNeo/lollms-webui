@@ -258,13 +258,24 @@ class Gpt4AllWebUI(GPT4AllAPI):
                                 scripts_path = personality_folder / 'scripts'
                                 personality_info['has_scripts'] = scripts_path.is_dir()
                                 assets_path = personality_folder / 'assets'
-                                logo_path = assets_path / 'logo.png'
                                 gif_logo_path = assets_path / 'logo.gif'
-                                personality_info['has_logo'] = logo_path.is_file() or gif_logo_path.is_file()
+                                webp_logo_path = assets_path / 'logo.webp'
+                                png_logo_path = assets_path / 'logo.png'
+                                jpg_logo_path = assets_path / 'logo.jpg'
+                                jpeg_logo_path = assets_path / 'logo.jpeg'
+                                bmp_logo_path = assets_path / 'logo.bmp'
+                                
+                                personality_info['has_logo'] = png_logo_path.is_file() or gif_logo_path.is_file()
                                 if gif_logo_path.is_file():
                                     personality_info['avatar'] = str(gif_logo_path).replace("\\","/")
-                                elif logo_path.is_file():
-                                    personality_info['avatar'] = str(logo_path).replace("\\","/")
+                                elif webp_logo_path.is_file():
+                                    personality_info['avatar'] = str(webp_logo_path).replace("\\","/")
+                                elif png_logo_path.is_file():
+                                    personality_info['avatar'] = str(png_logo_path).replace("\\","/")
+                                elif jpg_logo_path.is_file():
+                                    personality_info['avatar'] = str(jpg_logo_path).replace("\\","/")
+                                elif bmp_logo_path.is_file():
+                                    personality_info['avatar'] = str(bmp_logo_path).replace("\\","/")
                                 else:
                                     personality_info['avatar'] = ""
                                 personalities[language_folder.name][category_folder.name].append(personality_info)
