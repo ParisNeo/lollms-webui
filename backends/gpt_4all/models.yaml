@@ -4,6 +4,12 @@
   owner: Nomic AI
   owner_link: https://gpt4all.io
   description: A non-commercially licensable model based on Wizard Vicuna 13b.
+- md5sum: d5eafd5b0bd0d615cfd5fd763f642dfe
+  filename: ggml-nous-gpt4-vicuna-13b.bin
+  filesize: 8136777088
+  description: A non-commercially licensable model based on Vicuna 13b, fine-tuned on ~180,000 instructions, trained by Nous Research.
+  owner: Nomic AI
+  owner_link: https://gpt4all.io
 - bestGPTJ: 'true'
   description: Current best commercially licensable model based on GPT-J and trained
     by Nomic AI on the latest curated GPT4All dataset.
