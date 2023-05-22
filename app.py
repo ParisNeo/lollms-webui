@@ -266,17 +266,18 @@ class Gpt4AllWebUI(GPT4AllAPI):
                                 bmp_logo_path = assets_path / 'logo.bmp'
                                 
                                 personality_info['has_logo'] = png_logo_path.is_file() or gif_logo_path.is_file()
-                                if gif_logo_path.is_file():
+                                
+                                if gif_logo_path.exists():
                                     personality_info['avatar'] = str(gif_logo_path).replace("\\","/")
-                                elif webp_logo_path.is_file():
+                                elif webp_logo_path.exists():
                                     personality_info['avatar'] = str(webp_logo_path).replace("\\","/")
-                                elif png_logo_path.is_file():
+                                elif png_logo_path.exists():
                                     personality_info['avatar'] = str(png_logo_path).replace("\\","/")
-                                elif jpg_logo_path.is_file():
+                                elif jpg_logo_path.exists():
                                     personality_info['avatar'] = str(jpg_logo_path).replace("\\","/")
-                                elif jpeg_logo_path.is_file():
+                                elif jpeg_logo_path.exists():
                                     personality_info['avatar'] = str(jpeg_logo_path).replace("\\","/")
-                                elif bmp_logo_path.is_file():
+                                elif bmp_logo_path.exists():
                                     personality_info['avatar'] = str(bmp_logo_path).replace("\\","/")
                                 else:
                                     personality_info['avatar'] = ""
