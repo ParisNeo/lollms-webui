@@ -252,8 +252,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
                                 with open(config_path) as config_file:
                                     config_data = yaml.load(config_file, Loader=yaml.FullLoader)
                                     personality_info['name'] = personality_folder.name
-                                    personality_info['description'] = config_data['description']
-                                    personality_info['author'] = config_data['creator']
+                                    personality_info['description'] = config_data['personality_description']
+                                    personality_info['author'] = 'ParisNeo'#config_data['creator']
                                     personality_info['version'] = config_data['version']
                                 scripts_path = personality_folder / 'scripts'
                                 personality_info['has_scripts'] = scripts_path.is_dir()
