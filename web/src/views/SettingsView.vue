@@ -496,6 +496,7 @@ export default {
                     model_object.progress = response.progress
                 } else if (response.status === 'succeeded') {
                     socket.off('install_progress', progressListener);
+                    console.log("Installed successfully")
                     // Update the isInstalled property of the corresponding model
                     const index = this.models.findIndex((model) => model.path === path);
                     this.models[index].isInstalled = true;
@@ -503,6 +504,7 @@ export default {
 
                 } else if (response.status === 'failed') {
                     socket.off('install_progress', progressListener);
+                    console.log("Install failed")
                     // Installation failed or encountered an error
                     model_object.installing = false;
                     this.showProgress = false;
