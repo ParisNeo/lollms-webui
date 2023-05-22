@@ -110,7 +110,6 @@ class ModelProcess:
     def load_backend(self, backend_name:str, install=False):
         backend_path = Path("backends")/backend_name
         if install:
-            print("Installing the backend")
             # first find out if there is a requirements.txt file
             install_file_name="install.py"
             install_script_path = backend_path / install_file_name        
@@ -120,9 +119,7 @@ class ModelProcess:
                 module = importlib.util.module_from_spec(module_spec)
                 module_spec.loader.exec_module(module)
                 if hasattr(module, "Install"):
-                    self._install = module.Install(self)
-                else:
-                    self._install = None
+                    module.Install(self)
 
         # define the full absolute path to the module
         absolute_path = backend_path.resolve()
@@ -172,11 +169,10 @@ class ModelProcess:
     def rebuild_backend(self, config):
         try:
             print(" ******************* Building Backend from main Process *************************")
-            backend = self.load_backend(config["backend"], install=False)
+            backend = self.load_backend(config["backend"], install=True)
             print("Backend loaded successfully")
         except Exception as ex:
-            traceback.print_exc()
-            print("Couldn't build backend")
+            print("Couldn't build backend.")
             print(ex)
             backend = None
             self._set_config_result['backend_status'] ='failed'
@@ -242,7 +238,7 @@ class ModelProcess:
         if message_type==0:
             self.generation_queue.put((text,self.id, message_type))
         
-    def _run(self):        
+    def _run(self):     
         self._rebuild_model()
         self._rebuild_personality()
         if self.model_ready.value == 1:
@@ -389,7 +385,6 @@ class GPT4AllAPI():
         self.socketio = socketio
         #Create and launch the process
         self.process = ModelProcess(config)
-        self.process.start()
         self.config = config
         
         self.backend = self.process.rebuild_backend(self.config)
@@ -453,6 +448,7 @@ class GPT4AllAPI():
             tpe = threading.Thread(target=install_model_, args=())
             tpe.start()
             
+            
         @socketio.on('uninstall_model')
         def uninstall_model(data):
             model_path = data['path']
@@ -508,6 +504,8 @@ class GPT4AllAPI():
             tpe.start()
         # generation status
         self.generating=False
+        self.process.start()
+
 
     #properties
     @property
