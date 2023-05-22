@@ -13,6 +13,7 @@ class Install:
             print("-------------- GPT4All backend by nomic-ai -------------------------------")
             print("This is the first time you are using this backend.")
             print("Installing ...")
+            """
             try:
                 print("Checking pytorch")
                 import torch
@@ -23,7 +24,9 @@ class Install:
                     print("CUDA is not supported. Reinstalling PyTorch with CUDA support.")
                     self.reinstall_pytorch_with_cuda()
             except Exception as ex:
-                self.reinstall_pytorch_with_cuda()
+                self.reinstall_pytorch_with_cuda()            
+            """
+            
             # Step 2: Install dependencies using pip from requirements.txt
             requirements_file = current_dir / "requirements.txt"
             subprocess.run(["pip", "install", "--no-cache-dir", "-r", str(requirements_file)])

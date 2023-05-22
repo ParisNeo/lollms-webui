@@ -717,10 +717,7 @@ class GPT4AllAPI():
             self.process.generate(self.discussion_messages, self.current_message, message_id, n_predict = self.config['n_predict'])
             self.process.started_queue.get()
             while(self.process.is_generating.value):  # Simulating other commands being issued
-                chunk = ""
-                while not self.process.generation_queue.empty():
-                    chk, tok, message_type = self.process.generation_queue.get()
-                    chunk += chk
+                chunk, tok, message_type = self.process.generation_queue.get()
                 if chunk!="":
                     self.process_chunk(chunk)
 
