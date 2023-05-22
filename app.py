@@ -274,6 +274,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
                                     personality_info['avatar'] = str(png_logo_path).replace("\\","/")
                                 elif jpg_logo_path.is_file():
                                     personality_info['avatar'] = str(jpg_logo_path).replace("\\","/")
+                                elif jpeg_logo_path.is_file():
+                                    personality_info['avatar'] = str(jpeg_logo_path).replace("\\","/")
                                 elif bmp_logo_path.is_file():
                                     personality_info['avatar'] = str(bmp_logo_path).replace("\\","/")
                                 else:
