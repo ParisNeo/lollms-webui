@@ -265,6 +265,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
                                     personality_info['avatar'] = str(gif_logo_path).replace("\\","/")
                                 elif logo_path.is_file():
                                     personality_info['avatar'] = str(logo_path).replace("\\","/")
+                                else:
+                                    personality_info['avatar'] = ""
                                 personalities[language_folder.name][category_folder.name].append(personality_info)
 
         return json.dumps(personalities)
