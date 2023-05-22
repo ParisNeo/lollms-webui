@@ -116,7 +116,7 @@ if exist GPT4All (
 ) else (
     echo Cloning repository...
     rem Clone the Git repository into a temporary directory
-    git clone https://github.com/nomic-ai/gpt4all-ui.git ./GPT4All
+    git clone https://github.com/ParisNeo/gpt4all-ui.git ./GPT4All
     cd GPT4All
     echo Pulling latest changes 
     git pull
