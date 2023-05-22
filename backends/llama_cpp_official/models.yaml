@@ -14,3 +14,12 @@
   owner: CRD716
   server: https://huggingface.co/CRD716/ggml-vicuna-1.1-quantized/resolve/main/
   sha256: 67efec973a81151a55e55f8e747b455354979492978b2f9f22a342c6d841e6b7
+- bestLlama: 'true'
+  description: 'WizardLM - uncensored: An Instruction-following LLM Using Evol-Instruct'
+  filename: WizardLM-7B-uncensored.ggml.q4_0.bin
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/WizardLM-7B-uncensored-GGML/resolve/previous_llama_ggmlv2/
+  sha256: 67efec973a81151a55e55f8e747b455354979492978b2f9f22a342c6d841e6b7
+
