@@ -223,7 +223,7 @@
                     </label>
                     <div ref="personalitiesZoo" class="overflow-y-auto no-scrollbar p-2 pb-0 grid grid-cols-4 gap-4"
                         :class="pzl_collapsed ? '' : 'max-h-96'">
-                        <personality-entry v-for="(pers, index) in personalities" :key="index" :personality="pers"/>
+                        <personality-entry v-for="(pers, index) in personalities" :key="index" :personality="pers" />
                     </div>
                 </div>
                 <!-- EXPAND / COLLAPSE BUTTON -->
@@ -488,6 +488,7 @@ export default {
             axios.get('/get_available_models')
                 .then(response => {
                     //console.log(`Models list recovered successfuly: ${JSON.stringify(response.data)}`)
+                    console.log(" models",response.data.length)
                     this.models = response.data;
                 })
                 .catch(error => {
@@ -499,16 +500,20 @@ export default {
             // eslint-disable-next-line no-unused-vars
             if (model_object) {
                 if (model_object.isInstalled) {
-                    if (this.configFile.model != model_object.title) {
-                        this.update_model(model_object.title)
-                        this.configFile.model = model_object.title
-                        this.$refs.toast.showToast("Model:\n" + model_object.title + "\nselected", 4, true)
-                        this.settingsChanged = true
-                        this.isModelSelected = true
-                    }
+                    if (!this.isLoading) {
 
-                } else {
-                    this.$refs.toast.showToast("Model:\n" + model_object.title + "\nis not installed", 4, false)
+
+                        if (this.configFile.model != model_object.title) {
+                            this.update_model(model_object.title)
+                            this.configFile.model = model_object.title
+                            this.$refs.toast.showToast("Model:\n" + model_object.title + "\nselected", 4, true)
+                            this.settingsChanged = true
+                            this.isModelSelected = true
+                        }
+
+                    } else {
+                        this.$refs.toast.showToast("Model:\n" + model_object.title + "\nis not installed", 4, false)
+                    }
                 }
                 nextTick(() => {
                     feather.replace()
@@ -641,13 +646,14 @@ export default {
 
             console.log("Upgrading backend")
             // eslint-disable-next-line no-unused-vars
+            this.isLoading = true
             this.update_setting('backend', value, (res) => {
                 this.refresh();
                 console.log("Backend changed");
                 console.log(res);
                 this.$refs.toast.showToast("Backend changed.", 4, true)
                 this.settingsChanged = true
-
+                this.isLoading = false
                 nextTick(() => {
                     feather.replace()
 
@@ -662,7 +668,12 @@ export default {
 
             console.log("Upgrading model")
             // eslint-disable-next-line no-unused-vars
-            this.update_setting('model', value, (res) => { console.log("Model changed"); this.fetchModels(); })
+            this.isLoading = true
+            this.update_setting('model', value, (res) => {
+                console.log("Model changed");
+                this.fetchModels();
+                this.isLoading = false
+            })
         },
         applyConfiguration() {
             if (!this.configFile.model) {
@@ -770,11 +781,11 @@ export default {
                 for (let j = 0; j < catkeys.length; j++) {
                     const catkey = catkeys[j];
                     const personalitiesArray = catdictionary[catkey];
-                    const modPersArr = personalitiesArray.map((item)=>{
-                        let newItem ={}
-                        newItem=item
-                        newItem.category=catkey // add new props to items
-                        newItem.language=langkey // add new props to items
+                    const modPersArr = personalitiesArray.map((item) => {
+                        let newItem = {}
+                        newItem = item
+                        newItem.category = catkey // add new props to items
+                        newItem.language = langkey // add new props to items
                         return newItem
                     })
 
@@ -782,7 +793,7 @@ export default {
                     if (this.personalities.length == 0) {
                         this.personalities = modPersArr
                     } else {
-                        this.personalities=this.personalities.concat(modPersArr)
+                        this.personalities = this.personalities.concat(modPersArr)
                     }
                 }
 
@@ -790,7 +801,7 @@ export default {
         }
 
     }, async mounted() {
-        this.isLoading=true
+        this.isLoading = true
         nextTick(() => {
             feather.replace()
 
@@ -807,7 +818,7 @@ export default {
         this.persArr = await this.api_get_req("list_personalities")
         this.langArr = await this.api_get_req("list_languages")
         await this.getPersonalitiesArr()
-        this.isLoading=false
+        this.isLoading = false
         console.log('ppp', this.personalities)
     },
     watch: {
