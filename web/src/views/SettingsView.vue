@@ -200,7 +200,7 @@
                 <div class="m-2">
                     <button @click="applyConfiguration" class="bg-blue-500 text-white py-2 px-4 rounded">
                         Apply Configuration
-                    </button>
+                    </button> 
                     <div v-if="isLoading" class="loader"></div>
                 </div>
 
@@ -498,9 +498,12 @@ export default {
         onSelected(model_object) {
             console.log("Selected model")
             // eslint-disable-next-line no-unused-vars
+            if (this.isLoading) {
+                this.$refs.toast.showToast("Loading... please wait", 4, false)
+            }
             if (model_object) {
                 if (model_object.isInstalled) {
-                    if (!this.isLoading) {
+                    
 
 
                         if (this.configFile.model != model_object.title) {
@@ -514,7 +517,7 @@ export default {
                     } else {
                         this.$refs.toast.showToast("Model:\n" + model_object.title + "\nis not installed", 4, false)
                     }
-                }
+                
                 nextTick(() => {
                     feather.replace()
 
@@ -868,6 +871,12 @@ export default {
             })
         },
         settingsChanged() {
+            nextTick(() => {
+                feather.replace()
+
+            })
+        },
+        isLoading() {
             nextTick(() => {
                 feather.replace()
 
