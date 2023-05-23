@@ -288,6 +288,7 @@ class ModelProcess:
 
     def _generate(self, prompt, n_predict=50, callback=None):
         if self.model is not None:
+            print(">Generating message")
             self.id = self.id
             if self.config["override_personality_model_parameters"]:
                 output = self.model.generate(
@@ -712,8 +713,7 @@ class GPT4AllAPI():
             # prepare query and reception
             self.discussion_messages, self.current_message = self.prepare_query(message_id)
             self.prepare_reception()
-            self.generating = True
-            print(">Generating message")
+            self.generating = True            
             self.process.generate(self.discussion_messages, self.current_message, message_id, n_predict = self.config['n_predict'])
             self.process.started_queue.get()
             while(self.process.is_generating.value):  # Simulating other commands being issued
