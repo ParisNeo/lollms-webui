@@ -284,6 +284,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
                                 personalities[language_folder.name][category_folder.name].append(personality_info)
 
         return json.dumps(personalities)
+    
     # Settings (data: {"setting_name":<the setting name>,"setting_value":<the setting value>})
     def update_setting(self):
         data = request.get_json()
@@ -315,11 +316,19 @@ class Gpt4AllWebUI(GPT4AllAPI):
             back_language = self.config["personality_language"]
             if self.config["personality_language"]!=data['setting_value']:
                 self.config["personality_language"]=data['setting_value']
-                cats = self.list_personalities_categories()
+                personalities_categories_dir = Path(f'./personalities/{self.config["personality_language"]}')  # replace with the actual path to the models folder
+                cats = [f.stem for f in personalities_categories_dir.iterdir() if f.is_dir()]
+
                 if len(cats)>0:
                     back_category = self.config["personality_category"]
                     self.config["personality_category"]=cats[0]
-                    pers = json.loads(self.list_personalities().data.decode("utf8"))
+                    try:
+                        personalities_dir = Path(f'./personalities/{self.config["personality_language"]}/{self.config["personality_category"]}')  # replace with the actual path to the models folder
+                        pers = [f.stem for f in personalities_dir.iterdir() if f.is_dir()]
+                    except Exception as ex:
+                        pers=[]
+                        if self.config["debug"]:
+                            print(f"No personalities found. Using default one {ex}")
                     if len(pers)>0:
                         self.config["personality"]=pers[0]
                         personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
@@ -363,10 +372,11 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
         elif setting_name== "backend":
             if self.config['backend']!= data['setting_value']:
-                print("New backend selected")
+                print(f"New backend selected : {data['setting_value']}")
                 self.config["backend"]=data['setting_value']
                 try:
-                    self.backend = self.process.load_backend(self.config["backend"])
+                    self.backend = self.process.load_backend(self.config["backend"], install=True)
+                    
                 except Exception as ex:
                     print("Couldn't build backend")
                     return jsonify({'setting_name': data['setting_name'], "status":False, 'error':str(ex)})
@@ -383,7 +393,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         if self.config["debug"]:
             print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
             
-        print("Configuration updated")
+        print(f"Configuration {data['setting_name']} updated")
         # Tell that the setting was changed
         return jsonify({'setting_name': data['setting_name'], "status":True})
 

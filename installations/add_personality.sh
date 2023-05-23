@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Clone the repository to a tmp folder
 REPO_URL="https://github.com/ParisNeo/PyAIPersonality.git"
@@ -39,8 +39,7 @@ read -p "Enter the number of the desired personality: " SELECTED_PERSONALITY
 PERSONALITY_FOLDER="$PERSONALITIES_FOLDER/${PERSONALITIES[$SELECTED_PERSONALITY]}"
 
 # Copy the selected personality folder to personalities/language/category folder
-CORRECTED_PATH="$(pwd)/.."
-OUTPUT_FOLDER="$CORRECTED_PATH/personalities/${LANGUAGES[$SELECTED_LANGUAGE]}/${CATEGORIES[$SELECTED_CATEGORY]}/${PERSONALITIES[$SELECTED_PERSONALITY]}"
+OUTPUT_FOLDER="$(pwd)/personalities/${LANGUAGES[$SELECTED_LANGUAGE]}/${CATEGORIES[$SELECTED_CATEGORY]}/${PERSONALITIES[$SELECTED_PERSONALITY]}"
 mkdir -p "$OUTPUT_FOLDER"
 cp -r "$PERSONALITY_FOLDER/." "$OUTPUT_FOLDER"
 
