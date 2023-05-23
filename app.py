@@ -315,11 +315,19 @@ class Gpt4AllWebUI(GPT4AllAPI):
             back_language = self.config["personality_language"]
             if self.config["personality_language"]!=data['setting_value']:
                 self.config["personality_language"]=data['setting_value']
-                cats = self.list_personalities_categories()
+                personalities_categories_dir = Path(f'./personalities/{self.config["personality_language"]}')  # replace with the actual path to the models folder
+                cats = [f.stem for f in personalities_categories_dir.iterdir() if f.is_dir()]
+
                 if len(cats)>0:
                     back_category = self.config["personality_category"]
                     self.config["personality_category"]=cats[0]
-                    pers = json.loads(self.list_personalities().data.decode("utf8"))
+                    try:
+                        personalities_dir = Path(f'./personalities/{self.config["personality_language"]}/{self.config["personality_category"]}')  # replace with the actual path to the models folder
+                        pers = [f.stem for f in personalities_dir.iterdir() if f.is_dir()]
+                    except Exception as ex:
+                        pers=[]
+                        if self.config["debug"]:
+                            print(f"No personalities found. Using default one {ex}")
                     if len(pers)>0:
                         self.config["personality"]=pers[0]
                         personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
