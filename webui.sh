@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 echo "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
 echo "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
 echo "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
@@ -52,9 +52,9 @@ if ping -q -c 1 google.com >/dev/null 2>&1; then
       fi
     fi
 
-    # Check if repository exists 
+    # Check if repository exists
     if [[ -d .git ]] ;then
-    echo Pulling latest changes 
+    echo Pulling latest changes
     git pull origin main
     else
       if [[ -d GPT4All ]] ;then
