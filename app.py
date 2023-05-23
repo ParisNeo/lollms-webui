@@ -106,8 +106,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
             "/list_discussions", "list_discussions", self.list_discussions, methods=["GET"]
         )
         
-        self.add_endpoint("/set_personality_language", "set_personality_language", self.set_personality_language, methods=["GET"])
-        self.add_endpoint("/set_personality_category", "set_personality_category", self.set_personality_category, methods=["GET"])
+        self.add_endpoint("/set_personality", "set_personality", self.set_personality, methods=["GET"])
+        self.add_endpoint("/delete_personality", "delete_personality", self.delete_personality, methods=["GET"])
         
         
         self.add_endpoint("/", "", self.index, methods=["GET"])
@@ -212,6 +212,11 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.add_endpoint(
             "/get_all_personalities", "get_all_personalities", self.get_all_personalities, methods=["GET"]
         )
+
+        self.add_endpoint(
+            "/get_personality", "get_personality", self.get_personality, methods=["GET"]
+        )
+        
         
         self.add_endpoint(
             "/reset", "reset", self.reset, methods=["GET"]
@@ -251,7 +256,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
                                 config_path = personality_folder / 'config.yaml'
                                 with open(config_path) as config_file:
                                     config_data = yaml.load(config_file, Loader=yaml.FullLoader)
-                                    personality_info['name'] = personality_folder.name
+                                    personality_info['name'] = config_data.get('name',"No Name")
                                     personality_info['description'] = config_data.get('personality_description',"")
                                     personality_info['author'] = config_data.get('creator', 'ParisNeo')
                                     personality_info['version'] = config_data.get('version', '1.0.0')
@@ -285,6 +290,47 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
         return json.dumps(personalities)
     
+    def get_personality():
+        lang = request.args.get('language')
+        category = request.args.get('category')
+        name = request.args.get('name')
+        personality_folder = Path("personalities")/f"{lang}"/f"{category}"/f"{name}"
+        personality_path = personality_folder/f"config.yaml"
+        personality_info = {}
+        with open(personality_path) as config_file:
+            config_data = yaml.load(config_file, Loader=yaml.FullLoader)
+            personality_info['name'] = config_data.get('name',"unnamed")
+            personality_info['description'] = config_data.get('personality_description',"")
+            personality_info['author'] = config_data.get('creator', 'ParisNeo')
+            personality_info['version'] = config_data.get('version', '1.0.0')
+        scripts_path = personality_folder / 'scripts'
+        personality_info['has_scripts'] = scripts_path.is_dir()
+        assets_path = personality_folder / 'assets'
+        gif_logo_path = assets_path / 'logo.gif'
+        webp_logo_path = assets_path / 'logo.webp'
+        png_logo_path = assets_path / 'logo.png'
+        jpg_logo_path = assets_path / 'logo.jpg'
+        jpeg_logo_path = assets_path / 'logo.jpeg'
+        bmp_logo_path = assets_path / 'logo.bmp'
+        
+        personality_info['has_logo'] = png_logo_path.is_file() or gif_logo_path.is_file()
+        
+        if gif_logo_path.exists():
+            personality_info['avatar'] = str(gif_logo_path).replace("\\","/")
+        elif webp_logo_path.exists():
+            personality_info['avatar'] = str(webp_logo_path).replace("\\","/")
+        elif png_logo_path.exists():
+            personality_info['avatar'] = str(png_logo_path).replace("\\","/")
+        elif jpg_logo_path.exists():
+            personality_info['avatar'] = str(jpg_logo_path).replace("\\","/")
+        elif jpeg_logo_path.exists():
+            personality_info['avatar'] = str(jpeg_logo_path).replace("\\","/")
+        elif bmp_logo_path.exists():
+            personality_info['avatar'] = str(bmp_logo_path).replace("\\","/")
+        else:
+            personality_info['avatar'] = ""
+        return json.dumps(personality_info)
+        
     # Settings (data: {"setting_name":<the setting name>,"setting_value":<the setting value>})
     def update_setting(self):
         data = request.get_json()
@@ -376,7 +422,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 self.config["backend"]=data['setting_value']
                 try:
                     self.backend = self.process.load_backend(self.config["backend"], install=True)
-                    
+
                 except Exception as ex:
                     print("Couldn't build backend")
                     return jsonify({'setting_name': data['setting_name'], "status":False, 'error':str(ex)})
@@ -453,15 +499,26 @@ class Gpt4AllWebUI(GPT4AllAPI):
         return jsonify(discussions)
 
 
-    def set_personality_language(self):
+    def set_personality(self):
         lang = request.args.get('language')
-        self.config['personality_language'] = lang
-        return jsonify({'success':True})
-
-    def set_personality_category(self):
         category = request.args.get('category')
+        name = request.args.get('name')
+        self.config['personality_language'] = lang
         self.config['personality_category'] = category
-        return jsonify({'success':True})
+        self.config['personality'] = name
+        result = self.process.set_config(self.config)
+        return jsonify(result)
+
+    def delete_personality(self):
+        lang = request.args.get('language')
+        category = request.args.get('category')
+        name = request.args.get('name')
+        path = Path("personalities")/lang/category/name
+        try:
+            shutil.rmtree(path)
+            return jsonify({'status':'success'})
+        except Exception as ex:
+            return jsonify({'status':'failure','error':str(ex)})
 
     def add_endpoint(
         self,

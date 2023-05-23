@@ -210,7 +210,7 @@ class ModelProcess:
 
     def rebuild_personality(self):
         try:
-            print(" ******************* Building Personality from main Process *************************")
+            print(f" ******************* Building Personality {self.config['personality']} from main Process *************************")
             personality_path = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
             personality = AIPersonality(personality_path, run_scripts=False)
             print(f" ************ Personality {personality.name} is ready (Main process) ***************************")
@@ -224,7 +224,7 @@ class ModelProcess:
     
     def _rebuild_personality(self):
         try:
-            print(" ******************* Building Personality from generation Process *************************")
+            print(f" ******************* Building Personality {self.config['personality']} from generation Process *************************")
             personality_path = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
             self.personality = AIPersonality(personality_path)
             print(f" ************ Personality {self.personality.name} is ready (generation process) ***************************")
@@ -239,8 +239,8 @@ class ModelProcess:
             self._set_config_result['errors'].append(f"couldn't load personality:{ex}")
     
     def step_callback(self, text, message_type):
-        if message_type==0:
-            self.generation_queue.put((text,self.id, message_type))
+        self.generation_queue.put((text,self.id, message_type))
+
         
     def _run(self):     
         self._rebuild_model()
@@ -672,7 +672,7 @@ class GPT4AllAPI():
 
         return string
 
-    def process_chunk(self, chunk):
+    def process_chunk(self, chunk, message_type):
         print(chunk,end="", flush=True)
         self.bot_says += chunk
         if not self.personality.detect_antiprompt(self.bot_says):
@@ -680,7 +680,8 @@ class GPT4AllAPI():
                                             'data': self.bot_says, 
                                             'user_message_id':self.current_user_message_id, 
                                             'ai_message_id':self.current_ai_message_id, 
-                                            'discussion_id':self.current_discussion.discussion_id
+                                            'discussion_id':self.current_discussion.discussion_id,
+                                            'message_type': message_type
                                         }
                                 )
             if self.cancel_gen:
@@ -723,7 +724,7 @@ class GPT4AllAPI():
             while(self.process.is_generating.value):  # Simulating other commands being issued
                 chunk, tok, message_type = self.process.generation_queue.get()
                 if chunk!="":
-                    self.process_chunk(chunk)
+                    self.process_chunk(chunk, message_type)
 
             print()
             print("## Done ##")
