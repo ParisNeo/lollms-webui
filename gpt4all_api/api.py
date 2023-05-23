@@ -292,7 +292,7 @@ class ModelProcess:
 
     def _generate(self, prompt, n_predict=50, callback=None):
         if self.model is not None:
-            print(">Generating message")
+            print("Generating message...")
             self.id = self.id
             if self.config["override_personality_model_parameters"]:
                 output = self.model.generate(
