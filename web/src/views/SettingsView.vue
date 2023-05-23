@@ -128,8 +128,9 @@
                     <div ref="modelZoo" class="overflow-y-auto no-scrollbar p-2 pb-0"
                         :class="mzl_collapsed ? '' : 'max-h-96'">
                         <model-entry v-for="(model, index) in models" :key="index" :title="model.title" :icon="model.icon"
-                            :path="model.path" :owner="model.owner" :owner_link="model.owner_link" :license="model.license" :description="model.description" :is-installed="model.isInstalled"
-                            :on-install="onInstall" :on-uninstall="onUninstall" :on-selected="onSelected"
+                            :path="model.path" :owner="model.owner" :owner_link="model.owner_link" :license="model.license"
+                            :description="model.description" :is-installed="model.isInstalled" :on-install="onInstall"
+                            :on-uninstall="onUninstall" :on-selected="onSelected"
                             :selected="model.title === configFile.model" />
                     </div>
                 </div>
@@ -197,15 +198,49 @@
                     </select>
                 </div>
                 <div class="m-2">
-                        <button @click="applyConfiguration" class="bg-blue-500 text-white py-2 px-4 rounded">
-                            Apply Configuration
-                        </button>
-                        <div v-if="isLoading" class="loader"></div>
-                </div>                      
+                    <button @click="applyConfiguration" class="bg-blue-500 text-white py-2 px-4 rounded">
+                        Apply Configuration
+                    </button> 
+                    <div v-if="isLoading" class="loader"></div>
+                </div>
 
             </div>
         </div>
         <div
+            class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+            <div class="flex flex-row p-3">
+                <button @click.stop="pzc_collapsed = !pzc_collapsed"
+                    class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
+                    <i :data-feather="pzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
+                    <h3 class="text-lg font-semibold cursor-pointer select-none">
+                        Personalities zoo</h3>
+                </button>
+            </div>
+            <div :class="{ 'hidden': pzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                <div v-if="personalities.length > 0" class="mb-2">
+                    <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Personalities:
+                    </label>
+                    <div ref="personalitiesZoo" class="overflow-y-auto no-scrollbar p-2 pb-0 grid grid-cols-4 gap-4"
+                        :class="pzl_collapsed ? '' : 'max-h-96'">
+                        <personality-entry v-for="(pers, index) in personalities" :key="index" :personality="pers" />
+                    </div>
+                </div>
+                <!-- EXPAND / COLLAPSE BUTTON -->
+                <button v-if="pzl_collapsed"
+                    class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
+                    title="Collapse" type="button" @click="pzl_collapsed = !pzl_collapsed">
+                    <i data-feather="chevron-up"></i>
+                </button>
+                <button v-else
+                    class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
+                    title="Expand" type="button" @click="pzl_collapsed = !pzl_collapsed">
+                    <i data-feather="chevron-down"></i>
+                </button>
+            </div>
+
+        </div>
+        <!-- <div
             class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
             <div class="flex flex-row ">
                 <button @click.stop="pzc_collapsed = !pzc_collapsed"
@@ -226,7 +261,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <!-- MODEL -->
         <div
             class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
@@ -392,6 +427,7 @@ import YesNoDialog from "@/components/YesNoDialog.vue";
 import Toast from '../components/Toast.vue'
 import ModelEntry from '@/components/ModelEntry.vue';
 import PersonalityViewer from '@/components/PersonalityViewer.vue';
+import PersonalityEntry from "../components/PersonalityEntry.vue";
 import socket from '@/services/websocket.js'
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
@@ -401,7 +437,8 @@ export default {
         ModelEntry,
         // eslint-disable-next-line vue/no-unused-components
         PersonalityViewer,
-        Toast
+        Toast,
+        PersonalityEntry,
     },
     data() {
 
@@ -419,6 +456,7 @@ export default {
             mc_collapsed: true,
             // Zoo accordeoon
             mzl_collapsed: false,
+            pzl_collapsed: false,
             // Settings stuff
             backendsArr: [],
             modelsArr: [], // not used anymore but still have references in some methods
@@ -449,7 +487,8 @@ export default {
             console.log("Fetching models")
             axios.get('/get_available_models')
                 .then(response => {
-                    console.log(`Models list recovered successfuly: ${JSON.stringify(response.data)}`)
+                    //console.log(`Models list recovered successfuly: ${JSON.stringify(response.data)}`)
+                    console.log(" models",response.data.length)
                     this.models = response.data;
                 })
                 .catch(error => {
@@ -459,19 +498,26 @@ export default {
         onSelected(model_object) {
             console.log("Selected model")
             // eslint-disable-next-line no-unused-vars
+            if (this.isLoading) {
+                this.$refs.toast.showToast("Loading... please wait", 4, false)
+            }
             if (model_object) {
                 if (model_object.isInstalled) {
-                    if (this.configFile.model != model_object.title) {
-                        this.update_model(model_object.title)
-                        this.configFile.model = model_object.title
-                        this.$refs.toast.showToast("Model:\n" + model_object.title + "\nselected", 4, true)
-                        this.settingsChanged = true
-                        this.isModelSelected = true
-                    }
+                    
 
-                } else {
-                    this.$refs.toast.showToast("Model:\n" + model_object.title + "\nis not installed", 4, false)
-                }
+
+                        if (this.configFile.model != model_object.title) {
+                            this.update_model(model_object.title)
+                            this.configFile.model = model_object.title
+                            this.$refs.toast.showToast("Model:\n" + model_object.title + "\nselected", 4, true)
+                            this.settingsChanged = true
+                            this.isModelSelected = true
+                        }
+
+                    } else {
+                        this.$refs.toast.showToast("Model:\n" + model_object.title + "\nis not installed", 4, false)
+                    }
+                
                 nextTick(() => {
                     feather.replace()
 
@@ -603,13 +649,14 @@ export default {
 
             console.log("Upgrading backend")
             // eslint-disable-next-line no-unused-vars
+            this.isLoading = true
             this.update_setting('backend', value, (res) => {
                 this.refresh();
                 console.log("Backend changed");
                 console.log(res);
                 this.$refs.toast.showToast("Backend changed.", 4, true)
                 this.settingsChanged = true
-
+                this.isLoading = false
                 nextTick(() => {
                     feather.replace()
 
@@ -624,13 +671,18 @@ export default {
 
             console.log("Upgrading model")
             // eslint-disable-next-line no-unused-vars
-            this.update_setting('model', value, (res) => { console.log("Model changed"); this.fetchModels(); })
+            this.isLoading = true
+            this.update_setting('model', value, (res) => {
+                console.log("Model changed");
+                this.fetchModels();
+                this.isLoading = false
+            })
         },
         applyConfiguration() {
             if (!this.configFile.model) {
                 console.log("applying configuration failed")
-                    this.$refs.toast.showToast("Configuration changed failed.\nPlease select model first", 4, false)
-                    nextTick(() => {
+                this.$refs.toast.showToast("Configuration changed failed.\nPlease select model first", 4, false)
+                nextTick(() => {
                     feather.replace()
                 })
                 return
@@ -659,7 +711,7 @@ export default {
             axios.post('/save_settings', {})
                 .then((res) => {
                     if (res) {
-                        if (res.status){
+                        if (res.status) {
                             this.$refs.messageBox.showMessage("Settings saved!")
                         }
                         else
@@ -720,8 +772,39 @@ export default {
         closeToast() {
             this.showToast = false
         },
+        async getPersonalitiesArr() {
+            this.personalities
+            const dictionary = await this.api_get_req("get_all_personalities")
+            const langkeys = Object.keys(dictionary); // returns languages folder names
+            for (let i = 0; i < langkeys.length; i++) {
+                const langkey = langkeys[i];
+                const catdictionary = dictionary[langkey];
+                const catkeys = Object.keys(catdictionary); // returns categories
+
+                for (let j = 0; j < catkeys.length; j++) {
+                    const catkey = catkeys[j];
+                    const personalitiesArray = catdictionary[catkey];
+                    const modPersArr = personalitiesArray.map((item) => {
+                        let newItem = {}
+                        newItem = item
+                        newItem.category = catkey // add new props to items
+                        newItem.language = langkey // add new props to items
+                        return newItem
+                    })
+
+
+                    if (this.personalities.length == 0) {
+                        this.personalities = modPersArr
+                    } else {
+                        this.personalities = this.personalities.concat(modPersArr)
+                    }
+                }
+
+            }
+        }
 
     }, async mounted() {
+        this.isLoading = true
         nextTick(() => {
             feather.replace()
 
@@ -737,7 +820,9 @@ export default {
         this.persCatgArr = await this.api_get_req("list_personalities_categories")
         this.persArr = await this.api_get_req("list_personalities")
         this.langArr = await this.api_get_req("list_languages")
-
+        await this.getPersonalitiesArr()
+        this.isLoading = false
+        console.log('ppp', this.personalities)
     },
     watch: {
         bec_collapsed() {
@@ -771,6 +856,13 @@ export default {
 
             })
         },
+        pzl_collapsed() {
+
+            nextTick(() => {
+                feather.replace()
+
+            })
+        },
         all_collapsed(val) {
             this.collapseAll(val)
             nextTick(() => {
@@ -779,6 +871,12 @@ export default {
             })
         },
         settingsChanged() {
+            nextTick(() => {
+                feather.replace()
+
+            })
+        },
+        isLoading() {
             nextTick(() => {
                 feather.replace()
 
