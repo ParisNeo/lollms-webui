@@ -108,6 +108,10 @@ class ModelProcess:
             }
         
     def load_backend(self, backend_name:str, install=False):
+        if install:
+            print(f"Loading backend {backend_name} install ON")
+        else:
+            print(f"Loading backend : {backend_name} install is off")
         backend_path = Path("backends")/backend_name
         if install:
             # first find out if there is a requirements.txt file
