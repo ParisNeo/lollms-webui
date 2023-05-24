@@ -56,10 +56,7 @@
                         </svg>
                         <span class="sr-only">Loading...</span>
                     </div>
-                    <!-- <button @click="applyConfiguration" class="bg-primary text-white py-1 px-4 rounded">
-                    Apply Configuration
-                    <div v-if="isLoading" class="loader"></div>    v-if="settingsChanged"
-                </button> -->
+
                 </div>
             </div>
         </div>
@@ -77,7 +74,7 @@
             <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
                 <div class="mx-2 mb-4">
                     <label for="backend" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Backend:
+                        Backend: ({{ backendsArr.length }})
                     </label>
                     <select id="backend" @change="update_backend($event.target.value)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -87,9 +84,9 @@
                 </div>
                 <div v-if="models.length > 0" class="mb-2">
                     <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Models:
+                        Models: ({{ models.length }})
                     </label>
-                    <div ref="modelZoo" class="overflow-y-auto no-scrollbar p-2 pb-0  grid lg:grid-cols-3 md:grid-cols-2 gap-4"
+                    <div ref="modelZoo" class="overflow-y-auto no-scrollbar p-2 pb-0 "
                         :class="mzl_collapsed ? '' : 'max-h-96'">
                         <model-entry v-for="(model, index) in models" :key="index" :title="model.title" :icon="model.icon"
                             :path="model.path" :owner="model.owner" :owner_link="model.owner_link" :license="model.license"
@@ -126,7 +123,7 @@
             <div :class="{ 'hidden': pc_collapsed }" class="flex flex-col mb-2 p-2">
                 <div class="m-2">
                     <label for="persLang" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Personalities Languages:
+                        Personalities Languages: ({{ persLangArr.length }})
                     </label>
                     <select id="persLang" @change="update_setting('personality_language', $event.target.value, refresh)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -139,7 +136,7 @@
                 </div>
                 <div class="m-2">
                     <label for="persCat" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Personalities Category:
+                        Personalities Category: ({{ persLangArr.length }})
                     </label>
                     <select id="persCat" @change="update_setting('personality_category', $event.target.value, refresh)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -186,7 +183,7 @@
             <div :class="{ 'hidden': pzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
                 <div class="mx-2 mb-4">
                     <label for="persLang" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Personalities Languages:
+                        Personalities Languages: ({{ persLangArr.length }})
                     </label>
                     <select id="persLang" @change="update_setting('personality_language', $event.target.value, refresh)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -199,7 +196,7 @@
                 </div>
                 <div class="mx-2 mb-4">
                     <label for="persCat" class="block  mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Personalities Category:
+                        Personalities Category: ({{ persCatgArr.length }})
                     </label>
                     <select id="persCat" @change="update_setting('personality_category', $event.target.value, refresh)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -213,7 +210,7 @@
 
                 <div v-if="personalities.length > 0" class="mb-2">
                     <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Personalities:
+                        Personalities: ({{ personalities.length }})
                     </label>
                     <div ref="personalitiesZoo" class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
                         :class="pzl_collapsed ? '' : 'max-h-96'">

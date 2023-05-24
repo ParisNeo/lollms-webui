@@ -90,7 +90,8 @@ export default {
     return {
       progress: 0,
       installing: false,
-      uninstalling: false
+      uninstalling: false,
+      failedToLoad:false
     };
   },
   mounted() {
