@@ -6,7 +6,7 @@
       </h3>
       
     <div class="flex flex-row items-center  flex-shrink-0 gap-3">
-      <img :src="getImgUrl()" class="w-14 h-14 rounded-full object-fill text-red-700">
+      <img :src="getImgUrl()" @error="defaultImg($event)" class="w-14 h-14 rounded-full object-fill text-red-700">
       
     
     <div class="">
@@ -63,12 +63,10 @@ export default {
   },
   methods: {
     getImgUrl() {
-
-      if (this.personality.avatar) {
-        return bUrl+this.personality.avatar
-
-      }
-      return botImgPlaceholder;
+      return bUrl+this.personality.avatar
+    },
+    defaultImg(event){
+      event.target.src = botImgPlaceholder
     },
     toggleSelected() {
       this.onSelected(this)
