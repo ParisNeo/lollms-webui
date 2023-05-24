@@ -229,7 +229,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
     def export_multiple_discussions(self):
         data = request.get_json()
         discussion_ids = data["discussion_ids"]
-        return jsonify(self.db.export_discussions_to_json(discussion_ids))
+        discussions = self.db.export_discussions_to_json(discussion_ids)
+        return jsonify(discussions)
           
         
     def reset(self):
