@@ -131,7 +131,7 @@
                             :path="model.path" :owner="model.owner" :owner_link="model.owner_link" :license="model.license"
                             :description="model.description" :is-installed="model.isInstalled" :on-install="onInstall"
                             :on-uninstall="onUninstall" :on-selected="onSelected"
-                            :selected="model.title === configFile.model" />
+                            :selected="model.title === configFile.model" :model="model" />
                     </div>
                 </div>
                 <!-- EXPAND / COLLAPSE BUTTON -->
@@ -490,6 +490,30 @@ export default {
                     //console.log(`Models list recovered successfuly: ${JSON.stringify(response.data)}`)
                     console.log(" models",response.data.length)
                     this.models = response.data;
+                    this.fetchCustomModels()
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
+        fetchCustomModels() {
+            console.log("Fetching Custom models")
+            axios.get('/list_models')
+                .then(response => {
+                    // Returns array of model filenames which are = to title of models zoo entry
+                    for (let i = 0; i < response.data.length; i++) {
+                        const customModel = response.data[i]
+                        const index = this.models.findIndex(x => x.title == customModel)
+                        console.log("model-ccc", customModel, index)
+                        if (index==-1){
+                            let newModelEntry = {}
+                            newModelEntry.title = customModel
+                            newModelEntry.isCustomModel = true
+                            this.models.push(newModelEntry)
+                        }
+                    }
+                    
+
                 })
                 .catch(error => {
                     console.log(error);
