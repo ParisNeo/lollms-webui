@@ -29,6 +29,7 @@
                     <i data-feather="list"></i>
                 </button>
             </div>
+            
             <div class="flex gap-3 flex-1 items-center justify-end">
 
 
@@ -60,6 +61,10 @@
                 </div>
             </div>
         </div>
+        
+        <div :class="isLoading ? 'pointer-events-none opacity-30':''">
+          
+        
         <!-- MODELS ZOO -->
         <div
             class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
@@ -379,7 +384,7 @@
                 </div>
             </div>
         </div>
-
+    </div>
 
     </div>
 
