@@ -683,16 +683,19 @@ class Gpt4AllWebUI(GPT4AllAPI):
             print("New backend selected")
             
             self.config['backend'] = backend
-            backend_ =self.process.load_backend(config["backend"])
-            models = backend_.list_models(self.config)
-            if len(models)>0:      
-                self.backend = backend_
-                self.config['model'] = models[0]
-                # Build chatbot
-                return jsonify(self.process.set_config(self.config))
-            else:
-                return jsonify({"status": "no_models_found"})
-
+            try:
+                backend_ =self.process.load_backend(config["backend"],True)
+                models = backend_.list_models(self.config)
+                if len(models)>0:      
+                    self.backend = backend_
+                    self.config['model'] = models[0]
+                    # Build chatbot
+                    return jsonify(self.process.set_config(self.config))
+                else:
+                    return jsonify({"status": "no_models_found"})
+            except :
+                return jsonify({"status": "failed"})
+                
         return jsonify({"status": "error"})
 
     def set_model(self):
