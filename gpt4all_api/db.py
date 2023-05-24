@@ -250,6 +250,30 @@ class DiscussionsDB:
         return discussions
 
 
+    def export_discussions_to_json(self, discussions_ids:list):
+        # Convert the list of discussion IDs to a tuple
+        discussions_ids_tuple = tuple(discussions_ids)
+        db_discussions = self.select("SELECT * FROM discussion WHERE discussion_id IN ({})".format(
+        ','.join(['?'] * len(discussions_ids_tuple))
+        ))
+        discussions = []
+        for row in db_discussions:
+            discussion_id = row[0]
+            discussion_title = row[1]
+            discussion = {"id": discussion_id, "title":discussion_title, "messages": []}
+            rows = self.select(f"SELECT * FROM message WHERE discussion_id=?",(discussion_id,))
+            for message_row in rows:
+                sender = message_row[1]
+                content = message_row[2]
+                content_type = message_row[3]
+                rank = message_row[4]
+                parent = message_row[5]
+                discussion["messages"].append(
+                    {"sender": sender, "content": content, "type": content_type, "rank": rank, "parent": parent}
+                )
+            discussions.append(discussion)
+        return discussions
+
 class Discussion:
     def __init__(self, discussion_id, discussions_db:DiscussionsDB):
         self.discussion_id = discussion_id

@@ -179,12 +179,11 @@ class ModelProcess:
             print("Couldn't build backend.")
             print(ex)
             backend = None
-            self._set_config_result['backend_status'] ='failed'
-            self._set_config_result['errors'].append(f"couldn't build backend:{ex}")
         return backend
             
     def _rebuild_model(self):
         try:
+            self.reset_config_result()
             print(" ******************* Building Backend from generation Process *************************")
             self.backend = self.load_backend(self.config["backend"], install=True)
             print("Backend loaded successfully")
@@ -199,14 +198,18 @@ class ModelProcess:
                 print("Couldn't build model")
                 print(ex)
                 self.model = None
-                self._set_config_result['model_status'] ='failed'
-                self._set_config_result['errors'].append(f"couldn't build model:{ex}")
+                self._set_config_result['status'] ='failed'
+                self._set_config_result['backend_status'] ='failed'
+                self._set_config_result['errors'].append(f"couldn't build backend:{ex}")
         except Exception as ex:
             traceback.print_exc()
             print("Couldn't build backend")
             print(ex)
             self.backend = None
             self.model = None
+            self._set_config_result['status'] ='failed'
+            self._set_config_result['backend_status'] ='failed'
+            self._set_config_result['errors'].append(f"couldn't build backend:{ex}")
 
     def rebuild_personality(self):
         try:
@@ -224,6 +227,7 @@ class ModelProcess:
     
     def _rebuild_personality(self):
         try:
+            self.reset_config_result()
             print(f" ******************* Building Personality {self.config['personality']} from generation Process *************************")
             personality_path = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
             self.personality = AIPersonality(personality_path)
@@ -235,8 +239,9 @@ class ModelProcess:
             if self.config["debug"]:
                 print(ex)
             self.personality = AIPersonality()
-            self._set_config_result['personality_status'] ='failed'
-            self._set_config_result['errors'].append(f"couldn't load personality:{ex}")
+            self._set_config_result['status'] ='failed'
+            self._set_config_result['backend_status'] ='failed'
+            self._set_config_result['errors'].append(f"couldn't build backend:{ex}")
     
     def step_callback(self, text, message_type):
         self.generation_queue.put((text,self.id, message_type))

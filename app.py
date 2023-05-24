@@ -222,6 +222,15 @@ class Gpt4AllWebUI(GPT4AllAPI):
             "/reset", "reset", self.reset, methods=["GET"]
         )
         
+        self.add_endpoint(
+            "/export_multiple_discussions", "export_multiple_discussions", self.export_multiple_discussions, methods=["POST"]
+        )      
+        
+    def export_multiple_discussions(self):
+        data = request.get_json()
+        discussion_ids = data["discussion_ids"]
+        return jsonify(self.db.export_discussions_to_json(discussion_ids))
+          
         
     def reset(self):
         os.kill(os.getpid(), signal.SIGINT)  # Send the interrupt signal to the current process
@@ -445,7 +454,10 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
 
     def apply_settings(self):
-        return jsonify(self.process.set_config(self.config))
+        result = self.process.set_config(self.config)
+        print("Set config results:")
+        print(result)
+        return jsonify(result)
 
     def list_backends(self):
         backends_dir = Path('./backends')  # replace with the actual path to the models folder
@@ -677,8 +689,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 self.backend = backend_
                 self.config['model'] = models[0]
                 # Build chatbot
-                self.process.set_config(self.config)
-                return jsonify({"status": "ok"})
+                return jsonify(self.process.set_config(self.config))
             else:
                 return jsonify({"status": "no_models_found"})
 
@@ -690,11 +701,10 @@ class Gpt4AllWebUI(GPT4AllAPI):
         if self.config['model']!= model:
             print("set_model: New model selected")            
             self.config['model'] = model
-            # Build chatbot
-            self.process.set_config(self.config)
-            return jsonify({"status": "ok"})
+            # Build chatbot            
+            return jsonify(self.process.set_config(self.config))
 
-        return jsonify({"status": "error"})    
+        return jsonify({"status": "succeeded"})    
     
     def update_model_params(self):
         data = request.get_json()
@@ -709,7 +719,6 @@ class Gpt4AllWebUI(GPT4AllAPI):
             
             self.config['backend'] = backend
             self.config['model'] = model
-            self.process.set_config(self.config)
 
         self.config['personality_language'] = personality_language
         self.config['personality_category'] = personality_category
@@ -732,7 +741,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
         save_config(self.config, self.config_file_path)
         
-        self.process.set_config(self.config)
+        
         # Fixed missing argument
         self.backend = self.process.rebuild_backend(self.config)
 
@@ -754,7 +763,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         print(f"\trepeat_last_n:{self.config['repeat_last_n']}")
         print("==============================================")
 
-        return jsonify({"status":"ok"})
+        return jsonify(self.process.set_config(self.config))
     
     
     def get_available_models(self):
