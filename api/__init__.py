@@ -8,7 +8,7 @@
 # A simple api to communicate with gpt4all-ui and its models.
 ######
 from datetime import datetime
-from gpt4all_api.db import DiscussionsDB
+from api.db import DiscussionsDB
 from pathlib import Path
 import importlib
 from pyaipersonality import AIPersonality

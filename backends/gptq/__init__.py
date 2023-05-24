@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Callable
 from transformers import AutoTokenizer, TextGenerationPipeline
 from auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig
-from gpt4all_api.backend import GPTBackend
+from api.backend import GPTBackend
 import torch
 import yaml
 

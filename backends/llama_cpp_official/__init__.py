@@ -14,7 +14,7 @@
 from pathlib import Path
 from typing import Callable
 from llama_cpp import Llama
-from gpt4all_api.backend import GPTBackend
+from api.backend import GPTBackend
 import yaml
 import random
 

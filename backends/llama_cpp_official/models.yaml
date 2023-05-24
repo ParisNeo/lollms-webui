@@ -6,6 +6,17 @@
   owner: TheBloke
   server: https://huggingface.co/TheBloke/OpenAssistant-SFT-7-Llama-30B-GGML/resolve/main/
   sha256: 32fd44c685fbf429810db593e2db8aa42a7e1be2cd3571b6005d53b029acfcf5
+
+- bestLlama: 'true'
+  description: 'Manticore-13B'
+  filename: Manticore-13B.ggmlv3.q4_0.bin
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/Manticore-13B-GGML/resolve/main/
+  sha256: 910f3e73dc5797753313a950989c54a30342780311d64c3d4b8a37b12dd50336
+
+  
 - bestLlama: 'true'
   description: Legacy version of Vicuna 7B v 1.1 Quantized on 4 bits
   filename: legacy-ggml-vicuna-7B-1.1-q4_0.bin

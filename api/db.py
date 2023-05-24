@@ -249,13 +249,14 @@ class DiscussionsDB:
             discussions.append(discussion)
         return discussions
 
-
     def export_discussions_to_json(self, discussions_ids:list):
         # Convert the list of discussion IDs to a tuple
         discussions_ids_tuple = tuple(discussions_ids)
-        db_discussions = self.select("SELECT * FROM discussion WHERE discussion_id IN ({})".format(
-        ','.join(['?'] * len(discussions_ids_tuple))
-        ))
+        txt = ','.join(['?'] * len(discussions_ids_tuple))
+        db_discussions = self.select(
+            f"SELECT * FROM discussion WHERE id IN ({txt})",
+            discussions_ids_tuple
+        )
         discussions = []
         for row in db_discussions:
             discussion_id = row[0]

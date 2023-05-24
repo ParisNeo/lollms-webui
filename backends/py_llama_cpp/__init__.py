@@ -14,7 +14,7 @@
 from pathlib import Path
 from typing import Callable
 from pyllamacpp.model import Model
-from gpt4all_api.backend import GPTBackend
+from api.backend import GPTBackend
 import yaml
 
 __author__ = "parisneo"

@@ -15,7 +15,7 @@
 from pathlib import Path
 from typing import Callable
 from pygptj.model import Model
-from gpt4all_api.backend import GPTBackend
+from api.backend import GPTBackend
 
 __author__ = "parisneo"
 __github__ = "https://github.com/nomic-ai/gpt4all-ui"

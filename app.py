@@ -25,7 +25,7 @@ from tqdm import tqdm
 import subprocess
 import signal
 from pyaipersonality import AIPersonality
-from gpt4all_api.db import DiscussionsDB, Discussion
+from api.db import DiscussionsDB, Discussion
 from flask import (
     Flask,
     Response,
@@ -58,8 +58,8 @@ logging.getLogger('werkzeug').setLevel(logging.ERROR)
 logging.basicConfig(level=logging.WARNING)
 
 import time
-from gpt4all_api.config import load_config, save_config
-from gpt4all_api.api import GPT4AllAPI
+from api.config import load_config, save_config
+from api import GPT4AllAPI
 import shutil
 import markdown
 
