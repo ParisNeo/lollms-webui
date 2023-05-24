@@ -63,43 +63,7 @@
                 </div>
             </div>
         </div>
-        <!-- BACKEND -->
-        <!-- DISABLED FOR NOW -->
-        <!-- <div
-            class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
-            <div class="flex flex-row ">
-                <button @click.stop="bec_collapsed = !bec_collapsed"
-                    class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
-                    <i :data-feather="mzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
-                    <h3 class="text-lg font-semibold cursor-pointer select-none">
-                        Backend Configuration</h3>
-                </button>
-            </div>
-            <div :class="{ 'hidden': bec_collapsed }" class="flex flex-col mb-2 p-2">
-                <div class="m-2">
-                    <label for="backend" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Backend:
-                    </label>
-                    <select id="backend" @change="update_backend($event.target.value)"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                        <option v-for="item in backendsArr" :selected="item === configFile.backend">{{ item }}</option>
-                    </select>
-                </div>
-                <div class="m-2">
-                    <label for="model" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Model:
-                    </label>
-                    <select id="model" @change="update_model($event.target.value)"
-                        @mouseup="update_model($event.target.value)"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                        <option v-for="item in modelsArr" :selected="item === configFile.model">{{ item }}</option>
-
-                    </select>
-                </div>
-            </div>
-        </div> -->
+        <!-- MODELS ZOO -->
         <div
             class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
             <div class="flex flex-row p-3">
@@ -125,7 +89,7 @@
                     <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Models:
                     </label>
-                    <div ref="modelZoo" class="overflow-y-auto no-scrollbar p-2 pb-0"
+                    <div ref="modelZoo" class="overflow-y-auto no-scrollbar p-2 pb-0  grid lg:grid-cols-3 md:grid-cols-2 gap-4"
                         :class="mzl_collapsed ? '' : 'max-h-96'">
                         <model-entry v-for="(model, index) in models" :key="index" :title="model.title" :icon="model.icon"
                             :path="model.path" :owner="model.owner" :owner_link="model.owner_link" :license="model.license"
@@ -206,8 +170,11 @@
 
             </div>
         </div>
+        <!-- PERSONALITY ZOO -->
         <div
             class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+        
+            
             <div class="flex flex-row p-3">
                 <button @click.stop="pzc_collapsed = !pzc_collapsed"
                     class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
@@ -217,11 +184,38 @@
                 </button>
             </div>
             <div :class="{ 'hidden': pzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                <div class="mx-2 mb-4">
+                    <label for="persLang" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Personalities Languages:
+                    </label>
+                    <select id="persLang" @change="update_setting('personality_language', $event.target.value, refresh)"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                        <option v-for="item in persLangArr" :selected="item === configFile.personality_language">{{ item }}
+
+                        </option>
+
+                    </select>
+                </div>
+                <div class="mx-2 mb-4">
+                    <label for="persCat" class="block  mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Personalities Category:
+                    </label>
+                    <select id="persCat" @change="update_setting('personality_category', $event.target.value, refresh)"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                        <option v-for="item in persCatgArr" :selected="item === configFile.personality_category">{{ item }}
+
+                        </option>
+
+                    </select>
+                </div>
+
                 <div v-if="personalities.length > 0" class="mb-2">
                     <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Personalities:
                     </label>
-                    <div ref="personalitiesZoo" class="overflow-y-auto no-scrollbar p-2 pb-0 grid grid-cols-4 gap-4"
+                    <div ref="personalitiesZoo" class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
                         :class="pzl_collapsed ? '' : 'max-h-96'">
                         <personality-entry v-for="(pers, index) in personalities" :key="index" :personality="pers" />
                     </div>
@@ -240,28 +234,7 @@
             </div>
 
         </div>
-        <!-- <div
-            class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
-            <div class="flex flex-row ">
-                <button @click.stop="pzc_collapsed = !pzc_collapsed"
-                    class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
-                    <i :data-feather="mc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
-                    <h3 class="text-lg font-semibold cursor-pointer select-none">
-                        Personalities zoo
-                    </h3>
-                </button>
-            </div>
-            <div :class="{ 'hidden': pzc_collapsed }" class="flex flex-col mb-2 p-2">
-                <div v-if="models.length > 0" class="my-2">
-                    <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Install more models:
-                    </label>
-                    <div class="overflow-y-auto max-h-96 no-scrollbar p-2">
 
-                    </div>
-                </div>
-            </div>
-        </div> -->
         <!-- MODEL -->
         <div
             class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
@@ -509,6 +482,7 @@ export default {
                             let newModelEntry = {}
                             newModelEntry.title = customModel
                             newModelEntry.isCustomModel = true
+                            newModelEntry.isInstalled = true
                             this.models.push(newModelEntry)
                         }
                     }
