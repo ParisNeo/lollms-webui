@@ -35,7 +35,8 @@
 </template>
 
 <script>
-
+import feather from 'feather-icons'
+import { nextTick } from 'vue'
 export default {
     name: 'Toast',
     emits: ['close'],
@@ -58,7 +59,10 @@ export default {
             this.success = success;
             this.message = message;
             this.show = true;
+            nextTick(() => {
+                    feather.replace()
 
+                })
             setTimeout(() => {
                     this.$emit('close')
                     this.show = false

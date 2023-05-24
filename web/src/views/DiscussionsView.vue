@@ -778,6 +778,7 @@ export default {
         stopGenerating() {
             this.stop_gen()
             this.isGenerating = false
+            this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
             console.log("Stopped generating")
         },
         finalMsgEvent(msgObj) {
@@ -853,10 +854,13 @@ export default {
                 const filename = 'discussions_export_' + formattedDate + '.json'
                 this.loading = true
                 const res = await this.export_multiple_discussions(discussionIdArr)
-
-                if (res.data) {
-                    this.saveJSONtoFile(res.data, filename)
-
+              
+                if (res) {
+                    this.saveJSONtoFile(res, filename)
+                    this.$refs.toast.showToast("Successfully exported", 4, true)
+                    this.isCheckbox=false
+                }else{
+                    this.$refs.toast.showToast("Failed to export discussions", 4, false)
                 }
                 this.loading = false
             }

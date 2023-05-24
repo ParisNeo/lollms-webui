@@ -18,14 +18,14 @@
   <b>Author:&nbsp;</b>
   {{ personality.author }}
 </div>
-<div class="">
+<!-- <div class="">
   <b>Language:&nbsp;</b>
   {{ personality.language }}
 </div>
 <div class="">
   <b>Category:&nbsp;</b>
   {{ personality.category }}
-</div>
+</div> -->
 </div>
       <b>Description:&nbsp;</b><br>
 
