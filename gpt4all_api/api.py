@@ -185,6 +185,7 @@ class ModelProcess:
             
     def _rebuild_model(self):
         try:
+            self.reset_config_result()
             print(" ******************* Building Backend from generation Process *************************")
             self.backend = self.load_backend(self.config["backend"], install=True)
             print("Backend loaded successfully")
@@ -207,6 +208,8 @@ class ModelProcess:
             print(ex)
             self.backend = None
             self.model = None
+            self._set_config_result['model_status'] ='failed'
+            self._set_config_result['errors'].append(f"couldn't build model:{ex}")
 
     def rebuild_personality(self):
         try:
@@ -224,6 +227,7 @@ class ModelProcess:
     
     def _rebuild_personality(self):
         try:
+            self.reset_config_result()
             print(f" ******************* Building Personality {self.config['personality']} from generation Process *************************")
             personality_path = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
             self.personality = AIPersonality(personality_path)

@@ -222,6 +222,15 @@ class Gpt4AllWebUI(GPT4AllAPI):
             "/reset", "reset", self.reset, methods=["GET"]
         )
         
+        self.add_endpoint(
+            "/export_multiple_discussions", "export_multiple_discussions", self.export_multiple_discussions, methods=["POST"]
+        )      
+        
+    def export_multiple_discussions(self):
+        data = request.get_json()
+        discussion_ids = data["discussion_ids"]
+        return jsonify(self.db.export_discussions_to_json(discussion_ids))
+          
         
     def reset(self):
         os.kill(os.getpid(), signal.SIGINT)  # Send the interrupt signal to the current process
@@ -677,8 +686,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 self.backend = backend_
                 self.config['model'] = models[0]
                 # Build chatbot
-                self.process.set_config(self.config)
-                return jsonify({"status": "ok"})
+                return jsonify(self.process.set_config(self.config))
             else:
                 return jsonify({"status": "no_models_found"})
 
@@ -690,9 +698,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
         if self.config['model']!= model:
             print("set_model: New model selected")            
             self.config['model'] = model
-            # Build chatbot
-            self.process.set_config(self.config)
-            return jsonify({"status": "ok"})
+            # Build chatbot            
+            return jsonify(self.process.set_config(self.config))
 
         return jsonify({"status": "error"})    
     
