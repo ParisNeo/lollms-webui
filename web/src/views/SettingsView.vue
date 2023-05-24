@@ -29,6 +29,7 @@
                     <i data-feather="list"></i>
                 </button>
             </div>
+            
             <div class="flex gap-3 flex-1 items-center justify-end">
 
 
@@ -56,50 +57,15 @@
                         </svg>
                         <span class="sr-only">Loading...</span>
                     </div>
-                    <!-- <button @click="applyConfiguration" class="bg-primary text-white py-1 px-4 rounded">
-                    Apply Configuration
-                    <div v-if="isLoading" class="loader"></div>    v-if="settingsChanged"
-                </button> -->
+
                 </div>
             </div>
         </div>
-        <!-- BACKEND -->
-        <!-- DISABLED FOR NOW -->
-        <!-- <div
-            class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
-            <div class="flex flex-row ">
-                <button @click.stop="bec_collapsed = !bec_collapsed"
-                    class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
-                    <i :data-feather="mzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
-                    <h3 class="text-lg font-semibold cursor-pointer select-none">
-                        Backend Configuration</h3>
-                </button>
-            </div>
-            <div :class="{ 'hidden': bec_collapsed }" class="flex flex-col mb-2 p-2">
-                <div class="m-2">
-                    <label for="backend" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Backend:
-                    </label>
-                    <select id="backend" @change="update_backend($event.target.value)"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                        <option v-for="item in backendsArr" :selected="item === configFile.backend">{{ item }}</option>
-                    </select>
-                </div>
-                <div class="m-2">
-                    <label for="model" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Model:
-                    </label>
-                    <select id="model" @change="update_model($event.target.value)"
-                        @mouseup="update_model($event.target.value)"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                        <option v-for="item in modelsArr" :selected="item === configFile.model">{{ item }}</option>
-
-                    </select>
-                </div>
-            </div>
-        </div> -->
+        
+        <div :class="isLoading ? 'pointer-events-none opacity-30':''">
+          
+        
+        <!-- MODELS ZOO -->
         <div
             class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
             <div class="flex flex-row p-3">
@@ -113,7 +79,7 @@
             <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
                 <div class="mx-2 mb-4">
                     <label for="backend" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Backend:
+                        Backend: ({{ backendsArr.length }})
                     </label>
                     <select id="backend" @change="update_backend($event.target.value)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -123,15 +89,15 @@
                 </div>
                 <div v-if="models.length > 0" class="mb-2">
                     <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Models:
+                        Models: ({{ models.length }})
                     </label>
-                    <div ref="modelZoo" class="overflow-y-auto no-scrollbar p-2 pb-0"
+                    <div ref="modelZoo" class="overflow-y-auto no-scrollbar p-2 pb-0 "
                         :class="mzl_collapsed ? '' : 'max-h-96'">
                         <model-entry v-for="(model, index) in models" :key="index" :title="model.title" :icon="model.icon"
                             :path="model.path" :owner="model.owner" :owner_link="model.owner_link" :license="model.license"
                             :description="model.description" :is-installed="model.isInstalled" :on-install="onInstall"
                             :on-uninstall="onUninstall" :on-selected="onSelected"
-                            :selected="model.title === configFile.model" />
+                            :selected="model.title === configFile.model" :model="model" />
                     </div>
                 </div>
                 <!-- EXPAND / COLLAPSE BUTTON -->
@@ -162,7 +128,7 @@
             <div :class="{ 'hidden': pc_collapsed }" class="flex flex-col mb-2 p-2">
                 <div class="m-2">
                     <label for="persLang" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Personalities Languages:
+                        Personalities Languages: ({{ persLangArr.length }})
                     </label>
                     <select id="persLang" @change="update_setting('personality_language', $event.target.value, refresh)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -175,7 +141,7 @@
                 </div>
                 <div class="m-2">
                     <label for="persCat" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Personalities Category:
+                        Personalities Category: ({{ persLangArr.length }})
                     </label>
                     <select id="persCat" @change="update_setting('personality_category', $event.target.value, refresh)"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -206,8 +172,11 @@
 
             </div>
         </div>
+        <!-- PERSONALITY ZOO -->
         <div
             class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+        
+            
             <div class="flex flex-row p-3">
                 <button @click.stop="pzc_collapsed = !pzc_collapsed"
                     class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
@@ -217,11 +186,38 @@
                 </button>
             </div>
             <div :class="{ 'hidden': pzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                <div class="mx-2 mb-4">
+                    <label for="persLang" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Personalities Languages: ({{ persLangArr.length }})
+                    </label>
+                    <select id="persLang" @change="update_setting('personality_language', $event.target.value, refresh)"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                        <option v-for="item in persLangArr" :selected="item === configFile.personality_language">{{ item }}
+
+                        </option>
+
+                    </select>
+                </div>
+                <div class="mx-2 mb-4">
+                    <label for="persCat" class="block  mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Personalities Category: ({{ persCatgArr.length }})
+                    </label>
+                    <select id="persCat" @change="update_setting('personality_category', $event.target.value, refresh)"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                        <option v-for="item in persCatgArr" :selected="item === configFile.personality_category">{{ item }}
+
+                        </option>
+
+                    </select>
+                </div>
+
                 <div v-if="personalities.length > 0" class="mb-2">
                     <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Personalities:
+                        Personalities: ({{ personalities.length }})
                     </label>
-                    <div ref="personalitiesZoo" class="overflow-y-auto no-scrollbar p-2 pb-0 grid grid-cols-4 gap-4"
+                    <div ref="personalitiesZoo" class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
                         :class="pzl_collapsed ? '' : 'max-h-96'">
                         <personality-entry v-for="(pers, index) in personalities" :key="index" :personality="pers" />
                     </div>
@@ -240,28 +236,7 @@
             </div>
 
         </div>
-        <!-- <div
-            class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
-            <div class="flex flex-row ">
-                <button @click.stop="pzc_collapsed = !pzc_collapsed"
-                    class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
-                    <i :data-feather="mc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
-                    <h3 class="text-lg font-semibold cursor-pointer select-none">
-                        Personalities zoo
-                    </h3>
-                </button>
-            </div>
-            <div :class="{ 'hidden': pzc_collapsed }" class="flex flex-col mb-2 p-2">
-                <div v-if="models.length > 0" class="my-2">
-                    <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Install more models:
-                    </label>
-                    <div class="overflow-y-auto max-h-96 no-scrollbar p-2">
 
-                    </div>
-                </div>
-            </div>
-        </div> -->
         <!-- MODEL -->
         <div
             class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
@@ -409,7 +384,7 @@
                 </div>
             </div>
         </div>
-
+    </div>
 
     </div>
 
@@ -490,6 +465,31 @@ export default {
                     //console.log(`Models list recovered successfuly: ${JSON.stringify(response.data)}`)
                     console.log(" models",response.data.length)
                     this.models = response.data;
+                    this.fetchCustomModels()
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
+        fetchCustomModels() {
+            console.log("Fetching Custom models")
+            axios.get('/list_models')
+                .then(response => {
+                    // Returns array of model filenames which are = to title of models zoo entry
+                    for (let i = 0; i < response.data.length; i++) {
+                        const customModel = response.data[i]
+                        const index = this.models.findIndex(x => x.title == customModel)
+                        console.log("model-ccc", customModel, index)
+                        if (index==-1){
+                            let newModelEntry = {}
+                            newModelEntry.title = customModel
+                            newModelEntry.isCustomModel = true
+                            newModelEntry.isInstalled = true
+                            this.models.push(newModelEntry)
+                        }
+                    }
+                    
+
                 })
                 .catch(error => {
                     console.log(error);

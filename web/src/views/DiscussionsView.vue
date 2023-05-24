@@ -343,7 +343,7 @@ export default {
             try {
                 if (discussionIdArr.length > 0) {
                     const res = await axios.post('/export_multiple_discussions', {
-                        discussions: discussionIdArr
+                        discussion_ids: discussionIdArr
                     })
 
                     if (res) {
