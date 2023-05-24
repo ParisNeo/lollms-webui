@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./data:/srv/data
-      - ./data/.nomic:/root/.nomic/
+      - ./data/.parisneo:/root/.parisneo/
       - ./models:/srv/models
       - ./configs:/srv/configs
       - ./personalities:/srv/personalities
