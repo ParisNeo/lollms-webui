@@ -155,6 +155,10 @@ class ModelProcess:
         self.model = model_path
         
     def set_config(self, config):
+        try:
+            self.set_config_result_queue.get_nowait()
+        except:
+            pass
         self.set_config_queue.put(config)
         # Wait for it t o be consumed
         while self.set_config_result_queue.empty():
