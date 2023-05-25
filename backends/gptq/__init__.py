@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Callable
 from transformers import AutoTokenizer, TextGenerationPipeline
 from auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig
-from api.backend import GPTBackend
+from api.backend import LLMBackend
 import torch
 import yaml
 
@@ -22,7 +22,7 @@ __license__ = "Apache 2.0"
 
 backend_name = "GPTQ"
 
-class GPTQ(GPTBackend):
+class GPTQ(LLMBackend):
     file_extension='*'
     def __init__(self, config:dict) -> None:
         """Builds a GPTQ backend

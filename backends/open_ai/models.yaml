@@ -1,0 +1,8 @@
+- description: ChatGPT model
+  icon: https://www.google.fr/url?sa=i&url=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FFile%3AChatGPT_logo.svg&psig=AOvVaw1rUG9Bl0WfHOYRJF7LgSmA&ust=1685107628710000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCJDr0J7JkP8CFQAAAAAdAAAAABAE
+  filename: ChatGpt by Open AI
+  license: Commercial
+  owner_link: https://link_to_the_owner_web_page
+  owner: Open AI
+  server: https://openai.com
+  sha256: NONE

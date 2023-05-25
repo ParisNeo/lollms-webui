@@ -14,7 +14,7 @@
 ######
 from pathlib import Path
 from typing import Callable
-from api.backend import GPTBackend
+from api.backend import LLMBackend
 import yaml
 from ctransformers import AutoModelForCausalLM
 
@@ -23,9 +23,9 @@ __github__ = "https://github.com/nomic-ai/gpt4all-ui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-backend_name = "GPTJ"
+backend_name = "CTRansformers"
 
-class GPTJ(GPTBackend):
+class CTRansformers(LLMBackend):
     file_extension='*.bin'
     def __init__(self, config:dict) -> None:
         """Builds a LLAMACPP backend

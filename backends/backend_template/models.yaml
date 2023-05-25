@@ -1,0 +1,7 @@
+- description: The description of the model
+  filename: the file to be loaded
+  license: The licence
+  owner_link: https://link_to_the_owner_web_page
+  owner: Owner_name
+  server: https://Path_to_the_server_to_load_from
+  sha256: The Hash code of the file

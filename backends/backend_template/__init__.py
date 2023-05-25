@@ -2,45 +2,52 @@
 # Project       : GPT4ALL-UI
 # File          : backend.py
 # Author        : ParisNeo with the help of the community
+# Underlying backend : Abdeladim's pygptj backend
 # Supported by Nomic-AI
 # license       : Apache 2.0
 # Description   : 
 # This is an interface class for GPT4All-ui backends.
 
-
-# This backend is a wrapper to gpt4all's official backend
-# Follow him on his github project : https://github.com/nomic-ai/gpt4all
+# This backend is a wrapper to marella's backend
+# Follow him on his github project : https://github.com/marella/ctransformers
 
 ######
 from pathlib import Path
 from typing import Callable
-from gpt4all import GPT4All
 from api.backend import LLMBackend
 import yaml
+from api.config import load_config
+import re
 
 __author__ = "parisneo"
 __github__ = "https://github.com/nomic-ai/gpt4all-ui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-backend_name = "GPT4ALL"
+backend_name = "CustomBackend"
 
-class GPT4ALL(LLMBackend):
-    file_extension='*.bin'
-    
+class CustomBackend(LLMBackend):
+    # Define what is the extension of the model files supported by your backend
+    # Only applicable for local models for remote models like gpt4 and others, you can keep it empty 
+    # and reimplement your own list_models method
+    file_extension='*.bin' 
     def __init__(self, config:dict) -> None:
-        """Builds a GPT4ALL backend
+        """Builds a LLAMACPP backend
 
         Args:
             config (dict): The configuration file
         """
         super().__init__(config, False)
-        self.model = GPT4All.get_model_from_name(self.config['model'])
-        self.model.load_model(
-                model_path=f"./models/gpt_4all/{self.config['model']}"
-        )
+        
+        # The local config can be used to store personal information that shouldn't be shared like chatgpt Key 
+        # or other personal information
+        # This file is never commited to the repository as it is ignored by .gitignore
+        # You can remove this if you don't need custom local configurations
+        self._local_config_file_path = Path(__file__).parent/"config_local.yaml"
+        self.config = load_config(self._local_config_file_path)
 
-
+        # Do your initialization stuff
+            
     def tokenize(self, prompt):
         """
         Tokenizes the given prompt using the model's tokenizer.
@@ -51,7 +58,7 @@ class GPT4ALL(LLMBackend):
         Returns:
             list: A list of tokens representing the tokenized prompt.
         """
-        return None
+        return self.model.tokenize(prompt.encode())
 
     def detokenize(self, tokens_list):
         """
@@ -63,7 +70,8 @@ class GPT4ALL(LLMBackend):
         Returns:
             str: The detokenized text as a string.
         """
-        return None
+        return self.model.detokenize(tokens_list)
+    
     def generate(self, 
                  prompt:str,                  
                  n_predict: int = 128,
@@ -80,24 +88,36 @@ class GPT4ALL(LLMBackend):
         """
         try:
             output = ""
-            for tok in self.model.generate(prompt, 
-                                           n_predict=n_predict,                                           
-                                            temp=self.config['temperature'],
-                                            top_k=self.config['top_k'],
-                                            top_p=self.config['top_p'],
-                                            repeat_penalty=self.config['repeat_penalty'],
-                                            repeat_last_n = self.config['repeat_last_n'],
-                                            # n_threads=self.config['n_threads'],
-                                            streaming=True,
-                                           ):
-                output += tok
+            self.model.reset()
+            tokens = self.model.tokenize(prompt)
+            count = 0
+            generated_text = """
+This is an empty backend that shows how you can build your own backend.
+Find it in backends
+"""
+            for tok in re.split(r' |\n', generated_text):               
+                if count >= n_predict or self.model.is_eos_token(tok):
+                    break
+                word = self.model.detokenize(tok)
                 if new_text_callback is not None:
-                    if not new_text_callback(tok):
-                        return output
+                    if not new_text_callback(word):
+                        break
+                output += word
+                count += 1
         except Exception as ex:
             print(ex)
-        return output
-
+        return output            
+         
+    
+    # Decomment if you want to build a custom model listing
+    #@staticmethod
+    #def list_models(config:dict):
+    #    """Lists the models for this backend
+    #    """
+    #    models_dir = Path('./models')/config["backend"]  # replace with the actual path to the models folder
+    #    return [f.name for f in models_dir.glob(LLMBackend.file_extension)]
+    #
+        
     @staticmethod
     def get_available_models():
         # Create the file path relative to the child class's directory

@@ -14,7 +14,7 @@
 from pathlib import Path
 from typing import Callable
 from pyllamacpp.model import Model
-from api.backend import GPTBackend
+from api.backend import LLMBackend
 import yaml
 
 __author__ = "parisneo"
@@ -24,7 +24,7 @@ __license__ = "Apache 2.0"
 
 backend_name = "PyLLAMACPP"
 
-class PyLLAMACPP(GPTBackend):
+class PyLLAMACPP(LLMBackend):
     file_extension='*.bin'
     def __init__(self, config:dict) -> None:
         """Builds a LLAMACPP backend

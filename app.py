@@ -791,7 +791,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
             try:
                 filename = model.get('filename',"")
                 server = model.get('server',"")
-                image_url = model.get("image_url", '/icons/default.png')
+                image_url = model.get("icon", '/images/default_model.png')
                 license = model.get("license", 'unknown')
                 owner = model.get("owner", 'unknown')
                 owner_link = model.get("owner_link", 'https://github.com/ParisNeo')
