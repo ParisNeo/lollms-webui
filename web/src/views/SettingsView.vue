@@ -29,7 +29,7 @@
                     <i data-feather="list"></i>
                 </button>
             </div>
-            
+
             <div class="flex gap-3 flex-1 items-center justify-end">
 
 
@@ -37,13 +37,15 @@
                     <i data-feather="alert-triangle"></i>
                     No model selected!
                 </div>
-                <div v-if="settingsChanged" class="flex gap-3 items-center">
+                <div class="flex gap-3 items-center">
+                    <div v-if="settingsChanged" class="flex gap-3 items-center">
+                        Apply changes:
+                        <button v-if="!isLoading" class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                            title="Apply changes" type="button" @click.stop="applyConfiguration()">
+                            <i data-feather="check"></i>
+                        </button>
+                    </div>
 
-                    Apply changes:
-                    <button v-if="!isLoading" class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                        title="Apply changes" type="button" @click.stop="applyConfiguration()">
-                        <i data-feather="check"></i>
-                    </button>
                     <!-- SPINNER -->
                     <div v-if="isLoading" role="status">
                         <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101"
@@ -61,330 +63,291 @@
                 </div>
             </div>
         </div>
-        
-        <div :class="isLoading ? 'pointer-events-none opacity-30':''">
-          
-        
-        <!-- MODELS ZOO -->
-        <div
-            class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
-            <div class="flex flex-row p-3">
-                <button @click.stop="mzc_collapsed = !mzc_collapsed"
-                    class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
-                    <i :data-feather="mzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
-                    <h3 class="text-lg font-semibold cursor-pointer select-none">
-                        Models zoo</h3>
-                </button>
-            </div>
-            <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
-                <div class="mx-2 mb-4">
-                    <label for="backend" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Backend: ({{ backendsArr.length }})
-                    </label>
-                    <select id="backend" @change="update_backend($event.target.value)"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <option v-for="item in backendsArr" :selected="item === configFile.backend">{{ item }}</option>
-                    </select>
+        <div :class="isLoading ? 'pointer-events-none opacity-30' : ''">
+
+
+            <!-- MODELS ZOO -->
+            <div
+                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                <div class="flex flex-row p-3">
+                    <button @click.stop="mzc_collapsed = !mzc_collapsed"
+                        class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
+                        <i :data-feather="mzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
+                        <h3 class="text-lg font-semibold cursor-pointer select-none">
+                            Models zoo</h3>
+                    </button>
                 </div>
-                <div v-if="models.length > 0" class="mb-2">
-                    <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Models: ({{ models.length }})
-                    </label>
-                    <div ref="modelZoo" class="overflow-y-auto no-scrollbar p-2 pb-0 "
-                        :class="mzl_collapsed ? '' : 'max-h-96'">
-                        <model-entry v-for="(model, index) in models" :key="index" :title="model.title" :icon="model.icon"
-                            :path="model.path" :owner="model.owner" :owner_link="model.owner_link" :license="model.license"
-                            :description="model.description" :is-installed="model.isInstalled" :on-install="onInstall"
-                            :on-uninstall="onUninstall" :on-selected="onSelected"
-                            :selected="model.title === configFile.model" :model="model" />
+                <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                    <div class="mx-2 mb-4">
+                        <label for="backend" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Backend: ({{ backendsArr.length }})
+                        </label>
+                        <select id="backend" @change="update_backend($event.target.value)"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                            <option v-for="item in backendsArr" :selected="item === configFile.backend">{{ item }}</option>
+                        </select>
                     </div>
-                </div>
-                <!-- EXPAND / COLLAPSE BUTTON -->
-                <button v-if="mzl_collapsed"
-                    class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
-                    title="Collapse" type="button" @click="mzl_collapsed = !mzl_collapsed">
-                    <i data-feather="chevron-up"></i>
-                </button>
-                <button v-else
-                    class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
-                    title="Expand" type="button" @click="mzl_collapsed = !mzl_collapsed">
-                    <i data-feather="chevron-down"></i>
-                </button>
-            </div>
-
-        </div>
-        <!-- PERSONALITY -->
-        <div
-            class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
-            <div class="flex flex-row">
-                <button @click.stop="pc_collapsed = !pc_collapsed"
-                    class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
-                    <i :data-feather="pc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
-                    <h3 class="text-lg font-semibold cursor-pointer select-none">
-                        Personality Configuration</h3>
-                </button>
-            </div>
-            <div :class="{ 'hidden': pc_collapsed }" class="flex flex-col mb-2 p-2">
-                <div class="m-2">
-                    <label for="persLang" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Personalities Languages: ({{ persLangArr.length }})
-                    </label>
-                    <select id="persLang" @change="update_setting('personality_language', $event.target.value, refresh)"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                        <option v-for="item in persLangArr" :selected="item === configFile.personality_language">{{ item }}
-
-                        </option>
-
-                    </select>
-                </div>
-                <div class="m-2">
-                    <label for="persCat" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Personalities Category: ({{ persLangArr.length }})
-                    </label>
-                    <select id="persCat" @change="update_setting('personality_category', $event.target.value, refresh)"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                        <option v-for="item in persCatgArr" :selected="item === configFile.personality_category">{{ item }}
-
-                        </option>
-
-                    </select>
-                </div>
-                <div class="m-2">
-                    <label for="persona" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Personality:
-                    </label>
-                    <select id="persona" @change="update_setting('personality', $event.target.value, refresh)"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                        <option v-for="item in persArr" :selected="item === configFile.personality">{{ item }}</option>
-
-                    </select>
-                </div>
-                <div class="m-2">
-                    <button @click="applyConfiguration" class="bg-blue-500 text-white py-2 px-4 rounded">
-                        Apply Configuration
-                    </button> 
-                    <div v-if="isLoading" class="loader"></div>
-                </div>
-
-            </div>
-        </div>
-        <!-- PERSONALITY ZOO -->
-        <div
-            class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
-        
-            
-            <div class="flex flex-row p-3">
-                <button @click.stop="pzc_collapsed = !pzc_collapsed"
-                    class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
-                    <i :data-feather="pzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
-                    <h3 class="text-lg font-semibold cursor-pointer select-none">
-                        Personalities zoo</h3>
-                </button>
-            </div>
-            <div :class="{ 'hidden': pzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
-                <div class="mx-2 mb-4">
-                    <label for="persLang" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Personalities Languages: ({{ persLangArr.length }})
-                    </label>
-                    <select id="persLang" @change="update_setting('personality_language', $event.target.value, refresh)"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                        <option v-for="item in persLangArr" :selected="item === configFile.personality_language">{{ item }}
-
-                        </option>
-
-                    </select>
-                </div>
-                <div class="mx-2 mb-4">
-                    <label for="persCat" class="block  mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Personalities Category: ({{ persCatgArr.length }})
-                    </label>
-                    <select id="persCat" @change="update_setting('personality_category', $event.target.value, refresh)"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                        <option v-for="item in persCatgArr" :selected="item === configFile.personality_category">{{ item }}
-
-                        </option>
-
-                    </select>
-                </div>
-
-                <div v-if="personalities.length > 0" class="mb-2">
-                    <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Personalities: ({{ personalities.length }})
-                    </label>
-                    <div ref="personalitiesZoo" class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
-                        :class="pzl_collapsed ? '' : 'max-h-96'">
-                        <personality-entry v-for="(pers, index) in personalities" :key="index" :personality="pers" />
-                    </div>
-                </div>
-                <!-- EXPAND / COLLAPSE BUTTON -->
-                <button v-if="pzl_collapsed"
-                    class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
-                    title="Collapse" type="button" @click="pzl_collapsed = !pzl_collapsed">
-                    <i data-feather="chevron-up"></i>
-                </button>
-                <button v-else
-                    class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
-                    title="Expand" type="button" @click="pzl_collapsed = !pzl_collapsed">
-                    <i data-feather="chevron-down"></i>
-                </button>
-            </div>
-
-        </div>
-
-        <!-- MODEL -->
-        <div
-            class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
-            <div class="flex flex-row">
-                <button @click.stop="mc_collapsed = !mc_collapsed"
-                    class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
-                    <i :data-feather="mc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
-                    <h3 class="text-lg font-semibold cursor-pointer select-none">
-                        Model Configuration</h3>
-                </button>
-            </div>
-            <div :class="{ 'hidden': mc_collapsed }" class="flex flex-col mb-2 p-2">
-                <div class="m-2">
-                    <label for="seed" class="block mb-2 text-sm font-medium ">
-                        Seed:
-                    </label>
-                    <input type="text" id="seed" v-model="configFile.seed"
-                        class="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                </div>
-                <div class="m-2">
-                    <div class="flex flex-col align-bottom ">
-                        <div class="relative">
-                            <p class="absolute left-0 mt-6">
-                                <label for="temperature" class=" text-sm font-medium">
-                                    Temperature:
-                                </label>
-                            </p>
-                            <p class="absolute right-0">
-
-                                <input type="text" id="temp-val" v-model="configFile.temperature"
-                                    class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            </p>
-
+                    <div v-if="models.length > 0" class="mb-2">
+                        <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Models: ({{ models.length }})
+                        </label>
+                        <div ref="modelZoo" class="overflow-y-auto no-scrollbar p-2 pb-0 "
+                            :class="mzl_collapsed ? '' : 'max-h-96'">
+                            <model-entry v-for="(model, index) in models" :key="index" :title="model.title"
+                                :icon="model.icon" :path="model.path" :owner="model.owner" :owner_link="model.owner_link"
+                                :license="model.license" :description="model.description" :is-installed="model.isInstalled"
+                                :on-install="onInstall" :on-uninstall="onUninstall" :on-selected="onSelected"
+                                :selected="model.title === configFile.model" :model="model" />
                         </div>
-
-                        <input id="temperature" @change="update_setting('temperature', $event.target.value)" type="range"
-                            v-model="configFile.temperature" min="0" max="5" step="0.1"
-                            class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     </div>
+                    <!-- EXPAND / COLLAPSE BUTTON -->
+                    <button v-if="mzl_collapsed"
+                        class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
+                        title="Collapse" type="button" @click="mzl_collapsed = !mzl_collapsed">
+                        <i data-feather="chevron-up"></i>
+                    </button>
+                    <button v-else
+                        class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
+                        title="Expand" type="button" @click="mzl_collapsed = !mzl_collapsed">
+                        <i data-feather="chevron-down"></i>
+                    </button>
                 </div>
-                <div class="m-2">
-                    <div class="flex flex-col align-bottom ">
-                        <div class="relative">
-                            <p class="absolute left-0 mt-6">
-                                <label for="predict" class=" text-sm font-medium">
-                                    N Predict:
-                                </label>
-                            </p>
-                            <p class="absolute right-0">
 
-                                <input type="text" id="predict-val" v-model="configFile.n_predict"
-                                    class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            </p>
+            </div>
 
-                        </div>
+            <!-- PERSONALITY ZOO -->
+            <div
+                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
 
-                        <input id="predict" @change="update_setting('n_predict', $event.target.value)" type="range"
-                            v-model="configFile.n_predict" min="0" max="2048" step="32"
-                            class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                <div class="flex flex-row p-3">
+                    <button @click.stop="pzc_collapsed = !pzc_collapsed"
+                        class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
+                        <i :data-feather="pzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
+                        <h3 class="text-lg font-semibold cursor-pointer select-none">
+                            Personalities zoo</h3>
+                    </button>
+                </div>
+                <div :class="{ 'hidden': pzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                    <div class="mx-2 mb-4">
+                        <label for="persLang" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Personalities Languages: ({{ persLangArr.length }})
+                        </label>
+                        <select id="persLang" @change="update_setting('personality_language', $event.target.value, refresh)"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                            <option v-for="item in persLangArr" :selected="item === configFile.personality_language">{{ item
+                            }}
+
+                            </option>
+
+                        </select>
                     </div>
-                </div>
-                <div class="m-2">
-                    <div class="flex flex-col align-bottom ">
-                        <div class="relative">
-                            <p class="absolute left-0 mt-6">
-                                <label for="top_k" class=" text-sm font-medium">
-                                    Top-K:
-                                </label>
-                            </p>
-                            <p class="absolute right-0">
+                    <div class="mx-2 mb-4">
+                        <label for="persCat" class="block  mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Personalities Category: ({{ persCatgArr.length }})
+                        </label>
+                        <select id="persCat" @change="update_setting('personality_category', $event.target.value, refresh)"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                                <input type="text" id="top_k-val" v-model="configFile.top_k"
-                                    class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            </p>
+                            <option v-for="item in persCatgArr" :selected="item === configFile.personality_category">{{ item
+                            }}
 
-                        </div>
+                            </option>
 
-                        <input id="top_k" @change="update_setting('top_k', $event.target.value)" type="range"
-                            v-model="configFile.top_k" min="0" max="100" step="1"
-                            class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        </select>
                     </div>
-                </div>
-                <div class="m-2">
-                    <div class="flex flex-col align-bottom ">
-                        <div class="relative">
-                            <p class="absolute left-0 mt-6">
-                                <label for="top_p" class=" text-sm font-medium">
-                                    Top-P:
-                                </label>
-                            </p>
-                            <p class="absolute right-0">
 
-                                <input type="text" id="top_p-val" v-model="configFile.top_p"
-                                    class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            </p>
+                    <!-- <div class="mx-2 mb-4">
+                        <label for="persona" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Personality:
+                        </label>
+                        <select id="persona" @change="update_setting('personality', $event.target.value, refresh)"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
+                            <option v-for="item in persArr" :selected="item === configFile.personality">{{ item }}</option>
+
+                        </select>
+                    </div> -->
+
+                    <div v-if="personalitiesFiltered.length > 0" class="mb-2">
+                        <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Personalities: ({{ personalitiesFiltered.length }})
+                        </label>
+                        <div ref="personalitiesZoo"
+                            class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
+                            :class="pzl_collapsed ? '' : 'max-h-96'">
+                            <personality-entry v-for="(pers, index) in personalitiesFiltered" :key="index"
+                                :personality="pers"
+                                :selected="pers.name === configFile.personality && pers.category === configFile.personality_category && pers.language === configFile.personality_language"
+                                :on-selected="onPersonalitySelected" />
                         </div>
-
-                        <input id="top_p" @change="update_setting('top_p', $event.target.value)" type="range"
-                            v-model="configFile.top_p" min="0" max="1" step="0.01"
-                            class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     </div>
+                    <!-- EXPAND / COLLAPSE BUTTON -->
+                    <button v-if="pzl_collapsed"
+                        class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
+                        title="Collapse" type="button" @click="pzl_collapsed = !pzl_collapsed">
+                        <i data-feather="chevron-up"></i>
+                    </button>
+                    <button v-else
+                        class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
+                        title="Expand" type="button" @click="pzl_collapsed = !pzl_collapsed">
+                        <i data-feather="chevron-down"></i>
+                    </button>
                 </div>
-                <div class="m-2">
-                    <div class="flex flex-col align-bottom ">
-                        <div class="relative">
-                            <p class="absolute left-0 mt-6">
-                                <label for="repeat_penalty" class=" text-sm font-medium">
-                                    Repeat penalty:
-                                </label>
-                            </p>
-                            <p class="absolute right-0">
 
-                                <input type="text" id="repeat_penalty-val" v-model="configFile.repeat_penalty"
-                                    class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            </p>
+            </div>
 
-                        </div>
-
-                        <input id="repeat_penalty" @change="update_setting('repeat_penalty', $event.target.value)"
-                            type="range" v-model="configFile.repeat_penalty" min="0" max="2" step="0.01"
-                            class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <!-- MODEL -->
+            <div
+                class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                <div class="flex flex-row">
+                    <button @click.stop="mc_collapsed = !mc_collapsed"
+                        class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
+                        <i :data-feather="mc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
+                        <h3 class="text-lg font-semibold cursor-pointer select-none">
+                            Model Configuration</h3>
+                    </button>
+                </div>
+                <div :class="{ 'hidden': mc_collapsed }" class="flex flex-col mb-2 p-2">
+                    <div class="m-2">
+                        <label for="seed" class="block mb-2 text-sm font-medium ">
+                            Seed:
+                        </label>
+                        <input type="text" id="seed" v-model="configFile.seed"
+                            class="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     </div>
-                </div>
-                <div class="m-2">
-                    <div class="flex flex-col align-bottom ">
-                        <div class="relative">
-                            <p class="absolute left-0 mt-6">
-                                <label for="repeat_last_n" class=" text-sm font-medium">
-                                    Repeat last N:
-                                </label>
-                            </p>
-                            <p class="absolute right-0">
+                    <div class="m-2">
+                        <div class="flex flex-col align-bottom ">
+                            <div class="relative">
+                                <p class="absolute left-0 mt-6">
+                                    <label for="temperature" class=" text-sm font-medium">
+                                        Temperature:
+                                    </label>
+                                </p>
+                                <p class="absolute right-0">
 
-                                <input type="text" id="repeat_last_n-val" v-model="configFile.repeat_last_n"
-                                    class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            </p>
+                                    <input type="text" id="temp-val" v-model="configFile.temperature"
+                                        class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                </p>
 
+                            </div>
+
+                            <input id="temperature" @change="update_setting('temperature', $event.target.value)"
+                                type="range" v-model="configFile.temperature" min="0" max="5" step="0.1"
+                                class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         </div>
+                    </div>
+                    <div class="m-2">
+                        <div class="flex flex-col align-bottom ">
+                            <div class="relative">
+                                <p class="absolute left-0 mt-6">
+                                    <label for="predict" class=" text-sm font-medium">
+                                        N Predict:
+                                    </label>
+                                </p>
+                                <p class="absolute right-0">
 
-                        <input id="repeat_last_n" @change="update_setting('repeat_last_n', $event.target.value)"
-                            type="range" v-model="configFile.repeat_last_n" min="0" max="100" step="1"
-                            class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <input type="text" id="predict-val" v-model="configFile.n_predict"
+                                        class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                </p>
+
+                            </div>
+
+                            <input id="predict" @change="update_setting('n_predict', $event.target.value)" type="range"
+                                v-model="configFile.n_predict" min="0" max="2048" step="32"
+                                class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        </div>
+                    </div>
+                    <div class="m-2">
+                        <div class="flex flex-col align-bottom ">
+                            <div class="relative">
+                                <p class="absolute left-0 mt-6">
+                                    <label for="top_k" class=" text-sm font-medium">
+                                        Top-K:
+                                    </label>
+                                </p>
+                                <p class="absolute right-0">
+
+                                    <input type="text" id="top_k-val" v-model="configFile.top_k"
+                                        class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                </p>
+
+                            </div>
+
+                            <input id="top_k" @change="update_setting('top_k', $event.target.value)" type="range"
+                                v-model="configFile.top_k" min="0" max="100" step="1"
+                                class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        </div>
+                    </div>
+                    <div class="m-2">
+                        <div class="flex flex-col align-bottom ">
+                            <div class="relative">
+                                <p class="absolute left-0 mt-6">
+                                    <label for="top_p" class=" text-sm font-medium">
+                                        Top-P:
+                                    </label>
+                                </p>
+                                <p class="absolute right-0">
+
+                                    <input type="text" id="top_p-val" v-model="configFile.top_p"
+                                        class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                </p>
+
+                            </div>
+
+                            <input id="top_p" @change="update_setting('top_p', $event.target.value)" type="range"
+                                v-model="configFile.top_p" min="0" max="1" step="0.01"
+                                class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        </div>
+                    </div>
+                    <div class="m-2">
+                        <div class="flex flex-col align-bottom ">
+                            <div class="relative">
+                                <p class="absolute left-0 mt-6">
+                                    <label for="repeat_penalty" class=" text-sm font-medium">
+                                        Repeat penalty:
+                                    </label>
+                                </p>
+                                <p class="absolute right-0">
+
+                                    <input type="text" id="repeat_penalty-val" v-model="configFile.repeat_penalty"
+                                        class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                </p>
+
+                            </div>
+
+                            <input id="repeat_penalty" @change="update_setting('repeat_penalty', $event.target.value)"
+                                type="range" v-model="configFile.repeat_penalty" min="0" max="2" step="0.01"
+                                class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        </div>
+                    </div>
+                    <div class="m-2">
+                        <div class="flex flex-col align-bottom ">
+                            <div class="relative">
+                                <p class="absolute left-0 mt-6">
+                                    <label for="repeat_last_n" class=" text-sm font-medium">
+                                        Repeat last N:
+                                    </label>
+                                </p>
+                                <p class="absolute right-0">
+
+                                    <input type="text" id="repeat_last_n-val" v-model="configFile.repeat_last_n"
+                                        class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                </p>
+
+                            </div>
+
+                            <input id="repeat_last_n" @change="update_setting('repeat_last_n', $event.target.value)"
+                                type="range" v-model="configFile.repeat_last_n" min="0" max="100" step="1"
+                                class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
     </div>
 
@@ -421,6 +384,7 @@ export default {
             // Models zoo installer stuff
             models: [],
             personalities: [],
+            personalitiesFiltered: [],
             // Accordeon stuff 
             collapsedArr: [],
             all_collapsed: true,
@@ -463,7 +427,7 @@ export default {
             axios.get('/get_available_models')
                 .then(response => {
                     //console.log(`Models list recovered successfuly: ${JSON.stringify(response.data)}`)
-                    console.log(" models",response.data.length)
+                    console.log(" models", response.data.length)
                     this.models = response.data;
                     this.fetchCustomModels()
                 })
@@ -480,7 +444,7 @@ export default {
                         const customModel = response.data[i]
                         const index = this.models.findIndex(x => x.title == customModel)
                         console.log("model-ccc", customModel, index)
-                        if (index==-1){
+                        if (index == -1) {
                             let newModelEntry = {}
                             newModelEntry.title = customModel
                             newModelEntry.isCustomModel = true
@@ -488,12 +452,41 @@ export default {
                             this.models.push(newModelEntry)
                         }
                     }
-                    
+
 
                 })
                 .catch(error => {
                     console.log(error);
                 });
+        },
+        onPersonalitySelected(pers) {
+            console.log("Selected personality")
+            // eslint-disable-next-line no-unused-vars
+            if (this.isLoading) {
+                this.$refs.toast.showToast("Loading... please wait", 4, false)
+            }
+            if (pers.personality) {
+                // if (model_object.isInstalled) {
+                this.settingsChanged = true
+                const res = this.update_setting('personality', pers.personality.name,()=>{
+                    this.$refs.toast.showToast("Personality:\n" + pers.personality.name + "\nselected", 4, true)
+                    this.configFile.personality = pers.personality.name
+                    this.configFile.personality_category = pers.personality.category
+                    this.configFile.personality_language = pers.personality.language
+                })
+             
+        
+                    
+
+
+       
+
+                nextTick(() => {
+                    feather.replace()
+
+                })
+            }
+
         },
         onSelected(model_object) {
             console.log("Selected model")
@@ -503,28 +496,27 @@ export default {
             }
             if (model_object) {
                 if (model_object.isInstalled) {
-                    
 
 
-                        if (this.configFile.model != model_object.title) {
-                            this.update_model(model_object.title)
-                            this.configFile.model = model_object.title
-                            this.$refs.toast.showToast("Model:\n" + model_object.title + "\nselected", 4, true)
-                            this.settingsChanged = true
-                            this.isModelSelected = true
-                        }
 
-                    } else {
-                        this.$refs.toast.showToast("Model:\n" + model_object.title + "\nis not installed", 4, false)
+                    if (this.configFile.model != model_object.title) {
+                        this.update_model(model_object.title)
+                        this.configFile.model = model_object.title
+                        this.$refs.toast.showToast("Model:\n" + model_object.title + "\nselected", 4, true)
+                        this.settingsChanged = true
+                        this.isModelSelected = true
                     }
-                
+
+                } else {
+                    this.$refs.toast.showToast("Model:\n" + model_object.title + "\nis not installed", 4, false)
+                }
+
                 nextTick(() => {
                     feather.replace()
 
                 })
             }
 
-            //this.update_setting('model', model_object.title, (res)=>{console.log("Model selected"); })
         },
         // Model installation
 
@@ -618,7 +610,7 @@ export default {
                     }
                 });
             })
-
+            this.getPersonalitiesArr()
             this.fetchModels();
         },
         // Accordeon stuff
@@ -695,6 +687,7 @@ export default {
                     console.log("applying configuration succeeded")
                     this.$refs.toast.showToast("Configuration changed successfully.", 4, true)
                     this.settingsChanged = false
+                    this.save_configuration()
                 } else {
                     console.log("applying configuration failed")
                     this.$refs.toast.showToast("Configuration change failed.", 4, false)
@@ -712,7 +705,7 @@ export default {
                 .then((res) => {
                     if (res) {
                         if (res.status) {
-                            this.$refs.messageBox.showMessage("Settings saved!")
+                           // this.$refs.messageBox.showMessage("Settings saved!")
                         }
                         else
                             this.$refs.messageBox.showMessage("Error: Couldn't save settings!")
@@ -773,7 +766,8 @@ export default {
             this.showToast = false
         },
         async getPersonalitiesArr() {
-            this.personalities
+            this.isLoading = true
+            this.personalities=[]
             const dictionary = await this.api_get_req("get_all_personalities")
             const langkeys = Object.keys(dictionary); // returns languages folder names
             for (let i = 0; i < langkeys.length; i++) {
@@ -801,6 +795,9 @@ export default {
                 }
 
             }
+            this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
+            this.isLoading = false
+            
         }
 
     }, async mounted() {
@@ -822,7 +819,7 @@ export default {
         this.langArr = await this.api_get_req("list_languages")
         await this.getPersonalitiesArr()
         this.isLoading = false
-        console.log('ppp', this.personalities)
+
     },
     watch: {
         bec_collapsed() {
@@ -886,12 +883,7 @@ export default {
 
             console.log('iss selected:', val)
         }
-        // configFile(){
-        //     nextTick(() => {
-        //         feather.replace()
 
-        //     }) 
-        // }
 
     }
 }
@@ -922,5 +914,4 @@ export default {
     100% {
         transform: rotate(360deg);
     }
-}
-</style>
+}</style>
