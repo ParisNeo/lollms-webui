@@ -144,7 +144,7 @@
             <!-- Removed reference to copyToClipBoard() ; function was moved to Message.vue -->
             <Message v-for="(msg, index) in discussionArr" :key="index" :message="msg" :id="'msg-' + msg.id" ref="messages"
                 @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage" @rankDown="rankDownMessage"
-                @updateMessage="updateMessage" @resendMessage="resendMessage" />
+                @updateMessage="updateMessage" @resendMessage="resendMessage" :avatar="getAvatar(msg.sender)" />
 
             <WelcomeComponent v-if="!currentDiscussion.id" />
 
@@ -187,9 +187,26 @@ export default {
             showToast: false,
             isSearch: false,
             isDiscussionBottom: false,
+            personalityAvatars: [] // object array of personality name: and avatar: props
         }
     },
     methods: {
+        async api_get_req(endpoint) {
+            try {
+                const res = await axios.get("/" + endpoint);
+
+                if (res) {
+
+                    return res.data
+
+                }
+            } catch (error) {
+                console.log(error)
+                return
+            }
+
+
+        },
         async list_discussions() {
             try {
                 const res = await axios.get('/list_discussions')
@@ -542,10 +559,10 @@ export default {
             const parent = msgObj.user_message_id
             const discussion_id = msgObj.discussion_id
             // next statement - incorrect comparison: was '=' and should be '=='
-            
-            this.setDiscussionLoading(discussion_id, true );
+
+            this.setDiscussionLoading(discussion_id, true);
             if (this.currentDiscussion.id == discussion_id) {
-                
+
                 this.isGenerating = true;
                 const index = this.discussionArr.findIndex((x) => x.parent == parent && x.id == msgObj.ai_message_id)
                 const messageItem = this.discussionArr[index]
@@ -692,7 +709,7 @@ export default {
                     }
                     return newItem
 
-                }).sort(function(a,b){
+                }).sort(function (a, b) {
                     return b.id - a.id
                 })
                 this.list = newDisList
@@ -854,17 +871,69 @@ export default {
                 const filename = 'discussions_export_' + formattedDate + '.json'
                 this.loading = true
                 const res = await this.export_multiple_discussions(discussionIdArr)
-              
+
                 if (res) {
                     this.saveJSONtoFile(res, filename)
                     this.$refs.toast.showToast("Successfully exported", 4, true)
-                    this.isCheckbox=false
-                }else{
+                    this.isCheckbox = false
+                } else {
                     this.$refs.toast.showToast("Failed to export discussions", 4, false)
                 }
                 this.loading = false
             }
 
+        },
+        async getPersonalityAvatars() {
+
+            let personalities = []
+            const dictionary = await this.api_get_req("get_all_personalities")
+            const langkeys = Object.keys(dictionary); // returns languages folder names
+            for (let i = 0; i < langkeys.length; i++) {
+                const langkey = langkeys[i];
+                const catdictionary = dictionary[langkey];
+                const catkeys = Object.keys(catdictionary); // returns categories
+
+                for (let j = 0; j < catkeys.length; j++) {
+                    const catkey = catkeys[j];
+                    const personalitiesArray = catdictionary[catkey];
+                    const modPersArr = personalitiesArray.map((item) => {
+                        let newItem = {}
+                        newItem = item
+                        newItem.category = catkey // add new props to items
+                        newItem.language = langkey // add new props to items
+                        return newItem
+                    })
+
+
+                    if (personalities.length == 0) {
+                        personalities = modPersArr
+                    } else {
+                        personalities = personalities.concat(modPersArr)
+                    }
+                }
+
+            }
+
+            this.personalityAvatars = personalities.map(item => {
+                const newItem = {
+                    name: item.name,
+                    avatar: item.avatar
+                }
+                return newItem
+            })
+            // const index = personalities.findIndex((x) => x.name === sender)
+            //     const pers = personalities[index]
+            // return pers.avatar
+
+        },
+        getAvatar(sender) {
+            const index = this.personalityAvatars.findIndex((x) => x.name === sender)
+            const pers = this.personalityAvatars[index]
+            if(pers){
+                return pers.avatar
+            }
+            
+            return 
         }
 
 
@@ -890,11 +959,13 @@ export default {
         socket.on("final", this.finalMsgEvent)
 
     },
-    activated() {
+    async activated() {
         // This lifecycle hook runs every time you switch from other page back to this page (vue-router)
         // To fix scrolling back to last message, this hook is needed.
         // If anyone knows hor to fix scroll issue when changing pages, please do fix it :D
         console.log("Websocket connected (activated)", this.socketConnected)
+
+        await this.getPersonalityAvatars()
 
         if (this.isCreated) {
             this.loadLastUsedDiscussion()
