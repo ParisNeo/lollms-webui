@@ -60,27 +60,7 @@
   sha256: 1f08b147a5bce41cfcbb3fd5d51ba765dea1786e15b5655ab69ba3a337a893b7
 
 
-- bestLlama: 'true'
-  description: Legacy version of Vicuna 7B v 1.1 Quantized on 4 bits
-  icon : https://huggingface.co/avatars/40cbc1742585a88eeecf2915c7e4557c.svg
-  filename: legacy-ggml-vicuna-7B-1.1-q4_0.bin
-  license: Non commercial
-  owner_link: https://huggingface.co/CRD716
-  owner: CRD716
-  server: https://huggingface.co/CRD716/ggml-vicuna-1.1-quantized/resolve/main/
-  sha256: 67efec973a81151a55e55f8e747b455354979492978b2f9f22a342c6d841e6b7
-  
-- bestLlama: 'true'
-  description: 'WizardLM - uncensored: An Instruction-following LLM Using Evol-Instruct'
-  icon : https://aeiljuispo.cloudimg.io/v7/https://s3.amazonaws.com/moonup/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
-  filename: WizardLM-7B-uncensored.ggml.q4_0.bin
-  license: Non commercial
-  owner_link: https://huggingface.co/TheBloke
-  owner: TheBloke
-  server: https://huggingface.co/TheBloke/WizardLM-7B-uncensored-GGML/resolve/previous_llama_ggmlv2/
-  sha256: 67efec973a81151a55e55f8e747b455354979492978b2f9f22a342c6d841e6b7
-
-  
+ 
 - description: Koala 7B model produced at Berkeley
   icon : https://aeiljuispo.cloudimg.io/v7/https://s3.amazonaws.com/moonup/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
   filename: koala-7B.ggmlv3.q4_0.bin
