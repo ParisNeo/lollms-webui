@@ -235,7 +235,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         
     def reset(self):
         os.kill(os.getpid(), signal.SIGINT)  # Send the interrupt signal to the current process
-        subprocess.Popen(['python', 'your_app.py'])  # Restart the app using subprocess
+        subprocess.Popen(['python', 'app.py'])  # Restart the app using subprocess
 
         return 'App is resetting...'
 
