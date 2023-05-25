@@ -374,6 +374,8 @@
     <YesNoDialog ref="yesNoDialog" />
     <MessageBox ref="messageBox" />
     <Toast ref="toast" />
+
+    
 </template>
 
 <script>
@@ -387,6 +389,7 @@ import ModelEntry from '@/components/ModelEntry.vue';
 import PersonalityViewer from '@/components/PersonalityViewer.vue';
 import PersonalityEntry from "../components/PersonalityEntry.vue";
 import socket from '@/services/websocket.js'
+
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
     components: {
@@ -397,7 +400,7 @@ export default {
         PersonalityViewer,
         Toast,
         PersonalityEntry,
-    },
+            },
     data() {
 
         return {
@@ -881,6 +884,7 @@ export default {
             })
         },
         all_collapsed(val) {
+            
             this.collapseAll(val)
             nextTick(() => {
                 feather.replace()
@@ -910,30 +914,3 @@ export default {
 }
 </script>
 
-
-<style>
-/* .loader {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3498db;
-    border-radius: 50%;
-    width: 16px;
-    height: 16px;
-    animation: spin 2s linear infinite;
-    margin-left: 8px;
-    display: inline-block;
-}
-
-.height-64 {
-    min-height: 64px;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-} */
-</style>
