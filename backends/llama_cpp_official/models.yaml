@@ -26,7 +26,7 @@
   sha256: 5994f92f3cc8d3fe2d09a44c174ed8c0f4f32819597feaafc9d6bd06208d3df6
 
 - bestLlama: 'true'
-  description: 'MedAlpaca 16B Quantized on 4 bits: model specifically fine-tuned for medical domain tasks'
+  description: 'MedAlpaca 13B Quantized on 4 bits: model specifically fine-tuned for medical domain tasks'
   filename: medalpaca-13B.ggmlv3.q4_0.bin
   license: Non commercial
   owner_link: https://huggingface.co/TheBloke
@@ -35,7 +35,7 @@
   sha256: 24060342f7649f5609a90932b88604f90eb34ee490f7c22403ff47b9b8547c58
 
 - bestLlama: 'true'
-  description: 'MedAlpaca 16B Quantized on 5 bits: model specifically fine-tuned for medical domain tasks'
+  description: 'MedAlpaca 13B Quantized on 5 bits: model specifically fine-tuned for medical domain tasks'
   filename: medalpaca-13B.ggmlv3.q5_1.bin
   license: Non commercial
   owner_link: https://huggingface.co/TheBloke
