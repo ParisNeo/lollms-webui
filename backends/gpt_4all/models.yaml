@@ -1,4 +1,5 @@
 - bestMPT: 'true'
+  icon: https://cdn-1.webcatalog.io/catalog/mosaicml/mosaicml-icon-filled-256.png?v=1675590559063
   description: Current best non-commercially licensable chat model based on MPT and
     trained by Mosaic ML.
   filename: ggml-mpt-7b-chat.bin
@@ -12,6 +13,7 @@
   server: https://gpt4all.io/models/
 - description: A commericially licensable instruct model based on MPT and trained
     by Mosaic ML.
+  icon: https://cdn-1.webcatalog.io/catalog/mosaicml/mosaicml-icon-filled-256.png?v=1675590559063
   filename: ggml-mpt-7b-instruct.bin
   filesize: '4854401028'
   license: Apache 2.0
@@ -20,6 +22,7 @@
   owner: Nomic AI
   server: https://gpt4all.io/models/
 - description: A commercially licensable model base pre-trained by Mosaic ML.
+  icon: https://cdn-1.webcatalog.io/catalog/mosaicml/mosaicml-icon-filled-256.png?v=1675590559063
   filename: ggml-mpt-7b-base.bin
   filesize: '4854401028'
   license: Non commercial
@@ -30,6 +33,7 @@
   server: https://gpt4all.io/models/
 - description: A non-commercially licensable model based on Llama 7b and trained by
     teams from UC Berkeley, CMU, Stanford, MBZUAI, and UC San Diego.
+  icon: https://cdn-1.webcatalog.io/catalog/mosaicml/mosaicml-icon-filled-256.png?v=1675590559063
   filename: ggml-vicuna-7b-1.1-q4_2.bin
   filesize: '4212859520'
   license: Non commercial

@@ -1,5 +1,6 @@
 - bestLlama: 'true'
   description: The official open assistant 30B model finally here
+  icon : https://aeiljuispo.cloudimg.io/v7/https://s3.amazonaws.com/moonup/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
   filename: OpenAssistant-SFT-7-Llama-30B.ggml.q4_0.bin
   license: Non commercial
   owner_link: https://huggingface.co/TheBloke
@@ -9,6 +10,7 @@
 
 - bestLlama: 'true'
   description: 'Manticore-13B'
+  icon : https://aeiljuispo.cloudimg.io/v7/https://s3.amazonaws.com/moonup/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
   filename: Manticore-13B.ggmlv3.q4_0.bin
   license: Non commercial
   owner_link: https://huggingface.co/TheBloke
@@ -19,6 +21,7 @@
   
 - bestLlama: 'true'
   description: Legacy version of Vicuna 7B v 1.1 Quantized on 4 bits
+  icon : https://aeiljuispo.cloudimg.io/v7/https://s3.amazonaws.com/moonup/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
   filename: legacy-ggml-vicuna-7B-1.1-q4_0.bin
   license: Non commercial
   owner_link: https://huggingface.co/CRD716
@@ -27,6 +30,7 @@
   sha256: 67efec973a81151a55e55f8e747b455354979492978b2f9f22a342c6d841e6b7
 - bestLlama: 'true'
   description: 'WizardLM - uncensored: An Instruction-following LLM Using Evol-Instruct'
+  icon : https://aeiljuispo.cloudimg.io/v7/https://s3.amazonaws.com/moonup/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
   filename: WizardLM-7B-uncensored.ggml.q4_0.bin
   license: Non commercial
   owner_link: https://huggingface.co/TheBloke

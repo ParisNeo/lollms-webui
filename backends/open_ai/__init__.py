@@ -15,8 +15,8 @@
 from pathlib import Path
 from typing import Callable
 from api.backend import LLMBackend
-import yaml
 from api.config import load_config
+import yaml
 import re
 
 __author__ = "parisneo"
@@ -42,7 +42,6 @@ class CustomBackend(LLMBackend):
         # The local config can be used to store personal information that shouldn't be shared like chatgpt Key 
         # or other personal information
         # This file is never commited to the repository as it is ignored by .gitignore
-        # You can remove this if you don't need custom local configurations
         self._local_config_file_path = Path(__file__).parent/"config_local.yaml"
         self.config = load_config(self._local_config_file_path)
 
@@ -107,17 +106,14 @@ Find it in backends
         except Exception as ex:
             print(ex)
         return output            
-         
+
     
-    # Decomment if you want to build a custom model listing
-    #@staticmethod
-    #def list_models(config:dict):
-    #    """Lists the models for this backend
-    #    """
-    #    models_dir = Path('./models')/config["backend"]  # replace with the actual path to the models folder
-    #    return [f.name for f in models_dir.glob(LLMBackend.file_extension)]
-    #
-        
+    @staticmethod
+    def list_models(config:dict):
+        """Lists the models for this backend
+        """
+        return ["ChatGpt by Open AI"]
+                
     @staticmethod
     def get_available_models():
         # Create the file path relative to the child class's directory
