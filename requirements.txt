@@ -4,6 +4,7 @@ flask_socketio
 pytest
 pyyaml
 markdown
+auto-gptq
 gevent
 gevent-websocket
 pyaipersonality>=0.0.14
