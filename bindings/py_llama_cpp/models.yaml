@@ -1,0 +1,8 @@
+- description: Vigogne Instruct 13B - A French instruction-following LLaMa model GGML
+  icon : https://aeiljuispo.cloudimg.io/v7/https://s3.amazonaws.com/moonup/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+  filename: Vigogne-Instruct-13B.ggmlv3.q4_0.bin
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/Vigogne-Instruct-13B-GGML/resolve/main/
+  sha256: 14bcd51fbc09bcc456c79f9f0e4d070ad536e9d9e03811232e037b62580fe5e7
