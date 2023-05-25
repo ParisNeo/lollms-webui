@@ -257,47 +257,49 @@ class Gpt4AllWebUI(GPT4AllAPI):
         for language_folder in personalities_folder.iterdir():
             if language_folder.is_dir():
                 personalities[language_folder.name] = {}
-                for category_folder in language_folder.iterdir():
+                for category_folder in  language_folder.iterdir():
                     if category_folder.is_dir():
                         personalities[language_folder.name][category_folder.name] = []
                         for personality_folder in category_folder.iterdir():
                             if personality_folder.is_dir():
-                                personality_info = {}
-                                config_path = personality_folder / 'config.yaml'
-                                with open(config_path) as config_file:
-                                    config_data = yaml.load(config_file, Loader=yaml.FullLoader)
-                                    personality_info['name'] = config_data.get('name',"No Name")
-                                    personality_info['description'] = config_data.get('personality_description',"")
-                                    personality_info['author'] = config_data.get('creator', 'ParisNeo')
-                                    personality_info['version'] = config_data.get('version', '1.0.0')
-                                scripts_path = personality_folder / 'scripts'
-                                personality_info['has_scripts'] = scripts_path.is_dir()
-                                assets_path = personality_folder / 'assets'
-                                gif_logo_path = assets_path / 'logo.gif'
-                                webp_logo_path = assets_path / 'logo.webp'
-                                png_logo_path = assets_path / 'logo.png'
-                                jpg_logo_path = assets_path / 'logo.jpg'
-                                jpeg_logo_path = assets_path / 'logo.jpeg'
-                                bmp_logo_path = assets_path / 'logo.bmp'
-                                
-                                personality_info['has_logo'] = png_logo_path.is_file() or gif_logo_path.is_file()
-                                
-                                if gif_logo_path.exists():
-                                    personality_info['avatar'] = str(gif_logo_path).replace("\\","/")
-                                elif webp_logo_path.exists():
-                                    personality_info['avatar'] = str(webp_logo_path).replace("\\","/")
-                                elif png_logo_path.exists():
-                                    personality_info['avatar'] = str(png_logo_path).replace("\\","/")
-                                elif jpg_logo_path.exists():
-                                    personality_info['avatar'] = str(jpg_logo_path).replace("\\","/")
-                                elif jpeg_logo_path.exists():
-                                    personality_info['avatar'] = str(jpeg_logo_path).replace("\\","/")
-                                elif bmp_logo_path.exists():
-                                    personality_info['avatar'] = str(bmp_logo_path).replace("\\","/")
-                                else:
-                                    personality_info['avatar'] = ""
-                                personalities[language_folder.name][category_folder.name].append(personality_info)
-
+                                try:
+                                    personality_info = {}
+                                    config_path = personality_folder / 'config.yaml'
+                                    with open(config_path) as config_file:
+                                        config_data = yaml.load(config_file, Loader=yaml.FullLoader)
+                                        personality_info['name'] = config_data.get('name',"No Name")
+                                        personality_info['description'] = config_data.get('personality_description',"")
+                                        personality_info['author'] = config_data.get('creator', 'ParisNeo')
+                                        personality_info['version'] = config_data.get('version', '1.0.0')
+                                    scripts_path = personality_folder / 'scripts'
+                                    personality_info['has_scripts'] = scripts_path.is_dir()
+                                    assets_path = personality_folder / 'assets'
+                                    gif_logo_path = assets_path / 'logo.gif'
+                                    webp_logo_path = assets_path / 'logo.webp'
+                                    png_logo_path = assets_path / 'logo.png'
+                                    jpg_logo_path = assets_path / 'logo.jpg'
+                                    jpeg_logo_path = assets_path / 'logo.jpeg'
+                                    bmp_logo_path = assets_path / 'logo.bmp'
+                                    
+                                    personality_info['has_logo'] = png_logo_path.is_file() or gif_logo_path.is_file()
+                                    
+                                    if gif_logo_path.exists():
+                                        personality_info['avatar'] = str(gif_logo_path).replace("\\","/")
+                                    elif webp_logo_path.exists():
+                                        personality_info['avatar'] = str(webp_logo_path).replace("\\","/")
+                                    elif png_logo_path.exists():
+                                        personality_info['avatar'] = str(png_logo_path).replace("\\","/")
+                                    elif jpg_logo_path.exists():
+                                        personality_info['avatar'] = str(jpg_logo_path).replace("\\","/")
+                                    elif jpeg_logo_path.exists():
+                                        personality_info['avatar'] = str(jpeg_logo_path).replace("\\","/")
+                                    elif bmp_logo_path.exists():
+                                        personality_info['avatar'] = str(bmp_logo_path).replace("\\","/")
+                                    else:
+                                        personality_info['avatar'] = ""
+                                    personalities[language_folder.name][category_folder.name].append(personality_info)
+                                except:
+                                    print(f"Couldn't load personality from {personality_folder}")
         return json.dumps(personalities)
     
     def get_personality():
@@ -405,9 +407,13 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 if len(pers)>0:
                     self.config["personality"]=pers[0]
                     personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
-                    self.personality.load_personality(personality_fn)
-                    if self.config["debug"]:
-                        print(self.personality)
+                    try:
+                        self.personality.load_personality(personality_fn)
+                        if self.config["debug"]:
+                            print(self.personality)
+                    except:
+                        print(f"couldn't load personality from {personality_fn}")
+                        return jsonify({'setting_name': data['setting_name'], "status":False})
                 else:
                     self.config["personality_category"]=back_category
                     return jsonify({'setting_name': data['setting_name'], "status":False})
