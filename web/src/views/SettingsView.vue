@@ -200,7 +200,7 @@
 
             </div>
 
-            <!-- MODEL -->
+            <!-- MODEL CONFIGURATION -->
             <div
                 class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row">
@@ -212,6 +212,24 @@
                     </button>
                 </div>
                 <div :class="{ 'hidden': mc_collapsed }" class="flex flex-col mb-2 p-2">
+                    <div class="m-2">
+
+                        <div class="flex flex-row gap-3 items-center">
+
+                            <input id="override-model-parameters" type="checkbox"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                                @click.stop v-model="configFile.override_personality_model_parameters" @change="update_setting('override_personality_model_parameters', configFile.override_personality_model_parameters)">
+                            <label for="override-model-parameters" class="block text-sm font-medium ">
+                                Override personality model parameters
+                            </label>
+
+                        </div>
+
+                    </div>
+                    <!-- DISABLE PARAMETER SELECTION -->
+                    <div :class="!configFile.override_personality_model_parameters ? 'pointer-events-none opacity-30' : ''">
+
+                    
                     <div class="m-2">
                         <label for="seed" class="block mb-2 text-sm font-medium ">
                             Seed:
@@ -346,6 +364,8 @@
                         </div>
                     </div>
                 </div>
+                    <!-- sdasdas -->
+                </div>
             </div>
         </div>
 
@@ -468,18 +488,18 @@ export default {
             if (pers.personality) {
                 // if (model_object.isInstalled) {
                 this.settingsChanged = true
-                const res = this.update_setting('personality', pers.personality.name,()=>{
+                const res = this.update_setting('personality', pers.personality.name, () => {
                     this.$refs.toast.showToast("Personality:\n" + pers.personality.name + "\nselected", 4, true)
                     this.configFile.personality = pers.personality.name
                     this.configFile.personality_category = pers.personality.category
                     this.configFile.personality_language = pers.personality.language
                 })
-             
-        
-                    
 
 
-       
+
+
+
+
 
                 nextTick(() => {
                     feather.replace()
@@ -705,7 +725,7 @@ export default {
                 .then((res) => {
                     if (res) {
                         if (res.status) {
-                           // this.$refs.messageBox.showMessage("Settings saved!")
+                            // this.$refs.messageBox.showMessage("Settings saved!")
                         }
                         else
                             this.$refs.messageBox.showMessage("Error: Couldn't save settings!")
@@ -767,7 +787,7 @@ export default {
         },
         async getPersonalitiesArr() {
             this.isLoading = true
-            this.personalities=[]
+            this.personalities = []
             const dictionary = await this.api_get_req("get_all_personalities")
             const langkeys = Object.keys(dictionary); // returns languages folder names
             for (let i = 0; i < langkeys.length; i++) {
@@ -797,7 +817,7 @@ export default {
             }
             this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
             this.isLoading = false
-            
+
         }
 
     }, async mounted() {
@@ -882,7 +902,8 @@ export default {
         isModelSelected(val) {
 
             console.log('iss selected:', val)
-        }
+        },
+
 
 
     }
@@ -891,7 +912,7 @@ export default {
 
 
 <style>
-.loader {
+/* .loader {
     border: 4px solid #f3f3f3;
     border-top: 4px solid #3498db;
     border-radius: 50%;
@@ -914,4 +935,5 @@ export default {
     100% {
         transform: rotate(360deg);
     }
-}</style>
+} */
+</style>
