@@ -24,3 +24,23 @@ First, go to the github repository page at github.com/ParisNeo/gpt4all-ui then p
 We call this file, the application launcher. Make sure you install the launcher in a folder you choose. For example I'll put it in my ai folder at gpt4all-webui.
 
 Now let's run the script.
+You may encounter a warning from some antivirus or windows defender warining you about the script. It is a false positive caused by the reputation condition in some antiviruses. This means if a program is not used by enough users, some antiviruses consider it dangerous. This is true for this tool as it is new and not enough people as using it as of now so I have to wait for it to become more accepted.
+
+You may notice that the installer does not prompt you to install the default model any more as we now do this in the ui which is way easier.
+
+Now let's take a look at the new ui. As the previous one, you have a light mode and a dark mode. You also have direct access to the github repository.
+
+On the right side, you have the discussions panel, and on the center side, you have the messages flow.
+
+Before starting to use the tool, we need to download a model for a specific binding.
+To do this, go to settings. Then open the models zoo tab.
+You need to select a binding from the list. For example the llama-cpp-official. The first time you select a binding, you have to wait as it  is being installed. You can look it up in the console.
+
+Once the installation is done, you should install a model by pressing install and waiting for it to finish.
+
+Once the model is installed, you can select it and press Apply modifications.
+
+Notice that applying modifications does not save the configuration, so You need to press the save button and confirm.
+
+Now your model is selected and you are ready to start your first discussion.
+
