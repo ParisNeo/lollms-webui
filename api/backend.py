@@ -19,7 +19,7 @@ __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
 
-class GPTBackend:
+class LLMBackend:
     file_extension='*.bin'
     backend_path = Path(__file__).parent
     def __init__(self, config:dict, inline:bool) -> None:
@@ -72,7 +72,7 @@ class GPTBackend:
         """Lists the models for this backend
         """
         models_dir = Path('./models')/config["backend"]  # replace with the actual path to the models folder
-        return [f.name for f in models_dir.glob(GPTBackend.file_extension)]
+        return [f.name for f in models_dir.glob(LLMBackend.file_extension)]
     @staticmethod
     def get_available_models():
         # Create the file path relative to the child class's directory

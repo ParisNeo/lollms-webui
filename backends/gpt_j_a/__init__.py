@@ -15,7 +15,7 @@
 from pathlib import Path
 from typing import Callable
 from pygptj.model import Model
-from api.backend import GPTBackend
+from api.backend import LLMBackend
 
 __author__ = "parisneo"
 __github__ = "https://github.com/nomic-ai/gpt4all-ui"
@@ -24,7 +24,7 @@ __license__ = "Apache 2.0"
 
 backend_name = "GptJ"
 
-class GptJ(GPTBackend):
+class GptJ(LLMBackend):
     file_extension='*.bin'
     def __init__(self, config:dict) -> None:
         """Builds a LLAMACPP backend

@@ -1,0 +1,52 @@
+- LLAMA: 'true'
+  description: GGML format model files for the original LLaMa
+  filename: llama-7b.ggmlv3.q4_0.bin
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke/
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/LLaMa-7B-GGML/resolve/main/
+  sha256: ec2f2d1f0dfb73b72a4cbac7fa121abbe04c37ab327125a38248f930c0f09ddf
+- LLAMA: 'true'
+  description: GGML format model files for Wizard LM 7B model
+  filename: wizardLM-7B.ggmlv3.q4_0.bin
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke/
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/wizardLM-7B-GGML/resolve/main/
+  sha256: ea35e30a7c140485b856d0919284ce59e4ca47c1b8af037ea8b7ba05ef291c43
+- LLAMA: 'true'
+  description: GGML format model files for Wizard LM 7B model
+  filename: koala-7b.ggml.unquantized.pr613.bin 
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke/
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/koala-7b-ggml-unquantized/resolve/main/
+  sha256: c478ceced3b38800cb768225b1e759a32c9e89bd33606fb38eeff3b811e28371
+
+
+
+  
+- MPT-7B: 'true'
+  description: MPT-7B
+  filename: mpt-7b.ggmlv3.q5_1.bin
+  license: Apache-2.0
+  owner_link: https://huggingface.co/TheBloke/
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/MPT-7B-GGML/resolve/main/
+  sha256: c947c38405921a199c603fed2ed63486811777ba370bb51c40c3132e5cfe84e5
+- MPT-7B-Instruct: 'true'
+  description: MPT-7B-Instruct
+  filename: mpt-7b-instruct.ggmlv3.q5_1.bin
+  license: Apache-2.0
+  owner_link: https://huggingface.co/TheBloke/
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/MPT-7B-Instruct-GGML/resolve/main/
+  sha256: a4d17a39ac277d48a3d55aa74b36a4e6e1b891b58937a838243fad549d26c686
+- MPT-7B-Storywriter: 'true'
+  description: MPT-7B-Storywriter
+  filename: mpt-7b-storywriter.ggmlv3.q5_1.bin
+  license: Apache-2.0
+  owner_link: https://huggingface.co/TheBloke/
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/MPT-7B-Storywriter-GGML/resolve/main/
+  sha256: 3b7dd7aa7508cc8cb4e262fe4b93214826f38d18d04059075e05837457f5402
