@@ -198,9 +198,10 @@ class ModelProcess:
                 self.model_ready.value = 1
                 print("Model created successfully\n")
             except Exception as ex:
-                traceback.print_exc()
-                print("Couldn't build model")
-                print(ex)
+                if self.config["model"] is None:
+                    print("No model is selected.\nPlease select a backend and a model to start using the ui.")
+                else:
+                    print("Couldn't build model")
                 self.model = None
                 self._set_config_result['status'] ='failed'
                 self._set_config_result['binding_status'] ='failed'
