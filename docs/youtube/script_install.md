@@ -7,6 +7,20 @@ First, I want to thank all of you for your support. We have reached 2.1k stars o
 
 If not done yet, and if you think this project is useful, please consider gifting a star to the project, that helps alot.
 
-Before starting, let me tell you what this project is made for. This project is aimed to be a hub to all LLM models that people can use. You will be able to choose your preferred binding and
+Before starting, let me tell you what this project is made for. This project is aimed to be a hub to all LLM models that people can use. You will be able to choose your preferred binding, your preferred model, and your preferred or needed personality then have it do what you need. Help you enhance your mails, help you write an essai, help you debug a code, help you organize your thoughts, help you find answers to your questions, search for you, organize your data, generate images for you, discuss with you about things. And much more.
 
-Now let's cut to the chace. Let's start by installing the tool
+
+This project is under Apache 2.0 licence which is an open source licence that can be used commercially, so people can built things from this and use it in their business. 
+
+Also, please don't confuse the GPT4All application built by Nomic AI which is an interesting more professional application that you can find on their website gpt4all.io. It has a great community and I encourage you to check it up. 
+
+I have built this ui to explore new things and build on top of it. I am not building a company out of this, this is a side project. I just want to give back to the open source community and help make this technology available for all (hence the name).
+
+I think all the contributors to this project and hope more people come and share their expertise. This help is vital to enhance the tool for all man kind.
+
+Now let's cut to the chace. Let's start by installing the tool.
+First, go to the github repository page at github.com/ParisNeo/gpt4all-ui then press the latest release button. Depending on your platform download webui.bat for windows or webui.sh for linux.
+
+We call this file, the application launcher. Make sure you install the launcher in a folder you choose. For example I'll put it in my ai folder at gpt4all-webui.
+
+Now let's run the script.
