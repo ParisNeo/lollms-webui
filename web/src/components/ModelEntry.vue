@@ -2,7 +2,8 @@
   <div class="flex items-center p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer"
     @click.stop="toggleSelected" :class="selected ? ' border-primary-light' : 'border-transparent'">
     <div class="flex-shrink-0">
-      <i :class="`fas ${icon} text-xl`"></i>
+      <img :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-lg object-fill text-red-700">
+      <!-- <i :class="`fas ${icon} text-xl`"></i> -->
     </div>
     <div v-if="model.isCustomModel">
       <h3 class="font-bold font-large text-lg">
@@ -70,6 +71,8 @@
 <script>
 import { nextTick } from 'vue'
 import feather from 'feather-icons'
+import defaultImgPlaceholder from "../assets/default_model.png"
+const bUrl = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
   props: {
     title: String,
@@ -102,6 +105,17 @@ export default {
     })
   },
   methods: {
+    getImgUrl() {
+
+      if (this.icon === '/images/default_model.png'){
+        return defaultImgPlaceholder
+      }
+      
+      return this.icon
+    },
+    defaultImg(event) {
+      event.target.src = defaultImgPlaceholder
+    },
     toggleInstall() {
       if (this.isInstalled) {
         this.uninstalling = true;
