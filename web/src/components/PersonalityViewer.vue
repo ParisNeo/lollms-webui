@@ -54,8 +54,8 @@
     },
     methods: {
       commitChanges() {
-        // Send the modified personality to the backend
-        // Implement your backend integration here
+        // Send the modified personality to the binding
+        // Implement your binding integration here
         console.log('Personality changes committed');
         this.editMode = false;
       }

@@ -83,7 +83,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
 
         self.add_endpoint(
-            "/list_backends", "list_backends", self.list_backends, methods=["GET"]
+            "/list_bindings", "list_bindings", self.list_bindings, methods=["GET"]
         )
         self.add_endpoint(
             "/list_models", "list_models", self.list_models, methods=["GET"]
@@ -149,7 +149,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         )
         
         self.add_endpoint(
-            "/set_backend", "set_backend", self.set_backend, methods=["POST"]
+            "/set_binding", "set_binding", self.set_binding, methods=["POST"]
         )
         
         self.add_endpoint(
@@ -432,15 +432,15 @@ class Gpt4AllWebUI(GPT4AllAPI):
             self.config["model"]=data['setting_value']
             print("update_settings : New model selected")            
 
-        elif setting_name== "backend":
-            if self.config['backend']!= data['setting_value']:
-                print(f"New backend selected : {data['setting_value']}")
-                self.config["backend"]=data['setting_value']
+        elif setting_name== "binding":
+            if self.config['binding']!= data['setting_value']:
+                print(f"New binding selected : {data['setting_value']}")
+                self.config["binding"]=data['setting_value']
                 try:
-                    self.backend = self.process.load_backend(self.config["backend"], install=True)
+                    self.binding = self.process.load_binding(self.config["binding"], install=True)
 
                 except Exception as ex:
-                    print("Couldn't build backend")
+                    print("Couldn't build binding")
                     return jsonify({'setting_name': data['setting_name'], "status":False, 'error':str(ex)})
             else:
                 if self.config["debug"]:
@@ -466,15 +466,15 @@ class Gpt4AllWebUI(GPT4AllAPI):
         print(result)
         return jsonify(result)
 
-    def list_backends(self):
-        backends_dir = Path('./backends')  # replace with the actual path to the models folder
-        backends = [f.stem for f in backends_dir.iterdir() if f.is_dir() and f.stem!="__pycache__"]
-        return jsonify(backends)
+    def list_bindings(self):
+        bindings_dir = Path('./bindings')  # replace with the actual path to the models folder
+        bindings = [f.stem for f in bindings_dir.iterdir() if f.is_dir() and f.stem!="__pycache__"]
+        return jsonify(bindings)
 
 
     def list_models(self):
-        if self.backend is not None:
-            models = self.backend.list_models(self.config)
+        if self.binding is not None:
+            models = self.binding.list_models(self.config)
             return jsonify(models)
         else:
             return jsonify([])
@@ -683,18 +683,18 @@ class Gpt4AllWebUI(GPT4AllAPI):
         # Return a success response
         return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp, "welcome_message":self.personality.welcome_message, "sender":self.personality.name})
 
-    def set_backend(self):
+    def set_binding(self):
         data = request.get_json()
-        backend =  str(data["backend"])
-        if self.config['backend']!= backend:
-            print("New backend selected")
+        binding =  str(data["binding"])
+        if self.config['binding']!= binding:
+            print("New binding selected")
             
-            self.config['backend'] = backend
+            self.config['binding'] = binding
             try:
-                backend_ =self.process.load_backend(config["backend"],True)
-                models = backend_.list_models(self.config)
+                binding_ =self.process.load_binding(config["binding"],True)
+                models = binding_.list_models(self.config)
                 if len(models)>0:      
-                    self.backend = backend_
+                    self.binding = binding_
                     self.config['model'] = models[0]
                     # Build chatbot
                     return jsonify(self.process.set_config(self.config))
@@ -718,16 +718,16 @@ class Gpt4AllWebUI(GPT4AllAPI):
     
     def update_model_params(self):
         data = request.get_json()
-        backend =  str(data["backend"])
+        binding =  str(data["binding"])
         model =  str(data["model"])
         personality_language =  str(data["personality_language"])
         personality_category =  str(data["personality_category"])
         personality =  str(data["personality"])
         
-        if self.config['backend']!=backend or  self.config['model'] != model:
+        if self.config['binding']!=binding or  self.config['model'] != model:
             print("update_model_params: New model selected")
             
-            self.config['backend'] = backend
+            self.config['binding'] = binding
             self.config['model'] = model
 
         self.config['personality_language'] = personality_language
@@ -753,11 +753,11 @@ class Gpt4AllWebUI(GPT4AllAPI):
         
         
         # Fixed missing argument
-        self.backend = self.process.rebuild_backend(self.config)
+        self.binding = self.process.rebuild_binding(self.config)
 
         print("==============================================")
         print("Parameters changed to:")
-        print(f"\tBackend:{self.config['backend']}")
+        print(f"\tBinding:{self.config['binding']}")
         print(f"\tModel:{self.config['model']}")
         print(f"\tPersonality language:{self.config['personality_language']}")
         print(f"\tPersonality category:{self.config['personality_category']}")
@@ -782,9 +782,9 @@ class Gpt4AllWebUI(GPT4AllAPI):
         Returns:
             _type_: _description_
         """
-        if self.backend is None:
+        if self.binding is None:
             return jsonify([])
-        model_list = self.backend.get_available_models()
+        model_list = self.binding.get_available_models()
 
         models = []
         for model in model_list:
@@ -801,7 +801,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
                     path = f'{server}{filename}'
                 else:
                     path = f'{server}/{filename}'
-                local_path = Path(f'./models/{self.config["backend"]}/{filename}')
+                local_path = Path(f'./models/{self.config["binding"]}/{filename}')
                 is_installed = local_path.exists()
                 models.append({
                     'title': filename,

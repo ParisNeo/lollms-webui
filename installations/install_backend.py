@@ -5,32 +5,32 @@ import yaml
 from pathlib import Path
 
 
-def install_backend(backend_name):
-    # Load the list of available backends from backendlist.yaml
-    with open('backendlist.yaml', 'r') as f:
-        backend_list = yaml.safe_load(f)
+def install_binding(binding_name):
+    # Load the list of available bindings from bindinglist.yaml
+    with open('bindinglist.yaml', 'r') as f:
+        binding_list = yaml.safe_load(f)
 
-    # Get the Github repository URL for the selected backend
+    # Get the Github repository URL for the selected binding
     try:
-        backend_url = backend_list[backend_name]
+        binding_url = binding_list[binding_name]
     except KeyError:
-        print(f"Backend '{backend_name}' not found in backendlist.yaml")
+        print(f"Binding '{binding_name}' not found in bindinglist.yaml")
         return
 
     # Clone the Github repository to a tmp folder
     tmp_folder = Path('tmp')
     if tmp_folder.exists():
         shutil.rmtree(tmp_folder)
-    subprocess.run(['git', 'clone', backend_url, tmp_folder])
+    subprocess.run(['git', 'clone', binding_url, tmp_folder])
 
     # Install the requirements.txt from the cloned project
     requirements_file = tmp_folder / 'requirements.txt'
     subprocess.run(['pip', 'install', '-r', str(requirements_file)])
 
-    # Copy the folder found inside the binding to ../backends
+    # Copy the folder found inside the binding to ../bindings
     folders = [f for f in tmp_folder.iterdir() if f.is_dir() and not f.stem.startswith(".")]
     src_folder = folders[0]
-    dst_folder = Path('../backends') / src_folder.stem
+    dst_folder = Path('../bindings') / src_folder.stem
     print(f"coipying from {src_folder} to {dst_folder}")
     # Delete the destination directory if it already exists
     if dst_folder.exists():
@@ -41,20 +41,20 @@ def install_backend(backend_name):
     # Create an empty folder in ../models with the same name
     models_folder = Path('../models')
     models_folder.mkdir(exist_ok=True)
-    (models_folder / backend_name).mkdir(exist_ok=True, parents=True)
+    (models_folder / binding_name).mkdir(exist_ok=True, parents=True)
     if tmp_folder.exists():
         shutil.rmtree(tmp_folder)
 
 
 if __name__ == '__main__':
-    # Load the list of available backends from backendlist.yaml
-    with open('backendlist.yaml', 'r') as f:
-        backend_list = yaml.safe_load(f)
+    # Load the list of available bindings from bindinglist.yaml
+    with open('bindinglist.yaml', 'r') as f:
+        binding_list = yaml.safe_load(f)
 
-    # Print the list of available backends and prompt the user to select one
-    print("Available backends:")
-    for backend_id, backend_name in enumerate(backend_list):
-        print(f" {backend_id} - {backend_name}")
-    backend_id = int(input("Select a backend to install: "))
+    # Print the list of available bindings and prompt the user to select one
+    print("Available bindings:")
+    for binding_id, binding_name in enumerate(binding_list):
+        print(f" {binding_id} - {binding_name}")
+    binding_id = int(input("Select a binding to install: "))
 
-    install_backend(list(backend_list.keys())[backend_id])
+    install_binding(list(binding_list.keys())[binding_id])

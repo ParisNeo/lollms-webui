@@ -101,22 +101,22 @@ class ModelProcess:
     def reset_config_result(self):
         self._set_config_result = {
             'status': 'succeeded',
-            'backend_status':'ok',
+            'binding_status':'ok',
             'model_status':'ok',
             'personality_status':'ok',
             'errors':[]
             }
         
-    def load_backend(self, backend_name:str, install=False):
+    def load_binding(self, binding_name:str, install=False):
         if install:
-            print(f"Loading backend {backend_name} install ON")
+            print(f"Loading binding {binding_name} install ON")
         else:
-            print(f"Loading backend : {backend_name} install is off")
-        backend_path = Path("backends")/backend_name
+            print(f"Loading binding : {binding_name} install is off")
+        binding_path = Path("bindings")/binding_name
         if install:
             # first find out if there is a requirements.txt file
             install_file_name="install.py"
-            install_script_path = backend_path / install_file_name        
+            install_script_path = binding_path / install_file_name        
             if install_script_path.exists():
                 module_name = install_file_name[:-3]  # Remove the ".py" extension
                 module_spec = importlib.util.spec_from_file_location(module_name, str(install_script_path))
@@ -126,16 +126,16 @@ class ModelProcess:
                     module.Install(self)
 
         # define the full absolute path to the module
-        absolute_path = backend_path.resolve()
+        absolute_path = binding_path.resolve()
 
         # infer the module name from the file path
-        module_name = backend_path.stem
+        module_name = binding_path.stem
 
         # use importlib to load the module from the file path
         loader = importlib.machinery.SourceFileLoader(module_name, str(absolute_path/"__init__.py"))
-        backend_module = loader.load_module()
-        backend_class = getattr(backend_module, backend_module.backend_name)
-        return backend_class
+        binding_module = loader.load_module()
+        binding_class = getattr(binding_module, binding_module.binding_name)
+        return binding_class
 
     def start(self):
         if self.process is None:
@@ -148,8 +148,8 @@ class ModelProcess:
             self.process.join()
             self.process = None
 
-    def set_backend(self, backend_path):
-        self.backend = backend_path
+    def set_binding(self, binding_path):
+        self.binding = binding_path
 
     def set_model(self, model_path):
         self.model = model_path
@@ -174,27 +174,27 @@ class ModelProcess:
     def clear_queue(self):
         self.clear_queue_queue.put(('clear_queue',))
     
-    def rebuild_backend(self, config):
+    def rebuild_binding(self, config):
         try:
-            print(" ******************* Building Backend from main Process *************************")
-            backend = self.load_backend(config["backend"], install=True)
-            print("Backend loaded successfully")
+            print(" ******************* Building Binding from main Process *************************")
+            binding = self.load_binding(config["binding"], install=True)
+            print("Binding loaded successfully")
         except Exception as ex:
-            print("Couldn't build backend.")
+            print("Couldn't build binding.")
             print(ex)
-            backend = None
-        return backend
+            binding = None
+        return binding
             
     def _rebuild_model(self):
         try:
             self.reset_config_result()
-            print(" ******************* Building Backend from generation Process *************************")
-            self.backend = self.load_backend(self.config["backend"], install=True)
-            print("Backend loaded successfully")
+            print(" ******************* Building Binding from generation Process *************************")
+            self.binding = self.load_binding(self.config["binding"], install=True)
+            print("Binding loaded successfully")
             try:
-                model_file = Path("models")/self.config["backend"]/self.config["model"]
+                model_file = Path("models")/self.config["binding"]/self.config["model"]
                 print(f"Loading model : {model_file}")
-                self.model = self.backend(self.config)
+                self.model = self.binding(self.config)
                 self.model_ready.value = 1
                 print("Model created successfully\n")
             except Exception as ex:
@@ -203,17 +203,17 @@ class ModelProcess:
                 print(ex)
                 self.model = None
                 self._set_config_result['status'] ='failed'
-                self._set_config_result['backend_status'] ='failed'
-                self._set_config_result['errors'].append(f"couldn't build backend:{ex}")
+                self._set_config_result['binding_status'] ='failed'
+                self._set_config_result['errors'].append(f"couldn't build binding:{ex}")
         except Exception as ex:
             traceback.print_exc()
-            print("Couldn't build backend")
+            print("Couldn't build binding")
             print(ex)
-            self.backend = None
+            self.binding = None
             self.model = None
             self._set_config_result['status'] ='failed'
-            self._set_config_result['backend_status'] ='failed'
-            self._set_config_result['errors'].append(f"couldn't build backend:{ex}")
+            self._set_config_result['binding_status'] ='failed'
+            self._set_config_result['errors'].append(f"couldn't build binding:{ex}")
 
     def rebuild_personality(self):
         try:
@@ -244,8 +244,8 @@ class ModelProcess:
                 print(ex)
             self.personality = AIPersonality()
             self._set_config_result['status'] ='failed'
-            self._set_config_result['backend_status'] ='failed'
-            self._set_config_result['errors'].append(f"couldn't build backend:{ex}")
+            self._set_config_result['binding_status'] ='failed'
+            self._set_config_result['errors'].append(f"couldn't build binding:{ex}")
     
     def step_callback(self, text, message_type):
         self.generation_queue.put((text,self.id, message_type))
@@ -331,7 +331,7 @@ class ModelProcess:
                 )
         else:
             print("No model is installed or selected. Please make sure to install a model and select it inside your configuration before attempting to communicate with the model.")
-            print("To do this: Install the model to your models/<backend name> folder.")
+            print("To do this: Install the model to your models/<binding name> folder.")
             print("Then set your model information in your local configuration file that you can find in configs/local_default.yaml")
             print("You can also use the ui to set your model in the settings page.")
             output = ""
@@ -385,8 +385,8 @@ class ModelProcess:
         bk_cfg = self.config
         self.config = config
         print("Changing configuration")
-        # verify that the backend is the same
-        if self.config["backend"]!=bk_cfg["backend"] or self.config["model"]!=bk_cfg["model"]:
+        # verify that the binding is the same
+        if self.config["binding"]!=bk_cfg["binding"] or self.config["model"]!=bk_cfg["model"]:
             self._rebuild_model()
             
         # verify that the personality is the same
@@ -401,7 +401,7 @@ class GPT4AllAPI():
         self.process = ModelProcess(config)
         self.config = config
         
-        self.backend = self.process.rebuild_backend(self.config)
+        self.binding = self.process.rebuild_binding(self.config)
         self.personality = self.process.rebuild_personality()
         if config["debug"]:
             print(print(f"{self.personality}"))
@@ -442,7 +442,7 @@ class GPT4AllAPI():
                 print("Install model triggered")
                 model_path = data["path"]
                 progress = 0
-                installation_dir = Path(f'./models/{self.config["backend"]}/')
+                installation_dir = Path(f'./models/{self.config["binding"]}/')
                 filename = Path(model_path).name
                 installation_path = installation_dir / filename
                 print("Model install requested")
@@ -466,7 +466,7 @@ class GPT4AllAPI():
         @socketio.on('uninstall_model')
         def uninstall_model(data):
             model_path = data['path']
-            installation_dir = Path(f'./models/{self.config["backend"]}/')
+            installation_dir = Path(f'./models/{self.config["binding"]}/')
             filename = Path(model_path).name
             installation_path = installation_dir / filename
 

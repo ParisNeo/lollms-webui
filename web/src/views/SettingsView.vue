@@ -80,13 +80,13 @@
                 </div>
                 <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
                     <div class="mx-2 mb-4">
-                        <label for="backend" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Backend: ({{ backendsArr.length }})
+                        <label for="binding" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Binding: ({{ bindingsArr.length }})
                         </label>
-                        <select id="backend" @change="update_backend($event.target.value)"
+                        <select id="binding" @change="update_binding($event.target.value)"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                            <option v-for="item in backendsArr" :selected="item === configFile.backend">{{ item }}</option>
+                            <option v-for="item in bindingsArr" :selected="item === configFile.binding">{{ item }}</option>
                         </select>
                     </div>
                     <div v-if="models.length > 0" class="mb-2">
@@ -420,7 +420,7 @@ export default {
             mzl_collapsed: false,
             pzl_collapsed: false,
             // Settings stuff
-            backendsArr: [],
+            bindingsArr: [],
             modelsArr: [], // not used anymore but still have references in some methods
             persLangArr: [],
             persCatgArr: [],
@@ -613,7 +613,7 @@ export default {
             // No need to refresh all lists because they never change during using application. 
             // On settings change only config file chnages.
             //
-            //this.api_get_req("list_backends").then(response => { this.backendsArr = response })
+            //this.api_get_req("list_bindings").then(response => { this.bindingsArr = response })
             this.api_get_req("list_models").then(response => { this.modelsArr = response })
             //this.api_get_req("list_personalities_languages").then(response => { this.persLangArr = response })
             this.api_get_req("list_personalities_categories").then(response => { this.persCatgArr = response })
@@ -660,23 +660,23 @@ export default {
                 // eslint-disable-next-line no-unused-vars
                 .catch(error => { return { 'status': false } });
         },
-        update_backend(value) {
+        update_binding(value) {
 
-            console.log("Upgrading backend")
+            console.log("Upgrading binding")
             // eslint-disable-next-line no-unused-vars
             this.isLoading = true
-            this.update_setting('backend', value, (res) => {
+            this.update_setting('binding', value, (res) => {
                 this.refresh();
-                console.log("Backend changed");
+                console.log("Binding changed");
                 console.log(res);
-                this.$refs.toast.showToast("Backend changed.", 4, true)
+                this.$refs.toast.showToast("Binding changed.", 4, true)
                 this.settingsChanged = true
                 this.isLoading = false
                 nextTick(() => {
                     feather.replace()
 
                 })
-                // If backend changes then reset model
+                // If binding changes then reset model
                 this.update_model(null)
             })
 
@@ -834,7 +834,7 @@ export default {
             this.isModelSelected = true
         }
         this.fetchModels();
-        this.backendsArr = await this.api_get_req("list_backends")
+        this.bindingsArr = await this.api_get_req("list_bindings")
         this.modelsArr = await this.api_get_req("list_models")
         this.persLangArr = await this.api_get_req("list_personalities_languages")
         this.persCatgArr = await this.api_get_req("list_personalities_categories")

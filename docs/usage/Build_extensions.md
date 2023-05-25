@@ -27,7 +27,7 @@ version: 1.0
 # UI metadata
 has_ui: true
 
-# backend metadata
+# binding metadata
 can_trigger_the_model : 
 
 # Conditionning override

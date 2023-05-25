@@ -21,7 +21,7 @@
       <div class="flex flex-shrink-0">
         <b>Manual download:&nbsp;</b>
         <a :href="path" @click.stop class="flex hover:text-secondary duration-75 active:scale-90"
-          title="Download this manually (faster) and put it in the models/<your backend> folder then refresh">
+          title="Download this manually (faster) and put it in the models/<your binding> folder then refresh">
           <i data-feather="link" class="w-5 p-1"></i>
           {{ title }}
         </a>

@@ -20,7 +20,7 @@ setuptools.setup(
     version="0.0.5",
     author="Saifeddine ALOUI",
     author_email="aloui.saifeddine@gmail.com",
-    description="A web ui for running chat models with different backends. Supports multiple personalities and extensions.",
+    description="A web ui for running chat models with different bindings. Supports multiple personalities and extensions.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/nomic-ai/gpt4all-ui",

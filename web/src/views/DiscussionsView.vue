@@ -525,7 +525,7 @@ export default {
             }
         },
         sendMsg(msg) {
-            // Sends message to backend
+            // Sends message to binding
             this.isGenerating = true;
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
             axios.get('/get_generation_status', {}).then((res) => {
@@ -554,7 +554,7 @@ export default {
             });
         },
         streamMessageContent(msgObj) {
-            // Streams response message content from backend
+            // Streams response message content from binding
             //console.log("stream", JSON.stringify(content))
             const parent = msgObj.user_message_id
             const discussion_id = msgObj.discussion_id
@@ -590,7 +590,7 @@ export default {
 
         },
         async createNewDiscussion() {
-            // Creates new discussion on backend,
+            // Creates new discussion on binding,
             // gets new discussion list, selects
             // newly created discussion,
             // scrolls to the discussion
@@ -619,7 +619,7 @@ export default {
             }
         },
         async deleteDiscussion(id) {
-            // Deletes discussion from backend and frontend
+            // Deletes discussion from binding and frontend
 
             //const index = this.list.findIndex((x) => x.id == id)
             //const discussionItem = this.list[index]

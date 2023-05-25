@@ -8,8 +8,8 @@ debug: false
 n_threads: 8
 host: localhost
 language: en-US
-# Supported backends are llamacpp and gpt-j
-backend: gpt_4all
+# Supported bindings are llamacpp and gpt-j
+binding: gpt_4all
 model: null
 n_predict: 1024
 nb_messages_to_remember: 5

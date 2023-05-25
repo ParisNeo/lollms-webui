@@ -5,7 +5,7 @@ This Flask server provides various endpoints to manage and interact with the cha
 
 ##  Endpoints:
 
-- "/list_backends": GET request endpoint to list all the available backends.
+- "/list_bindings": GET request endpoint to list all the available bindings.
 ```
 [
   "llama_cpp"
@@ -159,14 +159,14 @@ This Flask server provides various endpoints to manage and interact with the cha
 - "/message_rank_up": GET request endpoint to rank up a message.
 - "/message_rank_down": GET request endpoint to rank down a message.
 - "/delete_message": GET request endpoint to delete a message.
-- "/set_backend": POST request endpoint to set the backend.
+- "/set_binding": POST request endpoint to set the binding.
 - "/set_model": POST request endpoint to set the model.
 - "/update_model_params": POST request endpoint to update the model parameters.
 - "/get_config": GET request endpoint to get the chatbot's configuration.
 ```
 {
   "auto_read": false,
-  "backend": "llama_cpp",
+  "binding": "llama_cpp",
   "config": "local_default",
   "ctx_size": 2048,
   "db_path": "databases/database.db",
@@ -243,7 +243,7 @@ This Flask server provides various endpoints to manage and interact with the cha
 
 ##  TODO Endpoints:
 
-Here we list needed endpoints on th ebackend to make UI work as expected.
+Here we list needed endpoints on th ebinding to make UI work as expected.
 
 
 # Socketio endpoints
@@ -274,7 +274,7 @@ The available settings are:
 - `personality_category`: A string representing the category of personality traits to use for generating responses.
 - `personality`: A string representing the name of a specific personality traits to use for generating responses.
 - `model`: A string representing the model to use for generating responses.
-- `backend`: A string representing the backend to use for generating responses.
+- `binding`: A string representing the binding to use for generating responses.
 
 The save_settings function is used to save the updated settings to a configuratio
 
