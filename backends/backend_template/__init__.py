@@ -17,16 +17,21 @@ from typing import Callable
 from api.backend import LLMBackend
 import yaml
 from ctransformers import AutoModelForCausalLM
+from api.config import load_config
+import re
 
 __author__ = "parisneo"
 __github__ = "https://github.com/nomic-ai/gpt4all-ui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-backend_name = "GPTJ"
+backend_name = "CustomBackend"
 
-class GPTJ(LLMBackend):
-    file_extension='*.bin'
+class CustomBackend(LLMBackend):
+    # Define what is the extension of the model files supported by your backend
+    # Only applicable for local models for remote models like gpt4 and others, you can keep it empty 
+    # and reimplement your own list_models method
+    file_extension='*.bin' 
     def __init__(self, config:dict) -> None:
         """Builds a LLAMACPP backend
 
@@ -34,33 +39,19 @@ class GPTJ(LLMBackend):
             config (dict): The configuration file
         """
         super().__init__(config, False)
-        if 'gpt2' in self.config['model']:
-            model_type='gpt2'
-        elif 'gptj' in self.config['model']:
-            model_type='gptj'
-        elif 'gpt_neox' in self.config['model']:
-            model_type='gpt_neox'
-        elif 'dolly-v2' in self.config['model']:
-            model_type='dolly-v2'
-        elif 'starcoder' in self.config['model']:
-            model_type='starcoder'
-        elif 'llama' in self.config['model'] or 'wizardLM' in self.config['model']:
-            model_type='llama'
-        elif 'mpt' in self.config['model']:
-            model_type='mpt'
-        else:
-            print("The model you are using is not supported by this backend")
-            return
         
-        
-        if self.config["use_avx2"]:
-            self.model = AutoModelForCausalLM.from_pretrained(
-                    f"./models/c_transformers/{self.config['model']}", model_type=model_type
-                    )
+        # The local config can be used to store personal information that shouldn't be shared like chatgpt Key 
+        # or other personal information
+        # This file is never commited to the repository as it is ignored by .gitignore
+        self._local_config_file_path = Path(__file__).parent/"config_local.yaml"
+        if  self._local_config_file_path.exists:
+            self.config = load_config(self._local_config_file_path)
         else:
-            self.model = AutoModelForCausalLM.from_pretrained(
-                    f"./models/c_transformers/{self.config['model']}", model_type=model_type, lib = "avx"
-                    )
+            self.config = {
+                #Put your default configurations here
+            }
+
+        # Do your initialization stuff
             
     def tokenize(self, prompt):
         """
@@ -105,19 +96,11 @@ class GPTJ(LLMBackend):
             self.model.reset()
             tokens = self.model.tokenize(prompt)
             count = 0
-            for tok in self.model.generate(
-                                            tokens,
-                                            top_k=self.config['top_k'],
-                                            top_p=self.config['top_p'],
-                                            temperature=self.config['temperature'],
-                                            repetition_penalty=self.config['repeat_penalty'],
-                                            seed=self.config['seed'],
-                                            batch_size=1,
-                                            threads = self.config['n_threads'],
-                                            reset=True,
-                                           ):
-                
-
+            generated_text = """
+This is an empty backend that shows how you can build your own backend.
+Find it in backends
+"""
+            for tok in re.split(r' |\n', generated_text):               
                 if count >= n_predict or self.model.is_eos_token(tok):
                     break
                 word = self.model.detokenize(tok)
@@ -126,8 +109,6 @@ class GPTJ(LLMBackend):
                         break
                 output += word
                 count += 1
-                
-                
         except Exception as ex:
             print(ex)
         return output            

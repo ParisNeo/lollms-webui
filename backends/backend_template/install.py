@@ -13,6 +13,7 @@ class Install:
             print("-------------- Template backend -------------------------------")
             print("This is the first time you are using this backend.")
             print("Installing ...")
+            # Example of installing py torche
             """
             try:
                 print("Checking pytorch")
@@ -31,11 +32,11 @@ class Install:
             requirements_file = current_dir / "requirements.txt"
             subprocess.run(["pip", "install", "--upgrade", "--no-cache-dir", "-r", str(requirements_file)])
 
-            # Create ther models folder
-            models_folder = Path("./models/c_transformers")
+            # Create the models folder
+            models_folder = Path(f"./models/{Path(__file__).parent.stem}")
             models_folder.mkdir(exist_ok=True, parents=True)
             
-            #Create the install file 
+            #Create the install file (a file that is used to insure the installation was done correctly)
             with open(install_file,"w") as f:
                 f.write("ok")
             print("Installed successfully")

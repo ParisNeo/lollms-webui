@@ -73,6 +73,7 @@ class LLMBackend:
         """
         models_dir = Path('./models')/config["backend"]  # replace with the actual path to the models folder
         return [f.name for f in models_dir.glob(LLMBackend.file_extension)]
+    
     @staticmethod
     def get_available_models():
         # Create the file path relative to the child class's directory
