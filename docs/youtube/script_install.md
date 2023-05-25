@@ -1,5 +1,3 @@
-[INTRO]
-
 Hi there. Today I finally make a presentation of the new alpha version of GPT4ALL webui.
 Join us as we dive into the features and functionalities of this new version.
 
