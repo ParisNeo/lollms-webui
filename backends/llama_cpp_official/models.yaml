@@ -16,7 +16,44 @@
   server: https://huggingface.co/TheBloke/Manticore-13B-GGML/resolve/main/
   sha256: 910f3e73dc5797753313a950989c54a30342780311d64c3d4b8a37b12dd50336
 
-  
+- bestLlama: 'true'
+  description: 'Project-Baize Quantized on 4 bits '
+  filename: baize-v2-13b.ggmlv3.q4_0.bin
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/Project-Baize-v2-13B-GGML/resolve/main/
+  sha256: 5994f92f3cc8d3fe2d09a44c174ed8c0f4f32819597feaafc9d6bd06208d3df6
+
+- bestLlama: 'true'
+  description: 'MedAlpaca 13B Quantized on 4 bits: model specifically fine-tuned for medical domain tasks'
+  filename: medalpaca-13B.ggmlv3.q4_0.bin
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/medalpaca-13B-GGML/resolve/main/
+  sha256: 24060342f7649f5609a90932b88604f90eb34ee490f7c22403ff47b9b8547c58
+
+- bestLlama: 'true'
+  description: 'MedAlpaca 13B Quantized on 5 bits: model specifically fine-tuned for medical domain tasks'
+  filename: medalpaca-13B.ggmlv3.q5_1.bin
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/medalpaca-13B-GGML/resolve/main/
+  sha256: eeae440fd56fe8cb05632f22d73725914c6ef803dbb468c3ab6d4d2a78ff9ad5
+
+
+- bestLlama: 'true'
+  description: 'Wizard-Vicuna-13B-Uncensored-GGML Quantized on 4 bits'
+  filename: Wizard-Vicuna-13B-Uncensored.ggmlv3.q4_0.bin
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/Wizard-Vicuna-13B-Uncensored-GGML/resolve/main/
+  sha256: 1f08b147a5bce41cfcbb3fd5d51ba765dea1786e15b5655ab69ba3a337a893b7
+
+
 - bestLlama: 'true'
   description: Legacy version of Vicuna 7B v 1.1 Quantized on 4 bits
   filename: legacy-ggml-vicuna-7B-1.1-q4_0.bin
@@ -25,6 +62,7 @@
   owner: CRD716
   server: https://huggingface.co/CRD716/ggml-vicuna-1.1-quantized/resolve/main/
   sha256: 67efec973a81151a55e55f8e747b455354979492978b2f9f22a342c6d841e6b7
+  
 - bestLlama: 'true'
   description: 'WizardLM - uncensored: An Instruction-following LLM Using Evol-Instruct'
   filename: WizardLM-7B-uncensored.ggml.q4_0.bin
@@ -33,4 +71,13 @@
   owner: TheBloke
   server: https://huggingface.co/TheBloke/WizardLM-7B-uncensored-GGML/resolve/previous_llama_ggmlv2/
   sha256: 67efec973a81151a55e55f8e747b455354979492978b2f9f22a342c6d841e6b7
+
+  
+- description: Koala 7B model produced at Berkeley
+  filename: koala-7B.ggmlv3.q4_0.bin
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/koala-7B-GGML/resolve/previous_llama_ggmlv2/
+  sha256: 14bcd51fbc09bcc456c79f9f0e4d070ad536e9d9e03811232e037b62580fe5e7
 
