@@ -392,12 +392,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
                         personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
                         self.personality.load_personality(personality_fn)
                     else:
-                        self.config["personality_language"]=back_language
-                        self.config["personality_category"]=back_category
-                        return jsonify({'setting_name': data['setting_name'], "status":False})
-                else:
-                    self.config["personality_language"]=back_language
-                    return jsonify({'setting_name': data['setting_name'], "status":False})
+                        self.config["personality"]=""
+                        self.personality = AIPersonality()
                 
         elif setting_name== "personality_category":
             back_category = self.config["personality_category"]
