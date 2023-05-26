@@ -18,7 +18,7 @@ from pygptj.model import Model
 from api.binding import LLMBinding
 
 __author__ = "parisneo"
-__github__ = "https://github.com/nomic-ai/gpt4all-ui"
+__github__ = "https://github.com/ParisNeo/gpt4all-ui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 

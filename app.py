@@ -10,7 +10,7 @@
 ######
 
 __author__ = "parisneo"
-__github__ = "https://github.com/nomic-ai/gpt4all-ui"
+__github__ = "https://github.com/ParisNeo/gpt4all-ui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
@@ -840,7 +840,32 @@ class Gpt4AllWebUI(GPT4AllAPI):
     def extensions(self):
         return render_template("extensions.html")
 
+def sync_cfg(default_config, config):
+    """Syncs a configuration with the default configuration
+
+    Args:
+        default_config (_type_): _description_
+        config (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    added_entries = []
+    removed_entries = []
+
+    # Ensure all fields from default_config exist in config
+    for key, value in default_config.items():
+        if key not in config:
+            config[key] = value
+            added_entries.append(key)
+
+    # Remove fields from config that don't exist in default_config
+    for key in list(config.keys()):
+        if key not in default_config:
+            del config[key]
+            removed_entries.append(key)
     
+    return config, added_entries, removed_entries
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Start the chatbot Flask app.")
@@ -924,13 +949,12 @@ if __name__ == "__main__":
     config_file_path = f"configs/{args.config}.yaml"
     config = load_config(config_file_path)
 
+    
     if "version" not in config or int(config["version"])<int(default_config["version"]):
         #Upgrade old configuration files to new format
         print("Configuration file is very old. Replacing with default configuration")
-        for key, value in default_config.items():
-            if key not in config:
-                config[key] = value
-        config["version"]=int(default_config["version"])
+        config, added, removed =sync_cfg(default_config, config)
+        print(f"Added entries : {added}, removed entries:{removed}")
         save_config(config, config_file_path)
 
     # Override values in config with command-line arguments

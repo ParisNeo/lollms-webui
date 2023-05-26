@@ -19,7 +19,7 @@
 2. Open Terminal/PowerShell and navigate to a folder you want to clone this repository.
 
 ```bash
-git clone https://github.com/nomic-ai/gpt4all-ui.git
+git clone https://github.com/ParisNeo/gpt4all-ui.git
 ```
 
 4. Install/run application by double clicking on `webui.bat` file from Windows explorer as normal user.
@@ -87,7 +87,7 @@ sudo pacman -S curl git python3
 2. Clone repository:
 
 ```bash
-git clone https://github.com/nomic-ai/gpt4all-ui.git
+git clone https://github.com/ParisNeo/gpt4all-ui.git
 ```
 ```bash
 cd gpt4all-ui
@@ -116,7 +116,7 @@ brew install git python3
 3. Clone repository:
 
 ```bash
-git clone https://github.com/nomic-ai/gpt4all-ui.git
+git clone https://github.com/ParisNeo/gpt4all-ui.git
 ```
 ```bash
 cd gpt4all-ui
