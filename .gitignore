@@ -147,7 +147,7 @@ tmp/
 temp/
 # configurations other than the default one
 configs/*
-!configs/default.yaml
+!configs/config.yaml
 
 # personalities other than the default one
 personalities/*

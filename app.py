@@ -933,13 +933,13 @@ if __name__ == "__main__":
 
     # The default configuration must be kept unchanged as it is committed to the repository, 
     # so we have to make a copy that is not comitted
-    default_config = load_config(f"configs/default.yaml")
+    default_config = load_config(f"configs/config.yaml")
 
-    if args.config=="default":
-        args.config = "local_default"
-        if not Path(f"configs/local_default.yaml").exists():
+    if args.config!="local_config":
+        args.config = "local_config"
+        if not Path(f"configs/local_config.yaml").exists():
             print("No local configuration file found. Building from scratch")
-            shutil.copy(f"configs/default.yaml", f"configs/local_default.yaml")
+            shutil.copy(f"configs/config.yaml", f"configs/local_config.yaml")
 
     config_file_path = f"configs/{args.config}.yaml"
     config = load_config(config_file_path)

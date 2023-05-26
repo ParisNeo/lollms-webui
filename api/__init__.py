@@ -334,7 +334,7 @@ class ModelProcess:
         else:
             print("No model is installed or selected. Please make sure to install a model and select it inside your configuration before attempting to communicate with the model.")
             print("To do this: Install the model to your models/<binding name> folder.")
-            print("Then set your model information in your local configuration file that you can find in configs/local_default.yaml")
+            print("Then set your model information in your local configuration file that you can find in configs/local_config.yaml")
             print("You can also use the ui to set your model in the settings page.")
             output = ""
         return output
