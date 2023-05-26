@@ -201,7 +201,7 @@ class ModelProcess:
                 if self.config["model"] is None:
                     print("No model is selected.\nPlease select a backend and a model to start using the ui.")
                 else:
-                    print("Couldn't build model")
+                    print(f"Couldn't build model {self.config['model']} : {ex}")
                 self.model = None
                 self._set_config_result['status'] ='failed'
                 self._set_config_result['binding_status'] ='failed'
