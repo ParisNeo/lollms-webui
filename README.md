@@ -12,4 +12,4 @@
 
 # License
 
-This project is licensed under the Apache 2.0 License. See the [LICENSE](https://github.com/nomic-ai/GPT4All-ui/blob/main/LICENSE) file for details.
+This project is licensed under the Apache 2.0 License. See the [LICENSE](https://github.com/ParisNeo/GPT4All-ui/blob/main/LICENSE) file for details.

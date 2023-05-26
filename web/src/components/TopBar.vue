@@ -11,7 +11,7 @@
             </RouterLink>
             <!-- GITHUB AND THEME BUTTONS -->
             <div class="flex gap-3 flex-1 items-center justify-end">
-                <a href="https://github.com/nomic-ai/gpt4all-ui" target="_blank">
+                <a href="https://github.com/ParisNeo/gpt4all-ui" target="_blank">
 
                     <div class="text-2xl  hover:text-primary duration-150" title="Visit repository page">
                         <i data-feather="github"></i>

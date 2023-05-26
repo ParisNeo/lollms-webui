@@ -9,7 +9,7 @@
 
 
 # This binding is a wrapper to gpt4all's official binding
-# Follow him on his github project : https://github.com/nomic-ai/gpt4all
+# Follow him on his github project : https://github.com/ParisNeo/gpt4all
 
 ######
 from pathlib import Path
@@ -19,7 +19,7 @@ from api.binding import LLMBinding
 import yaml
 
 __author__ = "parisneo"
-__github__ = "https://github.com/nomic-ai/gpt4all-ui"
+__github__ = "https://github.com/ParisNeo/gpt4all-ui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
