@@ -125,7 +125,7 @@
         <div class="relative overflow-y-scroll no-scrollbar">
             <!-- DISCUSSION LIST -->
             <div class="mx-4 flex-grow" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''">
-                <TransitionGroup name="list" >
+                <TransitionGroup v-if="list.length>0" name="list" >
                 <Discussion v-for="(item, index) in list" :key="item.id" :id="item.id" :title="item.title"
                     :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"
                     :checkBoxValue="item.checkBoxValue" @select="selectDiscussion(item)" @delete="deleteDiscussion(item.id)"
@@ -147,14 +147,14 @@
 
         <!-- CHAT AREA -->
         <div class="container flex flex-col flex-grow pt-4 pb-10">
-            <TransitionGroup name="list" >
+            <TransitionGroup v-if="discussionArr.length>0" name="list" >
             <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg" :id="'msg-' + msg.id" ref="messages"
                 @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage" @rankDown="rankDownMessage"
                 @updateMessage="updateMessage" @resendMessage="resendMessage" :avatar="getAvatar(msg.sender)" />
-
-            <WelcomeComponent v-if="!currentDiscussion.id" />
+               
+           
         </TransitionGroup>
-
+        <WelcomeComponent  v-if="!currentDiscussion.id" />
         </div>
         <div class=" sticky bottom-0">
             <ChatBox v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
