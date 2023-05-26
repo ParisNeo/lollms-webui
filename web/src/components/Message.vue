@@ -152,8 +152,10 @@ export default {
                 return userImgPlaceholder;
 
             }
-           
+           if(this.avatar){
             return bUrl + this.avatar
+           }
+           return botImgPlaceholder;
 
         },
         defaultImg(event) {

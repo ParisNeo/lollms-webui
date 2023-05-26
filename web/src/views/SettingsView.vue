@@ -95,12 +95,14 @@
                         </label>
                         <div ref="modelZoo" class="overflow-y-auto no-scrollbar p-2 pb-0 "
                             :class="mzl_collapsed ? '' : 'max-h-96'">
+                            <TransitionGroup name="list" >
                             <model-entry v-for="(model, index) in models" :key="index" :title="model.title"
                                 :icon="model.icon" :path="model.path" :owner="model.owner" :owner_link="model.owner_link"
                                 :license="model.license" :description="model.description" :is-installed="model.isInstalled"
                                 :on-install="onInstall" :on-uninstall="onUninstall" :on-selected="onSelected"
                                 :selected="model.title === configFile.model" :model="model" />
-                        </div>
+                            </TransitionGroup>
+                            </div>
                     </div>
                     <!-- EXPAND / COLLAPSE BUTTON -->
                     <button v-if="mzl_collapsed"
@@ -179,10 +181,12 @@
                         <div ref="personalitiesZoo"
                             class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
                             :class="pzl_collapsed ? '' : 'max-h-96'">
+                            <TransitionGroup name="bounce" >
                             <personality-entry v-for="(pers, index) in personalitiesFiltered" :key="index"
                                 :personality="pers"
                                 :selected="pers.name === configFile.personality && pers.category === configFile.personality_category && pers.language === configFile.personality_language"
                                 :on-selected="onPersonalitySelected" />
+                            </TransitionGroup>
                         </div>
                     </div>
                     <!-- EXPAND / COLLAPSE BUTTON -->
@@ -377,11 +381,48 @@
 
     
 </template>
+<style scoped>
+.list-move, /* apply transition to moving elements */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
 
+.list-enter-from {
+    transform: translatey(-30px);
+}
+.list-leave-to {
+  opacity: 0;
+  transform: translatey(30px);
+}
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
+   .list-leave-active {
+  position: absolute;
+}
+
+.bounce-enter-active {
+  animation: bounce-in 0.5s;
+}
+.bounce-leave-active {
+  animation: bounce-in 0.5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+</style>
 <script>
 import axios from "axios";
 import feather from 'feather-icons'
-import { nextTick } from 'vue'
+import { nextTick,TransitionGroup } from 'vue'
 import MessageBox from "@/components/MessageBox.vue";
 import YesNoDialog from "@/components/YesNoDialog.vue";
 import Toast from '../components/Toast.vue'
@@ -492,7 +533,7 @@ export default {
                 // if (model_object.isInstalled) {
                 this.settingsChanged = true
                 const res = this.update_setting('personality', pers.personality.name, () => {
-                    this.$refs.toast.showToast("Personality:\n" + pers.personality.name + "\nselected", 4, true)
+                    this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name , 4, true)
                     this.configFile.personality = pers.personality.name
                     this.configFile.personality_category = pers.personality.category
                     this.configFile.personality_language = pers.personality.language
@@ -525,7 +566,7 @@ export default {
                     if (this.configFile.model != model_object.title) {
                         this.update_model(model_object.title)
                         this.configFile.model = model_object.title
-                        this.$refs.toast.showToast("Model:\n" + model_object.title + "\nselected", 4, true)
+                        this.$refs.toast.showToast("Selected model:\n" + model_object.title , 4, true)
                         this.settingsChanged = true
                         this.isModelSelected = true
                     }
