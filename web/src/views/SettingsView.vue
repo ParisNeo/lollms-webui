@@ -533,7 +533,7 @@ export default {
                 // if (model_object.isInstalled) {
                 this.settingsChanged = true
                 const res = this.update_setting('personality', pers.personality.name, () => {
-                    this.$refs.toast.showToast("Personality:\n" + pers.personality.name + "\nselected", 4, true)
+                    this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name , 4, true)
                     this.configFile.personality = pers.personality.name
                     this.configFile.personality_category = pers.personality.category
                     this.configFile.personality_language = pers.personality.language
@@ -566,7 +566,7 @@ export default {
                     if (this.configFile.model != model_object.title) {
                         this.update_model(model_object.title)
                         this.configFile.model = model_object.title
-                        this.$refs.toast.showToast("Model:\n" + model_object.title + "\nselected", 4, true)
+                        this.$refs.toast.showToast("Selected model:\n" + model_object.title , 4, true)
                         this.settingsChanged = true
                         this.isModelSelected = true
                     }
