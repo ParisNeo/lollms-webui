@@ -1,5 +1,5 @@
 <template>
-    <div class="absolute bottom-16 right-2 z-20 flex flex-col gap-3">
+    <div class="absolute bottom-16 right-2 z-20 flex flex-col gap-3 min-w-[300px]">
         <TransitionGroup name="toastItem" tag="div">
             <div v-for=" t in toastArr" :key="t.id">
                 <div id="toast-success"

@@ -50,8 +50,12 @@
                 </div>
             </div>
             <!-- SEARCH BAR -->
-            <div class="flex-row  items-center gap-3 flex-0 w-full">
-                <div v-if="isSearch" class="p-4 pt-2">
+            <!-- <Transition name="expand" > -->
+            <div key="1" v-if="isSearch"  class="flex-row  items-center gap-3 flex-0 w-full">
+                
+
+                
+                <div  class="p-4 pt-2 ">
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                             <div class="scale-75">
@@ -71,7 +75,9 @@
                             @input="filterDiscussions()" />
                     </div>
                 </div>
+            
             </div>
+        <!-- </Transition> -->
             <hr v-if="isCheckbox" class="h-px bg-bg-light p-0 mb-4 px-4 mx-4 border-0 dark:bg-bg-dark">
             <div v-if="isCheckbox" class="flex flex-row flex-grow p-4 pt-0 items-center">
 
@@ -119,17 +125,18 @@
         <div class="relative overflow-y-scroll no-scrollbar">
             <!-- DISCUSSION LIST -->
             <div class="mx-4 flex-grow" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''">
-                <Discussion v-for="(item, index) in list" :key="index" :id="item.id" :title="item.title"
+                <TransitionGroup v-if="list.length>0" name="list" >
+                <Discussion v-for="(item, index) in list" :key="item.id" :id="item.id" :title="item.title"
                     :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"
                     :checkBoxValue="item.checkBoxValue" @select="selectDiscussion(item)" @delete="deleteDiscussion(item.id)"
                     @editTitle="editTitle" @checked="checkUncheckDiscussion" />
-
+                </TransitionGroup>
                 <div v-if="list.length < 1"
                     class="gap-2 py-2 my-2 hover:shadow-md hover:bg-primary-light dark:hover:bg-primary rounded-md p-2 duration-75 group cursor-pointer">
                     <p class="px-3">No discussions are found</p>
                 </div>
                 <div
-                    class="sticky bottom-0 bg-gradient-to-t pointer-events-none from-bg-light-tone dark:from-bg-dark-tone flex height-64">
+                    class="sticky bottom-0 bg-gradient-to-t pointer-events-none from-bg-light-tone dark:from-bg-dark-tone flex flex-grow">
                     <!-- FADING DISCUSSION LIST END ELEMENT -->
                 </div>
             </div>
@@ -140,15 +147,14 @@
 
         <!-- CHAT AREA -->
         <div class="container flex flex-col flex-grow pt-4 pb-10">
-            <!-- REMOVED @click="scrollToElement($event.target)" -->
-            <!-- Removed reference to copyToClipBoard() ; function was moved to Message.vue -->
-            <Message v-for="(msg, index) in discussionArr" :key="index" :message="msg" :id="'msg-' + msg.id" ref="messages"
+            <TransitionGroup v-if="discussionArr.length>0" name="list" >
+            <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg" :id="'msg-' + msg.id" ref="messages"
                 @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage" @rankDown="rankDownMessage"
                 @updateMessage="updateMessage" @resendMessage="resendMessage" :avatar="getAvatar(msg.sender)" />
-
-            <WelcomeComponent v-if="!currentDiscussion.id" />
-
-
+               
+           
+        </TransitionGroup>
+        <WelcomeComponent  v-if="!currentDiscussion.id" />
         </div>
         <div class=" sticky bottom-0">
             <ChatBox v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
@@ -159,12 +165,46 @@
     <Toast ref="toast">
     </Toast>
 </template>
+
+
 <style scoped>
-.height-64 {
-    min-height: 64px;
+.expand-enter-active,
+.expand-leave-active {
+    transition: all 0.5s ease;
+}
+
+.expand-enter{
+    transition: all 0.5s ease;
+    opacity: 1;
+    transform: translatey(30px);
+}
+.expand-leave-to {
+    
+    transform: translatey(-30px);
+    opacity: 0;
+}
+
+
+
+.list-move, /* apply transition to moving elements */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+
+.list-enter-from {
+    transform: translatey(-30px);
+}
+.list-leave-to {
+  opacity: 0;
+  transform: translatey(30px);
+}
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
+   .list-leave-active {
+  position: absolute;
 }
 </style>
-
 <script>
 
 export default {
@@ -526,6 +566,10 @@ export default {
         },
         sendMsg(msg) {
             // Sends message to binding
+            if(!msg){
+                this.$refs.toast.showToast("Message contains no centent!", 4, false)
+                 return
+            }
             this.isGenerating = true;
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
             axios.get('/get_generation_status', {}).then((res) => {
@@ -1036,7 +1080,7 @@ import Toast from '../components/Toast.vue'
 import feather from 'feather-icons'
 
 import axios from 'axios'
-import { nextTick } from 'vue'
+import { nextTick,TransitionGroup } from 'vue'
 
 import socket from '@/services/websocket.js'
 
