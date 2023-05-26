@@ -20,6 +20,7 @@ __license__ = "Apache 2.0"
 
 
 class LLMBinding:
+   
     file_extension='*.bin'
     binding_path = Path(__file__).parent
     def __init__(self, config:dict, inline:bool) -> None:
