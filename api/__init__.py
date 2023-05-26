@@ -91,11 +91,11 @@ class ModelProcess:
         self.process = None
         self.is_generating  = mp.Value('i', 0)
         self.model_ready  = mp.Value('i', 0)
+        self.curent_text = ""
         self.ready = False
         
         self.id=0
         self.n_predict=2048
-
         self.reset_config_result()
 
     def reset_config_result(self):
@@ -162,7 +162,7 @@ class ModelProcess:
         self.set_config_queue.put(config)
         # Wait for it t o be consumed
         while self.set_config_result_queue.empty():
-            time.sleep(0.5)
+            time.sleep(0.1)
         return self.set_config_result_queue.get()
 
     def generate(self, full_prompt, prompt, id, n_predict):
@@ -252,6 +252,17 @@ class ModelProcess:
     def _run(self):     
         self._rebuild_model()
         self._rebuild_personality()
+        self.check_set_config_thread = threading.Thread(target=self._check_set_config_queue, args=())
+        print("Launching config verification thread")
+        self.check_set_config_thread.start()
+        self.check_cancel_thread = threading.Thread(target=self._check_cancel_queue, args=())
+        print("Launching cancel verification thread")
+        self.check_cancel_thread.start()
+        
+        self._check_clear_thread = threading.Thread(target=self._check_clear_queue, args=())
+        print("Launching clear verification thread")
+        self._check_clear_thread.start()
+                
         if self.model_ready.value == 1:
             self.n_predict = 1
             self._generate("I",1)
@@ -264,40 +275,33 @@ class ModelProcess:
         print(f"Listening on :http://{self.config['host']}:{self.config['port']}")
         while True:
             try:
-                self._check_set_config_queue()
-                self._check_cancel_queue()
-                self._check_clear_queue()
-
                 if not self.generate_queue.empty():
                     command = self.generate_queue.get()
-                    if command is None:
-                        break
+                    if command is not None:
+                        if self.cancel_queue.empty() and self.clear_queue_queue.empty():
+                            self.is_generating.value = 1
+                            self.started_queue.put(1)
+                            self.id=command[2]
+                            self.n_predict=command[3]
+                            if self.personality.processor is not None:
+                                if self.personality.processor_cfg is not None:
+                                    if "custom_workflow" in self.personality.processor_cfg:
+                                        if self.personality.processor_cfg["custom_workflow"]:
+                                            print("Running workflow")
+                                            output = self.personality.processor.run_workflow(self._generate, command[1], command[0], self._callback)
+                                            self._callback(output, 0)
+                                            self.is_generating.value = 0
+                                            continue
 
-                    if self.cancel_queue.empty() and self.clear_queue_queue.empty():
-                        self.is_generating.value = 1
-                        self.started_queue.put(1)
-                        self.id=command[2]
-                        self.n_predict=command[3]
-                        if self.personality.processor is not None:
-                            if self.personality.processor_cfg is not None:
-                                if "custom_workflow" in self.personality.processor_cfg:
-                                    if self.personality.processor_cfg["custom_workflow"]:
-                                        print("Running workflow")
-                                        output = self.personality.processor.run_workflow(self._generate, command[1], command[0], self._callback)
-                                        self._callback(output, 0)
-                                        self.is_generating.value = 0
-                                        continue
-
-                        self._generate(command[0], self.n_predict, self._callback)
-                        while not self.generation_queue.empty():
-                            time.sleep(1)
-                        self.is_generating.value = 0
-                time.sleep(1)
+                            self._generate(command[0], self.n_predict, self._callback)
+                            while not self.generation_queue.empty():
+                                time.sleep(1)
+                            self.is_generating.value = 0
             except Exception as ex:
-                time.sleep(1)
                 print(ex)
-
+            time.sleep(1)
     def _generate(self, prompt, n_predict=50, callback=None):
+        self.curent_text = ""
         if self.model is not None:
             print("Generating message...")
             self.id = self.id
@@ -336,35 +340,47 @@ class ModelProcess:
         return output
 
     def _callback(self, text, text_type=0):
-        if not self.ready:
-            print(".",end="", flush=True)
-            return True
-        else:
-            # Stream the generated text to the main process
-            self.generation_queue.put((text,self.id, text_type))
-            self._check_set_config_queue()
-            self._check_cancel_queue()
-            self._check_clear_queue()        
-            # if stop generation is detected then stop
-            if self.is_generating.value==1:
+        print(text,end="", flush=True)
+        self.curent_text += text
+        detected_anti_prompt = False
+        anti_prompt_to_remove=""
+        for prompt in self.personality.anti_prompts:
+            if prompt.lower() in text.lower():
+                detected_anti_prompt=True
+                anti_prompt_to_remove = prompt.lower()
+                
+        if not detected_anti_prompt:
+            if not self.ready:
+                print(".",end="", flush=True)
                 return True
             else:
-                return False
+                # Stream the generated text to the main process
+                self.generation_queue.put((text,self.id, text_type))
+                # if stop generation is detected then stop
+                if self.is_generating.value==1:
+                    return True
+                else:
+                    return False
+        else:
+            self.curent_text = self.remove_text_from_string(self.curent_text, anti_prompt_to_remove)
+            self._cancel_generation()
+            print("The model is halucinating")
+
 
     def _check_cancel_queue(self):
-        while not self.cancel_queue.empty():
+        while True:
             command = self.cancel_queue.get()
             if command is not None:
                 self._cancel_generation()
 
     def _check_clear_queue(self):
-        while not self.clear_queue_queue.empty():
+        while True:
             command = self.clear_queue_queue.get()
             if command is not None:
                 self._clear_queue()
 
     def _check_set_config_queue(self):
-        while not self.set_config_queue.empty():
+        while True:
             config = self.set_config_queue.get()
             if config is not None:
                 print("Inference process : Setting configuration")
@@ -680,25 +696,20 @@ class GPT4AllAPI():
         return string
 
     def process_chunk(self, chunk, message_type):
-        print(chunk,end="", flush=True)
         self.bot_says += chunk
-        if not self.personality.detect_antiprompt(self.bot_says):
-            self.socketio.emit('message', {
-                                            'data': self.bot_says, 
-                                            'user_message_id':self.current_user_message_id, 
-                                            'ai_message_id':self.current_ai_message_id, 
-                                            'discussion_id':self.current_discussion.discussion_id,
-                                            'message_type': message_type
-                                        }
-                                )
-            if self.cancel_gen:
-                print("Generation canceled")
-                self.process.cancel_generation()
-                self.cancel_gen = False
-        else:
-            self.bot_says = self.remove_text_from_string(self.bot_says, self.personality.user_message_prefix.strip())
+        self.socketio.emit('message', {
+                                        'data': self.bot_says, 
+                                        'user_message_id':self.current_user_message_id, 
+                                        'ai_message_id':self.current_ai_message_id, 
+                                        'discussion_id':self.current_discussion.discussion_id,
+                                        'message_type': message_type
+                                    }
+                            )
+        if self.cancel_gen:
+            print("Generation canceled")
             self.process.cancel_generation()
-            print("The model is halucinating")
+            self.cancel_gen = False
+
         self.current_discussion.update_message(self.current_ai_message_id, self.bot_says)
                   
     def start_message_generation(self, message, message_id):
@@ -735,7 +746,7 @@ class GPT4AllAPI():
                     if chunk!="":
                         self.process_chunk(chunk, message_type)
                 except:
-                    time.sleep(1)
+                    time.sleep(0.1)
 
             print()
             print("## Done ##")
