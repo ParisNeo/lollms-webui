@@ -248,10 +248,7 @@ class ModelProcess:
             self._set_config_result['binding_status'] ='failed'
             self._set_config_result['errors'].append(f"couldn't build binding:{ex}")
     
-    def step_callback(self, text, message_type):
-        self.generation_queue.put((text,self.id, message_type))
-
-        
+       
     def _run(self):     
         self._rebuild_model()
         self._rebuild_personality()
@@ -286,8 +283,8 @@ class ModelProcess:
                                 if "custom_workflow" in self.personality.processor_cfg:
                                     if self.personality.processor_cfg["custom_workflow"]:
                                         print("Running workflow")
-                                        output = self.personality.processor.run_workflow(self._generate, command[1], command[0], self.step_callback)
-                                        self._callback(output)
+                                        output = self.personality.processor.run_workflow(self._generate, command[1], command[0], self._callback)
+                                        self._callback(output, 0)
                                         self.is_generating.value = 0
                                         continue
 
@@ -338,13 +335,13 @@ class ModelProcess:
             output = ""
         return output
 
-    def _callback(self, text):
+    def _callback(self, text, text_type=0):
         if not self.ready:
             print(".",end="", flush=True)
             return True
         else:
             # Stream the generated text to the main process
-            self.generation_queue.put((text,self.id, 0))
+            self.generation_queue.put((text,self.id, text_type))
             self._check_set_config_queue()
             self._check_cancel_queue()
             self._check_clear_queue()        
@@ -702,7 +699,8 @@ class GPT4AllAPI():
             self.bot_says = self.remove_text_from_string(self.bot_says, self.personality.user_message_prefix.strip())
             self.process.cancel_generation()
             print("The model is halucinating")
-            
+        self.current_discussion.update_message(self.current_ai_message_id, self.bot_says)
+                  
     def start_message_generation(self, message, message_id):
         bot_says = ""
 
@@ -732,9 +730,12 @@ class GPT4AllAPI():
             self.process.generate(self.discussion_messages, self.current_message, message_id, n_predict = self.config['n_predict'])
             self.process.started_queue.get()
             while(self.process.is_generating.value):  # Simulating other commands being issued
-                chunk, tok, message_type = self.process.generation_queue.get()
-                if chunk!="":
-                    self.process_chunk(chunk, message_type)
+                try:
+                    chunk, tok, message_type = self.process.generation_queue.get(False, 2)
+                    if chunk!="":
+                        self.process_chunk(chunk, message_type)
+                except:
+                    time.sleep(1)
 
             print()
             print("## Done ##")
