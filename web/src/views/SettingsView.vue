@@ -555,7 +555,12 @@ export default {
                 if (response.status === 'progress') {
                     console.log(`Progress = ${response.progress}`);
                     model_object.progress = response.progress
+                    if(model_object.progress==100){
+                        this.models[index].isInstalled = true;
+                        this.showProgress = false;
+                    }
                 } else if (response.status === 'succeeded') {
+                    console.log("Received succeeded")
                     socket.off('install_progress', progressListener);
                     console.log("Installed successfully")
                     // Update the isInstalled property of the corresponding model

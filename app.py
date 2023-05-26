@@ -592,7 +592,6 @@ class Gpt4AllWebUI(GPT4AllAPI):
     def stop_gen(self):
         self.cancel_gen = True
         self.process.cancel_generation()
-        print("Stop generation received")
         return jsonify({"status": "ok"})         
 
            

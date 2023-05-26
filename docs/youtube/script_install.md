@@ -16,6 +16,10 @@ I have built this ui to explore new things and build on top of it. I am not buil
 
 I think all the contributors to this project and hope more people come and share their expertise. This help is vital to enhance the tool for all man kind.
 
+Before installing this tool you need to install python 3.10 or higher as well as git. Make sure the python installation is in your path and you can call it from a terminal. To verify your python version, type python --version. If you get an error or the version is lower than 3.10, please install a newer version and try again. For those who use conda, you can create a conda virtual environment, install the requirements.txt content and just run the application using python app.py. Now we assume that you have a regular python installation and just want to use the tool.  
+
+
+
 Now let's cut to the chace. Let's start by installing the tool.
 First, go to the github repository page at github.com/ParisNeo/gpt4all-ui then press the latest release button. Depending on your platform download webui.bat for windows or webui.sh for linux.
 
@@ -35,7 +39,7 @@ To do this, go to settings. Then open the models zoo tab.
 You need to select a binding from the list. For example the llama-cpp-official. The first time you select a binding, you have to wait as it  is being installed. You can look it up in the console.
 
 Once the installation is done, you should install a model by pressing install and waiting for it to finish.
-
+This may take some time.
 Once the model is installed, you can select it and press Apply modifications.
 
 Notice that applying modifications does not save the configuration, so You need to press the save button and confirm.

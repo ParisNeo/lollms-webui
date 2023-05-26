@@ -371,13 +371,15 @@ class ModelProcess:
         while True:
             command = self.cancel_queue.get()
             if command is not None:
-                self._cancel_generation()
+                self._cancel_generation()        
+                print("Stop generation received")
 
     def _check_clear_queue(self):
         while True:
             command = self.clear_queue_queue.get()
             if command is not None:
                 self._clear_queue()
+                print("Clear received")
 
     def _check_set_config_queue(self):
         while True:
