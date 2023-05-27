@@ -120,7 +120,7 @@ export default {
     }, methods: {
         copyContentToClipboard() {
             this.$emit('copy', this.message.content)
-            navigator.clipboard.writeText(this.message.content);
+            
         },
         deleteMsg() {
             this.$emit('delete', this.message.id)
