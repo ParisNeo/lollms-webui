@@ -10,6 +10,7 @@
 
 Welcome to GPT4ALL WebUI, the hub for LLM (Large Language Model) models. This project aims to provide a user-friendly interface to access and utilize various LLM models for a wide range of tasks. Whether you need help with writing, coding, organizing data, generating images, or seeking answers to your questions, GPT4ALL WebUI has got you covered.
 
+[Click here for my youtube video on how to use the tool](https://youtu.be/ds_U0TDzbzI)
 ## Features
 
 - Choose your preferred binding, model, and personality for your tasks
@@ -43,13 +44,13 @@ If you receive an error or the version is lower than 3.10, please install a newe
 ### Installation steps
 #### Easy install
 
-1- Download the appropriate application launcher based on your platform:
+- Download the appropriate application launcher based on your platform:
     For Windows: `webui.bat`
     For Linux: `webui.sh`
-2- Place the downloaded launcher in a folder of your choice, for example:
+- Place the downloaded launcher in a folder of your choice, for example:
     Windows: `C:\ai\gpt4all-webui`
     Linux: `/home/user/ai/gpt4all-webui`
-3- Run the launcher script. Note that you might encounter warnings from antivirus or Windows Defender due to the tool's newness and limited usage. These warnings are false positives caused by reputation conditions in some antivirus software. You can safely proceed with running the script.
+- Run the launcher script. Note that you might encounter warnings from antivirus or Windows Defender due to the tool's newness and limited usage. These warnings are false positives caused by reputation conditions in some antivirus software. You can safely proceed with running the script.
 Once the installation is complete, the GPT4ALL WebUI will launch automatically.
 
 #### Using Conda
@@ -75,25 +76,25 @@ Alternatively, you can use Docker to set up the GPT4ALL WebUI. Please refer to t
 You can launch the app from the webui.sh or webui.bat launcher. It will automatically perform updates if any are present. If you don't prefer this method, you can also activate the virtual environment and launch the application using python app.py from the root of the project.
 Once the app is running, you can go to the application front link displayed in the console (by default localhost:9600 but can change if you change configuration) 
 ### Selecting a Model and Binding
-1- Open the GPT4ALL WebUI and navigate to the Settings page.
-2- In the Models Zoo tab, select a binding from the list (e.g., llama-cpp-official).
-3- Wait for the installation process to finish. You can monitor the progress in the console.
-4- Once the installation is complete, click the Install button next to the desired model.
-5- After the model installation finishes, select the model and press Apply changes.
-6- Remember to press the Save button to save the configuration.
+- Open the GPT4ALL WebUI and navigate to the Settings page.
+- In the Models Zoo tab, select a binding from the list (e.g., llama-cpp-official).
+- Wait for the installation process to finish. You can monitor the progress in the console.
+- Once the installation is complete, click the Install button next to the desired model.
+- After the model installation finishes, select the model and press Apply changes.
+- Remember to press the Save button to save the configuration.
 
 ### Starting a Discussion
-1- Go to the Discussions view.
-2- Click the + button to create a new discussion.
-3- You will see a predefined welcome message based on the selected personality (by default, GPT4All).
-4- Ask a question or provide an initial prompt to start the discussion.
-5- You can stop the generation process at any time by pressing the Stop Generating button.
+- Go to the Discussions view.
+- Click the + button to create a new discussion.
+- You will see a predefined welcome message based on the selected personality (by default, GPT4All).
+- Ask a question or provide an initial prompt to start the discussion.
+- You can stop the generation process at any time by pressing the Stop Generating button.
 
 ### Managing Discussions
-1- To edit a discussion title, simply type a new title or modify the existing one.
-2- To delete a discussion, click the Delete button.
-3- To search for specific discussions, use the search button and enter relevant keywords.
-4- To perform batch operations (exporting or deleting multiple discussions), enable Check Mode, select the discussions, and choose the desired action.
+- To edit a discussion title, simply type a new title or modify the existing one.
+- To delete a discussion, click the Delete button.
+- To search for specific discussions, use the search button and enter relevant keywords.
+- To perform batch operations (exporting or deleting multiple discussions), enable Check Mode, select the discussions, and choose the desired action.
 
 # Contributing
 Contributions to GPT4ALL WebUI are welcome! If you encounter any issues, have ideas for improvements, or want to contribute code, please open an issue or submit a pull request on the GitHub repository.
