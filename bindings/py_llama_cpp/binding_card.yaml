@@ -1,0 +1,13 @@
+name: PyLLamaCpp
+author: abdeladim
+version: 1.0
+link: https://github.com/abdeladim-s/pyllamacpp
+description: 'Python bindings for llama.cpp
+    For those who don''t know, llama.cpp is a port of Facebook's LLaMA model in pure C/C++:
+    Without dependencies
+    Apple silicon first-class citizen - optimized via ARM NEON
+    AVX2 support for x86 architectures
+    Mixed F16 / F32 precision
+    4-bit quantization support
+    Runs on the CPU
+    '

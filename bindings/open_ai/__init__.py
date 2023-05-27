@@ -8,8 +8,7 @@
 # Description   : 
 # This is an interface class for GPT4All-ui bindings.
 
-# This binding is a wrapper to marella's binding
-# Follow him on his github project : https://github.com/marella/ctransformers
+# This binding is a wrapper to open ai's api
 
 ######
 from pathlib import Path

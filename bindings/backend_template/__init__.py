@@ -9,7 +9,6 @@
 # This is an interface class for GPT4All-ui bindings.
 
 # This binding is a wrapper to marella's binding
-# Follow him on his github project : https://github.com/marella/ctransformers
 
 ######
 from pathlib import Path

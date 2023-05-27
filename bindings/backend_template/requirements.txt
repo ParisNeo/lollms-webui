@@ -1,3 +1,0 @@
-ctransformers
-transformers
-accelerate

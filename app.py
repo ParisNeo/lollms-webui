@@ -464,7 +464,16 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
     def list_bindings(self):
         bindings_dir = Path('./bindings')  # replace with the actual path to the models folder
-        bindings = [f.stem for f in bindings_dir.iterdir() if f.is_dir() and f.stem!="__pycache__"]
+        bindings=[]
+        for f in bindings_dir.iterdir():
+            card = f/"binding_card.yaml"
+            if card.exists():
+                try:
+                    bnd = load_config(card)
+                    bnd["folder"]=f.stem
+                    bindings.append(bnd)
+                except Exception as ex:
+                    print(f"Couldn't load backend card : {f}\n\t{ex}")
         return jsonify(bindings)
 
 
