@@ -57,7 +57,7 @@ ai_message_prefix: "### Assistant:
 dependencies: []
 
 # A list of texts to be used to detect that the model is hallucinating and stop the generation if any one of these is output by the model
-anti_prompts: ["###Human","###Assistant","### Human","### Assistant"]
+anti_prompts: ["###Human","###Assistant","### Human","### Assistant", "Human:"]
 
 # Some personalities need a disclaimer to warn the user of potential harm that can be caused by the AI
 # for example, for medical assistants, it is important to tell the user to be careful and not use medication
