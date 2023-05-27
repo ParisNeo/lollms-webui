@@ -6,8 +6,8 @@
     <div class="flex flex-row items-center  flex-shrink-0 gap-3">
       <img :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-full object-fill text-red-700">
       <h3 class="font-bold font-large text-lg line-clamp-3">
-      {{ personality.name }}
-    </h3>
+        {{ binding.name }}
+      </h3>
 
 
     </div>
@@ -18,22 +18,25 @@
           <i data-feather="user" class="w-5 m-1"></i>
           <b>Author:&nbsp;</b>
 
-  {{ personality.author }}
-</div>
-<!-- <div class="">
-  <b>Language:&nbsp;</b>
-  {{ personality.language }}
-</div>
-<div class="">
-  <b>Category:&nbsp;</b>
-  {{ personality.category }}
-</div> -->
-</div>
-<div class="flex items-center">
+          {{ binding.author }}
+        </div>
+        <div class="flex items-center">
+          <i data-feather="folder" class="w-5 m-1"></i>
+          <b>Folder:&nbsp;</b>
+
+          {{ binding.folder }}
+        </div>
+        <div class="flex items-center">
+          <i data-feather="git-merge" class="w-5 m-1"></i>
+          <b>Version:&nbsp;</b>
+          {{ binding.version }}
+        </div>
+      </div>
+      <div class="flex items-center">
         <i data-feather="info" class="w-5 m-1"></i>
         <b>Description:&nbsp;</b><br>
       </div>
-      <p class="mx-1 opacity-80 line-clamp-3" :title="personality.description">{{ personality.description }}</p>
+      <p class="mx-1 opacity-80 line-clamp-3" :title="binding.description">{{ binding.description }}</p>
 
 
     </div>
@@ -49,7 +52,7 @@ import userImgPlaceholder from "../assets/default_user.svg"
 const bUrl = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
   props: {
-    personality: {},
+    binding: {},
     onSelected: Function,
     selected: Boolean
   },
@@ -67,7 +70,7 @@ export default {
   },
   methods: {
     getImgUrl() {
-      return bUrl + this.personality.avatar
+      return bUrl + this.binding.icon
     },
     defaultImg(event) {
       event.target.src = botImgPlaceholder

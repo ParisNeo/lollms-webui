@@ -65,21 +65,24 @@
         </div>
 
         <div :class="isLoading ? 'pointer-events-none opacity-30' : ''">
-
-
-            <!-- MODELS ZOO -->
+            <!-- BINDING ZOO -->
             <div
                 class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row p-3">
-                    <button @click.stop="mzc_collapsed = !mzc_collapsed"
-                        class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
-                        <i :data-feather="mzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
-                        <h3 class="text-lg font-semibold cursor-pointer select-none">
-                            Models zoo</h3>
+                    <button @click.stop="bzc_collapsed = !bzc_collapsed"
+                        class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex flex-row items-center">
+                        <i data-feather="chevron-right" class="mr-2"></i>
+                        
+                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            Binding zoo</h3>
+                            <div v-if="configFile.binding" class="mr-2">|</div>
+                           
+                            <div v-if="configFile.binding" class=" text-base font-semibold cursor-pointer select-none items-center">
+                             {{configFile.binding}} </div>
                     </button>
                 </div>
-                <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
-                    <div class="mx-2 mb-4">
+                <div :class="{ 'hidden': bzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                    <!-- <div class="mx-2 mb-4">
                         <label for="binding" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Bindings: ({{ bindingsArr.length }})
                         </label>
@@ -91,7 +94,52 @@
                                 {{ item.name }} by ({{ item.author }})
                             </option>
                         </select>
+                    </div> -->
+                    <div v-if="bindings.length > 0" class="mb-2">
+                        <label for="binding" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Bindings: ({{ bindings.length }})
+                        </label>
+                        <div ref="bindingZoo" class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
+                            :class="bzl_collapsed ? '' : 'max-h-96'">
+                            <TransitionGroup name="list">
+                                <BindingEntry v-for="(binding, index) in bindings"
+                                    :key="'index-' + index + '-' + binding.folder" :binding="binding" :on-selected="onSelectedBinding" :selected="binding.folder === configFile.binding"></BindingEntry>
+                            </TransitionGroup>
+                        </div>
                     </div>
+
+                    
+                    <!-- EXPAND / COLLAPSE BUTTON -->
+                    <button v-if="bzl_collapsed"
+                        class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
+                        title="Collapse" type="button" @click="bzl_collapsed = !bzl_collapsed">
+                        <i data-feather="chevron-up"></i>
+                    </button>
+                    <button v-else
+                        class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
+                        title="Expand" type="button" @click="bzl_collapsed = !bzl_collapsed">
+                        <i data-feather="chevron-down"></i>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- MODELS ZOO -->
+            <div
+                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                <div class="flex flex-row p-3">
+                    <button @click.stop="mzc_collapsed = !mzc_collapsed"
+                        class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
+                        <i :data-feather="mzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
+                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            Models zoo</h3>
+                            <div v-if="configFile.model" class="mr-2">|</div>
+                            <div v-if="configFile.model" class=" text-base font-semibold cursor-pointer select-none items-center">
+                             {{configFile.model}} </div>
+                    </button>
+                </div>
+                <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+
                     <div v-if="models.length > 0" class="mb-2">
                         <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Models: ({{ models.length }})
@@ -131,8 +179,12 @@
                     <button @click.stop="pzc_collapsed = !pzc_collapsed"
                         class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
                         <i :data-feather="pzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
-                        <h3 class="text-lg font-semibold cursor-pointer select-none">
+                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
                             Personalities zoo</h3>
+                            <div v-if="configFile.personality" class="mr-2">|</div>
+                           
+                           <div v-if="configFile.personality" class=" text-base font-semibold cursor-pointer select-none items-center">
+                            {{configFile.personality}} </div>
                     </button>
                 </div>
                 <div :class="{ 'hidden': pzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
@@ -185,8 +237,8 @@
                             class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
                             :class="pzl_collapsed ? '' : 'max-h-96'">
                             <TransitionGroup name="bounce">
-                                <personality-entry v-for="(pers, index) in personalitiesFiltered" :key="'index-' + index + '-' + pers.name"
-                                    :personality="pers"
+                                <personality-entry v-for="(pers, index) in personalitiesFiltered"
+                                    :key="'index-' + index + '-' + pers.name" :personality="pers"
                                     :selected="pers.name === configFile.personality && pers.category === configFile.personality_category && pers.language === configFile.personality_language"
                                     :on-selected="onPersonalitySelected" />
                             </TransitionGroup>
@@ -439,6 +491,7 @@ import Toast from '../components/Toast.vue'
 import ModelEntry from '@/components/ModelEntry.vue';
 import PersonalityViewer from '@/components/PersonalityViewer.vue';
 import PersonalityEntry from "../components/PersonalityEntry.vue";
+import BindingEntry from "../components/BindingEntry.vue";
 import socket from '@/services/websocket.js'
 
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
@@ -451,25 +504,29 @@ export default {
         PersonalityViewer,
         Toast,
         PersonalityEntry,
+        BindingEntry,
     },
     data() {
 
         return {
-            // Models zoo installer stuff
+            // Zoo stuff
             models: [],
             personalities: [],
             personalitiesFiltered: [],
+            bindings: [],
             // Accordeon stuff 
             collapsedArr: [],
             all_collapsed: true,
             bec_collapsed: true,
             mzc_collapsed: true, // models zoo
             pzc_collapsed: true, // personalities zoo
+            bzc_collapsed: true, // binding zoo
             pc_collapsed: true,
             mc_collapsed: true,
             // Zoo accordeoon
             mzl_collapsed: false,
             pzl_collapsed: false,
+            bzl_collapsed: false,
             // Settings stuff
             bindingsArr: [],
             modelsArr: [], // not used anymore but still have references in some methods
@@ -497,7 +554,7 @@ export default {
             this.mc_collapsed = val
         },
         fetchModels() {
-            
+
             axios.get('/get_available_models')
                 .then(response => {
 
@@ -505,18 +562,18 @@ export default {
                     this.fetchCustomModels()
                 })
                 .catch(error => {
-                    console.log(error.message,'fetchModels');
+                    console.log(error.message, 'fetchModels');
                 });
         },
         fetchCustomModels() {
-         
+
             axios.get('/list_models')
                 .then(response => {
                     // Returns array of model filenames which are = to title of models zoo entry
                     for (let i = 0; i < response.data.length; i++) {
                         const customModel = response.data[i]
                         const index = this.models.findIndex(x => x.title == customModel)
-                       
+
                         if (index == -1) {
                             let newModelEntry = {}
                             newModelEntry.title = customModel
@@ -530,17 +587,17 @@ export default {
 
                 })
                 .catch(error => {
-                    console.log(error.message,'fetchCustomModels');
+                    console.log(error.message, 'fetchCustomModels');
                 });
         },
         onPersonalitySelected(pers) {
-            
+
             // eslint-disable-next-line no-unused-vars
             if (this.isLoading) {
                 this.$refs.toast.showToast("Loading... please wait", 4, false)
             }
             if (pers.personality) {
-                
+
                 this.settingsChanged = true
                 const res = this.update_setting('personality', pers.personality.name, () => {
                     this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
@@ -557,7 +614,7 @@ export default {
 
         },
         onSelected(model_object) {
-            
+
             // eslint-disable-next-line no-unused-vars
             if (this.isLoading) {
                 this.$refs.toast.showToast("Loading... please wait", 4, false)
@@ -664,10 +721,14 @@ export default {
                     this.$refs.toast.showToast("Model:\n" + model_object.title + "\nfailed to uninstall!", 4, false)
                 }
             };
-          
-                socket.on('install_progress', progressListener);
-        
+
+            socket.on('install_progress', progressListener);
+
             socket.emit('uninstall_model', { path: model_object.path });
+        },
+        onSelectedBinding(binding_object){
+            this.update_binding(binding_object.binding.folder)
+            //console.log('lol',binding_object)
         },
         // messagebox ok stuff
         onMessageBoxOk() {
@@ -676,7 +737,7 @@ export default {
         // Refresh stuff
         refresh() {
 
-            
+
             // No need to refresh all lists because they never change during using application. 
             // On settings change only config file chnages.
             //
@@ -688,9 +749,9 @@ export default {
             //this.api_get_req("list_languages").then(response => { this.langArr = response })
             this.api_get_req("get_config").then(response => {
                 this.configFile = response
-                
+
                 this.models.forEach(model => {
-                    
+
                     if (model.title == response["model"]) {
                         model.selected = true;
 
@@ -712,13 +773,13 @@ export default {
                 setting_name: setting_name_val,
                 setting_value: setting_value_val
             }
-            
+
             axios.post('/update_setting', obj).then((res) => {
-               
+
                 if (res) {
-                  
+
                     if (next !== undefined) {
-                        
+
                         next(res)
                     }
                     return res.data;
@@ -728,12 +789,12 @@ export default {
                 .catch(error => { return { 'status': false } });
         },
         update_binding(value) {
-
+            
             // eslint-disable-next-line no-unused-vars
             this.isLoading = true
             this.update_setting('binding', value, (res) => {
                 this.refresh();
-            
+
                 this.$refs.toast.showToast("Binding changed.", 4, true)
                 this.settingsChanged = true
                 this.isLoading = false
@@ -751,14 +812,14 @@ export default {
             // eslint-disable-next-line no-unused-vars
             this.isLoading = true
             this.update_setting('model', value, (res) => {
-               
+
                 //this.fetchModels();
                 this.isLoading = false
             })
         },
         applyConfiguration() {
             if (!this.configFile.model) {
-               
+
                 this.$refs.toast.showToast("Configuration changed failed.\nPlease select model first", 4, false)
                 nextTick(() => {
                     feather.replace()
@@ -768,14 +829,14 @@ export default {
             this.isLoading = true;
             axios.post('/apply_settings').then((res) => {
                 this.isLoading = false;
-                
+
                 if (res.data.status === "succeeded") {
-               
+
                     this.$refs.toast.showToast("Configuration changed successfully.", 4, true)
                     this.settingsChanged = false
                     this.save_configuration()
                 } else {
-                 
+
                     this.$refs.toast.showToast("Configuration change failed.", 4, false)
 
                 }
@@ -799,7 +860,7 @@ export default {
                     }
                 })
                 .catch(error => {
-                    console.log(error.message,'save_configuration')
+                    console.log(error.message, 'save_configuration')
                     this.$refs.messageBox.showMessage("Couldn't save settings!")
                     return { 'status': false }
                 });
@@ -820,7 +881,7 @@ export default {
                             }
                         })
                         .catch(error => {
-                            console.log(error.message,'reset_configuration')
+                            console.log(error.message, 'reset_configuration')
                             this.$refs.messageBox.showMessage("Couldn't reset settings!")
                             return { 'status': false }
                         });
@@ -842,7 +903,7 @@ export default {
 
                 }
             } catch (error) {
-                console.log(error.message,'api_get_req - settings')
+                console.log(error.message, 'api_get_req - settings')
                 return
             }
 
@@ -904,6 +965,7 @@ export default {
         this.persArr = await this.api_get_req("list_personalities")
         this.langArr = await this.api_get_req("list_languages")
         await this.getPersonalitiesArr()
+        this.bindings = await this.api_get_req("list_bindings")
         this.isLoading = false
 
     },
@@ -940,6 +1002,13 @@ export default {
             })
         },
         pzl_collapsed() {
+
+            nextTick(() => {
+                feather.replace()
+
+            })
+        },
+        bzl_collapsed() {
 
             nextTick(() => {
                 feather.replace()

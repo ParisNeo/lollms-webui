@@ -18,38 +18,47 @@
           {{ title }}
         </h3>
       </div>
-      <div class="flex flex-shrink-0">
+      <div class="flex flex-shrink-0 items-center ">
+        <i  data-feather="link" class="w-5 m-1" ></i>
         <b>Manual download:&nbsp;</b>
+        
         <a :href="path" @click.stop class="flex items-center  hover:text-secondary duration-75 active:scale-90"
           title="Download this manually (faster) and put it in the models/<your binding> folder then refresh">
             
-            <i  data-feather="link" class="w-5 p-1" ></i>
+           
           {{ title }}
           
         </a>
       </div>
-      <div class="flex flex-shrink-0">
+      <div class="flex flex-shrink-0 items-center">
+        <div class="flex flex-shrink-0 items-center" :class="linkNotValid? 'text-red-600':''">
+          <i data-feather="file" class="w-5 m-1"></i>
+          
         <b>File size:&nbsp;</b>
-        <div class="flex " :class="linkNotValid? 'text-red-600':''">
-          <i data-feather="file" class="w-5 p-1"></i>
+        
           {{ fileSize }}
         </div>
 
       </div>
-      <div class="flex flex-shrink-0">
+      <div class="flex flex-shrink-0 items-center">
+        <i data-feather="key" class="w-5 m-1"></i>
         <b>License:&nbsp;</b>
         {{ license }}
       </div>
-      <div class="flex flex-shrink-0">
+      <div class="flex flex-shrink-0 items-center">
+        <i data-feather="user" class="w-5 m-1"></i>
         <b>Owner:&nbsp;</b>
         <a :href="owner_link" target="_blank"  rel="noopener noreferrer" @click.stop class="flex hover:text-secondary duration-75 active:scale-90"
           title="Owner's profile">
-          <i data-feather="link" class="w-5 p-1"></i>
+          
           {{ owner }}
         </a>
       </div>
-      <b>Description:&nbsp;</b><br>
-      <p class="opacity-80">{{ description }}</p>
+      <div class="flex items-center">
+        <i data-feather="info" class="w-5 m-1"></i>
+        <b>Description:&nbsp;</b><br>
+      </div>
+      <p class="mx-1 opacity-80">{{ description }}</p>
     </div>
     <div class="flex-shrink-0" >
       <button class="px-4 py-2 rounded-md text-white font-bold transition-colors duration-300"
