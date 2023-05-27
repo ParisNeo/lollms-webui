@@ -402,7 +402,12 @@ export default {
             if (!this.filterInProgress) {
                 this.filterInProgress = true
                 setTimeout(() => {
-                    this.list = this.tempList.filter((item) => item.title && item.title.includes(this.filterTitle))
+                    if(this.filterTitle){
+                        this.list = this.tempList.filter((item) => item.title && item.title.includes(this.filterTitle))
+
+                    }else{
+                        this.list = this.tempList
+                    }
                     this.filterInProgress = false
                 }, 100)
             }
