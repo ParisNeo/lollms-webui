@@ -10,8 +10,7 @@
 
 Welcome to GPT4ALL WebUI, the hub for LLM (Large Language Model) models. This project aims to provide a user-friendly interface to access and utilize various LLM models for a wide range of tasks. Whether you need help with writing, coding, organizing data, generating images, or seeking answers to your questions, GPT4ALL WebUI has got you covered.
 
-<iframe width="560" height="315" src="https://youtu.be/ds_U0TDzbzI" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-
+[Click here for my youtube video on how to use the tool](https://youtu.be/ds_U0TDzbzI)
 ## Features
 
 - Choose your preferred binding, model, and personality for your tasks
