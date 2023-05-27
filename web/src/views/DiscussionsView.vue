@@ -168,24 +168,7 @@
 
 
 <style scoped>
-.expand-enter-active,
-.expand-leave-active {
-    transition: all 0.5s ease;
-}
-
-.expand-enter{
-    transition: all 0.5s ease;
-    opacity: 1;
-    transform: translatey(30px);
-}
-.expand-leave-to {
-    
-    transform: translatey(-30px);
-    opacity: 0;
-}
-
-
-
+/* THESE ARE FOR TransitionGroup components */
 .list-move, /* apply transition to moving elements */
 .list-enter-active,
 .list-leave-active {
@@ -241,7 +224,7 @@ export default {
 
                 }
             } catch (error) {
-                console.log(error)
+                console.log(error.message,'api_get_req')
                 return
             }
 
@@ -257,7 +240,7 @@ export default {
                     return res.data
                 }
             } catch (error) {
-                console.log("Error: Could not list discussions", error)
+                console.log("Error: Could not list discussions", error.message)
                 return []
             }
         },
@@ -278,7 +261,7 @@ export default {
                     }
                 }
             } catch (error) {
-                console.log(error)
+                console.log(error.message,'load_discussion')
                 this.loading = false
                 this.setDiscussionLoading(id, this.loading)
             }
@@ -291,7 +274,7 @@ export default {
                     return res.data
                 }
             } catch (error) {
-                console.log("Error: Could not create new discussion", error)
+                console.log("Error: Could not create new discussion", error.message)
                 return {}
             }
         },
@@ -307,7 +290,7 @@ export default {
                     this.setDiscussionLoading(id, this.loading)
                 }
             } catch (error) {
-                console.log("Error: Could not delete discussion", error)
+                console.log("Error: Could not delete discussion", error.message)
                 this.loading = false
                 this.setDiscussionLoading(id, this.loading)
             }
@@ -331,7 +314,7 @@ export default {
                     }
                 }
             } catch (error) {
-                console.log("Error: Could not edit title", error)
+                console.log("Error: Could not edit title", error.message)
                 this.loading = false
                 this.setDiscussionLoading(id, this.loading)
             }
@@ -344,7 +327,7 @@ export default {
                     return res.data
                 }
             } catch (error) {
-                console.log("Error: Could delete message", error)
+                console.log("Error: Could delete message", error.message)
                 return {}
             }
         },
@@ -356,7 +339,7 @@ export default {
                     return res.data
                 }
             } catch (error) {
-                console.log("Error: Could not stop generating", error)
+                console.log("Error: Could not stop generating", error.message)
                 return {}
             }
         },
@@ -368,7 +351,7 @@ export default {
                     return res.data
                 }
             } catch (error) {
-                console.log("Error: Could not rank up message", error)
+                console.log("Error: Could not rank up message", error.message)
                 return {}
             }
         },
@@ -380,7 +363,7 @@ export default {
                     return res.data
                 }
             } catch (error) {
-                console.log("Error: Could not rank down message", error)
+                console.log("Error: Could not rank down message", error.message)
                 return {}
             }
         },
@@ -392,7 +375,7 @@ export default {
                     return res.data
                 }
             } catch (error) {
-                console.log("Error: Could not update message", error)
+                console.log("Error: Could not update message", error.message)
                 return {}
             }
         },
@@ -409,7 +392,7 @@ export default {
                 }
 
             } catch (error) {
-                console.log("Error: Could not export multiple discussions", error)
+                console.log("Error: Could not export multiple discussions", error.message)
                 return {}
             }
         },
@@ -567,7 +550,7 @@ export default {
         sendMsg(msg) {
             // Sends message to binding
             if(!msg){
-                this.$refs.toast.showToast("Message contains no centent!", 4, false)
+                this.$refs.toast.showToast("Message contains no content!", 4, false)
                  return
             }
             this.isGenerating = true;
@@ -599,11 +582,8 @@ export default {
         },
         streamMessageContent(msgObj) {
             // Streams response message content from binding
-            //console.log("stream", JSON.stringify(content))
             const parent = msgObj.user_message_id
             const discussion_id = msgObj.discussion_id
-            // next statement - incorrect comparison: was '=' and should be '=='
-
             this.setDiscussionLoading(discussion_id, true);
             if (this.currentDiscussion.id == discussion_id) {
 
@@ -612,14 +592,10 @@ export default {
                 const messageItem = this.discussionArr[index]
                 if (messageItem) {
                     messageItem.content = msgObj.data
-                    //console.log("user-msg-id",parent, "ai-msg-id",msgObj.ai_message_id, index, discussion_id, msgObj.data)
                 }
 
             }
 
-
-            //const lastMsg = this.discussionArr[this.discussionArr.length - 1]
-            //lastMsg.content = content.data
         },
         async changeTitleUsingUserMSG(id, msg) {
             // If discussion is untitled or title is null then it sets the title to first user message.
@@ -649,7 +625,6 @@ export default {
                 const selectedDisElement = document.getElementById('dis-' + res.id)
                 this.scrollToElement(selectedDisElement)
             })
-            //console.log("disc",JSON.stringify(discussionItem))
         },
         loadLastUsedDiscussion() {
             // Checks local storage for last selected discussion
@@ -665,9 +640,6 @@ export default {
         async deleteDiscussion(id) {
             // Deletes discussion from binding and frontend
 
-            //const index = this.list.findIndex((x) => x.id == id)
-            //const discussionItem = this.list[index]
-            //discussionItem.loading = true
             await this.delete_discussion(id)
             if (this.currentDiscussion.id == id) {
                 this.currentDiscussion = {}
@@ -677,7 +649,6 @@ export default {
             this.list.splice(this.list.findIndex(item => item.id == id), 1)
 
             this.createDiscussionList(this.list)
-            //await this.list_discussions()
         },
         async deleteDiscussionMulti() {
             // Delete selected discussions
@@ -697,6 +668,8 @@ export default {
             }
             this.tempList = this.list
             this.isCheckbox = false
+            this.$refs.toast.showToast("Removed ("+deleteList.length+") items", 4, true)
+                
             console.log("Multi delete done")
         },
         async deleteMessage(msgId) {
@@ -706,7 +679,7 @@ export default {
                 this.discussionArr.splice(this.discussionArr.findIndex(item => item.id == msgId), 1)
 
             }).catch(() => {
-
+                this.$refs.toast.showToast("Could not remove message", 4, false)
                 console.log("Error: Could not delete message")
             })
 
@@ -788,7 +761,7 @@ export default {
                 const message = this.discussionArr[this.discussionArr.findIndex(item => item.id == msgId)]
                 message.rank = res.new_rank
             }).catch(() => {
-
+                this.$refs.toast.showToast("Could not rank up message", 4, false)
                 console.log("Error: Could not rank up message")
             })
 
@@ -799,6 +772,7 @@ export default {
                 const message = this.discussionArr[this.discussionArr.findIndex(item => item.id == msgId)]
                 message.rank = res.new_rank
             }).catch(() => {
+                this.$refs.toast.showToast("Could not rank down message", 4, false)
 
                 console.log("Error: Could not rank down message")
             })
@@ -811,6 +785,7 @@ export default {
                 message.content = msg
 
             }).catch(() => {
+                this.$refs.toast.showToast("Could not update message", 4, false)
 
                 console.log("Error: Could not update message")
             })
@@ -861,8 +836,9 @@ export default {
             this.chime.play()
         },
         copyToClipBoard(content) {
-
-            this.$refs.toast.showToast("Copied to clipboard successfully")
+            this.$refs.toast.showToast("Copied to clipboard successfully", 4, true)
+            navigator.clipboard.writeText(content);
+            
             nextTick(() => {
                 feather.replace()
 
@@ -965,9 +941,7 @@ export default {
                 }
                 return newItem
             })
-            // const index = personalities.findIndex((x) => x.name === sender)
-            //     const pers = personalities[index]
-            // return pers.avatar
+
 
         },
         getAvatar(sender) {
