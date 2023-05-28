@@ -44,6 +44,8 @@ from gevent.pywsgi import WSGIServer
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import logging
+import psutil
+
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
@@ -80,6 +82,11 @@ class Gpt4AllWebUI(GPT4AllAPI):
         # =========================================================================================
         # Endpoints
         # =========================================================================================
+
+
+        self.add_endpoint(
+            "/get_available_space", "get_available_space", self.get_available_space, methods=["GET"]
+        )
 
 
         self.add_endpoint(
@@ -461,6 +468,12 @@ class Gpt4AllWebUI(GPT4AllAPI):
         print("Set config results:")
         print(result)
         return jsonify(result)
+    
+    def get_available_space(self):
+        current_drive = Path.cwd().anchor
+        disk_usage = psutil.disk_usage(current_drive)
+        available_space = disk_usage.free
+        return jsonify({"available_space":available_space})
 
     def list_bindings(self):
         bindings_dir = Path('./bindings')  # replace with the actual path to the models folder

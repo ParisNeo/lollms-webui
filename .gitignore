@@ -178,3 +178,6 @@ outputs
 .installed
 
 test.http
+
+shared/*
+!shared/.keep

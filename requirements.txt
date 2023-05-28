@@ -1,4 +1,5 @@
 tqdm
+psutil
 flask
 flask_socketio
 pytest
@@ -7,3 +8,4 @@ markdown
 gevent
 gevent-websocket
 pyaipersonality>=0.0.14
+langchain
