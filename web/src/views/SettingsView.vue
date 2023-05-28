@@ -599,7 +599,7 @@ export default {
             if (pers.personality) {
 
                 this.settingsChanged = true
-                const res = this.update_setting('personality', pers.personality.name, () => {
+                const res = this.update_setting('personality', pers.personality.folder, () => {
                     this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
                     this.configFile.personality = pers.personality.name
                     this.configFile.personality_category = pers.personality.category

@@ -270,7 +270,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
                         for personality_folder in category_folder.iterdir():
                             if personality_folder.is_dir():
                                 try:
-                                    personality_info = {}
+                                    personality_info = {"folder":personality_folder.stem}
                                     config_path = personality_folder / 'config.yaml'
                                     with open(config_path) as config_file:
                                         config_data = yaml.load(config_file, Loader=yaml.FullLoader)
@@ -624,7 +624,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
             
     def get_generation_status(self):
-        return jsonify({"status":self.process.is_generating.value==1}) 
+        return jsonify({"status":self.process.start_signal.is_set()}) 
     
     def stop_gen(self):
         self.cancel_gen = True

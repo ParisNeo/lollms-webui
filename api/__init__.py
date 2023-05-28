@@ -87,9 +87,12 @@ class ModelProcess:
         self.clear_queue_queue = mp.Queue(maxsize=1)
         self.set_config_queue = mp.Queue(maxsize=1)
         self.set_config_result_queue = mp.Queue(maxsize=1)
-        self.started_queue = mp.Queue()
+
         self.process = None
-        self.is_generating  = mp.Value('i', 0)
+        # Create synchronization objects
+        self.start_signal = mp.Event()
+        self.completion_signal = mp.Event()
+
         self.model_ready  = mp.Value('i', 0)
         self.curent_text = ""
         self.ready = False
@@ -106,6 +109,24 @@ class ModelProcess:
             'personality_status':'ok',
             'errors':[]
             }
+        
+    def remove_text_from_string(self, string, text_to_find):
+        """
+        Removes everything from the first occurrence of the specified text in the string (case-insensitive).
+
+        Parameters:
+        string (str): The original string.
+        text_to_find (str): The text to find in the string.
+
+        Returns:
+        str: The updated string.
+        """
+        index = string.lower().find(text_to_find.lower())
+
+        if index != -1:
+            string = string[:index]
+
+        return string
         
     def load_binding(self, binding_name:str, install=False):
         if install:
@@ -166,10 +187,13 @@ class ModelProcess:
         return self.set_config_result_queue.get()
 
     def generate(self, full_prompt, prompt, id, n_predict):
+        self.start_signal.clear()
         self.generate_queue.put((full_prompt, prompt, id, n_predict))
 
     def cancel_generation(self):
+        self.completion_signal.set()
         self.cancel_queue.put(('cancel',))
+        print("Canel request received")
 
     def clear_queue(self):
         self.clear_queue_queue.put(('clear_queue',))
@@ -279,8 +303,6 @@ class ModelProcess:
                     command = self.generate_queue.get()
                     if command is not None:
                         if self.cancel_queue.empty() and self.clear_queue_queue.empty():
-                            self.is_generating.value = 1
-                            self.started_queue.put(1)
                             self.id=command[2]
                             self.n_predict=command[3]
                             if self.personality.processor is not None:
@@ -288,15 +310,18 @@ class ModelProcess:
                                     if "custom_workflow" in self.personality.processor_cfg:
                                         if self.personality.processor_cfg["custom_workflow"]:
                                             print("Running workflow")
+                                            self.completion_signal.clear()
+                                            self.start_signal.set()
                                             output = self.personality.processor.run_workflow(self._generate, command[1], command[0], self._callback)
                                             self._callback(output, 0)
-                                            self.is_generating.value = 0
+                                            self.completion_signal.set()
+                                            print("Finished executing the workflow")
                                             continue
-
+                            self.start_signal.set()
+                            self.completion_signal.clear()
                             self._generate(command[0], self.n_predict, self._callback)
-                            while not self.generation_queue.empty():
-                                time.sleep(1)
-                            self.is_generating.value = 0
+                            self.completion_signal.set()
+                            print("Finished executing the generation")
             except Exception as ex:
                 print(ex)
             time.sleep(1)
@@ -357,14 +382,14 @@ class ModelProcess:
                 # Stream the generated text to the main process
                 self.generation_queue.put((text,self.id, text_type))
                 # if stop generation is detected then stop
-                if self.is_generating.value==1:
+                if self.completion_signal.is_set():
                     return True
                 else:
                     return False
         else:
             self.curent_text = self.remove_text_from_string(self.curent_text, anti_prompt_to_remove)
-            self._cancel_generation()
             print("The model is halucinating")
+            return False
 
 
     def _check_cancel_queue(self):
@@ -391,7 +416,7 @@ class ModelProcess:
                 self.set_config_result_queue.put(self._set_config_result)
 
     def _cancel_generation(self):
-        self.is_generating.value = 0
+        self.completion_signal.set()
             
     def _clear_queue(self):
         while not self.generate_queue.empty():
@@ -679,24 +704,6 @@ class GPT4AllAPI():
         return discussion_messages # Removes the last return
 
 
-    def remove_text_from_string(self, string, text_to_find):
-        """
-        Removes everything from the first occurrence of the specified text in the string (case-insensitive).
-
-        Parameters:
-        string (str): The original string.
-        text_to_find (str): The text to find in the string.
-
-        Returns:
-        str: The updated string.
-        """
-        index = string.lower().find(text_to_find.lower())
-
-        if index != -1:
-            string = string[:index]
-
-        return string
-
     def process_chunk(self, chunk, message_type):
         self.bot_says += chunk
         self.socketio.emit('message', {
@@ -739,15 +746,14 @@ class GPT4AllAPI():
             # prepare query and reception
             self.discussion_messages, self.current_message = self.prepare_query(message_id)
             self.prepare_reception()
-            self.generating = True            
+            self.generating = True
             self.process.generate(self.discussion_messages, self.current_message, message_id, n_predict = self.config['n_predict'])
-            self.process.started_queue.get()
-            while(self.process.is_generating.value or not self.process.generation_queue.empty()):  # Simulating other commands being issued
+            while(not self.process.completion_signal.is_set() or not self.process.generation_queue.empty()):  # Simulating other commands being issued
                 try:
                     chunk, tok, message_type = self.process.generation_queue.get(False, 2)
                     if chunk!="":
                         self.process_chunk(chunk, message_type)
-                except:
+                except Exception as ex:
                     time.sleep(0.1)
 
             print()
