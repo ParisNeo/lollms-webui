@@ -19,6 +19,7 @@
     "markdown-it-emoji": "^2.0.2",
     "socket.io-client": "^4.6.1",
     "vue": "^3.2.47",
+    "vue-grid-responsive": "^1.3.0",
     "vue-router": "^4.1.6"
   },
   "devDependencies": {

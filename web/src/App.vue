@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col h-screen max-h-screen font-sans bg-bg-light text-slate-950 dark:bg-bg-dark dark:text-slate-50">
+    class="flex flex-col font-sans bg-bg-light text-slate-950 dark:bg-bg-dark dark:text-slate-50">
 
     <TopBar />
 

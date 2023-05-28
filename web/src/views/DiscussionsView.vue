@@ -1,4 +1,6 @@
 <template>
+ <row>
+ <column :xs="12" :md="4" :lg="3">
     <div
         class="overflow-y-scroll flex flex-col no-scrollbar shadow-lg min-w-[24rem] max-w-[24rem] bg-bg-light-tone dark:bg-bg-dark-tone">
         <!-- LEFT SIDE PANEL -->
@@ -122,7 +124,7 @@
                 </div>
             </div>
         </div>
-        <div class="relative overflow-y-scroll no-scrollbar">
+        <div>
             <!-- DISCUSSION LIST -->
             <div class="mx-4 flex-grow" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''">
                 <TransitionGroup v-if="list.length>0" name="list" >
@@ -142,8 +144,9 @@
             </div>
         </div>
     </div>
-    <div class="overflow-y-auto flex flex-col flex-grow  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
-        id="messages-list">
+      </column>
+    <column :xs="12" :md="8" :lg="9">
+     <div>
 
         <!-- CHAT AREA -->
         <div class="container flex flex-col flex-grow pt-4 pb-10">
@@ -156,12 +159,14 @@
         </TransitionGroup>
         <WelcomeComponent  v-if="!currentDiscussion.id" />
         </div>
-        <div class=" sticky bottom-0">
             <ChatBox v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
                 @stopGenerating="stopGenerating" />
-        </div>
 
     </div>
+    
+        </column>
+    </row>
+   
     <Toast ref="toast">
     </Toast>
 </template>

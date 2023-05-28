@@ -1,5 +1,5 @@
 <template>
-    <div class="flex-none sticky bottom-0 p-0 items-center justify-center px-32 self-center w-full">
+    <div class="flex-none sticky bottom-0 p-0 items-center justify-center px-16 self-center w-full">
         <div v-if="loading" class="flex items-center justify-center w-full">
             <div class="flex flex-row p-2 rounded-t-lg ">
                 
