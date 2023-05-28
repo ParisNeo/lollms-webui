@@ -240,18 +240,20 @@ This Flask server provides various endpoints to manage and interact with the cha
 - "/help": GET request endpoint to display the help page.
 - "/get_all_personalities": GET request endpoint to get all personalities array
 - "/get_personality": GET request endpoint to get speciffic data based on request
-- "/get_available_space": GET request endpoint to retrieve the available space in the current folder's drive.
+- "/disk_usage": GET request endpoint to retrieve the available space in the current folder's drive.
     Method: GET
     Description: Retrieves the available space in bytes for the current folder's drive.
     Response:
     Content-Type: application/json
     Body: JSON object with a single entry 'available_space' containing the available space in bytes.
     Example Response:
-    json
-    Copy code
+    ```json
     {
-      "available_space": 1234567890
+        "total_space":1000000000000,
+        "available_space":515358106014,
+        "percent_usage":51.53
     }
+    ```
     Example Usage:
     Request: GET /disk_space
     Response: 200 OK
