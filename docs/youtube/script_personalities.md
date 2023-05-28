@@ -171,6 +171,4 @@ I hope you found this video informative and engaging. If you enjoyed it, please 
 
 Thank you for watching, and until next time!
 
-
-
-Next time we will see how to import th
+See ya
