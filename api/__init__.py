@@ -705,15 +705,16 @@ class GPT4AllAPI():
 
 
     def process_chunk(self, chunk, message_type):
-        self.bot_says += chunk
-        self.socketio.emit('message', {
-                                        'data': self.bot_says, 
-                                        'user_message_id':self.current_user_message_id, 
-                                        'ai_message_id':self.current_ai_message_id, 
-                                        'discussion_id':self.current_discussion.discussion_id,
-                                        'message_type': message_type
-                                    }
-                            )
+        if message_type == 0:
+            self.bot_says += chunk
+            self.socketio.emit('message', {
+                                            'data': self.bot_says, 
+                                            'user_message_id':self.current_user_message_id, 
+                                            'ai_message_id':self.current_ai_message_id, 
+                                            'discussion_id':self.current_discussion.discussion_id,
+                                            'message_type': message_type
+                                        }
+                                )
         if self.cancel_gen:
             print("Generation canceled")
             self.process.cancel_generation()

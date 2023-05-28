@@ -148,5 +148,15 @@ By the end of this dynamic thought generation process, the AI accumulates a coll
 
 Now, let's put this Tree of Thoughts personality to the test with a challenging topic: finding solutions to the climate change problem. Brace yourself for an engaging and thought-provoking exploration of ideas and potential strategies.
 
-Here are the
+Here is the final synthesis of the AI's thoughts. The text appears to be correct and coherent, aligning precisely with the number of thoughts we set in the configuration. It's important to note that this response is the result of a thorough tree search process, which takes more time compared to a simple response. However, this technique allows for a more thoughtful and well-considered output, exceeding the expectations we might have had from the model alone.
 
+
+If we observe the console, we can see that the personality initiated the process by posing a question to itself. It then generated three distinct thoughts and proceeded to select the most suitable one. Following this, it asked itself, "Given that I've chosen this initial thought, what would be the subsequent thought?" Generating three more thoughts, it once again selected the most optimal choice. This cycle repeated once more, resulting in a final selection of the best thought. Finally, the personality synthesized its ultimate conclusion by combining the top three thoughts derived from this thoughtful tree-based approach.
+
+Just a quick reminder: the quality of the answers primarily relies on the model you're using. It's all about size here – the bigger the model, the better the results. In our case, we're using the Wizard LM 7B model, which has 7 billion parameters. But if you're looking for even more impressive outcomes, you can't go wrong with super-sized models like Open Assistant or chat GPT.
+
+Now, let's dive into another crowd-favorite personality: GPT 4 Internet. This personality comes packed with an impressive feature – it can browse the internet to fetch answers for user questions. Whenever you ask a query, the AI cleverly sends a search request to an engine, retrieves the results, and crafts a response based on the information it finds. The best part? It even provides you with the sources it used, adding an extra layer of credibility to its answers. With this nifty functionality, you can trust that GPT 4 Internet has got your back when it comes to delivering well-informed responses.
+
+Let's put GPT 4 Internet to the test with a current affairs question: Who is the newly appointed CEO of Twitter? By leveraging its internet-searching capabilities, this personality will scour the web to find the most up-to-date information and promptly deliver the answer you seek.
+
+As you can observe, the personality performed its intended function flawlessly. It intelligently crafted a well-tailored query, conducted the search seamlessly behind the scenes, and swiftly presented the desired information along with proper source attribution. This showcases the power of leveraging the internet to enhance the AI's capabilities and provide you with accurate and reliable answers.
