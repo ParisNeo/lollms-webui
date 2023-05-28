@@ -1,0 +1,101 @@
+Hi there. In this video, we are going to talk about the personalities and what you can do with them.
+
+The GPT4All webui uses my PyAIPersonality library under the hood. I have buit this library to create a standard way to define AI simulations and integrate the AI personality with other tools, applications and data. Before starting, I want to explain some concepts to make it easy for you to understand the inner workings of these tools. Let's dive right in.
+
+Large Language Models (LLMs) are powerful text processing models based on machine learning techniques. As their name suggests, these models are characterized by their substantial size and versatility in handling various text-based tasks. In the context of this work, we focus specifically on text generation models.
+
+To generate text, we first need a hardware layer, which is simply the physical machine running the code that executes the model. The hardware has at least a CPU and some memory to store the data while processing the text but can also have a GPU to accelerate some calculations.
+
+On top of the hardware there is a software that is running the model. The model can be seen as a giant function with many parameters. chatGPT for example has around 175 billion parameters while a typical LLama based small model has around 7 billion parameters. There are also models with 13 Billion parameters, 30 billion parameters and 64 billion parameters.
+
+To reduce the size of those model we use some optimization techniques like quantization and pruning.
+Quantization reduces the precision of numerical values in a neural network to lower bit widths, improving computational efficiency and reducing memory usage.
+Pruning removes unnecessary connections or weights from a neural network, making it sparser and reducing computational complexity, while often requiring fine-tuning to maintain performance.
+
+Let's do a quick refresher to remind how the model works.
+
+In the initial step of text processing, a sequence of text undergoes tokenization, which involves converting it from plain text into a series of integers that correspond to the text's position within a comprehensive vocabulary. As mentioned in a previous video, a token can represent individual letters, complete words, word combinations, or even parts of words, such as "automobile" being represented by two tokens: "auto" and "mobile." This intelligent approach efficiently represents text. On average, a token corresponds to approximately 0.7 words.
+
+The model itself determines a distribution probability of the next token given the current state of the context. Basically, given the previous text. The distribution probability of the next token refers to the probability distribution over the vocabulary of possible tokens at a given step in a sequence generation task. It represents the model's estimation of the likelihood of each token being the correct or appropriate choice for the next position in the sequence.
+
+During the training step, the model looks at chunks of text and tryes to update its weight to give a better prediction of the next token. It learns the statistical relationships between the input tokens list and the next token which leads to the ability to generate coherant text.
+
+
+To illustrate this concept, let's consider an example. Suppose we start with the word "I." At this point, there are numerous possible next words that could follow. However, by leveraging the knowledge and patterns learned from extensive training on a vast corpus of text, we can rank these potential next words based on their likelihood in the given context.
+
+For instance, if we determine that the most probable next word after "I" is "am," we update our context to "I am." As a result, the likelihood of "am" being repeated as the next word diminishes significantly, and other words like "happy" or "hungry" become more probable in this new context.
+
+The dynamic nature of the likelihood distribution for the next tokens is a fundamental aspect of language modeling. As more context is provided, the distribution of probable next words undergoes constant adjustments. This adaptability is precisely what the training step aims to enhance. By leveraging advanced techniques like the attention mechanism, the model learns the intricate relationships between words and becomes better at predicting the next token with greater accuracy.
+
+For a more comprehensive understanding of these mechanisms, I recommend referring to the "Attention is all you need" paper by Google, which delves into the details of the attention mechanism and its role in improving language modeling capabilities.
+
+One may ask, if we always select the most likely next word, how are these model capable of generating different outputs from the same input?
+
+As we discussed earlier, the language model determines the probability distribution of the next token. However, when it comes to selecting the next word, we rely on additional algorithms. While choosing the most likely word leads to a deterministic output, modern models employ various techniques such as sampling, top-k sampling, top-p (nucleus) sampling, and even apply repetition penalty to enhance the generated text.
+
+Sampling introduces an element of randomness during token selection. It involves stochastically drawing a token from the probability distribution based on a temperature parameter. A higher temperature (e.g., 1.0) increases randomness, resulting in diverse outputs. Conversely, a lower temperature (e.g., 0.5) makes the distribution sharper, favoring more probable tokens and yielding more focused outputs.
+
+Top-k sampling restricts the selection to the top-k most likely tokens, where k is a predefined value. Instead of considering the entire distribution, it narrows down the choices to a smaller set, maintaining a balance between randomness and coherence.
+
+Top-p (nucleus) sampling, also known as "soft" or "weighted" sampling, takes into account a cumulative probability threshold, usually referred to as p. It selects from the smallest possible set of tokens whose cumulative probability exceeds p. This approach allows for dynamic selection of the token set, ensuring a varied yet controlled generation process.
+
+Moreover, repetition penalty is a technique used to discourage repetitive outputs. It assigns lower probabilities to tokens that have been recently generated, reducing the likelihood of repetition and promoting more diverse and coherent text.
+
+By combining these techniques, language models can generate text that exhibits controlled randomness, avoids repetitiveness, and strikes a balance between exploration and coherence.
+
+Now that we have our next token, all we need to do is detokenize it and add it to our context.
+
+In our text generation process, we repeat this procedure until we encounter either the model predicting an end-of-sentence (EOS) token or reaching the maximum number of allowed tokens, which we refer to as the "N predict" parameter in our tool.
+
+This iterative approach ensures that the generated text remains within predefined length constraints and aligns with natural sentence boundaries. By incorporating the EOS token as a stopping criterion, we signify the completion of a coherent sentence or text snippet.
+
+The "N predict" parameter in our tool enables users to control the generated text's length, avoiding excessive length or truncation while maintaining desired content and brevity.
+
+Now you understand each one of the parameters that you can control in our UI. Let's take a look at these. First go to the settings tab and scroll down to model configuration section.
+
+As you observe, the parameters we discussed are integral to our system. By default, these parameters are not customizable, as our personalized system ensures the appropriate configuration for each personality. We recognize that different personalities may require varying levels of creativity or determinism, and this responsibility lies with the personality settings.
+
+However, we provide an override checkbox option that empowers you to modify and override the default personality settings, granting you the flexibility to adjust the parameters according to your specific needs and preferences. This checkbox serves as a means to deviate from the predefined settings, giving you greater control over the generated output.
+
+Let's get back to our diagram. Now we have an AI that has the possibility to generate text sequentially based on its experience acquired during the training process. But how can this seamingly dump process lead to a tool that can solve complex tasks like generating stories and do some basic reasoning?!
+
+At the heart of this process lies the simulation layer, a meta layer comprising the text itself. The ingenious trick is to leverage the power of text to condition subsequent generations, infusing them with contextual relevance. This is achieved through an initial text, known as the model conditioning, which establishes the foundation for the generation process and sets the plot.
+
+By employing the model conditioning, we enable the generation process to align with specific contexts, facilitating coherent and tailored outputs. This dynamic approach harnesses the rich potential of text to shape subsequent generations, ultimately enhancing the overall quality and relevance of the generated content.
+
+
+Allow me to provide you with an illustrative example. Suppose I present the model with a math question and instruct it to solve the problem. I would provide the math problem, followed by specific instructions such as "solve this problem," and then proceed to include the prefix, "solution:", before feeding the text to the AI.
+
+The AI, leveraging its prior knowledge acquired during training and utilizing the given context, will determine the appropriate response. The generated answer is generally coherent, although it may occasionally contain errors or take the form of a disclaimer, such as "I am a machine learning program and cannot solve math problems." This outcome depends on the training process and the alignment phase of the model, which may influence the model's readiness or inclination to perform certain tasks.
+
+While we won't delve into the intricacies of the alignment phase in this video, it is a crucial step that aligns the model to the specific task we desire it to perform. Through this alignment phase, the model can learn to recognize the scope and limitations of its abilities, leading to informed decisions regarding task completion.
+
+By combining the context provided and the model's training, we can explore the model's capabilities in generating responses to math questions or other tasks, while being mindful of the alignment process that shapes its behavior and responses.
+
+In PY AI Personalities library, the generation text is composed of a fixed Condutionning text, and an incremental discussion messages text. The discussion messages text in our application is in the form of a multi turns discussion. Each time we add a user prefix text such as, "### User:", followed by the user prompt, a link text (generally, a simple return to the line character), followed by the AI prefix, such as "### AI:". Then we feed this to the model that generates the AI text.
+
+At the end, we add the messages to the previous messages text and we continue as the user interacts with the AI.
+
+It's important to acknowledge that the AI has the potential to continue generating predictions for the rest of the discussion, including anticipating the user's future requests. This phenomenon is known as hallucination. To address this issue, we have implemented a hallucination suppression system designed to detect instances where the model predicts the user's next prompt and intervene to prevent it from persisting further.
+
+By employing this suppression system, we aim to ensure that the AI remains within the desired boundaries and avoids venturing into speculative or inaccurate territory. This protective mechanism helps maintain a more controlled and focused conversation, preventing the AI from generating misleading or unrelated information based on its own projections.
+
+The implementation of the hallucination suppression system enables a more reliable and coherent interaction, allowing users to have meaningful and productive exchanges with the AI while mitigating the risks associated with unfettered generation.
+
+Finally, the personality system is a structure that allows the definition of all the parameters of the AI agent you are talking too: The conditioning text, the user prefix text, the link text, the ai prefix text, the antiprompts text used by the hallucination suppression system as well as all the generation parameters that control the model.
+
+All of this is stored inside a yaml file called config.yaml stored in the personality folder. Notice that we also ahev extra folders, such as assets folder that contains the personality logo and will eventually be used to store more assets such as personality voice or personality 3D character that can be used for a future meta integration of language models.
+
+
+We also have a scripts folder where we can put custom code to execute instead of following the default generation workflow that we have shown at the beginning of this video. 
+
+
+Let's take a closer look at the GPT for art personality and its structure. It's a bit more complex because it's not just about answering prompts—it has its own customized workflow.
+
+In the assets folder, you'll find the personality's cool logo, which it actually generated itself.
+
+Now, in the scripts folder, there are two files. The first one is install.py, which runs when you select the personality for the first time. This file handles all the custom installation steps. For example, in this case, it installs extra libraries, downloads the stable diffusion project, and gets a diffusion model to work with. We keep a list of those extra libraries in requirements.txt. Once everything's installed, you're good to go with this personality.
+
+The second file, processor.py, is where the personality's magic happens. It's got a class called Processor that inherits from PAPScript and does some important stuff. The star of the show is the run_workflow method. It takes the current prompt, the accumulated messages so far, and a callback function that's triggered at each step of the workflow.
+
+In this art personality, we've set it up to generate an image description based on the user's prompt. Then it uses the stable diffusion generator to bring that description to life as an actual image. Finally, it prepares and sends the image as a cool markdown text to the UI.

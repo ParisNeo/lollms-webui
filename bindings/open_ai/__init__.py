@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Callable
 from api.binding import LLMBinding
 from api.config import load_config
+import openai
 import yaml
 import re
 
@@ -23,15 +24,15 @@ __github__ = "https://github.com/ParisNeo/gpt4all-ui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-binding_name = "CustomBinding"
+binding_name = "OpenAIGPT"
 
-class CustomBinding(LLMBinding):
+class OpenAIGPT(LLMBinding):
     # Define what is the extension of the model files supported by your binding
     # Only applicable for local models for remote models like gpt4 and others, you can keep it empty 
     # and reimplement your own list_models method
     file_extension='*.bin' 
     def __init__(self, config:dict) -> None:
-        """Builds a LLAMACPP binding
+        """Builds a OpenAIGPT binding
 
         Args:
             config (dict): The configuration file
@@ -93,6 +94,15 @@ class CustomBinding(LLMBinding):
 This is an empty binding that shows how you can build your own binding.
 Find it in bindings
 """
+
+            response = openai.Completion.create(
+                engine='text-davinci-003',  # Choose the engine according to your OpenAI plan
+                prompt=prompt,
+                max_tokens=100,  # Adjust the desired length of the generated response
+                n=1,  # Specify the number of responses you want
+                stop=None,  # Define a stop sequence if needed
+                temperature=0.7  # Adjust the temperature for more or less randomness in the output
+            )
             for tok in re.split(r' |\n', generated_text):               
                 if count >= n_predict or self.model.is_eos_token(tok):
                     break
