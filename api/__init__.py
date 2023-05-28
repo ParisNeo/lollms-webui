@@ -188,6 +188,7 @@ class ModelProcess:
 
     def generate(self, full_prompt, prompt, id, n_predict):
         self.start_signal.clear()
+        self.completion_signal.clear()
         self.generate_queue.put((full_prompt, prompt, id, n_predict))
 
     def cancel_generation(self):
@@ -315,12 +316,14 @@ class ModelProcess:
                                             output = self.personality.processor.run_workflow(self._generate, command[1], command[0], self._callback)
                                             self._callback(output, 0)
                                             self.completion_signal.set()
+                                            self.start_signal.clear()
                                             print("Finished executing the workflow")
                                             continue
                             self.start_signal.set()
                             self.completion_signal.clear()
                             self._generate(command[0], self.n_predict, self._callback)
                             self.completion_signal.set()
+                            self.start_signal.clear()
                             print("Finished executing the generation")
             except Exception as ex:
                 print(ex)
@@ -534,6 +537,7 @@ class GPT4AllAPI():
                 )
 
                 self.current_user_message_id = message_id
+                print("Starting message generation")
                 tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
                 tpe.start()
             else:
@@ -705,6 +709,11 @@ class GPT4AllAPI():
 
 
     def process_chunk(self, chunk, message_type):
+        """
+        0 : a regular message
+        1 : a notification message
+        2 : A hidden message
+        """
         if message_type == 0:
             self.bot_says += chunk
         if message_type < 2:
@@ -759,7 +768,7 @@ class GPT4AllAPI():
                     time.sleep(0.1)
 
             print()
-            print("## Done ##")
+            print("## Done Generation ##")
             print()
 
             # Send final message
@@ -772,8 +781,10 @@ class GPT4AllAPI():
 
             self.current_discussion.update_message(self.current_ai_message_id, self.bot_says)
             self.full_message_list.append(self.bot_says)
-            self.cancel_gen = False      
-            return bot_says
+            self.cancel_gen = False
+            print()
+            print("## Done ##")
+            print()
         else:
             #No discussion available
             print("No discussion selected!!!")

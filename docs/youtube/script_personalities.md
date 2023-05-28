@@ -160,3 +160,17 @@ Now, let's dive into another crowd-favorite personality: GPT 4 Internet. This pe
 Let's put GPT 4 Internet to the test with a current affairs question: Who is the newly appointed CEO of Twitter? By leveraging its internet-searching capabilities, this personality will scour the web to find the most up-to-date information and promptly deliver the answer you seek.
 
 As you can observe, the personality performed its intended function flawlessly. It intelligently crafted a well-tailored query, conducted the search seamlessly behind the scenes, and swiftly presented the desired information along with proper source attribution. This showcases the power of leveraging the internet to enhance the AI's capabilities and provide you with accurate and reliable answers.
+
+Finally, to install the personalities, go to the root of your gpt4all webui application and open a terminal. Then type installation/add_personality.bat or add_personality.sh depending on your operating system. you'll be prompted to choose a language, then a category, and finally the personality you want to install. Once installed, your personality will apear in the zoo.
+
+Alright, let's wrap up here to keep the video concise. With over 250 personalities to explore, we've only scratched the surface of what GPT 4 All has to offer. While not all personalities have been fully adapted to the new format, a majority of them are already functional and ready for testing.
+
+Throughout this video, we've delved into the various layers of LLM-based chatbots, grasped the fundamentals of text generation, and gained insights into the essential parameters that govern the generation process. Additionally, we've discovered the intriguing concept of personalities, witnessing some of them in action.
+
+I hope you found this video informative and engaging. If you enjoyed it, please show your support by liking, starring the project on GitHub, sharing, and subscribing to stay updated on future content. Producing this video was a labor of love, dedicating an entire weekend to its creation, and I sincerely hope it proves valuable to you.
+
+Thank you for watching, and until next time!
+
+
+
+Next time we will see how to import th
