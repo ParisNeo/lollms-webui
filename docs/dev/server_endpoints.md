@@ -251,7 +251,8 @@ This Flask server provides various endpoints to manage and interact with the cha
     {
         "total_space":1000000000000,
         "available_space":515358106014,
-        "percent_usage":51.53
+        "percent_usage":51.53,
+        "binding_models_usage": 3900000000
     }
     ```
     Example Usage:

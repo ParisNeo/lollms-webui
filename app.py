@@ -471,12 +471,24 @@ class Gpt4AllWebUI(GPT4AllAPI):
     
     def disk_usage(self):
         current_drive = Path.cwd().anchor
-        disk_usage = psutil.disk_usage(current_drive)
-        return jsonify({
-            "total_space":disk_usage.total,
-            "available_space":disk_usage.free,
-            "percent_usage":disk_usage.percent
-            })
+        drive_disk_usage = psutil.disk_usage(current_drive)
+        try:
+            models_folder_disk_usage = psutil.disk_usage(f'./models/{self.config["binding"]}')
+            return jsonify({
+                "total_space":drive_disk_usage.total,
+                "available_space":drive_disk_usage.free,
+
+                "percent_usage":drive_disk_usage.percent,
+                "binding_models_usage": models_folder_disk_usage.used
+                })
+        except:
+            return jsonify({
+                "total_space":drive_disk_usage.total,
+                "available_space":drive_disk_usage.free,
+                
+                "percent_usage":drive_disk_usage.percent,
+                "models_folder_usage": None
+                })
 
     def list_bindings(self):
         bindings_dir = Path('./bindings')  # replace with the actual path to the models folder
