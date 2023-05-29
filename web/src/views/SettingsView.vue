@@ -33,10 +33,10 @@
             <div class="flex gap-3 flex-1 items-center justify-end">
 
 
-                <div v-if="!isModelSelected" class="text-red-600 flex gap-3 items-center">
+                <!-- <div v-if="!isModelSelected" class="text-red-600 flex gap-3 items-center">
                     <i data-feather="alert-triangle"></i>
                     No model selected!
-                </div>
+                </div> -->
                 <div class="flex gap-3 items-center">
                     <div v-if="settingsChanged" class="flex gap-3 items-center">
                         Apply changes:
@@ -137,10 +137,16 @@
                         <i :data-feather="mzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
                             Models zoo</h3>
+                            <div class="flex flex-row items-center">
+                                <div v-if="!isModelSelected" class="text-base text-red-600 flex gap-3 items-center">
+                    <i data-feather="alert-triangle"></i>
+                    No model selected!
+                </div>
+                           
                         <div v-if="configFile.model" class="mr-2">|</div>
                         <div v-if="configFile.model"
                             class=" text-base font-semibold cursor-pointer select-none items-center">
-                            {{ configFile.model }} </div>
+                            {{ configFile.model }} </div> </div>
                     </button>
                 </div>
                 <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
@@ -149,7 +155,7 @@
                             Disk usage:
                         </label>
                         <div class="flex flex-col mx-2">
-                            <div><b>Bindings/models folder:&nbsp;</b>{{ binding_models_usage }}</div>
+                            <div><b>Current binding models folder:&nbsp;</b>{{ binding_models_usage }}</div>
                             <!-- <div><b>Percentage:&nbsp;</b>{{ percent_usage }}</div> -->
                             <!-- <div><b>Total disk size:&nbsp;</b>{{ total_space }}</div> -->
                             <div><b>Avaliable space:&nbsp;</b> {{ available_space }} / {{ total_space }}</div>
@@ -844,6 +850,7 @@ export default {
                 })
                 // If binding changes then reset model
                 this.update_model(null)
+                this.configFile.model=null
             })
 
         },
