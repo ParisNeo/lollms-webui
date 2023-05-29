@@ -368,7 +368,10 @@ class ModelProcess:
         return output
 
     def _callback(self, text, text_type=0):
-        print(text,end="", flush=True)
+        try:
+            print(str(text),end="", flush=True)
+        except:
+            print(".")
         self.curent_text += text
         detected_anti_prompt = False
         anti_prompt_to_remove=""
@@ -501,7 +504,10 @@ class GPT4AllAPI():
                 def callback(progress):
                     socketio.emit('install_progress',{'status': 'progress', 'progress': progress})
                     
-                self.download_file(model_path, installation_path, callback)
+                if hasattr(self.binding, "download_model"):
+                    self.binding.download_model(model_path, installation_path, callback)
+                else:
+                    self.download_file(model_path, installation_path, callback)
                 socketio.emit('install_progress',{'status': 'succeeded', 'error': ''})
             tpe = threading.Thread(target=install_model_, args=())
             tpe.start()

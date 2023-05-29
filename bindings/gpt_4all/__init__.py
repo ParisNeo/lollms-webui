@@ -24,6 +24,7 @@ __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
 binding_name = "GPT4ALL"
+from gpt4all import GPT4All
 
 class GPT4ALL(LLMBinding):
     file_extension='*.bin'
@@ -64,6 +65,8 @@ class GPT4ALL(LLMBinding):
             str: The detokenized text as a string.
         """
         return None
+    
+
     def generate(self, 
                  prompt:str,                  
                  n_predict: int = 128,
@@ -79,8 +82,19 @@ class GPT4ALL(LLMBinding):
             verbose (bool, optional): If true, the code will spit many informations about the generation process. Defaults to False.
         """
         try:
-            output = ""
-            for tok in self.model.generate(prompt, 
+            response_tokens = []
+            def local_callback(token_id, response):
+                decoded_token = response.decode('utf-8')
+                response_tokens.append( decoded_token );
+                if new_text_callback is not None:
+                    if not new_text_callback(''.join(response_tokens)):
+                        return False
+
+                # Do whatever you want with decoded_token here.
+
+                return True
+            self.model._response_callback = local_callback
+            self.model.generate(prompt, 
                                            n_predict=n_predict,                                           
                                             temp=self.config['temperature'],
                                             top_k=self.config['top_k'],
@@ -88,15 +102,11 @@ class GPT4ALL(LLMBinding):
                                             repeat_penalty=self.config['repeat_penalty'],
                                             repeat_last_n = self.config['repeat_last_n'],
                                             # n_threads=self.config['n_threads'],
-                                            streaming=True,
-                                           ):
-                output += tok
-                if new_text_callback is not None:
-                    if not new_text_callback(tok):
-                        return output
+                                            streaming=False,
+                                           )
         except Exception as ex:
             print(ex)
-        return output
+        return ''.join(response_tokens)
 
     @staticmethod
     def get_available_models():
