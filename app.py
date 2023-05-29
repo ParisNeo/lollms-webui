@@ -232,6 +232,11 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.add_endpoint(
             "/export_multiple_discussions", "export_multiple_discussions", self.export_multiple_discussions, methods=["POST"]
         )      
+        self.add_endpoint(
+            "/import_multiple_discussions", "import_multiple_discussions", self.import_multiple_discussions, methods=["POST"]
+        )      
+
+        
         
     def export_multiple_discussions(self):
         data = request.get_json()
@@ -239,6 +244,10 @@ class Gpt4AllWebUI(GPT4AllAPI):
         discussions = self.db.export_discussions_to_json(discussion_ids)
         return jsonify(discussions)
           
+    def import_multiple_discussions(self):
+        data = request.get_json()
+        discussions = data
+        return jsonify(discussions)
         
     def reset(self):
         os.kill(os.getpid(), signal.SIGINT)  # Send the interrupt signal to the current process
