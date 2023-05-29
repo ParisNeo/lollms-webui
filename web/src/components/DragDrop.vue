@@ -21,7 +21,9 @@
                         ({{ fileList.length }})
                     </div>
                 </div>
-                <div class=" overflow-auto no-scrollbar">
+
+                <!-- DISABLED UNTIL FURTHER NOTICE -->
+                <!-- <div class=" overflow-auto no-scrollbar">
 
                     <TransitionGroup name="list" tag="div" class="flex flex-col items-center p-2">
                         <div v-for="file in fileList" :key="file.name">
@@ -44,7 +46,7 @@
                             </div>
                         </div>
                     </TransitionGroup>
-                </div>
+                </div> -->
 
             </div>
         </div>
@@ -72,7 +74,6 @@ export default {
         }
     },
     mounted() {
-        //this.fileList.push({ name: 'lol.sss', size: 22 })
         nextTick(() => {
             feather.replace()
 
@@ -98,10 +99,8 @@ export default {
                 feather.replace()
             })
             this.$emit('panelDrop', this.fileList)
-            
+            this.fileList=[]
             this.show = false
-            // console.log("dropped", this.fileList)
-            //console.log(event.dataTransfer.files[0]);
 
         },
         panelLeave() {
@@ -109,7 +108,6 @@ export default {
             console.log('exit/leave')
             this.dropRelease = false
             this.show = false
-            //this.fileList = []
             nextTick(() => {
                 feather.replace()
 

@@ -25,8 +25,9 @@
                     type="button">
                     <i data-feather="database"></i>
                 </button>
+                <input type="file" ref="fileDialog" style="display: none" @change="importDiscussions" />
                 <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
-                    title="Import discussions" type="button" @click.stop="">
+                    title="Import discussions" type="button" @click.stop="$refs.fileDialog.click()">
                     <i data-feather="log-in"></i>
                 </button>
                 <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Filter discussions"
@@ -123,6 +124,9 @@
             </div>
         </div>
         <div class="relative overflow-y-scroll no-scrollbar">
+            <div class="z-20">
+            <DragDrop ref="dragdropDiscussion" @panelDrop="setFileListChat"></DragDrop>
+        </div>
             <!-- DISCUSSION LIST -->
             <div class="mx-4 flex-grow" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''">
                 <TransitionGroup v-if="list.length > 0" name="list">
@@ -142,16 +146,17 @@
             </div>
         </div>
     </div>
-    <div class="flex relative " @dragover.stop.prevent="setDropZone()" >
+    <div class="flex relative flex-grow " @dragover.stop.prevent="setDropZoneChat()">
         <div class="z-20">
-            <DragDrop ref="dragdrop"  @panelDrop="setFileList"></DragDrop>
+            <DragDrop ref="dragdropChat" @panelDrop="setFileListChat"></DragDrop>
         </div>
 
-        <div  :class="isDragOver?'pointer-events-none':''" class="flex flex-col flex-grow overflow-y-auto  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
-            id="messages-list" >
+        <div :class="isDragOver ? 'pointer-events-none' : ''"
+            class="flex flex-col flex-grow overflow-y-auto  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+            id="messages-list">
 
             <!-- CHAT AREA -->
-            <div class="container flex flex-col flex-grow pt-4 pb-10 ">
+            <div class="conainer flex flex-col flex-grow pt-4 pb-10 ">
                 <TransitionGroup v-if="discussionArr.length > 0" name="list">
                     <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg" :id="'msg-' + msg.id"
                         ref="messages" @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
@@ -165,8 +170,8 @@
             </div>
 
 
-            <div class=" sticky bottom-0">
-                <ChatBox v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
+            <div class="sticky bottom-0 flex flex-col  items-center justify-center">
+                <ChatBox ref="chatBox" v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
                     @stopGenerating="stopGenerating" />
             </div>
 
@@ -226,7 +231,7 @@ export default {
             personalityAvatars: [], // object array of personality name: and avatar: props
             fileList: [],
             isDropZoneVisible: true,
-            isDragOver:false
+            isDragOver: false
         }
     },
     methods: {
@@ -410,6 +415,25 @@ export default {
             } catch (error) {
                 console.log("Error: Could not export multiple discussions", error.message)
                 return {}
+            }
+        },
+        async import_multiple_discussions(jArray) {
+            try {
+                if (jArray.length > 0) {
+                    console.log('sending import',jArray)
+                    const res = await axios.post('/import_multiple_discussions', {
+                        jArray
+                    })
+
+                    if (res) {
+                        console.log('import response',res.data)
+                        return res.data
+                    }
+                }
+
+            } catch (error) {
+                console.log("Error: Could not import multiple discussions", error.message)
+                return 
             }
         },
         filterDiscussions() {
@@ -879,6 +903,14 @@ export default {
             a.click();
             document.body.removeChild(a);
         },
+        async parseJsonFile(file) {
+            return new Promise((resolve, reject) => {
+                const fileReader = new FileReader()
+                fileReader.onload = event => resolve(JSON.parse(event.target.result))
+                fileReader.onerror = error => reject(error)
+                fileReader.readAsText(file)
+            })
+        },
         async exportDiscussions() {
             // Export selected discussions
 
@@ -923,6 +955,20 @@ export default {
                 this.loading = false
             }
 
+        },
+        async importDiscussions(event) {
+            const obj = await this.parseJsonFile(event.target.files[0])
+
+            const res = await this.import_multiple_discussions(obj)
+            if(res){
+                this.$refs.toast.showToast("Successfully imported ("+obj.length+")", 4, true)
+                await this.list_discussions()
+            }else{
+                this.$refs.toast.showToast("Failed to import discussions", 4, false)
+            }
+            
+            
+           
         },
         async getPersonalityAvatars() {
 
@@ -974,19 +1020,19 @@ export default {
 
             return
         },
-        setFileList(files) {
+        setFileListChat(files) {
             this.fileList = files
-            console.log('dropppp', this.fileList)
+            this.$refs.chatBox.fileList = this.fileList
+            //console.log('dropppp', this.fileList)
+            this.isDragOver = false
         },
-        setDropZone(){
-            this.isDragOver=true
-            this.$refs.dragdrop.show=true
-            this.isDropZoneVisible=true
-            console.log('is vis',this.isDropZoneVisible)
+        setDropZoneChat() {
+            this.isDragOver = true
+            this.$refs.dragdropChat.show = true
+            this.isDropZoneVisible = true
+            //console.log('is vis',this.isDropZoneVisible)
         },
-        hideDropZone(){
-            this.$refs.dragdrop.show=false
-        }
+
 
 
     },
@@ -994,7 +1040,7 @@ export default {
         // Constructor
 
 
-
+        
         this.setPageTitle()
         await this.list_discussions()
 
@@ -1009,9 +1055,10 @@ export default {
         socket.on('infos', this.createBotMsg)
         socket.on('message', this.streamMessageContent)
         socket.on("final", this.finalMsgEvent)
-        
+
     },
     async activated() {
+        //this.$refs.dragdropDiscussion.show = true
         // This lifecycle hook runs every time you switch from other page back to this page (vue-router)
         // To fix scrolling back to last message, this hook is needed.
         // If anyone knows hor to fix scroll issue when changing pages, please do fix it :D
