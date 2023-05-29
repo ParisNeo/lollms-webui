@@ -369,8 +369,8 @@ class ModelProcess:
 
     def _callback(self, text, text_type=0):
         try:
-            print(str(text),end="", flush=True)
-        except:
+            print(str(text), end="", flush=True)
+        except Exception as ex:
             print(".")
         self.curent_text += text
         detected_anti_prompt = False
@@ -388,7 +388,7 @@ class ModelProcess:
                 # Stream the generated text to the main process
                 self.generation_queue.put((text,self.id, text_type))
                 # if stop generation is detected then stop
-                if self.completion_signal.is_set():
+                if not self.completion_signal.is_set():
                     return True
                 else:
                     return False

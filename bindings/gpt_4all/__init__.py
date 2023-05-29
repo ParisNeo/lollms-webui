@@ -82,12 +82,12 @@ class GPT4ALL(LLMBinding):
             verbose (bool, optional): If true, the code will spit many informations about the generation process. Defaults to False.
         """
         try:
-            response_tokens = []
+            response_text = []
             def local_callback(token_id, response):
-                decoded_token = response.decode('utf-8')
-                response_tokens.append( decoded_token );
+                decoded_word = response.decode('utf-8')
+                response_text.append( decoded_word )
                 if new_text_callback is not None:
-                    if not new_text_callback(''.join(response_tokens)):
+                    if not new_text_callback(decoded_word):
                         return False
 
                 # Do whatever you want with decoded_token here.
@@ -106,7 +106,7 @@ class GPT4ALL(LLMBinding):
                                            )
         except Exception as ex:
             print(ex)
-        return ''.join(response_tokens)
+        return ''.join(response_text)
 
     @staticmethod
     def get_available_models():
