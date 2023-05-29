@@ -136,11 +136,16 @@
                     class="gap-2 py-2 my-2 hover:shadow-md hover:bg-primary-light dark:hover:bg-primary rounded-md p-2 duration-75 group cursor-pointer">
                     <p class="px-3">No discussions are found</p>
                 </div>
+                                <div
+                    class="sticky bottom-0 bg-gradient-to-t pointer-events-none from-bg-light-tone dark:from-bg-dark-tone flex flex-grow">
+                    <!-- FADING DISCUSSION LIST END ELEMENT -->
+                </div>
             </div>
         </div>
     </column>
     <column :xs="12" :md="7" :lg="9">
-    <div id="messages-list">
+    <div class="flex flex-col flex-grow  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+        id="messages-list">
             <!-- CHAT AREA -->
                 <TransitionGroup v-if="discussionArr.length>0" name="list" >
                 <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg" :id="'msg-' + msg.id" ref="messages"
@@ -152,6 +157,7 @@
             <WelcomeComponent  v-if="!currentDiscussion.id" />
             
             </div>
+            
               <ChatBox v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
                     @stopGenerating="stopGenerating" />
 
@@ -447,16 +453,7 @@ export default {
         },
         scrollBottom(el) {
 
-            if (el) {
-                el.scrollTo(
-                    {
-                        top: el.scrollHeight,
-                        behavior: "smooth",
-                    }
-                )
-            } else {
-                console.log("Error: scrollBottom")
-            }
+            window.scrollTo(0, document.body.scrollHeight);
 
         },
 
