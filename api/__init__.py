@@ -290,8 +290,8 @@ class ModelProcess:
         self._check_clear_thread.start()
                 
         if self.model_ready.value == 1:
-            self.n_predict = 1
-            self._generate("I",1)
+            # self.n_predict = 1
+            # self._generate("I",1)
             print()
             print("Ready to receive data")
         else:
