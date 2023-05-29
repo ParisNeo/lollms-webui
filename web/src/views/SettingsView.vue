@@ -838,6 +838,7 @@ export default {
 
             // eslint-disable-next-line no-unused-vars
             this.isLoading = true
+            
             this.update_setting('binding', value, (res) => {
                 this.refresh();
 
@@ -851,6 +852,10 @@ export default {
                 // If binding changes then reset model
                 this.update_model(null)
                 this.configFile.model=null
+
+                this.api_get_req("disk_usage").then(response =>{
+                this.diskUsage=response
+            })
             })
 
         },
@@ -865,14 +870,14 @@ export default {
             })
         },
         applyConfiguration() {
-            if (!this.configFile.model) {
+            // if (!this.configFile.model) {
 
-                this.$refs.toast.showToast("Configuration changed failed.\nPlease select model first", 4, false)
-                nextTick(() => {
-                    feather.replace()
-                })
-                return
-            }
+            //     this.$refs.toast.showToast("Configuration changed failed.\nPlease select model first", 4, false)
+            //     nextTick(() => {
+            //         feather.replace()
+            //     })
+            //     return
+            // }
             this.isLoading = true;
             axios.post('/apply_settings').then((res) => {
                 this.isLoading = false;
