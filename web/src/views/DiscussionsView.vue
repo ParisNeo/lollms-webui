@@ -124,6 +124,9 @@
             </div>
         </div>
         <div class="relative overflow-y-scroll no-scrollbar">
+            <div class="z-20">
+            <DragDrop ref="dragdropDiscussion" @panelDrop="setFileListChat"></DragDrop>
+        </div>
             <!-- DISCUSSION LIST -->
             <div class="mx-4 flex-grow" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''">
                 <TransitionGroup v-if="list.length > 0" name="list">
@@ -143,9 +146,9 @@
             </div>
         </div>
     </div>
-    <div class="flex relative flex-grow " @dragover.stop.prevent="setDropZone()">
+    <div class="flex relative flex-grow " @dragover.stop.prevent="setDropZoneChat()">
         <div class="z-20">
-            <DragDrop ref="dragdrop" @panelDrop="setFileList"></DragDrop>
+            <DragDrop ref="dragdropChat" @panelDrop="setFileListChat"></DragDrop>
         </div>
 
         <div :class="isDragOver ? 'pointer-events-none' : ''"
@@ -1015,15 +1018,15 @@ export default {
 
             return
         },
-        setFileList(files) {
+        setFileListChat(files) {
             this.fileList = files
             this.$refs.chatBox.fileList = this.fileList
-            console.log('dropppp', this.fileList)
+            //console.log('dropppp', this.fileList)
             this.isDragOver = false
         },
-        setDropZone() {
+        setDropZoneChat() {
             this.isDragOver = true
-            this.$refs.dragdrop.show = true
+            this.$refs.dragdropChat.show = true
             this.isDropZoneVisible = true
             //console.log('is vis',this.isDropZoneVisible)
         },
@@ -1035,7 +1038,7 @@ export default {
         // Constructor
 
 
-
+        
         this.setPageTitle()
         await this.list_discussions()
 
@@ -1053,6 +1056,7 @@ export default {
 
     },
     async activated() {
+        this.$refs.dragdropDiscussion.show = true
         // This lifecycle hook runs every time you switch from other page back to this page (vue-router)
         // To fix scrolling back to last message, this hook is needed.
         // If anyone knows hor to fix scroll issue when changing pages, please do fix it :D
