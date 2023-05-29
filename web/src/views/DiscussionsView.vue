@@ -165,8 +165,8 @@
             </div>
 
 
-            <div class=" sticky bottom-0">
-                <ChatBox v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
+            <div class="sticky bottom-0 flex flex-col  items-center justify-center">
+                <ChatBox ref="chatBox" v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
                     @stopGenerating="stopGenerating" />
             </div>
 
@@ -976,17 +976,17 @@ export default {
         },
         setFileList(files) {
             this.fileList = files
+            this.$refs.chatBox.fileList=this.fileList
             console.log('dropppp', this.fileList)
+            this.isDragOver=false
         },
         setDropZone(){
             this.isDragOver=true
             this.$refs.dragdrop.show=true
             this.isDropZoneVisible=true
-            console.log('is vis',this.isDropZoneVisible)
+            //console.log('is vis',this.isDropZoneVisible)
         },
-        hideDropZone(){
-            this.$refs.dragdrop.show=false
-        }
+
 
 
     },

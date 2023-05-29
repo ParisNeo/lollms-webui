@@ -1,5 +1,5 @@
 <template>
-    <div class="flex-none sticky bottom-0 p-0 items-center justify-center px-32 self-center w-full">
+    <div class="sticky bottom-0 right-0 left-0 p-0 w-96">
         <div v-if="loading" class="flex items-center justify-center w-full">
             <div class="flex flex-row p-2 rounded-t-lg ">
 
@@ -16,26 +16,31 @@
                 class="px-3 py-3 rounded-t-lg bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel shadow-lg  ">
                 <!-- FILES     -->
                 <div class="flex flex-col flex-grow">
-                    <div class="flex flex-row overflow-auto scrollbar mb-2 gap-1">
-                        <div class="bg-red-400 rounded-lg flex flex-shrink-0  p-2 w-96">
-                            file
-                        </div>
-                        <div class="bg-red-400 rounded-lg flex flex-shrink-0  p-2 w-96">
-                            file
-                        </div>
-                        <div class="bg-red-400 rounded-lg flex flex-shrink-0  p-2 w-96">
-                            file
-                        </div>
-                        <div class="bg-red-400 rounded-lg flex flex-shrink-0  p-2 w-96">
-                            file
-                        </div>
-                        <div class="bg-red-400 rounded-lg flex flex-shrink-0 w-fit p-2 ">
-                            file
-                        </div>
-                    </div>
-                    <div>
+                    <div v-if="fileList.length>0" class="flex flex-row overflow-auto mb-2 gap-1 scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+                        <TransitionGroup name="list" tag="div" class="flex flex-row items-center p-2">
+                        <div v-for="file in fileList" :key="file.name">
+                            <div class="relative m-1 cursor-pointer">
 
+                                <span
+                                    class="inline-flex items-center px-2 py-1 mr-2 text-sm font-medium bg-bg-dark-tone-panel rounded-lg hover:bg-primary-light ">
+                                    <i data-feather="file" class="w-5 h-5 mr-1"></i>
+                                    {{ file.name }}
+                                    ({{ computedFileSize(file.size) }})
+                                    <button type="button" title="Remove item"
+                                        class="inline-flex items-center p-0.5 ml-2 text-sm rounded-sm hover:text-red-600 active:scale-75"
+                                        @click="removeItem(file)">
+                                        <i data-feather="x" class="w-5 h-5 "></i>
+
+                                    </button>
+                                </span>
+
+
+                            </div>
+                        </div>
+                    </TransitionGroup>
+                        
                     </div>
+
                     <div class="flex flex-row flex-grow items-center gap-2 ">
 
                     
@@ -75,12 +80,35 @@
         </form>
     </div>
 </template>
+<style scoped>
+/* THESE ARE FOR TransitionGroup components */
+.list-move,
+/* apply transition to moving elements */
+.list-enter-active,
+.list-leave-active {
+    transition: all 0.5s ease;
+}
 
+.list-enter-from {
+    transform: translatey(-30px);
+}
+
+.list-leave-to {
+    opacity: 0;
+    transform: translatey(30px);
+}
+
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
+.list-leave-active {
+    position: absolute;
+}
+</style>
 
 <script>
-import { nextTick } from 'vue'
+import { nextTick,TransitionGroup } from 'vue'
 import feather from 'feather-icons'
-
+import filesize from '../plugins/filesize'
 export default {
     name: 'ChatBox',
     emits: ["messageSentEvent", "stopGenerating"],
@@ -94,10 +122,18 @@ export default {
     },
     data() {
         return {
-            message: ""
+            message: "",
+            fileList:[]
         }
     },
     methods: {
+        computedFileSize(size) {
+            return filesize(size)
+        },
+        removeItem(file) {
+            this.fileList = this.fileList.filter((item) => item != file)
+            // console.log(this.fileList)
+        },
         sendMessageEvent(msg) {
 
             this.$emit('messageSentEvent', msg)
