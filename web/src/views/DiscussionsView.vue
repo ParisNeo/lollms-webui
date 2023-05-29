@@ -142,7 +142,7 @@
             </div>
         </div>
     </div>
-    <div class="flex relative " @dragover.stop.prevent="setDropZone()" >
+    <div class="flex relative flex-grow " @dragover.stop.prevent="setDropZone()" >
         <div class="z-20">
             <DragDrop ref="dragdrop"  @panelDrop="setFileList"></DragDrop>
         </div>
@@ -151,7 +151,7 @@
             id="messages-list" >
 
             <!-- CHAT AREA -->
-            <div class="container flex flex-col flex-grow pt-4 pb-10 ">
+            <div class="conainer flex flex-col flex-grow pt-4 pb-10 ">
                 <TransitionGroup v-if="discussionArr.length > 0" name="list">
                     <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg" :id="'msg-' + msg.id"
                         ref="messages" @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"

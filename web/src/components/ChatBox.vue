@@ -16,14 +16,14 @@
                 class="px-3 py-3 rounded-t-lg bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel shadow-lg  ">
                 <!-- FILES     -->
                 <div class="flex flex-col flex-grow">
-                    <div v-if="fileList.length>0" class="flex flex-row overflow-auto mb-2 gap-1 scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+                    <div v-if="fileList.length>0" class="flex flex-row overflow-x-scroll mb-2 gap-1 scrollbar-thin scrollbar-track-bg-light-tone-panel scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
                         <TransitionGroup name="list" tag="div" class="flex flex-row items-center p-2">
                         <div v-for="file in fileList" :key="file.name">
                             <div class="relative m-1 cursor-pointer">
 
                                 <span
-                                    class="inline-flex items-center px-2 py-1 mr-2 text-sm font-medium bg-bg-dark-tone-panel rounded-lg hover:bg-primary-light ">
-                                    <i data-feather="file" class="w-5 h-5 mr-1"></i>
+                                    class="inline-flex items-center px-2 py-1 mr-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary-light ">
+                                    <i data-feather="file" class="w-5 h-5 mr-1 truncate"></i>
                                     {{ file.name }}
                                     ({{ computedFileSize(file.size) }})
                                     <button type="button" title="Remove item"

@@ -138,7 +138,7 @@
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
                             Models zoo</h3>
                             <div class="flex flex-row items-center">
-                                <div v-if="!isModelSelected" class="text-base text-red-600 flex gap-3 items-center">
+                                <div v-if="!isModelSelected" class="text-base text-red-600 flex gap-3 items-center mr-2">
                     <i data-feather="alert-triangle"></i>
                     No model selected!
                 </div>
