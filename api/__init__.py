@@ -18,6 +18,7 @@ import time
 import requests
 from tqdm import tqdm 
 import traceback
+import sys
 
 __author__ = "parisneo"
 __github__ = "https://github.com/ParisNeo/gpt4all-ui"
@@ -368,10 +369,6 @@ class ModelProcess:
         return output
 
     def _callback(self, text, text_type=0):
-        try:
-            print(str(text), end="", flush=True)
-        except Exception as ex:
-            print(".")
         self.curent_text += text
         detected_anti_prompt = False
         anti_prompt_to_remove=""
@@ -382,7 +379,6 @@ class ModelProcess:
                 
         if not detected_anti_prompt:
             if not self.ready:
-                print(".",end="", flush=True)
                 return True
             else:
                 # Stream the generated text to the main process
@@ -768,6 +764,7 @@ class GPT4AllAPI():
             while(not self.process.completion_signal.is_set() or not self.process.generation_queue.empty()):  # Simulating other commands being issued
                 try:
                     chunk, tok, message_type = self.process.generation_queue.get(False, 2)
+                    print(chunk, end="")
                     if chunk!="":
                         self.process_chunk(chunk, message_type)
                 except Exception as ex:
