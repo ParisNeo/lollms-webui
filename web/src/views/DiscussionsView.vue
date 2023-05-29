@@ -155,7 +155,9 @@
            
         </TransitionGroup>
         <WelcomeComponent  v-if="!currentDiscussion.id" />
+        <DragDrop ></DragDrop>
         </div>
+        
         <div class=" sticky bottom-0">
             <ChatBox v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
                 @stopGenerating="stopGenerating" />
@@ -999,7 +1001,8 @@ export default {
         Message,
         ChatBox,
         WelcomeComponent,
-        Toast
+        Toast,
+        DragDrop
     },
     watch: {
         filterTitle(newVal) {
@@ -1055,7 +1058,7 @@ import Message from '../components/Message.vue'
 import ChatBox from '../components/ChatBox.vue'
 import WelcomeComponent from '../components/WelcomeComponent.vue'
 import Toast from '../components/Toast.vue'
-
+import DragDrop from '../components/DragDrop.vue'
 import feather from 'feather-icons'
 
 import axios from 'axios'
