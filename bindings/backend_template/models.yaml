@@ -5,3 +5,4 @@
   owner: Owner_name
   server: https://Path_to_the_server_to_load_from
   sha256: The Hash code of the file
+  model_type: api # api or file

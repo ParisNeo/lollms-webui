@@ -42,8 +42,10 @@ class OpenAIGPT(LLMBinding):
         # The local config can be used to store personal information that shouldn't be shared like chatgpt Key 
         # or other personal information
         # This file is never commited to the repository as it is ignored by .gitignore
+        self.config = config
         self._local_config_file_path = Path(__file__).parent/"config_local.yaml"
-        self.config = load_config(self._local_config_file_path)
+        self.local_config = load_config(self._local_config_file_path)
+        openai.api_key = self.local_config["openai_key"]
 
         # Do your initialization stuff
             
@@ -57,7 +59,7 @@ class OpenAIGPT(LLMBinding):
         Returns:
             list: A list of tokens representing the tokenized prompt.
         """
-        return self.model.tokenize(prompt.encode())
+        return None
 
     def detokenize(self, tokens_list):
         """
@@ -69,7 +71,7 @@ class OpenAIGPT(LLMBinding):
         Returns:
             str: The detokenized text as a string.
         """
-        return self.model.detokenize(tokens_list)
+        return None
     
     def generate(self, 
                  prompt:str,                  
@@ -86,35 +88,21 @@ class OpenAIGPT(LLMBinding):
             verbose (bool, optional): If true, the code will spit many informations about the generation process. Defaults to False.
         """
         try:
-            output = ""
-            self.model.reset()
-            tokens = self.model.tokenize(prompt)
-            count = 0
-            generated_text = """
-This is an empty binding that shows how you can build your own binding.
-Find it in bindings
-"""
-
             response = openai.Completion.create(
-                engine='text-davinci-003',  # Choose the engine according to your OpenAI plan
+                engine=self.config["model"],  # Choose the engine according to your OpenAI plan
                 prompt=prompt,
-                max_tokens=100,  # Adjust the desired length of the generated response
+                max_tokens=n_predict,  # Adjust the desired length of the generated response
                 n=1,  # Specify the number of responses you want
                 stop=None,  # Define a stop sequence if needed
-                temperature=0.7  # Adjust the temperature for more or less randomness in the output
+                temperature=gpt_params["temp"]  # Adjust the temperature for more or less randomness in the output
             )
-            for tok in re.split(r' |\n', generated_text):               
-                if count >= n_predict or self.model.is_eos_token(tok):
-                    break
-                word = self.model.detokenize(tok)
-                if new_text_callback is not None:
-                    if not new_text_callback(word):
-                        break
-                output += word
-                count += 1
+
+            # Extract the generated reply from the API response
+            reply = response.choices[0].text.strip()
+            return reply
         except Exception as ex:
             print(ex)
-        return output            
+        return ""            
 
     
     @staticmethod

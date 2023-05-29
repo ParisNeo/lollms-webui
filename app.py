@@ -119,6 +119,9 @@ class Gpt4AllWebUI(GPT4AllAPI):
         
         self.add_endpoint("/", "", self.index, methods=["GET"])
         self.add_endpoint("/<path:filename>", "serve_static", self.serve_static, methods=["GET"])
+        
+        self.add_endpoint("/images/<path:filename>", "serve_images", self.serve_images, methods=["GET"])
+        self.add_endpoint("/bindings/<path:filename>", "serve_bindings", self.serve_bindings, methods=["GET"])
         self.add_endpoint("/personalities/<path:filename>", "serve_personalities", self.serve_personalities, methods=["GET"])
         self.add_endpoint("/outputs/<path:filename>", "serve_outputs", self.serve_outputs, methods=["GET"])
 
@@ -452,7 +455,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
                     self.binding = self.process.load_binding(self.config["binding"], install=True)
 
                 except Exception as ex:
-                    print("Couldn't build binding")
+                    print(f"Couldn't build binding: [{ex}]")
                     return jsonify({'setting_name': data['setting_name'], "status":False, 'error':str(ex)})
             else:
                 if self.config["debug"]:
@@ -508,6 +511,10 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 try:
                     bnd = load_config(card)
                     bnd["folder"]=f.stem
+                    icon_path = Path(f/"logo.png")
+                    if icon_path.exists():
+                        bnd["icon"]=str(icon_path)
+
                     bindings.append(bnd)
                 except Exception as ex:
                     print(f"Couldn't load backend card : {f}\n\t{ex}")
@@ -606,6 +613,21 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 path = os.path.join(root_dir, 'static/')+"/".join(filename.split("/")[:-1])
         else:
             path = os.path.join(root_dir, 'static/')+"/".join(filename.split("/")[:-1])
+                            
+        fn = filename.split("/")[-1]
+        return send_from_directory(path, fn)
+
+    
+    def serve_images(self, filename):
+        root_dir = os.getcwd()
+        path = os.path.join(root_dir, 'images/')+"/".join(filename.split("/")[:-1])
+                            
+        fn = filename.split("/")[-1]
+        return send_from_directory(path, fn)
+    
+    def serve_bindings(self, filename):
+        root_dir = os.getcwd()
+        path = os.path.join(root_dir, 'bindings/')+"/".join(filename.split("/")[:-1])
                             
         fn = filename.split("/")[-1]
         return send_from_directory(path, fn)
@@ -838,12 +860,13 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 owner_link = model.get("owner_link", 'https://github.com/ParisNeo')
                 filesize = int(model.get('filesize',0))
                 description = model.get('description',"")
+                model_type = model.get("model_type","")
                 if server.endswith("/"):
                     path = f'{server}{filename}'
                 else:
                     path = f'{server}/{filename}'
                 local_path = Path(f'./models/{self.config["binding"]}/{filename}')
-                is_installed = local_path.exists()
+                is_installed = local_path.exists() or model_type.lower()=="api"
                 models.append({
                     'title': filename,
                     'icon': image_url,  # Replace with the path to the model icon
@@ -854,6 +877,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
                     'isInstalled': is_installed,
                     'path': path,
                     'filesize': filesize,
+                    'model_type': model_type
                 })
             except Exception as ex:
                 print("#################################")

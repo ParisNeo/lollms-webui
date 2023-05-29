@@ -3,7 +3,7 @@ from pathlib import Path
 import requests
 from tqdm import tqdm
 from api.config import save_config
-
+import yaml
 class Install:
     def __init__(self, api):
         # Get the current directory
@@ -11,7 +11,7 @@ class Install:
         install_file = current_dir / ".installed"
 
         if not install_file.exists():
-            print("-------------- Template binding -------------------------------")
+            print("-------------- OpenAI Binding -------------------------------")
             print("This is the first time you are using this binding.")
             print("Installing ...")
             # Step 2: Install dependencies using pip from requirements.txt
@@ -24,14 +24,12 @@ class Install:
 
             #Create 
             self._local_config_file_path = Path(__file__).parent/"config_local.yaml"
-            if not self._local_config_file_path.exists:
+            if not self._local_config_file_path.exists():
                 key = input("Please enter your Open AI Key")
                 config={
                     "openai_key":key
                 }
                 self.config = save_config(config, self._local_config_file_path)
-
-            
             #Create the install file (a file that is used to insure the installation was done correctly)
             with open(install_file,"w") as f:
                 f.write("ok")
@@ -41,4 +39,24 @@ class Install:
         """Installs pytorch with cuda (if you have a gpu) 
         """        
         subprocess.run(["pip", "install", "torch", "torchvision", "torchaudio", "--no-cache-dir", "--index-url", "https://download.pytorch.org/whl/cu117"])
-        
+
+
+    def create_config_file(self):
+        """
+        Create a config_local.yaml file with predefined data.
+
+        The function creates a config_local.yaml file with the specified data. The file is saved in the parent directory
+        of the current file.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
+        data = {
+            "pdf_file_path":  "" # Path to the PDF that will be discussed
+        }
+        path = Path(__file__).parent.parent / 'config_local.yaml'
+        with open(path, 'w') as file:
+            yaml.dump(data, file)

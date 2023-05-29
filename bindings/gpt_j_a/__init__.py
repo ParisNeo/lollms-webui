@@ -80,10 +80,10 @@ class GptJ(LLMBinding):
             output = ""
             for tok in self.model.generate(prompt, 
                                            n_predict=n_predict,                                           
-                                            temp=self.config['temperature'],
-                                            top_k=self.config['top_k'],
-                                            top_p=self.config['top_p'],
-                                            #repeat_penalty=self.config['repeat_penalty'],
+                                            temp=gpt_params["temp"],
+                                            top_k=gpt_params['top_k'],
+                                            top_p=gpt_params['top_p'],
+                                            #repeat_penalty=gpt_params['repeat_penalty'],
                                             #repeat_last_n = self.config['repeat_last_n'],
                                             n_threads=self.config['n_threads'],
                                            ):

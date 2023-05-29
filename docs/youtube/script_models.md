@@ -4,4 +4,4 @@ In this short video we will look at bindings and models, how to select them and 
 
 First, to select a binding, go to the settings tab then Bindings zoo.
 
-You will find a certain numbre of 
+You will find a certain numbre of bindings. Each binding as built by a person or a team. Make sure to visit their

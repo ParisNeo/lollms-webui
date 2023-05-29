@@ -57,7 +57,7 @@ class CustomBinding(LLMBinding):
         Returns:
             list: A list of tokens representing the tokenized prompt.
         """
-        return self.model.tokenize(prompt.encode())
+        return None
 
     def detokenize(self, tokens_list):
         """
@@ -69,7 +69,7 @@ class CustomBinding(LLMBinding):
         Returns:
             str: The detokenized text as a string.
         """
-        return self.model.detokenize(tokens_list)
+        return None
     
     def generate(self, 
                  prompt:str,                  
@@ -87,17 +87,22 @@ class CustomBinding(LLMBinding):
         """
         try:
             output = ""
-            self.model.reset()
-            tokens = self.model.tokenize(prompt)
             count = 0
             generated_text = """
 This is an empty binding that shows how you can build your own binding.
-Find it in bindings
+Find it in bindings.
+```python
+# This is a python snippet
+print("Hello World")
+```
+
+This is a photo
+![](/images/icon.png)
 """
-            for tok in re.split(r' |\n', generated_text):               
-                if count >= n_predict or self.model.is_eos_token(tok):
+            for tok in re.split(r'(\s+)', generated_text):               
+                if count >= n_predict:
                     break
-                word = self.model.detokenize(tok)
+                word = tok
                 if new_text_callback is not None:
                     if not new_text_callback(word):
                         break

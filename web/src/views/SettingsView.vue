@@ -179,7 +179,7 @@
                                     :title="model.title" :icon="model.icon" :path="model.path" :owner="model.owner"
                                     :owner_link="model.owner_link" :license="model.license" :description="model.description"
                                     :is-installed="model.isInstalled" :on-install="onInstall" :on-uninstall="onUninstall"
-                                    :on-selected="onSelected" :selected="model.title === configFile.model" :model="model" />
+                                    :on-selected="onSelected" :selected="model.title === configFile.model" :model="model" :model_type="model.model_type" />
                             </TransitionGroup>
                         </div>
                     </div>

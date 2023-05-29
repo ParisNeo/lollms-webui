@@ -61,7 +61,7 @@
       <p class="mx-1 opacity-80">{{ description }}</p>
     </div>
     <div class="flex-shrink-0" >
-      <button class="px-4 py-2 rounded-md text-white font-bold transition-colors duration-300"
+      <button v-if="model_type !== 'api'" class="px-4 py-2 rounded-md text-white font-bold transition-colors duration-300"
         :class="[isInstalled ? 'bg-red-500 hover:bg-red-600' : linkNotValid ? 'bg-gray-500 hover:bg-gray-600' : 'bg-green-500 hover:bg-green-600']"
         :disabled="installing || uninstalling" @click.stop="toggleInstall">
         <template v-if="installing">
@@ -84,6 +84,7 @@
           {{ isInstalled ? model.isCustomModel ? 'Delete' : 'Uninstall' : linkNotValid ? 'Link is not valid':'Install' }}
         </template>
       </button>
+
     </div>
 
   </div>
@@ -110,7 +111,8 @@ export default {
     onUninstall: Function,
     onSelected: Function,
     selected: Boolean,
-    model: Object
+    model: Object,
+    model_type: String
   },
   data() {
     return {
@@ -136,53 +138,56 @@ export default {
             return filesize(size)
         },
     async getFileSize(url) {
-      try {
+      console.log(this.model_type);
+      if(this.model_type!="api"){
+        try {
+          const res = await axios.head(url)
+          //console.log("addddd",url, res.headers)
+          if (res) {
+            
+            if (res.headers["content-length"]) {
+              return this.computedFileSize(res.headers["content-length"])
+            }
+            if (this.model.filesize) {
+              return this.computedFileSize(this.model.filesize)
+            }
+            return 'Could not be determined'
 
-        const res = await axios.head(url)
-        //console.log("addddd",url, res.headers)
-        if (res) {
-          
-          if (res.headers["content-length"]) {
-            return this.computedFileSize(res.headers["content-length"])
           }
           if (this.model.filesize) {
+
             return this.computedFileSize(this.model.filesize)
           }
           return 'Could not be determined'
 
-        }
-        if (this.model.filesize) {
-
-          return this.computedFileSize(this.model.filesize)
-        }
-        return 'Could not be determined'
-
-        // Example response
-        // {
-        //   date: 'Tue, 03 Apr 2018 14:29:32 GMT',
-        //   'content-type': 'application/javascript; charset=utf-8',
-        //   'content-length': '9068',
-        //   connection: 'close',
-        //   'last-modified': 'Wed, 28 Feb 2018 04:16:30 GMT',
-        //   etag: '"5a962d1e-236c"',
-        //   expires: 'Sun, 24 Mar 2019 14:29:32 GMT',
-        //   'cache-control': 'public, max-age=30672000',
-        //   'access-control-allow-origin': '*',
-        //   'cf-cache-status': 'HIT',
-        //   'accept-ranges': 'bytes',
-        //   'strict-transport-security': 'max-age=15780000; includeSubDomains',
-        //   'expect-ct': 'max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"',
-        //   server: 'cloudflare',
-        //   'cf-ray': '405c3a5cba7a68ba-CDG'
-        // }
+          // Example response
+          // {
+          //   date: 'Tue, 03 Apr 2018 14:29:32 GMT',
+          //   'content-type': 'application/javascript; charset=utf-8',
+          //   'content-length': '9068',
+          //   connection: 'close',
+          //   'last-modified': 'Wed, 28 Feb 2018 04:16:30 GMT',
+          //   etag: '"5a962d1e-236c"',
+          //   expires: 'Sun, 24 Mar 2019 14:29:32 GMT',
+          //   'cache-control': 'public, max-age=30672000',
+          //   'access-control-allow-origin': '*',
+          //   'cf-cache-status': 'HIT',
+          //   'accept-ranges': 'bytes',
+          //   'strict-transport-security': 'max-age=15780000; includeSubDomains',
+          //   'expect-ct': 'max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"',
+          //   server: 'cloudflare',
+          //   'cf-ray': '405c3a5cba7a68ba-CDG'
+          // }
 
 
-      } catch (error) {
-        console.log(error.message,'getFileSize')
-        this.linkNotValid=true
-        return 'Could not be determined'
-        
+          } catch (error) {
+          console.log(error.message,'getFileSize')
+          this.linkNotValid=true
+          return 'Could not be determined'
+
+          }
       }
+
 
     },
     getImgUrl() {

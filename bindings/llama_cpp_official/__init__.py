@@ -87,10 +87,10 @@ class LLAMACPP(LLMBinding):
             tokens = self.model.tokenize(prompt.encode())
             count = 0
             for tok in self.model.generate(tokens, 
-                                            temp=self.config['temperature'],
-                                            top_k=self.config['top_k'],
-                                            top_p=self.config['top_p'],
-                                            repeat_penalty=self.config['repeat_penalty'],
+                                            temp=gpt_params["temp"],
+                                            top_k=gpt_params['top_k'],
+                                            top_p=gpt_params['top_p'],
+                                            repeat_penalty=gpt_params['repeat_penalty'],
                                            ):
                 if count >= n_predict or (tok == self.model.token_eos()):
                     break

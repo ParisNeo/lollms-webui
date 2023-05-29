@@ -106,10 +106,10 @@ class CTRansformers(LLMBinding):
             count = 0
             for tok in self.model.generate(
                                             tokens,
-                                            top_k=self.config['top_k'],
-                                            top_p=self.config['top_p'],
-                                            temperature=self.config['temperature'],
-                                            repetition_penalty=self.config['repeat_penalty'],
+                                            top_k=gpt_params['top_k'],
+                                            top_p=gpt_params['top_p'],
+                                            temperature=gpt_params['temperature'],
+                                            repetition_penalty=gpt_params['repeat_penalty'],
                                             seed=self.config['seed'],
                                             batch_size=1,
                                             threads = self.config['n_threads'],
