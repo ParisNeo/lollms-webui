@@ -87,7 +87,7 @@ class LLAMACPP(LLMBinding):
             tokens = self.model.tokenize(prompt.encode())
             count = 0
             for tok in self.model.generate(tokens, 
-                                            temp=gpt_params["temp"],
+                                            temp=gpt_params["temperature"],
                                             top_k=gpt_params['top_k'],
                                             top_p=gpt_params['top_p'],
                                             repeat_penalty=gpt_params['repeat_penalty'],

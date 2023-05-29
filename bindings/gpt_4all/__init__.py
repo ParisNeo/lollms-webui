@@ -96,7 +96,7 @@ class GPT4ALL(LLMBinding):
             self.model._response_callback = local_callback
             self.model.generate(prompt, 
                                            n_predict=n_predict,                                           
-                                            temp=gpt_params["temp"],
+                                            temp=gpt_params["temperature"],
                                             top_k=gpt_params['top_k'],
                                             top_p=gpt_params['top_p'],
                                             repeat_penalty=gpt_params['repeat_penalty'],

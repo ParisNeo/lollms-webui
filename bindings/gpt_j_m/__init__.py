@@ -85,7 +85,7 @@ class GPTJ(LLMBinding):
                                             n_predict=n_predict,
                                             top_k=gpt_params['top_k'],
                                             top_p=gpt_params['top_p'],
-                                            temp=gpt_params["temp"],
+                                            temp=gpt_params["temperature"],
                                             repeat_penalty=gpt_params['repeat_penalty'],
                                             repeat_last_n=self.config['repeat_last_n'],
                                             n_batch=8,
