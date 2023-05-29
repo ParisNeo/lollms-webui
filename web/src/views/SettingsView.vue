@@ -33,10 +33,10 @@
             <div class="flex gap-3 flex-1 items-center justify-end">
 
 
-                <div v-if="!isModelSelected" class="text-red-600 flex gap-3 items-center">
+                <!-- <div v-if="!isModelSelected" class="text-red-600 flex gap-3 items-center">
                     <i data-feather="alert-triangle"></i>
                     No model selected!
-                </div>
+                </div> -->
                 <div class="flex gap-3 items-center">
                     <div v-if="settingsChanged" class="flex gap-3 items-center">
                         Apply changes:
@@ -72,13 +72,14 @@
                     <button @click.stop="bzc_collapsed = !bzc_collapsed"
                         class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex flex-row items-center">
                         <i data-feather="chevron-right" class="mr-2"></i>
-                        
+
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
                             Binding zoo</h3>
-                            <div v-if="configFile.binding" class="mr-2">|</div>
-                           
-                            <div v-if="configFile.binding" class=" text-base font-semibold cursor-pointer select-none items-center">
-                             {{configFile.binding}} </div>
+                        <div v-if="configFile.binding" class="mr-2">|</div>
+
+                        <div v-if="configFile.binding"
+                            class=" text-base font-semibold cursor-pointer select-none items-center">
+                            {{ configFile.binding }} </div>
                     </button>
                 </div>
                 <div :class="{ 'hidden': bzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
@@ -99,16 +100,19 @@
                         <label for="binding" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Bindings: ({{ bindings.length }})
                         </label>
-                        <div ref="bindingZoo" class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
+                        <div ref="bindingZoo"
+                            class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
                             :class="bzl_collapsed ? '' : 'max-h-96'">
                             <TransitionGroup name="list">
                                 <BindingEntry v-for="(binding, index) in bindings"
-                                    :key="'index-' + index + '-' + binding.folder" :binding="binding" :on-selected="onSelectedBinding" :selected="binding.folder === configFile.binding"></BindingEntry>
+                                    :key="'index-' + index + '-' + binding.folder" :binding="binding"
+                                    :on-selected="onSelectedBinding" :selected="binding.folder === configFile.binding">
+                                </BindingEntry>
                             </TransitionGroup>
                         </div>
                     </div>
 
-                    
+
                     <!-- EXPAND / COLLAPSE BUTTON -->
                     <button v-if="bzl_collapsed"
                         class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
@@ -133,17 +137,41 @@
                         <i :data-feather="mzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
                             Models zoo</h3>
-                            <div v-if="configFile.model" class="mr-2">|</div>
-                            <div v-if="configFile.model" class=" text-base font-semibold cursor-pointer select-none items-center">
-                             {{configFile.model}} </div>
+                            <div class="flex flex-row items-center">
+                                <div v-if="!isModelSelected" class="text-base text-red-600 flex gap-3 items-center">
+                    <i data-feather="alert-triangle"></i>
+                    No model selected!
+                </div>
+                           
+                        <div v-if="configFile.model" class="mr-2">|</div>
+                        <div v-if="configFile.model"
+                            class=" text-base font-semibold cursor-pointer select-none items-center">
+                            {{ configFile.model }} </div> </div>
                     </button>
                 </div>
                 <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                    <div class="mb-2">
+                        <label for="disk" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Disk usage:
+                        </label>
+                        <div class="flex flex-col mx-2">
+                            <div><b>Current binding models folder:&nbsp;</b>{{ binding_models_usage }}</div>
+                            <!-- <div><b>Percentage:&nbsp;</b>{{ percent_usage }}</div> -->
+                            <!-- <div><b>Total disk size:&nbsp;</b>{{ total_space }}</div> -->
+                            <div><b>Avaliable space:&nbsp;</b> {{ available_space }} / {{ total_space }}</div>
+                        </div>
+                        <div class="p-2 ">
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                <div class="bg-blue-600 h-2.5 rounded-full" :style="'width: ' + percent_usage + '%;'"></div>
+                            </div>
 
+                        </div>
+                    </div>
                     <div v-if="models.length > 0" class="mb-2">
                         <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Models: ({{ models.length }})
                         </label>
+
                         <div ref="modelZoo" class="overflow-y-auto no-scrollbar p-2 pb-0 "
                             :class="mzl_collapsed ? '' : 'max-h-96'">
                             <TransitionGroup name="list">
@@ -181,10 +209,11 @@
                         <i :data-feather="pzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
                             Personalities zoo</h3>
-                            <div v-if="configFile.personality" class="mr-2">|</div>
-                           
-                           <div v-if="configFile.personality" class=" text-base font-semibold cursor-pointer select-none items-center">
-                            {{configFile.personality}} </div>
+                        <div v-if="configFile.personality" class="mr-2">|</div>
+
+                        <div v-if="configFile.personality"
+                            class=" text-base font-semibold cursor-pointer select-none items-center">
+                            {{ configFile.personality }} </div>
                     </button>
                 </div>
                 <div :class="{ 'hidden': pzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
@@ -482,6 +511,7 @@
 }
 </style>
 <script>
+import filesize from '../plugins/filesize'
 import axios from "axios";
 import feather from 'feather-icons'
 import { nextTick, TransitionGroup } from 'vue'
@@ -539,7 +569,9 @@ export default {
             showToast: false,
             isLoading: false,
             settingsChanged: false,
-            isModelSelected: false
+            isModelSelected: false,
+            diskUsage: {}
+
 
         }
     },
@@ -677,6 +709,9 @@ export default {
                     this.showProgress = false;
                     model_object.installing = false
                     this.$refs.toast.showToast("Model:\n" + model_object.title + "\ninstalled!", 4, true)
+                    this.api_get_req("disk_usage").then(response =>{
+                this.diskUsage=response
+            })
                 } else if (response.status === 'failed') {
                     socket.off('install_progress', progressListener);
                     console.log("Install failed")
@@ -686,6 +721,9 @@ export default {
                     this.showProgress = false;
                     console.error('Installation failed:', response.error);
                     this.$refs.toast.showToast("Model:\n" + model_object.title + "\nfailed to install!", 4, false)
+                    this.api_get_req("disk_usage").then(response =>{
+                this.diskUsage=response
+            })
                 }
             };
 
@@ -711,6 +749,9 @@ export default {
                         this.models = this.models.filter((model) => model.title !== model_object.title)
                     }
                     this.$refs.toast.showToast("Model:\n" + model_object.title + "\nwas uninstalled!", 4, true)
+                    this.api_get_req("disk_usage").then(response =>{
+                this.diskUsage=response
+            })
                 } else if (response.status === 'failed') {
                     // Installation failed or encountered an error
                     model_object.uninstalling = false;
@@ -719,6 +760,9 @@ export default {
                     // eslint-disable-next-line no-undef
                     console.error('Uninstallation failed:', message.error);
                     this.$refs.toast.showToast("Model:\n" + model_object.title + "\nfailed to uninstall!", 4, false)
+                    this.api_get_req("disk_usage").then(response =>{
+                this.diskUsage=response
+            })
                 }
             };
 
@@ -726,7 +770,7 @@ export default {
 
             socket.emit('uninstall_model', { path: model_object.path });
         },
-        onSelectedBinding(binding_object){
+        onSelectedBinding(binding_object) {
             this.update_binding(binding_object.binding.folder)
             //console.log('lol',binding_object)
         },
@@ -761,6 +805,9 @@ export default {
                     }
                 });
             })
+            this.api_get_req("disk_usage").then(response =>{
+                this.diskUsage=response
+            })
             this.getPersonalitiesArr()
             this.fetchModels();
         },
@@ -789,9 +836,10 @@ export default {
                 .catch(error => { return { 'status': false } });
         },
         update_binding(value) {
-            
+
             // eslint-disable-next-line no-unused-vars
             this.isLoading = true
+            
             this.update_setting('binding', value, (res) => {
                 this.refresh();
 
@@ -804,6 +852,11 @@ export default {
                 })
                 // If binding changes then reset model
                 this.update_model(null)
+                this.configFile.model=null
+
+                this.api_get_req("disk_usage").then(response =>{
+                this.diskUsage=response
+            })
             })
 
         },
@@ -818,14 +871,14 @@ export default {
             })
         },
         applyConfiguration() {
-            if (!this.configFile.model) {
+            // if (!this.configFile.model) {
 
-                this.$refs.toast.showToast("Configuration changed failed.\nPlease select model first", 4, false)
-                nextTick(() => {
-                    feather.replace()
-                })
-                return
-            }
+            //     this.$refs.toast.showToast("Configuration changed failed.\nPlease select model first", 4, false)
+            //     nextTick(() => {
+            //         feather.replace()
+            //     })
+            //     return
+            // }
             this.isLoading = true;
             axios.post('/apply_settings').then((res) => {
                 this.isLoading = false;
@@ -945,7 +998,10 @@ export default {
             this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
             this.isLoading = false
 
-        }
+        },
+        computedFileSize(size){
+            return filesize(size)
+        },
 
     }, async mounted() {
         this.isLoading = true
@@ -967,7 +1023,22 @@ export default {
         await this.getPersonalitiesArr()
         this.bindings = await this.api_get_req("list_bindings")
         this.isLoading = false
-
+        this.diskUsage = await this.api_get_req("disk_usage")
+    },
+    computed: {
+        available_space() {
+            return this.computedFileSize(this.diskUsage.available_space)
+        },
+        binding_models_usage() {
+            return this.computedFileSize(this.diskUsage.binding_models_usage)
+        },
+        percent_usage() {
+            return this.diskUsage.percent_usage
+          
+        },
+        total_space() {
+            return this.computedFileSize(this.diskUsage.total_space)
+        },
     },
     watch: {
         bec_collapsed() {
