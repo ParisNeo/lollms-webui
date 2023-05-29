@@ -419,12 +419,14 @@ export default {
         },
         async import_multiple_discussions(jArray) {
             try {
-                if (discussionIdArr.length > 0) {
+                if (jArray.length > 0) {
+                    console.log('sending import',jArray)
                     const res = await axios.post('/import_multiple_discussions', {
                         jArray
                     })
 
                     if (res) {
+                        console.log('import response',res.data)
                         return res.data
                     }
                 }
@@ -1056,7 +1058,7 @@ export default {
 
     },
     async activated() {
-        this.$refs.dragdropDiscussion.show = true
+        //this.$refs.dragdropDiscussion.show = true
         // This lifecycle hook runs every time you switch from other page back to this page (vue-router)
         // To fix scrolling back to last message, this hook is needed.
         // If anyone knows hor to fix scroll issue when changing pages, please do fix it :D
