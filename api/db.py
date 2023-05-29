@@ -274,6 +274,36 @@ class DiscussionsDB:
                 )
             discussions.append(discussion)
         return discussions
+    
+    def import_from_json(self, json_data):
+        discussions = []
+        data = json_data
+        for discussion_data in data:
+            discussion_id = discussion_data.get("id")
+            discussion_title = discussion_data.get("title")
+            messages_data = discussion_data.get("messages", [])
+            discussion = {"id": discussion_id, "title": discussion_title, "messages": []}
+
+            # Insert discussion into the database
+            self.insert("INSERT INTO discussion (id, title) VALUES (?, ?)", (discussion_id, discussion_title))
+
+            for message_data in messages_data:
+                sender = message_data.get("sender")
+                content = message_data.get("content")
+                content_type = message_data.get("type")
+                rank = message_data.get("rank")
+                parent = message_data.get("parent")
+                discussion["messages"].append(
+                    {"sender": sender, "content": content, "type": content_type, "rank": rank, "parent": parent}
+                )
+
+                # Insert message into the database
+                self.insert("INSERT INTO message (sender, content, type, rank, parent, discussion_id) VALUES (?, ?, ?, ?, ?, ?)",
+                            (sender, content, content_type, rank, parent, discussion_id))
+
+            discussions.append(discussion)
+
+        return discussions
 
 class Discussion:
     def __init__(self, discussion_id, discussions_db:DiscussionsDB):

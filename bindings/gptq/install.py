@@ -15,7 +15,6 @@ class Install:
             print("This is the first time you are using this binding.")
             print("Installing ...")
             # Example of installing py torche
-            """
             try:
                 print("Checking pytorch")
                 import torch
@@ -27,7 +26,6 @@ class Install:
                     self.reinstall_pytorch_with_cuda()
             except Exception as ex:
                 self.reinstall_pytorch_with_cuda()
-            """
 
             # Step 2: Install dependencies using pip from requirements.txt
             requirements_file = current_dir / "requirements.txt"
