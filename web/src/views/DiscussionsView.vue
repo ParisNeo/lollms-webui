@@ -25,8 +25,9 @@
                     type="button">
                     <i data-feather="database"></i>
                 </button>
+                <input type="file" ref="fileDialog" style="display: none" @change="importDiscussions" />
                 <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
-                    title="Import discussions" type="button" @click.stop="">
+                    title="Import discussions" type="button" @click.stop="$refs.fileDialog.click()">
                     <i data-feather="log-in"></i>
                 </button>
                 <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Filter discussions"
@@ -142,13 +143,14 @@
             </div>
         </div>
     </div>
-    <div class="flex relative flex-grow " @dragover.stop.prevent="setDropZone()" >
+    <div class="flex relative flex-grow " @dragover.stop.prevent="setDropZone()">
         <div class="z-20">
-            <DragDrop ref="dragdrop"  @panelDrop="setFileList"></DragDrop>
+            <DragDrop ref="dragdrop" @panelDrop="setFileList"></DragDrop>
         </div>
 
-        <div  :class="isDragOver?'pointer-events-none':''" class="flex flex-col flex-grow overflow-y-auto  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
-            id="messages-list" >
+        <div :class="isDragOver ? 'pointer-events-none' : ''"
+            class="flex flex-col flex-grow overflow-y-auto  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+            id="messages-list">
 
             <!-- CHAT AREA -->
             <div class="conainer flex flex-col flex-grow pt-4 pb-10 ">
@@ -226,7 +228,7 @@ export default {
             personalityAvatars: [], // object array of personality name: and avatar: props
             fileList: [],
             isDropZoneVisible: true,
-            isDragOver:false
+            isDragOver: false
         }
     },
     methods: {
@@ -410,6 +412,23 @@ export default {
             } catch (error) {
                 console.log("Error: Could not export multiple discussions", error.message)
                 return {}
+            }
+        },
+        async import_multiple_discussions(jArray) {
+            try {
+                if (discussionIdArr.length > 0) {
+                    const res = await axios.post('/import_multiple_discussions', {
+                        jArray
+                    })
+
+                    if (res) {
+                        return res.data
+                    }
+                }
+
+            } catch (error) {
+                console.log("Error: Could not import multiple discussions", error.message)
+                return 
             }
         },
         filterDiscussions() {
@@ -879,6 +898,14 @@ export default {
             a.click();
             document.body.removeChild(a);
         },
+        async parseJsonFile(file) {
+            return new Promise((resolve, reject) => {
+                const fileReader = new FileReader()
+                fileReader.onload = event => resolve(JSON.parse(event.target.result))
+                fileReader.onerror = error => reject(error)
+                fileReader.readAsText(file)
+            })
+        },
         async exportDiscussions() {
             // Export selected discussions
 
@@ -923,6 +950,20 @@ export default {
                 this.loading = false
             }
 
+        },
+        async importDiscussions(event) {
+            const obj = await this.parseJsonFile(event.target.files[0])
+
+            const res = await this.import_multiple_discussions(obj)
+            if(res){
+                this.$refs.toast.showToast("Successfully imported ("+obj.length+")", 4, true)
+                await this.list_discussions()
+            }else{
+                this.$refs.toast.showToast("Failed to import discussions", 4, false)
+            }
+            
+            
+           
         },
         async getPersonalityAvatars() {
 
@@ -976,14 +1017,14 @@ export default {
         },
         setFileList(files) {
             this.fileList = files
-            this.$refs.chatBox.fileList=this.fileList
+            this.$refs.chatBox.fileList = this.fileList
             console.log('dropppp', this.fileList)
-            this.isDragOver=false
+            this.isDragOver = false
         },
-        setDropZone(){
-            this.isDragOver=true
-            this.$refs.dragdrop.show=true
-            this.isDropZoneVisible=true
+        setDropZone() {
+            this.isDragOver = true
+            this.$refs.dragdrop.show = true
+            this.isDropZoneVisible = true
             //console.log('is vis',this.isDropZoneVisible)
         },
 
@@ -1009,7 +1050,7 @@ export default {
         socket.on('infos', this.createBotMsg)
         socket.on('message', this.streamMessageContent)
         socket.on("final", this.finalMsgEvent)
-        
+
     },
     async activated() {
         // This lifecycle hook runs every time you switch from other page back to this page (vue-router)
