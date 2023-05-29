@@ -1,8 +1,7 @@
 <template>
+
  <row>
- <column :xs="12" :md="4" :lg="3">
-    <div
-        class="overflow-y-scroll flex flex-col no-scrollbar shadow-lg min-w-[24rem] max-w-[24rem] bg-bg-light-tone dark:bg-bg-dark-tone">
+ <column :xs="12" :md="5" :lg="3">
         <!-- LEFT SIDE PANEL -->
         <div class="z-10 sticky top-0 flex-col  bg-bg-light-tone dark:bg-bg-dark-tone shadow-md">
 
@@ -124,7 +123,7 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div >
             <!-- DISCUSSION LIST -->
             <div class="mx-4 flex-grow" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''">
                 <TransitionGroup v-if="list.length>0" name="list" >
@@ -137,34 +136,26 @@
                     class="gap-2 py-2 my-2 hover:shadow-md hover:bg-primary-light dark:hover:bg-primary rounded-md p-2 duration-75 group cursor-pointer">
                     <p class="px-3">No discussions are found</p>
                 </div>
-                <div
-                    class="sticky bottom-0 bg-gradient-to-t pointer-events-none from-bg-light-tone dark:from-bg-dark-tone flex flex-grow">
-                    <!-- FADING DISCUSSION LIST END ELEMENT -->
-                </div>
             </div>
         </div>
-    </div>
-      </column>
-    <column :xs="12" :md="8" :lg="9">
-     <div>
-
-        <!-- CHAT AREA -->
-        <div class="container flex flex-col flex-grow pt-4 pb-10">
-            <TransitionGroup v-if="discussionArr.length>0" name="list" >
-            <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg" :id="'msg-' + msg.id" ref="messages"
-                @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage" @rankDown="rankDownMessage"
-                @updateMessage="updateMessage" @resendMessage="resendMessage" :avatar="getAvatar(msg.sender)" />
+    </column>
+    <column :xs="12" :md="7" :lg="9">
+    <div id="messages-list">
+            <!-- CHAT AREA -->
+                <TransitionGroup v-if="discussionArr.length>0" name="list" >
+                <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg" :id="'msg-' + msg.id" ref="messages"
+                    @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage" @rankDown="rankDownMessage"
+                    @updateMessage="updateMessage" @resendMessage="resendMessage" :avatar="getAvatar(msg.sender)" />
+                   
                
-           
-        </TransitionGroup>
-        <WelcomeComponent  v-if="!currentDiscussion.id" />
-        </div>
-            <ChatBox v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
-                @stopGenerating="stopGenerating" />
+            </TransitionGroup>
+            <WelcomeComponent  v-if="!currentDiscussion.id" />
+            
+            </div>
+              <ChatBox v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
+                    @stopGenerating="stopGenerating" />
 
-    </div>
-    
-        </column>
+    </column>
     </row>
    
     <Toast ref="toast">
