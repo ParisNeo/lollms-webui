@@ -2,7 +2,7 @@
     <div
         class="overflow-y-scroll flex flex-col no-scrollbar shadow-lg min-w-[24rem] max-w-[24rem] bg-bg-light-tone dark:bg-bg-dark-tone">
         <!-- LEFT SIDE PANEL -->
-        <div class="z-10 sticky top-0 flex-col  bg-bg-light-tone dark:bg-bg-dark-tone shadow-md">
+        <div class=" sticky top-0 flex-col  bg-bg-light-tone dark:bg-bg-dark-tone shadow-md">
 
 
             <!-- CONTROL PANEL -->
@@ -51,11 +51,11 @@
             </div>
             <!-- SEARCH BAR -->
             <!-- <Transition name="expand" > -->
-            <div key="1" v-if="isSearch"  class="flex-row  items-center gap-3 flex-0 w-full">
-                
+            <div key="1" v-if="isSearch" class="flex-row  items-center gap-3 flex-0 w-full">
 
-                
-                <div  class="p-4 pt-2 ">
+
+
+                <div class="p-4 pt-2 ">
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                             <div class="scale-75">
@@ -75,9 +75,9 @@
                             @input="filterDiscussions()" />
                     </div>
                 </div>
-            
+
             </div>
-        <!-- </Transition> -->
+            <!-- </Transition> -->
             <hr v-if="isCheckbox" class="h-px bg-bg-light p-0 mb-4 px-4 mx-4 border-0 dark:bg-bg-dark">
             <div v-if="isCheckbox" class="flex flex-row flex-grow p-4 pt-0 items-center">
 
@@ -125,11 +125,11 @@
         <div class="relative overflow-y-scroll no-scrollbar">
             <!-- DISCUSSION LIST -->
             <div class="mx-4 flex-grow" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''">
-                <TransitionGroup v-if="list.length>0" name="list" >
-                <Discussion v-for="(item, index) in list" :key="item.id" :id="item.id" :title="item.title"
-                    :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"
-                    :checkBoxValue="item.checkBoxValue" @select="selectDiscussion(item)" @delete="deleteDiscussion(item.id)"
-                    @editTitle="editTitle" @checked="checkUncheckDiscussion" />
+                <TransitionGroup v-if="list.length > 0" name="list">
+                    <Discussion v-for="(item, index) in list" :key="item.id" :id="item.id" :title="item.title"
+                        :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"
+                        :checkBoxValue="item.checkBoxValue" @select="selectDiscussion(item)"
+                        @delete="deleteDiscussion(item.id)" @editTitle="editTitle" @checked="checkUncheckDiscussion" />
                 </TransitionGroup>
                 <div v-if="list.length < 1"
                     class="gap-2 py-2 my-2 hover:shadow-md hover:bg-primary-light dark:hover:bg-primary rounded-md p-2 duration-75 group cursor-pointer">
@@ -142,25 +142,35 @@
             </div>
         </div>
     </div>
-    <div class="overflow-y-auto flex flex-col flex-grow  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
-        id="messages-list">
-
-        <!-- CHAT AREA -->
-        <div class="container flex flex-col flex-grow pt-4 pb-10">
-            <TransitionGroup v-if="discussionArr.length>0" name="list" >
-            <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg" :id="'msg-' + msg.id" ref="messages"
-                @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage" @rankDown="rankDownMessage"
-                @updateMessage="updateMessage" @resendMessage="resendMessage" :avatar="getAvatar(msg.sender)" />
-               
-           
-        </TransitionGroup>
-        <WelcomeComponent  v-if="!currentDiscussion.id" />
-        </div>
-        <div class=" sticky bottom-0">
-            <ChatBox v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
-                @stopGenerating="stopGenerating" />
+    <div class="flex relative " @dragover.stop.prevent="setDropZone()" >
+        <div class="z-20">
+            <DragDrop ref="dragdrop"  @panelDrop="setFileList"></DragDrop>
         </div>
 
+        <div  :class="isDragOver?'pointer-events-none':''" class="flex flex-col flex-grow overflow-y-auto  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+            id="messages-list" >
+
+            <!-- CHAT AREA -->
+            <div class="container flex flex-col flex-grow pt-4 pb-10 ">
+                <TransitionGroup v-if="discussionArr.length > 0" name="list">
+                    <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg" :id="'msg-' + msg.id"
+                        ref="messages" @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
+                        @rankDown="rankDownMessage" @updateMessage="updateMessage" @resendMessage="resendMessage"
+                        :avatar="getAvatar(msg.sender)" />
+
+
+                </TransitionGroup>
+                <WelcomeComponent v-if="!currentDiscussion.id" />
+
+            </div>
+
+
+            <div class=" sticky bottom-0">
+                <ChatBox v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
+                    @stopGenerating="stopGenerating" />
+            </div>
+
+        </div>
     </div>
     <Toast ref="toast">
     </Toast>
@@ -169,23 +179,26 @@
 
 <style scoped>
 /* THESE ARE FOR TransitionGroup components */
-.list-move, /* apply transition to moving elements */
+.list-move,
+/* apply transition to moving elements */
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.5s ease;
+    transition: all 0.5s ease;
 }
 
 .list-enter-from {
     transform: translatey(-30px);
 }
+
 .list-leave-to {
-  opacity: 0;
-  transform: translatey(30px);
+    opacity: 0;
+    transform: translatey(30px);
 }
+
 /* ensure leaving items are taken out of layout flow so that moving
    animations can be calculated correctly. */
-   .list-leave-active {
-  position: absolute;
+.list-leave-active {
+    position: absolute;
 }
 </style>
 <script>
@@ -210,7 +223,10 @@ export default {
             showToast: false,
             isSearch: false,
             isDiscussionBottom: false,
-            personalityAvatars: [] // object array of personality name: and avatar: props
+            personalityAvatars: [], // object array of personality name: and avatar: props
+            fileList: [],
+            isDropZoneVisible: true,
+            isDragOver:false
         }
     },
     methods: {
@@ -224,7 +240,7 @@ export default {
 
                 }
             } catch (error) {
-                console.log(error.message,'api_get_req')
+                console.log(error.message, 'api_get_req')
                 return
             }
 
@@ -261,7 +277,7 @@ export default {
                     }
                 }
             } catch (error) {
-                console.log(error.message,'load_discussion')
+                console.log(error.message, 'load_discussion')
                 this.loading = false
                 this.setDiscussionLoading(id, this.loading)
             }
@@ -402,10 +418,10 @@ export default {
             if (!this.filterInProgress) {
                 this.filterInProgress = true
                 setTimeout(() => {
-                    if(this.filterTitle){
+                    if (this.filterTitle) {
                         this.list = this.tempList.filter((item) => item.title && item.title.includes(this.filterTitle))
 
-                    }else{
+                    } else {
                         this.list = this.tempList
                     }
                     this.filterInProgress = false
@@ -554,9 +570,9 @@ export default {
         },
         sendMsg(msg) {
             // Sends message to binding
-            if(!msg){
+            if (!msg) {
                 this.$refs.toast.showToast("Message contains no content!", 4, false)
-                 return
+                return
             }
             this.isGenerating = true;
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
@@ -673,8 +689,8 @@ export default {
             }
             this.tempList = this.list
             this.isCheckbox = false
-            this.$refs.toast.showToast("Removed ("+deleteList.length+") items", 4, true)
-                
+            this.$refs.toast.showToast("Removed (" + deleteList.length + ") items", 4, true)
+
             console.log("Multi delete done")
         },
         async deleteMessage(msgId) {
@@ -843,7 +859,7 @@ export default {
         copyToClipBoard(content) {
             this.$refs.toast.showToast("Copied to clipboard successfully", 4, true)
             navigator.clipboard.writeText(content);
-            
+
             nextTick(() => {
                 feather.replace()
 
@@ -952,11 +968,24 @@ export default {
         getAvatar(sender) {
             const index = this.personalityAvatars.findIndex((x) => x.name === sender)
             const pers = this.personalityAvatars[index]
-            if(pers){
+            if (pers) {
                 return pers.avatar
             }
-            
-            return 
+
+            return
+        },
+        setFileList(files) {
+            this.fileList = files
+            console.log('dropppp', this.fileList)
+        },
+        setDropZone(){
+            this.isDragOver=true
+            this.$refs.dragdrop.show=true
+            this.isDropZoneVisible=true
+            console.log('is vis',this.isDropZoneVisible)
+        },
+        hideDropZone(){
+            this.$refs.dragdrop.show=false
         }
 
 
@@ -980,7 +1009,7 @@ export default {
         socket.on('infos', this.createBotMsg)
         socket.on('message', this.streamMessageContent)
         socket.on("final", this.finalMsgEvent)
-
+        
     },
     async activated() {
         // This lifecycle hook runs every time you switch from other page back to this page (vue-router)
@@ -999,7 +1028,8 @@ export default {
         Message,
         ChatBox,
         WelcomeComponent,
-        Toast
+        Toast,
+        DragDrop
     },
     watch: {
         filterTitle(newVal) {
@@ -1055,11 +1085,11 @@ import Message from '../components/Message.vue'
 import ChatBox from '../components/ChatBox.vue'
 import WelcomeComponent from '../components/WelcomeComponent.vue'
 import Toast from '../components/Toast.vue'
-
+import DragDrop from '../components/DragDrop.vue'
 import feather from 'feather-icons'
 
 import axios from 'axios'
-import { nextTick,TransitionGroup } from 'vue'
+import { nextTick, TransitionGroup } from 'vue'
 
 import socket from '@/services/websocket.js'
 
