@@ -1,18 +1,34 @@
 <template>
-  <div class=" items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer"
+  <div class=" items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer active:scale-95 duration-75 select-none"
     @click.stop="toggleSelected" :class="selected ? ' border-primary-light' : 'border-transparent'">
 
     <div :class="isTemplate ? 'opacity-50' : ''">
+      <!-- 
+<div class="inline-flex items-center"> -->
 
 
-      <div class="flex flex-row items-center  flex-shrink-0 gap-3">
+      <div class="flex flex-row items-center   gap-3 ">
         <img :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-full object-fill text-red-700">
-        <h3 class="font-bold font-large text-lg line-clamp-3">
+        <h3 class="font-bold font-large text-lg truncate">
           {{ binding.name }}
         </h3>
+        <div class="grow">
+          <!-- EMPTY SPACE FILLER -->
+        </div>
 
+        <div class="flex-none">
+          <button type="button"
+            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
+            <i data-feather="sliders" class="w-5 m-1"></i>
+            <span class="sr-only">Icon description</span>
+          </button>
+        </div>
 
       </div>
+      <!-- <div class="  justify-end">
+          <i data-feather="sliders" class="w-5 m-1"></i>
+        </div>
+      </div> -->
       <div class="">
         <div class="">
 
@@ -62,7 +78,7 @@ export default {
     binding: {},
     onSelected: Function,
     selected: Boolean,
-    
+
   },
   data() {
     return {
