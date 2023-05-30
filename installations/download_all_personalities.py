@@ -9,11 +9,13 @@ def copy_files(source_path, destination_path):
 
         if source_item.is_file():
             # Remove destination file if it already exists
-            if destination_item.exists():
-                destination_item.unlink()
-
-            # Copy file from source to destination
-            shutil.copy2(str(source_item), str(destination_item))
+            try:
+                if destination_item.exists():
+                    destination_item.unlink()
+                # Copy file from source to destination
+                shutil.copy2(str(source_item), str(destination_item))
+            except:
+                print(f"Couldn't install personality {item}")
 
         elif source_item.is_dir():
             # Create destination directory if it does not exist
