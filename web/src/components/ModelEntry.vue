@@ -19,7 +19,7 @@
         </h3>
       </div>
       <div class="flex flex-shrink-0 items-center ">
-        <i  data-feather="link" class="w-5 m-1" ></i>
+        <i  data-feather="download" class="w-5 m-1" ></i>
         <b>Manual download:&nbsp;</b>
         
         <a :href="path" @click.stop class="flex items-center  hover:text-secondary duration-75 active:scale-90"

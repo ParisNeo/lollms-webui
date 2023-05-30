@@ -582,8 +582,10 @@ export default {
             this.bec_collapsed = val
             this.mzc_collapsed = val
             this.pzc_collapsed = val
+            this.bzc_collapsed = val
             this.pc_collapsed = val
             this.mc_collapsed = val
+
         },
         fetchModels() {
 
