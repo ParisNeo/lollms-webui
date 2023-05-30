@@ -35,8 +35,8 @@ class LLAMACPP(LLMBinding):
         """
         super().__init__(config, False)
         seed = config["seed"]
-        if seed <=0:
-            seed = random.randint(1, 2**31)
+        # if seed <=0:
+        #    seed = random.randint(1, 2**31)
             
         if not "n_gpu_layers" in self.config:
             self.config["n_gpu_layers"] = 20
