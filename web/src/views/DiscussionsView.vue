@@ -122,13 +122,18 @@
                     </div>
                 </div>
             </div>
+
         </div>
-        <div class="relative overflow-y-scroll no-scrollbar">
+
+        <div class="relative overflow-y-scroll no-scrollbar flex flex-row flex-grow"  @dragover.stop.prevent="setDropZoneDiscussion()">
             <div class="z-20">
-            <DragDrop ref="dragdropDiscussion" @panelDrop="setFileListChat"></DragDrop>
-        </div>
+                <DragDrop ref="dragdropDiscussion" @panelDrop="setFileListDiscussion">Drop your discussion file here</DragDrop>
+            </div >
             <!-- DISCUSSION LIST -->
-            <div class="mx-4 flex-grow" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''">
+            <div class="mx-4 flex-grow"  :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
+
+            
+            <div  :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''">
                 <TransitionGroup v-if="list.length > 0" name="list">
                     <Discussion v-for="(item, index) in list" :key="item.id" :id="item.id" :title="item.title"
                         :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"
@@ -145,13 +150,14 @@
                 </div>
             </div>
         </div>
+        </div>
     </div>
     <div class="flex relative flex-grow " @dragover.stop.prevent="setDropZoneChat()">
         <div class="z-20">
             <DragDrop ref="dragdropChat" @panelDrop="setFileListChat"></DragDrop>
         </div>
 
-        <div :class="isDragOver ? 'pointer-events-none' : ''"
+        <div :class="isDragOverChat ? 'pointer-events-none' : ''"
             class="flex flex-col flex-grow overflow-y-auto  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
             id="messages-list">
 
@@ -230,8 +236,8 @@ export default {
             isDiscussionBottom: false,
             personalityAvatars: [], // object array of personality name: and avatar: props
             fileList: [],
-            isDropZoneVisible: true,
-            isDragOver: false
+            isDragOverDiscussion: false,
+            isDragOverChat: false
         }
     },
     methods: {
@@ -420,20 +426,20 @@ export default {
         async import_multiple_discussions(jArray) {
             try {
                 if (jArray.length > 0) {
-                    console.log('sending import',jArray)
+                    console.log('sending import', jArray)
                     const res = await axios.post('/import_multiple_discussions', {
                         jArray
                     })
 
                     if (res) {
-                        console.log('import response',res.data)
+                        console.log('import response', res.data)
                         return res.data
                     }
                 }
 
             } catch (error) {
                 console.log("Error: Could not import multiple discussions", error.message)
-                return 
+                return
             }
         },
         filterDiscussions() {
@@ -714,7 +720,7 @@ export default {
             this.tempList = this.list
             this.isCheckbox = false
             this.$refs.toast.showToast("Removed (" + deleteList.length + ") items", 4, true)
-
+            this.showConfirmation = false
             console.log("Multi delete done")
         },
         async deleteMessage(msgId) {
@@ -903,10 +909,21 @@ export default {
             a.click();
             document.body.removeChild(a);
         },
+        parseJsonObj(obj){
+            try {
+                 const ret = JSON.parse(obj)
+                 return ret
+            } catch (error) {
+                this.$refs.toast.showToast("Could not parse JSON. \n"+error.message, 4, false)
+                return null
+            }
+           
+        },
         async parseJsonFile(file) {
+
             return new Promise((resolve, reject) => {
                 const fileReader = new FileReader()
-                fileReader.onload = event => resolve(JSON.parse(event.target.result))
+                fileReader.onload = event => resolve(this.parseJsonObj(event.target.result))
                 fileReader.onerror = error => reject(error)
                 fileReader.readAsText(file)
             })
@@ -960,15 +977,15 @@ export default {
             const obj = await this.parseJsonFile(event.target.files[0])
 
             const res = await this.import_multiple_discussions(obj)
-            if(res){
-                this.$refs.toast.showToast("Successfully imported ("+obj.length+")", 4, true)
+            if (res) {
+                this.$refs.toast.showToast("Successfully imported (" + obj.length + ")", 4, true)
                 await this.list_discussions()
-            }else{
+            } else {
                 this.$refs.toast.showToast("Failed to import discussions", 4, false)
             }
-            
-            
-           
+
+
+
         },
         async getPersonalityAvatars() {
 
@@ -1029,8 +1046,31 @@ export default {
         setDropZoneChat() {
             this.isDragOver = true
             this.$refs.dragdropChat.show = true
-            this.isDropZoneVisible = true
-            //console.log('is vis',this.isDropZoneVisible)
+
+        },
+        async setFileListDiscussion(files) {
+            
+            if(files.length > 1){
+                this.$refs.toast.showToast("Failed to import discussions. Too many files", 4, false)
+              return  
+            }
+            const obj = await this.parseJsonFile(files[0])
+
+            const res = await this.import_multiple_discussions(obj)
+            if (res) {
+                this.$refs.toast.showToast("Successfully imported (" + obj.length + ")", 4, true)
+                await this.list_discussions()
+            } else {
+                this.$refs.toast.showToast("Failed to import discussions", 4, false)
+            }
+
+
+            this.isDragOverDiscussion = false
+        },
+        setDropZoneDiscussion() {
+            this.isDragOverDiscussion = true
+            this.$refs.dragdropDiscussion.show = true
+
         },
 
 
@@ -1040,7 +1080,7 @@ export default {
         // Constructor
 
 
-        
+
         this.setPageTitle()
         await this.list_discussions()
 
@@ -1058,7 +1098,7 @@ export default {
 
     },
     async activated() {
-        //this.$refs.dragdropDiscussion.show = true
+      
         // This lifecycle hook runs every time you switch from other page back to this page (vue-router)
         // To fix scrolling back to last message, this hook is needed.
         // If anyone knows hor to fix scroll issue when changing pages, please do fix it :D
