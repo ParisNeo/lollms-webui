@@ -720,7 +720,7 @@ export default {
             this.tempList = this.list
             this.isCheckbox = false
             this.$refs.toast.showToast("Removed (" + deleteList.length + ") items", 4, true)
-
+            this.showConfirmation = false
             console.log("Multi delete done")
         },
         async deleteMessage(msgId) {
