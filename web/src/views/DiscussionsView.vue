@@ -127,7 +127,7 @@
 
         <div class="relative overflow-y-scroll no-scrollbar flex flex-row flex-grow"  @dragover.stop.prevent="setDropZoneDiscussion()">
             <div class="z-20">
-                <DragDrop ref="dragdropDiscussion" @panelDrop="setFileListChat">Drop your discussion file here</DragDrop>
+                <DragDrop ref="dragdropDiscussion" @panelDrop="setFileListDiscussion">Drop your discussion file here</DragDrop>
             </div >
             <!-- DISCUSSION LIST -->
             <div class="mx-4 flex-grow"  :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
@@ -909,10 +909,21 @@ export default {
             a.click();
             document.body.removeChild(a);
         },
+        parseJsonObj(obj){
+            try {
+                 const ret = JSON.parse(obj)
+                 return ret
+            } catch (error) {
+                this.$refs.toast.showToast("Could not parse JSON. \n"+error.message, 4, false)
+                return null
+            }
+           
+        },
         async parseJsonFile(file) {
+
             return new Promise((resolve, reject) => {
                 const fileReader = new FileReader()
-                fileReader.onload = event => resolve(JSON.parse(event.target.result))
+                fileReader.onload = event => resolve(this.parseJsonObj(event.target.result))
                 fileReader.onerror = error => reject(error)
                 fileReader.readAsText(file)
             })
@@ -1037,10 +1048,23 @@ export default {
             this.$refs.dragdropChat.show = true
 
         },
-        setFileListDiscussion(files) {
-            this.fileList = files
-            this.$refs.dragdropDiscussion.fileList = this.fileList
-            //console.log('dropppp', this.fileList)
+        async setFileListDiscussion(files) {
+            
+            if(files.length > 1){
+                this.$refs.toast.showToast("Failed to import discussions. Too many files", 4, false)
+              return  
+            }
+            const obj = await this.parseJsonFile(files[0])
+
+            const res = await this.import_multiple_discussions(obj)
+            if (res) {
+                this.$refs.toast.showToast("Successfully imported (" + obj.length + ")", 4, true)
+                await this.list_discussions()
+            } else {
+                this.$refs.toast.showToast("Failed to import discussions", 4, false)
+            }
+
+
             this.isDragOverDiscussion = false
         },
         setDropZoneDiscussion() {
