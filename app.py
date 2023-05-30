@@ -248,8 +248,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
         return jsonify(discussions)
           
     def import_multiple_discussions(self):
-        data = request.get_json()
-        discussions = data
+        discussions = request.get_json()["jArray"]
+        self.db.import_from_json(discussions)
         return jsonify(discussions)
         
     def reset(self):
@@ -317,8 +317,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
                                     else:
                                         personality_info['avatar'] = ""
                                     personalities[language_folder.name][category_folder.name].append(personality_info)
-                                except:
-                                    print(f"Couldn't load personality from {personality_folder}")
+                                except Exception as ex:
+                                    print(f"Couldn't load personality from {personality_folder} [{ex}]")
         return json.dumps(personalities)
     
     def get_personality():

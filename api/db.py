@@ -285,7 +285,7 @@ class DiscussionsDB:
             discussion = {"id": discussion_id, "title": discussion_title, "messages": []}
 
             # Insert discussion into the database
-            self.insert("INSERT INTO discussion (id, title) VALUES (?, ?)", (discussion_id, discussion_title))
+            discussion_id = self.insert("INSERT INTO discussion (title) VALUES (?)", (discussion_title,))
 
             for message_data in messages_data:
                 sender = message_data.get("sender")
