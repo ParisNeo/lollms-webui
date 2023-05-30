@@ -288,7 +288,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
                                         config_data = yaml.load(config_file, Loader=yaml.FullLoader)
                                         personality_info['name'] = config_data.get('name',"No Name")
                                         personality_info['description'] = config_data.get('personality_description',"")
-                                        personality_info['author'] = config_data.get('creator', 'ParisNeo')
+                                        personality_info['author'] = config_data.get('author', 'ParisNeo')
                                         personality_info['version'] = config_data.get('version', '1.0.0')
                                     scripts_path = personality_folder / 'scripts'
                                     personality_info['has_scripts'] = scripts_path.is_dir()
@@ -390,49 +390,10 @@ class Gpt4AllWebUI(GPT4AllAPI):
             self.config["language"]=data['setting_value']
 
         elif setting_name== "personality_language":
-            back_language = self.config["personality_language"]
-            if self.config["personality_language"]!=data['setting_value']:
-                self.config["personality_language"]=data['setting_value']
-                personalities_categories_dir = Path(f'./personalities/{self.config["personality_language"]}')  # replace with the actual path to the models folder
-                cats = [f.stem for f in personalities_categories_dir.iterdir() if f.is_dir()]
-
-                if len(cats)>0:
-                    back_category = self.config["personality_category"]
-                    self.config["personality_category"]=cats[0]
-                    try:
-                        personalities_dir = Path(f'./personalities/{self.config["personality_language"]}/{self.config["personality_category"]}')  # replace with the actual path to the models folder
-                        pers = [f.stem for f in personalities_dir.iterdir() if f.is_dir()]
-                    except Exception as ex:
-                        pers=[]
-                        if self.config["debug"]:
-                            print(f"No personalities found. Using default one {ex}")
-                    if len(pers)>0:
-                        self.config["personality"]=pers[0]
-                        personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
-                        self.personality.load_personality(personality_fn)
-                    else:
-                        self.config["personality"]=""
-                        self.personality = AIPersonality()
+            self.config["personality_language"]=data['setting_value']
                 
         elif setting_name== "personality_category":
-            back_category = self.config["personality_category"]
-            if self.config["personality_category"]!=data['setting_value']:
-                self.config["personality_category"]=data['setting_value']
-                pers = json.loads(self.list_personalities().data.decode("utf8"))
-                if len(pers)>0:
-                    self.config["personality"]=pers[0]
-                    personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
-                    try:
-                        self.personality.load_personality(personality_fn)
-                        if self.config["debug"]:
-                            print(self.personality)
-                    except:
-                        print(f"couldn't load personality from {personality_fn}")
-                        return jsonify({'setting_name': data['setting_name'], "status":False})
-                else:
-                    self.config["personality_category"]=back_category
-                    return jsonify({'setting_name': data['setting_name'], "status":False})
-
+            self.config["personality_category"]=data['setting_value']
         elif setting_name== "personality":
             self.config["personality"]=data['setting_value']
             personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
