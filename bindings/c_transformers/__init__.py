@@ -101,7 +101,7 @@ class CTRansformers(LLMBinding):
         """
         try:
             output = ""
-            self.model.reset()
+            #self.model.reset()
             tokens = self.model.tokenize(prompt)
             count = 0
             for tok in self.model.generate(
