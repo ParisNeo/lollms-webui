@@ -137,16 +137,17 @@
                         <i :data-feather="mzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
                             Models zoo</h3>
-                            <div class="flex flex-row items-center">
-                                <div v-if="!isModelSelected" class="text-base text-red-600 flex gap-3 items-center mr-2">
-                    <i data-feather="alert-triangle"></i>
-                    No model selected!
-                </div>
-                           
-                        <div v-if="configFile.model" class="mr-2">|</div>
-                        <div v-if="configFile.model"
-                            class=" text-base font-semibold cursor-pointer select-none items-center">
-                            {{ configFile.model }} </div> </div>
+                        <div class="flex flex-row items-center">
+                            <div v-if="!isModelSelected" class="text-base text-red-600 flex gap-3 items-center mr-2">
+                                <i data-feather="alert-triangle"></i>
+                                No model selected!
+                            </div>
+
+                            <div v-if="configFile.model" class="mr-2">|</div>
+                            <div v-if="configFile.model"
+                                class=" text-base font-semibold cursor-pointer select-none items-center">
+                                {{ configFile.model }} </div>
+                        </div>
                     </button>
                 </div>
                 <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
@@ -179,7 +180,8 @@
                                     :title="model.title" :icon="model.icon" :path="model.path" :owner="model.owner"
                                     :owner_link="model.owner_link" :license="model.license" :description="model.description"
                                     :is-installed="model.isInstalled" :on-install="onInstall" :on-uninstall="onUninstall"
-                                    :on-selected="onSelected" :selected="model.title === configFile.model" :model="model" :model_type="model.model_type" />
+                                    :on-selected="onSelected" :selected="model.title === configFile.model" :model="model"
+                                    :model_type="model.model_type" />
                             </TransitionGroup>
                         </div>
                     </div>
@@ -631,17 +633,17 @@ export default {
                 this.$refs.toast.showToast("Loading... please wait", 4, false)
             }
             if (pers.personality) {
-                if(this.configFile.personality != pers.personality.name){
+                if (this.configFile.personality != pers.personality.name) {
 
-               
-                this.settingsChanged = true
-                const res = this.update_setting('personality', pers.personality.folder, () => {
-                    this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
-                    this.configFile.personality = pers.personality.name
-                    this.configFile.personality_category = pers.personality.category
-                    this.configFile.personality_language = pers.personality.language
-                })
-            }
+
+                    this.settingsChanged = true
+                    const res = this.update_setting('personality', pers.personality.folder, () => {
+                        this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
+                        this.configFile.personality = pers.personality.name
+                        this.configFile.personality_category = pers.personality.category
+                        this.configFile.personality_language = pers.personality.language
+                    })
+                }
                 nextTick(() => {
                     feather.replace()
 
@@ -713,9 +715,9 @@ export default {
                     this.showProgress = false;
                     model_object.installing = false
                     this.$refs.toast.showToast("Model:\n" + model_object.title + "\ninstalled!", 4, true)
-                    this.api_get_req("disk_usage").then(response =>{
-                this.diskUsage=response
-            })
+                    this.api_get_req("disk_usage").then(response => {
+                        this.diskUsage = response
+                    })
                 } else if (response.status === 'failed') {
                     socket.off('install_progress', progressListener);
                     console.log("Install failed")
@@ -725,9 +727,9 @@ export default {
                     this.showProgress = false;
                     console.error('Installation failed:', response.error);
                     this.$refs.toast.showToast("Model:\n" + model_object.title + "\nfailed to install!", 4, false)
-                    this.api_get_req("disk_usage").then(response =>{
-                this.diskUsage=response
-            })
+                    this.api_get_req("disk_usage").then(response => {
+                        this.diskUsage = response
+                    })
                 }
             };
 
@@ -753,9 +755,9 @@ export default {
                         this.models = this.models.filter((model) => model.title !== model_object.title)
                     }
                     this.$refs.toast.showToast("Model:\n" + model_object.title + "\nwas uninstalled!", 4, true)
-                    this.api_get_req("disk_usage").then(response =>{
-                this.diskUsage=response
-            })
+                    this.api_get_req("disk_usage").then(response => {
+                        this.diskUsage = response
+                    })
                 } else if (response.status === 'failed') {
                     // Installation failed or encountered an error
                     model_object.uninstalling = false;
@@ -764,9 +766,9 @@ export default {
                     // eslint-disable-next-line no-undef
                     console.error('Uninstallation failed:', message.error);
                     this.$refs.toast.showToast("Model:\n" + model_object.title + "\nfailed to uninstall!", 4, false)
-                    this.api_get_req("disk_usage").then(response =>{
-                this.diskUsage=response
-            })
+                    this.api_get_req("disk_usage").then(response => {
+                        this.diskUsage = response
+                    })
                 }
             };
 
@@ -775,17 +777,18 @@ export default {
             socket.emit('uninstall_model', { path: model_object.path });
         },
         onSelectedBinding(binding_object) {
-if(this.configFile.binding != binding_object.binding.folder){
 
+            if (this.configFile.binding != binding_object.binding.folder) {
 
-            if(binding_object.binding.folder ==='backend_template' || binding_object.binding.folder==='binding_template'){
-                this.$refs.toast.showToast("Cannot select template", 4, false)
-                    
-                return
+                // disabled for now
+                // if (binding_object.binding.folder === 'backend_template' || binding_object.binding.folder === 'binding_template') {
+                //     this.$refs.toast.showToast("Cannot select template", 4, false)
+
+                //     return
+                // }
+                this.update_binding(binding_object.binding.folder)
+                //console.log('lol',binding_object)
             }
-            this.update_binding(binding_object.binding.folder)
-            //console.log('lol',binding_object)
-        }
         },
         // messagebox ok stuff
         onMessageBoxOk() {
@@ -818,8 +821,8 @@ if(this.configFile.binding != binding_object.binding.folder){
                     }
                 });
             })
-            this.api_get_req("disk_usage").then(response =>{
-                this.diskUsage=response
+            this.api_get_req("disk_usage").then(response => {
+                this.diskUsage = response
             })
             this.getPersonalitiesArr()
             this.fetchModels();
@@ -852,7 +855,7 @@ if(this.configFile.binding != binding_object.binding.folder){
 
             // eslint-disable-next-line no-unused-vars
             this.isLoading = true
-            
+
             this.update_setting('binding', value, (res) => {
                 this.refresh();
 
@@ -865,11 +868,11 @@ if(this.configFile.binding != binding_object.binding.folder){
                 })
                 // If binding changes then reset model
                 this.update_model(null)
-                this.configFile.model=null
+                this.configFile.model = null
 
-                this.api_get_req("disk_usage").then(response =>{
-                this.diskUsage=response
-            })
+                this.api_get_req("disk_usage").then(response => {
+                    this.diskUsage = response
+                })
             })
 
         },
@@ -964,7 +967,7 @@ if(this.configFile.binding != binding_object.binding.folder){
                 const res = await axios.get("/" + endpoint);
 
                 if (res) {
-                    
+
                     return res.data
 
                 }
@@ -1012,7 +1015,7 @@ if(this.configFile.binding != binding_object.binding.folder){
             this.isLoading = false
 
         },
-        computedFileSize(size){
+        computedFileSize(size) {
             return filesize(size)
         },
 
@@ -1047,7 +1050,7 @@ if(this.configFile.binding != binding_object.binding.folder){
         },
         percent_usage() {
             return this.diskUsage.percent_usage
-          
+
         },
         total_space() {
             return this.computedFileSize(this.diskUsage.total_space)

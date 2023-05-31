@@ -92,8 +92,8 @@ export default {
 
 
     })
-
-    this.getStatus()
+    // Disabled for now
+    //this.getStatus()
 
 
   },
