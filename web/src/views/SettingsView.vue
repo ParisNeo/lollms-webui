@@ -582,8 +582,10 @@ export default {
             this.bec_collapsed = val
             this.mzc_collapsed = val
             this.pzc_collapsed = val
+            this.bzc_collapsed = val
             this.pc_collapsed = val
             this.mc_collapsed = val
+
         },
         fetchModels() {
 
@@ -629,7 +631,9 @@ export default {
                 this.$refs.toast.showToast("Loading... please wait", 4, false)
             }
             if (pers.personality) {
+                if(this.configFile.personality != pers.personality.name){
 
+               
                 this.settingsChanged = true
                 const res = this.update_setting('personality', pers.personality.folder, () => {
                     this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
@@ -637,7 +641,7 @@ export default {
                     this.configFile.personality_category = pers.personality.category
                     this.configFile.personality_language = pers.personality.language
                 })
-
+            }
                 nextTick(() => {
                     feather.replace()
 
@@ -771,8 +775,17 @@ export default {
             socket.emit('uninstall_model', { path: model_object.path });
         },
         onSelectedBinding(binding_object) {
+if(this.configFile.binding != binding_object.binding.folder){
+
+
+            if(binding_object.binding.folder ==='backend_template' || binding_object.binding.folder==='binding_template'){
+                this.$refs.toast.showToast("Cannot select template", 4, false)
+                    
+                return
+            }
             this.update_binding(binding_object.binding.folder)
             //console.log('lol',binding_object)
+        }
         },
         // messagebox ok stuff
         onMessageBoxOk() {
@@ -951,7 +964,7 @@ export default {
                 const res = await axios.get("/" + endpoint);
 
                 if (res) {
-
+                    
                     return res.data
 
                 }

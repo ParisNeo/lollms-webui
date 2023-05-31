@@ -6,20 +6,22 @@
             class="select-none text-slate-50 absolute top-0 left-0 right-0 bottom-0 flex flex-col  items-center justify-center bg-black bg-opacity-50 duration-200 backdrop-blur-sm "
             @dragleave.prevent="panelLeave($event)" @drop.stop.prevent="panelDrop($event)">
             <div
-                class="flex flex-col  items-center justify-center p-8 rounded-lg shadow-lg border-dashed border-4 border-secondary w-4/5 h-4/5 " >
+                class="flex flex-col  items-center justify-center p-8 rounded-lg shadow-lg border-dashed border-4 border-secondary w-4/5 h-4/5 " :class="dropRelease?'':'pointer-events-none'">
 
 
-                <div class="text-4xl " :class="dropRelease?'':'pointer-events-none'">
+                <div class="text-4xl text-center" >
+                    <slot>
 
-                    <div v-if="fileList.length == 0">
                         Drop your files here
-                    </div>
-
-                    <div v-if="fileList.length > 0" class="flex flex-row gap-2 items-center">
+                    <!-- <div v-if="fileList.length == 0">
+                        Drop your files here
+                    </div> -->
+                </slot>
+                    <!-- <div v-if="fileList.length > 0" class="flex flex-row gap-2 items-center">
                         <i data-feather="file" class="w-12 h-12"></i>
                         Files to upload
                         ({{ fileList.length }})
-                    </div>
+                    </div> -->
                 </div>
 
                 <!-- DISABLED UNTIL FURTHER NOTICE -->
@@ -80,13 +82,13 @@ export default {
         })
     },
     methods: {
-        computedFileSize(size) {
-            return filesize(size)
-        },
-        removeItem(file) {
-            this.fileList = this.fileList.filter((item) => item != file)
-            // console.log(this.fileList)
-        },
+        // computedFileSize(size) {
+        //     return filesize(size)
+        // },
+        // removeItem(file) {
+        //     this.fileList = this.fileList.filter((item) => item != file)
+        //     // console.log(this.fileList)
+        // },
         panelDrop(event) {
             this.dropRelease = true
             if (event.dataTransfer.files.length > 0) {

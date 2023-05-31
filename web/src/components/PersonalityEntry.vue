@@ -1,5 +1,5 @@
 <template>
-  <div class=" items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer"
+  <div class=" items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer  active:scale-95 duration-75 select-none"
     @click.stop="toggleSelected" :class="selected ? ' border-primary-light' : 'border-transparent'">
 
 
