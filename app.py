@@ -1010,6 +1010,7 @@ if __name__ == "__main__":
         print("debug mode:true")    
     else:
         print("debug mode:false")
-        
-    http_server = WSGIServer((config["host"], config["port"]), app, handler_class=WebSocketHandler)
-    http_server.serve_forever()
+    
+    socketio.run(app, host=config["host"], port=config["port"])
+    # http_server = WSGIServer((config["host"], config["port"]), app, handler_class=WebSocketHandler)
+    # http_server.serve_forever()
