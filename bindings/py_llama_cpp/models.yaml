@@ -1,3 +1,75 @@
+- bestLlama: 'true'
+  description: The official open assistant 30B model finally here
+  icon : https://aeiljuispo.cloudimg.io/v7/https://s3.amazonaws.com/moonup/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+  filename: OpenAssistant-SFT-7-Llama-30B.ggml.q4_0.bin
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/OpenAssistant-SFT-7-Llama-30B-GGML/resolve/main/
+  sha256: 32fd44c685fbf429810db593e2db8aa42a7e1be2cd3571b6005d53b029acfcf5
+
+- bestLlama: 'true'
+  description: 'Manticore-13B'
+  icon : https://aeiljuispo.cloudimg.io/v7/https://s3.amazonaws.com/moonup/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+  filename: Manticore-13B.ggmlv3.q4_0.bin
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/Manticore-13B-GGML/resolve/main/
+  sha256: 910f3e73dc5797753313a950989c54a30342780311d64c3d4b8a37b12dd50336
+
+- bestLlama: 'true'
+  description: 'Project-Baize Quantized on 4 bits '
+  icon : https://aeiljuispo.cloudimg.io/v7/https://s3.amazonaws.com/moonup/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+  filename: baize-v2-13b.ggmlv3.q4_0.bin
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/Project-Baize-v2-13B-GGML/resolve/main/
+  sha256: 5994f92f3cc8d3fe2d09a44c174ed8c0f4f32819597feaafc9d6bd06208d3df6
+
+- bestLlama: 'true'
+  icon : https://aeiljuispo.cloudimg.io/v7/https://s3.amazonaws.com/moonup/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+  description: 'MedAlpaca 13B Quantized on 4 bits: model specifically fine-tuned for medical domain tasks'
+  filename: medalpaca-13B.ggmlv3.q4_0.bin
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/medalpaca-13B-GGML/resolve/main/
+  sha256: 24060342f7649f5609a90932b88604f90eb34ee490f7c22403ff47b9b8547c58
+
+- bestLlama: 'true'
+  description: 'MedAlpaca 13B Quantized on 5 bits: model specifically fine-tuned for medical domain tasks'
+  icon : https://aeiljuispo.cloudimg.io/v7/https://s3.amazonaws.com/moonup/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+  filename: medalpaca-13B.ggmlv3.q5_1.bin
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/medalpaca-13B-GGML/resolve/main/
+  sha256: eeae440fd56fe8cb05632f22d73725914c6ef803dbb468c3ab6d4d2a78ff9ad5
+
+
+- bestLlama: 'true'
+  description: 'Wizard-Vicuna-13B-Uncensored-GGML Quantized on 4 bits'
+  icon : https://aeiljuispo.cloudimg.io/v7/https://s3.amazonaws.com/moonup/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+  filename: Wizard-Vicuna-13B-Uncensored.ggmlv3.q4_0.bin
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/Wizard-Vicuna-13B-Uncensored-GGML/resolve/main/
+  sha256: 1f08b147a5bce41cfcbb3fd5d51ba765dea1786e15b5655ab69ba3a337a893b7
+
+
+ 
+- description: Koala 7B model produced at Berkeley
+  icon : https://aeiljuispo.cloudimg.io/v7/https://s3.amazonaws.com/moonup/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+  filename: koala-7B.ggmlv3.q4_0.bin
+  license: Non commercial
+  owner_link: https://huggingface.co/TheBloke
+  owner: TheBloke
+  server: https://huggingface.co/TheBloke/koala-7B-GGML/resolve/previous_llama_ggmlv2/
+  sha256: 14bcd51fbc09bcc456c79f9f0e4d070ad536e9d9e03811232e037b62580fe5e7
+
 - description: Vigogne Instruct 13B - A French instruction-following LLaMa model GGML
   icon : https://aeiljuispo.cloudimg.io/v7/https://s3.amazonaws.com/moonup/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
   filename: Vigogne-Instruct-13B.ggmlv3.q4_0.bin
