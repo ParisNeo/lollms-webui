@@ -15,9 +15,9 @@
         <div class="grow">
           <!-- EMPTY SPACE FILLER -->
         </div>
-
-        <div class="flex-none">
-          <button type="button"
+        <!-- ADVANCED OPTIONS - NOT IMPLEMENTED -->
+        <div v-if="hasAdvancedSettings" class="flex-none">
+          <button type="button" title="Not implemented"
             class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
             <i data-feather="sliders" class="w-5 m-1"></i>
             <span class="sr-only">Icon description</span>
@@ -82,7 +82,8 @@ export default {
   },
   data() {
     return {
-      isTemplate: false
+      isTemplate: false,
+      hasAdvancedSettings: false,
     };
   },
   mounted() {

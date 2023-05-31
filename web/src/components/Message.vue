@@ -11,7 +11,7 @@
             </div>
             <p class="drop-shadow-sm   py-0 px-2 text-lg text-opacity-95 font-bold ">{{ message.sender }}</p>
         </div>
-        <div class="-mt-4  ml-10 mr-0 pt-1 px-2 ">
+        <div class="-mt-4  ml-10 mr-0 pt-1 px-2 break-all">
             <!-- CONTENT/MESSAGE -->
             <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :markdown-text="message.content"></MarkdownRenderer>
             <textarea v-if="editMsgMode" ref="mdTextarea" :rows="4"
