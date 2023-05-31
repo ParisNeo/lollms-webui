@@ -288,6 +288,13 @@ export default {
                         this.discussionArr = res.data.filter((item) => item.type == 0)
 
                     }
+                    nextTick(() => {
+
+                        const msgList = document.getElementById('messages-list')
+
+                        this.scrollBottom(msgList)
+
+                    })
                 }
             } catch (error) {
                 console.log(error.message, 'load_discussion')
@@ -480,13 +487,13 @@ export default {
                         }
                     }
                 }
-                nextTick(() => {
+                // nextTick(() => {
 
-                    const msgList = document.getElementById('messages-list')
+                //     const msgList = document.getElementById('messages-list')
 
-                    this.scrollBottom(msgList)
+                //     this.scrollBottom(msgList)
 
-                })
+                // })
             }
         },
         scrollToElement(el) {
