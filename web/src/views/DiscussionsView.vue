@@ -152,13 +152,13 @@
         </div>
         </div>
     </div>
-    <div class="flex relative flex-grow " @dragover.stop.prevent="setDropZoneChat()">
+    <div class="flex relative flex-grow overflow-y-auto  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" @dragover.stop.prevent="setDropZoneChat()">
         <div class="z-20">
             <DragDrop ref="dragdropChat" @panelDrop="setFileListChat"></DragDrop>
         </div>
 
         <div :class="isDragOverChat ? 'pointer-events-none' : ''"
-            class="flex flex-col flex-grow overflow-y-auto  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+            class="container flex flex-col flex-grow  "
             id="messages-list">
 
             <!-- CHAT AREA -->
