@@ -1129,6 +1129,13 @@ export default {
 
         if (this.isCreated) {
             this.loadLastUsedDiscussion()
+            nextTick(() => {
+
+                const msgList = document.getElementById('messages-list')
+
+                this.scrollBottom(msgList)
+
+            })
         }
     },
     components: {
