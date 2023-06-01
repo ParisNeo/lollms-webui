@@ -6,8 +6,10 @@
 import { createApp } from 'vue';
 import io from 'socket.io-client';
 
+// "undefined" means the URL will be computed from the window.location object
+const URL = process.env.NODE_ENV === "production" ? undefined : (import.meta.env.VITE_GPT4ALL_API);
 
-const socket = new io(import.meta.env.VITE_GPT4ALL_API );
+export const socket = io(URL);
 
 socket.onopen = () => {
   console.log('WebSocket connection established.');

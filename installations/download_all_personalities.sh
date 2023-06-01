@@ -4,7 +4,7 @@
 environment_name="env"
 
 # Activate the virtual environment
-source "$environment_name/Scripts/activate"
+source "$environment_name/scripts/activate"
 
 # Change to the installations subfolder
 
