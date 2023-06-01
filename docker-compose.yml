@@ -11,5 +11,6 @@ services:
       - ./models:/srv/models
       - ./configs:/srv/configs
       - ./personalities:/srv/personalities
+      - ./web:/srv/web
     ports: 
       - "9600:9600"
