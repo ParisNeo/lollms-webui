@@ -79,7 +79,14 @@
 
                         <div v-if="configFile.binding"
                             class=" text-base font-semibold cursor-pointer select-none items-center">
-                            {{ configFile.binding }} </div>
+
+                            <div class="flex gap-1 items-center">
+                                    <img :src="imgBinding" class="w-8 h-8 rounded-full object-fill text-blue-700">
+                                    <h3 class="font-bold font-large text-lg">
+                                        {{ configFile.binding }} 
+                                    </h3>
+                                </div>
+                            </div>
                     </button>
                 </div>
                 <div :class="{ 'hidden': bzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
@@ -100,11 +107,11 @@
                         <label for="binding" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Bindings: ({{ bindings.length }})
                         </label>
-                        <div ref="bindingZoo"
+                        <div 
                             class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
                             :class="bzl_collapsed ? '' : 'max-h-96'">
                             <TransitionGroup name="list">
-                                <BindingEntry v-for="(binding, index) in bindings"
+                                <BindingEntry ref="bindingZoo" v-for="(binding, index) in bindings"
                                     :key="'index-' + index + '-' + binding.folder" :binding="binding"
                                     :on-selected="onSelectedBinding" :selected="binding.folder === configFile.binding">
                                 </BindingEntry>
@@ -144,9 +151,19 @@
                             </div>
 
                             <div v-if="configFile.model" class="mr-2">|</div>
+
                             <div v-if="configFile.model"
                                 class=" text-base font-semibold cursor-pointer select-none items-center">
-                                {{ configFile.model }} </div>
+
+                                <div class="flex gap-1 items-center">
+                                    <img :src="imgModel" class="w-8 h-8 rounded-lg object-fill">
+                                    <h3 class="font-bold font-large text-lg">
+                                        {{ configFile.model }}
+                                    </h3>
+                                </div>
+
+
+                            </div>
                         </div>
                     </button>
                 </div>
@@ -173,12 +190,12 @@
                             Models: ({{ models.length }})
                         </label>
 
-                        <div ref="modelZoo" class="overflow-y-auto no-scrollbar p-2 pb-0 "
-                            :class="mzl_collapsed ? '' : 'max-h-96'">
+                        <div class="overflow-y-auto no-scrollbar p-2 pb-0 " :class="mzl_collapsed ? '' : 'max-h-96'">
                             <TransitionGroup name="list">
-                                <model-entry v-for="(model, index) in models" :key="'index-' + index + '-' + model.title"
-                                    :title="model.title" :icon="model.icon" :path="model.path" :owner="model.owner"
-                                    :owner_link="model.owner_link" :license="model.license" :description="model.description"
+                                <model-entry ref="modelZoo" v-for="(model, index) in models"
+                                    :key="'index-' + index + '-' + model.title" :title="model.title" :icon="model.icon"
+                                    :path="model.path" :owner="model.owner" :owner_link="model.owner_link"
+                                    :license="model.license" :description="model.description"
                                     :is-installed="model.isInstalled" :on-install="onInstall" :on-uninstall="onUninstall"
                                     :on-selected="onSelected" :selected="model.title === configFile.model" :model="model"
                                     :model_type="model.model_type" />
@@ -215,7 +232,15 @@
 
                         <div v-if="configFile.personality"
                             class=" text-base font-semibold cursor-pointer select-none items-center">
-                            {{ configFile.personality }} </div>
+                           
+                            <div class="flex gap-1 items-center">
+                                    <img :src="imgPersonality" class="w-8 h-8 rounded-full object-fill text-red-700">
+                                    <h3 class="font-bold font-large text-lg">
+                                        {{ configFile.personality }} 
+                                    </h3>
+                                </div>
+                        
+                        </div>
                     </button>
                 </div>
                 <div :class="{ 'hidden': pzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
@@ -264,11 +289,11 @@
                         <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Personalities: ({{ personalitiesFiltered.length }})
                         </label>
-                        <div ref="personalitiesZoo"
+                        <div 
                             class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
                             :class="pzl_collapsed ? '' : 'max-h-96'">
                             <TransitionGroup name="bounce">
-                                <personality-entry v-for="(pers, index) in personalitiesFiltered"
+                                <personality-entry ref="personalitiesZoo" v-for="(pers, index) in personalitiesFiltered"
                                     :key="'index-' + index + '-' + pers.name" :personality="pers"
                                     :selected="pers.name === configFile.personality && pers.category === configFile.personality_category && pers.language === configFile.personality_language"
                                     :on-selected="onPersonalitySelected" />
@@ -572,7 +597,8 @@ export default {
             isLoading: false,
             settingsChanged: false,
             isModelSelected: false,
-            diskUsage: {}
+            diskUsage: {},
+            isMounted: false // Needed to wait for $refs to be rendered
 
 
         }
@@ -1019,6 +1045,7 @@ export default {
             return filesize(size)
         },
 
+
     }, async mounted() {
         this.isLoading = true
         nextTick(() => {
@@ -1040,6 +1067,9 @@ export default {
         this.bindings = await this.api_get_req("list_bindings")
         this.isLoading = false
         this.diskUsage = await this.api_get_req("disk_usage")
+        this.isMounted = true
+        console.log('reffy', this.$refs.bindingZoo)
+
     },
     computed: {
         available_space() {
@@ -1055,6 +1085,25 @@ export default {
         total_space() {
             return this.computedFileSize(this.diskUsage.total_space)
         },
+        imgBinding() {
+            if (!this.isMounted) {
+                return
+            }
+            return this.$refs.bindingZoo[this.$refs.bindingZoo.findIndex(item => item.binding.folder == this.configFile.binding)].$refs.imgElement.src
+        },
+        imgModel() {
+            if (!this.isMounted) {
+                return
+            }
+            return this.$refs.modelZoo[this.$refs.modelZoo.findIndex(item => item.title == this.configFile.model)].$refs.imgElement.src
+        },
+        imgPersonality() {
+            if (!this.isMounted) {
+                return
+            }
+            return this.$refs.personalitiesZoo[this.$refs.personalitiesZoo.findIndex(item => item.personality.name == this.configFile.personality)].$refs.imgElement.src
+        },
+
     },
     watch: {
         bec_collapsed() {

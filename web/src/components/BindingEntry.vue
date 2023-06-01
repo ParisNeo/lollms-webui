@@ -8,7 +8,7 @@
 
 
       <div class="flex flex-row items-center   gap-3 ">
-        <img :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-full object-fill text-red-700">
+        <img ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-full object-fill text-blue-700">
         <h3 class="font-bold font-large text-lg truncate">
           {{ binding.name }}
         </h3>
