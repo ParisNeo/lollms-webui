@@ -4,7 +4,7 @@
 
 
     <div class="flex flex-row items-center  flex-shrink-0 gap-3">
-      <img :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-full object-fill text-red-700">
+      <img ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-full object-fill text-red-700">
       <h3 class="font-bold font-large text-lg line-clamp-3">
       {{ personality.name }}
     </h3>

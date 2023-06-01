@@ -125,41 +125,43 @@
 
         </div>
 
-        <div class="relative overflow-y-scroll no-scrollbar flex flex-row flex-grow"  @dragover.stop.prevent="setDropZoneDiscussion()">
+        <div class="relative overflow-y-scroll no-scrollbar flex flex-row flex-grow"
+            @dragover.stop.prevent="setDropZoneDiscussion()">
             <div class="z-20">
-                <DragDrop ref="dragdropDiscussion" @panelDrop="setFileListDiscussion">Drop your discussion file here</DragDrop>
-            </div >
+                <DragDrop ref="dragdropDiscussion" @panelDrop="setFileListDiscussion">Drop your discussion file here
+                </DragDrop>
+            </div>
             <!-- DISCUSSION LIST -->
-            <div class="mx-4 flex-grow"  :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
+            <div class="mx-4 flex-grow" :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
 
-            
-            <div  :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''">
-                <TransitionGroup v-if="list.length > 0" name="list">
-                    <Discussion v-for="(item, index) in list" :key="item.id" :id="item.id" :title="item.title"
-                        :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"
-                        :checkBoxValue="item.checkBoxValue" @select="selectDiscussion(item)"
-                        @delete="deleteDiscussion(item.id)" @editTitle="editTitle" @checked="checkUncheckDiscussion" />
-                </TransitionGroup>
-                <div v-if="list.length < 1"
-                    class="gap-2 py-2 my-2 hover:shadow-md hover:bg-primary-light dark:hover:bg-primary rounded-md p-2 duration-75 group cursor-pointer">
-                    <p class="px-3">No discussions are found</p>
-                </div>
-                <div
-                    class="sticky bottom-0 bg-gradient-to-t pointer-events-none from-bg-light-tone dark:from-bg-dark-tone flex flex-grow">
-                    <!-- FADING DISCUSSION LIST END ELEMENT -->
+
+                <div :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''">
+                    <TransitionGroup v-if="list.length > 0" name="list">
+                        <Discussion v-for="(item, index) in list" :key="item.id" :id="item.id" :title="item.title"
+                            :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"
+                            :checkBoxValue="item.checkBoxValue" @select="selectDiscussion(item)"
+                            @delete="deleteDiscussion(item.id)" @editTitle="editTitle" @checked="checkUncheckDiscussion" />
+                    </TransitionGroup>
+                    <div v-if="list.length < 1"
+                        class="gap-2 py-2 my-2 hover:shadow-md hover:bg-primary-light dark:hover:bg-primary rounded-md p-2 duration-75 group cursor-pointer">
+                        <p class="px-3">No discussions are found</p>
+                    </div>
+                    <div
+                        class="sticky bottom-0 bg-gradient-to-t pointer-events-none from-bg-light-tone dark:from-bg-dark-tone flex flex-grow">
+                        <!-- FADING DISCUSSION LIST END ELEMENT -->
+                    </div>
                 </div>
             </div>
         </div>
-        </div>
     </div>
-    <div class="flex relative flex-grow overflow-y-auto  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" @dragover.stop.prevent="setDropZoneChat()">
+    <div id="messages-list"
+        class="flex relative flex-grow overflow-y-auto  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+        @dragover.stop.prevent="setDropZoneChat()">
         <div class="z-20">
             <DragDrop ref="dragdropChat" @panelDrop="setFileListChat"></DragDrop>
         </div>
 
-        <div :class="isDragOverChat ? 'pointer-events-none' : ''"
-            class="container flex flex-col flex-grow  "
-            id="messages-list">
+        <div :class="isDragOverChat ? 'pointer-events-none' : ''" class="container flex flex-col flex-grow  ">
 
             <!-- CHAT AREA -->
             <div class="conainer flex flex-col flex-grow pt-4 pb-10 ">
@@ -286,6 +288,13 @@ export default {
                         this.discussionArr = res.data.filter((item) => item.type == 0)
 
                     }
+                    // nextTick(() => {
+
+                    //     const msgList = document.getElementById('messages-list')
+
+                    //     this.scrollBottom(msgList)
+
+                    // })
                 }
             } catch (error) {
                 console.log(error.message, 'load_discussion')
@@ -644,7 +653,10 @@ export default {
                 if (messageItem) {
                     messageItem.content = msgObj.data
                 }
-
+                nextTick(() => {
+                    const msgList = document.getElementById('messages-list')
+                    this.scrollBottom(msgList)
+                })
             }
 
         },
@@ -867,6 +879,10 @@ export default {
             this.isGenerating = false
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
             console.log("Stopped generating")
+            nextTick(() => {
+                const msgList = document.getElementById('messages-list')
+                this.scrollBottom(msgList)
+            })
         },
         finalMsgEvent(msgObj) {
             console.log("final", msgObj)
@@ -881,6 +897,11 @@ export default {
                     messageItem.content = msgObj.data
                 }
             }
+            nextTick(() => {
+                const msgList = document.getElementById('messages-list')
+                this.scrollBottom(msgList)
+            })
+
 
             this.isGenerating = false
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
@@ -909,15 +930,15 @@ export default {
             a.click();
             document.body.removeChild(a);
         },
-        parseJsonObj(obj){
+        parseJsonObj(obj) {
             try {
-                 const ret = JSON.parse(obj)
-                 return ret
+                const ret = JSON.parse(obj)
+                return ret
             } catch (error) {
-                this.$refs.toast.showToast("Could not parse JSON. \n"+error.message, 4, false)
+                this.$refs.toast.showToast("Could not parse JSON. \n" + error.message, 4, false)
                 return null
             }
-           
+
         },
         async parseJsonFile(file) {
 
@@ -1049,10 +1070,10 @@ export default {
 
         },
         async setFileListDiscussion(files) {
-            
-            if(files.length > 1){
+
+            if (files.length > 1) {
                 this.$refs.toast.showToast("Failed to import discussions. Too many files", 4, false)
-              return  
+                return
             }
             const obj = await this.parseJsonFile(files[0])
 
@@ -1098,7 +1119,7 @@ export default {
 
     },
     async activated() {
-      
+
         // This lifecycle hook runs every time you switch from other page back to this page (vue-router)
         // To fix scrolling back to last message, this hook is needed.
         // If anyone knows hor to fix scroll issue when changing pages, please do fix it :D
@@ -1108,6 +1129,13 @@ export default {
 
         if (this.isCreated) {
             this.loadLastUsedDiscussion()
+            nextTick(() => {
+
+                const msgList = document.getElementById('messages-list')
+
+                this.scrollBottom(msgList)
+
+            })
         }
     },
     components: {

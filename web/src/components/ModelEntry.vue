@@ -13,7 +13,7 @@
     </div>
     <div class="flex-1" v-if="!model.isCustomModel">
       <div class="flex gap-3 items-center">
-        <img :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-lg object-fill" :class="linkNotValid ? 'grayscale':''">
+        <img ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-lg object-fill" :class="linkNotValid ? 'grayscale':''">
         <h3 class="font-bold font-large text-lg">
           {{ title }}
         </h3>
