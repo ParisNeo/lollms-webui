@@ -1,154 +1,158 @@
 <template>
     <div
-        class="overflow-y-scroll flex flex-col no-scrollbar shadow-lg min-w-[24rem] max-w-[24rem] bg-bg-light-tone dark:bg-bg-dark-tone">
+        class="relative flex flex-col no-scrollbar shadow-lg min-w-[24rem] max-w-[24rem] bg-bg-light-tone dark:bg-bg-dark-tone">
         <!-- LEFT SIDE PANEL -->
-        <div class=" sticky top-0 flex-col  bg-bg-light-tone dark:bg-bg-dark-tone shadow-md">
-
-
-            <!-- CONTROL PANEL -->
-            <div class="flex-row p-4  flex items-center gap-3 flex-0">
-
-                <!-- MAIN BUTTONS -->
-                <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Create new discussion"
-                    type="button" @click="createNewDiscussion()">
-                    <i data-feather="plus"></i>
-                </button>
-                <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Edit discussion list"
-                    type="button" @click="isCheckbox = !isCheckbox" :class="isCheckbox ? 'text-secondary' : ''">
-                    <i data-feather="check-square"></i>
-                </button>
-                <button class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                    title="Reset database, remove all discussions">
-                    <i data-feather="refresh-ccw"></i>
-                </button>
-                <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Export database"
-                    type="button">
-                    <i data-feather="database"></i>
-                </button>
-                <input type="file" ref="fileDialog" style="display: none" @change="importDiscussions" />
-                <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
-                    title="Import discussions" type="button" @click.stop="$refs.fileDialog.click()">
-                    <i data-feather="log-in"></i>
-                </button>
-                <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Filter discussions"
-                    type="button" @click="isSearch = !isSearch" :class="isSearch ? 'text-secondary' : ''">
-                    <i data-feather="search"></i>
-                </button>
-                <div v-if="loading" title="Loading.." class="flex flex-row flex-grow justify-end">
-                    <!-- SPINNER -->
-                    <div role="status">
-                        <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101"
-                            fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                fill="currentColor" />
-                            <path
-                                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                fill="currentFill" />
-                        </svg>
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
-            </div>
-            <!-- SEARCH BAR -->
-            <!-- <Transition name="expand" > -->
-            <div key="1" v-if="isSearch" class="flex-row  items-center gap-3 flex-0 w-full">
-
-
-
-                <div class="p-4 pt-2 ">
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <div class="scale-75">
-                                <i data-feather="search"></i>
-                            </div>
-                        </div>
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                            <div class="hover:text-secondary duration-75 active:scale-90"
-                                :class="filterTitle ? 'visible' : 'invisible'" title="Clear" @click="filterTitle = ''">
-                                <i data-feather="x"></i>
-                            </div>
-                        </div>
-
-                        <input type="search" id="default-search"
-                            class="block w-full p-2 pl-10 pr-10 text-sm border border-gray-300 rounded-lg bg-bg-light focus:ring-secondary focus:border-secondary dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-secondary dark:focus:border-secondary"
-                            placeholder="Search..." title="Filter discussions by title" v-model="filterTitle"
-                            @input="filterDiscussions()" />
-                    </div>
-                </div>
-
-            </div>
-            <!-- </Transition> -->
-            <hr v-if="isCheckbox" class="h-px bg-bg-light p-0 mb-4 px-4 mx-4 border-0 dark:bg-bg-dark">
-            <div v-if="isCheckbox" class="flex flex-row flex-grow p-4 pt-0 items-center">
-
-                <!-- CHECK BOX OPERATIONS -->
-                <div class="flex flex-row flex-grow ">
-                    <p v-if="selectedDiscussions.length > 0">Selected: {{ selectedDiscussions.length }}</p>
-                </div>
-                <div class="flex flex-row ">
-
-                    <div v-if="selectedDiscussions.length > 0" class="flex gap-3">
-                        <!-- DELETE MULTIPLE -->
-                        <button v-if="!showConfirmation"
-                            class="flex mx-3 flex-1 text-2xl hover:text-red-600 duration-75 active:scale-90 "
-                            title="Remove selected" type="button" @click.stop="showConfirmation = true">
-                            <i data-feather="trash"></i>
-                        </button>
-                        <!-- DELETE CONFIRM -->
-                        <div v-if="showConfirmation"
-                            class="flex gap-3 mx-3 flex-1 items-center justify-end  group-hover:visible duration-75">
-                            <button class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                                title="Confirm removal" type="button" @click.stop="deleteDiscussionMulti">
-                                <i data-feather="check"></i>
-                            </button>
-                            <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Cancel removal"
-                                type="button" @click.stop="showConfirmation = false">
-                                <i data-feather="x"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="flex gap-3">
-
-                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
-                            title="Export selected to a file" type="button" @click.stop="exportDiscussions">
-                            <i data-feather="log-out"></i>
-                        </button>
-                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90 " title="Select All"
-                            type="button" @click.stop="selectAllDiscussions">
-                            <i data-feather="list"></i>
-                        </button>
-
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="relative overflow-y-scroll no-scrollbar flex flex-row flex-grow"
+        <div class="flex flex-col flex-grow overflow-y-scroll no-scrollbar"
             @dragover.stop.prevent="setDropZoneDiscussion()">
+            <div class=" sticky z-10 top-0  bg-bg-light-tone dark:bg-bg-dark-tone shadow-md">
+
+
+                <!-- CONTROL PANEL -->
+                <div class="flex-row p-4  flex items-center gap-3 flex-0">
+
+                    <!-- MAIN BUTTONS -->
+                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Create new discussion"
+                        type="button" @click="createNewDiscussion()">
+                        <i data-feather="plus"></i>
+                    </button>
+                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Edit discussion list"
+                        type="button" @click="isCheckbox = !isCheckbox" :class="isCheckbox ? 'text-secondary' : ''">
+                        <i data-feather="check-square"></i>
+                    </button>
+                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                        title="Reset database, remove all discussions">
+                        <i data-feather="refresh-ccw"></i>
+                    </button>
+                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Export database"
+                        type="button">
+                        <i data-feather="database"></i>
+                    </button>
+                    <input type="file" ref="fileDialog" style="display: none" @change="importDiscussions" />
+                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
+                        title="Import discussions" type="button" @click.stop="$refs.fileDialog.click()">
+                        <i data-feather="log-in"></i>
+                    </button>
+                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Filter discussions"
+                        type="button" @click="isSearch = !isSearch" :class="isSearch ? 'text-secondary' : ''">
+                        <i data-feather="search"></i>
+                    </button>
+                    <div v-if="loading" title="Loading.." class="flex flex-row flex-grow justify-end">
+                        <!-- SPINNER -->
+                        <div role="status">
+                            <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101"
+                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                    fill="currentColor" />
+                                <path
+                                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                    fill="currentFill" />
+                            </svg>
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- SEARCH BAR -->
+                <!-- <Transition name="expand" > -->
+                <div v-if="isSearch" class="flex-row  items-center gap-3 flex-0 w-full">
+
+
+
+                    <div class="p-4 pt-2 ">
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <div class="scale-75">
+                                    <i data-feather="search"></i>
+                                </div>
+                            </div>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                <div class="hover:text-secondary duration-75 active:scale-90"
+                                    :class="filterTitle ? 'visible' : 'invisible'" title="Clear" @click="filterTitle = ''">
+                                    <i data-feather="x"></i>
+                                </div>
+                            </div>
+
+                            <input type="search" id="default-search"
+                                class="block w-full p-2 pl-10 pr-10 text-sm border border-gray-300 rounded-lg bg-bg-light focus:ring-secondary focus:border-secondary dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-secondary dark:focus:border-secondary"
+                                placeholder="Search..." title="Filter discussions by title" v-model="filterTitle"
+                                @input="filterDiscussions()" />
+                        </div>
+                    </div>
+
+                </div>
+                <!-- </Transition> -->
+                <hr v-if="isCheckbox" class="h-px bg-bg-light p-0 mb-4 px-4 mx-4 border-0 dark:bg-bg-dark">
+                <div v-if="isCheckbox" class="flex flex-row flex-grow p-4 pt-0 items-center">
+
+                    <!-- CHECK BOX OPERATIONS -->
+                    <div class="flex flex-row flex-grow ">
+                        <p v-if="selectedDiscussions.length > 0">Selected: {{ selectedDiscussions.length }}</p>
+                    </div>
+                    <div class="flex flex-row ">
+
+                        <div v-if="selectedDiscussions.length > 0" class="flex gap-3">
+                            <!-- DELETE MULTIPLE -->
+                            <button v-if="!showConfirmation"
+                                class="flex mx-3 flex-1 text-2xl hover:text-red-600 duration-75 active:scale-90 "
+                                title="Remove selected" type="button" @click.stop="showConfirmation = true">
+                                <i data-feather="trash"></i>
+                            </button>
+                            <!-- DELETE CONFIRM -->
+                            <div v-if="showConfirmation"
+                                class="flex gap-3 mx-3 flex-1 items-center justify-end  group-hover:visible duration-75">
+                                <button class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                                    title="Confirm removal" type="button" @click.stop="deleteDiscussionMulti">
+                                    <i data-feather="check"></i>
+                                </button>
+                                <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 "
+                                    title="Cancel removal" type="button" @click.stop="showConfirmation = false">
+                                    <i data-feather="x"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+
+                            <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
+                                title="Export selected to a file" type="button" @click.stop="exportDiscussions">
+                                <i data-feather="log-out"></i>
+                            </button>
+                            <button class="text-2xl hover:text-secondary duration-75 active:scale-90 " title="Select All"
+                                type="button" @click.stop="selectAllDiscussions">
+                                <i data-feather="list"></i>
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
             <div class="z-20">
                 <DragDrop ref="dragdropDiscussion" @panelDrop="setFileListDiscussion">Drop your discussion file here
                 </DragDrop>
             </div>
-            <!-- DISCUSSION LIST -->
-            <div class="mx-4 flex-grow" :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
+            <div class="relativeflex flex-row flex-grow ">
+
+                <!-- DISCUSSION LIST -->
+                <div class="mx-4 flex flex-col flex-grow" :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
 
 
-                <div :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''">
-                    <TransitionGroup v-if="list.length > 0" name="list">
-                        <Discussion v-for="(item, index) in list" :key="item.id" :id="item.id" :title="item.title"
-                            :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"
-                            :checkBoxValue="item.checkBoxValue" @select="selectDiscussion(item)"
-                            @delete="deleteDiscussion(item.id)" @editTitle="editTitle" @checked="checkUncheckDiscussion" />
-                    </TransitionGroup>
-                    <div v-if="list.length < 1"
-                        class="gap-2 py-2 my-2 hover:shadow-md hover:bg-primary-light dark:hover:bg-primary rounded-md p-2 duration-75 group cursor-pointer">
-                        <p class="px-3">No discussions are found</p>
-                    </div>
-                    <div
-                        class="sticky bottom-0 bg-gradient-to-t pointer-events-none from-bg-light-tone dark:from-bg-dark-tone flex flex-grow">
-                        <!-- FADING DISCUSSION LIST END ELEMENT -->
+                    <div :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''"
+                        class="flex flex-col flex-grow overflow-y-auto ">
+                        <TransitionGroup v-if="list.length > 0" name="list">
+                            <Discussion v-for="(item, index) in list" :key="item.id" :id="item.id" :title="item.title"
+                                :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"
+                                :checkBoxValue="item.checkBoxValue" @select="selectDiscussion(item)"
+                                @delete="deleteDiscussion(item.id)" @editTitle="editTitle"
+                                @checked="checkUncheckDiscussion" />
+                        </TransitionGroup>
+                        <div v-if="list.length < 1"
+                            class="gap-2 py-2 my-2 hover:shadow-md hover:bg-primary-light dark:hover:bg-primary rounded-md p-2 duration-75 group cursor-pointer">
+                            <p class="px-3">No discussions are found</p>
+                        </div>
+                        <div
+                            class="sticky bottom-0 bg-gradient-to-t pointer-events-none from-bg-light-tone dark:from-bg-dark-tone flex flex-grow">
+                            <!-- FADING DISCUSSION LIST END ELEMENT -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -161,7 +165,7 @@
             <DragDrop ref="dragdropChat" @panelDrop="setFileListChat"></DragDrop>
         </div>
 
-        <div  class="  flex-grow  " :class="isDragOverChat ? 'pointer-events-none' : ''">
+        <div class="  flex-grow  " :class="isDragOverChat ? 'pointer-events-none' : ''">
 
             <!-- CHAT AREA -->
             <div class=" container pt-4 pb-10 ">
@@ -1090,7 +1094,7 @@ export default {
             this.isDragOverDiscussion = false
         },
         setDropZoneDiscussion() {
-           
+
             this.isDragOverDiscussion = true
             this.$refs.dragdropDiscussion.show = true
 
@@ -1118,7 +1122,7 @@ export default {
         socket.on('infos', this.createBotMsg)
         socket.on('message', this.streamMessageContent)
         socket.on("final", this.finalMsgEvent)
-        
+
     },
     async activated() {
 
@@ -1137,6 +1141,7 @@ export default {
 
                 this.scrollBottom(msgList)
                 this.setDropZoneChat()
+                //this.setDropZoneDiscussion()
             })
         }
     },
