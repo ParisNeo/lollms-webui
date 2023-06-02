@@ -6,8 +6,9 @@
 import { createApp } from 'vue';
 import io from 'socket.io-client';
 
-
-const socket = new io(import.meta.env.VITE_GPT4ALL_API );
+const URL = process.env.NODE_ENV === "production" ? undefined : (import.meta.env.VITE_GPT4ALL_API);
+const socket = new io(URL);
+//const socket = new io(import.meta.env.VITE_GPT4ALL_API );
 
 socket.onopen = () => {
   console.log('WebSocket connection established.');
