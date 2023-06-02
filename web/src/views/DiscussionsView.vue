@@ -155,16 +155,16 @@
         </div>
     </div>
     <div id="messages-list"
-        class="flex relative flex-grow overflow-y-auto  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+        class=" relative overflow-y-scroll flex flex-row flex-grow scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
         @dragover.stop.prevent="setDropZoneChat()">
-        <div class="z-20">
+        <div class="z-20 h-max">
             <DragDrop ref="dragdropChat" @panelDrop="setFileListChat"></DragDrop>
         </div>
 
-        <div :class="isDragOverChat ? 'pointer-events-none' : ''" class="container flex flex-col flex-grow  ">
+        <div  class="  flex-grow  " :class="isDragOverChat ? 'pointer-events-none' : ''">
 
             <!-- CHAT AREA -->
-            <div class="conainer flex flex-col flex-grow pt-4 pb-10 ">
+            <div class=" container pt-4 pb-10 ">
                 <TransitionGroup v-if="discussionArr.length > 0" name="list">
                     <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg" :id="'msg-' + msg.id"
                         ref="messages" @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
@@ -1065,7 +1065,8 @@ export default {
             this.isDragOver = false
         },
         setDropZoneChat() {
-            this.isDragOver = true
+            console.log('ssss')
+            this.isDragOverChat = true
             this.$refs.dragdropChat.show = true
 
         },
@@ -1089,6 +1090,7 @@ export default {
             this.isDragOverDiscussion = false
         },
         setDropZoneDiscussion() {
+           
             this.isDragOverDiscussion = true
             this.$refs.dragdropDiscussion.show = true
 
@@ -1116,7 +1118,7 @@ export default {
         socket.on('infos', this.createBotMsg)
         socket.on('message', this.streamMessageContent)
         socket.on("final", this.finalMsgEvent)
-
+        
     },
     async activated() {
 
@@ -1134,7 +1136,7 @@ export default {
                 const msgList = document.getElementById('messages-list')
 
                 this.scrollBottom(msgList)
-
+                this.setDropZoneChat()
             })
         }
     },
