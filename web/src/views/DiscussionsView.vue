@@ -158,14 +158,14 @@
             </div>
         </div>
     </div>
-    <div id="messages-list"
-        class=" relative overflow-y-scroll flex flex-row flex-grow scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+    <div 
+        class="relative flex flex-col flex-grow scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
         @dragover.stop.prevent="setDropZoneChat()">
         <div class="z-20 h-max">
             <DragDrop ref="dragdropChat" @panelDrop="setFileListChat"></DragDrop>
         </div>
 
-        <div class="  flex-grow  " :class="isDragOverChat ? 'pointer-events-none' : ''">
+        <div id="messages-list" class="  flex-grow  overflow-y-scroll " :class="isDragOverChat ? 'pointer-events-none' : ''">
 
             <!-- CHAT AREA -->
             <div class=" container pt-4 pb-10 ">
@@ -182,13 +182,15 @@
             </div>
 
 
-            <div class="sticky bottom-0 flex flex-col  items-center justify-center">
+
+
+        </div>
+        <div class="container flex flex-row items-center justify-center">
                 <ChatBox ref="chatBox" v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
                     @stopGenerating="stopGenerating" />
             </div>
-
-        </div>
     </div>
+    
     <Toast ref="toast">
     </Toast>
 </template>
@@ -1066,7 +1068,7 @@ export default {
             this.fileList = files
             this.$refs.chatBox.fileList = this.fileList
             //console.log('dropppp', this.fileList)
-            this.isDragOver = false
+            this.isDragOverChat = false
         },
         setDropZoneChat() {
             console.log('ssss')
@@ -1140,7 +1142,7 @@ export default {
                 const msgList = document.getElementById('messages-list')
 
                 this.scrollBottom(msgList)
-                this.setDropZoneChat()
+                //this.setDropZoneChat()
                 //this.setDropZoneDiscussion()
             })
         }
