@@ -130,14 +130,14 @@
                 <DragDrop ref="dragdropDiscussion" @panelDrop="setFileListDiscussion">Drop your discussion file here
                 </DragDrop>
             </div>
-            <div class="relativeflex flex-row flex-grow ">
+            <div class="relative flex flex-row flex-grow mb-10">
 
                 <!-- DISCUSSION LIST -->
                 <div class="mx-4 flex flex-col flex-grow" :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
 
 
                     <div :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''"
-                        class="flex flex-col flex-grow overflow-y-auto ">
+                        class="flex flex-col flex-grow  ">
                         <TransitionGroup v-if="list.length > 0" name="list">
                             <Discussion v-for="(item, index) in list" :key="item.id" :id="item.id" :title="item.title"
                                 :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"
@@ -158,14 +158,14 @@
             </div>
         </div>
     </div>
-    <div 
-        class="relative flex flex-col flex-grow scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
-        @dragover.stop.prevent="setDropZoneChat()">
+    <div class="relative flex flex-col flex-grow " @dragover.stop.prevent="setDropZoneChat()">
         <div class="z-20 h-max">
             <DragDrop ref="dragdropChat" @panelDrop="setFileListChat"></DragDrop>
         </div>
 
-        <div id="messages-list" class="  flex-grow  overflow-y-scroll " :class="isDragOverChat ? 'pointer-events-none' : ''">
+        <div id="messages-list"
+            class="  flex-grow  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+            :class="isDragOverChat ? 'pointer-events-none' : ''">
 
             <!-- CHAT AREA -->
             <div class=" container pt-4 pb-10 ">
@@ -182,15 +182,16 @@
             </div>
 
 
-
-
+            <div
+            class="sticky bottom-0 container flex flex-row items-center justify-center bg-transparent p-4 pt-10 bg-gradient-to-t from-bg-light dark:from-bg-dark from-5% via-bg-light dark:via-bg-dark via-10% to-transparent to-100%">
+            <ChatBox ref="chatBox" v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
+                @stopGenerating="stopGenerating" />
         </div>
-        <div class="container flex flex-row items-center justify-center">
-                <ChatBox ref="chatBox" v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
-                    @stopGenerating="stopGenerating" />
-            </div>
+        <!-- CAN ADD FOOTER PANEL HERE -->
+        </div>
+
     </div>
-    
+
     <Toast ref="toast">
     </Toast>
 </template>

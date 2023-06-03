@@ -12,17 +12,18 @@
         </div>
         <form>
             <label for="chat" class="sr-only">Send message</label>
-            <div class="px-3 py-3 rounded-t-lg bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel shadow-lg  ">
+            <div class="px-3 py-3 rounded-lg bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel shadow-lg  ">
                 <!-- FILES     -->
                 <div class="">
-                    <div v-if="fileList.length > 0"
-                        class="flex flex-col max-h-64  ">
-                        <TransitionGroup name="list" tag="div" class="flex flex-col flex-grow overflow-y-scroll mb-2 gap-1 scrollbar-thin scrollbar-track-bg-light-tone-panel scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+                    <div v-if="fileList.length > 0" class="flex flex-col max-h-64  ">
+                        <TransitionGroup name="list" tag="div"
+                            class="flex flex-col flex-grow overflow-y-scroll mb-2 gap-1 scrollbar-thin scrollbar-track-bg-light-tone-panel scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
                             <div v-for="file in fileList" :key="file.name">
                                 <div class=" cursor-pointer pb-1 flex ">
 
-                                    <div class="flex justify-start p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary-light ">
-                                        
+                                    <div
+                                        class="flex justify-start p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary-light ">
+
                                         <div class=" flex flex-row items-center gap-1 ">
                                             <i data-feather="file" class="w-4 h-5"></i>
                                             <div class="">
@@ -30,24 +31,24 @@
 
                                             </div>
                                         </div>
-<div class="flexflex row items-center flex-grow justify-end">
-    <div class="flex flex-row items-center ">
-                                            <div class="">
-                                                {{ computedFileSize(file.size) }}
+                                        <div class="flexflex row items-center flex-grow justify-end">
+                                            <div class="flex flex-row items-center ">
+                                                <div class="">
+                                                    {{ computedFileSize(file.size) }}
 
+                                                </div>
+
+
+                                                <button type="button" title="Remove item"
+                                                    class="flex items-center p-0.5 text-sm rounded-sm hover:text-red-600 active:scale-75"
+                                                    @click="removeItem(file)">
+                                                    <i data-feather="x" class="w-5 h-5 "></i>
+
+                                                </button>
                                             </div>
 
 
-                                            <button type="button" title="Remove item"
-                                                class="flex items-center p-0.5 text-sm rounded-sm hover:text-red-600 active:scale-75"
-                                                @click="removeItem(file)">
-                                                <i data-feather="x" class="w-5 h-5 "></i>
-
-                                            </button>
                                         </div>
-
-
-</div>
 
 
                                     </div>
@@ -147,8 +148,8 @@ export default {
     methods: {
         computedFileSize(size) {
             nextTick(() => {
-            feather.replace()
-        })
+                feather.replace()
+            })
             return filesize(size)
         },
         removeItem(file) {
