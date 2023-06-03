@@ -1,5 +1,5 @@
 <template>
-    <div class=" bottom-0  justify-center text-center p-0 w-96">
+    <div class="absolute bottom-0  w-96  justify-center text-center p-4">
         <div v-if="loading" class="flex items-center justify-center w-full">
             <div class="flex flex-row p-2 rounded-t-lg ">
 
@@ -13,11 +13,11 @@
         <form>
             <label for="chat" class="sr-only">Send message</label>
             <div class="px-3 py-3 rounded-lg bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel shadow-lg  ">
-                <!-- FILES     -->
-                <div class="">
+
+                <div class="flex flex-col gap-2">
+                    <!-- FILES     -->
                     <div v-if="fileList.length > 0" class="flex flex-col max-h-64  ">
-                        <TransitionGroup name="list" tag="div"
-                            class="flex flex-col flex-grow overflow-y-scroll mb-2 gap-1 scrollbar-thin scrollbar-track-bg-light-tone-panel scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+                        <TransitionGroup name="list" tag="div" class="flex flex-col flex-grow overflow-y-scroll ">
                             <div v-for="file in fileList" :key="file.name">
                                 <div class=" cursor-pointer pb-1 flex ">
 
@@ -59,10 +59,11 @@
                         </TransitionGroup>
 
                     </div>
-
+                    <div v-if="fileList.length > 0" class="flex items-center bg-red-600">
+                        <!-- ADDITIONAL OPTIONS IF NEEDED -->
+                    </div>
+                    <!-- CHAT BOX -->
                     <div class="flex flex-row flex-grow items-center gap-2 ">
-
-
                         <textarea id="chat" rows="1" v-model="message"
                             class="block min-h-11  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="Send message..." @keydown.enter.exact="submitOnEnter($event)"></textarea>
@@ -142,7 +143,7 @@ export default {
     data() {
         return {
             message: "",
-            fileList: []
+            fileList: [],
         }
     },
     methods: {
@@ -152,6 +153,7 @@ export default {
             })
             return filesize(size)
         },
+
         removeItem(file) {
             this.fileList = this.fileList.filter((item) => item != file)
             // console.log(this.fileList)
@@ -189,7 +191,11 @@ export default {
             nextTick(() => {
                 feather.replace()
             })
-        }
+        },
+
+    },
+    computed:{
+
     },
     mounted() {
         nextTick(() => {

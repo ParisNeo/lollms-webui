@@ -164,11 +164,11 @@
         </div>
 
         <div id="messages-list"
-            class="  flex-grow  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+            class=" z-0 flex flex-col  flex-grow  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
             :class="isDragOverChat ? 'pointer-events-none' : ''">
 
             <!-- CHAT AREA -->
-            <div class=" container pt-4 pb-10 ">
+            <div class=" container pt-4 pb-10 mb-16">
                 <TransitionGroup v-if="discussionArr.length > 0" name="list">
                     <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg" :id="'msg-' + msg.id"
                         ref="messages" @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
@@ -181,13 +181,15 @@
 
             </div>
 
-
             <div
-            class="sticky bottom-0 container flex flex-row items-center justify-center bg-transparent p-4 pt-10 bg-gradient-to-t from-bg-light dark:from-bg-dark from-5% via-bg-light dark:via-bg-dark via-10% to-transparent to-100%">
-            <ChatBox ref="chatBox" v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
-                @stopGenerating="stopGenerating" />
-        </div>
-        <!-- CAN ADD FOOTER PANEL HERE -->
+                class="absolute w-full bottom-0 bg-transparent p-10 pt-16 bg-gradient-to-t from-bg-light dark:from-bg-dark from-5% via-bg-light dark:via-bg-dark via-10% to-transparent to-100%">
+
+            </div>
+            <div class=" bottom-0 container flex flex-row items-center justify-center ">
+                <ChatBox ref="chatBox" v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
+                    @stopGenerating="stopGenerating" />
+            </div>
+            <!-- CAN ADD FOOTER PANEL HERE -->
         </div>
 
     </div>
@@ -295,13 +297,7 @@ export default {
                         this.discussionArr = res.data.filter((item) => item.type == 0)
 
                     }
-                    // nextTick(() => {
 
-                    //     const msgList = document.getElementById('messages-list')
-
-                    //     this.scrollBottom(msgList)
-
-                    // })
                 }
             } catch (error) {
                 console.log(error.message, 'load_discussion')
@@ -536,7 +532,7 @@ export default {
                     }
                 )
             } else {
-                console.log("Error: scrollBottom")
+                console.log("Error: scrollTop")
             }
 
         },
@@ -591,12 +587,12 @@ export default {
                     //type: msgObj.type
                 }
                 this.discussionArr.push(responseMessage)
-                nextTick(() => {
-                    const msgList = document.getElementById('messages-list')
+                // nextTick(() => {
+                //     const msgList = document.getElementById('messages-list')
 
-                    this.scrollBottom(msgList)
+                //     this.scrollBottom(msgList)
 
-                })
+                // })
 
                 if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
                     if (msgObj.type == "input_message_infos") {
@@ -660,10 +656,11 @@ export default {
                 if (messageItem) {
                     messageItem.content = msgObj.data
                 }
-                nextTick(() => {
-                    const msgList = document.getElementById('messages-list')
-                    this.scrollBottom(msgList)
-                })
+                // // Disables as per request
+                // nextTick(() => {
+                //     const msgList = document.getElementById('messages-list')
+                //     this.scrollBottom(msgList)
+                // })
             }
 
         },
@@ -1068,11 +1065,11 @@ export default {
         setFileListChat(files) {
             this.fileList = files
             this.$refs.chatBox.fileList = this.fileList
-            //console.log('dropppp', this.fileList)
+
             this.isDragOverChat = false
         },
         setDropZoneChat() {
-            console.log('ssss')
+
             this.isDragOverChat = true
             this.$refs.dragdropChat.show = true
 
@@ -1143,8 +1140,7 @@ export default {
                 const msgList = document.getElementById('messages-list')
 
                 this.scrollBottom(msgList)
-                //this.setDropZoneChat()
-                //this.setDropZoneDiscussion()
+
             })
         }
     },
