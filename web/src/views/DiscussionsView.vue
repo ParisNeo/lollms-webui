@@ -1063,9 +1063,10 @@ export default {
             return
         },
         setFileListChat(files) {
-            console.log('file',files)
-            this.fileList = files.filter(item => item.type !='')
-            this.$refs.chatBox.fileList = this.fileList
+
+           
+            //this.fileList = files
+            this.$refs.chatBox.fileList =files
 
             this.isDragOverChat = false
         },

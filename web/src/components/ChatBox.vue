@@ -18,9 +18,9 @@
                     <!-- FILES     -->
                     <div v-if="fileList.length > 0" class="flex flex-col max-h-64  ">
                         <TransitionGroup name="list" tag="div"
-                            class="flex flex-col flex-grow overflow-y-scroll pr-2 scrollbar-thin scrollbar-track-bg-light scrollbar-thumb-bg-light-tone hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark dark:scrollbar-thumb-bg-dark-tone dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+                            class="flex flex-col flex-grow overflow-y-auto scrollbar-thin scrollbar-track-bg-light scrollbar-thumb-bg-light-tone hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark dark:scrollbar-thumb-bg-dark-tone dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
                             <div v-for="file in fileList" :key="file.name">
-                                <div class=" pb-1" :title="file.name">
+                                <div class="  m-1" :title="file.name">
 
                                     <div
                                         class="flex flex-row items-center gap-1 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary">
@@ -61,12 +61,15 @@
                         </TransitionGroup>
 
                     </div>
-                    <div v-if="fileList.length > 0" class="flex items-center ">
+                    <div v-if="fileList.length > 0" class="flex items-center mx-1">
 
                         <!-- ADDITIONAL INFO PANEL -->
 
-                        <div class="whitespace-nowrap">
-                            Total size:
+                        <div class="whitespace-nowrap flex flex-row gap-2">
+                            <p class="font-bold ">
+                                Total size:
+                            </p>
+                            
                             {{ totalSize }}
                             
                             ({{ fileList.length }})
@@ -180,7 +183,7 @@ export default {
             // console.log(this.fileList)
         },
         sendMessageEvent(msg) {
-
+            this.fileList=[]
             this.$emit('messageSentEvent', msg)
 
         },
@@ -214,16 +217,17 @@ export default {
             })
         },
         fileList: {
+            // Calculate total size
             handler(val, oldVal) {
                 let total = 0
                 if (val.length > 0) {
                     for (let i = 0; i < val.length; i++) {
                         total = total + parseInt(val[i].size)
-                        //console.log(val[i].size)
+                       
                     }
                 }
                 this.totalSize = filesize(total,false)
-                console.log(val)
+                
             },
             deep: true
         },
