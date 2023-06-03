@@ -17,36 +17,38 @@
                 <div class="flex flex-col gap-2">
                     <!-- FILES     -->
                     <div v-if="fileList.length > 0" class="flex flex-col max-h-64  ">
-                        <TransitionGroup name="list" tag="div" class="flex flex-col flex-grow overflow-y-scroll ">
+                        <TransitionGroup name="list" tag="div"
+                            class="flex flex-col flex-grow overflow-y-scroll pr-2 scrollbar-thin scrollbar-track-bg-light scrollbar-thumb-bg-light-tone hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark dark:scrollbar-thumb-bg-dark-tone dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
                             <div v-for="file in fileList" :key="file.name">
-                                <div class=" cursor-pointer pb-1 flex ">
+                                <div class=" pb-1" :title="file.name">
 
                                     <div
-                                        class="flex justify-start p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary-light ">
+                                        class="flex flex-row items-center gap-1 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary">
+                                        <div>
+                                            <i data-feather="file" class="w-5 h-5"></i>
 
-                                        <div class=" flex flex-row items-center gap-1 ">
-                                            <i data-feather="file" class="w-4 h-5"></i>
-                                            <div class="">
-                                                {{ file.name }}
-
-                                            </div>
                                         </div>
-                                        <div class="flexflex row items-center flex-grow justify-end">
-                                            <div class="flex flex-row items-center ">
-                                                <div class="">
-                                                    {{ computedFileSize(file.size) }}
-
-                                                </div>
 
 
-                                                <button type="button" title="Remove item"
-                                                    class="flex items-center p-0.5 text-sm rounded-sm hover:text-red-600 active:scale-75"
-                                                    @click="removeItem(file)">
-                                                    <i data-feather="x" class="w-5 h-5 "></i>
+                                        <div class="line-clamp-1 w-3/5">
+                                            {{ file.name }}
 
-                                                </button>
-                                            </div>
+                                        </div>
+                                        <div class="grow">
 
+                                        </div>
+
+                                        <div class="flex flex-row items-center">
+                                            <p class="whitespace-nowrap">
+                                                {{ computedFileSize(file.size) }}
+
+                                            </p>
+                                            <button type="button" title="Remove item"
+                                                class="flex items-center p-0.5 text-sm rounded-sm hover:text-red-600 active:scale-75"
+                                                @click="removeItem(file)">
+                                                <i data-feather="x" class="w-5 h-5 "></i>
+
+                                            </button>
 
                                         </div>
 
@@ -59,8 +61,26 @@
                         </TransitionGroup>
 
                     </div>
-                    <div v-if="fileList.length > 0" class="flex items-center bg-red-600">
-                        <!-- ADDITIONAL OPTIONS IF NEEDED -->
+                    <div v-if="fileList.length > 0" class="flex items-center ">
+
+                        <!-- ADDITIONAL INFO PANEL -->
+
+                        <div class="whitespace-nowrap">
+                            Total size:
+                            {{ totalSize }}
+                            
+                            ({{ fileList.length }})
+
+                        </div>
+                        <div class="grow">
+
+                        </div>
+                        <button type="button" title="Clear all"
+                            class="flex items-center p-0.5 text-sm rounded-sm hover:text-red-600 active:scale-75"
+                            @click="fileList = []">
+                            <i data-feather="trash" class="w-5 h-5 "></i>
+
+                        </button>
                     </div>
                     <!-- CHAT BOX -->
                     <div class="flex flex-row flex-grow items-center gap-2 ">
@@ -144,6 +164,7 @@ export default {
         return {
             message: "",
             fileList: [],
+            totalSize: 0
         }
     },
     methods: {
@@ -192,9 +213,23 @@ export default {
                 feather.replace()
             })
         },
+        fileList: {
+            handler(val, oldVal) {
+                let total = 0
+                if (val.length > 0) {
+                    for (let i = 0; i < val.length; i++) {
+                        total = total + parseInt(val[i].size)
+                        //console.log(val[i].size)
+                    }
+                }
+                this.totalSize = filesize(total,false)
+                console.log(val)
+            },
+            deep: true
+        },
 
     },
-    computed:{
+    computed: {
 
     },
     mounted() {
