@@ -173,7 +173,7 @@
                     <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg" :id="'msg-' + msg.id"
                         ref="messages" @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
                         @rankDown="rankDownMessage" @updateMessage="updateMessage" @resendMessage="resendMessage"
-                        :avatar="getAvatar(msg.sender)" />
+                        :avatar="getAvatar(msg.sender)" @click="scrollToElementInContainer($event.target, 'messages-list')" />
 
 
                 </TransitionGroup>
@@ -506,6 +506,13 @@ export default {
             } else {
                 console.log("Error: scrollToElement")
             }
+        },
+        scrollToElementInContainer(el, containerId) {
+            // console.log(el)
+            // const topPos = el.offsetTop + el.clientHeight;
+            // const container = document.getElementById(containerId)
+            // container.scrollTop = topPos;
+
         },
         scrollBottom(el) {
 
@@ -1064,9 +1071,9 @@ export default {
         },
         setFileListChat(files) {
 
-           
+
             //this.fileList = files
-            this.$refs.chatBox.fileList =files
+            this.$refs.chatBox.fileList = files
 
             this.isDragOverChat = false
         },

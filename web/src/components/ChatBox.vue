@@ -1,5 +1,5 @@
 <template>
-    <div class="absolute bottom-0  w-96  justify-center text-center p-4">
+    <div class="absolute bottom-0  w-96  justify-center text-center p-4 ">
         <div v-if="loading" class="flex items-center justify-center w-full">
             <div class="flex flex-row p-2 rounded-t-lg ">
 
