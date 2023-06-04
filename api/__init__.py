@@ -11,7 +11,8 @@ from datetime import datetime
 from api.db import DiscussionsDB
 from pathlib import Path
 import importlib
-from pyaipersonality import AIPersonality
+from lollms import AIPersonality, lollms_path
+from lollms.binding import BindingConfig
 import multiprocessing as mp
 import threading
 import time
@@ -80,7 +81,7 @@ def parse_requirements_file(requirements_path):
 
 
 class ModelProcess:
-    def __init__(self, config=None):
+    def __init__(self, config:BindingConfig=None):
         self.config = config
         self.generate_queue = mp.Queue()
         self.generation_queue = mp.Queue()
@@ -88,6 +89,8 @@ class ModelProcess:
         self.clear_queue_queue = mp.Queue(maxsize=1)
         self.set_config_queue = mp.Queue(maxsize=1)
         self.set_config_result_queue = mp.Queue(maxsize=1)
+
+        self.models_path = Path('models')
 
         self.process = None
         # Create synchronization objects
@@ -134,7 +137,7 @@ class ModelProcess:
             print(f"Loading binding {binding_name} install ON")
         else:
             print(f"Loading binding : {binding_name} install is off")
-        binding_path = Path("bindings")/binding_name
+        binding_path = lollms_path/"bindings_zoo"/binding_name
         if install:
             # first find out if there is a requirements.txt file
             install_file_name="install.py"
@@ -203,7 +206,7 @@ class ModelProcess:
     def rebuild_binding(self, config):
         try:
             print(" ******************* Building Binding from main Process *************************")
-            binding = self.load_binding(config["binding"], install=True)
+            binding = self.load_binding(config["binding_name"], install=True)
             print("Binding loaded successfully")
         except Exception as ex:
             print("Couldn't build binding.")
@@ -215,19 +218,19 @@ class ModelProcess:
         try:
             self.reset_config_result()
             print(" ******************* Building Binding from generation Process *************************")
-            self.binding = self.load_binding(self.config["binding"], install=True)
+            self.binding = self.load_binding(self.config["binding_name"], install=True)
             print("Binding loaded successfully")
             try:
-                model_file = Path("models")/self.config["binding"]/self.config["model"]
+                model_file = self.models_path/self.config["binding_name"]/self.config["model_name"]
                 print(f"Loading model : {model_file}")
                 self.model = self.binding(self.config)
                 self.model_ready.value = 1
                 print("Model created successfully\n")
             except Exception as ex:
-                if self.config["model"] is None:
+                if self.config["model_name"] is None:
                     print("No model is selected.\nPlease select a backend and a model to start using the ui.")
                 else:
-                    print(f"Couldn't build model {self.config['model']} : {ex}")
+                    print(f"Couldn't build model {self.config['model_name']} : {ex}")
                 self.model = None
                 self._set_config_result['status'] ='failed'
                 self._set_config_result['binding_status'] ='failed'
@@ -244,8 +247,9 @@ class ModelProcess:
 
     def rebuild_personality(self):
         try:
-            print(f" ******************* Building Personality {self.config['personality']} from main Process *************************")
-            personality_path = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
+            personality = self.config['personalities'][self.config['default_personality_id']]
+            print(f" ******************* Building Personality {personality} from main Process *************************")
+            personality_path = lollms_path/f"personalities_zoo/{personality}"
             personality = AIPersonality(personality_path, run_scripts=False)
             print(f" ************ Personality {personality.name} is ready (Main process) ***************************")
         except Exception as ex:
@@ -259,8 +263,9 @@ class ModelProcess:
     def _rebuild_personality(self):
         try:
             self.reset_config_result()
-            print(f" ******************* Building Personality {self.config['personality']} from generation Process *************************")
-            personality_path = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
+            personality = self.config['personalities'][self.config['default_personality_id']]
+            print(f" ******************* Building Personality {personality} from generation Process *************************")
+            personality_path = lollms_path/f"personalities_zoo/{personality}"
             self.personality = AIPersonality(personality_path)
             print(f" ************ Personality {self.personality.name} is ready (generation process) ***************************")
         except Exception as ex:
@@ -429,16 +434,16 @@ class ModelProcess:
         self.config = config
         print("Changing configuration")
         # verify that the binding is the same
-        if self.config["binding"]!=bk_cfg["binding"] or self.config["model"]!=bk_cfg["model"]:
+        if self.config["binding_name"]!=bk_cfg["binding_name"] or self.config["model_name"]!=bk_cfg["model_name"]:
             self._rebuild_model()
             
         # verify that the personality is the same
-        if self.config["personality"]!=bk_cfg["personality"] or self.config["personality_category"]!=bk_cfg["personality_category"] or self.config["personality_language"]!=bk_cfg["personality_language"]:
+        if self.config["personalities"][-1]!=bk_cfg["personalities"][-1]:
             self._rebuild_personality()
 
 
-class GPT4AllAPI():
-    def __init__(self, config:dict, socketio, config_file_path:str) -> None:
+class LoLLMsAPPI():
+    def __init__(self, config:BindingConfig, socketio, config_file_path:str) -> None:
         self.socketio = socketio
         #Create and launch the process
         self.process = ModelProcess(config)
@@ -485,7 +490,7 @@ class GPT4AllAPI():
                 print("Install model triggered")
                 model_path = data["path"]
                 progress = 0
-                installation_dir = Path(f'./models/{self.config["binding"]}/')
+                installation_dir = Path(f'./models/{self.config["binding_name"]}/')
                 filename = Path(model_path).name
                 installation_path = installation_dir / filename
                 print("Model install requested")
@@ -512,7 +517,7 @@ class GPT4AllAPI():
         @socketio.on('uninstall_model')
         def uninstall_model(data):
             model_path = data['path']
-            installation_dir = Path(f'./models/{self.config["binding"]}/')
+            installation_dir = Path(f'./models/{self.config["binding_name"]}/')
             filename = Path(model_path).name
             installation_path = installation_dir / filename
 
@@ -682,10 +687,8 @@ class GPT4AllAPI():
 
         link_text = self.personality.link_text
 
-        if len(self.full_message_list) > self.config["nb_messages_to_remember"]:
-            discussion_messages = self.personality.personality_conditioning+ link_text.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
-        else:
-            discussion_messages = self.personality.personality_conditioning+ link_text.join(self.full_message_list)
+        discussion_messages = self.personality.personality_conditioning+ link_text.join(self.full_message_list)
+
         
         return discussion_messages, message["content"]
 

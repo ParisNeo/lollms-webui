@@ -72,7 +72,7 @@ class LLMBinding:
     def list_models(config:dict):
         """Lists the models for this binding
         """
-        models_dir = Path('./models')/config["binding"]  # replace with the actual path to the models folder
+        models_dir = Path('./models')/config["binding_name"]  # replace with the actual path to the models folder
         return [f.name for f in models_dir.glob(LLMBinding.file_extension)]
     
     @staticmethod

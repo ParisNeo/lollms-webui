@@ -75,15 +75,15 @@
 
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
                             Binding zoo</h3>
-                        <div v-if="configFile.binding" class="mr-2">|</div>
+                        <div v-if="configFile.binding_name" class="mr-2">|</div>
 
-                        <div v-if="configFile.binding"
+                        <div v-if="configFile.binding_name"
                             class=" text-base font-semibold cursor-pointer select-none items-center">
 
                             <div class="flex gap-1 items-center">
                                     <img :src="imgBinding" class="w-8 h-8 rounded-full object-fill text-blue-700">
                                     <h3 class="font-bold font-large text-lg">
-                                        {{ configFile.binding }} 
+                                        {{ configFile.binding_name }} 
                                     </h3>
                                 </div>
                             </div>
@@ -97,7 +97,7 @@
                         <select id="binding" @change="update_binding($event.target.value)"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                            <option v-for="item in bindingsArr" :selected="item.folder === configFile.binding"
+                            <option v-for="item in bindingsArr" :selected="item.folder === configFile.binding_name"
                                 :value="item.folder">
                                 {{ item.name }} by ({{ item.author }})
                             </option>
@@ -113,7 +113,7 @@
                             <TransitionGroup name="list">
                                 <BindingEntry ref="bindingZoo" v-for="(binding, index) in bindings"
                                     :key="'index-' + index + '-' + binding.folder" :binding="binding"
-                                    :on-selected="onSelectedBinding" :selected="binding.folder === configFile.binding">
+                                    :on-selected="onSelectedBinding" :selected="binding.folder === configFile.binding_name">
                                 </BindingEntry>
                             </TransitionGroup>
                         </div>
@@ -150,15 +150,15 @@
                                 No model selected!
                             </div>
 
-                            <div v-if="configFile.model" class="mr-2">|</div>
+                            <div v-if="configFile.model_name" class="mr-2">|</div>
 
-                            <div v-if="configFile.model"
+                            <div v-if="configFile.model_name"
                                 class=" text-base font-semibold cursor-pointer select-none items-center">
 
                                 <div class="flex gap-1 items-center">
                                     <img :src="imgModel" class="w-8 h-8 rounded-lg object-fill">
                                     <h3 class="font-bold font-large text-lg">
-                                        {{ configFile.model }}
+                                        {{ configFile.model_name }}
                                     </h3>
                                 </div>
 
@@ -197,7 +197,7 @@
                                     :path="model.path" :owner="model.owner" :owner_link="model.owner_link"
                                     :license="model.license" :description="model.description"
                                     :is-installed="model.isInstalled" :on-install="onInstall" :on-uninstall="onUninstall"
-                                    :on-selected="onSelected" :selected="model.title === configFile.model" :model="model"
+                                    :on-selected="onSelected" :selected="model.title === configFile.model_name" :model="model"
                                     :model_type="model.model_type" />
                             </TransitionGroup>
                         </div>
@@ -228,15 +228,15 @@
                         <i :data-feather="pzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
                             Personalities zoo</h3>
-                        <div v-if="configFile.personality" class="mr-2">|</div>
+                        <div v-if="configFile.personalities" class="mr-2">|</div>
 
-                        <div v-if="configFile.personality"
+                        <div v-if="configFile.personalities"
                             class=" text-base font-semibold cursor-pointer select-none items-center">
                            
                             <div class="flex gap-1 items-center">
                                     <img :src="imgPersonality" class="w-8 h-8 rounded-full object-fill text-red-700">
                                     <h3 class="font-bold font-large text-lg">
-                                        {{ configFile.personality }} 
+                                        {{ this.configFile.personality_folder }} 
                                     </h3>
                                 </div>
                         
@@ -251,7 +251,7 @@
                         <select id="persLang" @change="update_setting('personality_language', $event.target.value, refresh)"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                            <option v-for="item in persLangArr" :selected="item === configFile.personality_language">{{ item
+                            <option v-for="item in persLangArr" :selected="item === this.configFile.personality_language">{{ item
                             }}
 
                             </option>
@@ -265,7 +265,7 @@
                         <select id="persCat" @change="update_setting('personality_category', $event.target.value, refresh)"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                            <option v-for="item in persCatgArr" :selected="item === configFile.personality_category">{{ item
+                            <option v-for="item in persCatgArr" :selected="item === this.configFile.personality_category">{{ item
                             }}
 
                             </option>
@@ -295,7 +295,7 @@
                             <TransitionGroup name="bounce">
                                 <personality-entry ref="personalitiesZoo" v-for="(pers, index) in personalitiesFiltered"
                                     :key="'index-' + index + '-' + pers.name" :personality="pers"
-                                    :selected="pers.name === configFile.personality && pers.category === configFile.personality_category && pers.language === configFile.personality_language"
+                                    :selected="pers.folder === this.configFile.personality_folder && pers.category === this.configFile.personality_category && pers.language === this.configFile.personality_language"
                                     :on-selected="onPersonalitySelected" />
                             </TransitionGroup>
                         </div>
@@ -659,15 +659,13 @@ export default {
                 this.$refs.toast.showToast("Loading... please wait", 4, false)
             }
             if (pers.personality) {
-                if (this.configFile.personality != pers.personality.name) {
+                if (this.configFile.personality_folder != pers.personality.folder) {
 
 
                     this.settingsChanged = true
-                    const res = this.update_setting('personality', pers.personality.folder, () => {
+                    const res = this.update_setting('personality_folder', pers.personality.folder, () => {
                         this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
-                        this.configFile.personality = pers.personality.name
-                        this.configFile.personality_category = pers.personality.category
-                        this.configFile.personality_language = pers.personality.language
+                        this.configFile.personalities[configFile.default_personality_id] = pers.personality.language+"/"+ pers.personality.category +"/" + pers.personality.name
                     })
                 }
                 nextTick(() => {
@@ -686,9 +684,9 @@ export default {
             if (model_object) {
                 if (model_object.isInstalled) {
 
-                    if (this.configFile.model != model_object.title) {
+                    if (this.configFile.model_name != model_object.title) {
                         this.update_model(model_object.title)
-                        this.configFile.model = model_object.title
+                        this.configFile.model_name = model_object.title
                         this.$refs.toast.showToast("Selected model:\n" + model_object.title, 4, true)
                         this.settingsChanged = true
                         this.isModelSelected = true
@@ -804,7 +802,7 @@ export default {
         },
         onSelectedBinding(binding_object) {
 
-            if (this.configFile.binding != binding_object.binding.folder) {
+            if (this.configFile.binding_name != binding_object.binding.folder) {
 
                 // disabled for now
                 // if (binding_object.binding.folder === 'backend_template' || binding_object.binding.folder === 'binding_template') {
@@ -835,10 +833,17 @@ export default {
             //this.api_get_req("list_languages").then(response => { this.langArr = response })
             this.api_get_req("get_config").then(response => {
                 this.configFile = response
+                this.configFile.personality_language = configFile.personalities[configFile.default_personality_id].split('/')[0]
+                this.configFile.personality_category = configFile.personalities[configFile.default_personality_id].split('/')[1]
+                this.configFile.personality_folder     = configFile.personalities[configFile.default_personality_id].split('/')[2]
+
+                console.log(`p lang = ${this.configFile.personality_language }`)
+                console.log(`p cat = ${this.configFile.personality_category }`)
+                console.log(`p name = ${this.configFile.personality_folder }`)
 
                 this.models.forEach(model => {
 
-                    if (model.title == response["model"]) {
+                    if (model.title == response["model_name"]) {
                         model.selected = true;
 
                     }
@@ -882,7 +887,7 @@ export default {
             // eslint-disable-next-line no-unused-vars
             this.isLoading = true
 
-            this.update_setting('binding', value, (res) => {
+            this.update_setting('binding_name', value, (res) => {
                 this.refresh();
 
                 this.$refs.toast.showToast("Binding changed.", 4, true)
@@ -894,7 +899,7 @@ export default {
                 })
                 // If binding changes then reset model
                 this.update_model(null)
-                this.configFile.model = null
+                this.configFile.model_name = null
 
                 this.api_get_req("disk_usage").then(response => {
                     this.diskUsage = response
@@ -906,14 +911,14 @@ export default {
             if (!value) this.isModelSelected = false
             // eslint-disable-next-line no-unused-vars
             this.isLoading = true
-            this.update_setting('model', value, (res) => {
+            this.update_setting('model_name', value, (res) => {
 
                 //this.fetchModels();
                 this.isLoading = false
             })
         },
         applyConfiguration() {
-            // if (!this.configFile.model) {
+            // if (!this.configFile.model_name) {
 
             //     this.$refs.toast.showToast("Configuration changed failed.\nPlease select model first", 4, false)
             //     nextTick(() => {
@@ -1011,6 +1016,8 @@ export default {
             this.isLoading = true
             this.personalities = []
             const dictionary = await this.api_get_req("get_all_personalities")
+            console.log("all_personalities")
+            console.log(dictionary)
             const langkeys = Object.keys(dictionary); // returns languages folder names
             for (let i = 0; i < langkeys.length; i++) {
                 const langkey = langkeys[i];
@@ -1037,7 +1044,11 @@ export default {
                 }
 
             }
+            console.log("Personalities")
+            console.log(this.personalities)
             this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
+            console.log("Personalities filtered")
+            console.log(this.personalitiesFiltered)
             this.isLoading = false
 
         },
@@ -1053,7 +1064,7 @@ export default {
 
         })
         this.configFile = await this.api_get_req("get_config")
-        if (this.configFile.model) {
+        if (this.configFile.model_name) {
             this.isModelSelected = true
         }
         this.fetchModels();
@@ -1089,19 +1100,21 @@ export default {
             if (!this.isMounted) {
                 return
             }
-            return this.$refs.bindingZoo[this.$refs.bindingZoo.findIndex(item => item.binding.folder == this.configFile.binding)].$refs.imgElement.src
+            return this.$refs.bindingZoo[this.$refs.bindingZoo.findIndex(item => item.binding.folder == this.configFile.binding_name)].$refs.imgElement.src
         },
         imgModel() {
             if (!this.isMounted) {
                 return
             }
-            return this.$refs.modelZoo[this.$refs.modelZoo.findIndex(item => item.title == this.configFile.model)].$refs.imgElement.src
+            console.log("Config file")
+            console.log(this.configFile)
+            return this.$refs.modelZoo[this.$refs.modelZoo.findIndex(item => item.title == this.configFile.model_name)].$refs.imgElement.src
         },
         imgPersonality() {
             if (!this.isMounted) {
                 return
             }
-            return this.$refs.personalitiesZoo[this.$refs.personalitiesZoo.findIndex(item => item.personality.name == this.configFile.personality)].$refs.imgElement.src
+            return this.$refs.personalitiesZoo[this.$refs.personalitiesZoo.findIndex(item => item.personality.folder == this.configFile.personality_folder)].$refs.imgElement.src
         },
 
     },

@@ -24,7 +24,7 @@ import sys
 from tqdm import tqdm
 import subprocess
 import signal
-from pyaipersonality import AIPersonality
+from lollms import AIPersonality, lollms_path
 from api.db import DiscussionsDB, Discussion
 from flask import (
     Flask,
@@ -45,6 +45,7 @@ import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import logging
 import psutil
+from lollms.binding import BindingConfig
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -61,23 +62,24 @@ logging.basicConfig(level=logging.WARNING)
 
 import time
 from api.config import load_config, save_config
-from api import GPT4AllAPI
+from api import LoLLMsAPPI
 import shutil
 import markdown
 
 
-class Gpt4AllWebUI(GPT4AllAPI):
-    def __init__(self, _app, _socketio, config:dict, config_file_path) -> None:
+class LoLLMsWebUI(LoLLMsAPPI):
+    def __init__(self, _app, _socketio, config:BindingConfig, config_file_path) -> None:
         super().__init__(config, _socketio, config_file_path)
 
         self.app = _app
         self.cancel_gen = False
         
 
-        if "use_new_ui" in self.config:
-            if self.config["use_new_ui"]:
-                app.template_folder = "web/dist"
+        app.template_folder = "web/dist"
 
+        self.personality_language= config["personalities"][config["default_personality_id"]].split("/")[0]
+        self.personality_category= config["personalities"][config["default_personality_id"]].split("/")[1]
+        self.personality_name= config["personalities"][config["default_personality_id"]].split("/")[2]
 
         # =========================================================================================
         # Endpoints
@@ -259,7 +261,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         return 'App is resetting...'
 
     def save_settings(self):
-        save_config(self.config, self.config_file_path)
+        self.config.save_config(self.config_file_path)
         if self.config["debug"]:
             print("Configuration saved")
         # Tell that the setting was changed
@@ -271,7 +273,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         return jsonify({"personality":self.personality.as_dict()})
     
     def get_all_personalities(self):
-        personalities_folder = Path("./personalities")
+        personalities_folder = lollms_path/"personalities_zoo"
         personalities = {}
         for language_folder in personalities_folder.iterdir():
             if language_folder.is_dir():
@@ -390,30 +392,32 @@ class Gpt4AllWebUI(GPT4AllAPI):
             self.config["language"]=data['setting_value']
 
         elif setting_name== "personality_language":
-            self.config["personality_language"]=data['setting_value']
+            self.personality_language=data['setting_value']
                 
         elif setting_name== "personality_category":
-            self.config["personality_category"]=data['setting_value']
-        elif setting_name== "personality":
-            self.config["personality"]=data['setting_value']
-            personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
+            self.personality_category=data['setting_value']
+
+        elif setting_name== "personality_folder":
+            self.personality_name=data['setting_value']
+            personality_fn = lollms_path/f"personalities_zoo/{self.personality_language}/{self.personality_category}/{self.personality_name}"
             self.personality.load_personality(personality_fn)
+
         elif setting_name== "override_personality_model_parameters":
             self.config["override_personality_model_parameters"]=bool(data['setting_value'])
             
             
 
 
-        elif setting_name== "model":
-            self.config["model"]=data['setting_value']
+        elif setting_name== "model_name":
+            self.config["model_name"]=data['setting_value']
             print("update_settings : New model selected")            
 
-        elif setting_name== "binding":
-            if self.config['binding']!= data['setting_value']:
+        elif setting_name== "binding_name":
+            if self.config['binding_name']!= data['setting_value']:
                 print(f"New binding selected : {data['setting_value']}")
-                self.config["binding"]=data['setting_value']
+                self.config["binding_name"]=data['setting_value']
                 try:
-                    self.binding = self.process.load_binding(self.config["binding"], install=True)
+                    self.binding = self.process.load_binding(self.config["binding_name"], install=True)
 
                 except Exception as ex:
                     print(f"Couldn't build binding: [{ex}]")
@@ -446,7 +450,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
         current_drive = Path.cwd().anchor
         drive_disk_usage = psutil.disk_usage(current_drive)
         try:
-            models_folder_disk_usage = psutil.disk_usage(f'./models/{self.config["binding"]}')
+            models_folder_disk_usage = psutil.disk_usage(f'./models/{self.config["binding_name"]}')
             return jsonify({
                 "total_space":drive_disk_usage.total,
                 "available_space":drive_disk_usage.free,
@@ -464,7 +468,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 })
 
     def list_bindings(self):
-        bindings_dir = Path('./bindings')  # replace with the actual path to the models folder
+        bindings_dir = lollms_path/'bindings_zoo'  # replace with the actual path to the models folder
         bindings=[]
         for f in bindings_dir.iterdir():
             card = f/"binding_card.yaml"
@@ -472,8 +476,8 @@ class Gpt4AllWebUI(GPT4AllAPI):
                 try:
                     bnd = load_config(card)
                     bnd["folder"]=f.stem
-                    icon_path = Path(f/"logo.png")
-                    if icon_path.exists():
+                    icon_path = Path(f"bindings/{f.name}/logo.png")
+                    if Path(lollms_path/f"bindings_zoo/{f.name}/logo.png").exists():
                         bnd["icon"]=str(icon_path)
 
                     bindings.append(bnd)
@@ -491,18 +495,18 @@ class Gpt4AllWebUI(GPT4AllAPI):
     
 
     def list_personalities_languages(self):
-        personalities_languages_dir = Path(f'./personalities')  # replace with the actual path to the models folder
+        personalities_languages_dir = lollms_path/f'personalities_zoo'  # replace with the actual path to the models folder
         personalities_languages = [f.stem for f in personalities_languages_dir.iterdir() if f.is_dir()]
         return jsonify(personalities_languages)
 
     def list_personalities_categories(self):
-        personalities_categories_dir = Path(f'./personalities/{self.config["personality_language"]}')  # replace with the actual path to the models folder
+        personalities_categories_dir = lollms_path/f'personalities_zoo/{self.config["personalities"][self.config["default_personality_id"]].split("/")[0]}'  # replace with the actual path to the models folder
         personalities_categories = [f.stem for f in personalities_categories_dir.iterdir() if f.is_dir()]
         return jsonify(personalities_categories)
     
     def list_personalities(self):
         try:
-            personalities_dir = Path(f'./personalities/{self.config["personality_language"]}/{self.config["personality_category"]}')  # replace with the actual path to the models folder
+            personalities_dir = lollms_path/f'personalities_zoo/{"/".join(self.config["personalities"][self.config["default_personality_id"]].split("/")[0:2])}'  # replace with the actual path to the models folder
             personalities = [f.stem for f in personalities_dir.iterdir() if f.is_dir()]
         except Exception as ex:
             personalities=[]
@@ -567,14 +571,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
     
     def serve_static(self, filename):
         root_dir = os.getcwd()
-        if "use_new_ui" in self.config:
-            if self.config["use_new_ui"]:
-                path = os.path.join(root_dir, 'web/dist/')+"/".join(filename.split("/")[:-1])
-            else:
-                path = os.path.join(root_dir, 'static/')+"/".join(filename.split("/")[:-1])
-        else:
-            path = os.path.join(root_dir, 'static/')+"/".join(filename.split("/")[:-1])
-                            
+        path = os.path.join(root_dir, 'web/dist/')+"/".join(filename.split("/")[:-1])                            
         fn = filename.split("/")[-1]
         return send_from_directory(path, fn)
 
@@ -587,15 +584,13 @@ class Gpt4AllWebUI(GPT4AllAPI):
         return send_from_directory(path, fn)
     
     def serve_bindings(self, filename):
-        root_dir = os.getcwd()
-        path = os.path.join(root_dir, 'bindings/')+"/".join(filename.split("/")[:-1])
+        path = str(lollms_path/('bindings_zoo/'+"/".join(filename.split("/")[:-1])))
                             
         fn = filename.split("/")[-1]
         return send_from_directory(path, fn)
 
     def serve_personalities(self, filename):
-        root_dir = os.getcwd()
-        path = os.path.join(root_dir, 'personalities/')+"/".join(filename.split("/")[:-1])
+        path = str(lollms_path/('personalities_zoo/'+"/".join(filename.split("/")[:-1])))
                             
         fn = filename.split("/")[-1]
         return send_from_directory(path, fn)
@@ -710,16 +705,16 @@ class Gpt4AllWebUI(GPT4AllAPI):
     def set_binding(self):
         data = request.get_json()
         binding =  str(data["binding"])
-        if self.config['binding']!= binding:
+        if self.config['binding_name']!= binding:
             print("New binding selected")
             
-            self.config['binding'] = binding
+            self.config['binding_name'] = binding
             try:
-                binding_ =self.process.load_binding(config["binding"],True)
+                binding_ =self.process.load_binding(config["binding_name"],True)
                 models = binding_.list_models(self.config)
                 if len(models)>0:      
                     self.binding = binding_
-                    self.config['model'] = models[0]
+                    self.config['model_name'] = models[0]
                     # Build chatbot
                     return jsonify(self.process.set_config(self.config))
                 else:
@@ -731,10 +726,10 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
     def set_model(self):
         data = request.get_json()
-        model =  str(data["model"])
-        if self.config['model']!= model:
+        model =  str(data["model_name"])
+        if self.config['model_name']!= model:
             print("set_model: New model selected")            
-            self.config['model'] = model
+            self.config['model_name'] = model
             # Build chatbot            
             return jsonify(self.process.set_config(self.config))
 
@@ -743,27 +738,27 @@ class Gpt4AllWebUI(GPT4AllAPI):
     def update_model_params(self):
         data = request.get_json()
         binding =  str(data["binding"])
-        model =  str(data["model"])
+        model =  str(data["model_name"])
         personality_language =  str(data["personality_language"])
         personality_category =  str(data["personality_category"])
         personality =  str(data["personality"])
         
-        if self.config['binding']!=binding or  self.config['model'] != model:
+        if self.config['binding_name']!=binding or  self.config['model_name'] != model:
             print("update_model_params: New model selected")
             
-            self.config['binding'] = binding
-            self.config['model'] = model
+            self.config['binding_name'] = binding
+            self.config['model_name'] = model
 
         self.config['personality_language'] = personality_language
         self.config['personality_category'] = personality_category
         self.config['personality'] = personality
 
-        personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
+        personality_fn = lollms_path/f"personalities_zoo/{self.personality_language}/{self.personality_category}/{self.personality_name}"
         print(f"Loading personality : {personality_fn}")
 
         self.config['n_predict'] = int(data["nPredict"])
         self.config['seed'] = int(data["seed"])
-        self.config['model'] = str(data["model"])
+        self.config['model_name'] = str(data["model_name"])
         self.config['voice'] = str(data["voice"])
         self.config['language'] = str(data["language"])
         
@@ -773,16 +768,16 @@ class Gpt4AllWebUI(GPT4AllAPI):
         self.config['repeat_penalty'] = float(data["repeatPenalty"])
         self.config['repeat_last_n'] = int(data["repeatLastN"])
 
-        save_config(self.config, self.config_file_path)
-        
+        self.config.save_config(self.config_file_path)
+
         
         # Fixed missing argument
         self.binding = self.process.rebuild_binding(self.config)
 
         print("==============================================")
         print("Parameters changed to:")
-        print(f"\tBinding:{self.config['binding']}")
-        print(f"\tModel:{self.config['model']}")
+        print(f"\tBinding:{self.config['binding_name']}")
+        print(f"\tModel:{self.config['model_name']}")
         print(f"\tPersonality language:{self.config['personality_language']}")
         print(f"\tPersonality category:{self.config['personality_category']}")
         print(f"\tPersonality:{self.config['personality']}")
@@ -826,7 +821,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
                     path = f'{server}{filename}'
                 else:
                     path = f'{server}/{filename}'
-                local_path = Path(f'./models/{self.config["binding"]}/{filename}')
+                local_path = Path(f'./models/{self.config["binding_name"]}/{filename}')
                 is_installed = local_path.exists() or model_type.lower()=="api"
                 models.append({
                     'title': filename,
@@ -849,7 +844,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
     
     def get_config(self):
-        return jsonify(self.config)
+        return jsonify(self.config.to_dict())
 
     def main(self):
         return render_template("main.html")
@@ -973,7 +968,7 @@ if __name__ == "__main__":
             shutil.copy(f"configs/config.yaml", f"configs/local_config.yaml")
 
     config_file_path = f"configs/{args.config}.yaml"
-    config = load_config(config_file_path)
+    config = BindingConfig(config_file_path, Path("./models"))
 
     
     if "version" not in config or int(config["version"])<int(default_config["version"]):
@@ -981,7 +976,7 @@ if __name__ == "__main__":
         print("Configuration file is very old. Replacing with default configuration")
         config, added, removed =sync_cfg(default_config, config)
         print(f"Added entries : {added}, removed entries:{removed}")
-        save_config(config, config_file_path)
+        config.save_config(config_file_path)
 
     # Override values in config with command-line arguments
     for arg_name, arg_value in vars(args).items():
@@ -990,7 +985,7 @@ if __name__ == "__main__":
 
     # executor = ThreadPoolExecutor(max_workers=1)
     # app.config['executor'] = executor
-    bot = Gpt4AllWebUI(app, socketio, config, config_file_path)
+    bot = LoLLMsWebUI(app, socketio, config, config_file_path)
 
     # chong Define custom WebSocketHandler with error handling 
     class CustomWebSocketHandler(WebSocketHandler):

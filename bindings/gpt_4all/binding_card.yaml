@@ -1,6 +1,0 @@
-name: gpt4all
-author: Nomic-ai
-version: 1.0
-link: https://github.com/nomic-ai/gpt4all
-description: 
-  Python bindings for the gpt4all models by Nomic-AI

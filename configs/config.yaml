@@ -1,31 +1,31 @@
+# =================== Lord Of Large Language Models Configuration file =========================== 
 version: 5
-user_name: user
-config: default
-ctx_size: 2048
-n_gpu_layers: 20 #Depends on your GPU size
-db_path: databases/database.db
-debug: false
-n_threads: 8
+binding_name: llama_cpp_official
+model_name: Wizard-Vicuna-7B-Uncensored.ggmlv3.q4_0.bin
+
+# Host information
 host: localhost
-language: en-US
-# Supported bindings are llamacpp and gpt-j
-binding: gpt_4all
-model: null
-n_predict: 1024
-nb_messages_to_remember: 5
-personality_language: english
-personality_category: default
-personality: gpt4all
 port: 9600
-repeat_last_n: 40
-repeat_penalty: 1.2
+
+# Genreration parameters 
 seed: -1
+n_predict: 1024
+ctx_size: 2048
 temperature: 0.9
 top_k: 50
 top_p: 0.95
-voice: ""
-use_gpu: false # Not active yet
-auto_read: false
-use_avx2: true # By default we require using avx2 but if not supported, make sure you remove it from here
-use_new_ui: true # By default use old ui
+repeat_last_n: 40
+repeat_penalty: 1.2
+
+n_threads: 8
+
+#Personality parameters
+personalities: ["english/generic/lollms"]
+default_personality_id: 0
 override_personality_model_parameters: false #if true the personality parameters are overriden by those of the configuration (may affect personality behaviour) 
+
+user_name: user
+
+# UI parameters
+debug: False
+db_path: databases/database.db
