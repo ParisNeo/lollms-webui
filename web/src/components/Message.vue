@@ -1,79 +1,104 @@
 <template>
     <div
         class="group rounded-lg m-2 shadow-lg hover:border-primary dark:hover:border-primary hover:border-solid hover:border-2 border-2 border-transparent even:bg-bg-light-discussion-odd dark:even:bg-bg-dark-discussion-odd flex-row p-4 pb-2">
-        <div class="w-30 flex">
-            <!-- SENDER -->
-            <div class="w-10 h-10 rounded-lg object-fill drop-shadow-md">
-
-
+        <div class="flex flex-row flex-grow gap-2">
+            <div class="flex-shrink-0">
+                <!-- AVATAR -->
                 <img :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-full object-fill text-red-700">
 
             </div>
-            <p class="drop-shadow-sm   py-0 px-2 text-lg text-opacity-95 font-bold ">{{ message.sender }}</p>
-        </div>
-        <div class="-mt-4  ml-10 mr-0 pt-1 px-2 break-all">
-            <!-- CONTENT/MESSAGE -->
-            <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :markdown-text="message.content"></MarkdownRenderer>
-            <textarea v-if="editMsgMode" ref="mdTextarea" :rows="4"
-                class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                :style="{ minHeight: mdRenderHeight + `px` }" placeholder="Enter message here..."
-                v-model="new_message_content"></textarea>
-        </div>
-        <div class="invisible group-hover:visible flex flex-row mt-3 -mb-2">
-            <!-- MESSAGE CONTROLS -->
-            <!-- EDIT CONFIRMATION -->
-            <div v-if="editMsgMode" class="flex items-center duration-75">
-                <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 p-2" title="Cancel edit"
-                    type="button" @click.stop="editMsgMode = false">
-                    <i data-feather="x"></i>
-                </button>
-                <button class="text-2xl hover:text-secondary duration-75 active:scale-90 p-2" title="Update message"
-                    type="button" @click.stop="updateMessage">
-                    <i data-feather="check"></i>
-                </button>
+
+            <div class="flex flex-col flex-grow ">
+                <div class="flex flex-row flex-grow items-start ">
+                    <!-- SENDER NAME -->
+                    <div class="flex flex-grow">
+                        <p class="drop-shadow-sm text-lg text-opacity-95 font-bold ">{{ message.sender }}</p>
+
+                    </div>
+                    <div class="flex-grow">
+
+                    </div>
+                    <!-- MESSAGE CONTROLS -->
+                    <div class="flex-row justify-end">
+                        <div class="invisible group-hover:visible flex flex-row ">
+                            <!-- MESSAGE CONTROLS -->
+                            <!-- EDIT CONFIRMATION -->
+                            <div v-if="editMsgMode" class="flex items-center duration-75">
+                                <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 p-2"
+                                    title="Cancel edit" type="button" @click.stop="editMsgMode = false">
+                                    <i data-feather="x"></i>
+                                </button>
+                                <button class="text-2xl hover:text-secondary duration-75 active:scale-90 p-2"
+                                    title="Update message" type="button" @click.stop="updateMessage">
+                                    <i data-feather="check"></i>
+                                </button>
+
+                            </div>
+                            <div v-if="!editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2"
+                                title="Edit message" @click.stop="editMsgMode = true">
+                                <i data-feather="edit"></i>
+                            </div>
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2"
+                                title="Copy message to clipboard" @click.stop="copyContentToClipboard()">
+                                <i data-feather="copy"></i>
+                            </div>
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" title="Resend message"
+                                @click.stop="resendMessage()">
+                                <i data-feather="refresh-cw"></i>
+                            </div>
+                            <!-- DELETE CONFIRMATION -->
+                            <div v-if="deleteMsgMode" class="flex items-center duration-75">
+                                <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 p-2"
+                                    title="Cancel removal" type="button" @click.stop="deleteMsgMode = false">
+                                    <i data-feather="x"></i>
+                                </button>
+                                <button class="text-2xl hover:text-secondary duration-75 active:scale-90 p-2"
+                                    title="Confirm removal" type="button" @click.stop="deleteMsg()">
+                                    <i data-feather="check"></i>
+                                </button>
+
+                            </div>
+                            <div v-if="!deleteMsgMode" class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2"
+                                title="Remove message" @click="deleteMsgMode = true">
+                                <i data-feather="trash"></i>
+                            </div>
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" title="Upvote"
+                                @click.stop="rankUp()">
+                                <i data-feather="thumbs-up"></i>
+                            </div>
+                            <div class="flex flex-row items-center">
+                                <div class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2" title="Downvote"
+                                    @click.stop="rankDown()">
+                                    <i data-feather="thumbs-down"></i>
+                                </div>
+                                <div v-if="message.rank != 0"
+                                    class="rounded-full px-2 text-sm flex items-center justify-center font-bold"
+                                    :class="message.rank > 0 ? 'bg-secondary' : 'bg-red-600'" title="Rank">{{
+                                        message.rank }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="break-all">
+                    <!-- MESSAGE CONTENT -->
+                    <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :markdown-text="message.content">
+                    </MarkdownRenderer>
+                    <textarea v-if="editMsgMode" ref="mdTextarea" :rows="4"
+                        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        :style="{ minHeight: mdRenderHeight + `px` }" placeholder="Enter message here..."
+                        v-model="new_message_content"></textarea>
+                </div>
+
 
             </div>
-            <div v-if="!editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2"
-                title="Edit message" @click.stop="editMsgMode = true">
-                <i data-feather="edit"></i>
-            </div>
-            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" title="Copy message to clipboard"
-                @click.stop="copyContentToClipboard()">
-                <i data-feather="copy"></i>
-            </div>
-            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" title="Resend message"
-                @click.stop="resendMessage()">
-                <i data-feather="refresh-cw"></i>
-            </div>
-            <!-- DELETE CONFIRMATION -->
-            <div v-if="deleteMsgMode" class="flex items-center duration-75">
-                <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 p-2" title="Cancel removal"
-                    type="button" @click.stop="deleteMsgMode = false">
-                    <i data-feather="x"></i>
-                </button>
-                <button class="text-2xl hover:text-secondary duration-75 active:scale-90 p-2" title="Confirm removal"
-                    type="button" @click.stop="deleteMsg()">
-                    <i data-feather="check"></i>
-                </button>
 
-            </div>
-            <div v-if="!deleteMsgMode" class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2"
-                title="Remove message" @click="deleteMsgMode = true">
-                <i data-feather="trash"></i>
-            </div>
-            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" title="Upvote" @click.stop="rankUp()">
-                <i data-feather="thumbs-up"></i>
-            </div>
-            <div class="flex flex-row items-center">
-                <div class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2" title="Downvote"
-                    @click.stop="rankDown()">
-                    <i data-feather="thumbs-down"></i>
-                </div>
-                <div v-if="message.rank != 0" class="rounded-full px-2 text-sm flex items-center justify-center font-bold"
-                    :class="message.rank > 0 ? 'bg-secondary' : 'bg-red-600'" title="Rank">{{ message.rank }}
-                </div>
-            </div>
+
         </div>
+
+
+
     </div>
 </template>
 
@@ -120,7 +145,7 @@ export default {
     }, methods: {
         copyContentToClipboard() {
             this.$emit('copy', this.message.content)
-            
+
         },
         deleteMsg() {
             this.$emit('delete', this.message.id)
@@ -141,21 +166,21 @@ export default {
         resendMessage() {
             this.$emit('resendMessage', this.message.id, this.new_message_content)
         },
-         getImgUrl() {
-           
+        getImgUrl() {
+
             if (this.message.sender == "user") {
                 if (this.avatar) {
-                    
+
                     return this.avatar
                 }
-               
+
                 return userImgPlaceholder;
 
             }
-           if(this.avatar){
-            return bUrl + this.avatar
-           }
-           return botImgPlaceholder;
+            if (this.avatar) {
+                return bUrl + this.avatar
+            }
+            return botImgPlaceholder;
 
         },
         defaultImg(event) {

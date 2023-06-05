@@ -1068,7 +1068,6 @@ export default {
         this.isLoading = false
         this.diskUsage = await this.api_get_req("disk_usage")
         this.isMounted = true
-        console.log('reffy', this.$refs.bindingZoo)
 
     },
     computed: {
