@@ -9,9 +9,10 @@ import { nextTick } from 'vue'
 import feather from 'feather-icons'
 import MarkdownIt from 'markdown-it';
 import emoji from 'markdown-it-emoji';
-import 'highlight.js/styles/tomorrow-night-blue.css'
+//import 'highlight.js/styles/tomorrow-night-blue.css'
 //import 'highlight.js/styles/tokyo-night-dark.css'
 import hljs from 'highlight.js';
+
 
 
 const markdownIt = new MarkdownIt('commonmark', {
@@ -26,8 +27,8 @@ const markdownIt = new MarkdownIt('commonmark', {
       try {
 
         return (
-          '<pre class="hljs p-4 overflow-x-auto shadow-lg scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">'+
-      '<code>' +
+          '<pre class="hljs p-4 overflow-x-auto rounded-lg shadow-lg scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">' +
+          '<code>' +
           hljs.highlight(str, { language: lang }).value +
           '</code></pre>'
         );
@@ -35,7 +36,7 @@ const markdownIt = new MarkdownIt('commonmark', {
       } catch (__) { }
     }
     return (
-      '<pre class="hljs p-4 overflow-x-auto shadow-lg scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">'+
+      '<pre class="hljs p-4 overflow-x-auto rounded-lg shadow-lg scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">' +
       '<code>' +
       markdownIt.utils.escapeHtml(str) +
       '</code></pre>'
@@ -53,22 +54,28 @@ export default {
   },
   data() {
     return {
-      renderedMarkdown: ''
+      renderedMarkdown: '',
+
     };
   },
   mounted() {
- 
+
     this.renderedMarkdown = markdownIt.render(this.markdownText);
     nextTick(() => {
       feather.replace()
 
     })
   },
+  created() {
+
+
+  },
   methods: {
     copyContentToClipboard() {
 
       navigator.clipboard.writeText(theCode);
     },
+
   },
   watch: {
     markdownText(newText) {
@@ -78,7 +85,12 @@ export default {
         feather.replace()
 
       })
-    }
+    },
+
+  },
+  computed:{
+
+    
   }
 };
 </script>
