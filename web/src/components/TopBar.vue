@@ -83,8 +83,10 @@ export default {
             if (this.userTheme == "dark" || (!this.userTheme && this.systemTheme)) {
                 document.documentElement.classList.add("dark");
                 this.moonIcon.classList.add("display-none");
+                import('highlight.js/styles/tokyo-night-dark.css');
                 return
             }
+            import('highlight.js/styles/tomorrow-night-blue.css');
             this.sunIcon.classList.add("display-none")
 
         },
@@ -93,9 +95,11 @@ export default {
                 document.documentElement.classList.remove("dark");
                 localStorage.setItem("theme", "light")
                 this.iconToggle()
+                import('highlight.js/styles/tomorrow-night-blue.css');
                 return
 
             }
+            import('highlight.js/styles/tokyo-night-dark.css');
             document.documentElement.classList.add("dark");
             localStorage.setItem("theme", "dark")
             this.iconToggle()
