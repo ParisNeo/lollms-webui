@@ -832,10 +832,12 @@ export default {
             this.api_get_req("list_personalities").then(response => { this.persArr = response })
             //this.api_get_req("list_languages").then(response => { this.langArr = response })
             this.api_get_req("get_config").then(response => {
+                console.log("Received config")
                 this.configFile = response
-                this.configFile.personality_language = configFile.personalities[configFile.default_personality_id].split('/')[0]
-                this.configFile.personality_category = configFile.personalities[configFile.default_personality_id].split('/')[1]
-                this.configFile.personality_folder     = configFile.personalities[configFile.default_personality_id].split('/')[2]
+                parts = configFile.personalities[configFile.default_personality_id].split('/')
+                this.configFile.personality_language = parts[0]
+                this.configFile.personality_category = parts[1]
+                this.configFile.personality_folder   = parts[2]
 
                 console.log(`p lang = ${this.configFile.personality_language }`)
                 console.log(`p cat = ${this.configFile.personality_category }`)
@@ -1044,6 +1046,8 @@ export default {
                 }
 
             }
+            console.log(this.configFile.personality_category)
+            console.log(this.configFile.personality_language)
             console.log("Personalities")
             console.log(this.personalities)
             this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
