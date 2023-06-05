@@ -24,7 +24,7 @@ import sys
 from tqdm import tqdm
 import subprocess
 import signal
-from lollms import AIPersonality, lollms_path
+from lollms import AIPersonality, lollms_path, MSG_TYPE
 from api.db import DiscussionsDB, Discussion
 from flask import (
     Flask,

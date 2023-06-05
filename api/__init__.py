@@ -11,7 +11,7 @@ from datetime import datetime
 from api.db import DiscussionsDB
 from pathlib import Path
 import importlib
-from lollms import AIPersonality, lollms_path
+from lollms import AIPersonality, lollms_path, MSG_TYPE
 from lollms.binding import BindingConfig
 import multiprocessing as mp
 import threading
@@ -342,7 +342,7 @@ class ModelProcess:
             if self.config["override_personality_model_parameters"]:
                 output = self.model.generate(
                     prompt,
-                    new_text_callback=callback,
+                    callback=callback,
                     n_predict=n_predict,
                     temperature=self.config['temperature'],
                     top_k=self.config['top_k'],
@@ -355,7 +355,7 @@ class ModelProcess:
             else:
                 output = self.model.generate(
                     prompt,
-                    new_text_callback=callback,
+                    callback=callback,
                     n_predict=self.n_predict,
                     temperature=self.personality.model_temperature,
                     top_k=self.personality.model_top_k,
@@ -378,7 +378,7 @@ class ModelProcess:
         detected_anti_prompt = False
         anti_prompt_to_remove=""
         for prompt in self.personality.anti_prompts:
-            if prompt.lower() in text.lower():
+            if prompt.lower() in self.curent_text.lower():
                 detected_anti_prompt=True
                 anti_prompt_to_remove = prompt.lower()
                 
@@ -713,21 +713,21 @@ class LoLLMsAPPI():
         return discussion_messages # Removes the last return
 
 
-    def process_chunk(self, chunk, message_type):
+    def process_chunk(self, chunk, message_type:MSG_TYPE):
         """
         0 : a regular message
         1 : a notification message
         2 : A hidden message
         """
-        if message_type == 0:
+        if message_type == MSG_TYPE.MSG_TYPE_CHUNK:
             self.bot_says += chunk
-        if message_type < 2:
+        if message_type.value < 2:
             self.socketio.emit('message', {
                                             'data': self.bot_says, 
                                             'user_message_id':self.current_user_message_id, 
                                             'ai_message_id':self.current_ai_message_id, 
                                             'discussion_id':self.current_discussion.discussion_id,
-                                            'message_type': message_type
+                                            'message_type': message_type.value
                                         }
                                 )
         if self.cancel_gen:
