@@ -1,4 +1,4 @@
 #!/bin/bash
-source ../env/Scripts/activate
+source ../env/bin/activate
 python install_binding.py "$@"
 read -p "Press any key to continue..." 
