@@ -276,12 +276,15 @@ class LoLLMsWebUI(LoLLMsAPPI):
         personalities_folder = lollms_path/"personalities_zoo"
         personalities = {}
         for language_folder in personalities_folder.iterdir():
+            lang = language_folder.stem
             if language_folder.is_dir():
                 personalities[language_folder.name] = {}
                 for category_folder in  language_folder.iterdir():
+                    cat = category_folder.stem
                     if category_folder.is_dir():
                         personalities[language_folder.name][category_folder.name] = []
                         for personality_folder in category_folder.iterdir():
+                            pers = personality_folder.stem
                             if personality_folder.is_dir():
                                 try:
                                     personality_info = {"folder":personality_folder.stem}
@@ -294,27 +297,35 @@ class LoLLMsWebUI(LoLLMsAPPI):
                                         personality_info['version'] = config_data.get('version', '1.0.0')
                                     scripts_path = personality_folder / 'scripts'
                                     personality_info['has_scripts'] = scripts_path.is_dir()
-                                    assets_path = personality_folder / 'assets'
+                                    real_assets_path = personality_folder/ 'assets'
+                                    assets_path = Path("personalities") / lang / cat / pers / 'assets'
                                     gif_logo_path = assets_path / 'logo.gif'
                                     webp_logo_path = assets_path / 'logo.webp'
                                     png_logo_path = assets_path / 'logo.png'
                                     jpg_logo_path = assets_path / 'logo.jpg'
                                     jpeg_logo_path = assets_path / 'logo.jpeg'
                                     bmp_logo_path = assets_path / 'logo.bmp'
-                                    
+
+                                    gif_logo_path_ = real_assets_path / 'logo.gif'
+                                    webp_logo_path_ = real_assets_path / 'logo.webp'
+                                    png_logo_path_ = real_assets_path / 'logo.png'
+                                    jpg_logo_path_ = real_assets_path / 'logo.jpg'
+                                    jpeg_logo_path_ = real_assets_path / 'logo.jpeg'
+                                    bmp_logo_path_ = real_assets_path / 'logo.bmp'
+
                                     personality_info['has_logo'] = png_logo_path.is_file() or gif_logo_path.is_file()
                                     
-                                    if gif_logo_path.exists():
+                                    if gif_logo_path_.exists():
                                         personality_info['avatar'] = str(gif_logo_path).replace("\\","/")
-                                    elif webp_logo_path.exists():
+                                    elif webp_logo_path_.exists():
                                         personality_info['avatar'] = str(webp_logo_path).replace("\\","/")
-                                    elif png_logo_path.exists():
+                                    elif png_logo_path_.exists():
                                         personality_info['avatar'] = str(png_logo_path).replace("\\","/")
-                                    elif jpg_logo_path.exists():
+                                    elif jpg_logo_path_.exists():
                                         personality_info['avatar'] = str(jpg_logo_path).replace("\\","/")
-                                    elif jpeg_logo_path.exists():
+                                    elif jpeg_logo_path_.exists():
                                         personality_info['avatar'] = str(jpeg_logo_path).replace("\\","/")
-                                    elif bmp_logo_path.exists():
+                                    elif bmp_logo_path_.exists():
                                         personality_info['avatar'] = str(bmp_logo_path).replace("\\","/")
                                     else:
                                         personality_info['avatar'] = ""
