@@ -1132,6 +1132,7 @@ export default {
             if (!this.isMounted) {
                 return
             }
+            console.log(`ICON ${this.$refs.personalitiesZoo[this.$refs.personalitiesZoo.findIndex(item => item.personality.folder == this.configFile.personality_folder)].$refs.imgElement.src}`)
             return this.$refs.personalitiesZoo[this.$refs.personalitiesZoo.findIndex(item => item.personality.folder == this.configFile.personality_folder)].$refs.imgElement.src
         },
 
