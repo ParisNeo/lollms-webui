@@ -84,6 +84,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         # =========================================================================================
         # Endpoints
         # =========================================================================================
+        self.add_endpoint("/send_file", "send_file", self.send_file, methods=["POST"])
 
 
         self.add_endpoint(
@@ -646,7 +647,12 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.process.cancel_generation()
         return jsonify({"status": "ok"})         
 
-           
+    def send_file(self):
+        file = request.files['file']
+        Path("uploads").mkdir(exist_ok=True, parents=True)
+        file.save('uploads/' + file.filename)
+        return jsonify({"status": "ok"})         
+
     def rename(self):
         data = request.get_json()
         title = data["title"]

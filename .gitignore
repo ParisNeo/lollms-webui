@@ -181,3 +181,6 @@ test.http
 
 shared/*
 !shared/.keep
+
+
+uploads
