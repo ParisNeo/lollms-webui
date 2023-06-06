@@ -834,10 +834,7 @@ export default {
             this.api_get_req("get_config").then(response => {
                 console.log("Received config")
                 this.configFile = response
-                parts = configFile.personalities[configFile.default_personality_id].split('/')
-                this.configFile.personality_language = parts[0]
-                this.configFile.personality_category = parts[1]
-                this.configFile.personality_folder   = parts[2]
+                extract_personality_parameters()
 
                 console.log(`p lang = ${this.configFile.personality_language }`)
                 console.log(`p cat = ${this.configFile.personality_category }`)
@@ -859,6 +856,22 @@ export default {
             })
             this.getPersonalitiesArr()
             this.fetchModels();
+        },
+        extract_personality_parameters(){
+            try{
+                let parts = this.configFile.personalities[this.configFile.default_personality_id].split('/')
+                this.configFile.personality_language = parts[0]
+                this.configFile.personality_category = parts[1]
+                this.configFile.personality_folder   = parts[2]
+
+                console.log(`p lang = ${this.configFile.personality_language }`)
+                console.log(`p cat = ${this.configFile.personality_category }`)
+                console.log(`p name = ${this.configFile.personality_folder }`)
+
+            }catch(error){
+                console.log(`Exception : ${error}`)
+            }
+
         },
         // Accordeon stuff
         toggleAccordion() {
@@ -1046,13 +1059,13 @@ export default {
                 }
 
             }
+            console.log(this.configFile)
             console.log(this.configFile.personality_category)
             console.log(this.configFile.personality_language)
             console.log("Personalities")
             console.log(this.personalities)
             this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
-            console.log("Personalities filtered")
-            console.log(this.personalitiesFiltered)
+            console.log(`Personalities filtered ${this.personalitiesFiltered}`)
             this.isLoading = false
 
         },
@@ -1071,6 +1084,8 @@ export default {
         if (this.configFile.model_name) {
             this.isModelSelected = true
         }
+        this.extract_personality_parameters();
+
         this.fetchModels();
         this.bindingsArr = await this.api_get_req("list_bindings")
         this.modelsArr = await this.api_get_req("list_models")
