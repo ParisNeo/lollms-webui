@@ -90,6 +90,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
             "/disk_usage", "disk_usage", self.disk_usage, methods=["GET"]
         )
 
+        self.add_endpoint(
+            "/ram_usage", "ram_usage", self.ram_usage, methods=["GET"]
+        )
+
 
         self.add_endpoint(
             "/list_bindings", "list_bindings", self.list_bindings, methods=["GET"]
@@ -456,7 +460,19 @@ class LoLLMsWebUI(LoLLMsAPPI):
         print("Set config results:")
         print(result)
         return jsonify(result)
-    
+    def ram_usage(self):
+        """
+        Returns the RAM usage in bytes.
+        """
+        ram = psutil.virtual_memory()
+        return jsonify({
+            "total_space":ram.total,
+            "available_space":ram.free,
+
+            "percent_usage":ram.percent,
+            "binding_models_usage": ram.used
+            })
+
     def disk_usage(self):
         current_drive = Path.cwd().anchor
         drive_disk_usage = psutil.disk_usage(current_drive)
