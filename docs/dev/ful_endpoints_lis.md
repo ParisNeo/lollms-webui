@@ -18,6 +18,16 @@ The Flask backend API exposes various endpoints to interact with the application
 
 ---
 
+### Endpoint: /ram_usage (GET)
+
+**Description**: Retrieves the ram usage of the system.
+
+**Parameters**: None
+
+**Output**: Returns the ram usage information.
+
+---
+
 ### Endpoint: /list_bindings (GET)
 
 **Description**: Lists the available bindings.

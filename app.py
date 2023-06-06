@@ -460,6 +460,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         print("Set config results:")
         print(result)
         return jsonify(result)
+    
     def ram_usage(self):
         """
         Returns the RAM usage in bytes.
