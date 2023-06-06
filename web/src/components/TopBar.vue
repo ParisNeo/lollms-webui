@@ -1,4 +1,5 @@
 <template>
+    <!-- <link v-if="codeBlockStylesheet" rel="stylesheet" :href="codeBlockStylesheet"> -->
     <header class=" top-0 shadow-lg">
         <nav class="container flex flex-col lg:flex-row  item-center gap-2 py-2 ">
             <!-- LOGO -->
@@ -51,6 +52,7 @@ export default {
     name: 'TopBar',
     data() {
         return {
+            codeBlockStylesheet:'',
             sunIcon: document.querySelector(".sun"),
             moonIcon: document.querySelector(".moon"),
             userTheme: localStorage.getItem("theme"),
@@ -78,26 +80,61 @@ export default {
         this.systemTheme = window.matchMedia("prefers-color-scheme: dark").matches;
     },
     methods: {
+        // codeBlockTheme(theme) {
+        //     const styleDark = document.createElement('link');
+        //     styleDark.type = "text/css";
+        //     styleDark.href = 'highlight.js/styles/tokyo-night-dark.css';
+
+        //     const styleLight = document.createElement('link');
+        //     styleLight.type = "text/css";
+        //     styleLight.href = 'highlight.js/styles/tomorrow-night-blue.css';
+        //    if(theme=='dark'){
+
+        //     document.head.appendChild(styleDark);
+        //     document.head.removeChild(styleLight);
+        //    }else{
+        //     document.head.appendChild(styleLight);
+        //     //document.head.removeChild(styleDark);
+        //    }
+            
+        // },
         themeCheck() {
 
             if (this.userTheme == "dark" || (!this.userTheme && this.systemTheme)) {
                 document.documentElement.classList.add("dark");
                 this.moonIcon.classList.add("display-none");
+
+                nextTick(()=>{
+                    //import('highlight.js/styles/tokyo-night-dark.css');
+                    import('highlight.js/styles/stackoverflow-dark.css');
+
+                })
+
                 return
             }
+
+            nextTick(()=>{
+                //import('highlight.js/styles/tomorrow-night-blue.css');
+                import('highlight.js/styles/stackoverflow-light.css');
+            })
             this.sunIcon.classList.add("display-none")
 
         },
         themeSwitch() {
+            
             if (document.documentElement.classList.contains("dark")) {
                 document.documentElement.classList.remove("dark");
                 localStorage.setItem("theme", "light")
+                this.userTheme == "light"
                 this.iconToggle()
+             
                 return
 
             }
+            import('highlight.js/styles/tokyo-night-dark.css');
             document.documentElement.classList.add("dark");
             localStorage.setItem("theme", "dark")
+            this.userTheme == "dark"
             this.iconToggle()
 
         },
