@@ -1073,7 +1073,7 @@ export default {
 
 
             //this.fileList = files
-            this.$refs.chatBox.fileList = files
+            this.$refs.chatBox.fileList = this.$refs.chatBox.fileList.concat(files)
 
             this.isDragOverChat = false
         },

@@ -19,7 +19,7 @@
                     <div v-if="fileList.length > 0" class="flex flex-col max-h-64  ">
                         <TransitionGroup name="list" tag="div"
                             class="flex flex-col flex-grow overflow-y-auto scrollbar-thin scrollbar-track-bg-light scrollbar-thumb-bg-light-tone hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark dark:scrollbar-thumb-bg-dark-tone dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
-                            <div v-for="file in fileList" :key="file.name">
+                            <div v-for="(file,index) in fileList" :key="index+'-'+file.name" >
                                 <div class="  m-1" :title="file.name">
 
                                     <div
@@ -69,9 +69,9 @@
                             <p class="font-bold ">
                                 Total size:
                             </p>
-                            
+
                             {{ totalSize }}
-                            
+
                             ({{ fileList.length }})
 
                         </div>
@@ -87,10 +87,19 @@
                     </div>
                     <!-- CHAT BOX -->
                     <div class="flex flex-row flex-grow items-center gap-2 ">
-                        <textarea id="chat" rows="1" v-model="message"
-                            class="block min-h-11  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Send message..." @keydown.enter.exact="submitOnEnter($event)"></textarea>
+                        <div class="relative grow">
+                            <textarea id="chat" rows="1" v-model="message"
+                                class="block min-h-11  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="Send message..." @keydown.enter.exact="submitOnEnter($event)">
+                            </textarea>
+                            <input type="file" ref="fileDialog" style="display: none" @change="addFiles" multiple/>
+                            <button type="button" @click.stop="$refs.fileDialog.click()" title="Add files"
+                                class="absolute inset-y-0 right-0 flex items-center mr-2 w-6 hover:text-secondary duration-75 active:scale-90">
 
+                                <i data-feather="file-plus"></i>
+
+                            </button>
+                        </div>
                         <!-- BUTTONS -->
                         <div class="inline-flex justify-center  rounded-full ">
 
@@ -183,7 +192,7 @@ export default {
             // console.log(this.fileList)
         },
         sendMessageEvent(msg) {
-            this.fileList=[]
+            this.fileList = []
             this.$emit('messageSentEvent', msg)
 
         },
@@ -208,6 +217,10 @@ export default {
         },
         stopGenerating() {
             this.$emit('stopGenerating')
+        },
+        addFiles(event){
+           
+           this.fileList = this.fileList.concat([...event.target.files])
         }
     },
     watch: {
@@ -223,11 +236,11 @@ export default {
                 if (val.length > 0) {
                     for (let i = 0; i < val.length; i++) {
                         total = total + parseInt(val[i].size)
-                       
+
                     }
                 }
-                this.totalSize = filesize(total,false)
-                
+                this.totalSize = filesize(total, false)
+
             },
             deep: true
         },
