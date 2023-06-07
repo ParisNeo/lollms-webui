@@ -929,7 +929,7 @@ export default {
             this.api_get_req("ram_usage").then(response => {
                 this.ramUsage = response
             })
-            console.log('ram',this.ramUsage)
+            //console.log('ram',this.ramUsage)
             this.getPersonalitiesArr()
             this.fetchModels();
         },
