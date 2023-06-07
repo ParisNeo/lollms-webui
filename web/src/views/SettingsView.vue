@@ -550,6 +550,7 @@ import PersonalityViewer from '@/components/PersonalityViewer.vue';
 import PersonalityEntry from "../components/PersonalityEntry.vue";
 import BindingEntry from "../components/BindingEntry.vue";
 import socket from '@/services/websocket.js'
+import defaultImgPlaceholder from "../assets/default_model.png"
 
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
@@ -1118,22 +1119,36 @@ export default {
             if (!this.isMounted) {
                 return
             }
-            return this.$refs.bindingZoo[this.$refs.bindingZoo.findIndex(item => item.binding.folder == this.configFile.binding_name)].$refs.imgElement.src
+            try{
+                return this.$refs.bindingZoo[this.$refs.bindingZoo.findIndex(item => item.binding.folder == this.configFile.binding_name)].$refs.imgElement.src
+            }
+            catch(error){
+                return defaultImgPlaceholder
+            }            
         },
         imgModel() {
             if (!this.isMounted) {
                 return
             }
-            //console.log("Config file")
-            //console.log(this.configFile)
-            return this.$refs.modelZoo[this.$refs.modelZoo.findIndex(item => item.title == this.configFile.model_name)].$refs.imgElement.src
+            console.log("Config file")
+            console.log(this.configFile)
+            try{
+                return this.$refs.modelZoo[this.$refs.modelZoo.findIndex(item => item.title == this.configFile.model_name)].$refs.imgElement.src
+            }
+            catch(error){
+                return defaultImgPlaceholder
+            }            
         },
         imgPersonality() {
             if (!this.isMounted) {
                 return
             }
-           // console.log(`ICON ${this.$refs.personalitiesZoo[this.$refs.personalitiesZoo.findIndex(item => item.personality.folder == this.configFile.personality_folder)].$refs.imgElement.src}`)
-            return this.$refs.personalitiesZoo[this.$refs.personalitiesZoo.findIndex(item => item.personality.folder == this.configFile.personality_folder)].$refs.imgElement.src
+            try{
+                return this.$refs.personalitiesZoo[this.$refs.personalitiesZoo.findIndex(item => item.personality.folder == this.configFile.personality_folder)].$refs.imgElement.src
+            }
+            catch(error){
+                return defaultImgPlaceholder
+            }            
         },
 
     },

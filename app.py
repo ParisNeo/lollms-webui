@@ -84,6 +84,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
         # =========================================================================================
         # Endpoints
         # =========================================================================================
+        self.add_endpoint("/add_reference_to_local_model", "add_reference_to_local_model", self.add_reference_to_local_model, methods=["POST"])
+        
         self.add_endpoint("/send_file", "send_file", self.send_file, methods=["POST"])
 
 
@@ -131,6 +133,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint("/bindings/<path:filename>", "serve_bindings", self.serve_bindings, methods=["GET"])
         self.add_endpoint("/personalities/<path:filename>", "serve_personalities", self.serve_personalities, methods=["GET"])
         self.add_endpoint("/outputs/<path:filename>", "serve_outputs", self.serve_outputs, methods=["GET"])
+        self.add_endpoint("/data/<path:filename>", "serve_data", self.serve_data, methods=["GET"])
+        self.add_endpoint("/uploads/<path:filename>", "serve_uploads", self.serve_uploads, methods=["GET"])
 
         
         self.add_endpoint("/export_discussion", "export_discussion", self.export_discussion, methods=["GET"])
@@ -630,6 +634,22 @@ class LoLLMsWebUI(LoLLMsAPPI):
                             
         fn = filename.split("/")[-1]
         return send_from_directory(path, fn)
+    
+    def serve_data(self, filename):
+        root_dir = os.getcwd()
+        path = os.path.join(root_dir, 'data/')+"/".join(filename.split("/")[:-1])
+                            
+        fn = filename.split("/")[-1]
+        return send_from_directory(path, fn)
+
+    def serve_uploads(self, filename):
+        root_dir = os.getcwd()
+        path = os.path.join(root_dir, 'uploads/')+"/".join(filename.split("/")[:-1])
+                            
+        fn = filename.split("/")[-1]
+        return send_from_directory(path, fn)
+
+
 
     def export(self):
         return jsonify(self.db.export_to_json())
@@ -645,13 +665,22 @@ class LoLLMsWebUI(LoLLMsAPPI):
     def stop_gen(self):
         self.cancel_gen = True
         self.process.cancel_generation()
-        return jsonify({"status": "ok"})         
+        return jsonify({"status": True})    
+    
+    def add_reference_to_local_model(self):     
+        data = request.get_json()
+        path = data["path"]
+        if path.exists():
+            self.conversation.config.reference_model(path)
+            return jsonify({"status": True})         
+        else:        
+            return jsonify({"status": True})         
 
     def send_file(self):
         file = request.files['file']
         Path("uploads").mkdir(exist_ok=True, parents=True)
         file.save('uploads/' + file.filename)
-        return jsonify({"status": "ok"})         
+        return jsonify({"status": True})         
 
     def rename(self):
         data = request.get_json()
@@ -699,26 +728,26 @@ class LoLLMsWebUI(LoLLMsAPPI):
         new_message = request.args.get("message")
         try:
             self.current_discussion.update_message(discussion_id, new_message)
-            return jsonify({"status": "ok"})
+            return jsonify({"status": True})
         except Exception as ex:
-            return jsonify({"status": "nok", "error":str(ex)})
+            return jsonify({"status": False, "error":str(ex)})
 
 
     def message_rank_up(self):
         discussion_id = request.args.get("id")
         try:
             new_rank = self.current_discussion.message_rank_up(discussion_id)
-            return jsonify({"status": "ok", "new_rank": new_rank})
+            return jsonify({"status": True, "new_rank": new_rank})
         except Exception as ex:
-            return jsonify({"status": "nok", "error":str(ex)})
+            return jsonify({"status": False, "error":str(ex)})
 
     def message_rank_down(self):
         discussion_id = request.args.get("id")
         try:
             new_rank = self.current_discussion.message_rank_down(discussion_id)
-            return jsonify({"status": "ok", "new_rank": new_rank})
+            return jsonify({"status": True, "new_rank": new_rank})
         except Exception as ex:
-            return jsonify({"status": "nok", "error":str(ex)})
+            return jsonify({"status": False, "error":str(ex)})
 
     def delete_message(self):
         discussion_id = request.args.get("id")
@@ -941,9 +970,9 @@ def sync_cfg(default_config, config):
             added_entries.append(key)
 
     # Remove fields from config that don't exist in default_config
-    for key in list(config.keys()):
+    for key in list(config.config.keys()):
         if key not in default_config:
-            del config[key]
+            del config.config[key]
             removed_entries.append(key)
     
     return config, added_entries, removed_entries
@@ -951,7 +980,7 @@ def sync_cfg(default_config, config):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Start the chatbot Flask app.")
     parser.add_argument(
-        "-c", "--config", type=str, default="default", help="Sets the configuration file to be used."
+        "-c", "--config", type=str, default="local_config", help="Sets the configuration file to be used."
     )
 
     parser.add_argument(
