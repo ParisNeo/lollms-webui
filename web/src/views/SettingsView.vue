@@ -65,6 +65,75 @@
         </div>
 
         <div :class="isLoading ? 'pointer-events-none opacity-30' : ''">
+                        <!-- DISK AND RAM USAGE -->
+                        <div
+                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                <div class="flex flex-row p-3">
+                    <button @click.stop="sc_collapsed = !sc_collapsed"
+                        class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex flex-row items-center">
+                        <i data-feather="chevron-right" class="mr-2"></i>
+
+                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            System status</h3>
+                        <div class="mr-2">|</div>
+
+                        <div
+                            class=" text-base font-semibold cursor-pointer select-none items-center">
+
+                            <div class="flex gap-2 items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M17 17H7V7h10m4 4V9h-2V7a2 2 0 0 0-2-2h-2V3h-2v2h-2V3H9v2H7c-1.11 0-2 .89-2 2v2H3v2h2v2H3v2h2v2a2 2 0 0 0 2 2h2v2h2v-2h2v2h2v-2h2a2 2 0 0 0 2-2v-2h2v-2h-2v-2m-6 2h-2v-2h2m2-2H9v6h6V9Z"/></svg>
+                                    <h3 class="font-bold font-large text-lg">
+                                        <div>{{ ram_usage }} / {{ ram_total_space }}</div>
+                                    </h3>
+                                    <i data-feather="hard-drive" class="w-5 h-5 mx-1"></i>
+                                    <h3 class="font-bold font-large text-lg">
+                                        <div> {{ disk_binding_models_usage }} / {{ disk_total_space }}</div>
+                                    </h3>
+                                </div>
+                            </div>
+                    </button>
+                </div>
+                <div :class="{ 'hidden': sc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+
+                    <div class="mb-2">
+                        
+                        <label for="disk" class=" flex items-center gap-1 ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M17 17H7V7h10m4 4V9h-2V7a2 2 0 0 0-2-2h-2V3h-2v2h-2V3H9v2H7c-1.11 0-2 .89-2 2v2H3v2h2v2H3v2h2v2a2 2 0 0 0 2 2h2v2h2v-2h2v2h2v-2h2a2 2 0 0 0 2-2v-2h2v-2h-2v-2m-6 2h-2v-2h2m2-2H9v6h6V9Z"/></svg>
+                                Ram usage:
+                        </label>
+                        <div class="flex flex-col mx-2">
+                            <div><b>Avaliable space:&nbsp;</b>{{ ram_available_space }}</div>
+                            <div><b>Ram usage:&nbsp;</b> {{ ram_usage }} / {{ ram_total_space }}</div>
+                        </div>
+                        <div class="p-2 ">
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                <div class="bg-blue-600 h-2.5 rounded-full" :style="'width: ' + ram_percent_usage + '%;'"></div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label for="disk" class="flex items-center gap-1 ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            <i data-feather="hard-drive" class="w-5 h-5"></i>
+                            Disk usage:
+                        </label>
+                        <div class="flex flex-col mx-2">
+                            <div><b>Avaliable space:&nbsp;</b>{{  disk_available_space }}</div>
+                            <div><b>Disk usage:&nbsp;</b> {{ disk_binding_models_usage }} / {{ disk_total_space }}</div>
+                        </div>
+                        <div class="p-2 ">
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                <div class="bg-blue-600 h-2.5 rounded-full" :style="'width: ' + disk_percent_usage + '%;'"></div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+            </div>
             <!-- BINDING ZOO -->
             <div
                 class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
@@ -168,23 +237,22 @@
                     </button>
                 </div>
                 <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
-                    <div class="mb-2">
+                    <!-- <div class="mb-2">
                         <label for="disk" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Disk usage:
                         </label>
                         <div class="flex flex-col mx-2">
-                            <div><b>Current binding models folder:&nbsp;</b>{{ binding_models_usage }}</div>
-                            <!-- <div><b>Percentage:&nbsp;</b>{{ percent_usage }}</div> -->
-                            <!-- <div><b>Total disk size:&nbsp;</b>{{ total_space }}</div> -->
-                            <div><b>Avaliable space:&nbsp;</b> {{ available_space }} / {{ total_space }}</div>
+                            <div><b>Current binding models folder:&nbsp;</b>{{ disk_binding_models_usage }}</div>
+
+                            <div><b>Avaliable space:&nbsp;</b> {{ disk_available_space }} / {{ disk_total_space }}</div>
                         </div>
                         <div class="p-2 ">
                             <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                                <div class="bg-blue-600 h-2.5 rounded-full" :style="'width: ' + percent_usage + '%;'"></div>
+                                <div class="bg-blue-600 h-2.5 rounded-full" :style="'width: ' + disk_percent_usage + '%;'"></div>
                             </div>
 
                         </div>
-                    </div>
+                    </div> -->
                     <div v-if="models.length > 0" class="mb-2">
                         <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Models: ({{ models.length }})
@@ -581,6 +649,7 @@ export default {
             bzc_collapsed: true, // binding zoo
             pc_collapsed: true,
             mc_collapsed: true,
+            sc_collapsed: true, // system status
             // Zoo accordeoon
             mzl_collapsed: false,
             pzl_collapsed: false,
@@ -599,6 +668,7 @@ export default {
             settingsChanged: false,
             isModelSelected: false,
             diskUsage: {},
+            ramUsage: {},
             isMounted: false // Needed to wait for $refs to be rendered
 
 
@@ -855,6 +925,10 @@ export default {
             this.api_get_req("disk_usage").then(response => {
                 this.diskUsage = response
             })
+            this.api_get_req("ram_usage").then(response => {
+                this.ramUsage = response
+            })
+            console.log('ram',this.ramUsage)
             this.getPersonalitiesArr()
             this.fetchModels();
         },
@@ -1067,6 +1141,7 @@ export default {
             console.log(this.personalities)
             this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
             console.log(`Personalities filtered ${this.personalitiesFiltered}`)
+            console.log(this.personalitiesFiltered)
             this.isLoading = false
 
         },
@@ -1098,22 +1173,37 @@ export default {
         this.bindings = await this.api_get_req("list_bindings")
         this.isLoading = false
         this.diskUsage = await this.api_get_req("disk_usage")
+        this.ramUsage = await this.api_get_req("ram_usage")
+        console.log('ran',this.ramUsage)
         this.isMounted = true
 
     },
     computed: {
-        available_space() {
+        disk_available_space() {
             return this.computedFileSize(this.diskUsage.available_space)
         },
-        binding_models_usage() {
+        disk_binding_models_usage() {
             return this.computedFileSize(this.diskUsage.binding_models_usage)
         },
-        percent_usage() {
+        disk_percent_usage() {
             return this.diskUsage.percent_usage
 
         },
-        total_space() {
+        disk_total_space() {
             return this.computedFileSize(this.diskUsage.total_space)
+        },
+       ram_available_space() {
+            return this.computedFileSize(this.ramUsage.available_space)
+        },
+        ram_usage() {
+            return this.computedFileSize(this.ramUsage.ram_usage)
+        },
+        ram_percent_usage() {
+            return this.ramUsage.percent_usage
+
+        },
+        ram_total_space() {
+            return this.computedFileSize(this.ramUsage.total_space)
         },
         imgBinding() {
             if (!this.isMounted) {
