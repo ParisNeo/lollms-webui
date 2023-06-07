@@ -550,7 +550,8 @@ import PersonalityViewer from '@/components/PersonalityViewer.vue';
 import PersonalityEntry from "../components/PersonalityEntry.vue";
 import BindingEntry from "../components/BindingEntry.vue";
 import socket from '@/services/websocket.js'
-import defaultImgPlaceholder from "../assets/default_model.png"
+import defaultModelImgPlaceholder from "../assets/default_model.png"
+import defaultPersonalityImgPlaceholder from  "../assets/logo.svg"
 
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
@@ -1130,13 +1131,13 @@ export default {
             if (!this.isMounted) {
                 return
             }
-            console.log("Config file")
-            console.log(this.configFile)
+            // console.log("Config file")
+            // console.log(this.configFile)
             try{
                 return this.$refs.modelZoo[this.$refs.modelZoo.findIndex(item => item.title == this.configFile.model_name)].$refs.imgElement.src
             }
             catch(error){
-                return defaultImgPlaceholder
+                return defaultModelImgPlaceholder
             }            
         },
         imgPersonality() {
@@ -1147,7 +1148,7 @@ export default {
                 return this.$refs.personalitiesZoo[this.$refs.personalitiesZoo.findIndex(item => item.personality.folder == this.configFile.personality_folder)].$refs.imgElement.src
             }
             catch(error){
-                return defaultImgPlaceholder
+                return defaultPersonalityImgPlaceholder
             }            
         },
 
