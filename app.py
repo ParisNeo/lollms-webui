@@ -476,7 +476,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             "available_space":ram.free,
 
             "percent_usage":ram.percent,
-            "binding_models_usage": ram.used
+            "ram_usage": ram.used
             })
 
     def disk_usage(self):
