@@ -138,7 +138,7 @@ export default {
             return filesize(size)
         },
     async getFileSize(url) {
-      console.log(this.model_type);
+      //console.log(this.model_type);
       if(this.model_type!="api"){
         try {
           const res = await axios.head(url)

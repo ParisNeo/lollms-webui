@@ -834,11 +834,11 @@ export default {
             this.api_get_req("get_config").then(response => {
                 console.log("Received config")
                 this.configFile = response
-                extract_personality_parameters()
+                this.extract_personality_parameters()
 
-                console.log(`p lang = ${this.configFile.personality_language }`)
-                console.log(`p cat = ${this.configFile.personality_category }`)
-                console.log(`p name = ${this.configFile.personality_folder }`)
+                // console.log(`p lang = ${this.configFile.personality_language }`)
+                // console.log(`p cat = ${this.configFile.personality_category }`)
+                // console.log(`p name = ${this.configFile.personality_folder }`)
 
                 this.models.forEach(model => {
 
@@ -864,9 +864,9 @@ export default {
                 this.configFile.personality_category = parts[1]
                 this.configFile.personality_folder   = parts[2]
 
-                console.log(`p lang = ${this.configFile.personality_language }`)
-                console.log(`p cat = ${this.configFile.personality_category }`)
-                console.log(`p name = ${this.configFile.personality_folder }`)
+                // console.log(`p lang = ${this.configFile.personality_language }`)
+                // console.log(`p cat = ${this.configFile.personality_category }`)
+                // console.log(`p name = ${this.configFile.personality_folder }`)
 
             }catch(error){
                 console.log(`Exception : ${error}`)
@@ -1031,8 +1031,8 @@ export default {
             this.isLoading = true
             this.personalities = []
             const dictionary = await this.api_get_req("get_all_personalities")
-            console.log("all_personalities")
-            console.log(dictionary)
+            // console.log("all_personalities")
+            // console.log(dictionary)
             const langkeys = Object.keys(dictionary); // returns languages folder names
             for (let i = 0; i < langkeys.length; i++) {
                 const langkey = langkeys[i];
@@ -1059,13 +1059,13 @@ export default {
                 }
 
             }
-            console.log(this.configFile)
-            console.log(this.configFile.personality_category)
-            console.log(this.configFile.personality_language)
-            console.log("Personalities")
-            console.log(this.personalities)
+            // console.log(this.configFile)
+            // console.log(this.configFile.personality_category)
+            // console.log(this.configFile.personality_language)
+            // console.log("Personalities")
+            // console.log(this.personalities)
             this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
-            console.log(`Personalities filtered ${this.personalitiesFiltered}`)
+            //console.log(`Personalities filtered ${this.personalitiesFiltered}`)
             this.isLoading = false
 
         },
@@ -1124,15 +1124,15 @@ export default {
             if (!this.isMounted) {
                 return
             }
-            console.log("Config file")
-            console.log(this.configFile)
+            //console.log("Config file")
+            //console.log(this.configFile)
             return this.$refs.modelZoo[this.$refs.modelZoo.findIndex(item => item.title == this.configFile.model_name)].$refs.imgElement.src
         },
         imgPersonality() {
             if (!this.isMounted) {
                 return
             }
-            console.log(`ICON ${this.$refs.personalitiesZoo[this.$refs.personalitiesZoo.findIndex(item => item.personality.folder == this.configFile.personality_folder)].$refs.imgElement.src}`)
+           // console.log(`ICON ${this.$refs.personalitiesZoo[this.$refs.personalitiesZoo.findIndex(item => item.personality.folder == this.configFile.personality_folder)].$refs.imgElement.src}`)
             return this.$refs.personalitiesZoo[this.$refs.personalitiesZoo.findIndex(item => item.personality.folder == this.configFile.personality_folder)].$refs.imgElement.src
         },
 
