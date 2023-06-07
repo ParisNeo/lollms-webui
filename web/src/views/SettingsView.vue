@@ -835,7 +835,7 @@ export default {
             this.api_get_req("get_config").then(response => {
                 console.log("Received config")
                 this.configFile = response
-                extract_personality_parameters()
+                this.extract_personality_parameters()
 
                 console.log(`p lang = ${this.configFile.personality_language }`)
                 console.log(`p cat = ${this.configFile.personality_category }`)
