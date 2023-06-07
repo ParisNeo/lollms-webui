@@ -889,11 +889,6 @@ export default {
             this.api_get_req("get_config").then(response => {
                 console.log("Received config")
                 this.configFile = response
-                this.extract_personality_parameters()
-
-                // console.log(`p lang = ${this.configFile.personality_language }`)
-                // console.log(`p cat = ${this.configFile.personality_category }`)
-                // console.log(`p name = ${this.configFile.personality_folder }`)
 
                 this.models.forEach(model => {
 
@@ -906,6 +901,12 @@ export default {
                     }
                 });
             })
+            this.api_get_req("get_current_personality_path_infos").then(response => {
+                this.configFile.personality_language = response["personality_language"]
+                this.configFile.personality_category = response["personality_category"]
+                this.configFile.personality_folder = response["personality_name"]
+                console.log("received infos")
+            });
             this.api_get_req("disk_usage").then(response => {
                 this.diskUsage = response
             })
@@ -915,22 +916,6 @@ export default {
             //console.log('ram',this.ramUsage)
             this.getPersonalitiesArr()
             this.fetchModels();
-        },
-        extract_personality_parameters() {
-            try {
-                let parts = this.configFile.personalities[this.configFile.default_personality_id].split('/')
-                this.configFile.personality_language = parts[0]
-                this.configFile.personality_category = parts[1]
-                this.configFile.personality_folder = parts[2]
-
-                // console.log(`p lang = ${this.configFile.personality_language }`)
-                // console.log(`p cat = ${this.configFile.personality_category }`)
-                // console.log(`p name = ${this.configFile.personality_folder }`)
-
-            } catch (error) {
-                console.log(`Exception : ${error}`)
-            }
-
         },
         // Accordeon stuff
         toggleAccordion() {
@@ -1140,10 +1125,15 @@ export default {
 
         })
         this.configFile = await this.api_get_req("get_config")
+        let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
+        this.configFile.personality_language = personality_path_infos["personality_language"]
+        this.configFile.personality_category = personality_path_infos["personality_category"]
+        this.configFile.personality_folder = personality_path_infos["personality_name"]
+
+
         if (this.configFile.model_name) {
             this.isModelSelected = true
         }
-        this.extract_personality_parameters();
 
         this.fetchModels();
         this.bindingsArr = await this.api_get_req("list_bindings")

@@ -122,7 +122,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
             "/list_discussions", "list_discussions", self.list_discussions, methods=["GET"]
         )
         
-        self.add_endpoint("/set_personality", "set_personality", self.set_personality, methods=["GET"])
         self.add_endpoint("/delete_personality", "delete_personality", self.delete_personality, methods=["GET"])
         
         
@@ -184,7 +183,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint(
             "/get_config", "get_config", self.get_config, methods=["GET"]
         )
-        
+
+        self.add_endpoint(
+            "/get_current_personality_path_infos", "get_current_personality_path_infos", self.get_current_personality_path_infos, methods=["GET"]
+        )
+
         self.add_endpoint(
             "/get_available_models", "get_available_models", self.get_available_models, methods=["GET"]
         )
@@ -533,13 +536,13 @@ class LoLLMsWebUI(LoLLMsAPPI):
         return jsonify(personalities_languages)
 
     def list_personalities_categories(self):
-        personalities_categories_dir = lollms_path/f'personalities_zoo/{self.config["personalities"][self.config["default_personality_id"]].split("/")[0]}'  # replace with the actual path to the models folder
+        personalities_categories_dir = lollms_path/f'personalities_zoo/{self.personality_language}'  # replace with the actual path to the models folder
         personalities_categories = [f.stem for f in personalities_categories_dir.iterdir() if f.is_dir()]
         return jsonify(personalities_categories)
     
     def list_personalities(self):
         try:
-            personalities_dir = lollms_path/f'personalities_zoo/{"/".join(self.config["personalities"][self.config["default_personality_id"]].split("/")[0:2])}'  # replace with the actual path to the models folder
+            personalities_dir = lollms_path/f'personalities_zoo/{self.personality_language}/{self.personality_category}'  # replace with the actual path to the models folder
             personalities = [f.stem for f in personalities_dir.iterdir() if f.is_dir()]
         except Exception as ex:
             personalities=[]
@@ -564,16 +567,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
         discussions = self.db.get_discussions()
         return jsonify(discussions)
 
-
-    def set_personality(self):
-        lang = request.args.get('language')
-        category = request.args.get('category')
-        name = request.args.get('name')
-        self.config['personality_language'] = lang
-        self.config['personality_category'] = category
-        self.config['personality'] = name
-        result = self.process.set_config(self.config)
-        return jsonify(result)
 
     def delete_personality(self):
         lang = request.args.get('language')
@@ -934,6 +927,13 @@ class LoLLMsWebUI(LoLLMsAPPI):
     
     def get_config(self):
         return jsonify(self.config.to_dict())
+    
+    def get_current_personality_path_infos(self):
+        return jsonify({
+            "personality_language":self.personality_language,
+            "personality_category":self.personality_category, 
+            "personality_name":self.personality_name
+        })
 
     def main(self):
         return render_template("main.html")
