@@ -108,9 +108,9 @@ class ModelProcess:
     def reset_config_result(self):
         self._set_config_result = {
             'status': 'succeeded',
-            'binding_status':'ok',
-            'model_status':'ok',
-            'personality_status':'ok',
+            'binding_status':True,
+            'model_status':True,
+            'personality_status':True,
             'errors':[]
             }
         

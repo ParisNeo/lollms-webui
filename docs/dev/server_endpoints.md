@@ -110,7 +110,7 @@ This Flask server provides various endpoints to manage and interact with the cha
 - "/stop_gen": GET request endpoint to stop the chatbot from generating responses.
 ```
 {
-  "status": "ok"
+  "status": True
 }
 ```
 

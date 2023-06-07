@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 5
+version: 6
 binding_name: llama_cpp_official
 model_name: Wizard-Vicuna-7B-Uncensored.ggmlv3.q4_0.bin
 
