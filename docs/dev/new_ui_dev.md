@@ -1,4 +1,4 @@
-# GPT4ALL-UI Web interface VUE3 development log, todo's and more
+# lollms-webui Web interface VUE3 development log, todo's and more
 
 ## Installation for development
 

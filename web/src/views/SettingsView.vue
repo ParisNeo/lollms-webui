@@ -720,7 +720,7 @@ export default {
                     this.settingsChanged = true
                     const res = this.update_setting('personality_folder', pers.personality.folder, () => {
                         this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
-                        this.configFile.personalities[configFile.default_personality_id] = pers.personality.language + "/" + pers.personality.category + "/" + pers.personality.name
+                        this.configFile.personalities[configFile.active_personality_id] = pers.personality.language + "/" + pers.personality.category + "/" + pers.personality.name
                     })
                 }
                 nextTick(() => {

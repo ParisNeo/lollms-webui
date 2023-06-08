@@ -476,3 +476,67 @@ The Flask backend API exposes various endpoints to interact with the application
 
 **Output**: Imports the specified discussions.
 
+
+
+## Active personalities manipulation endpoints
+
+### Mount Personality
+
+**Endpoint:** `/mount_personality`
+
+**Method:** POST
+
+**Parameters:**
+- `language` (file): The language file associated with the personality.
+- `category` (file): The category file associated with the personality.
+- `name` (file): The name file associated with the personality.
+
+**Description:**
+This endpoint mounts a personality by adding it to the list of configured personalities and setting it as the active personality. The personality is specified by providing the language, category, and name files. The endpoint checks if the personality's configuration file exists and, if not, adds the personality to the configuration. After mounting the personality, the settings are applied.
+
+**Returns:**
+- If the personality is mounted successfully:
+  - `status` (boolean): `True`
+- If the personality is not found:
+  - `status` (boolean): `False`
+  - `error` (string): "Personality not found"
+
+### Unmount Personality
+
+**Endpoint:** `/unmount_personality`
+
+**Method:** POST
+
+**Parameters:**
+- `language` (file): The language file associated with the personality.
+- `category` (file): The category file associated with the personality.
+- `name` (file): The name file associated with the personality.
+
+**Description:**
+This endpoint unmounts a personality by removing it from the list of configured personalities. The personality is specified by providing the language, category, and name files. If the active personality is removed, the active personality ID is reset to `0`. After unmounting the personality, the settings are applied.
+
+**Returns:**
+- If the personality is unmounted successfully:
+  - `status` (boolean): `True`
+- If the personality couldn't be unmounted:
+  - `status` (boolean): `False`
+  - `error` (string): "Couldn't unmount personality"
+
+### Select Personality
+
+**Endpoint:** `/select_personality`
+
+**Method:** POST
+
+**Parameters:**
+- `id` (file): The ID of the personality to select.
+
+**Description:**
+This endpoint selects a personality from the list of configured personalities based on the provided ID. The ID represents the index of the personality in the list. After selecting the personality, the settings are applied.
+
+**Returns:**
+- If the personality is selected successfully:
+  - `status` (boolean): `True`
+- If the ID is invalid:
+  - `status` (boolean): `False`
+  - `error` (string): "Invalid ID"

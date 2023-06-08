@@ -62,7 +62,7 @@ if ping -q -c 1 google.com >/dev/null 2>&1; then
       else
         echo Cloning repository...
         rem Clone the Git repository into a temporary directory
-        git clone https://github.com/ParisNeo/gpt4all-ui.git ./GPT4All
+        git clone https://github.com/ParisNeo/lollms-webui.git ./GPT4All
         cd GPT4All
       fi
     fi

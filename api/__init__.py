@@ -1,14 +1,15 @@
 ######
-# Project       : GPT4ALL-UI
+# Project       : lollms-webui
 # File          : api.py
 # Author        : ParisNeo with the help of the community
 # Supported by Nomic-AI
 # license       : Apache 2.0
 # Description   : 
-# A simple api to communicate with gpt4all-ui and its models.
+# A simple api to communicate with lollms-webui and its models.
 ######
 from datetime import datetime
 from api.db import DiscussionsDB
+from api.helpers import compare_lists
 from pathlib import Path
 import importlib
 from lollms import AIPersonality, lollms_path, MSG_TYPE
@@ -22,7 +23,7 @@ import traceback
 import sys
 
 __author__ = "parisneo"
-__github__ = "https://github.com/ParisNeo/gpt4all-ui"
+__github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
@@ -110,7 +111,7 @@ class ModelProcess:
             'status': 'succeeded',
             'binding_status':True,
             'model_status':True,
-            'personality_status':True,
+            'personalities_status':True,
             'errors':[]
             }
         
@@ -245,44 +246,58 @@ class ModelProcess:
             self._set_config_result['binding_status'] ='failed'
             self._set_config_result['errors'].append(f"couldn't build binding:{ex}")
 
-    def rebuild_personality(self):
-        try:
-            personality = self.config['personalities'][self.config['default_personality_id']]
-            print(f" ******************* Building Personality {personality} from main Process *************************")
-            personality_path = lollms_path/f"personalities_zoo/{personality}"
-            personality = AIPersonality(personality_path, run_scripts=False)
-            print(f" ************ Personality {personality.name} is ready (Main process) ***************************")
-        except Exception as ex:
-            print(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
-            if self.config["debug"]:
-                print(ex)
-            personality = AIPersonality()
+    def rebuild_personalities(self):
+        mounted_personalities=[]
+        print(f" ******************* Building mounted Personalities from main Process *************************")
+        for personality in self.config['personalities']:
+            try:
+                print(f" {personality}")
+                personality_path = lollms_path/f"personalities_zoo/{personality}"
+                personality = AIPersonality(personality_path, run_scripts=False)
+                mounted_personalities.append(personality)
+            except Exception as ex:
+                print(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+                if self.config["debug"]:
+                    print(ex)
+                personality = AIPersonality()
             
-        return personality
+        print(f" ************ Personalities mounted (Main process) ***************************")
+            
+        return mounted_personalities
     
-    def _rebuild_personality(self):
-        try:
-            self.reset_config_result()
-            personality = self.config['personalities'][self.config['default_personality_id']]
-            print(f" ******************* Building Personality {personality} from generation Process *************************")
-            personality_path = lollms_path/f"personalities_zoo/{personality}"
-            self.personality = AIPersonality(personality_path)
-            print(f" ************ Personality {self.personality.name} is ready (generation process) ***************************")
-        except Exception as ex:
-            print(f"Personality file not found or is corrupted ({personality_path}).")
-            print(f"Please verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
-            print(f"Exception: {ex}")
-            if self.config["debug"]:
-                print(ex)
-            self.personality = AIPersonality()
+    def _rebuild_personalities(self):
+        self.mounted_personalities=[]
+        failed_personalities=[]
+        self.reset_config_result()
+        print(f" ******************* Building mounted Personalities from generation Process *************************")
+        for personality in self.config['personalities']:
+            try:
+                print(f" {personality}")
+                personality_path = lollms_path/f"personalities_zoo/{personality}"
+                personality = AIPersonality(personality_path, run_scripts=True)
+                self.mounted_personalities.append(personality)
+            except Exception as ex:
+                print(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+                if self.config["debug"]:
+                    print(ex)
+                personality = AIPersonality()
+                failed_personalities.append(personality_path)
+                self._set_config_result['errors'].append(f"couldn't build personalities:{ex}")
+            
+        print(f" ************ Personalities mounted (Generation process) ***************************")
+        if len(failed_personalities)==len(self.config['personalities']):
             self._set_config_result['status'] ='failed'
-            self._set_config_result['binding_status'] ='failed'
-            self._set_config_result['errors'].append(f"couldn't build binding:{ex}")
-    
+            self._set_config_result['personalities_status'] ='failed'
+        elif len(failed_personalities)>0:
+            self._set_config_result['status'] ='semi_failed'
+            self._set_config_result['personalities_status'] ='semi_failed'
+            
+        self.personality = self.mounted_personalities[self.config['active_personality_id']]
+        print("Personality set successfully")
        
     def _run(self):     
         self._rebuild_model()
-        self._rebuild_personality()
+        self._rebuild_personalities()
         self.check_set_config_thread = threading.Thread(target=self._check_set_config_queue, args=())
         print("Launching config verification thread")
         self.check_set_config_thread.start()
@@ -438,8 +453,9 @@ class ModelProcess:
             self._rebuild_model()
             
         # verify that the personality is the same
-        if self.config["personalities"][-1]!=bk_cfg["personalities"][-1]:
-            self._rebuild_personality()
+        
+        if not compare_lists(self.config["personalities"], bk_cfg["personalities"]):
+            self._rebuild_personalities()
 
 
 class LoLLMsAPPI():
@@ -450,7 +466,8 @@ class LoLLMsAPPI():
         self.config = config
         
         self.binding = self.process.rebuild_binding(self.config)
-        self.personality = self.process.rebuild_personality()
+        self.personalities = self.process.rebuild_personalities()
+        self.personality = self.personalities[self.config["active_personality_id"]]
         if config["debug"]:
             print(print(f"{self.personality}"))
         self.config_file_path = config_file_path

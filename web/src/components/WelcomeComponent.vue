@@ -4,8 +4,8 @@
         <div class="flex flex-col text-center items-center">
 
             <div class="flex items-center gap-3 text-5xl drop-shadow-md align-middle pt-24 ">
-                <img class="w-24 animate-bounce" title="GPT4ALL-UI" src="@/assets/logo.svg" alt="Logo">
-                <p class=" ">GPT4ALL-UI</p>
+                <img class="w-24 animate-bounce" title="lollms-webui" src="@/assets/logo.svg" alt="Logo">
+                <p class=" ">lollms-webui</p>
 
 
             </div>

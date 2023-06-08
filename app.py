@@ -1,5 +1,5 @@
 ######
-# Project       : GPT4ALL-UI
+# Project       : lollms-webui
 # Author        : ParisNeo with the help of the community
 # Supported by Nomic-AI
 # license       : Apache 2.0
@@ -10,7 +10,7 @@
 ######
 
 __author__ = "parisneo"
-__github__ = "https://github.com/ParisNeo/gpt4all-ui"
+__github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
@@ -25,7 +25,9 @@ from tqdm import tqdm
 import subprocess
 import signal
 from lollms import AIPersonality, lollms_path, MSG_TYPE
+from lollms.console import ASCIIColors
 from api.db import DiscussionsDB, Discussion
+from api.helpers import compare_lists
 from flask import (
     Flask,
     Response,
@@ -77,9 +79,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         app.template_folder = "web/dist"
 
-        self.personality_language= config["personalities"][config["default_personality_id"]].split("/")[0]
-        self.personality_category= config["personalities"][config["default_personality_id"]].split("/")[1]
-        self.personality_name= config["personalities"][config["default_personality_id"]].split("/")[2]
+        self.personality_language= config["personalities"][config["active_personality_id"]].split("/")[0]
+        self.personality_category= config["personalities"][config["active_personality_id"]].split("/")[1]
+        self.personality_name= config["personalities"][config["active_personality_id"]].split("/")[2]
 
         # =========================================================================================
         # Endpoints
@@ -87,6 +89,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint("/add_reference_to_local_model", "add_reference_to_local_model", self.add_reference_to_local_model, methods=["POST"])
         
         self.add_endpoint("/send_file", "send_file", self.send_file, methods=["POST"])
+        self.add_endpoint("/mount_personality", "mount_personality", self.mount_personality, methods=["POST"])
+        self.add_endpoint("/unmount_personality", "unmount_personality", self.unmount_personality, methods=["POST"])
+        self.add_endpoint("/select_personality", "select_personality", self.select_personality, methods=["POST"])
 
 
         self.add_endpoint(
@@ -668,6 +673,51 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return jsonify({"status": True})         
         else:        
             return jsonify({"status": True})         
+
+
+    def mount_personality(self):
+        language = request.files['language']
+        category = request.files['category']
+        name = request.files['name']
+
+        package_path = f"{language}/{category}/{name}"
+        package_full_path = lollms_path/"personalities_zoo"/package_path
+        config_file = package_full_path / "config.yaml"
+        if not config_file.exists():
+            self.config["personalities"].append()
+            self.personalities = self.process.rebuild_personalities()
+            self.personality = self.personalities[self.config["active_personality_id"]]
+            self.apply_settings()
+            return jsonify({"status": True})         
+        else:
+            return jsonify({"status": False, "error":"Personality not found"})         
+
+    def unmount_personality(self):
+        language = request.files['language']
+        category = request.files['category']
+        name = request.files['name']
+        try:
+            index = self.config["personalities"].index(f"{language}/{category}/{name}")
+            self.config["personalities"].remove(f"{language}/{category}/{name}")
+            if self.config["active_personality_id"]>=index:
+                self.config["active_personality_id"]=0
+            self.personalities = self.process.rebuild_personalities()
+            self.personality = self.personalities[self.config["active_personality_id"]]
+            self.apply_settings()
+            return jsonify({"status": True})         
+        except:
+            return jsonify({"status": False, "error":"Couldn't unmount personality"})         
+            
+    def select_personality(self):
+        id = request.files['id']
+        if id<len(self.config["personalities"]):
+            self.config["active_personality_id"]=id
+            self.personality = self.personalities[self.config["active_personality_id"]]
+            self.apply_settings()
+            return jsonify({"status": True})
+        else:
+            return jsonify({"status": False, "error":"Invalid ID"})         
+                    
 
     def send_file(self):
         file = request.files['file']

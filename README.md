@@ -1,9 +1,9 @@
 # Gpt4All Web UI
 
-![GitHub license](https://img.shields.io/github/license/nomic-ai/GPT4All-ui)
-![GitHub issues](https://img.shields.io/github/issues/nomic-ai/GPT4All-ui)
-![GitHub stars](https://img.shields.io/github/stars/nomic-ai/GPT4All-ui)
-![GitHub forks](https://img.shields.io/github/forks/nomic-ai/GPT4All-ui)
+![GitHub license](https://img.shields.io/github/license/nomic-ai/lollms-webui)
+![GitHub issues](https://img.shields.io/github/issues/nomic-ai/lollms-webui)
+![GitHub stars](https://img.shields.io/github/stars/nomic-ai/lollms-webui)
+![GitHub forks](https://img.shields.io/github/forks/nomic-ai/lollms-webui)
 [![Discord](https://img.shields.io/discord/1092918764925882418?color=7289da&label=Discord&logo=discord&logoColor=ffffff)](https://discord.gg/4rR282WJb6)
 [![Follow me on Twitter](https://img.shields.io/twitter/follow/SpaceNerduino?style=social)](https://twitter.com/SpaceNerduino)
 [![Follow Me on YouTube](https://img.shields.io/badge/Follow%20Me%20on-YouTube-red?style=flat&logo=youtube)](https://www.youtube.com/user/Parisneo)
@@ -58,8 +58,8 @@ If you use conda, you can create a virtual environment and install the required 
 First clone the project or download the zip file and unzip it:
 
 ```bash
-git clone https://github.com/ParisNeo/gpt4all-ui.git
-cd gpt4all-ui
+git clone https://github.com/ParisNeo/lollms-webui.git
+cd lollms-webui
 ```
 Now create a new conda environment, activate it and install requirements
 
@@ -100,7 +100,7 @@ Once the app is running, you can go to the application front link displayed in t
 Contributions to GPT4ALL WebUI are welcome! If you encounter any issues, have ideas for improvements, or want to contribute code, please open an issue or submit a pull request on the GitHub repository.
 
 # License
-This project is licensed under the Apache 2.0 License. You are free to use this software commercially, build upon it, and integrate it into your own projects. See the [LICENSE](https://github.com/ParisNeo/GPT4All-ui/blob/main/LICENSE) file for details.
+This project is licensed under the Apache 2.0 License. You are free to use this software commercially, build upon it, and integrate it into your own projects. See the [LICENSE](https://github.com/ParisNeo/lollms-webui/blob/main/LICENSE) file for details.
 
 # Acknowledgements
 Please note that GPT4ALL WebUI is not affiliated with the GPT4All application developed by Nomic AI. The latter is a separate professional application available at gpt4all.io, which has its own unique features and community.

@@ -23,7 +23,7 @@ setuptools.setup(
     description="A web ui for running chat models with different bindings. Supports multiple personalities and extensions.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/ParisNeo/gpt4all-ui",
+    url="https://github.com/ParisNeo/lollms-webui",
     packages=setuptools.find_packages(),
     install_requires=requirements,
     extras_require={"dev": requirements_dev},

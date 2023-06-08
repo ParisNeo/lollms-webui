@@ -1,11 +1,11 @@
 ######
-# Project       : GPT4ALL-UI
+# Project       : lollms-webui
 # File          : binding.py
 # Author        : ParisNeo with the help of the community
 # Supported by Nomic-AI
 # license       : Apache 2.0
 # Description   : 
-# This is an interface class for GPT4All-ui bindings.
+# This is an interface class for lollms-webui bindings.
 ######
 from pathlib import Path
 from typing import Callable
@@ -14,7 +14,7 @@ import yaml
 import sys
 
 __author__ = "parisneo"
-__github__ = "https://github.com/ParisNeo/gpt4all-ui"
+__github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 

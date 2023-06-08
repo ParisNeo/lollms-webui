@@ -1,5 +1,5 @@
 ######
-# Project       : GPT4ALL-UI
+# Project       : lollms-webui
 # File          : config.py
 # Author        : ParisNeo with the help of the community
 # Supported by Nomic-AI
@@ -12,7 +12,7 @@
 import yaml
 
 __author__ = "parisneo"
-__github__ = "https://github.com/ParisNeo/gpt4all-ui"
+__github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
