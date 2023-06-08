@@ -80,7 +80,8 @@
                         <div class=" text-base font-semibold cursor-pointer select-none items-center">
 
                             <div class="flex gap-2 items-center ">
-                                <svg class="flex-shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <svg class="flex-shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                    viewBox="0 0 24 24">
                                     <path fill="currentColor"
                                         d="M17 17H7V7h10m4 4V9h-2V7a2 2 0 0 0-2-2h-2V3h-2v2h-2V3H9v2H7c-1.11 0-2 .89-2 2v2H3v2h2v2H3v2h2v2a2 2 0 0 0 2 2h2v2h2v-2h2v2h2v-2h2a2 2 0 0 0 2-2v-2h2v-2h-2v-2m-6 2h-2v-2h2m2-2H9v6h6V9Z" />
                                 </svg>
@@ -247,7 +248,7 @@
                                     :license="model.license" :description="model.description"
                                     :is-installed="model.isInstalled" :on-install="onInstall" :on-uninstall="onUninstall"
                                     :on-selected="onSelected" :selected="model.title === configFile.model_name"
-                                    :model="model" :model_type="model.model_type" />
+                                    :model="model" :model_type="model.model_type" :on-copy="onCopy" />
                             </TransitionGroup>
                         </div>
                     </div>
@@ -284,7 +285,7 @@
 
                             <div class="flex gap-1 items-center">
                                 <img :src="imgPersonality" class="w-8 h-8 rounded-full object-fill text-red-700">
-                                <h3 class="font-bold font-large text-lg line-clamp-1" >
+                                <h3 class="font-bold font-large text-lg line-clamp-1">
                                     {{ this.configFile.personality_folder }}
                                 </h3>
                             </div>
@@ -758,6 +759,18 @@ export default {
             }
 
         },
+        onCopy(modelEntry) {
+            let content
+            if (!modelEntry.model.isCustomModel) {
+                content = `Model name: ${modelEntry.title}\nFile size: ${modelEntry.fileSize}\nDownload: ${modelEntry.path}\nLicense: ${modelEntry.license}\nOwner: ${modelEntry.owner}\nWebsite: ${modelEntry.owner_link}\nDescription: ${modelEntry.description}`
+            } else {
+                content = `Model name: ${modelEntry.title}\nFile size: ${modelEntry.fileSize}\nManually downloaded model `
+            }
+
+            this.$refs.toast.showToast("Copied model info to clipboard!", 4, true)
+            navigator.clipboard.writeText(content.trim());
+        },
+
         // Model installation
 
         onInstall(model_object) {

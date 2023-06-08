@@ -1,5 +1,6 @@
 <template>
-  <div class="flex items-center p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer  active:scale-95 duration-75 select-none"
+
+  <div class="flex items-center p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer  active:opacity-80 duration-75 "
     @click.stop="toggleSelected" :class="selected ? ' border-primary-light' : 'border-transparent'">
 
 
@@ -10,13 +11,18 @@
           {{ title }}
         </h3>
       </div>
+
     </div>
     <div class="flex-1" v-if="!model.isCustomModel">
-      <div class="flex gap-3 items-center">
+      <div class="flex flex-row gap-3 items-center ">
         <img ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-lg object-fill" :class="linkNotValid ? 'grayscale':''">
         <h3 class="font-bold font-large text-lg">
           {{ title }}
         </h3>
+        <div class="flex-grow">
+
+        </div>
+
       </div>
       <div class="flex flex-shrink-0 items-center ">
         <i  data-feather="download" class="w-5 m-1" ></i>
@@ -60,7 +66,11 @@
       </div>
       <p class="mx-1 opacity-80">{{ description }}</p>
     </div>
-    <div class="flex-shrink-0" >
+    <div class="flex flex-row flex-shrink-0 items-center"  >
+      <button class="text-lg hover:text-secondary duration-75 active:scale-90 p-2"
+            title="Copy model info to clipboard" @click.stop="toggleCopy()">
+            <i data-feather="clipboard"></i>
+      </button>
       <button v-if="model_type !== 'api'" class="px-4 py-2 rounded-md text-white font-bold transition-colors duration-300"
         :class="[isInstalled ? 'bg-red-500 hover:bg-red-600' : linkNotValid ? 'bg-gray-500 hover:bg-gray-600' : 'bg-green-500 hover:bg-green-600']"
         :disabled="installing || uninstalling" @click.stop="toggleInstall">
@@ -88,6 +98,7 @@
     </div>
 
   </div>
+
 </template>
 
 <script>
@@ -110,6 +121,7 @@ export default {
     onInstall: Function,
     onUninstall: Function,
     onSelected: Function,
+    onCopy: Function,
     selected: Boolean,
     model: Object,
     model_type: String
@@ -215,11 +227,20 @@ export default {
     toggleSelected() {
       this.onSelected(this)
     },
+    toggleCopy() {
+ 
+      this.onCopy(this)
+    },
     handleSelection() {
       if (this.isInstalled && !this.selected) {
         this.onSelected(this);
       }
-    }
+    },
+    copyContentToClipboard() {
+      console.log('asdasdas')
+            this.$emit('copy', 'this.message.content')
+
+        },
   },
   watch:{
     linkNotValid(){
