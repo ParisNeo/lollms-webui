@@ -168,12 +168,15 @@
             :class="isDragOverChat ? 'pointer-events-none' : ''">
 
             <!-- CHAT AREA -->
-            <div class=" container pt-4 pb-10 mb-16">
+            <div class=" container pt-4 pb-10 mb-16" >
                 <TransitionGroup v-if="discussionArr.length > 0" name="list">
                     <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg" :id="'msg-' + msg.id"
                         ref="messages" @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
                         @rankDown="rankDownMessage" @updateMessage="updateMessage" @resendMessage="resendMessage"
-                        :avatar="getAvatar(msg.sender)" @click="scrollToElementInContainer($event.target, 'messages-list')" />
+                        :avatar="getAvatar(msg.sender)" />
+
+                        <!-- REMOVED FOR NOW, NEED MORE TESTING -->
+                        <!-- @click="scrollToElementInContainer($event.target, 'messages-list')"  -->
 
 
                 </TransitionGroup>
