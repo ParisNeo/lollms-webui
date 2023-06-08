@@ -11,11 +11,11 @@
             <div class="flex flex-col flex-grow ">
                 <div class="flex flex-row flex-grow items-start ">
                     <!-- SENDER NAME -->
-                    <div class="flex flex-grow">
-                        <p class="drop-shadow-sm text-lg text-opacity-95 font-bold ">{{ message.sender }}</p>
+                    <div class="flex ">
+                        <p class="drop-shadow-sm text-lg text-opacity-95 font-bold grow  ">{{ message.sender }}</p>
 
                     </div>
-                    <div class="flex-grow">
+                    <div class="flex-grow ">
 
                     </div>
                     <!-- MESSAGE CONTROLS -->
@@ -81,7 +81,7 @@
                     </div>
                 </div>
 
-                <div class="break-all">
+                <div class="relative overflow-hidden flex-none">
                     <!-- MESSAGE CONTENT -->
                     <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :markdown-text="message.content">
                     </MarkdownRenderer>
