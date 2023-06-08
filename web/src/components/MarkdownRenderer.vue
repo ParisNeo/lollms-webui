@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class=" break-all w-full">
     <div v-html="renderedMarkdown" class=""></div>
   </div>
 </template>
@@ -22,24 +22,45 @@ const markdownIt = new MarkdownIt('commonmark', {
   linkify: true,
   typographer: true,
   highlight: (str, lang) => {
+    const language = hljs.highlight(str, { language: lang }).language
+
+    const languageCapital = language.charAt(0).toUpperCase() + language.slice(1);
+
 
     if (lang && hljs.getLanguage(lang)) {
       try {
 
+
         return (
-          '<pre class="hljs p-4 overflow-x-auto rounded-lg shadow-sm scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">' +
+          '<div class="hljs language-html break-all whitespace-pre  p-2 rounded-lg shadow-sm ">' +
+          languageCapital +
+
+          '<pre class="break-all whitespace-pre p-1 overflow-x-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary ">' +
+
           '<code>' +
-          hljs.highlight(str, { language: lang }).value +
-          '</code></pre>'
+          hljs.highlightAuto(str).value +
+          '</code></pre>' + '</div>'
         );
 
       } catch (__) { }
     }
+    // return (
+    //   '<pre class="hljs p-4 overflow-x-auto rounded-lg shadow-sm scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">' +
+    //   '<code>' +
+    //   markdownIt.utils.escapeHtml(str) +
+    //   '</code></pre>'
+    // );
+
+
     return (
-      '<pre class="hljs p-4 overflow-x-auto rounded-lg shadow-sm scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">' +
+      '<div class="hljs language-html break-all whitespace-pre  p-2 rounded-lg shadow-sm ">' +
+      languageCapital +
+
+      '<pre class="break-all whitespace-pre p-1 overflow-x-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary ">' +
+
       '<code>' +
       markdownIt.utils.escapeHtml(str) +
-      '</code></pre>'
+      '</code></pre>' + '</div>'
     );
   }
 }).use(emoji);
@@ -88,10 +109,11 @@ export default {
     },
 
   },
-  computed:{
+  computed: {
 
-    
+
   }
 };
 </script>
   
+<style></style>

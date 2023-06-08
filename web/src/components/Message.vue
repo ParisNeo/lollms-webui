@@ -11,11 +11,11 @@
             <div class="flex flex-col flex-grow ">
                 <div class="flex flex-row flex-grow items-start ">
                     <!-- SENDER NAME -->
-                    <div class="flex flex-grow">
-                        <p class="drop-shadow-sm text-lg text-opacity-95 font-bold ">{{ message.sender }}</p>
+                    <div class="flex ">
+                        <p class="drop-shadow-sm text-lg text-opacity-95 font-bold grow  ">{{ message.sender }}</p>
 
                     </div>
-                    <div class="flex-grow">
+                    <div class="flex-grow ">
 
                     </div>
                     <!-- MESSAGE CONTROLS -->
@@ -81,16 +81,15 @@
                     </div>
                 </div>
 
-                <div class="break-all">
+                <div >
                     <!-- MESSAGE CONTENT -->
-                    <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :markdown-text="message.content">
+                    <MarkdownRenderer ref="mdRender"  v-if="!editMsgMode" :markdown-text="message.content">
                     </MarkdownRenderer>
                     <textarea v-if="editMsgMode" ref="mdTextarea" :rows="4"
                         class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         :style="{ minHeight: mdRenderHeight + `px` }" placeholder="Enter message here..."
                         v-model="new_message_content"></textarea>
                 </div>
-
 
             </div>
 
