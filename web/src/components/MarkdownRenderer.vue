@@ -32,10 +32,10 @@ const markdownIt = new MarkdownIt('commonmark', {
 
 
         return (
-          '<div class="hljs language-html whitespace-pre break-all  p-2 rounded-lg shadow-sm ">' +
+          '<div class="hljs language-html break-all whitespace-pre  p-2 rounded-lg shadow-sm ">' +
           languageCapital +
 
-          '<pre class=" p-1 overflow-x-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary ">' +
+          '<pre class="break-all whitespace-pre p-1 overflow-x-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary ">' +
 
           '<code>' +
           hljs.highlightAuto(str).value +
@@ -53,10 +53,10 @@ const markdownIt = new MarkdownIt('commonmark', {
 
 
     return (
-      '<div class="hljs language-html whitespace-pre break-all  p-2 rounded-lg shadow-sm ">' +
+      '<div class="hljs language-html break-all whitespace-pre  p-2 rounded-lg shadow-sm ">' +
       languageCapital +
 
-      '<pre class=" p-1 overflow-x-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary ">' +
+      '<pre class="break-all whitespace-pre p-1 overflow-x-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary ">' +
 
       '<code>' +
       markdownIt.utils.escapeHtml(str) +

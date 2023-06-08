@@ -81,16 +81,15 @@
                     </div>
                 </div>
 
-                <div class="relative overflow-hidden flex-none">
+                <div >
                     <!-- MESSAGE CONTENT -->
-                    <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :markdown-text="message.content">
+                    <MarkdownRenderer ref="mdRender"  v-if="!editMsgMode" :markdown-text="message.content">
                     </MarkdownRenderer>
                     <textarea v-if="editMsgMode" ref="mdTextarea" :rows="4"
                         class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         :style="{ minHeight: mdRenderHeight + `px` }" placeholder="Enter message here..."
                         v-model="new_message_content"></textarea>
                 </div>
-
 
             </div>
 
