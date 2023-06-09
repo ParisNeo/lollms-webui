@@ -695,7 +695,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.personalities = self.process.rebuild_personalities()
             self.personality = self.personalities[self.config["active_personality_id"]]
             self.apply_settings()
-            return jsonify({"status": True})         
+            return jsonify({"status": True,
+                            "personalities":self.config["personalities"],
+                            "active_personality_id":self.config["active_personality_id"]
+                            })         
         else:
             pth = str(config_file).replace('\\','/')
             return jsonify({"status": False, "error":f"Personality not found @ {pth}"})         
@@ -714,7 +717,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.personalities = self.process.rebuild_personalities()
             self.personality = self.personalities[self.config["active_personality_id"]]
             self.apply_settings()
-            return jsonify({"status": True})         
+            return jsonify({"status": True,
+                            "personalities":self.config["personalities"],
+                            "active_personality_id":self.config["active_personality_id"]
+                            })         
         except:
             return jsonify({"status": False, "error":"Couldn't unmount personality"})         
             
