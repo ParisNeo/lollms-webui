@@ -272,7 +272,7 @@
                 class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
 
 
-                <div class="flex flex-row p-3">
+                <div class="flex flex-row p-3 items-center">
                     <button @click.stop="pzc_collapsed = !pzc_collapsed"
                         class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
                         <i :data-feather="pzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2 flex-shrink-0"></i>
@@ -283,14 +283,27 @@
                         <div v-if="configFile.personalities"
                             class=" text-base font-semibold cursor-pointer select-none items-center">
 
-                            <div class="flex gap-1 items-center">
+                            <!-- <div class="flex gap-1 items-center">
                                 <img :src="imgPersonality" class="w-8 h-8 rounded-full object-fill text-red-700">
                                 <h3 class="font-bold font-large text-lg line-clamp-1">
                                     {{ this.configFile.personality_folder }}
                                 </h3>
-                            </div>
+                            </div> -->
 
+                            <div class="flex -space-x-4 items-center" v-if="mountedPersonalities">
+
+                                <div class="relative" v-for="item in mountedPersonalities">
+                                    <img :src="item.$refs.imgElement.src"
+                                        class="w-8 h-8 rounded-full object-fill text-red-700 border-2 hover:border-secondary border-transparent"
+                                        :title="item.personality.name">
+                                    <!-- <span
+                                        class="top-0 left-7 absolute  w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"
+                                        title="Mounted personality"></span> -->
+                                </div>
+                            </div>
                         </div>
+
+
                     </button>
                 </div>
                 <div :class="{ 'hidden': pzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
@@ -615,6 +628,7 @@ export default {
         Toast,
         PersonalityEntry,
         BindingEntry,
+
     },
     data() {
 
@@ -960,7 +974,7 @@ export default {
             this.isLoading = true
 
             this.update_setting('binding_name', value, (res) => {
-                
+
 
                 this.$refs.toast.showToast("Binding changed.", 4, true)
                 this.settingsChanged = true
@@ -1103,6 +1117,7 @@ export default {
                         newItem = item
                         newItem.category = catkey // add new props to items
                         newItem.language = langkey // add new props to items
+                        newItem.full_path = langkey + '/' + catkey + '/' + item.name // add new props to items
                         return newItem
                     })
 
@@ -1159,8 +1174,9 @@ export default {
         this.isLoading = false
         this.diskUsage = await this.api_get_req("disk_usage")
         this.ramUsage = await this.api_get_req("ram_usage")
-        console.log('ran', this.ramUsage)
+
         this.isMounted = true
+        this.mountedPersonalities
 
     },
     computed: {
@@ -1225,6 +1241,29 @@ export default {
                 return defaultPersonalityImgPlaceholder
             }
         },
+        mountedPersonalities() {
+            if (!this.isMounted) {
+                return []
+            }
+            let mountedPersArr = []
+            if (this.configFile.personalities.length > 0) {
+
+                for (let i = 0; i < this.configFile.personalities.length; i++) {
+                    const full_path_item = this.configFile.personalities[i]
+
+                    const index = this.$refs.personalitiesZoo.findIndex(item => item.personality.full_path == full_path_item)
+                    if (index) {
+
+                        const pers = this.$refs.personalitiesZoo[index]
+                        mountedPersArr.push(pers)
+                    }
+                }
+
+            }
+            console.log('mountedPers', mountedPersArr)
+
+            return mountedPersArr
+        }
 
     },
     watch: {
