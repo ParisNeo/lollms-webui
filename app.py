@@ -728,8 +728,12 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.config["personalities"].remove(f"{language}/{category}/{name}")
             if self.config["active_personality_id"]>=index:
                 self.config["active_personality_id"]=0
-            self.personalities = self.process.rebuild_personalities()
-            self.personality = self.personalities[self.config["active_personality_id"]]
+            if len(self.config["personalities"])>0:
+                self.personalities = self.process.rebuild_personalities()
+                self.personality = self.personalities[self.config["active_personality_id"]]
+            else:
+                self.personalities = []
+                self.personality = None
             self.apply_settings()
             return jsonify({
                         "status": True,

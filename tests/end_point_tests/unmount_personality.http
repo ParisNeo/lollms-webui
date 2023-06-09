@@ -4,5 +4,5 @@ Content-Type: application/json
 {
     "language": "english",
     "category": "generic",
-    "name": "lollms"
+    "name": "gpt4all"
 }
