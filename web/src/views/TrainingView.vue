@@ -1,5 +1,5 @@
 <template>
-    <div class="container overflow-y-scroll flex flex-col no-scrollbar shadow-lg p-10 pt-0">
+    <div class="container overflow-y-scroll flex flex-col no-scrollbar shadow-lg p-10 pt-2 bg-bg-light-tone dark:bg-bg-dark-tone">
       <form @submit.prevent="submitForm" class="max-w-md mx-auto">
         <!-- Model/Tokenizer -->
         <div class="mb-4">

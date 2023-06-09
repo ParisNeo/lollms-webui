@@ -1,6 +1,6 @@
 <template>
-    <div class="container mx-auto p-4">
-      <h1 class="text-3xl font-bold mb-4">Help Page</h1>
+    <div class="container mx-auto p-4 bg-bg-light-tone dark:bg-bg-dark-tone  shadow-lg">
+      
       <div class="mb-8">
         <h2 class="text-2xl font-bold mb-2">Frequently Asked Questions</h2>
         <ul class="list-disc pl-4">
@@ -13,13 +13,13 @@
       <div>
         <h2 class="text-2xl font-bold mb-2">Contact Us</h2>
         <p class="mb-4">If you have any further questions or need assistance, feel free to reach out to us.</p>
-        <p>Discord link: <a href="https://discord.gg/C73K7hjy">https://discord.gg/C73K7hjy</a></p>
+        <p>Discord link: <a class="text-blue-500 hover:text-blue-400 duration-150" href="https://discord.gg/C73K7hjy">https://discord.gg/C73K7hjy</a></p>
       </div>
       <div class="mt-8">
         <h2 class="text-2xl font-bold mb-2">Credits</h2>
-        <p class="mb-4">This project is developed by <span class="font-bold">ParisNeo</span> With help from the community..</p>
+        <p class="mb-4">This project is developed by <span class="font-bold">ParisNeo</span> With help from the community.</p>
         <p class="mb-4"><span class="font-bold"><a href="https://github.com/ParisNeo/lollms-webui/graphs/contributors">Check out the full list of developers here and show them some love.</a></span></p>
-        <p>Check out the project on <a class="text-blue-500" :href="githubLink" target="_blank" rel="noopener noreferrer">GitHub</a>.</p>
+        <p>Check out the project on <a class="text-blue-500 hover:text-blue-400 duration-150" :href="githubLink" target="_blank" rel="noopener noreferrer">GitHub</a>.</p>
       </div>
     </div>
   </template>
