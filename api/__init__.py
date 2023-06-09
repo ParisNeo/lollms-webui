@@ -12,8 +12,9 @@ from api.db import DiscussionsDB
 from api.helpers import compare_lists
 from pathlib import Path
 import importlib
-from lollms import AIPersonality, lollms_path, MSG_TYPE
+from lollms import AIPersonality, MSG_TYPE
 from lollms.binding import BindingConfig
+from lollms.paths import lollms_path, lollms_personal_configuration_path, lollms_personal_path, lollms_personal_models_path, lollms_bindings_zoo_path, lollms_personalities_zoo_path, lollms_default_cfg_path
 import multiprocessing as mp
 import threading
 import time
@@ -91,7 +92,7 @@ class ModelProcess:
         self.set_config_queue = mp.Queue(maxsize=1)
         self.set_config_result_queue = mp.Queue(maxsize=1)
 
-        self.models_path = Path('models')
+        self.models_path = lollms_personal_models_path
 
         self.process = None
         # Create synchronization objects
@@ -222,7 +223,7 @@ class ModelProcess:
             self.binding = self.load_binding(self.config["binding_name"], install=True)
             print("Binding loaded successfully")
             try:
-                model_file = self.models_path/self.config["binding_name"]/self.config["model_name"]
+                model_file = self.config.models_path/self.config["binding_name"]/self.config["model_name"]
                 print(f"Loading model : {model_file}")
                 self.model = self.binding(self.config)
                 self.model_ready.value = 1
