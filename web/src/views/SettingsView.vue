@@ -960,21 +960,20 @@ export default {
             this.isLoading = true
 
             this.update_setting('binding_name', value, (res) => {
-                this.refresh();
+                
 
                 this.$refs.toast.showToast("Binding changed.", 4, true)
                 this.settingsChanged = true
                 this.isLoading = false
-                nextTick(() => {
-                    feather.replace()
 
-                })
                 // If binding changes then reset model
                 this.update_model(null)
                 this.configFile.model_name = null
 
-                this.api_get_req("disk_usage").then(response => {
-                    this.diskUsage = response
+                this.refresh();
+                nextTick(() => {
+                    feather.replace()
+
                 })
             })
 
