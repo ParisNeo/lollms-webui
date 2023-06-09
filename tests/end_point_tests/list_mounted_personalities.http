@@ -1,0 +1,5 @@
+POST http://localhost:9600/list_mounted_personalities
+Content-Type: application/json
+
+{
+}

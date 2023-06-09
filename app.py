@@ -89,6 +89,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint("/add_reference_to_local_model", "add_reference_to_local_model", self.add_reference_to_local_model, methods=["POST"])
         
         self.add_endpoint("/send_file", "send_file", self.send_file, methods=["POST"])
+        
+        self.add_endpoint("/list_mounted_personalities", "list_mounted_personalities", self.list_mounted_personalities, methods=["POST"])
         self.add_endpoint("/mount_personality", "mount_personality", self.mount_personality, methods=["POST"])
         self.add_endpoint("/unmount_personality", "unmount_personality", self.unmount_personality, methods=["POST"])
         self.add_endpoint("/select_personality", "select_personality", self.select_personality, methods=["POST"])
@@ -674,6 +676,13 @@ class LoLLMsWebUI(LoLLMsAPPI):
         else:        
             return jsonify({"status": True})         
 
+    def list_mounted_personalities(self):
+        print("- Listing mounted personalities")
+        return jsonify({"status": True,
+                        "personalities":self.config["personalities"],
+                        "active_personality_id":self.config["active_personality_id"]
+                        })         
+
 
     def mount_personality(self):
         print("- Mounting personality")
@@ -705,22 +714,32 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
     def unmount_personality(self):
         print("- Unmounting personality")
-        data = request.get_json()
-        language = data['language']
-        category = data['category']
-        name = data['name']
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
+        language    = data['language']
+        category    = data['category']
+        name        = data['name']
         try:
             index = self.config["personalities"].index(f"{language}/{category}/{name}")
             self.config["personalities"].remove(f"{language}/{category}/{name}")
             if self.config["active_personality_id"]>=index:
                 self.config["active_personality_id"]=0
-            self.personalities = self.process.rebuild_personalities()
-            self.personality = self.personalities[self.config["active_personality_id"]]
+            if len(self.config["personalities"])>0:
+                self.personalities = self.process.rebuild_personalities()
+                self.personality = self.personalities[self.config["active_personality_id"]]
+            else:
+                self.personalities = []
+                self.personality = None
             self.apply_settings()
-            return jsonify({"status": True,
-                            "personalities":self.config["personalities"],
-                            "active_personality_id":self.config["active_personality_id"]
-                            })         
+            return jsonify({
+                        "status": True,
+                        "personalities":self.config["personalities"],
+                        "active_personality_id":self.config["active_personality_id"]
+                        })         
         except:
             return jsonify({"status": False, "error":"Couldn't unmount personality"})         
             
