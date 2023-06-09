@@ -690,14 +690,15 @@ class LoLLMsWebUI(LoLLMsAPPI):
         package_path = f"{language}/{category}/{name}"
         package_full_path = lollms_path/"personalities_zoo"/package_path
         config_file = package_full_path / "config.yaml"
-        if not config_file.exists():
-            self.config["personalities"].append()
+        if config_file.exists():
+            self.config["personalities"].append(package_path)
             self.personalities = self.process.rebuild_personalities()
             self.personality = self.personalities[self.config["active_personality_id"]]
             self.apply_settings()
             return jsonify({"status": True})         
         else:
-            return jsonify({"status": False, "error":"Personality not found"})         
+            pth = str(config_file).replace('\\','/')
+            return jsonify({"status": False, "error":f"Personality not found @ {pth}"})         
 
     def unmount_personality(self):
         print("- Unmounting personality")
