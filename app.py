@@ -676,7 +676,13 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
 
     def mount_personality(self):
-        data = request.get_json()
+        print("- Mounting personality")
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
         language = data['language']
         category = data['category']
         name = data['name']
@@ -694,6 +700,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return jsonify({"status": False, "error":"Personality not found"})         
 
     def unmount_personality(self):
+        print("- Unmounting personality")
         data = request.get_json()
         language = data['language']
         category = data['category']
