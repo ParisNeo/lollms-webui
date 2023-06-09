@@ -1,5 +1,5 @@
 <template>
-  <div class=" break-all w-full">
+  <div class=" break-all ">
     <div v-html="renderedMarkdown" class=""></div>
   </div>
 </template>
@@ -32,36 +32,30 @@ const markdownIt = new MarkdownIt('commonmark', {
 
 
         return (
-          '<div class="hljs language-html break-all whitespace-pre  p-2 rounded-lg shadow-sm ">' +
+          '<div class="bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel  p-2 rounded-lg shadow-sm ">' +
           languageCapital +
 
-          '<pre class="break-all whitespace-pre p-1 overflow-x-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary ">' +
+          '<pre class=" hljs  p-1 rounded-md  break-all  grid grid-cols-1 ">' +
 
-          '<code>' +
+          '<code class="overflow-x-auto break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary ">' +
           hljs.highlightAuto(str).value +
           '</code></pre>' + '</div>'
         );
 
       } catch (__) { }
     }
-    // return (
-    //   '<pre class="hljs p-4 overflow-x-auto rounded-lg shadow-sm scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">' +
-    //   '<code>' +
-    //   markdownIt.utils.escapeHtml(str) +
-    //   '</code></pre>'
-    // );
-
 
     return (
-      '<div class="hljs language-html break-all whitespace-pre  p-2 rounded-lg shadow-sm ">' +
+      '<div class="bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel  p-2 rounded-lg shadow-sm ">' +
       languageCapital +
 
-      '<pre class="break-all whitespace-pre p-1 overflow-x-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary ">' +
+      '<pre class=" hljs  p-1 rounded-md  break-all  grid grid-cols-1 ">' +
 
-      '<code>' +
+      '<code class="overflow-x-auto break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary ">' +
       markdownIt.utils.escapeHtml(str) +
       '</code></pre>' + '</div>'
     );
+
   }
 }).use(emoji);
 
@@ -116,4 +110,4 @@ export default {
 };
 </script>
   
-<style></style>
+<style type='text/css'></style>
