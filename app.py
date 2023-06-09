@@ -676,9 +676,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
 
     def mount_personality(self):
-        language = request.files['language']
-        category = request.files['category']
-        name = request.files['name']
+        data = request.get_json()
+        language = data['language']
+        category = data['category']
+        name = data['name']
 
         package_path = f"{language}/{category}/{name}"
         package_full_path = lollms_path/"personalities_zoo"/package_path
@@ -693,9 +694,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return jsonify({"status": False, "error":"Personality not found"})         
 
     def unmount_personality(self):
-        language = request.files['language']
-        category = request.files['category']
-        name = request.files['name']
+        data = request.get_json()
+        language = data['language']
+        category = data['category']
+        name = data['name']
         try:
             index = self.config["personalities"].index(f"{language}/{category}/{name}")
             self.config["personalities"].remove(f"{language}/{category}/{name}")
