@@ -1,14 +1,14 @@
 <template>
     <div
-        class="group rounded-lg m-2 shadow-lg hover:border-primary dark:hover:border-primary hover:border-solid hover:border-2 border-2 border-transparent even:bg-bg-light-discussion-odd dark:even:bg-bg-dark-discussion-odd flex-row p-4 pb-2">
-        <div class="flex flex-row flex-grow gap-2">
-            <div class="flex-shrink-0">
+        class="group rounded-lg m-2 shadow-lg hover:border-primary dark:hover:border-primary hover:border-solid hover:border-2 border-2 border-transparent even:bg-bg-light-discussion-odd dark:even:bg-bg-dark-discussion-odd flex flex-col flex-grow flex-wrap overflow-x-hidden p-4 pb-2">
+        <div class="flex flex-row  gap-2 ">
+            <div class="flex-shrink-0 ">
                 <!-- AVATAR -->
                 <img :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-full object-fill text-red-700">
 
             </div>
 
-            <div class="flex flex-col flex-grow ">
+            <div class="flex flex-col w-full flex-grow-0 ">
                 <div class="flex flex-row flex-grow items-start ">
                     <!-- SENDER NAME -->
                     <div class="flex ">
@@ -19,7 +19,7 @@
 
                     </div>
                     <!-- MESSAGE CONTROLS -->
-                    <div class="flex-row justify-end">
+                    <div class="flex-row justify-end mx-2">
                         <div class="invisible group-hover:visible flex flex-row ">
                             <!-- MESSAGE CONTROLS -->
                             <!-- EDIT CONFIRMATION -->
@@ -81,9 +81,9 @@
                     </div>
                 </div>
 
-                <div >
+                <div class="overflow-x-auto w-full " >
                     <!-- MESSAGE CONTENT -->
-                    <MarkdownRenderer ref="mdRender"  v-if="!editMsgMode" :markdown-text="message.content">
+                    <MarkdownRenderer ref="mdRender"  v-if="!editMsgMode" :markdown-text="message.content" >
                     </MarkdownRenderer>
                     <textarea v-if="editMsgMode" ref="mdTextarea" :rows="4"
                         class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
