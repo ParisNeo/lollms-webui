@@ -1,0 +1,8 @@
+POST http://localhost:9600/mount_personality
+Content-Type: application/json
+
+{
+    "language": "english",
+    "category": "generic",
+    "name":     "gpt4all"
+}
