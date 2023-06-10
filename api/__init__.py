@@ -7,6 +7,7 @@
 # Description   : 
 # A simple api to communicate with lollms-webui and its models.
 ######
+from flask import request
 from datetime import datetime
 from api.db import DiscussionsDB
 from api.helpers import compare_lists
@@ -199,7 +200,7 @@ class ModelProcess:
     def cancel_generation(self):
         self.completion_signal.set()
         self.cancel_queue.put(('cancel',))
-        print("Canel request received")
+        ASCIIColors.print(ASCIIColors.color_red,"Canel request received")
 
     def clear_queue(self):
         self.clear_queue_queue.put(('clear_queue',))
@@ -498,25 +499,26 @@ class LoLLMsAPPI():
 
         # This is used to keep track of messages 
         self.full_message_list = []
-        
+        self.current_room_id = None
         # =========================================================================================
         # Socket IO stuff    
         # =========================================================================================
         @socketio.on('connect')
         def connect():
-            ASCIIColors.print(ASCIIColors.color_green,'Client connected')
+            ASCIIColors.print(ASCIIColors.color_green,f'Client {request.sid} connected')
 
         @socketio.on('disconnect')
         def disconnect():
-            ASCIIColors.print(ASCIIColors.color_red,'Client disconnected')
+            ASCIIColors.print(ASCIIColors.color_red,f'Client {request.sid} disconnected')
 
         @socketio.on('install_model')
         def install_model(data):
+            room_id = request.sid 
             def install_model_():
                 print("Install model triggered")
                 model_path = data["path"]
                 progress = 0
-                installation_dir = Path(f'./models/{self.config["binding_name"]}/')
+                installation_dir = self.lollms_paths.personal_models_path/self.config["binding_name"]
                 filename = Path(model_path).name
                 installation_path = installation_dir / filename
                 print("Model install requested")
@@ -524,18 +526,18 @@ class LoLLMsAPPI():
 
                 if installation_path.exists():
                     print("Error: Model already exists")
-                    socketio.emit('install_progress',{'status': 'failed', 'error': 'model already exists'})
+                    socketio.emit('install_progress',{'status': 'failed', 'error': 'model already exists'}, room=room_id)
                 
-                socketio.emit('install_progress',{'status': 'progress', 'progress': progress})
+                socketio.emit('install_progress',{'status': 'progress', 'progress': progress}, room=room_id)
                 
                 def callback(progress):
-                    socketio.emit('install_progress',{'status': 'progress', 'progress': progress})
+                    socketio.emit('install_progress',{'status': 'progress', 'progress': progress}, room=room_id)
                     
                 if hasattr(self.binding, "download_model"):
                     self.binding.download_model(model_path, installation_path, callback)
                 else:
                     self.download_file(model_path, installation_path, callback)
-                socketio.emit('install_progress',{'status': 'succeeded', 'error': ''})
+                socketio.emit('install_progress',{'status': 'succeeded', 'error': ''}, room=room_id)
             tpe = threading.Thread(target=install_model_, args=())
             tpe.start()
             
@@ -543,20 +545,21 @@ class LoLLMsAPPI():
         @socketio.on('uninstall_model')
         def uninstall_model(data):
             model_path = data['path']
-            installation_dir = Path(f'./models/{self.config["binding_name"]}/')
+            installation_dir = self.lollms_paths.personal_models_path/self.config["binding_name"]
             filename = Path(model_path).name
             installation_path = installation_dir / filename
 
             if not installation_path.exists():
-                socketio.emit('install_progress',{'status': 'failed', 'error': 'The model does not exist'})
+                socketio.emit('install_progress',{'status': 'failed', 'error': 'The model does not exist'}, room=request.sid)
 
             installation_path.unlink()
-            socketio.emit('install_progress',{'status': 'succeeded', 'error': ''})
+            socketio.emit('install_progress',{'status': 'succeeded', 'error': ''}, room=request.sid)
             
 
         
         @socketio.on('generate_msg')
         def generate_msg(data):
+            self.current_room_id = request.sid
             if self.process.model_ready.value==1:
                 if self.current_discussion is None:
                     if self.db.does_last_discussion_have_messages():
@@ -584,7 +587,7 @@ class LoLLMsAPPI():
                             "message":"",
                             "user_message_id": self.current_user_message_id,
                             "ai_message_id": self.current_ai_message_id,
-                        }
+                        }, room=request.sid
                 )
 
         @socketio.on('generate_msg_from')
@@ -754,7 +757,7 @@ class LoLLMsAPPI():
                                             'ai_message_id':self.current_ai_message_id, 
                                             'discussion_id':self.current_discussion.discussion_id,
                                             'message_type': message_type.value
-                                        }
+                                        }, room=self.current_room_id
                                 )
         if self.cancel_gen:
             print("Generation canceled")
@@ -782,7 +785,7 @@ class LoLLMsAPPI():
                         "message":message,#markdown.markdown(message),
                         "user_message_id": self.current_user_message_id,
                         "ai_message_id": self.current_ai_message_id,
-                    }
+                    }, room=self.current_room_id
             )
 
             # prepare query and reception
@@ -808,7 +811,7 @@ class LoLLMsAPPI():
                                             'data': self.bot_says, 
                                             'ai_message_id':self.current_ai_message_id, 
                                             'parent':self.current_user_message_id, 'discussion_id':self.current_discussion.discussion_id
-                                        }
+                                        }, room=self.current_room_id
                                 )
 
             self.current_discussion.update_message(self.current_ai_message_id, self.bot_says)
