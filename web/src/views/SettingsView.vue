@@ -737,28 +737,28 @@ export default {
                 this.$refs.toast.showToast("Loading... please wait", 4, false)
             }
             if (pers.personality) {
-                
-                    
 
-                    this.settingsChanged = true
-                    
-                    const res = this.update_setting('personality_folder', pers.personality.folder, () => {
-                        
-                        this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
 
-                        console.log('selecting',pers)
-                        this.mountPersonality(pers)
-                        //this.configFile.personalities[configFile.active_personality_id] = pers.personality.language + "/" + pers.personality.category + "/" + pers.personality.name
-                      if(!pers.isMounted){
-                       
-                       
-                    //   }else{
-                    //     console.log('elsing')
-                    //     this.refresh()
-                      }
-                    
-                    })
-                
+
+                this.settingsChanged = true
+
+                const res = this.update_setting('personality_folder', pers.personality.folder, () => {
+
+                    this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
+
+                    console.log('selecting', pers)
+                    this.mountPersonality(pers)
+                    //this.configFile.personalities[configFile.active_personality_id] = pers.personality.language + "/" + pers.personality.category + "/" + pers.personality.name
+                    if (!pers.isMounted) {
+
+
+                        //   }else{
+                        //     console.log('elsing')
+                        //     this.refresh()
+                    }
+
+                })
+
                 nextTick(() => {
                     feather.replace()
 
@@ -979,7 +979,7 @@ export default {
             axios.post('/update_setting', obj).then((res) => {
 
                 if (res) {
-                    console.log('update_setting',res)
+                    console.log('update_setting', res)
                     if (next !== undefined) {
 
                         next(res)
@@ -1222,23 +1222,16 @@ export default {
                 return
             }
 
-
-
-
-
-
-
-
         },
         async mountPersonality(pers) {
-            console.log('mount pers',pers)
+            console.log('mount pers', pers)
             if (!pers) { return }
-            console.log('sss',pers)
-             if(this.configFile.personalities.includes(pers.personality.full_path)){
+            console.log('sss', pers)
+            if (this.configFile.personalities.includes(pers.personality.full_path)) {
                 this.$refs.toast.showToast("Personality already mounted", 4, false)
                 return
             }
-            pers.isMounted=true
+            pers.isMounted = true
             const res = await this.mount_personality(pers.personality)
             console.log('ff1', res)
 
@@ -1250,13 +1243,10 @@ export default {
                 this.$refs.toast.showToast("Could not mount personality", 4, false)
             }
 
-
-
-
         },
         async unmountPersonality(pers) {
             if (!pers) { return }
-            pers.isMounted=false
+            pers.isMounted = false
             const res = await this.unmount_personality(pers.personality)
             console.log('ff', res)
 
@@ -1282,7 +1272,7 @@ export default {
                     if (index) {
 
                         const pers = this.$refs.personalitiesZoo[index]
-                        if(pers){
+                        if (pers) {
                             mountedPersArr.push(pers)
 
                         }
