@@ -1,12 +1,12 @@
 <template>
     <div class="container mx-auto p-4 bg-bg-light-tone dark:bg-bg-dark-tone  shadow-lg">
       
-      <div class="mb-8">
+      <div class="mb-8 overflow-y-auto max-h-96 scrollbar">
         <h2 class="text-2xl font-bold mb-2">Frequently Asked Questions</h2>
         <ul class="list-disc pl-4">
           <li v-for="(faq, index) in faqs" :key="index">
             <h3 class="text-xl font-bold mb-1">{{ faq.question }}</h3>
-            <p class="mb-4">{{ faq.answer }}</p>
+            <p class="mb-4" v-html="parseMultiline(faq.answer)"></p>
           </li>
         </ul>
       </div>
@@ -53,10 +53,39 @@
             console.error('Error loading FAQs:', error);
           });
       },
+      parseMultiline(text) {
+        // Replace newline characters with HTML line breaks
+        return text.replace(/\n/g, '<br>');
+      },
     },
   };
   </script>
   
   <style scoped>
+  .scrollbar {
+    /* Add your scrollbar container styles here */
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
+    white-space: pre-wrap; /* Preserve line breaks */
+    overflow-wrap: break-word; /* Break words if necessary */
+  }
+  
+  .scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .scrollbar::-webkit-scrollbar-track {
+    background-color: var(--scrollbar-track-color);
+  }
+  
+  .scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-color);
+    border-radius: 4px;
+  }
+  
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover-color);
+  }
+  
   </style>
   
