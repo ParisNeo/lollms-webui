@@ -150,7 +150,7 @@ class ModelProcess:
                 module = importlib.util.module_from_spec(module_spec)
                 module_spec.loader.exec_module(module)
                 if hasattr(module, "Install"):
-                    module.Install(self)
+                    module.Install(self.config)
 
         # define the full absolute path to the module
         absolute_path = binding_path.resolve()
