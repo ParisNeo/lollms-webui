@@ -328,7 +328,7 @@
                             <div class="flex -space-x-4 items-center" v-if="mountedPersArr.length > 0">
 
                                 <div class="relative  hover:-translate-y-2 duration-300 hover:z-10 shrink-0 "
-                                    v-for="(item, index) in mountedPersArr" :key="index">
+                                    v-for="(item, index) in mountedPersArr" :key="index + '-'+item.name">
                                     <div class="group ">
 
                                         <img :src="item.$refs.imgElement.src"
@@ -337,7 +337,7 @@
                                         <span
                                             class="hidden group-hover:block top-0 left-7 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
                                             title="Unmount personality" @click.stop="unmountPersonality(item)">
-                                            <!-- CLOSE BUTTON -->
+                                            <!-- UNMOUNT BUTTON -->
                                             <svg aria-hidden="true" class="w-4 h-4 text-red-600 hover:text-red-500 "
                                                 fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                                 <path fill-rule="evenodd"
