@@ -1,9 +1,9 @@
 # LoLLMS Web UI
 
-![GitHub license](https://img.shields.io/github/license/nomic-ai/lollms-webui)
-![GitHub issues](https://img.shields.io/github/issues/nomic-ai/lollms-webui)
-![GitHub stars](https://img.shields.io/github/stars/nomic-ai/lollms-webui)
-![GitHub forks](https://img.shields.io/github/forks/nomic-ai/lollms-webui)
+![GitHub license](https://img.shields.io/github/license/ParisNeo/lollms-webui)
+![GitHub issues](https://img.shields.io/github/issues/ParisNeo/lollms-webui)
+![GitHub stars](https://img.shields.io/github/stars/ParisNeo/lollms-webui)
+![GitHub forks](https://img.shields.io/github/forks/ParisNeo/lollms-webui)
 [![Discord](https://img.shields.io/discord/1092918764925882418?color=7289da&label=Discord&logo=discord&logoColor=ffffff)](https://discord.gg/4rR282WJb6)
 [![Follow me on Twitter](https://img.shields.io/twitter/follow/SpaceNerduino?style=social)](https://twitter.com/SpaceNerduino)
 [![Follow Me on YouTube](https://img.shields.io/badge/Follow%20Me%20on-YouTube-red?style=flat&logo=youtube)](https://www.youtube.com/user/Parisneo)
