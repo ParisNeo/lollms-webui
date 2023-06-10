@@ -278,13 +278,13 @@ class ModelProcess:
             try:
                 print(f" {personality}")
                 personality_path = self.lollms_paths.personalities_zoo_path/f"{personality}"
-                personality = AIPersonality(self.lollms_paths, personality_path, run_scripts=True)
+                personality = AIPersonality(self.lollms_paths, personality_path, run_scripts=True, model=self.model)
                 self.mounted_personalities.append(personality)
             except Exception as ex:
                 print(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
                 if self.config["debug"]:
                     print(ex)
-                personality = AIPersonality(self.lollms_paths)
+                personality = AIPersonality(self.lollms_paths, model=self.model)
                 failed_personalities.append(personality_path)
                 self._set_config_result['errors'].append(f"couldn't build personalities:{ex}")
             
@@ -336,10 +336,11 @@ class ModelProcess:
                                 if self.personality.processor_cfg is not None:
                                     if "custom_workflow" in self.personality.processor_cfg:
                                         if self.personality.processor_cfg["custom_workflow"]:
-                                            print("Running workflow")
+                                            ASCIIColors.print(ASCIIColors.color_green,"Running workflow")
                                             self.completion_signal.clear()
                                             self.start_signal.set()
-                                            output = self.personality.processor.run_workflow(self._generate, command[1], command[0], self._callback)
+
+                                            output = self.personality.processor.run_workflow( command[1], command[0], self._callback)
                                             self._callback(output, 0)
                                             self.completion_signal.set()
                                             self.start_signal.clear()
@@ -587,7 +588,7 @@ class LoLLMsAPPI():
                             "message":"",
                             "user_message_id": self.current_user_message_id,
                             "ai_message_id": self.current_ai_message_id,
-                        }, room=request.sid
+                        }, room=self.current_room_id
                 )
 
         @socketio.on('generate_msg_from')
@@ -750,6 +751,8 @@ class LoLLMsAPPI():
         """
         if message_type == MSG_TYPE.MSG_TYPE_CHUNK:
             self.bot_says += chunk
+        if message_type == MSG_TYPE.MSG_TYPE_FULL:
+            self.bot_says = chunk
         if message_type.value < 2:
             self.socketio.emit('message', {
                                             'data': self.bot_says, 
