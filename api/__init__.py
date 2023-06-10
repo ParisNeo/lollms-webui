@@ -12,8 +12,9 @@ from api.db import DiscussionsDB
 from api.helpers import compare_lists
 from pathlib import Path
 import importlib
-from lollms import AIPersonality, lollms_path, MSG_TYPE
+from lollms import AIPersonality, MSG_TYPE
 from lollms.binding import BindingConfig
+from lollms.paths import lollms_path, lollms_personal_configuration_path, lollms_personal_path, lollms_personal_models_path, lollms_bindings_zoo_path, lollms_personalities_zoo_path, lollms_default_cfg_path
 import multiprocessing as mp
 import threading
 import time
@@ -91,7 +92,7 @@ class ModelProcess:
         self.set_config_queue = mp.Queue(maxsize=1)
         self.set_config_result_queue = mp.Queue(maxsize=1)
 
-        self.models_path = Path('models')
+        self.models_path = lollms_personal_models_path
 
         self.process = None
         # Create synchronization objects
@@ -149,7 +150,7 @@ class ModelProcess:
                 module = importlib.util.module_from_spec(module_spec)
                 module_spec.loader.exec_module(module)
                 if hasattr(module, "Install"):
-                    module.Install(self)
+                    module.Install(self.config)
 
         # define the full absolute path to the module
         absolute_path = binding_path.resolve()
@@ -222,7 +223,7 @@ class ModelProcess:
             self.binding = self.load_binding(self.config["binding_name"], install=True)
             print("Binding loaded successfully")
             try:
-                model_file = self.models_path/self.config["binding_name"]/self.config["model_name"]
+                model_file = self.config.models_path/self.config["binding_name"]/self.config["model_name"]
                 print(f"Loading model : {model_file}")
                 self.model = self.binding(self.config)
                 self.model_ready.value = 1
@@ -252,7 +253,7 @@ class ModelProcess:
         for personality in self.config['personalities']:
             try:
                 print(f" {personality}")
-                personality_path = lollms_path/f"personalities_zoo/{personality}"
+                personality_path = lollms_personalities_zoo_path/f"{personality}"
                 personality = AIPersonality(personality_path, run_scripts=False)
                 mounted_personalities.append(personality)
             except Exception as ex:
@@ -293,6 +294,7 @@ class ModelProcess:
             self._set_config_result['personalities_status'] ='semi_failed'
             
         self.personality = self.mounted_personalities[self.config['active_personality_id']]
+        self.mounted_personalities = self.config["personalities"]
         print("Personality set successfully")
        
     def _run(self):     
@@ -347,6 +349,7 @@ class ModelProcess:
                             self.start_signal.clear()
                             print("Finished executing the generation")
             except Exception as ex:
+                print("Couldn't start generation")
                 print(ex)
             time.sleep(1)
     def _generate(self, prompt, n_predict=50, callback=None):
@@ -464,10 +467,9 @@ class LoLLMsAPPI():
         #Create and launch the process
         self.process = ModelProcess(config)
         self.config = config
-        
         self.binding = self.process.rebuild_binding(self.config)
-        self.personalities = self.process.rebuild_personalities()
-        self.personality = self.personalities[self.config["active_personality_id"]]
+        self.mounted_personalities = self.process.rebuild_personalities()
+        self.personality = self.mounted_personalities[self.config["active_personality_id"]]
         if config["debug"]:
             print(print(f"{self.personality}"))
         self.config_file_path = config_file_path

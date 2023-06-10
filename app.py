@@ -26,6 +26,7 @@ import subprocess
 import signal
 from lollms import AIPersonality, lollms_path, MSG_TYPE
 from lollms.console import ASCIIColors
+from lollms.paths import lollms_default_cfg_path, lollms_bindings_zoo_path, lollms_personalities_zoo_path, lollms_personal_path, lollms_personal_configuration_path, lollms_personal_models_path
 from api.db import DiscussionsDB, Discussion
 from api.helpers import compare_lists
 from flask import (
@@ -140,6 +141,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint("/personalities/<path:filename>", "serve_personalities", self.serve_personalities, methods=["GET"])
         self.add_endpoint("/outputs/<path:filename>", "serve_outputs", self.serve_outputs, methods=["GET"])
         self.add_endpoint("/data/<path:filename>", "serve_data", self.serve_data, methods=["GET"])
+        self.add_endpoint("/help/<path:filename>", "serve_help", self.serve_help, methods=["GET"])
+        
         self.add_endpoint("/uploads/<path:filename>", "serve_uploads", self.serve_uploads, methods=["GET"])
 
         
@@ -292,7 +295,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         return jsonify({"personality":self.personality.as_dict()})
     
     def get_all_personalities(self):
-        personalities_folder = lollms_path/"personalities_zoo"
+        personalities_folder = lollms_personalities_zoo_path
         personalities = {}
         for language_folder in personalities_folder.iterdir():
             lang = language_folder.stem
@@ -429,9 +432,16 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         elif setting_name== "personality_folder":
             self.personality_name=data['setting_value']
-            personality_fn = lollms_path/f"personalities_zoo/{self.personality_language}/{self.personality_category}/{self.personality_name}"
-            self.personality.load_personality(personality_fn)
-
+            if len(self.config["personalities"])>0:
+                if self.config["active_personality_id"]<len(self.config["personalities"]):
+                    self.config["personalities"][self.config["active_personality_id"]] = f"{self.personality_language}/{self.personality_category}/{self.personality_name}"
+                else:
+                    self.config["active_personality_id"] = 0
+                    self.config["personalities"][self.config["active_personality_id"]] = f"{self.personality_language}/{self.personality_category}/{self.personality_name}"
+                personality_fn = lollms_personalities_zoo_path/self.config["personalities"][self.config["active_personality_id"]]
+                self.personality.load_personality(personality_fn)
+            else:
+                self.config["personalities"].append(f"{self.personality_language}/{self.personality_category}/{self.personality_name}")
         elif setting_name== "override_personality_model_parameters":
             self.config["override_personality_model_parameters"]=bool(data['setting_value'])
             
@@ -493,7 +503,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         current_drive = Path.cwd().anchor
         drive_disk_usage = psutil.disk_usage(current_drive)
         try:
-            models_folder_disk_usage = psutil.disk_usage(f'./models/{self.config["binding_name"]}')
+            models_folder_disk_usage = psutil.disk_usage(lollms_personal_models_path/f'{self.config["binding_name"]}')
             return jsonify({
                 "total_space":drive_disk_usage.total,
                 "available_space":drive_disk_usage.free,
@@ -511,7 +521,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 })
 
     def list_bindings(self):
-        bindings_dir = lollms_path/'bindings_zoo'  # replace with the actual path to the models folder
+        bindings_dir = lollms_bindings_zoo_path  # replace with the actual path to the models folder
         bindings=[]
         for f in bindings_dir.iterdir():
             card = f/"binding_card.yaml"
@@ -520,7 +530,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     bnd = load_config(card)
                     bnd["folder"]=f.stem
                     icon_path = Path(f"bindings/{f.name}/logo.png")
-                    if Path(lollms_path/f"bindings_zoo/{f.name}/logo.png").exists():
+                    if Path(lollms_bindings_zoo_path/f"{f.name}/logo.png").exists():
                         bnd["icon"]=str(icon_path)
 
                     bindings.append(bnd)
@@ -538,18 +548,18 @@ class LoLLMsWebUI(LoLLMsAPPI):
     
 
     def list_personalities_languages(self):
-        personalities_languages_dir = lollms_path/f'personalities_zoo'  # replace with the actual path to the models folder
+        personalities_languages_dir = lollms_personalities_zoo_path  # replace with the actual path to the models folder
         personalities_languages = [f.stem for f in personalities_languages_dir.iterdir() if f.is_dir()]
         return jsonify(personalities_languages)
 
     def list_personalities_categories(self):
-        personalities_categories_dir = lollms_path/f'personalities_zoo/{self.personality_language}'  # replace with the actual path to the models folder
+        personalities_categories_dir = lollms_personalities_zoo_path/f'{self.personality_language}'  # replace with the actual path to the models folder
         personalities_categories = [f.stem for f in personalities_categories_dir.iterdir() if f.is_dir()]
         return jsonify(personalities_categories)
     
     def list_personalities(self):
         try:
-            personalities_dir = lollms_path/f'personalities_zoo/{self.personality_language}/{self.personality_category}'  # replace with the actual path to the models folder
+            personalities_dir = lollms_personalities_zoo_path/f'{self.personality_language}/{self.personality_category}'  # replace with the actual path to the models folder
             personalities = [f.stem for f in personalities_dir.iterdir() if f.is_dir()]
         except Exception as ex:
             personalities=[]
@@ -617,34 +627,46 @@ class LoLLMsWebUI(LoLLMsAPPI):
         return send_from_directory(path, fn)
     
     def serve_bindings(self, filename):
-        path = str(lollms_path/('bindings_zoo/'+"/".join(filename.split("/")[:-1])))
+        path = str(lollms_bindings_zoo_path/("/".join(filename.split("/")[:-1])))
                             
         fn = filename.split("/")[-1]
         return send_from_directory(path, fn)
 
     def serve_personalities(self, filename):
-        path = str(lollms_path/('personalities_zoo/'+"/".join(filename.split("/")[:-1])))
+        path = str(lollms_personalities_zoo_path/("/".join(filename.split("/")[:-1])))
                             
         fn = filename.split("/")[-1]
         return send_from_directory(path, fn)
 
     def serve_outputs(self, filename):
-        root_dir = os.getcwd()
-        path = os.path.join(root_dir, 'outputs/')+"/".join(filename.split("/")[:-1])
+        root_dir = lollms_personal_path / "outputs"
+        root_dir.mkdir(exist_ok=True, parents=True)
+        path = str(root_dir/"/".join(filename.split("/")[:-1]))
                             
         fn = filename.split("/")[-1]
         return send_from_directory(path, fn)
-    
+
+    def serve_help(self, filename):
+        root_dir = Path(__file__).parent/f"help"
+        root_dir.mkdir(exist_ok=True, parents=True)
+        path = str(root_dir/"/".join(filename.split("/")[:-1]))
+                            
+        fn = filename.split("/")[-1]
+        return send_from_directory(path, fn)
+
     def serve_data(self, filename):
-        root_dir = os.getcwd()
-        path = os.path.join(root_dir, 'data/')+"/".join(filename.split("/")[:-1])
+        root_dir = lollms_personal_path / "data"
+        root_dir.mkdir(exist_ok=True, parents=True)
+        path = str(root_dir/"/".join(filename.split("/")[:-1]))
                             
         fn = filename.split("/")[-1]
         return send_from_directory(path, fn)
 
     def serve_uploads(self, filename):
-        root_dir = os.getcwd()
-        path = os.path.join(root_dir, 'uploads/')+"/".join(filename.split("/")[:-1])
+        root_dir = lollms_personal_path / "uploads"
+        root_dir.mkdir(exist_ok=True, parents=True)
+
+        path = str(root_dir+"/".join(filename.split("/")[:-1]))
                             
         fn = filename.split("/")[-1]
         return send_from_directory(path, fn)
@@ -702,7 +724,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         if config_file.exists():
             self.config["personalities"].append(package_path)
             self.personalities = self.process.rebuild_personalities()
-            self.personality = self.personalities[self.config["active_personality_id"]]
+            self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             self.apply_settings()
             return jsonify({"status": True,
                             "personalities":self.config["personalities"],
@@ -730,7 +752,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 self.config["active_personality_id"]=0
             if len(self.config["personalities"])>0:
                 self.personalities = self.process.rebuild_personalities()
-                self.personality = self.personalities[self.config["active_personality_id"]]
+                self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             else:
                 self.personalities = []
                 self.personality = None
@@ -747,7 +769,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         id = request.files['id']
         if id<len(self.config["personalities"]):
             self.config["active_personality_id"]=id
-            self.personality = self.personalities[self.config["active_personality_id"]]
+            self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             self.apply_settings()
             return jsonify({"status": True})
         else:
@@ -962,7 +984,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     path = f'{server}{filename}'
                 else:
                     path = f'{server}/{filename}'
-                local_path = Path(f'./models/{self.config["binding_name"]}/{filename}')
+                local_path = lollms_personal_models_path/f'{self.config["binding_name"]}/{filename}'
                 is_installed = local_path.exists() or model_type.lower()=="api"
                 models.append({
                     'title': filename,
@@ -1133,16 +1155,16 @@ if __name__ == "__main__":
 
     # The default configuration must be kept unchanged as it is committed to the repository, 
     # so we have to make a copy that is not comitted
-    default_config = load_config(f"configs/config.yaml")
+    default_config = load_config("configs/config.yaml")
 
     if args.config!="local_config":
         args.config = "local_config"
-        if not Path(f"configs/local_config.yaml").exists():
+        if not lollms_personal_configuration_path/f"local_config.yaml".exists():
             print("No local configuration file found. Building from scratch")
-            shutil.copy(f"configs/config.yaml", f"configs/local_config.yaml")
+            shutil.copy(default_config, lollms_personal_configuration_path/f"local_config.yaml")
 
-    config_file_path = f"configs/{args.config}.yaml"
-    config = BindingConfig(config_file_path, Path("./models"))
+    config_file_path = lollms_personal_configuration_path/f"local_config.yaml"
+    config = BindingConfig(config_file_path)
 
     
     if "version" not in config or int(config["version"])<int(default_config["version"]):

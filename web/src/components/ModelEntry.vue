@@ -29,7 +29,7 @@
         <b>Manual download:&nbsp;</b>
         
         <a :href="path" @click.stop class="flex items-center  hover:text-secondary duration-75 active:scale-90"
-          title="Download this manually (faster) and put it in the models/<your binding> folder then refresh">
+          title="Download this manually (faster) and put it in the models/<your binding> folder under your home directory/Documents/lollms folder then refresh">
             
            
           {{ title }}
