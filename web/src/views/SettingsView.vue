@@ -65,55 +65,121 @@
         </div>
 
         <div :class="isLoading ? 'pointer-events-none opacity-30' : ''">
+            <!-- DISK AND RAM USAGE -->
+            <div
+                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                <div class="flex flex-row p-3">
+                    <button @click.stop="sc_collapsed = !sc_collapsed"
+                        class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex flex-row items-center ">
+                        <i data-feather="chevron-right" class="mr-2  flex-shrink-0"></i>
+
+                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            System status</h3>
+                        <div class="mr-2">|</div>
+
+                        <div class=" text-base font-semibold cursor-pointer select-none items-center">
+
+                            <div class="flex gap-2 items-center ">
+                                <svg class="flex-shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                    viewBox="0 0 24 24">
+                                    <path fill="currentColor"
+                                        d="M17 17H7V7h10m4 4V9h-2V7a2 2 0 0 0-2-2h-2V3h-2v2h-2V3H9v2H7c-1.11 0-2 .89-2 2v2H3v2h2v2H3v2h2v2a2 2 0 0 0 2 2h2v2h2v-2h2v2h2v-2h2a2 2 0 0 0 2-2v-2h2v-2h-2v-2m-6 2h-2v-2h2m2-2H9v6h6V9Z" />
+                                </svg>
+                                <h3 class="font-bold font-large text-lg">
+                                    <div>{{ ram_usage }} / {{ ram_total_space }}</div>
+                                </h3>
+                                <i data-feather="hard-drive" class="w-5 h-5 mx-1 flex-shrink-0"></i>
+                                <h3 class="font-bold font-large text-lg">
+                                    <div> {{ disk_binding_models_usage }} / {{ disk_total_space }}</div>
+                                </h3>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+                <div :class="{ 'hidden': sc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+
+                    <div class="mb-2">
+
+                        <label for="disk"
+                            class=" flex items-center gap-1 ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M17 17H7V7h10m4 4V9h-2V7a2 2 0 0 0-2-2h-2V3h-2v2h-2V3H9v2H7c-1.11 0-2 .89-2 2v2H3v2h2v2H3v2h2v2a2 2 0 0 0 2 2h2v2h2v-2h2v2h2v-2h2a2 2 0 0 0 2-2v-2h2v-2h-2v-2m-6 2h-2v-2h2m2-2H9v6h6V9Z" />
+                            </svg>
+                            Ram usage:
+                        </label>
+                        <div class="flex flex-col mx-2">
+                            <div><b>Avaliable space:&nbsp;</b>{{ ram_available_space }}</div>
+                            <div><b>Ram usage:&nbsp;</b> {{ ram_usage }} / {{ ram_total_space }}</div>
+                        </div>
+                        <div class="p-2 ">
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                <div class="bg-blue-600 h-2.5 rounded-full" :style="'width: ' + ram_percent_usage + '%;'">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label for="disk"
+                            class="flex items-center gap-1 ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            <i data-feather="hard-drive" class="w-5 h-5"></i>
+                            Disk usage:
+                        </label>
+                        <div class="flex flex-col mx-2">
+                            <div><b>Avaliable space:&nbsp;</b>{{ disk_available_space }}</div>
+                            <div><b>Disk usage:&nbsp;</b> {{ disk_binding_models_usage }} / {{ disk_total_space }}</div>
+                        </div>
+                        <div class="p-2 ">
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                <div class="bg-blue-600 h-2.5 rounded-full" :style="'width: ' + disk_percent_usage + '%;'">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+            </div>
             <!-- BINDING ZOO -->
             <div
                 class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row p-3">
                     <button @click.stop="bzc_collapsed = !bzc_collapsed"
                         class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex flex-row items-center">
-                        <i data-feather="chevron-right" class="mr-2"></i>
+                        <i data-feather="chevron-right" class="mr-2 flex-shrink-0"></i>
 
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
                             Binding zoo</h3>
-                        <div v-if="configFile.binding" class="mr-2">|</div>
+                        <div v-if="configFile.binding_name" class="mr-2">|</div>
 
-                        <div v-if="configFile.binding"
+                        <div v-if="configFile.binding_name"
                             class=" text-base font-semibold cursor-pointer select-none items-center">
 
                             <div class="flex gap-1 items-center">
-                                    <img :src="imgBinding" class="w-8 h-8 rounded-full object-fill text-blue-700">
-                                    <h3 class="font-bold font-large text-lg">
-                                        {{ configFile.binding }} 
-                                    </h3>
-                                </div>
+                                <img :src="imgBinding" class="w-8 h-8 rounded-full object-fill text-blue-700">
+                                <h3 class="font-bold font-large text-lg line-clamp-1">
+                                    {{ configFile.binding_name }}
+                                </h3>
                             </div>
+                        </div>
                     </button>
                 </div>
                 <div :class="{ 'hidden': bzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
-                    <!-- <div class="mx-2 mb-4">
-                        <label for="binding" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Bindings: ({{ bindingsArr.length }})
-                        </label>
-                        <select id="binding" @change="update_binding($event.target.value)"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                            <option v-for="item in bindingsArr" :selected="item.folder === configFile.binding"
-                                :value="item.folder">
-                                {{ item.name }} by ({{ item.author }})
-                            </option>
-                        </select>
-                    </div> -->
                     <div v-if="bindings.length > 0" class="mb-2">
                         <label for="binding" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Bindings: ({{ bindings.length }})
                         </label>
-                        <div 
-                            class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
+                        <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
                             :class="bzl_collapsed ? '' : 'max-h-96'">
                             <TransitionGroup name="list">
                                 <BindingEntry ref="bindingZoo" v-for="(binding, index) in bindings"
                                     :key="'index-' + index + '-' + binding.folder" :binding="binding"
-                                    :on-selected="onSelectedBinding" :selected="binding.folder === configFile.binding">
+                                    :on-selected="onSelectedBinding" :selected="binding.folder === configFile.binding_name">
                                 </BindingEntry>
                             </TransitionGroup>
                         </div>
@@ -141,24 +207,24 @@
                 <div class="flex flex-row p-3">
                     <button @click.stop="mzc_collapsed = !mzc_collapsed"
                         class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
-                        <i :data-feather="mzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
+                        <i :data-feather="mzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2 flex-shrink-0"></i>
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
                             Models zoo</h3>
                         <div class="flex flex-row items-center">
                             <div v-if="!isModelSelected" class="text-base text-red-600 flex gap-3 items-center mr-2">
-                                <i data-feather="alert-triangle"></i>
+                                <i data-feather="alert-triangle" class="flex-shrink-0"></i>
                                 No model selected!
                             </div>
 
-                            <div v-if="configFile.model" class="mr-2">|</div>
+                            <div v-if="configFile.model_name" class="mr-2">|</div>
 
-                            <div v-if="configFile.model"
+                            <div v-if="configFile.model_name"
                                 class=" text-base font-semibold cursor-pointer select-none items-center">
 
                                 <div class="flex gap-1 items-center">
                                     <img :src="imgModel" class="w-8 h-8 rounded-lg object-fill">
-                                    <h3 class="font-bold font-large text-lg">
-                                        {{ configFile.model }}
+                                    <h3 class="font-bold font-large text-lg line-clamp-1">
+                                        {{ configFile.model_name }}
                                     </h3>
                                 </div>
 
@@ -168,23 +234,7 @@
                     </button>
                 </div>
                 <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
-                    <div class="mb-2">
-                        <label for="disk" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Disk usage:
-                        </label>
-                        <div class="flex flex-col mx-2">
-                            <div><b>Current binding models folder:&nbsp;</b>{{ binding_models_usage }}</div>
-                            <!-- <div><b>Percentage:&nbsp;</b>{{ percent_usage }}</div> -->
-                            <!-- <div><b>Total disk size:&nbsp;</b>{{ total_space }}</div> -->
-                            <div><b>Avaliable space:&nbsp;</b> {{ available_space }} / {{ total_space }}</div>
-                        </div>
-                        <div class="p-2 ">
-                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                                <div class="bg-blue-600 h-2.5 rounded-full" :style="'width: ' + percent_usage + '%;'"></div>
-                            </div>
 
-                        </div>
-                    </div>
                     <div v-if="models.length > 0" class="mb-2">
                         <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Models: ({{ models.length }})
@@ -197,8 +247,8 @@
                                     :path="model.path" :owner="model.owner" :owner_link="model.owner_link"
                                     :license="model.license" :description="model.description"
                                     :is-installed="model.isInstalled" :on-install="onInstall" :on-uninstall="onUninstall"
-                                    :on-selected="onSelected" :selected="model.title === configFile.model" :model="model"
-                                    :model_type="model.model_type" />
+                                    :on-selected="onSelected" :selected="model.title === configFile.model_name"
+                                    :model="model" :model_type="model.model_type" :on-copy="onCopy" />
                             </TransitionGroup>
                         </div>
                     </div>
@@ -225,21 +275,21 @@
                 <div class="flex flex-row p-3">
                     <button @click.stop="pzc_collapsed = !pzc_collapsed"
                         class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
-                        <i :data-feather="pzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2"></i>
+                        <i :data-feather="pzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2 flex-shrink-0"></i>
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
                             Personalities zoo</h3>
-                        <div v-if="configFile.personality" class="mr-2">|</div>
+                        <div v-if="configFile.personalities" class="mr-2">|</div>
 
-                        <div v-if="configFile.personality"
+                        <div v-if="configFile.personalities"
                             class=" text-base font-semibold cursor-pointer select-none items-center">
-                           
+
                             <div class="flex gap-1 items-center">
-                                    <img :src="imgPersonality" class="w-8 h-8 rounded-full object-fill text-red-700">
-                                    <h3 class="font-bold font-large text-lg">
-                                        {{ configFile.personality }} 
-                                    </h3>
-                                </div>
-                        
+                                <img :src="imgPersonality" class="w-8 h-8 rounded-full object-fill text-red-700">
+                                <h3 class="font-bold font-large text-lg line-clamp-1">
+                                    {{ this.configFile.personality_folder }}
+                                </h3>
+                            </div>
+
                         </div>
                     </button>
                 </div>
@@ -251,7 +301,8 @@
                         <select id="persLang" @change="update_setting('personality_language', $event.target.value, refresh)"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                            <option v-for="item in persLangArr" :selected="item === configFile.personality_language">{{ item
+                            <option v-for="item in persLangArr" :selected="item === this.configFile.personality_language">{{
+                                item
                             }}
 
                             </option>
@@ -265,7 +316,8 @@
                         <select id="persCat" @change="update_setting('personality_category', $event.target.value, refresh)"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                            <option v-for="item in persCatgArr" :selected="item === configFile.personality_category">{{ item
+                            <option v-for="item in persCatgArr" :selected="item === this.configFile.personality_category">{{
+                                item
                             }}
 
                             </option>
@@ -289,13 +341,12 @@
                         <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Personalities: ({{ personalitiesFiltered.length }})
                         </label>
-                        <div 
-                            class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
+                        <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
                             :class="pzl_collapsed ? '' : 'max-h-96'">
                             <TransitionGroup name="bounce">
                                 <personality-entry ref="personalitiesZoo" v-for="(pers, index) in personalitiesFiltered"
                                     :key="'index-' + index + '-' + pers.name" :personality="pers"
-                                    :selected="pers.name === configFile.personality && pers.category === configFile.personality_category && pers.language === configFile.personality_language"
+                                    :selected="pers.folder === this.configFile.personality_folder && pers.category === this.configFile.personality_category && pers.language === this.configFile.personality_language"
                                     :on-selected="onPersonalitySelected" />
                             </TransitionGroup>
                         </div>
@@ -550,6 +601,8 @@ import PersonalityViewer from '@/components/PersonalityViewer.vue';
 import PersonalityEntry from "../components/PersonalityEntry.vue";
 import BindingEntry from "../components/BindingEntry.vue";
 import socket from '@/services/websocket.js'
+import defaultModelImgPlaceholder from "../assets/default_model.png"
+import defaultPersonalityImgPlaceholder from "../assets/logo.svg"
 
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
@@ -580,6 +633,7 @@ export default {
             bzc_collapsed: true, // binding zoo
             pc_collapsed: true,
             mc_collapsed: true,
+            sc_collapsed: true, // system status
             // Zoo accordeoon
             mzl_collapsed: false,
             pzl_collapsed: false,
@@ -598,6 +652,7 @@ export default {
             settingsChanged: false,
             isModelSelected: false,
             diskUsage: {},
+            ramUsage: {},
             isMounted: false // Needed to wait for $refs to be rendered
 
 
@@ -613,6 +668,7 @@ export default {
             this.bzc_collapsed = val
             this.pc_collapsed = val
             this.mc_collapsed = val
+            this.sc_collapsed = val
 
         },
         fetchModels() {
@@ -659,15 +715,13 @@ export default {
                 this.$refs.toast.showToast("Loading... please wait", 4, false)
             }
             if (pers.personality) {
-                if (this.configFile.personality != pers.personality.name) {
+                if (this.configFile.personality_folder != pers.personality.folder) {
 
 
                     this.settingsChanged = true
-                    const res = this.update_setting('personality', pers.personality.folder, () => {
+                    const res = this.update_setting('personality_folder', pers.personality.folder, () => {
                         this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
-                        this.configFile.personality = pers.personality.name
-                        this.configFile.personality_category = pers.personality.category
-                        this.configFile.personality_language = pers.personality.language
+                        this.configFile.personalities[configFile.active_personality_id] = pers.personality.language + "/" + pers.personality.category + "/" + pers.personality.name
                     })
                 }
                 nextTick(() => {
@@ -686,9 +740,9 @@ export default {
             if (model_object) {
                 if (model_object.isInstalled) {
 
-                    if (this.configFile.model != model_object.title) {
+                    if (this.configFile.model_name != model_object.title) {
                         this.update_model(model_object.title)
-                        this.configFile.model = model_object.title
+                        this.configFile.model_name = model_object.title
                         this.$refs.toast.showToast("Selected model:\n" + model_object.title, 4, true)
                         this.settingsChanged = true
                         this.isModelSelected = true
@@ -705,6 +759,18 @@ export default {
             }
 
         },
+        onCopy(modelEntry) {
+            let content
+            if (!modelEntry.model.isCustomModel) {
+                content = `Model name: ${modelEntry.title}\nFile size: ${modelEntry.fileSize}\nDownload: ${modelEntry.path}\nLicense: ${modelEntry.license}\nOwner: ${modelEntry.owner}\nWebsite: ${modelEntry.owner_link}\nDescription: ${modelEntry.description}`
+            } else {
+                content = `Model name: ${modelEntry.title}\nFile size: ${modelEntry.fileSize}\nManually downloaded model `
+            }
+
+            this.$refs.toast.showToast("Copied model info to clipboard!", 4, true)
+            navigator.clipboard.writeText(content.trim());
+        },
+
         // Model installation
 
         onInstall(model_object) {
@@ -804,7 +870,7 @@ export default {
         },
         onSelectedBinding(binding_object) {
 
-            if (this.configFile.binding != binding_object.binding.folder) {
+            if (this.configFile.binding_name != binding_object.binding.folder) {
 
                 // disabled for now
                 // if (binding_object.binding.folder === 'backend_template' || binding_object.binding.folder === 'binding_template') {
@@ -834,11 +900,12 @@ export default {
             this.api_get_req("list_personalities").then(response => { this.persArr = response })
             //this.api_get_req("list_languages").then(response => { this.langArr = response })
             this.api_get_req("get_config").then(response => {
+                console.log("Received config")
                 this.configFile = response
 
                 this.models.forEach(model => {
 
-                    if (model.title == response["model"]) {
+                    if (model.title == response["model_name"]) {
                         model.selected = true;
 
                     }
@@ -847,9 +914,19 @@ export default {
                     }
                 });
             })
+            this.api_get_req("get_current_personality_path_infos").then(response => {
+                this.configFile.personality_language = response["personality_language"]
+                this.configFile.personality_category = response["personality_category"]
+                this.configFile.personality_folder = response["personality_name"]
+                console.log("received infos")
+            });
             this.api_get_req("disk_usage").then(response => {
                 this.diskUsage = response
             })
+            this.api_get_req("ram_usage").then(response => {
+                this.ramUsage = response
+            })
+            //console.log('ram',this.ramUsage)
             this.getPersonalitiesArr()
             this.fetchModels();
         },
@@ -882,22 +959,21 @@ export default {
             // eslint-disable-next-line no-unused-vars
             this.isLoading = true
 
-            this.update_setting('binding', value, (res) => {
-                this.refresh();
+            this.update_setting('binding_name', value, (res) => {
+                
 
                 this.$refs.toast.showToast("Binding changed.", 4, true)
                 this.settingsChanged = true
                 this.isLoading = false
+
+                // If binding changes then reset model
+                this.update_model(null)
+                this.configFile.model_name = null
+
+                this.refresh();
                 nextTick(() => {
                     feather.replace()
 
-                })
-                // If binding changes then reset model
-                this.update_model(null)
-                this.configFile.model = null
-
-                this.api_get_req("disk_usage").then(response => {
-                    this.diskUsage = response
                 })
             })
 
@@ -906,14 +982,14 @@ export default {
             if (!value) this.isModelSelected = false
             // eslint-disable-next-line no-unused-vars
             this.isLoading = true
-            this.update_setting('model', value, (res) => {
+            this.update_setting('model_name', value, (res) => {
 
                 //this.fetchModels();
                 this.isLoading = false
             })
         },
         applyConfiguration() {
-            // if (!this.configFile.model) {
+            // if (!this.configFile.model_name) {
 
             //     this.$refs.toast.showToast("Configuration changed failed.\nPlease select model first", 4, false)
             //     nextTick(() => {
@@ -1011,6 +1087,8 @@ export default {
             this.isLoading = true
             this.personalities = []
             const dictionary = await this.api_get_req("get_all_personalities")
+            // console.log("all_personalities")
+            // console.log(dictionary)
             const langkeys = Object.keys(dictionary); // returns languages folder names
             for (let i = 0; i < langkeys.length; i++) {
                 const langkey = langkeys[i];
@@ -1037,7 +1115,13 @@ export default {
                 }
 
             }
+            // console.log(this.configFile)
+            // console.log(this.configFile.personality_category)
+            // console.log(this.configFile.personality_language)
+            // console.log("Personalities")
+            // console.log(this.personalities)
             this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
+            //console.log(`Personalities filtered ${this.personalitiesFiltered}`)
             this.isLoading = false
 
         },
@@ -1053,9 +1137,16 @@ export default {
 
         })
         this.configFile = await this.api_get_req("get_config")
-        if (this.configFile.model) {
+        let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
+        this.configFile.personality_language = personality_path_infos["personality_language"]
+        this.configFile.personality_category = personality_path_infos["personality_category"]
+        this.configFile.personality_folder = personality_path_infos["personality_name"]
+
+
+        if (this.configFile.model_name) {
             this.isModelSelected = true
         }
+
         this.fetchModels();
         this.bindingsArr = await this.api_get_req("list_bindings")
         this.modelsArr = await this.api_get_req("list_models")
@@ -1067,40 +1158,72 @@ export default {
         this.bindings = await this.api_get_req("list_bindings")
         this.isLoading = false
         this.diskUsage = await this.api_get_req("disk_usage")
+        this.ramUsage = await this.api_get_req("ram_usage")
+        console.log('ran', this.ramUsage)
         this.isMounted = true
 
     },
     computed: {
-        available_space() {
+        disk_available_space() {
             return this.computedFileSize(this.diskUsage.available_space)
         },
-        binding_models_usage() {
+        disk_binding_models_usage() {
             return this.computedFileSize(this.diskUsage.binding_models_usage)
         },
-        percent_usage() {
+        disk_percent_usage() {
             return this.diskUsage.percent_usage
 
         },
-        total_space() {
+        disk_total_space() {
             return this.computedFileSize(this.diskUsage.total_space)
+        },
+        ram_available_space() {
+            return this.computedFileSize(this.ramUsage.available_space)
+        },
+        ram_usage() {
+            return this.computedFileSize(this.ramUsage.ram_usage)
+        },
+        ram_percent_usage() {
+            return this.ramUsage.percent_usage
+
+        },
+        ram_total_space() {
+            return this.computedFileSize(this.ramUsage.total_space)
         },
         imgBinding() {
             if (!this.isMounted) {
                 return
             }
-            return this.$refs.bindingZoo[this.$refs.bindingZoo.findIndex(item => item.binding.folder == this.configFile.binding)].$refs.imgElement.src
+            try {
+                return this.$refs.bindingZoo[this.$refs.bindingZoo.findIndex(item => item.binding.folder == this.configFile.binding_name)].$refs.imgElement.src
+            }
+            catch (error) {
+                return defaultImgPlaceholder
+            }
         },
         imgModel() {
             if (!this.isMounted) {
                 return
             }
-            return this.$refs.modelZoo[this.$refs.modelZoo.findIndex(item => item.title == this.configFile.model)].$refs.imgElement.src
+            // console.log("Config file")
+            // console.log(this.configFile)
+            try {
+                return this.$refs.modelZoo[this.$refs.modelZoo.findIndex(item => item.title == this.configFile.model_name)].$refs.imgElement.src
+            }
+            catch (error) {
+                return defaultModelImgPlaceholder
+            }
         },
         imgPersonality() {
             if (!this.isMounted) {
                 return
             }
-            return this.$refs.personalitiesZoo[this.$refs.personalitiesZoo.findIndex(item => item.personality.name == this.configFile.personality)].$refs.imgElement.src
+            try {
+                return this.$refs.personalitiesZoo[this.$refs.personalitiesZoo.findIndex(item => item.personality.folder == this.configFile.personality_folder)].$refs.imgElement.src
+            }
+            catch (error) {
+                return defaultPersonalityImgPlaceholder
+            }
         },
 
     },
@@ -1118,6 +1241,12 @@ export default {
             })
         },
         mc_collapsed() {
+            nextTick(() => {
+                feather.replace()
+
+            })
+        },
+        sc_collapsed() {
             nextTick(() => {
                 feather.replace()
 

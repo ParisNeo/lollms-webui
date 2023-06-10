@@ -1,5 +1,5 @@
 {
-  "name": "gpt4all-ui-vue",
+  "name": "lollms-webui-vue",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -17,6 +17,7 @@
     "highlight.js": "^11.8.0",
     "markdown-it": "^13.0.1",
     "markdown-it-emoji": "^2.0.2",
+    "papaparse": "^5.4.1",
     "socket.io-client": "^4.6.1",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6"

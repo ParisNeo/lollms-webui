@@ -1,4 +1,4 @@
-// Project : GPT4ALL-ui
+// Project : lollms-webui
 // Author : ParisNeo
 // Description :
 // All websocket stuff can be found here.
