@@ -741,11 +741,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
         name = data['name']
 
         package_path = f"{language}/{category}/{name}"
-        package_full_path = self.lollms_paths.lollms_path/"personalities_zoo"/package_path
+        package_full_path = self.lollms_paths.personalities_zoo_path/package_path
         config_file = package_full_path / "config.yaml"
         if config_file.exists():
             self.config["personalities"].append(package_path)
-            self.personalities = self.process.rebuild_personalities()
+            self.mounted_personalities = self.process.rebuild_personalities()
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             self.apply_settings()
             return jsonify({"status": True,
@@ -788,12 +788,17 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return jsonify({"status": False, "error":"Couldn't unmount personality"})         
             
     def select_personality(self):
-        id = request.files['id']
+        data = request.get_json()
+        id = data['id']
         if id<len(self.config["personalities"]):
             self.config["active_personality_id"]=id
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             self.apply_settings()
-            return jsonify({"status": True})
+            return jsonify({
+                "status": True,
+                "personalities":self.config["personalities"],
+                "active_personality_id":self.config["active_personality_id"]                
+                })
         else:
             return jsonify({"status": False, "error":"Invalid ID"})         
                     

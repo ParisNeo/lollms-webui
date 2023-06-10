@@ -1,0 +1,6 @@
+POST http://localhost:9600/select_personality
+Content-Type: application/json
+
+{
+    "id": 0
+}
