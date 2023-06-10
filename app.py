@@ -714,7 +714,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         if config_file.exists():
             self.config["personalities"].append(package_path)
             self.personalities = self.process.rebuild_personalities()
-            self.personality = self.personalities[self.config["active_personality_id"]]
+            self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             self.apply_settings()
             return jsonify({"status": True,
                             "personalities":self.config["personalities"],
@@ -742,7 +742,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 self.config["active_personality_id"]=0
             if len(self.config["personalities"])>0:
                 self.personalities = self.process.rebuild_personalities()
-                self.personality = self.personalities[self.config["active_personality_id"]]
+                self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             else:
                 self.personalities = []
                 self.personality = None
@@ -759,7 +759,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         id = request.files['id']
         if id<len(self.config["personalities"]):
             self.config["active_personality_id"]=id
-            self.personality = self.personalities[self.config["active_personality_id"]]
+            self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             self.apply_settings()
             return jsonify({"status": True})
         else:

@@ -253,7 +253,7 @@ class ModelProcess:
         for personality in self.config['personalities']:
             try:
                 print(f" {personality}")
-                personality_path = lollms_path/f"personalities_zoo/{personality}"
+                personality_path = lollms_personalities_zoo_path/f"{personality}"
                 personality = AIPersonality(personality_path, run_scripts=False)
                 mounted_personalities.append(personality)
             except Exception as ex:
@@ -293,7 +293,7 @@ class ModelProcess:
             self._set_config_result['status'] ='semi_failed'
             self._set_config_result['personalities_status'] ='semi_failed'
             
-        self.personality = self.config["personalities"][self.config['active_personality_id']]
+        self.personality = self.mounted_personalities[self.config['active_personality_id']]
         self.mounted_personalities = self.config["personalities"]
         print("Personality set successfully")
        
@@ -349,6 +349,7 @@ class ModelProcess:
                             self.start_signal.clear()
                             print("Finished executing the generation")
             except Exception as ex:
+                print("Couldn't start generation")
                 print(ex)
             time.sleep(1)
     def _generate(self, prompt, n_predict=50, callback=None):
@@ -466,10 +467,9 @@ class LoLLMsAPPI():
         #Create and launch the process
         self.process = ModelProcess(config)
         self.config = config
-        self.mounted_personalities = self.config["personalities"]
         self.binding = self.process.rebuild_binding(self.config)
-        self.personalities = self.process.rebuild_personalities()
-        self.personality = self.personalities[self.config["active_personality_id"]]
+        self.mounted_personalities = self.process.rebuild_personalities()
+        self.personality = self.mounted_personalities[self.config["active_personality_id"]]
         if config["debug"]:
             print(print(f"{self.personality}"))
         self.config_file_path = config_file_path
