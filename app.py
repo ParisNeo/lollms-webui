@@ -741,7 +741,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         name = data['name']
 
         package_path = f"{language}/{category}/{name}"
-        package_full_path = self.lollms_paths.lollms_path/"personalities_zoo"/package_path
+        package_full_path = self.lollms_paths.personalities_zoo_path/package_path
         config_file = package_full_path / "config.yaml"
         if config_file.exists():
             self.config["personalities"].append(package_path)
