@@ -25,7 +25,7 @@ from tqdm import tqdm
 import subprocess
 import signal
 from lollms.personality import AIPersonality, MSG_TYPE
-from lollms.helpers import ASCIIColors
+from lollms.helpers import ASCIIColors, BaseConfig
 from lollms.paths import LollmsPaths
 from api.db import DiscussionsDB, Discussion
 from api.helpers import compare_lists
@@ -87,6 +87,12 @@ class LoLLMsWebUI(LoLLMsAPPI):
         # =========================================================================================
         # Endpoints
         # =========================================================================================
+
+
+
+
+        self.add_endpoint("/switch_personal_path", "switch_personal_path", self.switch_personal_path, methods=["POST"])
+
         self.add_endpoint("/add_reference_to_local_model", "add_reference_to_local_model", self.add_reference_to_local_model, methods=["POST"])
         
         self.add_endpoint("/send_file", "send_file", self.send_file, methods=["POST"])
@@ -689,6 +695,22 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.process.cancel_generation()
         return jsonify({"status": True})    
     
+
+    def switch_personal_path(self):
+        data = request.get_json()
+        path = data["path"]
+        global_paths_cfg = Path("./global_paths_cfg.yaml")
+        if global_paths_cfg.exists():
+            try:
+                cfg = BaseConfig()
+                cfg.load_config(global_paths_cfg)
+                cfg.lollms_personal_path = path
+                cfg.save_config(global_paths_cfg)
+                return jsonify({"status": True})         
+            except Exception as ex:
+                print(ex)
+                return jsonify({"status": False, 'error':f"Couldn't switch path: {ex}"})         
+    
     def add_reference_to_local_model(self):     
         data = request.get_json()
         path = data["path"]
@@ -1087,6 +1109,8 @@ def sync_cfg(default_config, config):
 if __name__ == "__main__":
 
     lollms_paths = LollmsPaths.find_paths(force_local=True)
+    db_folder = lollms_paths.personal_path/"databases"
+    db_folder.mkdir(parents=True, exist_ok=True)
     parser = argparse.ArgumentParser(description="Start the chatbot Flask app.")
     parser.add_argument(
         "-c", "--config", type=str, default="local_config", help="Sets the configuration file to be used."

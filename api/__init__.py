@@ -484,9 +484,12 @@ class LoLLMsAPPI():
         self._message_id = 0
 
         self.db_path = config["db_path"]
-
-        # Create database object
-        self.db = DiscussionsDB(self.db_path)
+        if Path(self.db_path).is_absolute():
+            # Create database object
+            self.db = DiscussionsDB(self.db_path)
+        else:
+            # Create database object
+            self.db = DiscussionsDB(self.lollms_paths.personal_path/"databases"/self.db_path)
 
         # If the database is empty, populate it with tables
         self.db.populate()
