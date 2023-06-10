@@ -41,10 +41,12 @@
     methods: {
       loadFAQs() {
         // Fetch and parse the CSV file
-        fetch('/data/faqs.csv')
+        fetch('/help/faqs.csv')
           .then((response) => response.text())
           .then((csv) => {
             const { data } = Papa.parse(csv, { header: true }); // Parse the CSV and extract data
+            console.log("Recovered data")
+            console.log(data)
             this.faqs = data; // Assign the parsed data to the faqs array
           })
           .catch((error) => {

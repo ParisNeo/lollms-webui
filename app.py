@@ -141,6 +141,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint("/personalities/<path:filename>", "serve_personalities", self.serve_personalities, methods=["GET"])
         self.add_endpoint("/outputs/<path:filename>", "serve_outputs", self.serve_outputs, methods=["GET"])
         self.add_endpoint("/data/<path:filename>", "serve_data", self.serve_data, methods=["GET"])
+        self.add_endpoint("/help/<path:filename>", "serve_help", self.serve_help, methods=["GET"])
+        
         self.add_endpoint("/uploads/<path:filename>", "serve_uploads", self.serve_uploads, methods=["GET"])
 
         
@@ -643,7 +645,15 @@ class LoLLMsWebUI(LoLLMsAPPI):
                             
         fn = filename.split("/")[-1]
         return send_from_directory(path, fn)
-    
+
+    def serve_help(self, filename):
+        root_dir = Path(__file__).parent/f"help"
+        root_dir.mkdir(exist_ok=True, parents=True)
+        path = str(root_dir/"/".join(filename.split("/")[:-1]))
+                            
+        fn = filename.split("/")[-1]
+        return send_from_directory(path, fn)
+
     def serve_data(self, filename):
         root_dir = lollms_personal_path / "data"
         root_dir.mkdir(exist_ok=True, parents=True)
