@@ -12,9 +12,9 @@ from api.db import DiscussionsDB
 from api.helpers import compare_lists
 from pathlib import Path
 import importlib
-from lollms import AIPersonality, MSG_TYPE
-from lollms.binding import BindingConfig
-from lollms.paths import lollms_path, lollms_personal_configuration_path, lollms_personal_path, lollms_personal_models_path, lollms_bindings_zoo_path, lollms_personalities_zoo_path, lollms_default_cfg_path
+from lollms.personality import AIPersonality, MSG_TYPE
+from lollms.binding import LOLLMSConfig
+from lollms.paths import LollmsPaths
 import multiprocessing as mp
 import threading
 import time
@@ -83,16 +83,15 @@ def parse_requirements_file(requirements_path):
 
 
 class ModelProcess:
-    def __init__(self, config:BindingConfig=None):
+    def __init__(self, lollms_paths:LollmsPaths, config:LOLLMSConfig=None):
         self.config = config
+        self.lollms_paths = lollms_paths
         self.generate_queue = mp.Queue()
         self.generation_queue = mp.Queue()
         self.cancel_queue = mp.Queue(maxsize=1)
         self.clear_queue_queue = mp.Queue(maxsize=1)
         self.set_config_queue = mp.Queue(maxsize=1)
         self.set_config_result_queue = mp.Queue(maxsize=1)
-
-        self.models_path = lollms_personal_models_path
 
         self.process = None
         # Create synchronization objects
@@ -139,7 +138,7 @@ class ModelProcess:
             print(f"Loading binding {binding_name} install ON")
         else:
             print(f"Loading binding : {binding_name} install is off")
-        binding_path = lollms_path/"bindings_zoo"/binding_name
+        binding_path = self.lollms_paths.bindings_zoo_path/binding_name
         if install:
             # first find out if there is a requirements.txt file
             install_file_name="install.py"
@@ -223,7 +222,7 @@ class ModelProcess:
             self.binding = self.load_binding(self.config["binding_name"], install=True)
             print("Binding loaded successfully")
             try:
-                model_file = self.config.models_path/self.config["binding_name"]/self.config["model_name"]
+                model_file = self.lollms_paths.personal_models_path/self.config["binding_name"]/self.config["model_name"]
                 print(f"Loading model : {model_file}")
                 self.model = self.binding(self.config)
                 self.model_ready.value = 1
@@ -253,14 +252,15 @@ class ModelProcess:
         for personality in self.config['personalities']:
             try:
                 print(f" {personality}")
-                personality_path = lollms_personalities_zoo_path/f"{personality}"
-                personality = AIPersonality(personality_path, run_scripts=False)
+                personality_path = self.lollms_paths.personalities_zoo_path/f"{personality}"
+                print(f"Loading from {personality_path}")
+                personality = AIPersonality(self.lollms_paths, personality_path, run_scripts=False)
                 mounted_personalities.append(personality)
             except Exception as ex:
                 print(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
                 if self.config["debug"]:
                     print(ex)
-                personality = AIPersonality()
+                personality = AIPersonality(self.lollms_paths)
             
         print(f" ************ Personalities mounted (Main process) ***************************")
             
@@ -274,14 +274,14 @@ class ModelProcess:
         for personality in self.config['personalities']:
             try:
                 print(f" {personality}")
-                personality_path = lollms_path/f"personalities_zoo/{personality}"
-                personality = AIPersonality(personality_path, run_scripts=True)
+                personality_path = self.lollms_paths.personalities_zoo_path/f"{personality}"
+                personality = AIPersonality(self.lollms_paths, personality_path, run_scripts=True)
                 self.mounted_personalities.append(personality)
             except Exception as ex:
                 print(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
                 if self.config["debug"]:
                     print(ex)
-                personality = AIPersonality()
+                personality = AIPersonality(self.lollms_paths)
                 failed_personalities.append(personality_path)
                 self._set_config_result['errors'].append(f"couldn't build personalities:{ex}")
             
@@ -462,10 +462,12 @@ class ModelProcess:
 
 
 class LoLLMsAPPI():
-    def __init__(self, config:BindingConfig, socketio, config_file_path:str) -> None:
+    def __init__(self, config:LOLLMSConfig, socketio, config_file_path:str, lollms_paths: LollmsPaths) -> None:
+        self.lollms_paths = lollms_paths
+        
         self.socketio = socketio
         #Create and launch the process
-        self.process = ModelProcess(config)
+        self.process = ModelProcess(self.lollms_paths, config)
         self.config = config
         self.binding = self.process.rebuild_binding(self.config)
         self.mounted_personalities = self.process.rebuild_personalities()
@@ -482,9 +484,12 @@ class LoLLMsAPPI():
         self._message_id = 0
 
         self.db_path = config["db_path"]
-
-        # Create database object
-        self.db = DiscussionsDB(self.db_path)
+        if Path(self.db_path).is_absolute():
+            # Create database object
+            self.db = DiscussionsDB(self.db_path)
+        else:
+            # Create database object
+            self.db = DiscussionsDB(self.lollms_paths.personal_path/"databases"/self.db_path)
 
         # If the database is empty, populate it with tables
         self.db.populate()

@@ -28,4 +28,4 @@ user_name: user
 
 # UI parameters
 debug: False
-db_path: databases/database.db
+db_path: database.db
