@@ -293,7 +293,8 @@ class ModelProcess:
             self._set_config_result['status'] ='semi_failed'
             self._set_config_result['personalities_status'] ='semi_failed'
             
-        self.personality = self.mounted_personalities[self.config['active_personality_id']]
+        self.personality = self.config["personalities"][self.config['active_personality_id']]
+        self.mounted_personalities = self.config["personalities"]
         print("Personality set successfully")
        
     def _run(self):     
@@ -465,7 +466,7 @@ class LoLLMsAPPI():
         #Create and launch the process
         self.process = ModelProcess(config)
         self.config = config
-        
+        self.mounted_personalities = self.config["personalities"]
         self.binding = self.process.rebuild_binding(self.config)
         self.personalities = self.process.rebuild_personalities()
         self.personality = self.personalities[self.config["active_personality_id"]]
