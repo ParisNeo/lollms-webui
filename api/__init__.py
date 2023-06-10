@@ -15,6 +15,7 @@ import importlib
 from lollms.personality import AIPersonality, MSG_TYPE
 from lollms.binding import LOLLMSConfig
 from lollms.paths import LollmsPaths
+from lollms.helpers import ASCIIColors
 import multiprocessing as mp
 import threading
 import time
@@ -138,6 +139,11 @@ class ModelProcess:
             print(f"Loading binding {binding_name} install ON")
         else:
             print(f"Loading binding : {binding_name} install is off")
+
+        if binding_name is None:
+            self.model
+
+
         binding_path = self.lollms_paths.bindings_zoo_path/binding_name
         if install:
             # first find out if there is a requirements.txt file
@@ -173,12 +179,6 @@ class ModelProcess:
             self.generate_queue.put(None)
             self.process.join()
             self.process = None
-
-    def set_binding(self, binding_path):
-        self.binding = binding_path
-
-    def set_model(self, model_path):
-        self.model = model_path
         
     def set_config(self, config):
         try:
@@ -206,21 +206,23 @@ class ModelProcess:
     
     def rebuild_binding(self, config):
         try:
-            print(" ******************* Building Binding from main Process *************************")
+            ASCIIColors.print(ASCIIColors.color_green," ******************* Building Binding from main Process *************************")
             binding = self.load_binding(config["binding_name"], install=True)
-            print("Binding loaded successfully")
+            ASCIIColors.print(ASCIIColors.color_green,"Binding loaded successfully")
         except Exception as ex:
-            print("Couldn't build binding.")
-            print(ex)
+            ASCIIColors.print(ASCIIColors.color_red,"Couldn't build binding.")
+            ASCIIColors.print(ASCIIColors.color_red,"-----------------")
+            print(f"It seems that there is no valid binding selected. Please use the ui settings to select a binding.\nHere is encountered error: {ex}")
+            ASCIIColors.print(ASCIIColors.color_red,"-----------------")
             binding = None
         return binding
             
     def _rebuild_model(self):
         try:
             self.reset_config_result()
-            print(" ******************* Building Binding from generation Process *************************")
+            ASCIIColors.print(ASCIIColors.color_green," ******************* Building Binding from generation Process *************************")
             self.binding = self.load_binding(self.config["binding_name"], install=True)
-            print("Binding loaded successfully")
+            ASCIIColors.print(ASCIIColors.color_green,"Binding loaded successfully")
             try:
                 model_file = self.lollms_paths.personal_models_path/self.config["binding_name"]/self.config["model_name"]
                 print(f"Loading model : {model_file}")
@@ -234,11 +236,11 @@ class ModelProcess:
                     print(f"Couldn't build model {self.config['model_name']} : {ex}")
                 self.model = None
                 self._set_config_result['status'] ='failed'
-                self._set_config_result['binding_status'] ='failed'
-                self._set_config_result['errors'].append(f"couldn't build binding:{ex}")
+                self._set_config_result['model_status'] ='failed'
+                self._set_config_result['errors'].append(f"couldn't build model:{ex}")
         except Exception as ex:
             traceback.print_exc()
-            print("Couldn't build binding")
+            print("Couldn't build model")
             print(ex)
             self.binding = None
             self.model = None
@@ -248,7 +250,7 @@ class ModelProcess:
 
     def rebuild_personalities(self):
         mounted_personalities=[]
-        print(f" ******************* Building mounted Personalities from main Process *************************")
+        ASCIIColors.print(ASCIIColors.color_green,f" ******************* Building mounted Personalities from main Process *************************")
         for personality in self.config['personalities']:
             try:
                 print(f" {personality}")
@@ -257,12 +259,12 @@ class ModelProcess:
                 personality = AIPersonality(self.lollms_paths, personality_path, run_scripts=False)
                 mounted_personalities.append(personality)
             except Exception as ex:
-                print(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+                ASCIIColors.print(ASCIIColors.color_red,f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
                 if self.config["debug"]:
                     print(ex)
                 personality = AIPersonality(self.lollms_paths)
             
-        print(f" ************ Personalities mounted (Main process) ***************************")
+        ASCIIColors.print(ASCIIColors.color_green,f" ************ Personalities mounted (Main process) ***************************")
             
         return mounted_personalities
     
@@ -270,7 +272,7 @@ class ModelProcess:
         self.mounted_personalities=[]
         failed_personalities=[]
         self.reset_config_result()
-        print(f" ******************* Building mounted Personalities from generation Process *************************")
+        ASCIIColors.print(ASCIIColors.color_green,f" ******************* Building mounted Personalities from generation Process *************************")
         for personality in self.config['personalities']:
             try:
                 print(f" {personality}")
@@ -285,7 +287,7 @@ class ModelProcess:
                 failed_personalities.append(personality_path)
                 self._set_config_result['errors'].append(f"couldn't build personalities:{ex}")
             
-        print(f" ************ Personalities mounted (Generation process) ***************************")
+        ASCIIColors.print(ASCIIColors.color_green,f" ************ Personalities mounted (Generation process) ***************************")
         if len(failed_personalities)==len(self.config['personalities']):
             self._set_config_result['status'] ='failed'
             self._set_config_result['personalities_status'] ='failed'
@@ -295,7 +297,7 @@ class ModelProcess:
             
         self.personality = self.mounted_personalities[self.config['active_personality_id']]
         self.mounted_personalities = self.config["personalities"]
-        print("Personality set successfully")
+        ASCIIColors.print(ASCIIColors.color_green,"Personality set successfully")
        
     def _run(self):     
         self._rebuild_model()
@@ -320,7 +322,7 @@ class ModelProcess:
             print("No model loaded. Waiting for new configuration instructions")
                     
         self.ready = True
-        print(f"Listening on :http://{self.config['host']}:{self.config['port']}")
+        ASCIIColors.print(ASCIIColors.color_bright_blue,f"Listening on :http://{self.config['host']}:{self.config['port']}")
         while True:
             try:
                 if not self.generate_queue.empty():
@@ -502,11 +504,11 @@ class LoLLMsAPPI():
         # =========================================================================================
         @socketio.on('connect')
         def connect():
-            print('Client connected')
+            ASCIIColors.print(ASCIIColors.color_green,'Client connected')
 
         @socketio.on('disconnect')
         def disconnect():
-            print('Client disconnected')
+            ASCIIColors.print(ASCIIColors.color_red,'Client disconnected')
 
         @socketio.on('install_model')
         def install_model(data):

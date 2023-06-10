@@ -1108,6 +1108,8 @@ def sync_cfg(default_config, config):
         if key not in default_config:
             del config.config[key]
             removed_entries.append(key)
+
+    config["version"]=default_config["version"]
     
     return config, added_entries, removed_entries
 
@@ -1200,8 +1202,8 @@ if __name__ == "__main__":
     
     if "version" not in config or int(config["version"])<int(default_config["version"]):
         #Upgrade old configuration files to new format
-        print("Configuration file is very old. Replacing with default configuration")
-        config, added, removed =sync_cfg(default_config, config)
+        ASCIIColors.print(ASCIIColors.color_red,"Configuration file is very old.\nReplacing with default configuration")
+        config, added, removed = sync_cfg(default_config, config)
         print(f"Added entries : {added}, removed entries:{removed}")
         config.save_config(config_file_path)
 
