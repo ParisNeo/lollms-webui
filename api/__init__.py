@@ -200,30 +200,30 @@ class ModelProcess:
     def cancel_generation(self):
         self.completion_signal.set()
         self.cancel_queue.put(('cancel',))
-        ASCIIColors.print(ASCIIColors.color_red,"Canel request received")
+        ASCIIColors.error("Canel request received")
 
     def clear_queue(self):
         self.clear_queue_queue.put(('clear_queue',))
     
     def rebuild_binding(self, config):
         try:
-            ASCIIColors.print(ASCIIColors.color_green," ******************* Building Binding from main Process *************************")
+            ASCIIColors.success(" ******************* Building Binding from main Process *************************")
             binding = self.load_binding(config["binding_name"], install=True)
-            ASCIIColors.print(ASCIIColors.color_green,"Binding loaded successfully")
+            ASCIIColors.success("Binding loaded successfully")
         except Exception as ex:
-            ASCIIColors.print(ASCIIColors.color_red,"Couldn't build binding.")
-            ASCIIColors.print(ASCIIColors.color_red,"-----------------")
+            ASCIIColors.error("Couldn't build binding.")
+            ASCIIColors.error("-----------------")
             print(f"It seems that there is no valid binding selected. Please use the ui settings to select a binding.\nHere is encountered error: {ex}")
-            ASCIIColors.print(ASCIIColors.color_red,"-----------------")
+            ASCIIColors.error("-----------------")
             binding = None
         return binding
             
     def _rebuild_model(self):
         try:
             self.reset_config_result()
-            ASCIIColors.print(ASCIIColors.color_green," ******************* Building Binding from generation Process *************************")
+            ASCIIColors.success(" ******************* Building Binding from generation Process *************************")
             self.binding = self.load_binding(self.config["binding_name"], install=True)
-            ASCIIColors.print(ASCIIColors.color_green,"Binding loaded successfully")
+            ASCIIColors.success("Binding loaded successfully")
             try:
                 model_file = self.lollms_paths.personal_models_path/self.config["binding_name"]/self.config["model_name"]
                 print(f"Loading model : {model_file}")
@@ -251,7 +251,7 @@ class ModelProcess:
 
     def rebuild_personalities(self):
         mounted_personalities=[]
-        ASCIIColors.print(ASCIIColors.color_green,f" ******************* Building mounted Personalities from main Process *************************")
+        ASCIIColors.success(f" ******************* Building mounted Personalities from main Process *************************")
         for personality in self.config['personalities']:
             try:
                 print(f" {personality}")
@@ -260,12 +260,12 @@ class ModelProcess:
                 personality = AIPersonality(self.lollms_paths, personality_path, run_scripts=False)
                 mounted_personalities.append(personality)
             except Exception as ex:
-                ASCIIColors.print(ASCIIColors.color_red,f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+                ASCIIColors.error(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
                 if self.config["debug"]:
                     print(ex)
                 personality = AIPersonality(self.lollms_paths)
             
-        ASCIIColors.print(ASCIIColors.color_green,f" ************ Personalities mounted (Main process) ***************************")
+        ASCIIColors.success(f" ************ Personalities mounted (Main process) ***************************")
             
         return mounted_personalities
     
@@ -273,7 +273,7 @@ class ModelProcess:
         self.mounted_personalities=[]
         failed_personalities=[]
         self.reset_config_result()
-        ASCIIColors.print(ASCIIColors.color_green,f" ******************* Building mounted Personalities from generation Process *************************")
+        ASCIIColors.success(f" ******************* Building mounted Personalities from generation Process *************************")
         for personality in self.config['personalities']:
             try:
                 print(f" {personality}")
@@ -288,7 +288,7 @@ class ModelProcess:
                 failed_personalities.append(personality_path)
                 self._set_config_result['errors'].append(f"couldn't build personalities:{ex}")
             
-        ASCIIColors.print(ASCIIColors.color_green,f" ************ Personalities mounted (Generation process) ***************************")
+        ASCIIColors.success(f" ************ Personalities mounted (Generation process) ***************************")
         if len(failed_personalities)==len(self.config['personalities']):
             self._set_config_result['status'] ='failed'
             self._set_config_result['personalities_status'] ='failed'
@@ -298,7 +298,7 @@ class ModelProcess:
             
         self.personality = self.mounted_personalities[self.config['active_personality_id']]
         self.mounted_personalities = self.config["personalities"]
-        ASCIIColors.print(ASCIIColors.color_green,"Personality set successfully")
+        ASCIIColors.success("Personality set successfully")
        
     def _run(self):     
         self._rebuild_model()
@@ -336,7 +336,7 @@ class ModelProcess:
                                 if self.personality.processor_cfg is not None:
                                     if "custom_workflow" in self.personality.processor_cfg:
                                         if self.personality.processor_cfg["custom_workflow"]:
-                                            ASCIIColors.print(ASCIIColors.color_green,"Running workflow")
+                                            ASCIIColors.success("Running workflow")
                                             self.completion_signal.clear()
                                             self.start_signal.set()
 
@@ -506,11 +506,11 @@ class LoLLMsAPPI():
         # =========================================================================================
         @socketio.on('connect')
         def connect():
-            ASCIIColors.print(ASCIIColors.color_green,f'Client {request.sid} connected')
+            ASCIIColors.success(f'Client {request.sid} connected')
 
         @socketio.on('disconnect')
         def disconnect():
-            ASCIIColors.print(ASCIIColors.color_red,f'Client {request.sid} disconnected')
+            ASCIIColors.error(f'Client {request.sid} disconnected')
 
         @socketio.on('install_model')
         def install_model(data):

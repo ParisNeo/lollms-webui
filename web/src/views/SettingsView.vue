@@ -209,30 +209,31 @@
                         class="text-2xl hover:text-primary duration-75 p-2 -m-2 w-full text-left active:translate-y-1 flex items-center">
                         <i :data-feather="mzc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2 flex-shrink-0"></i>
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
-                            Models zoo</h3>
+                        Models zoo</h3>
                         <div class="flex flex-row items-center">
-                            <div v-if="!isModelSelected" class="text-base text-red-600 flex gap-3 items-center mr-2">
-                                <i data-feather="alert-triangle" class="flex-shrink-0"></i>
-                                No model selected!
+                        <div v-if="!isModelSelected" class="text-base text-red-600 flex gap-3 items-center mr-2">
+                            <i data-feather="alert-triangle" class="flex-shrink-0"></i>
+                            No model selected!
+                        </div>
+
+                        <div v-if="configFile.model_name" class="mr-2">|</div>
+
+                        <div v-if="configFile.model_name" class="text-base font-semibold cursor-pointer select-none items-center">
+                            <div class="flex gap-1 items-center">
+                            <img :src="imgModel" class="w-8 h-8 rounded-lg object-fill">
+                            <h3 class="font-bold font-large text-lg line-clamp-1">
+                                {{ configFile.model_name }}
+                            </h3>
+                            <button @click.stop="showInputDialog" class="text-base hover:text-primary-dark ml-1 bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-dark-tone duration-200 rounded-lg px-2 py-1">
+                                +
+                            </button>
                             </div>
-
-                            <div v-if="configFile.model_name" class="mr-2">|</div>
-
-                            <div v-if="configFile.model_name"
-                                class=" text-base font-semibold cursor-pointer select-none items-center">
-
-                                <div class="flex gap-1 items-center">
-                                    <img :src="imgModel" class="w-8 h-8 rounded-lg object-fill">
-                                    <h3 class="font-bold font-large text-lg line-clamp-1">
-                                        {{ configFile.model_name }}
-                                    </h3>
-                                </div>
-
-
-                            </div>
+                        </div>
                         </div>
                     </button>
                 </div>
+
+
                 <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
 
                     <div v-if="models.length > 0" class="mb-2">
@@ -587,6 +588,17 @@
         transform: scale(1);
     }
 }
+.bg-primary-light {
+  background-color: aqua
+}
+
+.hover:bg-primary-light:hover {
+  background-color: aquamarine
+}
+
+.font-bold {
+  font-weight: bold;
+}
 </style>
 <script>
 import filesize from '../plugins/filesize'
@@ -619,6 +631,9 @@ export default {
     data() {
 
         return {
+            // install custom model
+            showModelInputDialog: false,
+            modelPath: '',            
             // Zoo stuff
             models: [],
             personalities: [],
@@ -661,6 +676,32 @@ export default {
     created() {
 
     }, methods: {
+        showInputDialog() {
+            console.log("Input dialog shown")
+            this.showModelInputDialog = true;
+        },
+        closeInputDialog() {
+            this.showModelInputDialog = false;
+            this.modelPath = '';
+        },
+        validateModelPath() {
+            // Perform validation of the model path (e.g., checking if it is a local file or internet link)
+            // ...
+
+            // Trigger the `download_model` endpoint with the path as a POST
+            this.$axios.post('/download_model', { path: this.modelPath })
+            .then(response => {
+                // Handle the response
+                // ...
+            })
+            .catch(error => {
+                // Handle the error
+                // ...
+            });
+
+            // Close the input dialog
+            this.closeInputDialog();
+        },        
         collapseAll(val) {
             this.bec_collapsed = val
             this.mzc_collapsed = val
