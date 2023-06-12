@@ -46,9 +46,9 @@ if errorlevel 1 (
 )
 :NO_INTERNET
 
-if exist GPT4All (
-    echo GPT4All folder found
-    cd GPT4All
+if exist lollms-webui (
+    echo lollms-webui folder found
+    cd lollms-webui
     set /p="Activating virtual environment ..." <nul
     call env\Scripts\activate.bat
 )
@@ -108,16 +108,16 @@ goto :CHECK_PYTHON_INSTALL
 
 :CLONE_REPO
 REM Check if repository exists 
-if exist GPT4All (
-    echo GPT4All folder found
-    cd GPT4All
+if exist lollms-webui (
+    echo lollms-webui folder found
+    cd lollms-webui
     echo Pulling latest changes 
     git pull
 ) else (
     echo Cloning repository...
     rem Clone the Git repository into a temporary directory
-    git clone https://github.com/ParisNeo/lollms-webui.git ./GPT4All
-    cd GPT4All
+    git clone https://github.com/ParisNeo/lollms-webui.git ./lollms-webui
+    cd lollms-webui
     echo Pulling latest changes 
     git pull
 )
