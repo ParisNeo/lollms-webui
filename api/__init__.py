@@ -281,9 +281,8 @@ class ModelProcess:
                 personality = AIPersonality(self.lollms_paths, personality_path, run_scripts=True, model=self.model)
                 self.mounted_personalities.append(personality)
             except Exception as ex:
-                print(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
-                if self.config["debug"]:
-                    print(ex)
+                ASCIIColors.error(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+                ASCIIColors.error(f"Exception received is: {ex}")
                 personality = AIPersonality(self.lollms_paths, model=self.model)
                 failed_personalities.append(personality_path)
                 self._set_config_result['errors'].append(f"couldn't build personalities:{ex}")
@@ -295,12 +294,13 @@ class ModelProcess:
         elif len(failed_personalities)>0:
             self._set_config_result['status'] ='semi_failed'
             self._set_config_result['personalities_status'] ='semi_failed'
+
         if self.config['active_personality_id']<len(self.mounted_personalities):
             self.personality = self.mounted_personalities[self.config['active_personality_id']]
             ASCIIColors.success("Personality set successfully")
         else:
-            self.personality = None   
-            ASCIIColors.error("Personality set failed")
+
+            ASCIIColors.error("Failed to set personality. Please select a valid one")
 
     def _run(self):     
         self._rebuild_model()
