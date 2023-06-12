@@ -8,7 +8,6 @@ RUN python3 -m pip install --no-cache-dir -r requirements.txt --upgrade pip
 
 COPY ./app.py /srv/app.py
 COPY ./api /srv/api
-COPY ./bindings /srv/bindings
 COPY ./static /srv/static
 COPY ./templates /srv/templates
 COPY ./web /srv/web
