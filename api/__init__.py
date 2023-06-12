@@ -295,11 +295,13 @@ class ModelProcess:
         elif len(failed_personalities)>0:
             self._set_config_result['status'] ='semi_failed'
             self._set_config_result['personalities_status'] ='semi_failed'
-            
-        self.personality = self.mounted_personalities[self.config['active_personality_id']]
-        self.mounted_personalities = self.config["personalities"]
-        ASCIIColors.success("Personality set successfully")
-       
+        if self.config['active_personality_id']<len(self.mounted_personalities):
+            self.personality = self.mounted_personalities[self.config['active_personality_id']]
+            ASCIIColors.success("Personality set successfully")
+        else:
+            self.personality = None   
+            ASCIIColors.error("Personality set failed")
+
     def _run(self):     
         self._rebuild_model()
         self._rebuild_personalities()
@@ -475,7 +477,10 @@ class LoLLMsAPPI():
         self.config = config
         self.binding = self.process.rebuild_binding(self.config)
         self.mounted_personalities = self.process.rebuild_personalities()
-        self.personality = self.mounted_personalities[self.config["active_personality_id"]]
+        if self.config["active_personality_id"]<len(self.mounted_personalities):
+            self.personality = self.mounted_personalities[self.config["active_personality_id"]]
+        else:
+            self.personality = None
         if config["debug"]:
             print(print(f"{self.personality}"))
         self.config_file_path = config_file_path

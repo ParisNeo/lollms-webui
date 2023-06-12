@@ -224,7 +224,7 @@
                             <h3 class="font-bold font-large text-lg line-clamp-1">
                                 {{ configFile.model_name }}
                             </h3>
-                            <button @click.stop="showInputDialog" class="text-base hover:text-primary-dark ml-1 bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-dark-tone duration-200 rounded-lg px-2 py-1">
+                            <button @click.stop="showAddModelDialog" class="text-base hover:text-primary-dark ml-1 bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-dark-tone duration-200 rounded-lg px-2 py-1">
                                 +
                             </button>
                             </div>
@@ -536,10 +536,11 @@
                 </div>
             </div>
         </div>
-
     </div>
 
+
     <YesNoDialog ref="yesNoDialog" />
+    <AddModelDialog ref="addmodeldialog" />
     <MessageBox ref="messageBox" />
     <Toast ref="toast" />
 </template>
@@ -615,10 +616,12 @@ import BindingEntry from "../components/BindingEntry.vue";
 import socket from '@/services/websocket.js'
 import defaultModelImgPlaceholder from "../assets/default_model.png"
 import defaultPersonalityImgPlaceholder from "../assets/logo.svg"
+import AddModelDialog from "@/components/AddModelDialog.vue";
 
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
     components: {
+        AddModelDialog,
         MessageBox,
         YesNoDialog,
         ModelEntry,
@@ -632,7 +635,7 @@ export default {
 
         return {
             // install custom model
-            showModelInputDialog: false,
+            addModelDialogVisibility: false,
             modelPath: '',            
             // Zoo stuff
             models: [],
@@ -676,32 +679,25 @@ export default {
     created() {
 
     }, methods: {
-        showInputDialog() {
-            console.log("Input dialog shown")
-            this.showModelInputDialog = true;
-        },
-        closeInputDialog() {
-            this.showModelInputDialog = false;
-            this.modelPath = '';
-        },
-        validateModelPath() {
-            // Perform validation of the model path (e.g., checking if it is a local file or internet link)
-            // ...
+        showAddModelDialog() {
+            this.$refs.addmodeldialog.showDialog("").then(()=>{
+                console.log(this.$refs.addmodeldialog.model_path);
 
-            // Trigger the `download_model` endpoint with the path as a POST
-            this.$axios.post('/download_model', { path: this.modelPath })
-            .then(response => {
-                // Handle the response
-                // ...
+                // Make a POST request to the "install model" endpoint
+                const path = this.$refs.addmodeldialog.model_path;
+
+                // Emit an event to the Socket.IO server
+                socket.emit("install_model", { path: path }, (response) => {
+                // Handle the response from the server
+                console.log("Model installation successful:", response);
+                });
+                console.log(this.$refs.addmodeldialog.model_path)
             })
-            .catch(error => {
-                // Handle the error
-                // ...
-            });
 
-            // Close the input dialog
-            this.closeInputDialog();
-        },        
+        },
+        closeAddModelDialog() {
+            this.addModelDialogVisibility = false;
+        },         
         collapseAll(val) {
             this.bec_collapsed = val
             this.mzc_collapsed = val
