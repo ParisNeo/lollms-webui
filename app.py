@@ -40,12 +40,8 @@ from flask import (
 )
 from flask_socketio import SocketIO, emit
 from pathlib import Path
-import gc
 import yaml
 from geventwebsocket.handler import WebSocketHandler
-from gevent.pywsgi import WSGIServer
-import requests
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import logging
 import psutil
 from lollms.binding import LOLLMSConfig
@@ -569,8 +565,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             personalities = [f.stem for f in personalities_dir.iterdir() if f.is_dir()]
         except Exception as ex:
             personalities=[]
-            if self.config["debug"]:
-                print(f"No personalities found. Using default one {ex}")
+            ASCIIColors.error(f"No personalities found. Using default one {ex}")
         return jsonify(personalities)
 
     def list_languages(self):
@@ -1108,6 +1103,8 @@ def sync_cfg(default_config, config):
         if key not in default_config:
             del config.config[key]
             removed_entries.append(key)
+
+    config["version"]=default_config["version"]
     
     return config, added_entries, removed_entries
 
@@ -1184,26 +1181,8 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    # The default configuration must be kept unchanged as it is committed to the repository, 
-    # so we have to make a copy that is not comitted
-    default_config = load_config("configs/config.yaml")
-
-    if args.config!="local_config":
-        args.config = "local_config"
-        if not lollms_paths.personal_configuration_path/f"local_config.yaml".exists():
-            print("No local configuration file found. Building from scratch")
-            shutil.copy(default_config, lollms_paths.personal_configuration_path/f"local_config.yaml")
-
-    config_file_path = lollms_paths.personal_configuration_path/f"local_config.yaml"
-    config = LOLLMSConfig(config_file_path)
-
-    
-    if "version" not in config or int(config["version"])<int(default_config["version"]):
-        #Upgrade old configuration files to new format
-        print("Configuration file is very old. Replacing with default configuration")
-        config, added, removed =sync_cfg(default_config, config)
-        print(f"Added entries : {added}, removed entries:{removed}")
-        config.save_config(config_file_path)
+    # Configuration loading part
+    config = LOLLMSConfig.autoload(lollms_paths)
 
     # Override values in config with command-line arguments
     for arg_name, arg_value in vars(args).items():
@@ -1212,7 +1191,7 @@ if __name__ == "__main__":
 
     # executor = ThreadPoolExecutor(max_workers=1)
     # app.config['executor'] = executor
-    bot = LoLLMsWebUI(app, socketio, config, config_file_path, lollms_paths)
+    bot = LoLLMsWebUI(app, socketio, config, config.file_path, lollms_paths)
 
     # chong Define custom WebSocketHandler with error handling 
     class CustomWebSocketHandler(WebSocketHandler):
