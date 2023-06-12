@@ -1187,14 +1187,16 @@ if __name__ == "__main__":
     # The default configuration must be kept unchanged as it is committed to the repository, 
     # so we have to make a copy that is not comitted
     default_config = load_config("configs/config.yaml")
+    config_file_path = lollms_paths.personal_configuration_path/f"local_config.yaml"
 
     if args.config!="local_config":
-        args.config = "local_config"
-        if not lollms_paths.personal_configuration_path/f"local_config.yaml".exists():
-            print("No local configuration file found. Building from scratch")
-            shutil.copy(default_config, lollms_paths.personal_configuration_path/f"local_config.yaml")
+        print("Found local configuration file. Loading it")
+        custom_config = load_config(lollms_paths.personal_configuration_path/args.config)
+        save_config(custom_config, config_file_path)
+    else:
+        print("No local configuration file found. Building from scratch")
+        save_config(default_config, config_file_path)
 
-    config_file_path = lollms_paths.personal_configuration_path/f"local_config.yaml"
     config = LOLLMSConfig(config_file_path)
 
     
