@@ -1109,8 +1109,7 @@ def sync_cfg(default_config, config):
     return config, added_entries, removed_entries
 
 if __name__ == "__main__":
-
-    lollms_paths = LollmsPaths.find_paths(force_local=True)
+    lollms_paths = LollmsPaths.find_paths(force_local=True, custom_default_cfg_path="configs/config.yaml")
     db_folder = lollms_paths.personal_path/"databases"
     db_folder.mkdir(parents=True, exist_ok=True)
     parser = argparse.ArgumentParser(description="Start the chatbot Flask app.")
