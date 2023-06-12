@@ -2,7 +2,7 @@
     <div
         class="relative flex flex-col no-scrollbar shadow-lg min-w-[24rem] max-w-[24rem] bg-bg-light-tone dark:bg-bg-dark-tone">
         <!-- LEFT SIDE PANEL -->
-        <div class="flex flex-col flex-grow overflow-y-scroll no-scrollbar"
+        <div id="leftPanel" class="flex flex-col flex-grow overflow-y-scroll no-scrollbar"
             @dragover.stop.prevent="setDropZoneDiscussion()">
             <div class=" sticky z-10 top-0  bg-bg-light-tone dark:bg-bg-dark-tone shadow-md">
 
@@ -136,7 +136,7 @@
                 <div class="mx-4 flex flex-col flex-grow" :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
 
 
-                    <div :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''"
+                    <div id="dis-list" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''"
                         class="flex flex-col flex-grow  ">
                         <TransitionGroup v-if="list.length > 0" name="list">
                             <Discussion v-for="(item, index) in list" :key="item.id" :id="item.id" :title="item.title"
@@ -168,12 +168,15 @@
             :class="isDragOverChat ? 'pointer-events-none' : ''">
 
             <!-- CHAT AREA -->
-            <div class=" container pt-4 pb-10 mb-16">
+            <div class=" container pt-4 pb-10 mb-16" >
                 <TransitionGroup v-if="discussionArr.length > 0" name="list">
                     <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg" :id="'msg-' + msg.id"
                         ref="messages" @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
                         @rankDown="rankDownMessage" @updateMessage="updateMessage" @resendMessage="resendMessage"
-                        :avatar="getAvatar(msg.sender)" @click="scrollToElementInContainer($event.target, 'messages-list')" />
+                        :avatar="getAvatar(msg.sender)" />
+
+                        <!-- REMOVED FOR NOW, NEED MORE TESTING -->
+                        <!-- @click="scrollToElementInContainer($event.target, 'messages-list')"  -->
 
 
                 </TransitionGroup>
@@ -492,6 +495,12 @@ export default {
                 }
                 nextTick(() => {
 
+
+                    const discussionitem =document.getElementById('dis-'+this.currentDiscussion.id)
+
+                    //this.scrollToElement(discussionitem)
+
+                    this.scrollToElementInContainer(discussionitem, 'leftPanel')
                     const msgList = document.getElementById('messages-list')
 
                     this.scrollBottom(msgList)
@@ -508,10 +517,17 @@ export default {
             }
         },
         scrollToElementInContainer(el, containerId) {
-            // console.log(el)
-            // const topPos = el.offsetTop + el.clientHeight;
-            // const container = document.getElementById(containerId)
-            // container.scrollTop = topPos;
+            const topPos = el.offsetTop + el.clientHeight;
+            const container = document.getElementById(containerId)
+           // console.log(el.offsetTop , el.clientHeight, container.clientHeight)
+
+
+            container.scrollTo(
+                    {
+                        top: topPos,
+                        behavior: "smooth",
+                    }
+                )
 
         },
         scrollBottom(el) {
@@ -1073,7 +1089,7 @@ export default {
 
 
             //this.fileList = files
-            this.$refs.chatBox.fileList = files
+            this.$refs.chatBox.fileList = this.$refs.chatBox.fileList.concat(files)
 
             this.isDragOverChat = false
         },

@@ -21,7 +21,7 @@ Before installing this tool you need to install python 3.10 or higher as well as
 
 
 Now let's cut to the chace. Let's start by installing the tool.
-First, go to the github repository page at github.com/ParisNeo/gpt4all-ui then press the latest release button. Depending on your platform download webui.bat for windows or webui.sh for linux.
+First, go to the github repository page at github.com/ParisNeo/lollms-webui then press the latest release button. Depending on your platform download webui.bat for windows or webui.sh for linux.
 
 We call this file, the application launcher. Make sure you install the launcher in a folder you choose. For example I'll put it in my ai folder at gpt4all-webui.
 

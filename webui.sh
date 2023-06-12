@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+echo "\u001b[34m"
 echo "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
 echo "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
 echo "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
@@ -33,6 +34,7 @@ echo "HHHHHHHHHHHH.HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
 echo "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
 echo "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
+echo "\u001b[0m"
 
 if ping -q -c 1 google.com >/dev/null 2>&1; then
     echo -e "\e[32mInternet Connection working fine\e[0m"
@@ -57,13 +59,13 @@ if ping -q -c 1 google.com >/dev/null 2>&1; then
     echo Pulling latest changes
     git pull origin main
     else
-      if [[ -d GPT4All ]] ;then
-        cd GPT4All
+      if [[ -d lollms-webui ]] ;then
+        cd lollms-webui
       else
         echo Cloning repository...
         rem Clone the Git repository into a temporary directory
-        git clone https://github.com/ParisNeo/gpt4all-ui.git ./GPT4All
-        cd GPT4All
+        git clone https://github.com/ParisNeo/lollms-webui.git ./lollms-webui
+        cd lollms-webui
       fi
     fi
     echo Pulling latest version...

@@ -1,17 +1,22 @@
 ######
-# Project       : GPT4ALL-UI
+# Project       : lollms-webui
 # File          : api.py
 # Author        : ParisNeo with the help of the community
 # Supported by Nomic-AI
 # license       : Apache 2.0
 # Description   : 
-# A simple api to communicate with gpt4all-ui and its models.
+# A simple api to communicate with lollms-webui and its models.
 ######
+from flask import request
 from datetime import datetime
 from api.db import DiscussionsDB
+from api.helpers import compare_lists
 from pathlib import Path
 import importlib
-from pyaipersonality import AIPersonality
+from lollms.personality import AIPersonality, MSG_TYPE
+from lollms.binding import LOLLMSConfig
+from lollms.paths import LollmsPaths
+from lollms.helpers import ASCIIColors
 import multiprocessing as mp
 import threading
 import time
@@ -21,7 +26,7 @@ import traceback
 import sys
 
 __author__ = "parisneo"
-__github__ = "https://github.com/ParisNeo/gpt4all-ui"
+__github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
@@ -80,8 +85,9 @@ def parse_requirements_file(requirements_path):
 
 
 class ModelProcess:
-    def __init__(self, config=None):
+    def __init__(self, lollms_paths:LollmsPaths, config:LOLLMSConfig=None):
         self.config = config
+        self.lollms_paths = lollms_paths
         self.generate_queue = mp.Queue()
         self.generation_queue = mp.Queue()
         self.cancel_queue = mp.Queue(maxsize=1)
@@ -105,9 +111,9 @@ class ModelProcess:
     def reset_config_result(self):
         self._set_config_result = {
             'status': 'succeeded',
-            'binding_status':'ok',
-            'model_status':'ok',
-            'personality_status':'ok',
+            'binding_status':True,
+            'model_status':True,
+            'personalities_status':True,
             'errors':[]
             }
         
@@ -134,7 +140,12 @@ class ModelProcess:
             print(f"Loading binding {binding_name} install ON")
         else:
             print(f"Loading binding : {binding_name} install is off")
-        binding_path = Path("bindings")/binding_name
+
+        if binding_name is None:
+            self.model
+
+
+        binding_path = self.lollms_paths.bindings_zoo_path/binding_name
         if install:
             # first find out if there is a requirements.txt file
             install_file_name="install.py"
@@ -145,7 +156,7 @@ class ModelProcess:
                 module = importlib.util.module_from_spec(module_spec)
                 module_spec.loader.exec_module(module)
                 if hasattr(module, "Install"):
-                    module.Install(self)
+                    module.Install(self.config)
 
         # define the full absolute path to the module
         absolute_path = binding_path.resolve()
@@ -169,12 +180,6 @@ class ModelProcess:
             self.generate_queue.put(None)
             self.process.join()
             self.process = None
-
-    def set_binding(self, binding_path):
-        self.binding = binding_path
-
-    def set_model(self, model_path):
-        self.model = model_path
         
     def set_config(self, config):
         try:
@@ -195,46 +200,48 @@ class ModelProcess:
     def cancel_generation(self):
         self.completion_signal.set()
         self.cancel_queue.put(('cancel',))
-        print("Canel request received")
+        ASCIIColors.error("Canel request received")
 
     def clear_queue(self):
         self.clear_queue_queue.put(('clear_queue',))
     
     def rebuild_binding(self, config):
         try:
-            print(" ******************* Building Binding from main Process *************************")
-            binding = self.load_binding(config["binding"], install=True)
-            print("Binding loaded successfully")
+            ASCIIColors.success(" ******************* Building Binding from main Process *************************")
+            binding = self.load_binding(config["binding_name"], install=True)
+            ASCIIColors.success("Binding loaded successfully")
         except Exception as ex:
-            print("Couldn't build binding.")
-            print(ex)
+            ASCIIColors.error("Couldn't build binding.")
+            ASCIIColors.error("-----------------")
+            print(f"It seems that there is no valid binding selected. Please use the ui settings to select a binding.\nHere is encountered error: {ex}")
+            ASCIIColors.error("-----------------")
             binding = None
         return binding
             
     def _rebuild_model(self):
         try:
             self.reset_config_result()
-            print(" ******************* Building Binding from generation Process *************************")
-            self.binding = self.load_binding(self.config["binding"], install=True)
-            print("Binding loaded successfully")
+            ASCIIColors.success(" ******************* Building Binding from generation Process *************************")
+            self.binding = self.load_binding(self.config["binding_name"], install=True)
+            ASCIIColors.success("Binding loaded successfully")
             try:
-                model_file = Path("models")/self.config["binding"]/self.config["model"]
+                model_file = self.lollms_paths.personal_models_path/self.config["binding_name"]/self.config["model_name"]
                 print(f"Loading model : {model_file}")
                 self.model = self.binding(self.config)
                 self.model_ready.value = 1
                 print("Model created successfully\n")
             except Exception as ex:
-                if self.config["model"] is None:
+                if self.config["model_name"] is None:
                     print("No model is selected.\nPlease select a backend and a model to start using the ui.")
                 else:
-                    print(f"Couldn't build model {self.config['model']} : {ex}")
+                    print(f"Couldn't build model {self.config['model_name']} : {ex}")
                 self.model = None
                 self._set_config_result['status'] ='failed'
-                self._set_config_result['binding_status'] ='failed'
-                self._set_config_result['errors'].append(f"couldn't build binding:{ex}")
+                self._set_config_result['model_status'] ='failed'
+                self._set_config_result['errors'].append(f"couldn't build model:{ex}")
         except Exception as ex:
             traceback.print_exc()
-            print("Couldn't build binding")
+            print("Couldn't build model")
             print(ex)
             self.binding = None
             self.model = None
@@ -242,42 +249,61 @@ class ModelProcess:
             self._set_config_result['binding_status'] ='failed'
             self._set_config_result['errors'].append(f"couldn't build binding:{ex}")
 
-    def rebuild_personality(self):
-        try:
-            print(f" ******************* Building Personality {self.config['personality']} from main Process *************************")
-            personality_path = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
-            personality = AIPersonality(personality_path, run_scripts=False)
-            print(f" ************ Personality {personality.name} is ready (Main process) ***************************")
-        except Exception as ex:
-            print(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
-            if self.config["debug"]:
-                print(ex)
-            personality = AIPersonality()
+    def rebuild_personalities(self):
+        mounted_personalities=[]
+        ASCIIColors.success(f" ******************* Building mounted Personalities from main Process *************************")
+        for personality in self.config['personalities']:
+            try:
+                print(f" {personality}")
+                personality_path = self.lollms_paths.personalities_zoo_path/f"{personality}"
+                print(f"Loading from {personality_path}")
+                personality = AIPersonality(self.lollms_paths, personality_path, run_scripts=False)
+                mounted_personalities.append(personality)
+            except Exception as ex:
+                ASCIIColors.error(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+                if self.config["debug"]:
+                    print(ex)
+                personality = AIPersonality(self.lollms_paths)
             
-        return personality
+        ASCIIColors.success(f" ************ Personalities mounted (Main process) ***************************")
+            
+        return mounted_personalities
     
-    def _rebuild_personality(self):
-        try:
-            self.reset_config_result()
-            print(f" ******************* Building Personality {self.config['personality']} from generation Process *************************")
-            personality_path = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}"
-            self.personality = AIPersonality(personality_path)
-            print(f" ************ Personality {self.personality.name} is ready (generation process) ***************************")
-        except Exception as ex:
-            print(f"Personality file not found or is corrupted ({personality_path}).")
-            print(f"Please verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
-            print(f"Exception: {ex}")
-            if self.config["debug"]:
-                print(ex)
-            self.personality = AIPersonality()
+    def _rebuild_personalities(self):
+        self.mounted_personalities=[]
+        failed_personalities=[]
+        self.reset_config_result()
+        ASCIIColors.success(f" ******************* Building mounted Personalities from generation Process *************************")
+        for personality in self.config['personalities']:
+            try:
+                print(f" {personality}")
+                personality_path = self.lollms_paths.personalities_zoo_path/f"{personality}"
+                personality = AIPersonality(self.lollms_paths, personality_path, run_scripts=True, model=self.model)
+                self.mounted_personalities.append(personality)
+            except Exception as ex:
+                ASCIIColors.error(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+                ASCIIColors.error(f"Exception received is: {ex}")
+                personality = AIPersonality(self.lollms_paths, model=self.model)
+                failed_personalities.append(personality_path)
+                self._set_config_result['errors'].append(f"couldn't build personalities:{ex}")
+            
+        ASCIIColors.success(f" ************ Personalities mounted (Generation process) ***************************")
+        if len(failed_personalities)==len(self.config['personalities']):
             self._set_config_result['status'] ='failed'
-            self._set_config_result['binding_status'] ='failed'
-            self._set_config_result['errors'].append(f"couldn't build binding:{ex}")
-    
+            self._set_config_result['personalities_status'] ='failed'
+        elif len(failed_personalities)>0:
+            self._set_config_result['status'] ='semi_failed'
+            self._set_config_result['personalities_status'] ='semi_failed'
+            
+        if self.config['active_personality_id']<len(self.mounted_personalities):
+            self.personality = self.mounted_personalities[self.config['active_personality_id']]
+            ASCIIColors.success("Personality set successfully")
+        else:
+            ASCIIColors.error("Failed to set personality. Please select a valid one")
        
     def _run(self):     
         self._rebuild_model()
-        self._rebuild_personality()
+        self._rebuild_personalities()
         self.check_set_config_thread = threading.Thread(target=self._check_set_config_queue, args=())
         print("Launching config verification thread")
         self.check_set_config_thread.start()
@@ -298,7 +324,7 @@ class ModelProcess:
             print("No model loaded. Waiting for new configuration instructions")
                     
         self.ready = True
-        print(f"Listening on :http://{self.config['host']}:{self.config['port']}")
+        ASCIIColors.print(ASCIIColors.color_bright_blue,f"Listening on :http://{self.config['host']}:{self.config['port']}")
         while True:
             try:
                 if not self.generate_queue.empty():
@@ -311,10 +337,11 @@ class ModelProcess:
                                 if self.personality.processor_cfg is not None:
                                     if "custom_workflow" in self.personality.processor_cfg:
                                         if self.personality.processor_cfg["custom_workflow"]:
-                                            print("Running workflow")
+                                            ASCIIColors.success("Running workflow")
                                             self.completion_signal.clear()
                                             self.start_signal.set()
-                                            output = self.personality.processor.run_workflow(self._generate, command[1], command[0], self._callback)
+
+                                            output = self.personality.processor.run_workflow( command[1], command[0], self._callback)
                                             self._callback(output, 0)
                                             self.completion_signal.set()
                                             self.start_signal.clear()
@@ -327,6 +354,7 @@ class ModelProcess:
                             self.start_signal.clear()
                             print("Finished executing the generation")
             except Exception as ex:
+                print("Couldn't start generation")
                 print(ex)
             time.sleep(1)
     def _generate(self, prompt, n_predict=50, callback=None):
@@ -337,7 +365,7 @@ class ModelProcess:
             if self.config["override_personality_model_parameters"]:
                 output = self.model.generate(
                     prompt,
-                    new_text_callback=callback,
+                    callback=callback,
                     n_predict=n_predict,
                     temperature=self.config['temperature'],
                     top_k=self.config['top_k'],
@@ -350,7 +378,7 @@ class ModelProcess:
             else:
                 output = self.model.generate(
                     prompt,
-                    new_text_callback=callback,
+                    callback=callback,
                     n_predict=self.n_predict,
                     temperature=self.personality.model_temperature,
                     top_k=self.personality.model_top_k,
@@ -373,7 +401,7 @@ class ModelProcess:
         detected_anti_prompt = False
         anti_prompt_to_remove=""
         for prompt in self.personality.anti_prompts:
-            if prompt.lower() in text.lower():
+            if prompt.lower() in self.curent_text.lower():
                 detected_anti_prompt=True
                 anti_prompt_to_remove = prompt.lower()
                 
@@ -429,23 +457,26 @@ class ModelProcess:
         self.config = config
         print("Changing configuration")
         # verify that the binding is the same
-        if self.config["binding"]!=bk_cfg["binding"] or self.config["model"]!=bk_cfg["model"]:
+        if self.config["binding_name"]!=bk_cfg["binding_name"] or self.config["model_name"]!=bk_cfg["model_name"]:
             self._rebuild_model()
             
         # verify that the personality is the same
-        if self.config["personality"]!=bk_cfg["personality"] or self.config["personality_category"]!=bk_cfg["personality_category"] or self.config["personality_language"]!=bk_cfg["personality_language"]:
-            self._rebuild_personality()
+        
+        if not compare_lists(self.config["personalities"], bk_cfg["personalities"]):
+            self._rebuild_personalities()
 
 
-class GPT4AllAPI():
-    def __init__(self, config:dict, socketio, config_file_path:str) -> None:
+class LoLLMsAPPI():
+    def __init__(self, config:LOLLMSConfig, socketio, config_file_path:str, lollms_paths: LollmsPaths) -> None:
+        self.lollms_paths = lollms_paths
+        
         self.socketio = socketio
         #Create and launch the process
-        self.process = ModelProcess(config)
+        self.process = ModelProcess(self.lollms_paths, config)
         self.config = config
-        
         self.binding = self.process.rebuild_binding(self.config)
-        self.personality = self.process.rebuild_personality()
+        self.mounted_personalities = self.process.rebuild_personalities()
+        self.personality = self.mounted_personalities[self.config["active_personality_id"]]
         if config["debug"]:
             print(print(f"{self.personality}"))
         self.config_file_path = config_file_path
@@ -458,34 +489,38 @@ class GPT4AllAPI():
         self._message_id = 0
 
         self.db_path = config["db_path"]
-
-        # Create database object
-        self.db = DiscussionsDB(self.db_path)
+        if Path(self.db_path).is_absolute():
+            # Create database object
+            self.db = DiscussionsDB(self.db_path)
+        else:
+            # Create database object
+            self.db = DiscussionsDB(self.lollms_paths.personal_path/"databases"/self.db_path)
 
         # If the database is empty, populate it with tables
         self.db.populate()
 
         # This is used to keep track of messages 
         self.full_message_list = []
-        
+        self.current_room_id = None
         # =========================================================================================
         # Socket IO stuff    
         # =========================================================================================
         @socketio.on('connect')
         def connect():
-            print('Client connected')
+            ASCIIColors.success(f'Client {request.sid} connected')
 
         @socketio.on('disconnect')
         def disconnect():
-            print('Client disconnected')
+            ASCIIColors.error(f'Client {request.sid} disconnected')
 
         @socketio.on('install_model')
         def install_model(data):
+            room_id = request.sid 
             def install_model_():
                 print("Install model triggered")
                 model_path = data["path"]
                 progress = 0
-                installation_dir = Path(f'./models/{self.config["binding"]}/')
+                installation_dir = self.lollms_paths.personal_models_path/self.config["binding_name"]
                 filename = Path(model_path).name
                 installation_path = installation_dir / filename
                 print("Model install requested")
@@ -493,18 +528,18 @@ class GPT4AllAPI():
 
                 if installation_path.exists():
                     print("Error: Model already exists")
-                    socketio.emit('install_progress',{'status': 'failed', 'error': 'model already exists'})
+                    socketio.emit('install_progress',{'status': 'failed', 'error': 'model already exists'}, room=room_id)
                 
-                socketio.emit('install_progress',{'status': 'progress', 'progress': progress})
+                socketio.emit('install_progress',{'status': 'progress', 'progress': progress}, room=room_id)
                 
                 def callback(progress):
-                    socketio.emit('install_progress',{'status': 'progress', 'progress': progress})
+                    socketio.emit('install_progress',{'status': 'progress', 'progress': progress}, room=room_id)
                     
                 if hasattr(self.binding, "download_model"):
                     self.binding.download_model(model_path, installation_path, callback)
                 else:
                     self.download_file(model_path, installation_path, callback)
-                socketio.emit('install_progress',{'status': 'succeeded', 'error': ''})
+                socketio.emit('install_progress',{'status': 'succeeded', 'error': ''}, room=room_id)
             tpe = threading.Thread(target=install_model_, args=())
             tpe.start()
             
@@ -512,20 +547,21 @@ class GPT4AllAPI():
         @socketio.on('uninstall_model')
         def uninstall_model(data):
             model_path = data['path']
-            installation_dir = Path(f'./models/{self.config["binding"]}/')
+            installation_dir = self.lollms_paths.personal_models_path/self.config["binding_name"]
             filename = Path(model_path).name
             installation_path = installation_dir / filename
 
             if not installation_path.exists():
-                socketio.emit('install_progress',{'status': 'failed', 'error': 'The model does not exist'})
+                socketio.emit('install_progress',{'status': 'failed', 'error': 'The model does not exist'}, room=request.sid)
 
             installation_path.unlink()
-            socketio.emit('install_progress',{'status': 'succeeded', 'error': ''})
+            socketio.emit('install_progress',{'status': 'succeeded', 'error': ''}, room=request.sid)
             
 
         
         @socketio.on('generate_msg')
         def generate_msg(data):
+            self.current_room_id = request.sid
             if self.process.model_ready.value==1:
                 if self.current_discussion is None:
                     if self.db.does_last_discussion_have_messages():
@@ -553,7 +589,7 @@ class GPT4AllAPI():
                             "message":"",
                             "user_message_id": self.current_user_message_id,
                             "ai_message_id": self.current_ai_message_id,
-                        }
+                        }, room=self.current_room_id
                 )
 
         @socketio.on('generate_msg_from')
@@ -682,10 +718,8 @@ class GPT4AllAPI():
 
         link_text = self.personality.link_text
 
-        if len(self.full_message_list) > self.config["nb_messages_to_remember"]:
-            discussion_messages = self.personality.personality_conditioning+ link_text.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
-        else:
-            discussion_messages = self.personality.personality_conditioning+ link_text.join(self.full_message_list)
+        discussion_messages = self.personality.personality_conditioning+ link_text.join(self.full_message_list)
+
         
         return discussion_messages, message["content"]
 
@@ -710,22 +744,24 @@ class GPT4AllAPI():
         return discussion_messages # Removes the last return
 
 
-    def process_chunk(self, chunk, message_type):
+    def process_chunk(self, chunk, message_type:MSG_TYPE):
         """
         0 : a regular message
         1 : a notification message
         2 : A hidden message
         """
-        if message_type == 0:
+        if message_type == MSG_TYPE.MSG_TYPE_CHUNK:
             self.bot_says += chunk
-        if message_type < 2:
+        if message_type == MSG_TYPE.MSG_TYPE_FULL:
+            self.bot_says = chunk
+        if message_type.value < 2:
             self.socketio.emit('message', {
                                             'data': self.bot_says, 
                                             'user_message_id':self.current_user_message_id, 
                                             'ai_message_id':self.current_ai_message_id, 
                                             'discussion_id':self.current_discussion.discussion_id,
-                                            'message_type': message_type
-                                        }
+                                            'message_type': message_type.value
+                                        }, room=self.current_room_id
                                 )
         if self.cancel_gen:
             print("Generation canceled")
@@ -753,7 +789,7 @@ class GPT4AllAPI():
                         "message":message,#markdown.markdown(message),
                         "user_message_id": self.current_user_message_id,
                         "ai_message_id": self.current_ai_message_id,
-                    }
+                    }, room=self.current_room_id
             )
 
             # prepare query and reception
@@ -779,7 +815,7 @@ class GPT4AllAPI():
                                             'data': self.bot_says, 
                                             'ai_message_id':self.current_ai_message_id, 
                                             'parent':self.current_user_message_id, 'discussion_id':self.current_discussion.discussion_id
-                                        }
+                                        }, room=self.current_room_id
                                 )
 
             self.current_discussion.update_message(self.current_ai_message_id, self.bot_says)

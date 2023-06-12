@@ -8,7 +8,7 @@ Welcome to the GPT4ALL WebUI tutorial! In this tutorial, we will walk you throug
 2. If you are using Conda, you can create a Conda virtual environment, install the dependencies mentioned in the `requirements.txt` file, and run the application using `python app.py`. For regular Python installations, follow the next steps.
 
 ## Download and Launch the Tool
-1. Visit the GitHub repository page at [github.com/ParisNeo/gpt4all-ui](https://github.com/ParisNeo/gpt4all-ui).
+1. Visit the GitHub repository page at [github.com/ParisNeo/lollms-webui](https://github.com/ParisNeo/lollms-webui).
 2. Click on the "Latest Release" button.
 3. Depending on your platform, download either `webui.bat` for Windows or `webui.sh` for Linux.
 4. Choose a folder on your system to install the application launcher. For example, you can create a folder named `gpt4all-webui` in your `ai` directory.

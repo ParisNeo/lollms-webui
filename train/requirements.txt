@@ -1,0 +1,15 @@
+accelerate
+datasets
+torchmetrics
+evaluate
+transformers>=4.28.0
+wandb
+pip
+peft
+nodelist-inflator
+deepspeed
+sentencepiece
+jsonlines
+nomic
+scikit-learn
+matplotlib

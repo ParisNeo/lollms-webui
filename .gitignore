@@ -181,3 +181,7 @@ test.http
 
 shared/*
 !shared/.keep
+
+
+uploads
+global_paths_cfg.yaml

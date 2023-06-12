@@ -1,8 +1,8 @@
 
 import sqlite3
-
+from pathlib import Path
 __author__ = "parisneo"
-__github__ = "https://github.com/ParisNeo/gpt4all-ui"
+__github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
@@ -13,7 +13,8 @@ class DiscussionsDB:
     MSG_TYPE_CONDITIONNING  = 1
 
     def __init__(self, db_path="database.db"):
-        self.db_path = db_path
+        self.db_path = Path(db_path)
+        self.db_path .parent.mkdir(exist_ok=True, parents= True)
 
     def populate(self):
         """

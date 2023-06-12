@@ -5,14 +5,14 @@
             <!-- LOGO -->
             <RouterLink :to="{ name: 'discussions' }">
                 <div class="flex items-center gap-3 flex-1">
-                    <img class="w-12  hover:scale-95 duration-150 " title="GPT4ALL-UI" src="@/assets/logo.svg" alt="Logo">
-                    <p class="text-2xl ">GPT4ALL-UI</p>
+                    <img class="w-12  hover:scale-95 duration-150 " title="lollms-webui" src="@/assets/logo.svg" alt="Logo">
+                    <p class="text-2xl ">lollms-webui</p>
 
                 </div>
             </RouterLink>
             <!-- GITHUB AND THEME BUTTONS -->
             <div class="flex gap-3 flex-1 items-center justify-end">
-                <a href="https://github.com/ParisNeo/gpt4all-ui" target="_blank">
+                <a href="https://github.com/ParisNeo/lollms-webui" target="_blank">
 
                     <div class="text-2xl  hover:text-primary duration-150" title="Visit repository page">
                         <i data-feather="github"></i>

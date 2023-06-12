@@ -8,4 +8,6 @@ markdown
 gevent
 gevent-websocket
 pyaipersonality>=0.0.14
+lollms
 langchain
+requests

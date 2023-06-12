@@ -18,7 +18,7 @@ jobs:
         with:
           context: .
           push: false
-          tags: gpt4all-ui:latest
+          tags: lollms-webui:latest
 
   lint:
     runs-on: ubuntu-latest
