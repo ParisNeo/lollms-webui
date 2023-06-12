@@ -565,8 +565,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             personalities = [f.stem for f in personalities_dir.iterdir() if f.is_dir()]
         except Exception as ex:
             personalities=[]
-            if self.config["debug"]:
-                print(f"No personalities found. Using default one {ex}")
+            ASCIIColors.error(f"No personalities found. Using default one {ex}")
         return jsonify(personalities)
 
     def list_languages(self):

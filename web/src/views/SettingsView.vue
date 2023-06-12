@@ -938,7 +938,6 @@ export default {
             this.api_get_req("list_models").then(response => { this.modelsArr = response })
             //this.api_get_req("list_personalities_languages").then(response => { this.persLangArr = response })
             this.api_get_req("list_personalities_categories").then(response => { this.persCatgArr = response })
-            this.api_get_req("list_personalities").then(response => { this.persArr = response })
             //this.api_get_req("list_languages").then(response => { this.langArr = response })
             this.api_get_req("get_config").then(response => {
                 console.log("Received config")
@@ -961,6 +960,10 @@ export default {
                 this.configFile.personality_folder = response["personality_name"]
                 console.log("received infos")
             });
+            this.api_get_req("list_personalities").then(response => { 
+                this.persArr = response 
+                console.log(`Listed personalities:\n${response}`)
+            })
             this.api_get_req("disk_usage").then(response => {
                 this.diskUsage = response
             })
