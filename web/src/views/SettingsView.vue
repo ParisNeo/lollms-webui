@@ -339,15 +339,19 @@
                                 <div class="relative  hover:-translate-y-2 duration-300 hover:z-10 shrink-0 "
                                     v-for="(item, index) in mountedPersArr" :key="index + '-' + item.name">
                                     <div class="group ">
+                                        <button @click.stop="onPersonalitySelected(item)">
 
                                         <img :src="item.$refs.imgElement.src"
                                             class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary "
                                             :class="item.selected ? 'border-secondary':'border-transparent z-0'"
                                             :title="item.personality.name"
-                                            @click.stop="onPersonalitySelected(item)">
+                                            >
+                                        </button>
+                                        <button  @click.stop="onPersonalityMounted(item)">
+                                            
                                         <span
                                             class="hidden group-hover:block top-0 left-7 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
-                                            title="Unmount personality" @click.stop="unmountPersonality(item)">
+                                            title="Unmount personality">
                                             <!-- UNMOUNT BUTTON -->
                                             <svg aria-hidden="true" class="w-4 h-4 text-red-600 hover:text-red-500 "
                                                 fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -357,6 +361,7 @@
                                             </svg>
 
                                         </span>
+                                    </button>
                                     </div>
                                 </div>
                             </div>
@@ -826,6 +831,10 @@ export default {
             }
             if (pers.personality) {
 
+                if(pers.selected){
+                    this.$refs.toast.showToast("Personality already selected", 4, true)
+                    return
+                }
 
 
                 this.settingsChanged = true
@@ -1398,10 +1407,11 @@ export default {
                 this.getMountedPersonalities()
                 // Select some other personality
                 const lastPers = this.mountedPersArr[this.mountedPersArr.length-1]
+
                 console.log(lastPers, this.mountedPersArr.length)
                 const res2 = await this.select_personality(lastPers)
                 if (res2.status) {
-                    this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
+                    this.$refs.toast.showToast("Selected personality:\n" + lastPers.personality.name, 4, true)
                    
                 }
 
