@@ -1400,9 +1400,18 @@ export default {
             if (res.status) {
                 this.configFile.personalities = res.personalities
                 this.$refs.toast.showToast("Personality unmounted", 4, true)
-
                 pers.isMounted = false
                 this.getMountedPersonalities()
+                // Select some other personality
+                const lastPers = this.mountedPersArr[this.mountedPersArr.length-1]
+                console.log(lastPers, this.mountedPersArr.length)
+                const res2 = await this.select_personality(lastPers)
+                if (res2.status) {
+                    this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
+                   
+                }
+
+
             } else {
                 this.$refs.toast.showToast("Could not unmount personality\nError: "+res.error, 4, false)
             }
@@ -1437,15 +1446,21 @@ export default {
 
         },
         onPersonalityMounted(persItem) {
-            console.log('toggl', persItem)
+            
 
             if (this.configFile.personalities.includes(persItem.personality.full_path)) {
                 //this.$refs.toast.showToast("Personality already mounted", 4, false)
                 //return
-                persItem.ismounted = false
-                this.unmountPersonality(persItem)
+                //persItem.ismounted = false
+                if(this.configFile.personalities.length==1){
+                    this.$refs.toast.showToast("Can't unmount last personality", 4, false)
+
+                }else{
+                    this.unmountPersonality(persItem)
+
+                }
             } else {
-                persItem.ismounted = true
+                //persItem.ismounted = true
                 this.mountPersonality(persItem)
                 
             }
