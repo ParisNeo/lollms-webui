@@ -517,7 +517,7 @@ export default {
             }
         },
         scrollToElementInContainer(el, containerId) {
-            const topPos = el.offsetTop + el.clientHeight;
+            const topPos = el.offsetTop ; //+ el.clientHeight
             const container = document.getElementById(containerId)
            // console.log(el.offsetTop , el.clientHeight, container.clientHeight)
 
