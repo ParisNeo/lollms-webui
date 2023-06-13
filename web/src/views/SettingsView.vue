@@ -335,16 +335,18 @@
                         <!-- LIST OF MOUNTED PERSONALITIES -->
                         <div v-if="configFile.personalities"
                             class=" text-base font-semibold cursor-pointer select-none items-center ">
-
+                            <!-- LIST -->
                             <div class="flex -space-x-4 items-center" v-if="mountedPersArr.length > 0">
-
+                                <!-- ITEM -->
                                 <div class="relative  hover:-translate-y-2 duration-300 hover:z-10 shrink-0 "
                                     v-for="(item, index) in mountedPersArr" :key="index + '-' + item.name">
                                     <div class="group ">
 
                                         <img :src="item.$refs.imgElement.src"
-                                            class="w-8 h-8 rounded-full object-fill text-red-700 border-2  group-hover:border-secondary border-transparent"
-                                            :title="item.personality.name">
+                                            class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary "
+                                            :class="item.selected ? 'border-secondary':'border-transparent z-0'"
+                                            :title="item.personality.name"
+                                            @click.stop="onPersonalitySelected(item)">
                                         <span
                                             class="hidden group-hover:block top-0 left-7 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
                                             title="Unmount personality" @click.stop="unmountPersonality(item)">
@@ -1368,46 +1370,41 @@ export default {
                 this.$refs.toast.showToast("Personality already mounted", 4, false)
                 return
             }
-            pers.isMounted = true
+            
             const res = await this.mount_personality(pers.personality)
             console.log('mount_personality res', res)
 
             if (res.status) {
                 this.configFile.personalities = res.personalities
                 this.$refs.toast.showToast("Personality mounted", 4, true)
+                pers.isMounted = true
 
-                // this.configFile = await this.api_get_req("get_config")
-                // await this.getPersonalitiesArr().then(()=>{
-                //     this.getMountedPersonalities()
-                // })
                 const res2 = await this.select_personality(pers)
                 if (res2.status) {
-                    this.$refs.toast.showToast("Personality activated", 4, true)
+                    this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
                    
                 }
                 this.getMountedPersonalities()
             } else {
-                this.$refs.toast.showToast("Could not mount personality", 4, false)
+                pers.isMounted = false
+                this.$refs.toast.showToast("Could not mount personality\nError: "+ res.error, 4, false)
             }
 
         },
         async unmountPersonality(pers) {
             if (!pers) { return }
-            pers.isMounted = false
+            
             const res = await this.unmount_personality(pers.personality)
-            console.log('ff', res)
+           
 
             if (res.status) {
                 this.configFile.personalities = res.personalities
                 this.$refs.toast.showToast("Personality unmounted", 4, true)
-                //this.refresh()
-                // this.configFile = await this.api_get_req("get_config")
-                // await this.getPersonalitiesArr().then(()=>{
-                //     this.getMountedPersonalities()
-                // })
+
+                pers.isMounted = false
                 this.getMountedPersonalities()
             } else {
-                this.$refs.toast.showToast("Could not unmount personality", 4, false)
+                this.$refs.toast.showToast("Could not unmount personality\nError: "+res.error, 4, false)
             }
 
 
