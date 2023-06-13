@@ -1632,7 +1632,9 @@ export default {
 
             })
         },
-        settingsChanged() {
+        settingsChanged(val) {
+            this.$store.state.settingsChanged=val
+            //this.$store.settingsChanged=val
             nextTick(() => {
                 feather.replace()
 
