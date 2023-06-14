@@ -1151,7 +1151,7 @@ export default {
     },
     async activated() {
         
-console.log('settings changed',this.$store.state.settingsChanged)
+console.log('settings changed',this.$store.state.mountedPersonalities)
         // This lifecycle hook runs every time you switch from other page back to this page (vue-router)
         // To fix scrolling back to last message, this hook is needed.
         // If anyone knows hor to fix scroll issue when changing pages, please do fix it :D
