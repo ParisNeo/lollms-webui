@@ -1,7 +1,7 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
 version: 7
-binding_name: llama_cpp_official
-model_name: airoboros-13b-gpt4.ggmlv3.q4_0.bin
+binding_name: gpt4all
+model_name: ggml-gpt4all-j-v1.3-groovy.bin
 
 # Host information
 host: localhost

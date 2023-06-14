@@ -1432,7 +1432,8 @@ export default {
                 const lastPers = this.mountedPersArr[this.mountedPersArr.length - 1]
 
                 console.log(lastPers, this.mountedPersArr.length)
-                const res2 = await this.select_personality(lastPers.personality)
+                // const res2 = await this.select_personality(lastPers.personality)
+                const res2 = await this.select_personality(pers.personality)
                 if (res2.status) {
                     this.$refs.toast.showToast("Selected personality:\n" + lastPers.name, 4, true)
 
@@ -1448,22 +1449,20 @@ export default {
         getMountedPersonalities() {
 
             let mountedPersArr = []
-            if (this.configFile.personalities.length > 0) {
-
-                for (let i = 0; i < this.configFile.personalities.length; i++) {
-                    const full_path_item = this.configFile.personalities[i]
-                    //console.log('perrs listo',this.personalities)
-                    const index = this.personalities.findIndex(item => item.full_path == full_path_item)
-                    if (index) {
-
-                        const pers = this.personalities[index]
-                        if (pers) {
-                            mountedPersArr.push(pers)
-
-                        }
-                    }
+            console.log(this.configFile.personalities.length)
+            // console.log('perrs listo',this.personalities)
+            for (let i = 0; i < this.configFile.personalities.length; i++) {
+                const full_path_item = this.configFile.personalities[i]
+                const index = this.personalities.findIndex(item => item.full_path == full_path_item)
+                console.log('index',index)
+                console.log("i:",i)
+                const pers = this.personalities[index]
+                if (pers) {
+                    mountedPersArr.push(pers)
                 }
-
+                else{
+                    mountedPersArr.push(this.personalities[this.personalities.findIndex(item => item.full_path == "english/generic/lollms")])
+                }
             }
             this.mountedPersArr = []
             this.mountedPersArr = mountedPersArr

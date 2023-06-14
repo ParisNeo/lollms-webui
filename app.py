@@ -506,7 +506,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         drive_disk_usage = psutil.disk_usage(current_drive)
         try:
             models_folder_disk_usage = psutil.disk_usage(str(self.lollms_paths.personal_models_path/f'{self.config["binding_name"]}'))
-            return jsonify({
+            return jsonify( {
                 "total_space":drive_disk_usage.total,
                 "available_space":drive_disk_usage.free,
                 "usage":drive_disk_usage.used,
@@ -777,11 +777,12 @@ class LoLLMsWebUI(LoLLMsAPPI):
             if self.config["active_personality_id"]>=index:
                 self.config["active_personality_id"]=0
             if len(self.config["personalities"])>0:
-                self.personalities = self.process.rebuild_personalities()
+                self.mounted_personalities = self.process.rebuild_personalities()
                 self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             else:
-                self.personalities = []
-                self.personality = None
+                self.personalities = ["english/generic/lollms"]
+                self.mounted_personalities = self.process.rebuild_personalities()
+                self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             self.apply_settings()
             ASCIIColors.success("ok")
             return jsonify({
@@ -790,14 +791,14 @@ class LoLLMsWebUI(LoLLMsAPPI):
                         "active_personality_id":self.config["active_personality_id"]
                         })         
         except:
-            ASCIIColors.error(f"nok : Personality not found @ {pth}")
+            ASCIIColors.error(f"nok : Personality not found @ {language}/{category}/{name}")
             return jsonify({"status": False, "error":"Couldn't unmount personality"})         
             
     def select_personality(self):
-        print("- Selecting active personality ...",end="")
 
         data = request.get_json()
         id = data['id']
+        print(f"- Selecting active personality {id} ...",end="")
         if id<len(self.config["personalities"]):
             self.config["active_personality_id"]=id
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
