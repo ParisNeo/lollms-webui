@@ -733,7 +733,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return
         language = data['language']
         category = data['category']
-        name = data['name']
+        name = data['folder']
 
         package_path = f"{language}/{category}/{name}"
         package_full_path = self.lollms_paths.personalities_zoo_path/package_path
@@ -802,7 +802,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 "active_personality_id":self.config["active_personality_id"]                
                 })
         else:
-            ASCIIColors.error(f"nok : Personality not found @ {pth}")
+            ASCIIColors.error(f"nok : personality id out of bounds @ {id} >= {len(self.config['personalities'])}")
             return jsonify({"status": False, "error":"Invalid ID"})         
                     
 
