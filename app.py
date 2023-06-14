@@ -510,7 +510,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 "total_space":drive_disk_usage.total,
                 "available_space":drive_disk_usage.free,
 
-                "percent_usage":drive_disk_usage.percent,
+                "percent_usage":models_folder_disk_usage.used,
                 "binding_models_usage": models_folder_disk_usage.used
                 })
         except:
@@ -763,7 +763,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return
         language    = data['language']
         category    = data['category']
-        name        = data['name']
+        name        = data['folder']
         try:
             index = self.config["personalities"].index(f"{language}/{category}/{name}")
             self.config["personalities"].remove(f"{language}/{category}/{name}")
