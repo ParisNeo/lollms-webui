@@ -78,6 +78,7 @@ export default {
     onSelected: Function,
     selected: Boolean,
     onMounted: Function,
+    full_path:String
 
   },
   data() {

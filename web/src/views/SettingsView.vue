@@ -338,10 +338,10 @@
                                     <div class="group ">
                                         <button @click.stop="onPersonalitySelected(item)">
 
-                                        <img :src="item.$refs.imgElement.src"
+                                        <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
                                             class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary "
-                                            :class="item.selected ? 'border-secondary':'border-transparent z-0'"
-                                            :title="item.personality.name"
+                                            :class="configFile.active_personality_id == configFile.personalities.indexOf(item.full_path) ? 'border-secondary':'border-transparent z-0'"
+                                            :title="item.name"
                                             >
                                         </button>
                                         <button  @click.stop="onPersonalityMounted(item)">
@@ -418,7 +418,7 @@
                             :class="pzl_collapsed ? '' : 'max-h-96'">
                             <TransitionGroup name="bounce">
                                 <personality-entry ref="personalitiesZoo" v-for="(pers, index) in personalitiesFiltered"
-                                    :key="'index-' + index + '-' + pers.name" :personality="pers"
+                                    :key="'index-' + index + '-' + pers.name" :personality="pers" :full_path="pers.full_path"
                                     :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === pers.full_path) "
                                     :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted" />
                             </TransitionGroup>
@@ -691,6 +691,7 @@ import defaultModelImgPlaceholder from "../assets/default_model.png"
 import defaultPersonalityImgPlaceholder from "../assets/logo.svg"
 import AddModelDialog from "@/components/AddModelDialog.vue";
 
+const bUrl = import.meta.env.VITE_GPT4ALL_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
     components: {
@@ -746,8 +747,8 @@ export default {
             diskUsage: {},
             ramUsage: {},
             mountedPersArr: [],
-            isMounted: false // Needed to wait for $refs to be rendered
-
+            isMounted: false, // Needed to wait for $refs to be rendered
+            bUrl:bUrl // for personality images
 
         }
     },
@@ -789,6 +790,7 @@ export default {
                 .then(response => {
 
                     this.models = response.data;
+                    this.models.sort((a, b) => a.title.localeCompare(b.title))
                     this.fetchCustomModels()
                 })
                 .catch(error => {
@@ -821,12 +823,12 @@ export default {
                 });
         },
         async onPersonalitySelected(pers) {
-
+            console.log('on pers', pers)
             // eslint-disable-next-line no-unused-vars
             if (this.isLoading) {
                 this.$refs.toast.showToast("Loading... please wait", 4, false)
             }
-            if (pers.personality) {
+            if (pers) {
 
                 if(pers.selected){
                     this.$refs.toast.showToast("Personality already selected", 4, true)
@@ -841,7 +843,7 @@ export default {
                    const res= await this.select_personality(pers)
 
                    if(res.status){
-                    this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
+                    this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
 
                    }
                     
@@ -1035,15 +1037,23 @@ export default {
         refresh() {
 
 
-            // No need to refresh all lists because they never change during using application. 
-            // On settings change only config file chnages.
-            //
-            //this.api_get_req("list_bindings").then(response => { this.bindingsArr = response })
-            this.api_get_req("list_models").then(response => { this.modelsArr = response })
-            //this.api_get_req("list_personalities_languages").then(response => { this.persLangArr = response })
-            this.api_get_req("list_personalities_categories").then(response => { this.persCatgArr = response })
-            //this.api_get_req("list_languages").then(response => { this.langArr = response })
+
+            this.api_get_req("list_models").then(response => { 
+                this.modelsArr = response 
+                this.modelsArr.sort() 
+            })
+           
+            this.api_get_req("list_personalities_categories").then(response => { 
+                this.persCatgArr = response 
+                this.persCatgArr.sort()
+            })
+            
             this.api_get_req("get_config").then(response => {
+                this.getPersonalitiesArr().then(()=>{
+                this.getMountedPersonalities()
+
+            })
+            
                 console.log("Received config")
                 this.configFile = response
 
@@ -1058,26 +1068,30 @@ export default {
                     }
                 });
             })
+
             this.api_get_req("get_current_personality_path_infos").then(response => {
                 this.configFile.personality_language = response["personality_language"]
                 this.configFile.personality_category = response["personality_category"]
                 this.configFile.personality_folder = response["personality_name"]
                 console.log("received infos")
             });
+
             this.api_get_req("list_personalities").then(response => {
                 this.persArr = response
+                this.persArr.sort()
                 console.log(`Listed personalities:\n${response}`)
             })
+
             this.api_get_req("disk_usage").then(response => {
                 this.diskUsage = response
             })
+
             this.api_get_req("ram_usage").then(response => {
                 this.ramUsage = response
             })
-            //console.log('ram',this.ramUsage)
-            this.getPersonalitiesArr()
+
+
             this.fetchModels();
-            this.getMountedPersonalities()
         },
         // Accordeon stuff
         toggleAccordion() {
@@ -1251,7 +1265,7 @@ export default {
                     const personalitiesArray = catdictionary[catkey];
                     const modPersArr = personalitiesArray.map((item) => {
 
-                        const isMounted = config.personalities.includes(langkey + '/' + catkey + '/' + item.name)
+                        const isMounted = config.personalities.includes(langkey + '/' + catkey + '/' + item.folder)
                         // if (isMounted) {
                         //     console.log(item)
                         // }
@@ -1259,7 +1273,7 @@ export default {
                         newItem = item
                         newItem.category = catkey // add new props to items
                         newItem.language = langkey // add new props to items
-                        newItem.full_path = langkey + '/' + catkey + '/' + item.name // add new props to items
+                        newItem.full_path = langkey + '/' + catkey + '/' + item.folder // add new props to items
                         newItem.isMounted = isMounted // add new props to items
                         return newItem
                     })
@@ -1273,13 +1287,10 @@ export default {
                 }
 
             }
-            // console.log(this.configFile)
-            // console.log(this.configFile.personality_category)
-            // console.log(this.configFile.personality_language)
-            // console.log("Personalities")
-            //console.log(this.personalities)
+
+            this.personalities.sort((a, b) => a.name.localeCompare(b.name))
             this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
-            //console.log(`Personalities filtered ${this.personalitiesFiltered}`)
+            this.personalitiesFiltered.sort()
 
             this.isLoading = false
 
@@ -1289,7 +1300,6 @@ export default {
         },
         async mount_personality(pers) {
             if (!pers) { return { 'status': false, 'error': 'no personality - mount_personality' } }
-
 
             try {
                 const obj = {
@@ -1315,7 +1325,7 @@ export default {
 
         },
         async unmount_personality(pers) {
-            if (!pers) { return { 'status': false, 'jig': 'no personality - unmount_personality' } }
+            if (!pers) { return { 'status': false, 'error': 'no personality - unmount_personality' } }
 
             const obj = {
                 language: pers.language,
@@ -1339,9 +1349,9 @@ export default {
 
         },
         async select_personality(pers) {
-            if (!pers) { return { 'status': false, 'jig': 'no personality - select_personality' } }
+            if (!pers) { return { 'status': false, 'error': 'no personality - select_personality' } }
             console.log('select pers',pers)
-            const id = this.configFile.personalities.findIndex(item=> item === pers.personality.full_path)
+            const id = this.configFile.personalities.findIndex(item=> item === pers.full_path)
 
             const obj = {
                 id: id
@@ -1379,7 +1389,7 @@ export default {
                 this.$refs.toast.showToast("Personality mounted", 4, true)
                 pers.isMounted = true
 
-                const res2 = await this.select_personality(pers)
+                const res2 = await this.select_personality(pers.personality)
                 if (res2.status) {
                     this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
                    
@@ -1406,9 +1416,9 @@ export default {
                 const lastPers = this.mountedPersArr[this.mountedPersArr.length-1]
 
                 console.log(lastPers, this.mountedPersArr.length)
-                const res2 = await this.select_personality(lastPers)
+                const res2 = await this.select_personality(lastPers.personality)
                 if (res2.status) {
-                    this.$refs.toast.showToast("Selected personality:\n" + lastPers.personality.name, 4, true)
+                    this.$refs.toast.showToast("Selected personality:\n" + lastPers.name, 4, true)
                    
                 }
 
@@ -1426,11 +1436,11 @@ export default {
 
                 for (let i = 0; i < this.configFile.personalities.length; i++) {
                     const full_path_item = this.configFile.personalities[i]
-
-                    const index = this.$refs.personalitiesZoo.findIndex(item => item.personality.full_path == full_path_item)
+                    //console.log('perrs listo',this.personalities)
+                    const index = this.personalities.findIndex(item => item.full_path == full_path_item)
                     if (index) {
 
-                        const pers = this.$refs.personalitiesZoo[index]
+                        const pers = this.personalities[index]
                         if (pers) {
                             mountedPersArr.push(pers)
 
@@ -1442,14 +1452,14 @@ export default {
             this.mountedPersArr = []
             this.mountedPersArr = mountedPersArr
             //this.mountedPersArr = mountedPersArr
-            console.log('getMountedPersonalities', mountedPersArr.length)
+            console.log('getMountedPersonalities', mountedPersArr)
 
 
         },
         onPersonalityMounted(persItem) {
-            
+            console.log('on sel ', persItem)
 
-            if (this.configFile.personalities.includes(persItem.personality.full_path)) {
+            if (this.configFile.personalities.includes(persItem.full_path)) {
                 //this.$refs.toast.showToast("Personality already mounted", 4, false)
                 //return
                 //persItem.ismounted = false
@@ -1467,7 +1477,10 @@ export default {
             }
 
 
-        }
+        },
+        personalityImgPlacehodler(event) {
+      event.target.src = defaultPersonalityImgPlaceholder
+    },
 
 
     }, async mounted() {
@@ -1476,6 +1489,7 @@ export default {
             feather.replace()
 
         })
+
         this.configFile = await this.api_get_req("get_config")
         let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
         this.configFile.personality_language = personality_path_infos["personality_language"]
@@ -1488,14 +1502,28 @@ export default {
         }
 
         this.fetchModels();
+
         this.bindingsArr = await this.api_get_req("list_bindings")
         this.modelsArr = await this.api_get_req("list_models")
         this.persLangArr = await this.api_get_req("list_personalities_languages")
         this.persCatgArr = await this.api_get_req("list_personalities_categories")
         this.persArr = await this.api_get_req("list_personalities")
         this.langArr = await this.api_get_req("list_languages")
+
+
+        this.bindingsArr.sort((a, b) => a.name.localeCompare(b.name))
+        this.modelsArr.sort()
+        this.persLangArr.sort()
+        this.persCatgArr.sort()
+        this.persArr.sort()
+        this.langArr.sort()
+
+
         await this.getPersonalitiesArr()
+
+
         this.bindings = await this.api_get_req("list_bindings")
+        this.bindings.sort((a, b) => a.name.localeCompare(b.name))
         this.isLoading = false
         this.diskUsage = await this.api_get_req("disk_usage")
         this.ramUsage = await this.api_get_req("ram_usage")
@@ -1555,17 +1583,17 @@ export default {
                 return defaultModelImgPlaceholder
             }
         },
-        imgPersonality() {
-            if (!this.isMounted) {
-                return
-            }
-            try {
-                return this.$refs.personalitiesZoo[this.$refs.personalitiesZoo.findIndex(item => item.personality.folder == this.configFile.personality_folder)].$refs.imgElement.src
-            }
-            catch (error) {
-                return defaultPersonalityImgPlaceholder
-            }
-        },
+        // imgPersonality() {
+        //     if (!this.isMounted) {
+        //         return
+        //     }
+        //     try {
+        //         return this.$refs.personalitiesZoo[this.$refs.personalitiesZoo.findIndex(item => item.personality.folder == this.configFile.personality_folder)].$refs.imgElement.src
+        //     }
+        //     catch (error) {
+        //         return defaultPersonalityImgPlaceholder
+        //     }
+        // },
 
 
     },
