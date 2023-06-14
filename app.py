@@ -477,7 +477,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         if self.config["debug"]:
             print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
             
-        print(f"Configuration {data['setting_name']} updated")
+        ASCIIColors.success(f"Configuration {data['setting_name']} updated")
         # Tell that the setting was changed
         return jsonify({'setting_name': data['setting_name'], "status":True})
 
@@ -724,7 +724,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
 
     def mount_personality(self):
-        print("- Mounting personality")
+        print("- Mounting personality ...",end="")
         try:
             data = request.get_json()
             # Further processing of the data
@@ -743,16 +743,18 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.mounted_personalities = self.process.rebuild_personalities()
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             self.apply_settings()
+            ASCIIColors.success("ok")
             return jsonify({"status": True,
                             "personalities":self.config["personalities"],
                             "active_personality_id":self.config["active_personality_id"]
                             })         
         else:
             pth = str(config_file).replace('\\','/')
+            ASCIIColors.error(f"nok : Personality not found @ {pth}")
             return jsonify({"status": False, "error":f"Personality not found @ {pth}"})         
 
     def unmount_personality(self):
-        print("- Unmounting personality")
+        print("- Unmounting personality ...",end="")
         try:
             data = request.get_json()
             # Further processing of the data
@@ -774,27 +776,33 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 self.personalities = []
                 self.personality = None
             self.apply_settings()
+            ASCIIColors.success("ok")
             return jsonify({
                         "status": True,
                         "personalities":self.config["personalities"],
                         "active_personality_id":self.config["active_personality_id"]
                         })         
         except:
+            ASCIIColors.error(f"nok : Personality not found @ {pth}")
             return jsonify({"status": False, "error":"Couldn't unmount personality"})         
             
     def select_personality(self):
+        print("- Selecting active personality ...",end="")
+
         data = request.get_json()
         id = data['id']
         if id<len(self.config["personalities"]):
             self.config["active_personality_id"]=id
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             self.apply_settings()
+            ASCIIColors.success("ok")
             return jsonify({
                 "status": True,
                 "personalities":self.config["personalities"],
                 "active_personality_id":self.config["active_personality_id"]                
                 })
         else:
+            ASCIIColors.error(f"nok : Personality not found @ {pth}")
             return jsonify({"status": False, "error":"Invalid ID"})         
                     
 
