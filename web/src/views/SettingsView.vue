@@ -232,9 +232,6 @@
                             <h3 class="font-bold font-large text-lg line-clamp-1">
                                 {{ configFile.model_name }}
                             </h3>
-                            <button @click.stop="showAddModelDialog" class="text-base hover:text-primary-dark ml-1 bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-dark-tone duration-200 rounded-lg px-2 py-1">
-                                +
-                            </button>
                             </div>
                         </div>
                         </div>
