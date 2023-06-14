@@ -505,21 +505,28 @@ class LoLLMsWebUI(LoLLMsAPPI):
         current_drive = Path.cwd().anchor
         drive_disk_usage = psutil.disk_usage(current_drive)
         try:
-            models_folder_disk_usage = psutil.disk_usage(self.lollms_paths.personal_models_path/f'{self.config["binding_name"]}')
+            models_folder_disk_usage = psutil.disk_usage(str(self.lollms_paths.personal_models_path/f'{self.config["binding_name"]}'))
             return jsonify({
                 "total_space":drive_disk_usage.total,
                 "available_space":drive_disk_usage.free,
-
-                "percent_usage":models_folder_disk_usage.used,
-                "binding_models_usage": models_folder_disk_usage.used
-                })
-        except:
-            return jsonify({
-                "total_space":drive_disk_usage.total,
-                "available_space":drive_disk_usage.free,
-                
+                "usage":drive_disk_usage.used,
                 "percent_usage":drive_disk_usage.percent,
-                "models_folder_usage": None
+
+                "binding_disk_total_space":models_folder_disk_usage.total,
+                "binding_disk_available_space":drive_disk_usage.free,
+                "binding_models_usage": models_folder_disk_usage.used,
+                "binding_models_percent_usage": models_folder_disk_usage.percent,
+                })
+        except Exception as ex:
+            return jsonify({
+                "total_space":drive_disk_usage.total,
+                "available_space":drive_disk_usage.free,
+                "percent_usage":drive_disk_usage.percent,
+
+                "binding_disk_total_space": None,
+                "binding_disk_available_space": None,
+                "binding_models_usage": None,
+                "binding_models_percent_usage": None,
                 })
 
     def list_bindings(self):
