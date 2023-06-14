@@ -1053,7 +1053,7 @@ export default {
                 this.getMountedPersonalities()
 
             })
-            
+
                 console.log("Received config")
                 this.configFile = response
 
@@ -1330,7 +1330,7 @@ export default {
             const obj = {
                 language: pers.language,
                 category: pers.category,
-                name: pers.name
+                folder: pers.folder
             }
 
 
