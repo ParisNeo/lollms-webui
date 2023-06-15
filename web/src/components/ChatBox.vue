@@ -88,10 +88,10 @@
                     </div>
                     <!-- CHAT BOX -->
                     <div class="flex flex-row flex-grow items-center gap-2 ">
-                        <div class="w-24">
+                        <!-- <div class="w-24">
                             <MountedPersonalitiesComponent  />
 
-                        </div>
+                        </div> -->
                         <div class="relative grow">
                             <textarea id="chat" rows="1" v-model="message"
                                 class="block min-h-11  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
