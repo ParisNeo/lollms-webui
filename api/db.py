@@ -21,7 +21,7 @@ class DiscussionsDB:
         """
         create database schema
         """
-        db_version = 5
+        db_version = 6
         # Verify encoding and change it if it is not complient
         with sqlite3.connect(self.db_path) as conn:
             # Execute a PRAGMA statement to get the current encoding of the database
@@ -75,6 +75,7 @@ class DiscussionsDB:
                             rank INT NOT NULL,
                             parent INT,
                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                            finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                             discussion_id INTEGER NOT NULL,
                             FOREIGN KEY (discussion_id) REFERENCES discussion(id),
                             FOREIGN KEY (parent) REFERENCES message(id)
@@ -107,6 +108,9 @@ class DiscussionsDB:
 
                     cursor.execute("ALTER TABLE message ADD COLUMN model TEXT DEFAULT ''") # Added in V4
                     cursor.execute("ALTER TABLE message ADD COLUMN personality INT DEFAULT ''") # Added in V4
+
+                    cursor.execute("ALTER TABLE discussion ADD COLUMN finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V5
+
                     
             # Upgrade the schema to version 1
             elif version < 2:
@@ -122,6 +126,7 @@ class DiscussionsDB:
                         cursor.execute("ALTER TABLE message ADD COLUMN personality INT DEFAULT ''") # Added in V4
                         
                         cursor.execute("ALTER TABLE message ADD COLUMN binding TEXT DEFAULT ''") # Added in V5
+                        cursor.execute("ALTER TABLE message ADD COLUMN finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V6
                         
                         
                     except :
@@ -138,6 +143,10 @@ class DiscussionsDB:
                         cursor.execute("ALTER TABLE message ADD COLUMN personality INT DEFAULT ''") # Added in V4
 
                         cursor.execute("ALTER TABLE message ADD COLUMN binding TEXT DEFAULT ''") # Added in V5
+                        cursor.execute("ALTER TABLE message ADD COLUMN finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V6
+                        
+                        cursor.execute("ALTER TABLE message ADD COLUMN finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V6
+                        
                     except :
                         pass
             # Upgrade the schema to version 1
@@ -150,6 +159,9 @@ class DiscussionsDB:
                         cursor.execute("ALTER TABLE message ADD COLUMN personality INT DEFAULT ''") # Added in V4
 
                         cursor.execute("ALTER TABLE message ADD COLUMN binding TEXT DEFAULT ''") # Added in V5
+
+                        cursor.execute("ALTER TABLE message ADD COLUMN finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V6
+                        
                     except :
                         pass                    
             elif version < 5:
@@ -158,6 +170,17 @@ class DiscussionsDB:
                 if message_table_exist:
                     try:
                         cursor.execute("ALTER TABLE message ADD COLUMN binding TEXT DEFAULT ''") # Added in V5
+                        cursor.execute("ALTER TABLE message ADD COLUMN finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V6
+                        
+                    except :
+                        pass                    
+            elif version < 6:
+                print(f"Upgrading schema to version {db_version}...")
+                # Add the 'created_at' column to the 'message' table
+                if message_table_exist:
+                    try:
+                        cursor.execute("ALTER TABLE message ADD COLUMN finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V6
+                        
                     except :
                         pass                    
             # Update the schema version
@@ -275,7 +298,7 @@ class DiscussionsDB:
             discussion_id = row[0]
             discussion_title = row[1]
             discussion = {"id": discussion_id, "title":discussion_title, "messages": []}
-            rows = self.select(f"SELECT sender, content, message_type, rank, parent, binding, model, personality, created_at FROM message WHERE discussion_id=?",(discussion_id,))
+            rows = self.select(f"SELECT sender, content, message_type, rank, parent, binding, model, personality, created_at, finished_generating_at FROM message WHERE discussion_id=?",(discussion_id,))
             for message_row in rows:
                 sender = message_row[1]
                 content = message_row[2]
@@ -286,9 +309,10 @@ class DiscussionsDB:
                 model = message_row[7]
                 personality = message_row[8]
                 created_at = message_row[9]
+                finished_generating_at = message_row[10]
                 
                 discussion["messages"].append(
-                    {"sender": sender, "content": content, "type": content_type, "rank": rank, "parent": parent, "binding": binding, "model":model, "personality":personality, "created_at":created_at}
+                    {"sender": sender, "content": content, "type": content_type, "rank": rank, "parent": parent, "binding": binding, "model":model, "personality":personality, "created_at":created_at, "finished_generating_at":finished_generating_at}
                 )
             discussions.append(discussion)
         return discussions
@@ -306,7 +330,7 @@ class DiscussionsDB:
             discussion_id = row[0]
             discussion_title = row[1]
             discussion = {"id": discussion_id, "title":discussion_title, "messages": []}
-            rows = self.select(f"SELECT sender, content, message_type, rank, parent, binding, model, personality, created_at FROM message WHERE discussion_id=?",(discussion_id,))
+            rows = self.select(f"SELECT sender, content, message_type, rank, parent, binding, model, personality, created_at, finished_generating_at FROM message WHERE discussion_id=?",(discussion_id,))
             for message_row in rows:
                 sender = message_row[1]
                 content = message_row[2]
@@ -317,9 +341,10 @@ class DiscussionsDB:
                 model = message_row[7]
                 personality = message_row[8]
                 created_at = message_row[9]
+                finished_generating_at = message_row[10]
                 
                 discussion["messages"].append(
-                    {"sender": sender, "content": content, "type": content_type, "rank": rank, "parent": parent, "binding": binding, "model":model, "personality":personality, "created_at":created_at}
+                    {"sender": sender, "content": content, "type": content_type, "rank": rank, "parent": parent, "binding": binding, "model":model, "personality":personality, "created_at":created_at, "finished_generating_at": finished_generating_at}
                 )
             discussions.append(discussion)
         return discussions
@@ -346,13 +371,14 @@ class DiscussionsDB:
                 model = message_data.get("model","")
                 personality = message_data.get("personality","")
                 created_at = message_data.get("created_at",datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                finished_generating_at = message_data.get("finished_generating_at",datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
                 discussion["messages"].append(
-                    {"sender": sender, "content": content, "type": content_type, "rank": rank, "model": model, "binding": binding, "personality": personality, "created_at": created_at}
+                    {"sender": sender, "content": content, "type": content_type, "rank": rank, "binding": binding, "model": model, "personality": personality, "created_at": created_at, "finished_generating_at": finished_generating_at}
                 )
 
                 # Insert message into the database
-                self.insert("INSERT INTO message (sender, content, type, rank, parent, discussion_id) VALUES (?, ?, ?, ?, ?, ?)",
-                            (sender, content, content_type, rank, parent, discussion_id))
+                self.insert("INSERT INTO message (sender, content, type, rank, parent, binding, model, personality, created_at, finished_generating_at, discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            (sender, content, content_type, rank, parent, model, personality, created_at, finished_generating_at, discussion_id))
 
             discussions.append(discussion)
 
@@ -363,7 +389,7 @@ class Discussion:
         self.discussion_id = discussion_id
         self.discussions_db = discussions_db
 
-    def add_message(self, sender, content, message_type=0, rank=0, parent=0, binding="", model ="", personality="", created_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')):
+    def add_message(self, sender, content, message_type=0, rank=0, parent=0, binding="", model ="", personality="", created_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')):
         """Adds a new message to the discussion
 
         Args:
@@ -374,8 +400,8 @@ class Discussion:
             int: The added message id
         """
         message_id = self.discussions_db.insert(
-            "INSERT INTO message (sender, content, type, rank, parent, binding, model, personality, created_at, discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-            (sender, content, message_type, rank, parent, binding, model, personality, created_at, self.discussion_id)
+            "INSERT INTO message (sender, content, type, rank, parent, binding, model, personality, created_at, finished_generating_at, discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+            (sender, content, message_type, rank, parent, binding, model, personality, created_at, finished_generating_at, self.discussion_id)
         )
         return message_id
 
@@ -406,10 +432,10 @@ class Discussion:
             list: List of entries in the format {"id":message id, "sender":sender name, "content":message content, "type":message type, "rank": message rank}
         """
         rows = self.discussions_db.select(
-            "SELECT id, sender, content, type, rank, parent, binding, model, personality, created_at FROM message WHERE discussion_id=?", (self.discussion_id,)
+            "SELECT id, sender, content, type, rank, parent, binding, model, personality, created_at, finished_generating_at FROM message WHERE discussion_id=?", (self.discussion_id,)
         )
 
-        return [{"id": row[0], "sender": row[1], "content": row[2], "type": row[3], "rank": row[4], "parent": row[5], "binding":row[6], "model": row[7], "personality": row[8], "created_at": row[9]} for row in rows]
+        return [{"id": row[0], "sender": row[1], "content": row[2], "type": row[3], "rank": row[4], "parent": row[5], "binding":row[6], "model": row[7], "personality": row[8], "created_at": row[9], "finished_generating_at": row[10]} for row in rows]
 
     def update_message(self, message_id, new_content):
         """Updates the content of a message
