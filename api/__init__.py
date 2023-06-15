@@ -136,7 +136,7 @@ class ModelProcess:
 
         return string
         
-    def load_binding(self, binding_name:str, install=False):
+    def load_binding(self, binding_name:str, install=False, force_install=False):
         if install:
             print(f"Loading binding {binding_name} install ON")
         else:
@@ -151,7 +151,7 @@ class ModelProcess:
             # first find out if there is a requirements.txt file
             install_file_name="install.py"
             install_script_path = binding_path / install_file_name        
-            if install_script_path.exists():
+            if install_script_path.exists() or force_install:
                 module_name = install_file_name[:-3]  # Remove the ".py" extension
                 module_spec = importlib.util.spec_from_file_location(module_name, str(install_script_path))
                 module = importlib.util.module_from_spec(module_spec)
@@ -837,7 +837,9 @@ class LoLLMsAPPI():
         if self.current_discussion:
             # First we need to send the new message ID to the client
             self.current_ai_message_id = self.current_discussion.add_message(
-                self.personality.name, "", parent = self.current_user_message_id
+                self.personality.name, 
+                "", 
+                parent = self.current_user_message_id
             )  # first the content is empty, but we'll fill it at the end
             self.socketio.emit('infos',
                     {
