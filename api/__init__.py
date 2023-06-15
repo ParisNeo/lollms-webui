@@ -591,8 +591,7 @@ class LoLLMsAPPI():
 
                 message = data["prompt"]
                 message_id = self.current_discussion.add_message(
-                    "user", message, parent=self.message_id,model = self.config["model_name"], 
-                    personality=self.config["personalities"][self.config["active_personality_id"]]
+                    "user", message, parent=self.message_id
                 )
 
                 self.current_user_message_id = message_id
@@ -839,7 +838,9 @@ class LoLLMsAPPI():
             self.current_ai_message_id = self.current_discussion.add_message(
                 self.personality.name, 
                 "", 
-                parent = self.current_user_message_id
+                parent = self.current_user_message_id,
+                model = self.config["model_name"], 
+                personality=self.config["personalities"][self.config["active_personality_id"]]
             )  # first the content is empty, but we'll fill it at the end
             self.socketio.emit('infos',
                     {
