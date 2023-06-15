@@ -105,7 +105,11 @@ printf "%*s\n" $((""+COLUMNS/2)) "\u001b[0m                                     
     cd lollms-webui || { echo "Couldn't access repo folder. Please check folder structure / permissions and run script again"; exit 1; }
   else
     print "Cloning repository...\n"
-    git clone https://github.com/ParisNeo/lollms-webui.git ./lollms-webui
+    git clone https://github.com/ParisNeo/lollms-webui.git ./lollms-webui 
+    if [ $? -ne 0 ]; then
+        printf "Downloadin from git failed. Please check your internet connection and permissions and try again.\n"
+        exit 1
+    fi
     cd lollms-webui || { echo "Couldn't access repo folder. Please check folder structure / permissions and run script again"; exit 1; }
   fi
     printf "Pulling latest version...\n"
@@ -149,7 +153,13 @@ printf "%*s\n" $((""+COLUMNS/2)) "\u001b[0m                                     
 
   printf "Activating virtual environment..."
   source env/bin/activate
-  printf "is active"
+  source env/bin/activate 
+if [ $? -ne 0 ]; then
+    printf "Failed to activate virtual environment. Please check your setup and try again.\n"
+    exit 1
+else
+      printf "Virtrual environment is active"
+fi  
 
 #>Install the required packages
 
@@ -170,4 +180,5 @@ printf "%*s\n" $((""+COLUMNS/2)) "\u001b[0m                                     
 
 #>Launch the Python application
 
+printf "Launching application"
 python app.py
