@@ -714,7 +714,9 @@ class LoLLMsAPPI():
                 self.personality.name, self.personality.welcome_message, 
                 DiscussionsDB.MSG_TYPE_NORMAL,
                 0,
-                -1,model = self.config["model_name"], 
+                -1,
+                binding= self.config["binding_name"],
+                model = self.config["model_name"], 
                 personality=self.config["personalities"][self.config["active_personality_id"]]
             )
         
