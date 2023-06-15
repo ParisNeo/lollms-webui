@@ -88,7 +88,7 @@
                     </div>
                     <!-- CHAT BOX -->
                     <div class="flex flex-row flex-grow items-center gap-2 ">
-                        <div >
+                        <div class="w-24">
                             <MountedPersonalitiesComponent  />
 
                         </div>

@@ -2,7 +2,7 @@
   
         <!-- LIST OF MOUNTED PERSONALITIES -->
         <div 
-            class=" text-base font-semibold cursor-pointer select-none items-center flex flex-row">
+            class=" text-base font-semibold cursor-pointer select-none items-center flex flex-row overflow-visible overflow-x-auto scrollbar-thin scrollbar-track-bg-light scrollbar-thumb-bg-light-tone hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark dark:scrollbar-thumb-bg-dark-tone dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
             <!-- LIST -->
             <div class="flex -space-x-4 items-center ">
                 <!-- ITEM -->
