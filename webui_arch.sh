@@ -46,20 +46,11 @@ printf "%*s\n" $((""+COLUMNS/2)) "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 printf "%*s\n" $((""+COLUMNS/2)) "\u001b[0m                                           m0]dl00u/"
 #./shellcheckrc
 
-#>Testing internet connectivity
-#-added "port poke test" with netcat as first choice, as ping responses can be unreliable
-#-both interactions tested
-
   printf "Testing internet connectivity"
+  ping -c1 -W1 google.com
 
-# Check if nc (netcat) is available
-
-  if command -v nc &> /dev/null; then
-    ping -c1 -W1 google.com
-  else
-    nc -zw1 google.com 443
-  fi
 # Check the exit status of the previous command
+
   if [ $? -eq 0 ]; then
     printf "Internet connectivity confirmed\n"
   else
