@@ -365,7 +365,7 @@ class Discussion:
             new_content (str): The nex message content
         """
         self.discussions_db.update(
-            f"UPDATE message SET content = ? WHERE id = ?",(new_content,message_id)
+            f"UPDATE message SET content = ?, finished_generating_at = ? WHERE id = ?",(new_content, datetime.now().strftime('%Y-%m-%d %H:%M:%S'),message_id)
         )
     
     def message_rank_up(self, message_id):
