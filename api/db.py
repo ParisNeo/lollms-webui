@@ -21,7 +21,6 @@ class DiscussionsDB:
 
 
     def create_tables(self):
-        ASCIIColors.info("Checking discussions database...")
         db_version = 6
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
