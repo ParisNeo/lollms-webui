@@ -575,7 +575,8 @@ class LoLLMsAPPI():
 
                 message = data["prompt"]
                 message_id = self.current_discussion.add_message(
-                    "user", message, parent=self.message_id
+                    "user", message, parent=self.message_id,model = self.config["model_name"], 
+                    personality=self.config["personalities"][self.config["active_personality_id"]]
                 )
 
                 self.current_user_message_id = message_id
@@ -675,7 +676,8 @@ class LoLLMsAPPI():
                 self.personality.name, self.personality.welcome_message, 
                 DiscussionsDB.MSG_TYPE_NORMAL,
                 0,
-                -1
+                -1,model = self.config["model_name"], 
+                personality=self.config["personalities"][self.config["active_personality_id"]]
             )
         
             self.current_ai_message_id = message_id

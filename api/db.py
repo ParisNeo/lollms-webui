@@ -20,7 +20,7 @@ class DiscussionsDB:
         """
         create database schema
         """
-        db_version = 3
+        db_version = 4
         # Verify encoding and change it if it is not complient
         with sqlite3.connect(self.db_path) as conn:
             # Execute a PRAGMA statement to get the current encoding of the database
@@ -65,6 +65,8 @@ class DiscussionsDB:
                 cursor.execute("""
                         CREATE TABLE message (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            model TEXT,
+                            personality TEXT,
                             sender TEXT NOT NULL,
                             content TEXT NOT NULL,
                             type INT NOT NULL,
@@ -100,6 +102,9 @@ class DiscussionsDB:
                     cursor.execute("ALTER TABLE message ADD COLUMN parent INT DEFAULT 0") # Added in V2
                     cursor.execute("ALTER TABLE message ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V3
                     cursor.execute("ALTER TABLE discussion ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V3
+
+                    cursor.execute("ALTER TABLE message ADD COLUMN model TEXT DEFAULT ''") # Added in V4
+                    cursor.execute("ALTER TABLE message ADD COLUMN personality INT DEFAULT ''") # Added in V4
                     
             # Upgrade the schema to version 1
             elif version < 2:
@@ -110,6 +115,9 @@ class DiscussionsDB:
                         cursor.execute("ALTER TABLE message ADD COLUMN parent INT DEFAULT 0") # Added in V2
                         cursor.execute("ALTER TABLE message ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V3
                         cursor.execute("ALTER TABLE discussion ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V3
+
+                        cursor.execute("ALTER TABLE message ADD COLUMN model TEXT DEFAULT ''") # Added in V4
+                        cursor.execute("ALTER TABLE message ADD COLUMN personality INT DEFAULT ''") # Added in V4
                     except :
                         pass
             # Upgrade the schema to version 1
@@ -120,8 +128,22 @@ class DiscussionsDB:
                     try:
                         cursor.execute("ALTER TABLE message ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V3
                         cursor.execute("ALTER TABLE discussion ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V3
+                        cursor.execute("ALTER TABLE message ADD COLUMN model TEXT DEFAULT ''") # Added in V4
+                        cursor.execute("ALTER TABLE message ADD COLUMN personality INT DEFAULT ''") # Added in V4
+
                     except :
                         pass
+            # Upgrade the schema to version 1
+            elif version < 4:
+                print(f"Upgrading schema to version {db_version}...")
+                # Add the 'created_at' column to the 'message' table
+                if message_table_exist:
+                    try:
+                        cursor.execute("ALTER TABLE message ADD COLUMN model TEXT DEFAULT ''") # Added in V4
+                        cursor.execute("ALTER TABLE message ADD COLUMN personality INT DEFAULT ''") # Added in V4
+
+                    except :
+                        pass                    
             # Update the schema version
             if not schema_table_exist:
                 cursor.execute(f"INSERT INTO schema_version (id, version) VALUES (1, {db_version})")
@@ -311,7 +333,7 @@ class Discussion:
         self.discussion_id = discussion_id
         self.discussions_db = discussions_db
 
-    def add_message(self, sender, content, message_type=0, rank=0, parent=0):
+    def add_message(self, sender, content, message_type=0, rank=0, parent=0, model ="", personality=""):
         """Adds a new message to the discussion
 
         Args:
@@ -322,8 +344,8 @@ class Discussion:
             int: The added message id
         """
         message_id = self.discussions_db.insert(
-            "INSERT INTO message (sender, content, type, rank, parent, discussion_id) VALUES (?, ?, ?, ?, ?, ?)", 
-            (sender, content, message_type, rank, parent, self.discussion_id)
+            "INSERT INTO message (sender, content, type, rank, parent, model, personality, discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
+            (sender, content, message_type, rank, parent, model, personality, self.discussion_id)
         )
         return message_id
 
@@ -354,10 +376,10 @@ class Discussion:
             list: List of entries in the format {"id":message id, "sender":sender name, "content":message content, "type":message type, "rank": message rank}
         """
         rows = self.discussions_db.select(
-            "SELECT * FROM message WHERE discussion_id=?", (self.discussion_id,)
+            "SELECT id, sender, content, type, rank, parent, model, personality FROM message WHERE discussion_id=?", (self.discussion_id,)
         )
 
-        return [{"id": row[0], "sender": row[1], "content": row[2], "type": row[3], "rank": row[4], "parent": row[5]} for row in rows]
+        return [{"id": row[0], "sender": row[1], "content": row[2], "type": row[3], "rank": row[4], "parent": row[5], "model": row[6], "personality": row[7]} for row in rows]
 
     def update_message(self, message_id, new_content):
         """Updates the content of a message

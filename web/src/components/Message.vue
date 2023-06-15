@@ -12,9 +12,12 @@
                 <div class="flex flex-row flex-grow items-start ">
                     <!-- SENDER NAME -->
                     <div class="flex ">
-                        <p class="drop-shadow-sm text-lg text-opacity-95 font-bold grow  ">{{ message.sender }}</p>
-
-                    </div>
+                        <p class="drop-shadow-sm text-lg text-opacity-95 font-bold grow ">{{ message.sender }}</p>
+                        <button @click="toggleModel"  class="expand-button">{{ expanded ? ' - ' : ' + ' }}</button>
+                        <p v-if="expanded" class="drop-shadow-sm text-lg text-opacity-95 font-bold grow">
+                        {{ message.model }}
+                        </p>
+                    </div>                    
                     <div class="flex-grow ">
 
                     </div>
@@ -100,7 +103,17 @@
 
     </div>
 </template>
+<style>
 
+.expand-button {
+  margin-left: 10px; /* Add space between sender and expand button */
+  margin-right: 10px; /* Add space between sender and expand button */
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+</style>
 <script>
 import botImgPlaceholder from "../assets/logo.svg"
 import userImgPlaceholder from "../assets/default_user.svg"
@@ -121,7 +134,7 @@ export default {
     },
     data() {
         return {
-
+            expanded: false,
 
             new_message_content: '',
             showConfirmation: false,
@@ -142,6 +155,9 @@ export default {
         })
 
     }, methods: {
+        toggleModel() {
+            this.expanded = !this.expanded;
+        },
         copyContentToClipboard() {
             this.$emit('copy', this.message.content)
 
