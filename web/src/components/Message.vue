@@ -18,8 +18,8 @@
                         {{ message.model }}
                         </p> -->
 
-                    </div>
-                        <div class="text-sm text-gray-400 font-thin" v-if="message.created_at">
+                        </div>
+                        <div class="text-sm text-gray-400 font-thin" v-if="message.created_at" :title="message.created_at">
                             {{ created_at }}
 
                         </div>
@@ -102,9 +102,9 @@
                 <!-- FOOTER -->
                 <div class="text-sm text-gray-400 mt-2">
                     <div class="flex flex-row items-center gap-2">
-                        <p v-if="message.binding">Binding: <span class="font-semibold">{{ message.binding }}</span></p>
-                        <p v-if="message.model">Model: <span class="font-semibold">{{ message.model }}</span></p>
-                        <p v-if="message.seed">Seed: <span class="font-semibold">{{ message.seed }}</span></p>
+                        <p v-if="message.binding">Binding: <span class="font-thin">{{ message.binding }}</span></p>
+                        <p v-if="message.model">Model: <span class="font-thin">{{ message.model }}</span></p>
+                        <p v-if="message.seed">Seed: <span class="font-thin">{{ message.seed }}</span></p>
                     </div>
 
                 </div>
@@ -255,6 +255,24 @@ export default {
                 return "1 week ago";
             }
             return tdate;
+        },
+        prettyDate(time) {
+            let date = new Date((time || "").replace(/-/g, "/").replace(/[TZ]/g, " ")),
+                diff = (((new Date()).getTime() - date.getTime()) / 1000),
+                day_diff = Math.floor(diff / 86400);
+
+            if (isNaN(day_diff) || day_diff < 0 || day_diff >= 31)
+                return;
+
+            return day_diff == 0 && (
+                diff < 60 && "just now" ||
+                diff < 120 && "1 minute ago" ||
+                diff < 3600 && Math.floor(diff / 60) + " minutes ago" ||
+                diff < 7200 && "1 hour ago" ||
+                diff < 86400 && Math.floor(diff / 3600) + " hours ago") ||
+                day_diff == 1 && "Yesterday" ||
+                day_diff < 7 && day_diff + " days ago" ||
+                day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago";
         }
 
 
@@ -287,7 +305,7 @@ export default {
     },
     computed: {
         created_at() {
-            return this.parseDate(this.message.created_at)
+            return this.prettyDate(this.message.created_at)
 
         }
     }
