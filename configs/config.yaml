@@ -1,6 +1,6 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
 version: 7
-binding_name: gpt4all
+binding_name: c_transformers
 model_name: ggml-gpt4all-j-v1.3-groovy.bin
 
 # Host information

@@ -72,7 +72,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         self.app = _app
         self.cancel_gen = False
-        
 
         app.template_folder = "web/dist"
 
@@ -440,7 +439,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 else:
                     self.config["active_personality_id"] = 0
                     self.config["personalities"][self.config["active_personality_id"]] = f"{self.personality_language}/{self.personality_category}/{self.personality_name}"
-                personality_fn = self.lollms_paths.personalities_zoo_path/self.config["personalities"][self.config["active_personality_id"]]
+                
+                if self.personality_category!="Custom":
+                    personality_fn = self.lollms_paths.personalities_zoo_path/self.config["personalities"][self.config["active_personality_id"]]
+                else:
+                    personality_fn = self.lollms_paths.personal_personalities_path/self.config["personalities"][self.config["active_personality_id"]].split("/")[-1]
                 self.personality.load_personality(personality_fn)
             else:
                 self.config["personalities"].append(f"{self.personality_language}/{self.personality_category}/{self.personality_name}")
@@ -482,11 +485,14 @@ class LoLLMsWebUI(LoLLMsAPPI):
         return jsonify({'setting_name': data['setting_name'], "status":True})
 
 
+
     def apply_settings(self):
         result = self.process.set_config(self.config)
         print("Set config results:")
         print(result)
         return jsonify(result)
+    
+
     
     def ram_usage(self):
         """
@@ -1198,7 +1204,7 @@ if __name__ == "__main__":
 
     # Configuration loading part
     config = LOLLMSConfig.autoload(lollms_paths)
-
+    
     # Override values in config with command-line arguments
     for arg_name, arg_value in vars(args).items():
         if arg_value is not None:

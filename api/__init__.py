@@ -24,6 +24,7 @@ import requests
 from tqdm import tqdm 
 import traceback
 import sys
+from lollms.console import MainMenu
 
 __author__ = "parisneo"
 __github__ = "https://github.com/ParisNeo/lollms-webui"
@@ -325,7 +326,8 @@ class ModelProcess:
             print("No model loaded. Waiting for new configuration instructions")
                     
         self.ready = True
-        ASCIIColors.print(ASCIIColors.color_bright_blue,f"Listening on :http://{self.config['host']}:{self.config['port']}")
+        ASCIIColors.blue(f"Your personal data is stored here :{self.lollms_paths.personal_path}")
+        ASCIIColors.blue(f"Listening on :http://{self.config['host']}:{self.config['port']}")
         while True:
             try:
                 if not self.generate_queue.empty():
@@ -470,11 +472,16 @@ class ModelProcess:
 class LoLLMsAPPI():
     def __init__(self, config:LOLLMSConfig, socketio, config_file_path:str, lollms_paths: LollmsPaths) -> None:
         self.lollms_paths = lollms_paths
+        self.config = config
+        self.menu = MainMenu(self)
+        
+        # Check model
+        if config.model_name is None:
+            self.menu.select_model()       
         
         self.socketio = socketio
         #Create and launch the process
         self.process = ModelProcess(self.lollms_paths, config)
-        self.config = config
         self.binding = self.process.rebuild_binding(self.config)
         self.mounted_personalities = self.process.rebuild_personalities()
         if self.config["active_personality_id"]<len(self.mounted_personalities):
@@ -630,6 +637,37 @@ class LoLLMsAPPI():
         self._message_id = id
 
 
+    def load_model(self):
+        try:
+            print("update_settings : New model selected")
+            if hasattr(self,"process"):
+                result = self.process.set_config(self.config)
+                print("Set config results:")
+                print(result)
+        except Exception as ex:
+            ASCIIColors.error(f"Couldn't load model.Process returned exception : {ex}")
+            ASCIIColors.error(f"Binding returned this exception : {ex}")
+            ASCIIColors.error(f"{self.config.get_model_path_infos()}")
+            print("Please select a valid model or install a new one from a url")
+            self.menu.select_model()
+
+
+    def load_personality(self):
+        try:
+            print("update_settings : New personality selected")
+            if hasattr(self,"process"):
+                result = self.process.set_config(self.config)
+                print("Set config results:")
+                print(result)
+        except Exception as ex:
+            ASCIIColors.error(f"Couldn't load personality. Please verify your configuration file at {self.configuration_path} or use the next menu to select a valid personality")
+            ASCIIColors.error(f"Binding returned this exception : {ex}")
+            ASCIIColors.error(f"{self.config.get_personality_path_infos()}")
+            print("Please select a valid model or install a new one from a url")
+            self.menu.select_model()
+        self.cond_tk = self.personality.model.tokenize(self.personality.personality_conditioning)
+        self.n_cond_tk = len(self.cond_tk)    
+
     def download_file(self, url, installation_path, callback=None):
         """
         Downloads a file from a URL, reports the download progress using a callback function, and displays a progress bar.
@@ -676,7 +714,9 @@ class LoLLMsAPPI():
                 self.personality.name, self.personality.welcome_message, 
                 DiscussionsDB.MSG_TYPE_NORMAL,
                 0,
-                -1,model = self.config["model_name"], 
+                -1,
+                binding= self.config["binding_name"],
+                model = self.config["model_name"], 
                 personality=self.config["personalities"][self.config["active_personality_id"]]
             )
         
