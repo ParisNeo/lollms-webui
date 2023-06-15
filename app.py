@@ -84,6 +84,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         # =========================================================================================
 
 
+        self.add_endpoint("/reinstall_binding", "reinstall_binding", self.reinstall_binding, methods=["POST"])
 
 
         self.add_endpoint("/switch_personal_path", "switch_personal_path", self.switch_personal_path, methods=["POST"])
@@ -738,6 +739,24 @@ class LoLLMsWebUI(LoLLMsAPPI):
                         "active_personality_id":self.config["active_personality_id"]
                         })         
 
+    def reinstall_binding(self):
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
+        print(f"- Reinstalling binding {data['name']}...",end="")
+        try:
+            self.binding = self.process.load_binding(self.config["binding_name"], install=True, force_install=True)
+            return jsonify({"status": True}) 
+        except Exception as ex:
+            print(f"Couldn't build binding: [{ex}]")
+            return jsonify({"status":False, 'error':str(ex)})
+        
+
+    
+
 
     def mount_personality(self):
         print("- Mounting personality ...",end="")
@@ -813,6 +832,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             self.apply_settings()
             ASCIIColors.success("ok")
+            print(f"Mounted {self.personality.name}")
             return jsonify({
                 "status": True,
                 "personalities":self.config["personalities"],
