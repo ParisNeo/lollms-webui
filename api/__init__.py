@@ -514,7 +514,8 @@ class LoLLMsAPPI():
             self.db = DiscussionsDB(self.lollms_paths.personal_path/"databases"/self.db_path)
 
         # If the database is empty, populate it with tables
-        self.db.populate()
+        self.db.create_tables()
+        self.db.add_missing_columns()
 
         # This is used to keep track of messages 
         self.full_message_list = []

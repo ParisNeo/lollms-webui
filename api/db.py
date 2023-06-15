@@ -2,6 +2,8 @@
 import sqlite3
 from pathlib import Path
 from datetime import datetime
+from lollms.helpers import ASCIIColors
+
 __author__ = "parisneo"
 __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
@@ -17,179 +19,98 @@ class DiscussionsDB:
         self.db_path = Path(db_path)
         self.db_path .parent.mkdir(exist_ok=True, parents= True)
 
-    def populate(self):
-        """
-        create database schema
-        """
+
+    def create_tables(self):
+        ASCIIColors.info("Checking discussions database...")
         db_version = 6
-        # Verify encoding and change it if it is not complient
-        with sqlite3.connect(self.db_path) as conn:
-            # Execute a PRAGMA statement to get the current encoding of the database
-            cur = conn.execute('PRAGMA encoding')
-            current_encoding = cur.fetchone()[0]
-
-            if current_encoding != 'UTF-8':
-                # The current encoding is not UTF-8, so we need to change it
-                print(f"The current encoding is {current_encoding}, changing to UTF-8...")
-                conn.execute('PRAGMA encoding = "UTF-8"')
-                conn.commit()        
-
-        print("Checking discussions database...")
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
 
-            discussion_table_exist=False
-            message_table_exist=False
-            schema_table_exist=False
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS schema_version (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    version INTEGER NOT NULL
+                )
+            """)
 
-            # Check if the 'schema_version' table exists
-            try:
-                cursor.execute("""
-                    CREATE TABLE schema_version (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        version INTEGER NOT NULL
-                    )
-                """)
-            except:
-                schema_table_exist = True
-            try:
-                cursor.execute("""
-                    CREATE TABLE discussion (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        title TEXT,
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                    )
-                    """)
-            except Exception:
-                discussion_table_exist=True        
-            try:
-                cursor.execute("""
-                        CREATE TABLE message (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            binding TEXT,
-                            model TEXT,
-                            personality TEXT,
-                            sender TEXT NOT NULL,
-                            content TEXT NOT NULL,
-                            type INT NOT NULL,
-                            rank INT NOT NULL,
-                            parent INT,
-                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                            finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                            discussion_id INTEGER NOT NULL,
-                            FOREIGN KEY (discussion_id) REFERENCES discussion(id),
-                            FOREIGN KEY (parent) REFERENCES message(id)
-                        )
-                    """
-                    )
-            except :
-                message_table_exist=True
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS discussion (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
 
-            # Get the current version from the schema_version table
-            cursor.execute("SELECT version FROM schema_version WHERE id = 1")
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS message (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    binding TEXT,
+                    model TEXT,
+                    personality TEXT,
+                    sender TEXT NOT NULL,
+                    content TEXT NOT NULL,
+                    type INT NOT NULL,
+                    rank INT NOT NULL,
+                    parent INT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    discussion_id INTEGER NOT NULL,
+                    FOREIGN KEY (discussion_id) REFERENCES discussion(id),
+                    FOREIGN KEY (parent) REFERENCES message(id)
+                )
+            """)
+
+            cursor.execute("SELECT * FROM schema_version")
             row = cursor.fetchone()
+
             if row is None:
-                # If the table is empty, assume version 0
-                version = 0
+                cursor.execute("INSERT INTO schema_version (version) VALUES (?)", (db_version,))
             else:
-                # Otherwise, use the version from the table
-                version = row[0]
-
-            # Upgrade the schema to version 1
-            if version < 1:
-                print(f"Upgrading schema to version {db_version}...")
-                # Add the 'created_at' column to the 'message' table
-                if message_table_exist:
-                    cursor.execute("ALTER TABLE message ADD COLUMN type INT DEFAULT 0") # Added in V1
-                    cursor.execute("ALTER TABLE message ADD COLUMN rank INT DEFAULT 0") # Added in V1
-                    cursor.execute("ALTER TABLE message ADD COLUMN parent INT DEFAULT 0") # Added in V2
-                    cursor.execute("ALTER TABLE message ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V3
-                    cursor.execute("ALTER TABLE discussion ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V3
-
-                    cursor.execute("ALTER TABLE message ADD COLUMN model TEXT DEFAULT ''") # Added in V4
-                    cursor.execute("ALTER TABLE message ADD COLUMN personality INT DEFAULT ''") # Added in V4
-
-                    cursor.execute("ALTER TABLE discussion ADD COLUMN finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V5
-
-                    
-            # Upgrade the schema to version 1
-            elif version < 2:
-                print(f"Upgrading schema to version {db_version}...")
-                # Add the 'created_at' column to the 'message' table
-                if message_table_exist:
-                    try:
-                        cursor.execute("ALTER TABLE message ADD COLUMN parent INT DEFAULT 0") # Added in V2
-                        cursor.execute("ALTER TABLE message ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V3
-                        cursor.execute("ALTER TABLE discussion ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V3
-
-                        cursor.execute("ALTER TABLE message ADD COLUMN model TEXT DEFAULT ''") # Added in V4
-                        cursor.execute("ALTER TABLE message ADD COLUMN personality INT DEFAULT ''") # Added in V4
-                        
-                        cursor.execute("ALTER TABLE message ADD COLUMN binding TEXT DEFAULT ''") # Added in V5
-                        cursor.execute("ALTER TABLE message ADD COLUMN finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V6
-                        
-                        
-                    except :
-                        pass
-            # Upgrade the schema to version 1
-            elif version < 3:
-                print(f"Upgrading schema to version {db_version}...")
-                # Add the 'created_at' column to the 'message' table
-                if message_table_exist:
-                    try:
-                        cursor.execute("ALTER TABLE message ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V3
-                        cursor.execute("ALTER TABLE discussion ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V3
-                        cursor.execute("ALTER TABLE message ADD COLUMN model TEXT DEFAULT ''") # Added in V4
-                        cursor.execute("ALTER TABLE message ADD COLUMN personality INT DEFAULT ''") # Added in V4
-
-                        cursor.execute("ALTER TABLE message ADD COLUMN binding TEXT DEFAULT ''") # Added in V5
-                        cursor.execute("ALTER TABLE message ADD COLUMN finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V6
-                        
-                        cursor.execute("ALTER TABLE message ADD COLUMN finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V6
-                        
-                    except :
-                        pass
-            # Upgrade the schema to version 1
-            elif version < 4:
-                print(f"Upgrading schema to version {db_version}...")
-                # Add the 'created_at' column to the 'message' table
-                if message_table_exist:
-                    try:
-                        cursor.execute("ALTER TABLE message ADD COLUMN model TEXT DEFAULT ''") # Added in V4
-                        cursor.execute("ALTER TABLE message ADD COLUMN personality INT DEFAULT ''") # Added in V4
-
-                        cursor.execute("ALTER TABLE message ADD COLUMN binding TEXT DEFAULT ''") # Added in V5
-
-                        cursor.execute("ALTER TABLE message ADD COLUMN finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V6
-                        
-                    except :
-                        pass                    
-            elif version < 5:
-                print(f"Upgrading schema to version {db_version}...")
-                # Add the 'created_at' column to the 'message' table
-                if message_table_exist:
-                    try:
-                        cursor.execute("ALTER TABLE message ADD COLUMN binding TEXT DEFAULT ''") # Added in V5
-                        cursor.execute("ALTER TABLE message ADD COLUMN finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V6
-                        
-                    except :
-                        pass                    
-            elif version < 6:
-                print(f"Upgrading schema to version {db_version}...")
-                # Add the 'created_at' column to the 'message' table
-                if message_table_exist:
-                    try:
-                        cursor.execute("ALTER TABLE message ADD COLUMN finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP") # Added in V6
-                        
-                    except :
-                        pass                    
-            # Update the schema version
-            if not schema_table_exist:
-                cursor.execute(f"INSERT INTO schema_version (id, version) VALUES (1, {db_version})")
-            else:
-                cursor.execute(f"UPDATE schema_version SET version=? WHERE id=?",(db_version,1))
+                cursor.execute("UPDATE schema_version SET version = ?", (db_version,))            
 
             conn.commit()
+
+    def add_missing_columns(self):
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+
+            table_columns = {
+                'discussion': [
+                    'id',
+                    'title',
+                    'created_at'
+                ],
+                'message': [
+                    'id',
+                    'binding',
+                    'model',
+                    'personality',
+                    'sender',
+                    'content',
+                    'type',
+                    'rank',
+                    'parent',
+                    'created_at',
+                    'finished_generating_at',
+                    'discussion_id'
+                ]
+            }
+
+            for table, columns in table_columns.items():
+                cursor.execute(f"PRAGMA table_info({table})")
+                existing_columns = [column[1] for column in cursor.fetchall()]
+
+                for column in columns:
+                    if column not in existing_columns:
+                        if column == 'id':
+                            cursor.execute(f"ALTER TABLE {table} ADD COLUMN {column} INTEGER PRIMARY KEY AUTOINCREMENT")
+                        elif column.endswith('_at'):
+                            cursor.execute(f"ALTER TABLE {table} ADD COLUMN {column} TIMESTAMP")
+                        else:
+                            cursor.execute(f"ALTER TABLE {table} ADD COLUMN {column} TEXT")
+
+            conn.commit()
+
 
     def select(self, query, params=None, fetch_all=True):
         """
