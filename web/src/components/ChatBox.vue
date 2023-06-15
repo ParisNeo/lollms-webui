@@ -10,6 +10,7 @@
                 </button>
             </div>
         </div>
+
         <form>
             <label for="chat" class="sr-only">Send message</label>
             <div class="px-3 py-3 rounded-lg bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel shadow-lg  ">
@@ -19,7 +20,7 @@
                     <div v-if="fileList.length > 0" class="flex flex-col max-h-64  ">
                         <TransitionGroup name="list" tag="div"
                             class="flex flex-col flex-grow overflow-y-auto scrollbar-thin scrollbar-track-bg-light scrollbar-thumb-bg-light-tone hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark dark:scrollbar-thumb-bg-dark-tone dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
-                            <div v-for="(file,index) in fileList" :key="index+'-'+file.name" >
+                            <div v-for="(file, index) in fileList" :key="index + '-' + file.name">
                                 <div class="  m-1" :title="file.name">
 
                                     <div
@@ -87,12 +88,16 @@
                     </div>
                     <!-- CHAT BOX -->
                     <div class="flex flex-row flex-grow items-center gap-2 ">
+                        <!-- <div class="w-24">
+                            <MountedPersonalitiesComponent  />
+
+                        </div> -->
                         <div class="relative grow">
                             <textarea id="chat" rows="1" v-model="message"
                                 class="block min-h-11  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 placeholder="Send message..." @keydown.enter.exact="submitOnEnter($event)">
                             </textarea>
-                            <input type="file" ref="fileDialog" style="display: none" @change="addFiles" multiple/>
+                            <input type="file" ref="fileDialog" style="display: none" @change="addFiles" multiple />
                             <button type="button" @click.stop="$refs.fileDialog.click()" title="Add files"
                                 class="absolute inset-y-0 right-0 flex items-center mr-2 w-6 hover:text-secondary duration-75 active:scale-90">
 
@@ -125,6 +130,7 @@
                                     <span class="sr-only">Loading...</span>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -156,8 +162,12 @@
     position: absolute;
 }
 </style>
+<script setup>
+import MountedPersonalitiesComponent from './MountedPersonalitiesComponent.vue'
 
+</script>
 <script>
+
 import { nextTick, TransitionGroup } from 'vue'
 import feather from 'feather-icons'
 import filesize from '../plugins/filesize'
@@ -168,6 +178,9 @@ export default {
 
         loading: false
 
+    },
+    components: {
+        MountedPersonalitiesComponent
     },
     setup() {
         return {}
@@ -218,9 +231,9 @@ export default {
         stopGenerating() {
             this.$emit('stopGenerating')
         },
-        addFiles(event){
-           
-           this.fileList = this.fileList.concat([...event.target.files])
+        addFiles(event) {
+
+            this.fileList = this.fileList.concat([...event.target.files])
         }
     },
     watch: {
