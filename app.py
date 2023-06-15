@@ -488,8 +488,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
     def apply_settings(self):
         result = self.process.set_config(self.config)
-        print("Set config results:")
-        print(result)
+        if result["status"]:
+            ASCIIColors.success("OK")
+        else:
+            ASCIIColors.error("NOK")
+            
         return jsonify(result)
     
 
@@ -606,9 +609,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
         path = Path("personalities")/lang/category/name
         try:
             shutil.rmtree(path)
-            return jsonify({'status':'success'})
+            return jsonify({'status':True})
         except Exception as ex:
-            return jsonify({'status':'failure','error':str(ex)})
+            return jsonify({'status':False,'error':str(ex)})
 
     def add_endpoint(
         self,
