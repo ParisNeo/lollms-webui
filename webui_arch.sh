@@ -86,7 +86,7 @@ printf "%*s\n" $((""+COLUMNS/2)) "\u001b[0m                                     
 
 #>-Check if repository exists
 
-  print "Synchronizing repository"
+  printf "Synchronizing repository"
 
   if [[ -d .git ]] ;then
     printf "Pulling latest changes\n"
@@ -95,7 +95,7 @@ printf "%*s\n" $((""+COLUMNS/2)) "\u001b[0m                                     
     #-error-handling in case folder isn't accessible..avoids a minor mess if cd fails and script keeps going
     cd lollms-webui || { echo "Couldn't access repo folder. Please check folder structure / permissions and run script again"; exit 1; }
   else
-    print "Cloning repository...\n"
+    printf "Cloning repository...\n"
     git clone https://github.com/ParisNeo/lollms-webui.git ./lollms-webui 
     if [ $? -ne 0 ]; then
         printf "Downloadin from git failed. Please check your internet connection and permissions and try again.\n"
