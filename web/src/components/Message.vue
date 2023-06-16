@@ -19,7 +19,7 @@
                         </p> -->
 
                         </div>
-                        <div class="text-sm text-gray-400 font-thin" v-if="message.created_at" :title="message.created_at">
+                        <div class="text-sm text-gray-400 font-thin" v-if="message.created_at" :title="parsed_date">
                             {{ created_at }}
 
                         </div>
@@ -306,6 +306,10 @@ export default {
     computed: {
         created_at() {
             return this.prettyDate(this.message.created_at)
+
+        },
+        parsed_date() {
+            return new Date(Date.parse(this.message.created_at)).toLocaleString()
 
         }
     }

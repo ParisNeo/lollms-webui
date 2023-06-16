@@ -162,7 +162,8 @@
                             <div class="flex gap-1 items-center">
                                 <img :src="imgBinding" class="w-8 h-8 rounded-full object-fill text-blue-700">
                                 <h3 class="font-bold font-large text-lg line-clamp-1">
-                                    {{ configFile.binding_name }}
+                                    <!-- {{ configFile.binding_name }} -->
+                                    {{binding_name}}
                                 </h3>
                             </div>
                         </div>
@@ -329,6 +330,11 @@
 
                         <div v-if="configFile.personalities" class="mr-2">|</div>
                         <!-- LIST OF MOUNTED PERSONALITIES -->
+                        <div class="mr-2 font-bold font-large text-lg line-clamp-1">
+                        {{active_pesonality }}
+
+                         </div>
+                        <div v-if="configFile.personalities" class="mr-2">|</div>
                         <div v-if="configFile.personalities"
                             class=" text-base font-semibold cursor-pointer select-none items-center flex flex-row">
                             <!-- LIST -->
@@ -1380,7 +1386,7 @@ export default {
             const res = await this.mount_personality(pers.personality)
             console.log('mount_personality res', res)
 
-            if (res.status) {
+            if (res && res.status) {
                 this.configFile.personalities = res.personalities
                 this.$refs.toast.showToast("Personality mounted", 4, true)
                 pers.isMounted = true
@@ -1609,6 +1615,15 @@ export default {
                 return defaultModelImgPlaceholder
             }
         },
+        binding_name(){
+            return this.bindingsArr[this.bindingsArr.findIndex(item=>item.folder === this.configFile.binding_name)].name
+            
+        },
+        active_pesonality(){
+            return this.personalities[this.personalities.findIndex(item => item.full_path ===this.configFile.personalities[this.configFile.active_personality_id])].name
+            
+
+        }
         // imgPersonality() {
         //     if (!this.isMounted) {
         //         return

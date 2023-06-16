@@ -560,12 +560,14 @@ export default {
 
         },
         createUserMsg(msgObj) {
+
             let usrMessage = {
                 content: msgObj.message,
                 id: msgObj.id,
                 //parent: 10,
                 rank: 0,
-                sender: msgObj.user
+                sender: msgObj.user,
+                created_at: msgObj.created_at
                 //type: 0
             }
             this.discussionArr.push(usrMessage)
@@ -653,7 +655,9 @@ export default {
                             message: msg,
                             id: 0,
                             rank: 0,
-                            user: "user"
+                            user: "user",
+                            created_at:  new Date().toLocaleString(),
+                            
                         };
                         this.createUserMsg(usrMessage);
 
@@ -887,7 +891,7 @@ export default {
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
             axios.get('/get_generation_status', {}).then((res) => {
                 if (res) {
-                    //console.log(res.data.status);
+                    console.log(res);
                     if (!res.data.status) {
                         socket.emit('generate_msg_from', { prompt: msg, id: msgId });
 
