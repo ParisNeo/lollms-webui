@@ -19,7 +19,7 @@
                         </p> -->
 
                         </div>
-                        <div class="text-sm text-gray-400 font-thin" v-if="message.created_at" :title="message.created_at">
+                        <div class="text-sm text-gray-400 font-thin" v-if="message.created_at" :title="'Created at: '+created_at_parsed">
                             {{ created_at }}
 
                         </div>
@@ -105,6 +105,8 @@
                         <p v-if="message.binding">Binding: <span class="font-thin">{{ message.binding }}</span></p>
                         <p v-if="message.model">Model: <span class="font-thin">{{ message.model }}</span></p>
                         <p v-if="message.seed">Seed: <span class="font-thin">{{ message.seed }}</span></p>
+                        <p v-if="message.finished_generating_at">Time spent: <span class="font-thin"
+                                :title="'Finished generating: '+finished_generating_at_parsed">{{ time_spent }}</span></p>
                     </div>
 
                 </div>
@@ -174,7 +176,7 @@ export default {
             this.expanded = !this.expanded;
         },
         copyContentToClipboard() {
-            this.$emit('copy', this.message.content)
+            this.$emit('copy', this)
 
         },
         deleteMsg() {
@@ -306,6 +308,54 @@ export default {
     computed: {
         created_at() {
             return this.prettyDate(this.message.created_at)
+
+        },
+        created_at_parsed() {
+            return new Date(Date.parse(this.message.created_at)).toLocaleString()
+
+        },
+        finished_generating_at_parsed() {
+            return new Date(Date.parse(this.message.finished_generating_at)).toLocaleString()
+
+        },
+
+        time_spent() {
+            const startTime = new Date(Date.parse(this.message.created_at))
+            const endTime = new Date(Date.parse(this.message.finished_generating_at))
+            //const spentTime = new Date(endTime - startTime)
+
+
+            let timeDiff = endTime.getTime() - startTime.getTime();
+            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+
+            timeDiff -= hours * (1000 * 60 * 60);
+
+
+
+            const mins = Math.floor(timeDiff / (1000 * 60));
+
+            timeDiff -= mins * (1000 * 60);
+
+            const secs = Math.floor(timeDiff / 1000)
+            timeDiff -= secs * 1000;
+
+
+
+            // let spentTime = Math.floor((endTime.getTime() - startTime.getTime()) / 1000);
+            // const result = spentTime.getSeconds();
+
+            function addZero(i) {
+                if (i < 10) { i = "0" + i }
+                return i;
+            }
+
+            // const d = new Date();
+            // let h = addZero(spentTime.getHours());
+            // let m = addZero(spentTime.getMinutes());
+            // let s = addZero(spentTime.getSeconds());
+            const time = addZero(hours) + "h:" + addZero(mins) + "m:" + addZero(secs)+'s';
+
+             return time
 
         }
     }
