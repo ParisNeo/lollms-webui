@@ -1616,11 +1616,30 @@ export default {
             }
         },
         binding_name(){
-            return this.bindingsArr[this.bindingsArr.findIndex(item=>item.folder === this.configFile.binding_name)].name
+            if (!this.isMounted) {
+                return
+            }
+            const index =this.bindingsArr.findIndex(item=>item.folder === this.configFile.binding_name)
+            if(index>-1){
+                return this.bindingsArr[index].name
+
+            }else{
+                return
+            }
             
         },
         active_pesonality(){
-            return this.personalities[this.personalities.findIndex(item => item.full_path ===this.configFile.personalities[this.configFile.active_personality_id])].name
+            if (!this.isMounted) {
+                return
+            }
+            const index =this.personalities.findIndex(item => item.full_path ===this.configFile.personalities[this.configFile.active_personality_id])
+            if (index>-1){
+                return this.personalities[index].name
+            }else{
+                return
+
+            }
+           
             
 
         }
