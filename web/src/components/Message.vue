@@ -11,13 +11,19 @@
             <div class="flex flex-col w-full flex-grow-0 ">
                 <div class="flex flex-row flex-grow items-start ">
                     <!-- SENDER NAME -->
-                    <div class="flex ">
-                        <p class="drop-shadow-sm text-lg text-opacity-95 font-bold grow ">{{ message.sender }}</p>
-                        <button @click="toggleModel"  class="expand-button">{{ expanded ? ' - ' : ' + ' }}</button>
+                    <div class="flex flex-col mb-2">
+                        <div class="drop-shadow-sm text-lg text-opacity-95 font-bold grow ">{{ message.sender }}
+                            <!-- <button @click="toggleModel"  class="expand-button">{{ expanded ? ' - ' : ' + ' }}</button>
                         <p v-if="expanded" class="drop-shadow-sm text-lg text-opacity-95 font-bold grow">
                         {{ message.model }}
-                        </p>
-                    </div>                    
+                        </p> -->
+
+                        </div>
+                        <div class="text-sm text-gray-400 font-thin" v-if="message.created_at" :title="message.created_at">
+                            {{ created_at }}
+
+                        </div>
+                    </div>
                     <div class="flex-grow ">
 
                     </div>
@@ -84,16 +90,24 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto w-full " >
+                <div class="overflow-x-auto w-full ">
                     <!-- MESSAGE CONTENT -->
-                    <MarkdownRenderer ref="mdRender"  v-if="!editMsgMode" :markdown-text="message.content" >
+                    <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :markdown-text="message.content">
                     </MarkdownRenderer>
                     <textarea v-if="editMsgMode" ref="mdTextarea" :rows="4"
                         class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         :style="{ minHeight: mdRenderHeight + `px` }" placeholder="Enter message here..."
                         v-model="new_message_content"></textarea>
                 </div>
+                <!-- FOOTER -->
+                <div class="text-sm text-gray-400 mt-2">
+                    <div class="flex flex-row items-center gap-2">
+                        <p v-if="message.binding">Binding: <span class="font-thin">{{ message.binding }}</span></p>
+                        <p v-if="message.model">Model: <span class="font-thin">{{ message.model }}</span></p>
+                        <p v-if="message.seed">Seed: <span class="font-thin">{{ message.seed }}</span></p>
+                    </div>
 
+                </div>
             </div>
 
 
@@ -104,14 +118,15 @@
     </div>
 </template>
 <style>
-
 .expand-button {
-  margin-left: 10px; /* Add space between sender and expand button */
-  margin-right: 10px; /* Add space between sender and expand button */
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
+    margin-left: 10px;
+    /* Add space between sender and expand button */
+    margin-right: 10px;
+    /* Add space between sender and expand button */
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
 }
 </style>
 <script>
@@ -201,6 +216,65 @@ export default {
         defaultImg(event) {
             event.target.src = botImgPlaceholder
         },
+        parseDate(tdate) {
+            let system_date = new Date(Date.parse(tdate));
+            let user_date = new Date();
+
+            let diff = Math.floor((user_date - system_date) / 1000);
+            if (diff <= 1) {
+                return "just now";
+            }
+            if (diff < 20) {
+                return diff + " seconds ago";
+            }
+            if (diff < 40) {
+                return "half a minute ago";
+            }
+            if (diff < 60) {
+                return "less than a minute ago";
+            }
+            if (diff <= 90) {
+                return "one minute ago";
+            }
+            if (diff <= 3540) {
+                return Math.round(diff / 60) + " minutes ago";
+            }
+            if (diff <= 5400) {
+                return "1 hour ago";
+            }
+            if (diff <= 86400) {
+                return Math.round(diff / 3600) + " hours ago";
+            }
+            if (diff <= 129600) {
+                return "1 day ago";
+            }
+            if (diff < 604800) {
+                return Math.round(diff / 86400) + " days ago";
+            }
+            if (diff <= 777600) {
+                return "1 week ago";
+            }
+            return tdate;
+        },
+        prettyDate(time) {
+            let date = new Date((time || "").replace(/-/g, "/").replace(/[TZ]/g, " ")),
+                diff = (((new Date()).getTime() - date.getTime()) / 1000),
+                day_diff = Math.floor(diff / 86400);
+
+            if (isNaN(day_diff) || day_diff < 0 || day_diff >= 31)
+                return;
+
+            return day_diff == 0 && (
+                diff < 60 && "just now" ||
+                diff < 120 && "1 minute ago" ||
+                diff < 3600 && Math.floor(diff / 60) + " minutes ago" ||
+                diff < 7200 && "1 hour ago" ||
+                diff < 86400 && Math.floor(diff / 3600) + " hours ago") ||
+                day_diff == 1 && "Yesterday" ||
+                day_diff < 7 && day_diff + " days ago" ||
+                day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago";
+        }
+
 
     }, watch: {
         showConfirmation() {
@@ -230,7 +304,10 @@ export default {
 
     },
     computed: {
+        created_at() {
+            return this.prettyDate(this.message.created_at)
 
+        }
     }
 
 

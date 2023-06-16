@@ -1471,7 +1471,7 @@ export default {
             console.log('fig', this.configFile.personality_category)
             nextTick(()=>{
                 console.log('accc',this.$refs.mountedPersonalities)
-        this.$store.state.mountedPersonalities = this.$refs.mountedPersonalities
+        //this.$store.state.mountedPersonalities = this.$refs.mountedPersonalities
             })
 
         },
