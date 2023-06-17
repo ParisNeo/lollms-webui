@@ -60,11 +60,14 @@
             <b>Version:&nbsp;</b>
             {{ binding.version }}
           </div>
-          <a :href="binding.link" target="_blank" class="flex items-center">
+          <div class="flex items-center">
+         
             <i data-feather="github" class="w-5 m-1"></i>
             <b>Link:&nbsp;</b>
+            <a :href="binding.link" target="_blank" class="flex items-center  hover:text-secondary duration-75 active:scale-90">
             {{ binding.link }}
           </a>
+        </div>
         </div>
         <div class="flex items-center">
           <i data-feather="info" class="w-5 m-1"></i>
