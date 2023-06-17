@@ -1,5 +1,5 @@
 <template>
-  <div class=" items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer active:scale-95 duration-75 select-none"
+  <div class=" items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer select-none"
     @click.stop="toggleSelected" :class="selected ? ' border-primary-light' : 'border-transparent'">
 
     <div :class="isTemplate ? 'opacity-50' : ''">
@@ -15,13 +15,24 @@
         <div class="grow">
           <!-- EMPTY SPACE FILLER -->
         </div>
-        <!-- ADVANCED OPTIONS - NOT IMPLEMENTED -->
-        <div v-if="hasAdvancedSettings" class="flex-none">
-          <button type="button" title="Not implemented"
-            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
-            <i data-feather="sliders" class="w-5 m-1"></i>
-            <span class="sr-only">Icon description</span>
+        <!-- ADVANCED OPTIONS -->
+        <div  class="flex-none gap-1">
+          <button type="button" title="Reinstall binding"
+            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="toggleReinstall">
+            <i data-feather="tool" class="w-5"></i>
+            <span class="sr-only">Reinstall binding</span>
           </button>
+          <!-- - NOT IMPLEMENTED -->
+          <!-- <button type="button" title="Settings - Not implemented"
+            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
+            <i data-feather="sliders" class="w-5"></i>
+            <span class="sr-only">Settings</span>
+          </button>
+          <button type="button" title="Help - Not implemented"
+            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
+            <i data-feather="help-circle" class="w-5"></i>
+            <span class="sr-only">Help</span>
+          </button> -->
         </div>
 
       </div>
@@ -49,11 +60,14 @@
             <b>Version:&nbsp;</b>
             {{ binding.version }}
           </div>
-          <a :href="binding.link" target="_blank" class="flex items-center">
+          <div class="flex items-center">
+         
             <i data-feather="github" class="w-5 m-1"></i>
             <b>Link:&nbsp;</b>
+            <a :href="binding.link" target="_blank" class="flex items-center  hover:text-secondary duration-75 active:scale-90">
             {{ binding.link }}
           </a>
+        </div>
         </div>
         <div class="flex items-center">
           <i data-feather="info" class="w-5 m-1"></i>
@@ -77,13 +91,14 @@ export default {
   props: {
     binding: {},
     onSelected: Function,
+    onReinstall: Function,
     selected: Boolean,
 
   },
   data() {
     return {
       isTemplate: false,
-      hasAdvancedSettings: false,
+      
     };
   },
   mounted() {
@@ -106,6 +121,9 @@ export default {
     },
     toggleSelected() {
       this.onSelected(this)
+    },
+    toggleReinstall() {
+      this.onReinstall(this)
     },
     getStatus() {
       if (this.binding.folder === 'backend_template' || this.binding.folder === 'binding_template') {

@@ -11,14 +11,15 @@ const app = createApp(App)
 const store = createStore({
     state () {
       return {
-        count: 0,
-        mountedPersonalities: {}
+        // count: 0,
+        mountedPersonalities: {},
+        settingsChanged:false
       }
     },
     mutations: {
-      increment (state) {
-        state.count++
-      }
+      // increment (state) {
+      //   state.count++
+      // }
     }
   })
 
