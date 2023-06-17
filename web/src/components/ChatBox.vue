@@ -1,5 +1,5 @@
 <template>
-    <div class="absolute bottom-0  w-96  justify-center text-center p-4 ">
+    <div class="absolute bottom-0 min-w-96  w-full  justify-center text-center p-4 ">
         <div v-if="loading" class="flex items-center justify-center w-full">
             <div class="flex flex-row p-2 rounded-t-lg ">
 
@@ -164,13 +164,13 @@
 </style>
 <script setup>
 import MountedPersonalitiesComponent from './MountedPersonalitiesComponent.vue'
-
-</script>
-<script>
-
 import { nextTick, TransitionGroup } from 'vue'
 import feather from 'feather-icons'
 import filesize from '../plugins/filesize'
+</script>
+<script>
+
+
 export default {
     name: 'ChatBox',
     emits: ["messageSentEvent", "stopGenerating"],
@@ -180,9 +180,11 @@ export default {
 
     },
     components: {
-        MountedPersonalitiesComponent
+        //MountedPersonalitiesComponent
     },
-    setup() {
+    setup () {
+        
+
         return {}
     },
     data() {
@@ -259,10 +261,8 @@ export default {
         },
 
     },
-    computed: {
-
-    },
     mounted() {
+    
         nextTick(() => {
             feather.replace()
         })

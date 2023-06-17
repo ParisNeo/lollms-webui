@@ -188,9 +188,9 @@
                 class="absolute w-full bottom-0 bg-transparent p-10 pt-16 bg-gradient-to-t from-bg-light dark:from-bg-dark from-5% via-bg-light dark:via-bg-dark via-10% to-transparent to-100%">
 
             </div>
-            <div class=" bottom-0 container flex flex-row items-center justify-center ">
-                <ChatBox ref="chatBox" v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
-                    @stopGenerating="stopGenerating" />
+            <div class=" bottom-0 container flex flex-row items-center justify-center " v-if="currentDiscussion.id">
+                <ChatBox ref="chatBoxarea"  @messageSentEvent="sendMsg" :loading="isGenerating"
+                    @stopGenerating="stopGenerating" ></ChatBox>
             </div>
             <!-- CAN ADD FOOTER PANEL HERE -->
         </div>
@@ -1129,9 +1129,14 @@ export default {
 
 
             //this.fileList = files
+            
+
+                console.log('chatbox',this.$refs)
             this.$refs.chatBox.fileList = this.$refs.chatBox.fileList.concat(files)
 
             this.isDragOverChat = false
+        
+
         },
         setDropZoneChat() {
 
@@ -1189,6 +1194,9 @@ export default {
         socket.on("final", this.finalMsgEvent)
 
     },
+    mounted(){
+        console.log('chatbox mnt',this.$refs)
+    },
     async activated() {
 
         //console.log('settings changed', this.$store.state.mountedPersonalities)
@@ -1196,7 +1204,7 @@ export default {
         // To fix scrolling back to last message, this hook is needed.
         // If anyone knows hor to fix scroll issue when changing pages, please do fix it :D
         console.log("Websocket connected (activated)", this.socketConnected)
-        console.log('settings changed acc', this.$store.state.settingsChanged)
+        //console.log('settings changed acc', this.$store.state.settingsChanged)
         await this.getPersonalityAvatars()
 
         if (this.isCreated) {
