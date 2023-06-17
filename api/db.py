@@ -51,8 +51,8 @@ class DiscussionsDB:
                     type INT NOT NULL,
                     rank INT NOT NULL,
                     parent INT,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    created_at TIMESTAMP,
+                    finished_generating_at TIMESTAMP,
                     discussion_id INTEGER NOT NULL,
                     FOREIGN KEY (discussion_id) REFERENCES discussion(id),
                     FOREIGN KEY (parent) REFERENCES message(id)
