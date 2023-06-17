@@ -72,30 +72,14 @@ export default {
         },
         copyToClipBoard(content) {
 
-            // const id = parseInt(((new Date()).getTime() * Math.random()).toString()).toString()
-            // const toastObj = {
-            //     id: id,
-            //     success: true,
-            //     message: "Copied to clipboard successfully",
-            //     show: true,
-            //     copy: this.copyToClipBoard(this.message)
-            // }
-
             navigator.clipboard.writeText(content);
 
-            // this.toastArr.push(toastObj)
+          
 
             nextTick(() => {
                 feather.replace()
 
             })
-            // setTimeout(() => {
-
-            //     this.toastArr = this.toastArr.filter(item => item.id != id)
-
-            // }, duration_s * 1000);
-
-
 
 
         },
@@ -116,11 +100,11 @@ export default {
                 feather.replace()
 
             })
-            // setTimeout(() => {
+            setTimeout(() => {
 
-            //     this.toastArr = this.toastArr.filter(item => item.id != id)
+                this.toastArr = this.toastArr.filter(item => item.id != id)
 
-            // }, duration_s * 1000);
+            }, duration_s * 1000);
         }
 
     },
