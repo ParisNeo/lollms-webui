@@ -105,7 +105,7 @@
                         <p v-if="message.binding">Binding: <span class="font-thin">{{ message.binding }}</span></p>
                         <p v-if="message.model">Model: <span class="font-thin">{{ message.model }}</span></p>
                         <p v-if="message.seed">Seed: <span class="font-thin">{{ message.seed }}</span></p>
-                        <p v-if="message.finished_generating_at">Time spent: <span class="font-thin"
+                        <p v-if="message.time_spent">Time spent: <span class="font-thin"
                                 :title="'Finished generating: '+finished_generating_at_parsed">{{ time_spent }}</span></p>
                     </div>
 
@@ -326,6 +326,7 @@ export default {
 
 
             let timeDiff = endTime.getTime() - startTime.getTime();
+
             const hours = Math.floor(timeDiff / (1000 * 60 * 60));
 
             timeDiff -= hours * (1000 * 60 * 60);
@@ -355,7 +356,13 @@ export default {
             // let s = addZero(spentTime.getSeconds());
             const time = addZero(hours) + "h:" + addZero(mins) + "m:" + addZero(secs)+'s';
 
-             return time
+            if (timeDiff==0){
+                console.log(timeDiff)
+                return undefined
+            }else{
+                return time
+            }
+            
 
         }
     }
