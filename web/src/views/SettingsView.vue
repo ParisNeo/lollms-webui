@@ -1149,19 +1149,12 @@ export default {
             })
         },
         applyConfiguration() {
-            // if (!this.configFile.model_name) {
 
-            //     this.$refs.toast.showToast("Configuration changed failed.\nPlease select model first", 4, false)
-            //     nextTick(() => {
-            //         feather.replace()
-            //     })
-            //     return
-            // }
             this.isLoading = true;
             axios.post('/apply_settings').then((res) => {
                 this.isLoading = false;
-
-                if (res.data.status === "succeeded") {
+                //console.log('apply-res',res)
+                if (res.data.status) {
 
                     this.$refs.toast.showToast("Configuration changed successfully.", 4, true)
                     this.settingsChanged = false

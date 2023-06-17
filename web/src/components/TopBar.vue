@@ -6,7 +6,7 @@
             <RouterLink :to="{ name: 'discussions' }">
                 <div class="flex items-center gap-3 flex-1">
                     <img class="w-12  hover:scale-95 duration-150 " title="lollms-webui" src="@/assets/logo.svg" alt="Logo">
-                    <p class="text-2xl ">lollms-webui</p>
+                    <p class="text-2xl ">Lord of Large Language Models: One tool to rule them all</p>
 
                 </div>
             </RouterLink>
