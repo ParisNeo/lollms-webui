@@ -168,15 +168,15 @@
             :class="isDragOverChat ? 'pointer-events-none' : ''">
 
             <!-- CHAT AREA -->
-            <div class=" container pt-4 pb-10 mb-16" >
+            <div class=" container pt-4 pb-10 mb-16">
                 <TransitionGroup v-if="discussionArr.length > 0" name="list">
                     <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg" :id="'msg-' + msg.id"
                         ref="messages" @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
                         @rankDown="rankDownMessage" @updateMessage="updateMessage" @resendMessage="resendMessage"
                         :avatar="getAvatar(msg.sender)" />
 
-                        <!-- REMOVED FOR NOW, NEED MORE TESTING -->
-                        <!-- @click="scrollToElementInContainer($event.target, 'messages-list')"  -->
+                    <!-- REMOVED FOR NOW, NEED MORE TESTING -->
+                    <!-- @click="scrollToElementInContainer($event.target, 'messages-list')"  -->
 
 
                 </TransitionGroup>
@@ -188,9 +188,8 @@
                 class="absolute w-full bottom-0 bg-transparent p-10 pt-16 bg-gradient-to-t from-bg-light dark:from-bg-dark from-5% via-bg-light dark:via-bg-dark via-10% to-transparent to-100%">
 
             </div>
-            <div class=" bottom-0 container flex flex-row items-center justify-center ">
-                <ChatBox ref="chatBox" v-if="currentDiscussion.id" @messageSentEvent="sendMsg" :loading="isGenerating"
-                    @stopGenerating="stopGenerating" />
+            <div class=" bottom-0 container flex flex-row items-center justify-center " v-if="currentDiscussion.id">
+                <ChatBox ref="chatBox"  @messageSentEvent="sendMsg" :loading="isGenerating" @stopGenerating="stopGenerating" ></ChatBox>
             </div>
             <!-- CAN ADD FOOTER PANEL HERE -->
         </div>
@@ -199,6 +198,7 @@
 
     <Toast ref="toast">
     </Toast>
+   
 </template>
 
 
@@ -496,7 +496,7 @@ export default {
                 nextTick(() => {
 
 
-                    const discussionitem =document.getElementById('dis-'+this.currentDiscussion.id)
+                    const discussionitem = document.getElementById('dis-' + this.currentDiscussion.id)
 
                     //this.scrollToElement(discussionitem)
 
@@ -517,17 +517,17 @@ export default {
             }
         },
         scrollToElementInContainer(el, containerId) {
-            const topPos = el.offsetTop ; //+ el.clientHeight
+            const topPos = el.offsetTop; //+ el.clientHeight
             const container = document.getElementById(containerId)
-           // console.log(el.offsetTop , el.clientHeight, container.clientHeight)
+            // console.log(el.offsetTop , el.clientHeight, container.clientHeight)
 
 
             container.scrollTo(
-                    {
-                        top: topPos,
-                        behavior: "smooth",
-                    }
-                )
+                {
+                    top: topPos,
+                    behavior: "smooth",
+                }
+            )
 
         },
         scrollBottom(el) {
@@ -560,12 +560,14 @@ export default {
 
         },
         createUserMsg(msgObj) {
+
             let usrMessage = {
                 content: msgObj.message,
                 id: msgObj.id,
                 //parent: 10,
                 rank: 0,
-                sender: msgObj.user
+                sender: msgObj.user,
+                created_at: msgObj.created_at
                 //type: 0
             }
             this.discussionArr.push(usrMessage)
@@ -601,12 +603,14 @@ export default {
             if (msgObj["status"] == "generation_started") {
                 this.updateLastUserMsg(msgObj)
                 // Create response message
+
                 let responseMessage = {
                     content: "✍ please stand by ...",//msgObj.message,
                     id: msgObj.ai_message_id,
                     parent: msgObj.user_message_id,
                     rank: 0,
                     sender: msgObj.bot,
+                    created_at: new Date().toLocaleString(),
                     //type: msgObj.type
                 }
                 this.discussionArr.push(responseMessage)
@@ -653,7 +657,9 @@ export default {
                             message: msg,
                             id: 0,
                             rank: 0,
-                            user: "user"
+                            user: "user",
+                            created_at: new Date().toLocaleString(),
+
                         };
                         this.createUserMsg(usrMessage);
 
@@ -834,14 +840,14 @@ export default {
             if (item) {
                 if (item.id) {
                     const realTitle = item.title ? item.title === "untitled" ? "New discussion" : item.title : "New discussion"
-                    document.title = 'GPT4ALL - WEBUI - ' + realTitle
+                    document.title = 'LoLLMS WebUI - ' + realTitle
                 } else {
                     const title = item || "Welcome"
-                    document.title = 'GPT4ALL - WEBUI - ' + title
+                    document.title = 'LoLLMS WebUI - ' + title
                 }
             } else {
                 const title = item || "Welcome"
-                document.title = 'GPT4ALL - WEBUI - ' + title
+                document.title = 'LoLLMS WebUI - ' + title
             }
 
         },
@@ -887,7 +893,7 @@ export default {
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
             axios.get('/get_generation_status', {}).then((res) => {
                 if (res) {
-                    //console.log(res.data.status);
+                    console.log(res);
                     if (!res.data.status) {
                         socket.emit('generate_msg_from', { prompt: msg, id: msgId });
 
@@ -934,9 +940,43 @@ export default {
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
             this.chime.play()
         },
-        copyToClipBoard(content) {
+        copyToClipBoard(messageEntry) {
             this.$refs.toast.showToast("Copied to clipboard successfully", 4, true)
-            navigator.clipboard.writeText(content);
+
+            let binding =""
+            if(messageEntry.message.binding){
+                binding= `Binding: ${messageEntry.message.binding}`
+            }
+            let personality=""
+            if(messageEntry.message.personality){
+                personality= `\nPersonality: ${messageEntry.message.personality}`
+            }
+            let time=""
+            if(messageEntry.created_at_parsed){
+                time= `\nCreated: ${messageEntry.created_at_parsed}`
+            }
+            let content=""
+            if(messageEntry.message.content){
+                content= messageEntry.message.content
+            }
+            let model=""
+            if(messageEntry.message.model){
+                model= `Model: ${messageEntry.message.model}`
+            }
+            let seed=""
+            if(messageEntry.message.seed){
+                seed= `Seed: ${messageEntry.message.seed}`
+            }
+            let time_spent=""
+            if(messageEntry.time_spent){
+                time_spent= `\nTime spent: ${messageEntry.time_spent}`
+            }
+            let bottomRow = ''
+            bottomRow = `${binding} ${model} ${seed} ${time_spent}`.trim()
+           const result = `${messageEntry.message.sender}${personality}${time}\n\n${content}\n\n${bottomRow}`
+
+
+            navigator.clipboard.writeText(result);
 
             nextTick(() => {
                 feather.replace()
@@ -1088,10 +1128,17 @@ export default {
         setFileListChat(files) {
 
 
-            //this.fileList = files
-            this.$refs.chatBox.fileList = this.$refs.chatBox.fileList.concat(files)
+                try {
+                    this.$refs.chatBox.fileList = this.$refs.chatBox.fileList.concat(files)
+                } catch (error) {
+                this.$refs.toast.showToast("Failed to set filelist in chatbox\n"+error.message, 4, false)
+                    
+                }
+            
 
             this.isDragOverChat = false
+        
+
         },
         setDropZoneChat() {
 
@@ -1149,14 +1196,17 @@ export default {
         socket.on("final", this.finalMsgEvent)
 
     },
+    mounted(){
+        //console.log('chatbox mnt',this.$refs)
+    },
     async activated() {
-        
-console.log('settings changed',this.$store.state.mountedPersonalities)
+
+        //console.log('settings changed', this.$store.state.mountedPersonalities)
         // This lifecycle hook runs every time you switch from other page back to this page (vue-router)
         // To fix scrolling back to last message, this hook is needed.
         // If anyone knows hor to fix scroll issue when changing pages, please do fix it :D
         console.log("Websocket connected (activated)", this.socketConnected)
-
+        //console.log('settings changed acc', this.$store.state.settingsChanged)
         await this.getPersonalityAvatars()
 
         if (this.isCreated) {

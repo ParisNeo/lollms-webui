@@ -51,8 +51,8 @@ class DiscussionsDB:
                     type INT NOT NULL,
                     rank INT NOT NULL,
                     parent INT,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    finished_generating_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    created_at TIMESTAMP,
+                    finished_generating_at TIMESTAMP,
                     discussion_id INTEGER NOT NULL,
                     FOREIGN KEY (discussion_id) REFERENCES discussion(id),
                     FOREIGN KEY (parent) REFERENCES message(id)
@@ -364,9 +364,18 @@ class Discussion:
             message_id (int): The id of the message to be changed
             new_content (str): The nex message content
         """
+        current_date_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        # print(f"{current_date_time}")
         self.discussions_db.update(
-            f"UPDATE message SET content = ?, finished_generating_at = ? WHERE id = ?",(new_content, datetime.now().strftime('%Y-%m-%d %H:%M:%S'),message_id)
+            f"UPDATE message SET content = ?, finished_generating_at = ? WHERE id = ?",(new_content, current_date_time,message_id)
         )
+        """
+        stuff = self.discussions_db.select(
+            f"Select finished_generating_at from  message WHERE id = ?",(message_id,)
+        )
+        print(stuff)        
+        """
+        
     
     def message_rank_up(self, message_id):
         """Increments the rank of the message

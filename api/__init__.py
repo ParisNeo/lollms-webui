@@ -591,7 +591,9 @@ class LoLLMsAPPI():
 
                 message = data["prompt"]
                 message_id = self.current_discussion.add_message(
-                    "user", message, parent=self.message_id
+                    "user", 
+                    message, 
+                    parent=self.message_id
                 )
 
                 self.current_user_message_id = message_id
@@ -839,8 +841,9 @@ class LoLLMsAPPI():
                 self.personality.name, 
                 "", 
                 parent = self.current_user_message_id,
+                binding = self.config["binding_name"],
                 model = self.config["model_name"], 
-                personality=self.config["personalities"][self.config["active_personality_id"]]
+                personality = self.config["personalities"][self.config["active_personality_id"]]
             )  # first the content is empty, but we'll fill it at the end
             self.socketio.emit('infos',
                     {
@@ -851,6 +854,7 @@ class LoLLMsAPPI():
                         "message":message,#markdown.markdown(message),
                         "user_message_id": self.current_user_message_id,
                         "ai_message_id": self.current_ai_message_id,
+                        
                     }, room=self.current_room_id
             )
 
@@ -876,7 +880,16 @@ class LoLLMsAPPI():
             self.socketio.emit('final', {
                                             'data': self.bot_says, 
                                             'ai_message_id':self.current_ai_message_id, 
-                                            'parent':self.current_user_message_id, 'discussion_id':self.current_discussion.discussion_id
+                                            'parent':self.current_user_message_id, 'discussion_id':self.current_discussion.discussion_id,
+                                            "status":'model_not_ready',
+                                            "type": "input_message_infos",
+                                            'logo': "",
+                                            "bot": self.personality.name,
+                                            "user": self.personality.user_name,
+                                            "message":self.bot_says,
+                                            "user_message_id": self.current_user_message_id,
+                                            "ai_message_id": self.current_ai_message_id,
+
                                         }, room=self.current_room_id
                                 )
 

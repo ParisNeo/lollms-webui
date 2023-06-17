@@ -75,11 +75,12 @@
                         <div class=" text-base font-semibold cursor-pointer select-none items-center">
 
                             <div class="flex gap-2 items-center ">
-                                <svg class="flex-shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                <!-- <svg class="flex-shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                     viewBox="0 0 24 24">
                                     <path fill="currentColor"
                                         d="M17 17H7V7h10m4 4V9h-2V7a2 2 0 0 0-2-2h-2V3h-2v2h-2V3H9v2H7c-1.11 0-2 .89-2 2v2H3v2h2v2H3v2h2v2a2 2 0 0 0 2 2h2v2h2v-2h2v2h2v-2h2a2 2 0 0 0 2-2v-2h2v-2h-2v-2m-6 2h-2v-2h2m2-2H9v6h6V9Z" />
-                                </svg>
+                                </svg> -->
+                                <i data-feather="cpu" class="w-5 h-5 mx-1 flex-shrink-0"></i>
                                 <h3 class="font-bold font-large text-lg">
                                     <div>{{ ram_usage }} / {{ ram_total_space }}</div>
                                 </h3>
@@ -162,7 +163,8 @@
                             <div class="flex gap-1 items-center">
                                 <img :src="imgBinding" class="w-8 h-8 rounded-full object-fill text-blue-700">
                                 <h3 class="font-bold font-large text-lg line-clamp-1">
-                                    {{ configFile.binding_name }}
+                                    <!-- {{ configFile.binding_name }} -->
+                                    {{ binding_name }}
                                 </h3>
                             </div>
                         </div>
@@ -179,7 +181,8 @@
                             <TransitionGroup name="list">
                                 <BindingEntry ref="bindingZoo" v-for="(binding, index) in bindings"
                                     :key="'index-' + index + '-' + binding.folder" :binding="binding"
-                                    :on-selected="onSelectedBinding" :selected="binding.folder === configFile.binding_name">
+                                    :on-selected="onSelectedBinding" :on-reinstall="onReinstallBinding"
+                                    :selected="binding.folder === configFile.binding_name">
                                 </BindingEntry>
                             </TransitionGroup>
                         </div>
@@ -329,13 +332,19 @@
 
                         <div v-if="configFile.personalities" class="mr-2">|</div>
                         <!-- LIST OF MOUNTED PERSONALITIES -->
+                        <div class="mr-2 font-bold font-large text-lg line-clamp-1">
+                            {{ active_pesonality }}
+
+                        </div>
+                        <div v-if="configFile.personalities" class="mr-2">|</div>
                         <div v-if="configFile.personalities"
                             class=" text-base font-semibold cursor-pointer select-none items-center flex flex-row">
                             <!-- LIST -->
-                            <div class="flex -space-x-4 items-center " v-if="mountedPersArr.length > 0" >
+                            <div class="flex -space-x-4 items-center " v-if="mountedPersArr.length > 0">
                                 <!-- ITEM -->
                                 <div class="relative  hover:-translate-y-2 duration-300 hover:z-10 shrink-0 "
-                                    v-for="(item, index) in mountedPersArr" :key="index + '-' + item.name" ref="mountedPersonalities">
+                                    v-for="(item, index) in mountedPersArr" :key="index + '-' + item.name"
+                                    ref="mountedPersonalities">
                                     <div class="group items-center flex flex-row">
                                         <button @click.stop="onPersonalitySelected(item)">
 
@@ -614,7 +623,7 @@
     </div>
 
 
-    <YesNoDialog ref="yesNoDialog" />
+    <YesNoDialog ref="yesNoDialog" class="z-20" />
     <AddModelDialog ref="addmodeldialog" />
     <MessageBox ref="messageBox" />
     <Toast ref="toast" />
@@ -831,17 +840,18 @@ export default {
             if (this.isLoading) {
                 this.$refs.toast.showToast("Loading... please wait", 4, false)
             }
-            this.isLoading=true
-            console.log('ppa',pers)
+            this.isLoading = true
+            console.log('ppa', pers)
             if (pers) {
 
                 if (pers.selected) {
                     this.$refs.toast.showToast("Personality already selected", 4, true)
+                    this.isLoading = false
                     return
                 }
 
 
-                this.settingsChanged = true
+                //this.settingsChanged = true
 
                 if (pers.isMounted) {
 
@@ -862,7 +872,7 @@ export default {
                     feather.replace()
 
                 })
-                this.isLoading=false
+                this.isLoading = false
             }
 
         },
@@ -1017,6 +1027,29 @@ export default {
                 //console.log('lol',binding_object)
             }
         },
+        onReinstallBinding(binding_object) {
+            this.isLoading = true
+            axios.post('/reinstall_binding', {name: binding_object.binding.folder}).then((res) => {
+
+                if (res) {
+                    this.isLoading = false
+                    console.log('reinstall_binding', res)
+                    if(res.data.status){
+                        this.$refs.toast.showToast("Reinstalled binding successfully!", 4, true)
+                    }else{
+                        this.$refs.toast.showToast("Could not reinstall binding", 4, false)
+                    }
+                    return res.data;
+                }
+                this.isLoading = false
+            })
+            // eslint-disable-next-line no-unused-vars
+            
+                .catch(error => { 
+                    this.isLoading = false
+                    this.$refs.toast.showToast("Could not reinstall binding\n"+error.message, 4, false)
+                    return { 'status': false } });
+        },
         // messagebox ok stuff
         onMessageBoxOk() {
             console.log("OK button clicked");
@@ -1089,6 +1122,7 @@ export default {
             this.showAccordion = !this.showAccordion;
         },
         update_setting(setting_name_val, setting_value_val, next) {
+            this.isLoading = true
             const obj = {
                 setting_name: setting_name_val,
                 setting_value: setting_value_val
@@ -1097,6 +1131,7 @@ export default {
             axios.post('/update_setting', obj).then((res) => {
 
                 if (res) {
+                    this.isLoading = false
                     console.log('update_setting', res)
                     if (next !== undefined) {
 
@@ -1104,9 +1139,13 @@ export default {
                     }
                     return res.data;
                 }
+                this.isLoading = false
             })
-                // eslint-disable-next-line no-unused-vars
-                .catch(error => { return { 'status': false } });
+            // eslint-disable-next-line no-unused-vars
+            
+                .catch(error => { 
+                    this.isLoading = false
+                    return { 'status': false } });
         },
         update_binding(value) {
 
@@ -1143,23 +1182,16 @@ export default {
             })
         },
         applyConfiguration() {
-            // if (!this.configFile.model_name) {
 
-            //     this.$refs.toast.showToast("Configuration changed failed.\nPlease select model first", 4, false)
-            //     nextTick(() => {
-            //         feather.replace()
-            //     })
-            //     return
-            // }
             this.isLoading = true;
             axios.post('/apply_settings').then((res) => {
                 this.isLoading = false;
-
-                if (res.data.status === "succeeded") {
+                //console.log('apply-res',res)
+                if (res.data.status) {
 
                     this.$refs.toast.showToast("Configuration changed successfully.", 4, true)
                     this.settingsChanged = false
-                    this.save_configuration()
+                    //this.save_configuration()
                 } else {
 
                     this.$refs.toast.showToast("Configuration change failed.", 4, false)
@@ -1368,19 +1400,21 @@ export default {
 
         },
         async mountPersonality(pers) {
-            this.isLoading=true
+            this.isLoading = true
             console.log('mount pers', pers)
             if (!pers) { return }
 
             if (this.configFile.personalities.includes(pers.personality.full_path)) {
+                this.isLoading = false
                 this.$refs.toast.showToast("Personality already mounted", 4, false)
+
                 return
             }
 
             const res = await this.mount_personality(pers.personality)
             console.log('mount_personality res', res)
 
-            if (res.status) {
+            if (res && res.status) {
                 this.configFile.personalities = res.personalities
                 this.$refs.toast.showToast("Personality mounted", 4, true)
                 pers.isMounted = true
@@ -1395,11 +1429,11 @@ export default {
                 pers.isMounted = false
                 this.$refs.toast.showToast("Could not mount personality\nError: " + res.error, 4, false)
             }
-            this.isLoading=false
+            this.isLoading = false
 
         },
         async unmountPersonality(pers) {
-            this.isLoading=true
+            this.isLoading = true
             if (!pers) { return }
 
             const res = await this.unmount_personality(pers.personality || pers)
@@ -1444,7 +1478,7 @@ export default {
                 this.$refs.toast.showToast("Could not unmount personality\nError: " + res.error, 4, false)
             }
 
-            this.isLoading=false
+            this.isLoading = false
         },
         getMountedPersonalities() {
 
@@ -1454,13 +1488,13 @@ export default {
             for (let i = 0; i < this.configFile.personalities.length; i++) {
                 const full_path_item = this.configFile.personalities[i]
                 const index = this.personalities.findIndex(item => item.full_path == full_path_item)
-                console.log('index',index)
-                console.log("i:",i)
+                console.log('index', index)
+                console.log("i:", i)
                 const pers = this.personalities[index]
                 if (pers) {
                     mountedPersArr.push(pers)
                 }
-                else{
+                else {
                     mountedPersArr.push(this.personalities[this.personalities.findIndex(item => item.full_path == "english/generic/lollms")])
                 }
             }
@@ -1469,14 +1503,14 @@ export default {
             //this.mountedPersArr = mountedPersArr
             console.log('getMountedPersonalities', mountedPersArr)
             console.log('fig', this.configFile.personality_category)
-            nextTick(()=>{
-                console.log('accc',this.$refs.mountedPersonalities)
-        //this.$store.state.mountedPersonalities = this.$refs.mountedPersonalities
+            nextTick(() => {
+                console.log('accc', this.$refs.mountedPersonalities)
+                //this.$store.state.mountedPersonalities = this.$refs.mountedPersonalities
             })
 
         },
         onPersonalityMounted(persItem) {
-            this.isLoading=true
+            this.isLoading = true
             console.log('on sel ', persItem)
 
             if (this.configFile.personalities.includes(persItem.full_path)) {
@@ -1496,7 +1530,7 @@ export default {
 
             }
 
-            this.isLoading=true
+            this.isLoading = false
         },
         personalityImgPlacehodler(event) {
             event.target.src = defaultPersonalityImgPlaceholder
@@ -1504,7 +1538,7 @@ export default {
 
 
     }, async mounted() {
-        
+
         //this.$refs.mountedPersonalities
         this.isLoading = true
         nextTick(() => {
@@ -1551,12 +1585,11 @@ export default {
         this.ramUsage = await this.api_get_req("ram_usage")
         this.getMountedPersonalities()
         this.isMounted = true
-        
+
 
     },
-    activated(){
-        // console.log('accc',this.$refs.mountedPersonalities)
-        // this.$store.state.mountedPersonalities = this.$refs.mountedPersonalities
+    activated() {
+
     },
     computed: {
         disk_available_space() {
@@ -1609,17 +1642,34 @@ export default {
                 return defaultModelImgPlaceholder
             }
         },
-        // imgPersonality() {
-        //     if (!this.isMounted) {
-        //         return
-        //     }
-        //     try {
-        //         return this.$refs.personalitiesZoo[this.$refs.personalitiesZoo.findIndex(item => item.personality.folder == this.configFile.personality_folder)].$refs.imgElement.src
-        //     }
-        //     catch (error) {
-        //         return defaultPersonalityImgPlaceholder
-        //     }
-        // },
+        binding_name() {
+            if (!this.isMounted) {
+                return
+            }
+            const index = this.bindingsArr.findIndex(item => item.folder === this.configFile.binding_name)
+            if (index > -1) {
+                return this.bindingsArr[index].name
+
+            } else {
+                return
+            }
+
+        },
+        active_pesonality() {
+            if (!this.isMounted) {
+                return
+            }
+            const index = this.personalities.findIndex(item => item.full_path === this.configFile.personalities[this.configFile.active_personality_id])
+            if (index > -1) {
+                return this.personalities[index].name
+            } else {
+                return
+
+            }
+
+
+
+        }
 
 
     },
@@ -1684,8 +1734,8 @@ export default {
             })
         },
         settingsChanged(val) {
-            
-            //this.$store.settingsChanged=val
+
+            this.$store.state.settingsChanged = val
             nextTick(() => {
                 feather.replace()
 
@@ -1698,7 +1748,23 @@ export default {
             })
         },
 
-    }
+    },
+    async beforeRouteLeave(to) {
+        // console.log('did settings?',this.settingsChanged)
+        await this.$router.isReady()
+        if (this.settingsChanged) {
+            const res = await this.$refs.yesNoDialog.askQuestion("You forgot to apply changes?\nYou need to apply changes before you leave, or else.", 'Apply configuration', 'Cancel')
+            if (res) {
+                this.applyConfiguration()
+
+            }
+
+            return false
+
+        }
+
+
+    },
 }
 </script>
 
