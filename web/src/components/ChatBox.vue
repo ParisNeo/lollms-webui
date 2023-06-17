@@ -92,10 +92,14 @@
                             <MountedPersonalitiesComponent  />
 
                         </div> -->
+                       
+
                         <div class="relative grow">
-                            <textarea id="chat" rows="1" v-model="message"
-                                class="block min-h-11  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"
+                                class="inline-block  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 placeholder="Send message..." @keydown.enter.exact="submitOnEnter($event)">
+
+
                             </textarea>
                             <input type="file" ref="fileDialog" style="display: none" @change="addFiles" multiple />
                             <button type="button" @click.stop="$refs.fileDialog.click()" title="Add files"
@@ -182,10 +186,10 @@ export default {
     // components: {
     //     //MountedPersonalitiesComponent
     // },
-    setup () {
-        
+    setup() {
 
-  
+
+
     },
     data() {
         return {
@@ -262,7 +266,7 @@ export default {
 
     },
     mounted() {
-    
+
         nextTick(() => {
             feather.replace()
         })
