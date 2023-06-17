@@ -163,7 +163,7 @@
                                 <img :src="imgBinding" class="w-8 h-8 rounded-full object-fill text-blue-700">
                                 <h3 class="font-bold font-large text-lg line-clamp-1">
                                     <!-- {{ configFile.binding_name }} -->
-                                    {{binding_name}}
+                                    {{ binding_name }}
                                 </h3>
                             </div>
                         </div>
@@ -331,17 +331,18 @@
                         <div v-if="configFile.personalities" class="mr-2">|</div>
                         <!-- LIST OF MOUNTED PERSONALITIES -->
                         <div class="mr-2 font-bold font-large text-lg line-clamp-1">
-                        {{active_pesonality }}
+                            {{ active_pesonality }}
 
-                         </div>
+                        </div>
                         <div v-if="configFile.personalities" class="mr-2">|</div>
                         <div v-if="configFile.personalities"
                             class=" text-base font-semibold cursor-pointer select-none items-center flex flex-row">
                             <!-- LIST -->
-                            <div class="flex -space-x-4 items-center " v-if="mountedPersArr.length > 0" >
+                            <div class="flex -space-x-4 items-center " v-if="mountedPersArr.length > 0">
                                 <!-- ITEM -->
                                 <div class="relative  hover:-translate-y-2 duration-300 hover:z-10 shrink-0 "
-                                    v-for="(item, index) in mountedPersArr" :key="index + '-' + item.name" ref="mountedPersonalities">
+                                    v-for="(item, index) in mountedPersArr" :key="index + '-' + item.name"
+                                    ref="mountedPersonalities">
                                     <div class="group items-center flex flex-row">
                                         <button @click.stop="onPersonalitySelected(item)">
 
@@ -620,7 +621,7 @@
     </div>
 
 
-    <YesNoDialog ref="yesNoDialog" />
+    <YesNoDialog ref="yesNoDialog" class="z-20"/>
     <AddModelDialog ref="addmodeldialog" />
     <MessageBox ref="messageBox" />
     <Toast ref="toast" />
@@ -837,12 +838,13 @@ export default {
             if (this.isLoading) {
                 this.$refs.toast.showToast("Loading... please wait", 4, false)
             }
-            this.isLoading=true
-            console.log('ppa',pers)
+            this.isLoading = true
+            console.log('ppa', pers)
             if (pers) {
 
                 if (pers.selected) {
                     this.$refs.toast.showToast("Personality already selected", 4, true)
+                    this.isLoading = false
                     return
                 }
 
@@ -868,7 +870,7 @@ export default {
                     feather.replace()
 
                 })
-                this.isLoading=false
+                this.isLoading = false
             }
 
         },
@@ -1158,7 +1160,7 @@ export default {
 
                     this.$refs.toast.showToast("Configuration changed successfully.", 4, true)
                     this.settingsChanged = false
-                    this.save_configuration()
+                    //this.save_configuration()
                 } else {
 
                     this.$refs.toast.showToast("Configuration change failed.", 4, false)
@@ -1367,12 +1369,14 @@ export default {
 
         },
         async mountPersonality(pers) {
-            this.isLoading=true
+            this.isLoading = true
             console.log('mount pers', pers)
             if (!pers) { return }
 
             if (this.configFile.personalities.includes(pers.personality.full_path)) {
+                this.isLoading = false
                 this.$refs.toast.showToast("Personality already mounted", 4, false)
+
                 return
             }
 
@@ -1394,11 +1398,11 @@ export default {
                 pers.isMounted = false
                 this.$refs.toast.showToast("Could not mount personality\nError: " + res.error, 4, false)
             }
-            this.isLoading=false
+            this.isLoading = false
 
         },
         async unmountPersonality(pers) {
-            this.isLoading=true
+            this.isLoading = true
             if (!pers) { return }
 
             const res = await this.unmount_personality(pers.personality || pers)
@@ -1443,7 +1447,7 @@ export default {
                 this.$refs.toast.showToast("Could not unmount personality\nError: " + res.error, 4, false)
             }
 
-            this.isLoading=false
+            this.isLoading = false
         },
         getMountedPersonalities() {
 
@@ -1453,13 +1457,13 @@ export default {
             for (let i = 0; i < this.configFile.personalities.length; i++) {
                 const full_path_item = this.configFile.personalities[i]
                 const index = this.personalities.findIndex(item => item.full_path == full_path_item)
-                console.log('index',index)
-                console.log("i:",i)
+                console.log('index', index)
+                console.log("i:", i)
                 const pers = this.personalities[index]
                 if (pers) {
                     mountedPersArr.push(pers)
                 }
-                else{
+                else {
                     mountedPersArr.push(this.personalities[this.personalities.findIndex(item => item.full_path == "english/generic/lollms")])
                 }
             }
@@ -1468,14 +1472,14 @@ export default {
             //this.mountedPersArr = mountedPersArr
             console.log('getMountedPersonalities', mountedPersArr)
             console.log('fig', this.configFile.personality_category)
-            nextTick(()=>{
-                console.log('accc',this.$refs.mountedPersonalities)
-        //this.$store.state.mountedPersonalities = this.$refs.mountedPersonalities
+            nextTick(() => {
+                console.log('accc', this.$refs.mountedPersonalities)
+                //this.$store.state.mountedPersonalities = this.$refs.mountedPersonalities
             })
 
         },
         onPersonalityMounted(persItem) {
-            this.isLoading=true
+            this.isLoading = true
             console.log('on sel ', persItem)
 
             if (this.configFile.personalities.includes(persItem.full_path)) {
@@ -1495,7 +1499,7 @@ export default {
 
             }
 
-            this.isLoading=true
+            this.isLoading = false
         },
         personalityImgPlacehodler(event) {
             event.target.src = defaultPersonalityImgPlaceholder
@@ -1503,7 +1507,7 @@ export default {
 
 
     }, async mounted() {
-        
+
         //this.$refs.mountedPersonalities
         this.isLoading = true
         nextTick(() => {
@@ -1550,12 +1554,11 @@ export default {
         this.ramUsage = await this.api_get_req("ram_usage")
         this.getMountedPersonalities()
         this.isMounted = true
-        
+
 
     },
-    activated(){
-        // console.log('accc',this.$refs.mountedPersonalities)
-        // this.$store.state.mountedPersonalities = this.$refs.mountedPersonalities
+    activated() {
+
     },
     computed: {
         disk_available_space() {
@@ -1608,45 +1611,34 @@ export default {
                 return defaultModelImgPlaceholder
             }
         },
-        binding_name(){
+        binding_name() {
             if (!this.isMounted) {
                 return
             }
-            const index =this.bindingsArr.findIndex(item=>item.folder === this.configFile.binding_name)
-            if(index>-1){
+            const index = this.bindingsArr.findIndex(item => item.folder === this.configFile.binding_name)
+            if (index > -1) {
                 return this.bindingsArr[index].name
 
-            }else{
+            } else {
                 return
             }
-            
+
         },
-        active_pesonality(){
+        active_pesonality() {
             if (!this.isMounted) {
                 return
             }
-            const index =this.personalities.findIndex(item => item.full_path ===this.configFile.personalities[this.configFile.active_personality_id])
-            if (index>-1){
+            const index = this.personalities.findIndex(item => item.full_path === this.configFile.personalities[this.configFile.active_personality_id])
+            if (index > -1) {
                 return this.personalities[index].name
-            }else{
+            } else {
                 return
 
             }
-           
-            
+
+
 
         }
-        // imgPersonality() {
-        //     if (!this.isMounted) {
-        //         return
-        //     }
-        //     try {
-        //         return this.$refs.personalitiesZoo[this.$refs.personalitiesZoo.findIndex(item => item.personality.folder == this.configFile.personality_folder)].$refs.imgElement.src
-        //     }
-        //     catch (error) {
-        //         return defaultPersonalityImgPlaceholder
-        //     }
-        // },
 
 
     },
@@ -1711,8 +1703,8 @@ export default {
             })
         },
         settingsChanged(val) {
-            
-            //this.$store.settingsChanged=val
+
+            this.$store.state.settingsChanged = val
             nextTick(() => {
                 feather.replace()
 
@@ -1725,7 +1717,23 @@ export default {
             })
         },
 
-    }
+    },
+    async beforeRouteLeave(to) {
+        // console.log('did settings?',this.settingsChanged)
+        await this.$router.isReady()
+        if (this.settingsChanged){
+            const res = await this.$refs.yesNoDialog.askQuestion("You forgot to apply changes?\nYou need to apply changes before you leave, or else.",'Apply configuration','Cancel')
+                if(res){
+                    this.applyConfiguration()
+                    
+                }   
+            
+            return false
+        
+        }
+        
+
+    },
 }
 </script>
 

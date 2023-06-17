@@ -1196,7 +1196,7 @@ export default {
         // To fix scrolling back to last message, this hook is needed.
         // If anyone knows hor to fix scroll issue when changing pages, please do fix it :D
         console.log("Websocket connected (activated)", this.socketConnected)
-
+        console.log('settings changed acc', this.$store.state.settingsChanged)
         await this.getPersonalityAvatars()
 
         if (this.isCreated) {
