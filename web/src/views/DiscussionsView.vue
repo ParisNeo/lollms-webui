@@ -189,8 +189,7 @@
 
             </div>
             <div class=" bottom-0 container flex flex-row items-center justify-center " v-if="currentDiscussion.id">
-                <ChatBox ref="chatBoxarea"  @messageSentEvent="sendMsg" :loading="isGenerating"
-                    @stopGenerating="stopGenerating" ></ChatBox>
+                <ChatBox ref="chatBox"  @messageSentEvent="sendMsg" :loading="isGenerating" @stopGenerating="stopGenerating" ></ChatBox>
             </div>
             <!-- CAN ADD FOOTER PANEL HERE -->
         </div>
@@ -1128,11 +1127,13 @@ export default {
         setFileListChat(files) {
 
 
-            //this.fileList = files
+                try {
+                    this.$refs.chatBox.fileList = this.$refs.chatBox.fileList.concat(files)
+                } catch (error) {
+                this.$refs.toast.showToast("Failed to set filelist in chatbox\n"+error.message, 4, false)
+                    
+                }
             
-
-                console.log('chatbox',this.$refs)
-            this.$refs.chatBox.fileList = this.$refs.chatBox.fileList.concat(files)
 
             this.isDragOverChat = false
         
@@ -1195,7 +1196,7 @@ export default {
 
     },
     mounted(){
-        console.log('chatbox mnt',this.$refs)
+        //console.log('chatbox mnt',this.$refs)
     },
     async activated() {
 

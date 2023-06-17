@@ -164,12 +164,12 @@
 </style>
 <script setup>
 import MountedPersonalitiesComponent from './MountedPersonalitiesComponent.vue'
+
+</script>
+<script>
 import { nextTick, TransitionGroup } from 'vue'
 import feather from 'feather-icons'
 import filesize from '../plugins/filesize'
-</script>
-<script>
-
 
 export default {
     name: 'ChatBox',
@@ -179,13 +179,13 @@ export default {
         loading: false
 
     },
-    components: {
-        //MountedPersonalitiesComponent
-    },
+    // components: {
+    //     //MountedPersonalitiesComponent
+    // },
     setup () {
         
 
-        return {}
+  
     },
     data() {
         return {
