@@ -89,7 +89,7 @@
                     <!-- CHAT BOX -->
                     <div class="flex flex-row flex-grow items-center gap-2 ">
                         <!-- <div class="w-24">
-                            <MountedPersonalitiesComponent  />
+                            <MountedPersonalities  />
 
                         </div> -->
                        
@@ -166,15 +166,15 @@
     position: absolute;
 }
 </style>
-<script setup>
+<!-- <script setup>
 import MountedPersonalitiesComponent from './MountedPersonalitiesComponent.vue'
 
-</script>
+</script> -->
 <script>
 import { nextTick, TransitionGroup } from 'vue'
 import feather from 'feather-icons'
 import filesize from '../plugins/filesize'
-
+import MountedPersonalities from './MountedPersonalities.vue'
 export default {
     name: 'ChatBox',
     emits: ["messageSentEvent", "stopGenerating"],
@@ -183,9 +183,9 @@ export default {
         loading: false
 
     },
-    // components: {
-    //     //MountedPersonalitiesComponent
-    // },
+    components: {
+        MountedPersonalities
+    },
     setup() {
 
 

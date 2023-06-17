@@ -1,42 +1,40 @@
 <template>
-  
-        <!-- LIST OF MOUNTED PERSONALITIES -->
-        <div 
-            class=" text-base font-semibold cursor-pointer select-none items-center flex flex-row overflow-visible overflow-x-auto scrollbar-thin scrollbar-track-bg-light scrollbar-thumb-bg-light-tone hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark dark:scrollbar-thumb-bg-dark-tone dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
-            <!-- LIST -->
-            <div class="flex -space-x-4 items-center ">
-                <!-- ITEM -->
-                <div class="relative  hover:-translate-y-2 duration-300 hover:z-10 shrink-0 "
-                    v-for="(item, index) in mountedPersArr" :key="index + '-' + item.name" >
-                    <div class="group items-center flex flex-row">
-                        <button @click.stop="onPersonalitySelected(item)">
+    <!-- LIST OF MOUNTED PERSONALITIES -->
+    <div
+        class=" text-base font-semibold cursor-pointer select-none items-center flex flex-row overflow-visible overflow-x-auto scrollbar-thin scrollbar-track-bg-light scrollbar-thumb-bg-light-tone hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark dark:scrollbar-thumb-bg-dark-tone dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+        <!-- LIST -->
+        <div class="flex -space-x-4 items-center ">
+            <!-- ITEM -->
+            <div class="relative  hover:-translate-y-2 duration-300 hover:z-10 shrink-0 "
+                v-for="(item, index) in mountedPersArr" :key="index + '-' + item.name">
+                <div class="group items-center flex flex-row">
+                    <button @click.stop="onPersonalitySelected(item)">
 
-                            <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
-                                class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary "
-                                :class="configFile.active_personality_id == configFile.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
-                                :title="item.name">
-                        </button>
-                        <button @click.stop="onPersonalityMounted(item)">
+                        <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
+                            class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary "
+                            :class="configFile.active_personality_id == configFile.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
+                            :title="item.name">
+                    </button>
+                    <button @click.stop="onPersonalityMounted(item)">
 
-                            <span
-                                class="hidden group-hover:block top-0 left-7 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
-                                title="Unmount personality">
-                                <!-- UNMOUNT BUTTON -->
-                                <svg aria-hidden="true" class="w-4 h-4 text-red-600 hover:text-red-500 " fill="currentColor"
-                                    viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
+                        <span
+                            class="hidden group-hover:block top-0 left-7 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
+                            title="Unmount personality">
+                            <!-- UNMOUNT BUTTON -->
+                            <svg aria-hidden="true" class="w-4 h-4 text-red-600 hover:text-red-500 " fill="currentColor"
+                                viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
 
-                            </span>
-                        </button>
-                    </div>
+                        </span>
+                    </button>
                 </div>
             </div>
-
         </div>
-   
+
+    </div>
 </template>
 
 <script>
@@ -46,40 +44,40 @@ import defaultPersonalityImgPlaceholder from "../assets/logo.svg"
 const bUrl = import.meta.env.VITE_GPT4ALL_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
-    name: 'MountedPersonalitiesComponent',
+    name: 'MountedPersonalities',
     setup() {
 
 
         return {
             configFile: {},
-            mountedPersArr:[],
-            personalities:[],
-            bUrl:bUrl,
-            isMounted:false
+            mountedPersArr: [],
+            personalities: [],
+            bUrl: bUrl,
+            isMounted: false
         }
     },
-   async  mounted(){
+    async mounted() {
         await this.constructor()
-        this.isMounted=true
+        this.isMounted = true
     },
-    async activated(){
-        if(this.isMounted){
+    async activated() {
+        if (this.isMounted) {
             await this.constructor()
         }
-        
-    },
-    methods:{
-        async constructor(){
-            this.configFile = await this.api_get_req("get_config")
-        let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
-        this.configFile.personality_language = personality_path_infos["personality_language"]
-        this.configFile.personality_category = personality_path_infos["personality_category"]
-        this.configFile.personality_folder = personality_path_infos["personality_name"]
 
-        await this.getPersonalitiesArr().then(()=>{
-            this.getMountedPersonalities()
-            this.$forceUpdate()
-        })
+    },
+    methods: {
+        async constructor() {
+            this.configFile = await this.api_get_req("get_config")
+            let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
+            this.configFile.personality_language = personality_path_infos["personality_language"]
+            this.configFile.personality_category = personality_path_infos["personality_category"]
+            this.configFile.personality_folder = personality_path_infos["personality_name"]
+
+            await this.getPersonalitiesArr().then(() => {
+                this.getMountedPersonalities()
+                this.$forceUpdate()
+            })
         },
         async api_get_req(endpoint) {
             try {
@@ -169,15 +167,15 @@ export default {
 
             }
 
-            this.isLoading=true
+            this.isLoading = true
         },
         async onPersonalitySelected(pers) {
             // eslint-disable-next-line no-unused-vars
             if (this.isLoading) {
                 this.$refs.toast.showToast("Loading... please wait", 4, false)
             }
-            this.isLoading=true
-            console.log('ppa',pers)
+            this.isLoading = true
+            console.log('ppa', pers)
             if (pers) {
 
                 if (pers.selected) {
@@ -204,10 +202,10 @@ export default {
 
 
                 nextTick(() => {
-                   
+
 
                 })
-                this.isLoading=false
+                this.isLoading = false
             }
 
         },
@@ -290,7 +288,7 @@ export default {
 
         },
         async mountPersonality(pers) {
-            this.isLoading=true
+            this.isLoading = true
             console.log('mount pers', pers)
             if (!pers) { return }
 
@@ -317,11 +315,11 @@ export default {
                 pers.isMounted = false
                 this.$refs.toast.showToast("Could not mount personality\nError: " + res.error, 4, false)
             }
-            this.isLoading=false
+            this.isLoading = false
 
         },
         async unmountPersonality(pers) {
-            this.isLoading=true
+            this.isLoading = true
             if (!pers) { return }
 
             const res = await this.unmount_personality(pers.personality || pers)
@@ -366,7 +364,7 @@ export default {
                 this.$refs.toast.showToast("Could not unmount personality\nError: " + res.error, 4, false)
             }
 
-            this.isLoading=false
+            this.isLoading = false
         },
         getMountedPersonalities() {
 
@@ -381,7 +379,7 @@ export default {
                 if (pers) {
                     mountedPersArr.push(pers)
                 }
-                else{
+                else {
                     mountedPersArr.push(this.personalities[this.personalities.findIndex(item => item.full_path == "english/generic/lollms")])
                 }
             }
