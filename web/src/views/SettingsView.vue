@@ -75,11 +75,12 @@
                         <div class=" text-base font-semibold cursor-pointer select-none items-center">
 
                             <div class="flex gap-2 items-center ">
-                                <svg class="flex-shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                <!-- <svg class="flex-shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                     viewBox="0 0 24 24">
                                     <path fill="currentColor"
                                         d="M17 17H7V7h10m4 4V9h-2V7a2 2 0 0 0-2-2h-2V3h-2v2h-2V3H9v2H7c-1.11 0-2 .89-2 2v2H3v2h2v2H3v2h2v2a2 2 0 0 0 2 2h2v2h2v-2h2v2h2v-2h2a2 2 0 0 0 2-2v-2h2v-2h-2v-2m-6 2h-2v-2h2m2-2H9v6h6V9Z" />
-                                </svg>
+                                </svg> -->
+                                <i data-feather="cpu" class="w-5 h-5 mx-1 flex-shrink-0"></i>
                                 <h3 class="font-bold font-large text-lg">
                                     <div>{{ ram_usage }} / {{ ram_total_space }}</div>
                                 </h3>
@@ -180,7 +181,8 @@
                             <TransitionGroup name="list">
                                 <BindingEntry ref="bindingZoo" v-for="(binding, index) in bindings"
                                     :key="'index-' + index + '-' + binding.folder" :binding="binding"
-                                    :on-selected="onSelectedBinding" :selected="binding.folder === configFile.binding_name">
+                                    :on-selected="onSelectedBinding" :on-reinstall="onReinstallBinding"
+                                    :selected="binding.folder === configFile.binding_name">
                                 </BindingEntry>
                             </TransitionGroup>
                         </div>
@@ -621,7 +623,7 @@
     </div>
 
 
-    <YesNoDialog ref="yesNoDialog" class="z-20"/>
+    <YesNoDialog ref="yesNoDialog" class="z-20" />
     <AddModelDialog ref="addmodeldialog" />
     <MessageBox ref="messageBox" />
     <Toast ref="toast" />
@@ -849,7 +851,7 @@ export default {
                 }
 
 
-                this.settingsChanged = true
+                //this.settingsChanged = true
 
                 if (pers.isMounted) {
 
@@ -1025,6 +1027,29 @@ export default {
                 //console.log('lol',binding_object)
             }
         },
+        onReinstallBinding(binding_object) {
+            this.isLoading = true
+            axios.post('/reinstall_binding', {name: binding_object.binding.folder}).then((res) => {
+
+                if (res) {
+                    this.isLoading = false
+                    console.log('reinstall_binding', res)
+                    if(res.data.status){
+                        this.$refs.toast.showToast("Reinstalled binding successfully!", 4, true)
+                    }else{
+                        this.$refs.toast.showToast("Could not reinstall binding", 4, false)
+                    }
+                    return res.data;
+                }
+                this.isLoading = false
+            })
+            // eslint-disable-next-line no-unused-vars
+            
+                .catch(error => { 
+                    this.isLoading = false
+                    this.$refs.toast.showToast("Could not reinstall binding\n"+error.message, 4, false)
+                    return { 'status': false } });
+        },
         // messagebox ok stuff
         onMessageBoxOk() {
             console.log("OK button clicked");
@@ -1097,6 +1122,7 @@ export default {
             this.showAccordion = !this.showAccordion;
         },
         update_setting(setting_name_val, setting_value_val, next) {
+            this.isLoading = true
             const obj = {
                 setting_name: setting_name_val,
                 setting_value: setting_value_val
@@ -1105,6 +1131,7 @@ export default {
             axios.post('/update_setting', obj).then((res) => {
 
                 if (res) {
+                    this.isLoading = false
                     console.log('update_setting', res)
                     if (next !== undefined) {
 
@@ -1112,9 +1139,13 @@ export default {
                     }
                     return res.data;
                 }
+                this.isLoading = false
             })
-                // eslint-disable-next-line no-unused-vars
-                .catch(error => { return { 'status': false } });
+            // eslint-disable-next-line no-unused-vars
+            
+                .catch(error => { 
+                    this.isLoading = false
+                    return { 'status': false } });
         },
         update_binding(value) {
 
@@ -1721,17 +1752,17 @@ export default {
     async beforeRouteLeave(to) {
         // console.log('did settings?',this.settingsChanged)
         await this.$router.isReady()
-        if (this.settingsChanged){
-            const res = await this.$refs.yesNoDialog.askQuestion("You forgot to apply changes?\nYou need to apply changes before you leave, or else.",'Apply configuration','Cancel')
-                if(res){
-                    this.applyConfiguration()
-                    
-                }   
-            
+        if (this.settingsChanged) {
+            const res = await this.$refs.yesNoDialog.askQuestion("You forgot to apply changes?\nYou need to apply changes before you leave, or else.", 'Apply configuration', 'Cancel')
+            if (res) {
+                this.applyConfiguration()
+
+            }
+
             return false
-        
+
         }
-        
+
 
     },
 }
