@@ -967,7 +967,7 @@ export default {
                 seed= `Seed: ${messageEntry.message.seed}`
             }
             let time_spent=""
-            if(messageEntry.time_spent && messageEntry.time_spent>0){
+            if(messageEntry.time_spent){
                 time_spent= `\nTime spent: ${messageEntry.time_spent}`
             }
             let bottomRow = ''
