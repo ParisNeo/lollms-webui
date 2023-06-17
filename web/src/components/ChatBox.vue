@@ -258,7 +258,7 @@ export default {
 
                     }
                 }
-                this.totalSize = filesize(total, false)
+                this.totalSize = filesize(total, true)
 
             },
             deep: true
