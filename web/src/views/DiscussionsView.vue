@@ -1197,7 +1197,7 @@ export default {
 
     },
     mounted(){
-        console.log('chatbox mnt',this.$refs)
+        //console.log('chatbox mnt',this.$refs)
     },
     async activated() {
 
