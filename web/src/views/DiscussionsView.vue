@@ -840,14 +840,14 @@ export default {
             if (item) {
                 if (item.id) {
                     const realTitle = item.title ? item.title === "untitled" ? "New discussion" : item.title : "New discussion"
-                    document.title = 'GPT4ALL - WEBUI - ' + realTitle
+                    document.title = 'LoLLMS WebUI - ' + realTitle
                 } else {
                     const title = item || "Welcome"
-                    document.title = 'GPT4ALL - WEBUI - ' + title
+                    document.title = 'LoLLMS WebUI - ' + title
                 }
             } else {
                 const title = item || "Welcome"
-                document.title = 'GPT4ALL - WEBUI - ' + title
+                document.title = 'LoLLMS WebUI - ' + title
             }
 
         },
