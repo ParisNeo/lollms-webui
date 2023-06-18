@@ -308,6 +308,11 @@ class Discussion:
     def __init__(self, discussion_id, discussions_db:DiscussionsDB):
         self.discussion_id = discussion_id
         self.discussions_db = discussions_db
+        self.current_message_binding = ""
+        self.current_message_model = ""
+        self.current_message_personality = ""
+        self.current_message_created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.current_message_finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     def add_message(self, sender, content, message_type=0, rank=0, parent=0, binding="", model ="", personality="", created_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')):
         """Adds a new message to the discussion
@@ -319,6 +324,13 @@ class Discussion:
         Returns:
             int: The added message id
         """
+        self.current_message_binding = binding
+        self.current_message_model = model
+        self.current_message_personality = personality
+
+        self.current_message_created_at = created_at
+        self.current_message_finished_generating_at = finished_generating_at
+
         message_id = self.discussions_db.insert(
             "INSERT INTO message (sender, content, type, rank, parent, binding, model, personality, created_at, finished_generating_at, discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
             (sender, content, message_type, rank, parent, binding, model, personality, created_at, finished_generating_at, self.discussion_id)
@@ -355,16 +367,29 @@ class Discussion:
             "SELECT id, sender, content, type, rank, parent, binding, model, personality, created_at, finished_generating_at FROM message WHERE discussion_id=?", (self.discussion_id,)
         )
 
-        return [{"id": row[0], "sender": row[1], "content": row[2], "type": row[3], "rank": row[4], "parent": row[5], "binding":row[6], "model": row[7], "personality": row[8], "created_at": row[9], "finished_generating_at": row[10]} for row in rows]
+        return [{
+                    "id": row[0],
+                    "sender": row[1],
+                    "content": row[2],
+                    "type": row[3],
+                    "rank": row[4],
+                    "parent": row[5],
+                    "binding":row[6],
+                    "model": row[7],
+                    "personality": row[8],
+                    "created_at": row[9],
+                    "finished_generating_at": row[10]
+                    } for row in rows]
 
-    def update_message(self, message_id, new_content):
+    def update_message(self, message_id, new_content, current_date_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')):
         """Updates the content of a message
 
         Args:
             message_id (int): The id of the message to be changed
             new_content (str): The nex message content
         """
-        current_date_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.current_message_finished_generating_at = current_date_time
+        
         # print(f"{current_date_time}")
         self.discussions_db.update(
             f"UPDATE message SET content = ?, finished_generating_at = ? WHERE id = ?",(new_content, current_date_time,message_id)
