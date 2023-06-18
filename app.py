@@ -74,7 +74,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.cancel_gen = False
 
         app.template_folder = "web/dist"
-
+        if config["active_personality_id"]>=len(config["personalities"]):
+            config["active_personality_id"] = 0
         self.personality_language= config["personalities"][config["active_personality_id"]].split("/")[0]
         self.personality_category= config["personalities"][config["active_personality_id"]].split("/")[1]
         self.personality_name= config["personalities"][config["active_personality_id"]].split("/")[2]
