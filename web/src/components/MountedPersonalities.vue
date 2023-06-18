@@ -230,10 +230,6 @@ export default {
                 return
             }
 
-
-
-
-
         },
         async unmount_personality(pers) {
             if (!pers) { return { 'status': false, 'error': 'no personality - unmount_personality' } }
@@ -246,12 +242,12 @@ export default {
 
 
             try {
+                this.isLoading = true
                 const res = await axios.post('/unmount_personality', obj);
+                this.isLoading = false
 
                 if (res) {
-
                     return res.data
-
                 }
             } catch (error) {
                 console.log(error.message, 'unmount_personality - settings')
