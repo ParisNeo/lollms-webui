@@ -611,6 +611,12 @@ class LoLLMsAPPI():
                             "message":"",
                             "user_message_id": self.current_user_message_id,
                             "ai_message_id": self.current_ai_message_id,
+
+                            'binding': self.current_discussion.current_message_binding,
+                            'model': self.current_discussion.current_message_model,
+                            'personality': self.current_discussion.current_message_personality,
+                            'created_at': self.current_discussion.current_message_created_at,
+                            'finished_generating_at': self.current_discussion.current_message_finished_generating_at,
                         }, room=self.current_room_id
                 )
 
@@ -854,7 +860,12 @@ class LoLLMsAPPI():
                         "message":message,#markdown.markdown(message),
                         "user_message_id": self.current_user_message_id,
                         "ai_message_id": self.current_ai_message_id,
-                        
+
+                        'binding': self.current_discussion.current_message_binding,
+                        'model': self.current_discussion.current_message_model,
+                        'personality': self.current_discussion.current_message_personality,
+                        'created_at': self.current_discussion.current_message_created_at,
+                        'finished_generating_at': self.current_discussion.current_message_finished_generating_at,                        
                     }, room=self.current_room_id
             )
 
@@ -876,6 +887,10 @@ class LoLLMsAPPI():
             print("## Done Generation ##")
             print()
 
+            self.current_discussion.update_message(self.current_ai_message_id, self.bot_says)
+            self.full_message_list.append(self.bot_says)
+            self.cancel_gen = False
+
             # Send final message
             self.socketio.emit('final', {
                                             'data': self.bot_says, 
@@ -890,12 +905,15 @@ class LoLLMsAPPI():
                                             "user_message_id": self.current_user_message_id,
                                             "ai_message_id": self.current_ai_message_id,
 
+                                            'binding': self.current_discussion.current_message_binding,
+                                            'model': self.current_discussion.current_message_model,
+                                            'personality': self.current_discussion.current_message_personality,
+                                            'created_at': self.current_discussion.current_message_created_at,
+                                            'finished_generating_at': self.current_discussion.current_message_finished_generating_at,
+
                                         }, room=self.current_room_id
                                 )
 
-            self.current_discussion.update_message(self.current_ai_message_id, self.bot_says)
-            self.full_message_list.append(self.bot_says)
-            self.cancel_gen = False
             print()
             print("## Done ##")
             print()
