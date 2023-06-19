@@ -488,7 +488,7 @@ class LoLLMsAPPI():
         #Create and launch the process
         self.process = ModelProcess(self.lollms_paths, config)
         self.binding = self.process.rebuild_binding(self.config)
-        
+
         # Check model
         if config.model_name is None:
             self.menu.select_model()       
@@ -661,7 +661,7 @@ class LoLLMsAPPI():
     def load_model(self):
         try:
             print("update_settings : New model selected")
-            if hasattr(self,"process"):
+            if hasattr(self,"process") and self.process.ready:
                 result = self.process.set_config(self.config)
                 if result["status"]:
                     ASCIIColors.success("OK")
