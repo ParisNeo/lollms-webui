@@ -105,6 +105,8 @@ class ModelProcess:
         self.curent_text = ""
         self.ready = False
         
+        
+
         self.id=0
         self.n_predict=2048
         self.reset_config_result()
@@ -368,7 +370,7 @@ class ModelProcess:
     def _generate(self, prompt, n_predict=50, callback=None):
         self.curent_text = ""
         if self.model is not None:
-            print("Generating message...")
+            ASCIIColors.info("warmup")
             self.id = self.id
             if self.config["override_personality_model_parameters"]:
                 output = self.model.generate(
@@ -480,15 +482,18 @@ class LoLLMsAPPI():
         self.lollms_paths = lollms_paths
         self.config = config
         self.menu = MainMenu(self)
-        
-        # Check model
-        if config.model_name is None:
-            self.menu.select_model()       
+
         
         self.socketio = socketio
         #Create and launch the process
         self.process = ModelProcess(self.lollms_paths, config)
         self.binding = self.process.rebuild_binding(self.config)
+        
+        # Check model
+        if config.model_name is None:
+            self.menu.select_model()       
+
+
         self.mounted_personalities = self.process.rebuild_personalities()
         if self.config["active_personality_id"]<len(self.mounted_personalities):
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
@@ -821,6 +826,7 @@ class LoLLMsAPPI():
         if message_type == MSG_TYPE.MSG_TYPE_FULL:
             self.bot_says = chunk
         if message_type.value < 2:
+            ASCIIColors.green(f"generated:{len(self.bot_says)} words", end='\r')
             self.socketio.emit('message', {
                                             'data': self.bot_says, 
                                             'user_message_id':self.current_user_message_id, 
@@ -830,7 +836,7 @@ class LoLLMsAPPI():
                                         }, room=self.current_room_id
                                 )
         if self.cancel_gen:
-            print("Generation canceled")
+            ASCIIColors.warning("Generation canceled")
             self.process.cancel_generation()
             self.cancel_gen = False
 
