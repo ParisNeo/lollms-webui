@@ -413,7 +413,7 @@
                                 </div>
                                 <input type="search" id="personality-search"
                                     class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    placeholder="Search personality..." required v-model="searchPersonality" @keyup.stop="searchPersonality_func">
+                                    placeholder="Search personality..." required v-model="searchPersonality" @keyup.stop="searchPersonality_func" >
                                 <!-- @input="filterPersonalities()" -->
 
                             </div>
@@ -1588,9 +1588,9 @@ export default {
             this.mountedPersArr = mountedPersArr
             //this.mountedPersArr = mountedPersArr
             console.log('getMountedPersonalities', mountedPersArr)
-            console.log('fig', this.configFile.personality_category)
+            //console.log('fig', this.configFile.personality_category)
             nextTick(() => {
-                console.log('accc', this.$refs.mountedPersonalities)
+                //console.log('accc', this.$refs.mountedPersonalities)
                 //this.$store.state.mountedPersonalities = this.$refs.mountedPersonalities
             })
 
@@ -1863,6 +1863,11 @@ export default {
 
             })
         },
+        searchPersonality(val){
+            if(val==""){
+                this.filterPersonalities()
+            }
+        }
 
 
 
