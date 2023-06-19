@@ -377,7 +377,50 @@
                     </button>
                 </div>
                 <div :class="{ 'hidden': pzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                    <!-- SEARCH BAR -->
                     <div class="mx-2 mb-4">
+
+                        <form>
+                            <label for="personality-search"
+                                class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <div v-if="searchPersonalityInProgress">
+                                        <!-- SPINNER -->
+                                        <div role="status">
+                                            <svg aria-hidden="true"
+                                                class="inline w-4 h-4 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                                                viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                                    fill="currentColor" />
+                                                <path
+                                                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                                    fill="currentFill" />
+                                            </svg>
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </div>
+                                    <div v-if="!searchPersonalityInProgress">
+                                        <!-- SEARCH -->
+                                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                    </div>
+
+                                </div>
+                                <input type="search" id="personality-search"
+                                    class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    placeholder="Search personality..." required v-model="searchPersonality" @keyup.stop="searchPersonality_func">
+                                <!-- @input="filterPersonalities()" -->
+
+                            </div>
+                        </form>
+
+                    </div>
+                    <div class="mx-2 mb-4" v-if="!searchPersonality">
                         <label for="persLang" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Personalities Languages: ({{ persLangArr.length }})
                         </label>
@@ -392,7 +435,7 @@
 
                         </select>
                     </div>
-                    <div class="mx-2 mb-4">
+                    <div class="mx-2 mb-4" v-if="!searchPersonality">
                         <label for="persCat" class="block  mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Personalities Category: ({{ persCatgArr.length }})
                         </label>
@@ -408,34 +451,43 @@
 
                         </select>
                     </div>
+                    <div>
 
-                    <!-- <div class="mx-2 mb-4">
-                        <label for="persona" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Personality:
-                        </label>
-                        <select id="persona" @change="update_setting('personality', $event.target.value, refresh)"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                            <option v-for="item in persArr" :selected="item === configFile.personality">{{ item }}</option>
-
-                        </select>
-                    </div> -->
-
-                    <div v-if="personalitiesFiltered.length > 0" class="mb-2">
-                        <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Personalities: ({{ personalitiesFiltered.length }})
-                        </label>
-                        <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
-                            :class="pzl_collapsed ? '' : 'max-h-96'">
-                            <TransitionGroup name="bounce">
-                                <personality-entry ref="personalitiesZoo" v-for="(pers, index) in personalitiesFiltered"
-                                    :key="'index-' + index + '-' + pers.name" :personality="pers"
-                                    :full_path="pers.full_path"
-                                    :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === pers.full_path)"
-                                    :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted" />
-                            </TransitionGroup>
+                        <div v-if="personalitiesFiltered.length > 0" class="mb-2">
+                            <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                Personalities: ({{ personalitiesFiltered.length }})
+                            </label>
+                            <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
+                                :class="pzl_collapsed ? '' : 'max-h-96'">
+                                <TransitionGroup name="bounce">
+                                    <personality-entry ref="personalitiesZoo" v-for="(pers, index) in personalitiesFiltered"
+                                        :key="'index-' + index + '-' + pers.name" :personality="pers"
+                                        :full_path="pers.full_path"
+                                        :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === pers.full_path)"
+                                        :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted" />
+                                </TransitionGroup>
+                            </div>
                         </div>
                     </div>
+                    <!-- <div v-if="searchPersonality">
+                        <div v-if="filterPersonalities_computed.length > 0" class="mb-2">
+                            <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                Personalities found: ({{ filterPersonalities_computed.length }})
+                            </label>
+                            <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
+                                :class="pzl_collapsed ? '' : 'max-h-96'">
+                                <TransitionGroup name="bounce">
+                                    <personality-entry ref="personalitiesZooSearch"
+                                        v-for="(pers, index) in filterPersonalities_computed"
+                                        :key="'index-' + index + '-' + pers.name" :personality="pers"
+                                        :full_path="pers.full_path"
+                                        :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === pers.full_path)"
+                                        :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted" />
+                                </TransitionGroup>
+                            </div>
+                        </div>
+                    </div> -->
                     <!-- EXPAND / COLLAPSE BUTTON -->
                     <button v-if="pzl_collapsed"
                         class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
@@ -760,7 +812,11 @@ export default {
             ramUsage: {},
             mountedPersArr: [],
             isMounted: false, // Needed to wait for $refs to be rendered
-            bUrl: bUrl // for personality images
+            bUrl: bUrl, // for personality images
+            searchPersonality: "",
+            searchPersonalityTimer: {},
+            searchPersonalityTimerInterval: 1500, // timeout in ms
+            searchPersonalityInProgress: false
 
         }
     },
@@ -1029,26 +1085,27 @@ export default {
         },
         onReinstallBinding(binding_object) {
             this.isLoading = true
-            axios.post('/reinstall_binding', {name: binding_object.binding.folder}).then((res) => {
+            axios.post('/reinstall_binding', { name: binding_object.binding.folder }).then((res) => {
 
                 if (res) {
                     this.isLoading = false
                     console.log('reinstall_binding', res)
-                    if(res.data.status){
+                    if (res.data.status) {
                         this.$refs.toast.showToast("Reinstalled binding successfully!", 4, true)
-                    }else{
+                    } else {
                         this.$refs.toast.showToast("Could not reinstall binding", 4, false)
                     }
                     return res.data;
                 }
                 this.isLoading = false
             })
-            // eslint-disable-next-line no-unused-vars
-            
-                .catch(error => { 
+                // eslint-disable-next-line no-unused-vars
+
+                .catch(error => {
                     this.isLoading = false
-                    this.$refs.toast.showToast("Could not reinstall binding\n"+error.message, 4, false)
-                    return { 'status': false } });
+                    this.$refs.toast.showToast("Could not reinstall binding\n" + error.message, 4, false)
+                    return { 'status': false }
+                });
         },
         // messagebox ok stuff
         onMessageBoxOk() {
@@ -1141,11 +1198,12 @@ export default {
                 }
                 this.isLoading = false
             })
-            // eslint-disable-next-line no-unused-vars
-            
-                .catch(error => { 
+                // eslint-disable-next-line no-unused-vars
+
+                .catch(error => {
                     this.isLoading = false
-                    return { 'status': false } });
+                    return { 'status': false }
+                });
         },
         update_binding(value) {
 
@@ -1316,6 +1374,34 @@ export default {
             this.personalitiesFiltered.sort()
 
             this.isLoading = false
+
+        },
+        async filterPersonalities() {
+            if (!this.searchPersonality) {
+                this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
+                this.personalitiesFiltered.sort()
+                this.searchPersonalityInProgress=false
+                return
+            }
+            const searchTerm = this.searchPersonality.toLowerCase()
+            const seachedPersonalities = this.personalities.filter((item) => {
+
+                if (item.name.toLowerCase().includes(searchTerm) || item.description.toLowerCase().includes(searchTerm) || item.full_path.toLowerCase().includes(searchTerm)) {
+                    return item
+                }
+
+            })
+
+
+
+            if (seachedPersonalities.length > 0) {
+
+                this.personalitiesFiltered = seachedPersonalities.sort()
+            } else {
+                this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
+                this.personalitiesFiltered.sort()
+            }
+            this.searchPersonalityInProgress=false
 
         },
         computedFileSize(size) {
@@ -1535,6 +1621,13 @@ export default {
         personalityImgPlacehodler(event) {
             event.target.src = defaultPersonalityImgPlaceholder
         },
+        searchPersonality_func() {
+            clearTimeout(this.searchPersonalityTimer)
+            if (this.searchPersonality) {
+                this.searchPersonalityInProgress=true
+                setTimeout(this.filterPersonalities, this.searchPersonalityTimerInterval)
+            }
+        }
 
 
     }, async mounted() {
@@ -1669,7 +1762,30 @@ export default {
 
 
 
-        }
+        },
+        // filterPersonalities_computed() {
+
+
+
+
+
+        //     const searchTerm = this.searchPersonality.toLowerCase()
+        //     const seachedPersonalities = this.personalities.filter((item) =>{
+
+        //         if(item.name.toLowerCase().includes(searchTerm) || item.description.toLowerCase().includes(searchTerm) || item.full_path.toLowerCase().includes(searchTerm)){
+        //             return item
+        //         }
+
+        //     })
+
+
+
+
+
+        //         return seachedPersonalities.sort()
+
+
+        // },
 
 
     },
@@ -1747,6 +1863,8 @@ export default {
 
             })
         },
+
+
 
     },
     async beforeRouteLeave(to) {
