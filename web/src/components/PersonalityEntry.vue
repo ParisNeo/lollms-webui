@@ -18,13 +18,13 @@
 
         <!-- CHECKBOX MOUNTED  -->
         <button type="button" @click.stop="toggleMounted"
-          class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" :class="isMounted ? ' bg-red-700 rounded-lg hover:bg-red-800 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800':''">
           {{isMounted ? 'Unmount':'Mount'}}
-          <span
+          <!-- <span
             class="inline-flex items-center justify-center w-4 h-4 ml-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
             <input disabled id="default-checkbox" type="checkbox" v-model="isMounted" 
               class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-          </span>
+          </span> -->
         </button>
 
         <!-- <div class="flex items-center mb-4" @click.stop title="Click to mount/unmount">
