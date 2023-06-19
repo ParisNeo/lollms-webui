@@ -168,7 +168,7 @@
             :class="isDragOverChat ? 'pointer-events-none' : ''">
 
             <!-- CHAT AREA -->
-            <div class=" container pt-4 pb-10 mb-16">
+            <div class=" container pt-4 pb-10 mb-28">
                 <TransitionGroup v-if="discussionArr.length > 0" name="list">
                     <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg" :id="'msg-' + msg.id"
                         ref="messages" @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
@@ -189,7 +189,8 @@
 
             </div>
             <div class=" bottom-0 container flex flex-row items-center justify-center " v-if="currentDiscussion.id">
-                <ChatBox ref="chatBox"  @messageSentEvent="sendMsg" :loading="isGenerating" @stopGenerating="stopGenerating" ></ChatBox>
+                <ChatBox ref="chatBox" @messageSentEvent="sendMsg" :loading="isGenerating" @stopGenerating="stopGenerating">
+                </ChatBox>
             </div>
             <!-- CAN ADD FOOTER PANEL HERE -->
         </div>
@@ -198,7 +199,6 @@
 
     <Toast ref="toast">
     </Toast>
-   
 </template>
 
 
@@ -580,13 +580,36 @@ export default {
         },
         updateLastUserMsg(msgObj) {
 
-            const lastMsg = this.discussionArr[this.discussionArr.length - 1]
-            lastMsg.content = msgObj.message
-            lastMsg.id = msgObj.user_message_id
-            // lastMsg.parent=msgObj.parent
-            lastMsg.rank = msgObj.rank
-            lastMsg.sender = msgObj.user
-            // lastMsg.type=msgObj.type
+            // const lastMsg = this.discussionArr[this.discussionArr.length - 1]
+            // lastMsg.content = msgObj.message
+            // lastMsg.id = msgObj.user_message_id
+            // // lastMsg.parent=msgObj.parent
+            // lastMsg.rank = msgObj.rank
+            // lastMsg.sender = msgObj.user
+            // // lastMsg.type=msgObj.type
+            const index = this.discussionArr.indexOf(item => item.id = msgObj.user_message_id)
+            const newMessage ={
+                binding: msgObj.binding,
+                content: msgObj.message,
+                created_at: msgObj.created_at,
+                finished_generating_at: msgObj.finished_generating_at,
+                id: msgObj.user_message_id,
+                model: msgObj.model,
+                
+                personality: msgObj.personality,
+                
+                sender: msgObj.user,
+                
+            }
+            
+            
+            if (index !== -1) {
+                this.discussionArr[index] = newMessage;
+            }
+
+
+
+
         },
         createBotMsg(msgObj) {
             // Update previous message with reponse user data
@@ -610,7 +633,7 @@ export default {
                     parent: msgObj.user_message_id,
                     rank: 0,
                     sender: msgObj.bot,
-                    created_at: new Date().toLocaleString(),
+                    created_at: msgObj.created_at,
                     //type: msgObj.type
                 }
                 this.discussionArr.push(responseMessage)
@@ -653,9 +676,10 @@ export default {
 
                         // Create new User message
                         // Temp data
+                        const lastmsgid = Number(this.discussionArr[this.discussionArr.length - 1].id) + 1
                         let usrMessage = {
                             message: msg,
-                            id: 0,
+                            id: lastmsgid,
                             rank: 0,
                             user: "user",
                             created_at: new Date().toLocaleString(),
@@ -674,6 +698,7 @@ export default {
         },
         streamMessageContent(msgObj) {
             // Streams response message content from binding
+            //console.log('stream msg',msgObj)
             const parent = msgObj.user_message_id
             const discussion_id = msgObj.discussion_id
             this.setDiscussionLoading(discussion_id, true);
@@ -925,10 +950,25 @@ export default {
             const discussion_id = msgObj.discussion_id
             if (this.currentDiscussion.id == discussion_id) {
                 const index = this.discussionArr.findIndex((x) => x.parent == parent && x.id == msgObj.ai_message_id)
-                const messageItem = this.discussionArr[index]
-                if (messageItem) {
-                    messageItem.content = msgObj.data
+                const finalMessage = {
+                    binding:msgObj.binding,
+                    content:msgObj.data,
+                    created_at:msgObj.created_at,
+                    finished_generating_at:msgObj.finished_generating_at,
+                    id: msgObj.ai_message_id,
+                    model:msgObj.model,
+                    parent: msgObj.user_message_id,
+                    personality:msgObj.personality,
+                    rank:0,
+                    sender:msgObj.bot,
+                    type:msgObj.type
                 }
+                this.discussionArr[index]=finalMessage
+
+                // const messageItem = this.discussionArr[index]
+                // if (messageItem) {
+                //     messageItem.content = msgObj.data
+                // }
             }
             nextTick(() => {
                 const msgList = document.getElementById('messages-list')
@@ -943,37 +983,37 @@ export default {
         copyToClipBoard(messageEntry) {
             this.$refs.toast.showToast("Copied to clipboard successfully", 4, true)
 
-            let binding =""
-            if(messageEntry.message.binding){
-                binding= `Binding: ${messageEntry.message.binding}`
+            let binding = ""
+            if (messageEntry.message.binding) {
+                binding = `Binding: ${messageEntry.message.binding}`
             }
-            let personality=""
-            if(messageEntry.message.personality){
-                personality= `\nPersonality: ${messageEntry.message.personality}`
+            let personality = ""
+            if (messageEntry.message.personality) {
+                personality = `\nPersonality: ${messageEntry.message.personality}`
             }
-            let time=""
-            if(messageEntry.created_at_parsed){
-                time= `\nCreated: ${messageEntry.created_at_parsed}`
+            let time = ""
+            if (messageEntry.created_at_parsed) {
+                time = `\nCreated: ${messageEntry.created_at_parsed}`
             }
-            let content=""
-            if(messageEntry.message.content){
-                content= messageEntry.message.content
+            let content = ""
+            if (messageEntry.message.content) {
+                content = messageEntry.message.content
             }
-            let model=""
-            if(messageEntry.message.model){
-                model= `Model: ${messageEntry.message.model}`
+            let model = ""
+            if (messageEntry.message.model) {
+                model = `Model: ${messageEntry.message.model}`
             }
-            let seed=""
-            if(messageEntry.message.seed){
-                seed= `Seed: ${messageEntry.message.seed}`
+            let seed = ""
+            if (messageEntry.message.seed) {
+                seed = `Seed: ${messageEntry.message.seed}`
             }
-            let time_spent=""
-            if(messageEntry.time_spent){
-                time_spent= `\nTime spent: ${messageEntry.time_spent}`
+            let time_spent = ""
+            if (messageEntry.time_spent) {
+                time_spent = `\nTime spent: ${messageEntry.time_spent}`
             }
             let bottomRow = ''
             bottomRow = `${binding} ${model} ${seed} ${time_spent}`.trim()
-           const result = `${messageEntry.message.sender}${personality}${time}\n\n${content}\n\n${bottomRow}`
+            const result = `${messageEntry.message.sender}${personality}${time}\n\n${content}\n\n${bottomRow}`
 
 
             navigator.clipboard.writeText(result);
@@ -1128,16 +1168,16 @@ export default {
         setFileListChat(files) {
 
 
-                try {
-                    this.$refs.chatBox.fileList = this.$refs.chatBox.fileList.concat(files)
-                } catch (error) {
-                this.$refs.toast.showToast("Failed to set filelist in chatbox\n"+error.message, 4, false)
-                    
-                }
-            
+            try {
+                this.$refs.chatBox.fileList = this.$refs.chatBox.fileList.concat(files)
+            } catch (error) {
+                this.$refs.toast.showToast("Failed to set filelist in chatbox\n" + error.message, 4, false)
+
+            }
+
 
             this.isDragOverChat = false
-        
+
 
         },
         setDropZoneChat() {
@@ -1196,7 +1236,7 @@ export default {
         socket.on("final", this.finalMsgEvent)
 
     },
-    mounted(){
+    mounted() {
         //console.log('chatbox mnt',this.$refs)
     },
     async activated() {

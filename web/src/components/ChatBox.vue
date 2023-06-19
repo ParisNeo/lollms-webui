@@ -91,8 +91,8 @@
                         <!-- <div class="w-24">
                             <MountedPersonalities  />
 
-                        </div> -->
-                       
+                        </div>
+                        -->
 
                         <div class="relative grow">
                             <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"
