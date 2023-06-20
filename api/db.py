@@ -314,7 +314,7 @@ class Discussion:
         self.current_message_created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.current_message_finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-    def add_message(self, sender, content, message_type=0, rank=0, parent=0, binding="", model ="", personality="", created_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')):
+    def add_message(self, sender, content, message_type=0, rank=0, parent=0, binding="", model ="", personality="", created_at=None, finished_generating_at=None):
         """Adds a new message to the discussion
 
         Args:
@@ -324,6 +324,11 @@ class Discussion:
         Returns:
             int: The added message id
         """
+        if created_at is None:
+            created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            
+        if finished_generating_at is None:
+            finished_generating_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.current_message_binding = binding
         self.current_message_model = model
         self.current_message_personality = personality
@@ -381,13 +386,14 @@ class Discussion:
                     "finished_generating_at": row[10]
                     } for row in rows]
 
-    def update_message(self, message_id, new_content, current_date_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')):
+    def update_message(self, message_id, new_content):
         """Updates the content of a message
 
         Args:
             message_id (int): The id of the message to be changed
             new_content (str): The nex message content
         """
+        current_date_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.current_message_finished_generating_at = current_date_time
         
         # print(f"{current_date_time}")
