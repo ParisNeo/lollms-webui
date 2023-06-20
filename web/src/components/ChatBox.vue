@@ -89,10 +89,10 @@
                     <!-- CHAT BOX -->
                     <div class="flex flex-row flex-grow items-center gap-2 ">
                         <!-- <div class="w-24">
-                            <MountedPersonalities  />
+                            <MountedPersonalities  @click.stop=""/>
 
-                        </div>
-                        -->
+                        </div> -->
+                       
 
                         <div class="relative grow">
                             <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"

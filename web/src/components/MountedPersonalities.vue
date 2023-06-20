@@ -53,7 +53,8 @@ export default {
             mountedPersArr: [],
             personalities: [],
             bUrl: bUrl,
-            isMounted: false
+            isMounted: false,
+            isLoading:false
         }
     },
     async mounted() {
@@ -189,11 +190,13 @@ export default {
                 if (pers.isMounted) {
 
                     const res = await this.select_personality(pers)
+                    if (res) {
+                        if (res.status) {
+                            this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
 
-                    if (res.status) {
-                        this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
-
+                        }
                     }
+
 
                 } else {
                     this.onPersonalityMounted(pers)
@@ -201,10 +204,6 @@ export default {
                 }
 
 
-                nextTick(() => {
-
-
-                })
                 this.isLoading = false
             }
 
@@ -278,7 +277,7 @@ export default {
 
                 }
             } catch (error) {
-                console.log(error.message, 'select_personality - settings')
+                console.log(error, 'select_personality - settings')
                 return
             }
 

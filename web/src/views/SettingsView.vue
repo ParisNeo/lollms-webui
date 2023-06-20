@@ -245,45 +245,51 @@
 
                 <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
                     <div class="mb-2" v-if="configFile.binding_name">
-                        <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Add models:
-                        </label>
-                        <div class="p-2 ">
 
-                            <form>
-                                <div class="mb-3">
-                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                        for="file_input">Select
-                                        files</label>
+                        <!-- <div >
 
 
-                                    <input
-                                        class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                                        id="multiple_files" type="file" multiple>
-                                </div>
+                            <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                Add models:
+                            </label>
+                            <div class="p-2 ">
 
-                                <button type="submit"
-                                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Upload</button>
-                            </form>
+                                <form>
+                                    <div class="mb-3">
+                                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                            for="file_input">Select
+                                            files</label>
 
-                        </div>
-                        <div class="p-2  ">
 
-                            <form>
-                                <div class="mb-3">
-                                    <label for="email"
-                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Model
-                                        URL</label>
-                                    <input type="email" id="email"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="url" required>
-                                </div>
+                                        <input
+                                            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                                            id="multiple_files" type="file" multiple>
+                                    </div>
 
-                                <button type="submit"
-                                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Download</button>
-                            </form>
+                                    <button type="submit"
+                                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Upload</button>
+                                </form>
 
-                        </div>
+                            </div>
+
+                            <div class="p-2  ">
+
+                                <form>
+                                    <div class="mb-3">
+                                        <label for="email"
+                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Model
+                                            URL</label>
+                                        <input type="email" id="email"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            placeholder="url" required>
+                                    </div>
+
+                                    <button type="submit"
+                                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Download</button>
+                                </form>
+
+                            </div>
+                        </div> -->
                     </div>
                     <div v-if="models.length > 0" class="mb-2">
                         <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -316,7 +322,63 @@
                 </div>
 
             </div>
+            <!-- ADD MODELS -->
+            <div
+                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                <div class="flex flex-row p-3">
+                    <button @click.stop="mzdc_collapsed = !mzdc_collapsed"
+                        class="text-2xl hover:text-primary  p-2 -m-2 w-full text-left flex items-center">
+                        <i :data-feather="mzdc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2 flex-shrink-0"></i>
+                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            Add models</h3>
 
+                    </button>
+                </div>
+                <div :class="{ 'hidden': mzdc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+
+                    <div class="mb-2">
+
+                        <div class="p-2 ">
+
+                            <form>
+                                <div class="mb-3">
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        for="file_input">Select
+                                        files</label>
+
+
+                                    <input
+                                        class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                                        id="multiple_files" type="file" multiple>
+                                </div>
+
+                                <button type="submit"
+                                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Upload</button>
+                            </form>
+
+                        </div>
+
+                        <div class="p-2  ">
+
+                            <form>
+                                <div class="mb-3">
+                                    <label for="email"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Model
+                                        URL</label>
+                                    <input type="email" id="email"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="url" required>
+                                </div>
+
+                                <button type="submit"
+                                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Download</button>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
             <!-- PERSONALITY ZOO -->
             <div
                 class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
@@ -404,16 +466,17 @@
                                     <div v-if="!searchPersonalityInProgress">
                                         <!-- SEARCH -->
                                         <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                    </svg>
+                                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                        </svg>
                                     </div>
 
                                 </div>
                                 <input type="search" id="personality-search"
                                     class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    placeholder="Search personality..." required v-model="searchPersonality" @keyup.stop="searchPersonality_func" >
+                                    placeholder="Search personality..." required v-model="searchPersonality"
+                                    @keyup.stop="searchPersonality_func">
                                 <!-- @input="filterPersonalities()" -->
 
                             </div>
@@ -786,6 +849,7 @@ export default {
             all_collapsed: true,
             bec_collapsed: true,
             mzc_collapsed: true, // models zoo
+            mzdc_collapsed: false, // models zoo download
             pzc_collapsed: true, // personalities zoo
             bzc_collapsed: true, // binding zoo
             pc_collapsed: true,
@@ -1380,7 +1444,7 @@ export default {
             if (!this.searchPersonality) {
                 this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
                 this.personalitiesFiltered.sort()
-                this.searchPersonalityInProgress=false
+                this.searchPersonalityInProgress = false
                 return
             }
             const searchTerm = this.searchPersonality.toLowerCase()
@@ -1401,7 +1465,7 @@ export default {
                 this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
                 this.personalitiesFiltered.sort()
             }
-            this.searchPersonalityInProgress=false
+            this.searchPersonalityInProgress = false
 
         },
         computedFileSize(size) {
@@ -1624,7 +1688,7 @@ export default {
         searchPersonality_func() {
             clearTimeout(this.searchPersonalityTimer)
             if (this.searchPersonality) {
-                this.searchPersonalityInProgress=true
+                this.searchPersonalityInProgress = true
                 setTimeout(this.filterPersonalities, this.searchPersonalityTimerInterval)
             }
         }
@@ -1863,10 +1927,16 @@ export default {
 
             })
         },
-        searchPersonality(val){
-            if(val==""){
+        searchPersonality(val) {
+            if (val == "") {
                 this.filterPersonalities()
             }
+        },
+        mzdc_collapsed() {
+            nextTick(() => {
+                feather.replace()
+
+            })
         }
 
 
