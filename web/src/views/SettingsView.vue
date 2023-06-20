@@ -330,8 +330,25 @@
                         class="text-2xl hover:text-primary  p-2 -m-2 w-full text-left flex items-center">
                         <i :data-feather="mzdc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2 flex-shrink-0"></i>
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
-                            Add models</h3>
+                            Add models to</h3>
+                            <div v-if="!configFile.binding_name" class="text-base text-red-600 flex gap-3 items-center mr-2">
+                            <i data-feather="alert-triangle" class="flex-shrink-0"></i>
+                            No binding selected!
+                        </div>
 
+                        <div v-if="configFile.binding_name" class="mr-2">|</div>
+
+                        <div v-if="configFile.binding_name"
+                            class=" text-base font-semibold cursor-pointer select-none items-center">
+
+                            <div class="flex gap-1 items-center">
+                                <img :src="imgBinding" class="w-8 h-8 rounded-full object-fill text-blue-700">
+                                <h3 class="font-bold font-large text-lg line-clamp-1">
+                                    <!-- {{ configFile.binding_name }} -->
+                                    {{ binding_name }}
+                                </h3>
+                            </div>
+                        </div>
                     </button>
                 </div>
                 <div :class="{ 'hidden': mzdc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
@@ -849,7 +866,7 @@ export default {
             all_collapsed: true,
             bec_collapsed: true,
             mzc_collapsed: true, // models zoo
-            mzdc_collapsed: false, // models zoo download
+            mzdc_collapsed: true, // models zoo download
             pzc_collapsed: true, // personalities zoo
             bzc_collapsed: true, // binding zoo
             pc_collapsed: true,
@@ -914,6 +931,7 @@ export default {
             this.pc_collapsed = val
             this.mc_collapsed = val
             this.sc_collapsed = val
+            this.mzdc_collapsed = val
 
         },
         fetchModels() {
