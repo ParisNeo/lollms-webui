@@ -182,7 +182,7 @@
                                 <BindingEntry ref="bindingZoo" v-for="(binding, index) in bindings"
                                     :key="'index-' + index + '-' + binding.folder" :binding="binding"
                                     :on-selected="onSelectedBinding" :on-reinstall="onReinstallBinding"
-                                    :selected="binding.folder === configFile.binding_name">
+                                    :on-settings="onSettingsBinding" :selected="binding.folder === configFile.binding_name">
                                 </BindingEntry>
                             </TransitionGroup>
                         </div>
@@ -331,7 +331,7 @@
                         <i :data-feather="mzdc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2 flex-shrink-0"></i>
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
                             Add models for binding</h3>
-                            <div v-if="!configFile.binding_name" class="text-base text-red-600 flex gap-3 items-center mr-2">
+                        <div v-if="!configFile.binding_name" class="text-base text-red-600 flex gap-3 items-center mr-2">
                             <i data-feather="alert-triangle" class="flex-shrink-0"></i>
                             No binding selected!
                         </div>
@@ -759,6 +759,7 @@
     <AddModelDialog ref="addmodeldialog" />
     <MessageBox ref="messageBox" />
     <Toast ref="toast" />
+    <UniversalForm ref="universalForm" class="z-20" />
 </template>
 <style scoped>
 /* THESE ARE FOR TransitionGroup components */
@@ -834,7 +835,7 @@ import socket from '@/services/websocket.js'
 import defaultModelImgPlaceholder from "../assets/default_model.png"
 import defaultPersonalityImgPlaceholder from "../assets/logo.svg"
 import AddModelDialog from "@/components/AddModelDialog.vue";
-
+import UniversalForm from '../components/UniversalForm.vue';
 const bUrl = import.meta.env.VITE_GPT4ALL_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
@@ -848,7 +849,7 @@ export default {
         Toast,
         PersonalityEntry,
         BindingEntry,
-
+        UniversalForm
     },
     data() {
 
@@ -1188,6 +1189,15 @@ export default {
                     this.$refs.toast.showToast("Could not reinstall binding\n" + error.message, 4, false)
                     return { 'status': false }
                 });
+        },
+        onSettingsBinding() {
+
+            const arr = '[{"name":"Configuration 1","value":0,"type":"int","min":0,"max":100},{"name":"Configuration 1.1","value":0,"type":"int","min":null,"max":null},{"name":"Configuration 2","value":"blabla","type":"str","min":null,"max":null},{"name":"Configuration 1.1","value":0,"type":"int","min":null,"max":null},{"name":"Configuration 2","value":"blabla","type":"str","min":null,"max":null},{"name":"Configuration 1.1","value":0,"type":"int","min":null,"max":null},{"name":"Configuration 2","value":"blabla","type":"str","min":null,"max":null},{"name":"Configuration 1.1","value":0,"type":"int","min":null,"max":null},{"name":"Configuration 2","value":"blabla","type":"str","min":null,"max":null},{"name":"Configuration 1.1","value":0,"type":"int","min":null,"max":null},{"name":"Configuration 2","value":"blabla","type":"str","min":null,"max":null},{"name":"Configuration 1.1","value":0,"type":"int","min":null,"max":null},{"name":"Configuration 2","value":"blabla","type":"str","min":null,"max":null}]'
+            const arr2 = JSON.parse(arr)
+            //console.log(this.controls_array)
+
+
+            this.$refs.universalForm.showForm(arr2, "Baba booey form", "Go for torps", "go home")
         },
         // messagebox ok stuff
         onMessageBoxOk() {

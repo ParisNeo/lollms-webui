@@ -22,12 +22,13 @@
             <i data-feather="tool" class="w-5"></i>
             <span class="sr-only">Reinstall binding</span>
           </button>
-          <!-- - NOT IMPLEMENTED -->
-          <!-- <button type="button" title="Settings - Not implemented"
-            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
+          <button type="button" title="Settings"
+            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="toggleSettings">
             <i data-feather="sliders" class="w-5"></i>
             <span class="sr-only">Settings</span>
           </button>
+          <!-- - NOT IMPLEMENTED -->
+          <!-- 
           <button type="button" title="Help - Not implemented"
             class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
             <i data-feather="help-circle" class="w-5"></i>
@@ -92,6 +93,7 @@ export default {
     binding: {},
     onSelected: Function,
     onReinstall: Function,
+    onSettings: Function,
     selected: Boolean,
 
   },
@@ -124,6 +126,9 @@ export default {
     },
     toggleReinstall() {
       this.onReinstall(this)
+    },
+    toggleSettings() {
+      this.onSettings(this)
     },
     getStatus() {
       if (this.binding.folder === 'backend_template' || this.binding.folder === 'binding_template') {
