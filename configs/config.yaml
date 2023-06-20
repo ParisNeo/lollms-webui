@@ -1,6 +1,6 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
 version: 7
-binding_name: llama_cpp_official
+binding_name: c_transformers
 model_name: null
 
 # Host information
