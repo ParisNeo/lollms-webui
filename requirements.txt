@@ -10,3 +10,4 @@ gevent-websocket
 lollms
 langchain
 requests
+websocket-client
