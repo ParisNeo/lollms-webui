@@ -883,7 +883,6 @@ class LoLLMsAPPI():
             while(not self.process.completion_signal.is_set() or not self.process.generation_queue.empty()):  # Simulating other commands being issued
                 try:
                     chunk, tok, message_type = self.process.generation_queue.get(False, 2)
-                    print(chunk, end="")
                     if chunk!="":
                         self.process_chunk(chunk, message_type)
                 except Exception as ex:
