@@ -187,3 +187,7 @@ uploads
 global_paths_cfg.yaml
 
 .vscode
+
+# Endpoint test files using REST client (VSCODE Extension)
+
+tests/end_point_tests/*_local.http

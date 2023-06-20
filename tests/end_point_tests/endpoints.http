@@ -1,0 +1,138 @@
+############################################
+### Create new discussion
+############################################
+GET http://localhost:9600/new_discussion
+Content-Type: application/json
+
+{
+    "title": "Some title" // Can be empty
+}
+############################################
+### List discussions
+############################################
+GET http://localhost:9600/list_discussions
+############################################
+### Load Discussion by ID
+############################################
+POST http://localhost:9600/load_discussion
+Content-Type: application/json
+
+{
+    "id": 0 // Discussion ID Must be integer
+}
+############################################
+### Delete Discussion by ID
+############################################
+POST http://localhost:9600/delete_discussion
+Content-Type: application/json
+
+{
+    "id": 0 // Discussion ID Must be integer
+}
+############################################
+### Edit discussion title
+############################################
+POST http://localhost:9600/edit_title
+Content-Type: application/json
+
+{
+    "id": 0, // Discussion ID Must be integer
+    "title": "New title"
+}
+############################################
+### Update message
+############################################
+GET http://localhost:9600/update_message
+?id=0 
+&message="New Message text"
+############################################
+### Update setting
+############################################
+POST http://localhost:9600/update_setting
+Content-Type: application/json
+
+{
+    "setting_name": "personality_language",
+    "setting_value": "english"
+}
+############################################
+### Get all personalities
+############################################
+GET http://localhost:9600/get_all_personalities
+############################################
+### Get current personality
+############################################
+GET http://localhost:9600/get_current_personality
+############################################
+### Get current personality infos
+############################################
+GET http://localhost:9600/get_current_personality_path_infos
+############################################
+### Mount personality
+############################################
+POST http://localhost:9600/mount_personality
+Content-Type: application/json
+
+{
+    "language": "english",
+    "category": "generic",
+    "folder": "gpt4all"
+}
+############################################
+### Unmount personality
+############################################
+POST http://localhost:9600/unmount_personality
+Content-Type: application/json
+
+{
+    "language": "english",
+    "category": "generic",
+    "name": "lollms"
+}
+############################################
+### Select personality
+############################################
+POST http://localhost:9600/select_personality
+Content-Type: application/json
+
+{
+    "id": 0 // Array index from get_config.personalities array
+}
+
+####@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+####@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+###
+### INFORMATION SECTION
+###
+####@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+####@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+############################################
+### List Models
+############################################
+GET http://localhost:9600/list_models
+############################################
+### Get avaliable Models
+############################################
+GET http://localhost:9600/get_available_models
+############################################
+### List Bindings
+############################################
+GET http://localhost:9600/list_bindings
+############################################
+### Get Config
+############################################
+GET http://localhost:9600/get_config
+############################################
+### Get generation status
+############################################
+GET http://localhost:9600/get_generation_status
+############################################
+### Get disk usage
+############################################
+GET http://localhost:9600/disk_usage
+############################################
+### Get ram usage
+############################################
+GET http://localhost:9600/ram_usage
