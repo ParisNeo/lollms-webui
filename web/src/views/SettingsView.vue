@@ -1194,10 +1194,10 @@ export default {
 
             const arr = '[{"name":"Configuration 1","value":0,"type":"int","min":0,"max":100},{"name":"Configuration 1.1","value":0,"type":"int","min":null,"max":null},{"name":"Configuration 2","value":"blabla","type":"str","min":null,"max":null},{"name":"Configuration 1.1","value":0,"type":"int","min":null,"max":null},{"name":"Configuration 2","value":"blabla","type":"str","min":null,"max":null},{"name":"Configuration 1.1","value":0,"type":"int","min":null,"max":null},{"name":"Configuration 2","value":"blabla","type":"str","min":null,"max":null},{"name":"Configuration 1.1","value":0,"type":"int","min":null,"max":null},{"name":"Configuration 2","value":"blabla","type":"str","min":null,"max":null},{"name":"Configuration 1.1","value":0,"type":"int","min":null,"max":null},{"name":"Configuration 2","value":"blabla","type":"str","min":null,"max":null},{"name":"Configuration 1.1","value":0,"type":"int","min":null,"max":null},{"name":"Configuration 2","value":"blabla","type":"str","min":null,"max":null}]'
             const arr2 = JSON.parse(arr)
-            //console.log(this.controls_array)
+    
 
 
-            this.$refs.universalForm.showForm(arr2, "Baba booey form", "Go for torps", "go home")
+            //this.$refs.universalForm.showForm(arr2, "Baba booey form", "Go for torps", "go home") // disabled to not break UI just add endpoint or anything
         },
         // messagebox ok stuff
         onMessageBoxOk() {
