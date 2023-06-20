@@ -330,7 +330,7 @@
                         class="text-2xl hover:text-primary  p-2 -m-2 w-full text-left flex items-center">
                         <i :data-feather="mzdc_collapsed ? 'chevron-right' : 'chevron-down'" class="mr-2 flex-shrink-0"></i>
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
-                            Add models to</h3>
+                            Add models for binding</h3>
                             <div v-if="!configFile.binding_name" class="text-base text-red-600 flex gap-3 items-center mr-2">
                             <i data-feather="alert-triangle" class="flex-shrink-0"></i>
                             No binding selected!
