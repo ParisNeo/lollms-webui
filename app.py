@@ -311,9 +311,16 @@ class LoLLMsWebUI(LoLLMsAPPI):
                         for personality_folder in category_folder.iterdir():
                             pers = personality_folder.stem
                             if personality_folder.is_dir():
+                                personality_info = {"folder":personality_folder.stem}
+                                config_path = personality_folder / 'config.yaml'
+                                if not config_path.exists():
+                                    try:
+                                        config_path.parent.rmdir()
+                                        ASCIIColors.warning(f"Deleted useless personality: {config_path.parent}")
+                                    except:
+                                        ASCIIColors.warning(f"Couldn't delete personality")
+                                    continue
                                 try:
-                                    personality_info = {"folder":personality_folder.stem}
-                                    config_path = personality_folder / 'config.yaml'
                                     with open(config_path) as config_file:
                                         config_data = yaml.load(config_file, Loader=yaml.FullLoader)
                                         personality_info['name'] = config_data.get('name',"No Name")
