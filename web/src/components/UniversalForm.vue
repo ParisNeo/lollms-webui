@@ -1,13 +1,13 @@
 <template>
     <div v-if="show" class="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-        <div class="relative w-full max-w-md">
+        <div class="relative w-full max-w-md ">
 
             <div
-                class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel duration-150 shadow-lg h-screen no-scrollbar overflow-auto ">
+                class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel duration-150 shadow-lg max-h-screen">
                 <div class="flex flex-row flex-grow items-center mb-2">
                     <div class="grow flex items-center">
                         <i data-feather="sliders" class="mr-2 flex-shrink-0"></i>
-                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
+                        <h3 class="text-lg font-semibold select-none mr-2">
                             {{ title }}</h3>
                     </div>
 
@@ -27,7 +27,7 @@
                     </div>
                 </div>
                 <!-- FORM AREA -->
-                <div class="flex flex-col relative">
+                <div class="flex flex-col relative no-scrollbar overflow-y-scroll">
 
                     <div class="mb-2 " v-for="(item, index) in controls_array">
 
