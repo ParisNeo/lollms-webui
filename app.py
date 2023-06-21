@@ -25,7 +25,8 @@ from tqdm import tqdm
 import subprocess
 import signal
 from lollms.personality import AIPersonality, MSG_TYPE
-from lollms.helpers import ASCIIColors, BaseConfig
+from lollms.config import BaseConfig
+from lollms.helpers import ASCIIColors
 from lollms.paths import LollmsPaths
 from api.db import DiscussionsDB, Discussion
 from api.helpers import compare_lists
@@ -44,7 +45,7 @@ import yaml
 from geventwebsocket.handler import WebSocketHandler
 import logging
 import psutil
-from lollms.binding import LOLLMSConfig
+from lollms.main_config import LOLLMSConfig
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
