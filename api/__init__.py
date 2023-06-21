@@ -313,58 +313,6 @@ class LoLLMsAPPI():
         self._current_ai_message_id=id
         self._message_id = id
 
-    def load_binding(self):
-        try:
-            print("update_settings : New binding selected")
-            if hasattr(self,"process") and self.process.ready:
-                result = self.process.set_config(self.config)
-                if result["status"]:
-                    ASCIIColors.success("OK")
-                else:
-                    ASCIIColors.error("NOK")
-        except Exception as ex:
-            ASCIIColors.error(f"Couldn't load model.Process returned exception : {ex}")
-            ASCIIColors.error(f"Binding returned this exception : {ex}")
-            ASCIIColors.error(f"{self.config.get_model_path_infos()}")
-            print("Please select a valid model or install a new one from a url")
-            self.menu.select_model()        
-
-
-    def load_model(self):
-        try:
-            print("update_settings : New model selected")
-            if hasattr(self,"process") and self.process.ready:
-                result = self.process.set_config(self.config)
-                if result["status"]:
-                    ASCIIColors.success("OK")
-                else:
-                    ASCIIColors.error("NOK")
-        except Exception as ex:
-            ASCIIColors.error(f"Couldn't load model.Process returned exception : {ex}")
-            ASCIIColors.error(f"Binding returned this exception : {ex}")
-            ASCIIColors.error(f"{self.config.get_model_path_infos()}")
-            print("Please select a valid model or install a new one from a url")
-            self.menu.select_model()
-
-
-    def load_personality(self):
-        try:
-            print("update_settings : New personality selected")
-            if hasattr(self,"process") and self.process.ready:
-                result = self.process.set_config(self.config)
-                if result["status"]:
-                    ASCIIColors.success("OK")
-                else:
-                    ASCIIColors.error("NOK")
-        except Exception as ex:
-            ASCIIColors.error(f"Couldn't load personality. Please verify your configuration file at {self.configuration_path} or use the next menu to select a valid personality")
-            ASCIIColors.error(f"Binding returned this exception : {ex}")
-            ASCIIColors.error(f"{self.config.get_personality_path_infos()}")
-            print("Please select a valid model or install a new one from a url")
-            self.menu.select_model()
-        self.cond_tk = self.personality.model.tokenize(self.personality.personality_conditioning)
-        self.n_cond_tk = len(self.cond_tk)    
-
     def download_file(self, url, installation_path, callback=None):
         """
         Downloads a file from a URL, reports the download progress using a callback function, and displays a progress bar.
