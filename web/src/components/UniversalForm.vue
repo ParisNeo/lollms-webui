@@ -33,34 +33,28 @@
                     <div class="px-2 " v-for="(item, index) in controls_array">
                         <div class="">
                             <div v-if="item.type != 'bool'">
-                                <label class="relative flex item-center gap-2 text-sm font-medium text-gray-900 dark:text-white"
-                                    for="file_input">
+                                <label
+                                    class="mb-2 relative flex item-center gap-2 text-sm font-medium text-gray-900 dark:text-white select-none"
+                                    :class="item.help ? 'cursor-pointer ' : ''">
+                                    <!-- TITLE -->
                                     <div>
                                         {{ item.name }}:
                                     </div>
-                                   
-       
-                                    <label class="relative inline-flex mb-5 cursor-pointer">
-                                        <input type="checkbox" value="" class="sr-only peer" >
+
+                                    <!-- HELP BUTTON -->
+                                    <label v-if="item.help" class="relative inline-flex">
+                                        <input type="checkbox" v-model="item.isHelp" class="sr-only peer">
                                         <div
                                             class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-secondary">
                                             <i data-feather="help-circle" class="w-5 h-5 "></i>
                                         </div>
-                                        <div class="peer-checked:hidden">
-                                            <p class="text-sm font-normal text-gray-700 dark:text-gray-400 mb-2">
-                                            {{ item.help }}
-                                        </p>
-
-                                        </div>
-
                                     </label>
 
-                                    <button class="text-sm  hover:text-secondary duration-75 active:scale-90" title="Help"
-                                        type="toggle" @click.stop="">
-
-                                    </button>
                                 </label>
-
+                                <!-- HELP DESCRIPTION -->
+                                <p v-if="item.isHelp" class="text-sm font-normal text-gray-700 dark:text-gray-400 mb-2">
+                                    {{ item.help }}
+                                </p>
 
                                 <input type="text" v-model="item.value"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -148,11 +142,20 @@ export default {
         showForm(controls_array, title, ConfirmButtonText, DenyButtonText) {
             this.ConfirmButtonText = ConfirmButtonText || this.ConfirmButtonText
             this.DenyButtonText = DenyButtonText || this.DenyButtonText
+            //let moddedArr =[]
+            // add aditional values for UI
+            for (let i = 0; i < controls_array.length; i++) {
+                controls_array[i].isHelp = false
+
+            }
+
+
             return new Promise((resolve) => {
                 this.controls_array = controls_array;
                 this.show = true;
                 this.title = title || this.title
                 this.resolve = resolve;
+                console.log('show foam', this.controls_array)
             });
         },
 
