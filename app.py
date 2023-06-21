@@ -320,10 +320,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
                                 config_path = personality_folder / 'config.yaml'
                                 if not config_path.exists():
                                     try:
-                                        config_path.parent.rmdir()
+                                        shutil.rmtree(str(config_path.parent))
                                         ASCIIColors.warning(f"Deleted useless personality: {config_path.parent}")
-                                    except:
-                                        ASCIIColors.warning(f"Couldn't delete personality")
+                                    except Exception as ex:
+                                        ASCIIColors.warning(f"Couldn't delete personality ({ex})")
                                     continue
                                 try:
                                     with open(config_path) as config_file:

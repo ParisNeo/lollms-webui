@@ -251,7 +251,7 @@ echo OK
 REM Install the required packages
 echo Installing requirements ...
 python -m pip install pip --upgrade
-python -m pip install --upgrade -r requirements.txt
+python -m pip install --upgrade -r requirements.txt --ignore-installed 
 if %ERRORLEVEL% neq 0 (
     echo Failed to install required packages. Please check your internet connection and try again.
     pause
