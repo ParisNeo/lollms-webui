@@ -1192,12 +1192,14 @@ export default {
         },
         onSettingsBinding() {
 
-            const arr = '[{"name":"Configuration 1","value":0,"type":"int","min":0,"max":100},{"name":"Configuration 1.1","value":0,"type":"int","min":null,"max":null},{"name":"Configuration 2","value":"blabla","type":"str","min":null,"max":null},{"name":"Configuration 1.1","value":0,"type":"int","min":null,"max":null},{"name":"Configuration 2","value":"blabla","type":"str","min":null,"max":null},{"name":"Configuration 1.1","value":0,"type":"int","min":null,"max":null},{"name":"Configuration 2","value":"blabla","type":"str","min":null,"max":null},{"name":"Configuration 1.1","value":0,"type":"int","min":null,"max":null},{"name":"Configuration 2","value":"blabla","type":"str","min":null,"max":null},{"name":"Configuration 1.1","value":0,"type":"int","min":null,"max":null},{"name":"Configuration 2","value":"blabla","type":"str","min":null,"max":null},{"name":"Configuration 1.1","value":0,"type":"int","min":null,"max":null},{"name":"Configuration 2","value":"blabla","type":"str","min":null,"max":null}]'
+            const arr = '[{"name":"model_name","type":"str","value":"DreamShaper_5_beta2_noVae_half_pruned.ckpt", "help":"Name of the model to be loaded for stable diffusion generation"},{"name":"ddim_steps","type":"int","value":50, "min":10, "max":1024},{"name":"scale","type":"float","value":7.5, "min":0.1, "max":100.0},{"name":"W","type":"int","value":512, "min":10, "max":2048},{"name":"H","type":"int","value":512, "min":10, "max":2048},{"name":"skip_grid","type":"bool","value":true,"help":"Skip building a grid of generated images"},{"name":"batch_size","type":"int","value":1, "min":1, "max":100,"help":"Number of images per batch (requires more memory)"},{"name":"num_images","type":"int","value":1, "min":1, "max":100,"help":"Number of batch of images to generate (to speed up put a batch of n and a single num images, to save vram, put a batch of 1 and num_img of n)"},{"name":"seed","type":"int","value":-1},                {"name":"servers_addresses","type":"list","value":[], "help":"A list of server addresses for example [\'http://localhost:9601\', \'http://localhost:9602\']"},{"name":"keep_only_active_servers","type":"bool","value":true, "help":"If true, then only active servers will be kept in the loop"},{"name":"sampler_name","type":"str","value":"ddim","help":"Supported sampler names: ddim, dpms, plms", "options":["ddim","dpms","plms"]}]'
             const arr2 = JSON.parse(arr)
-    
 
-
-            //this.$refs.universalForm.showForm(arr2, "Baba booey form", "Go for torps", "go home") // disabled to not break UI just add endpoint or anything
+            const newItem = { name: "babagaga", value: ['lol', 'asdasd', 'hhhhhh'], type: 'list', help: 'smelly ' }
+            arr2.push(newItem)
+           // this.$refs.universalForm.showForm(arr2, "Baba booey form", "Go for torps", "go home").then(res => {
+           //     console.log('finished', res)
+           // }) // disabled to not break UI just add endpoint or anything
         },
         // messagebox ok stuff
         onMessageBoxOk() {

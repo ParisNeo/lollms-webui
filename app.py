@@ -24,8 +24,11 @@ import sys
 from tqdm import tqdm
 import subprocess
 import signal
+from lollms.config import InstallOption
+from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding
 from lollms.personality import AIPersonality, MSG_TYPE
-from lollms.helpers import ASCIIColors, BaseConfig
+from lollms.config import BaseConfig
+from lollms.helpers import ASCIIColors
 from lollms.paths import LollmsPaths
 from api.db import DiscussionsDB, Discussion
 from api.helpers import compare_lists
@@ -44,7 +47,7 @@ import yaml
 from geventwebsocket.handler import WebSocketHandler
 import logging
 import psutil
-from lollms.binding import LOLLMSConfig
+from lollms.main_config import LOLLMSConfig
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -72,6 +75,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         self.app = _app
         self.cancel_gen = False
+        self.binding_changed = False
+        self.model_changed = False
 
         app.template_folder = "web/dist"
         if config["active_personality_id"]>=len(config["personalities"]):
@@ -464,18 +469,14 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         elif setting_name== "model_name":
             self.config["model_name"]=data['setting_value']
-            print("update_settings : New model selected")            
+            self.model_changed = True
+            print("update_settings : New model selected")
 
         elif setting_name== "binding_name":
             if self.config['binding_name']!= data['setting_value']:
                 print(f"New binding selected : {data['setting_value']}")
                 self.config["binding_name"]=data['setting_value']
-                try:
-                    self.binding = self.process.load_binding(self.config["binding_name"], install=True)
-
-                except Exception as ex:
-                    print(f"Couldn't build binding: [{ex}]")
-                    return jsonify({'setting_name': data['setting_name'], "status":False, 'error':str(ex)})
+                self.binding_changed = True
             else:
                 if self.config["debug"]:
                     print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
@@ -496,13 +497,28 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
 
     def apply_settings(self):
-        result = self.process.set_config(self.config)
-        if result["status"]:
-            ASCIIColors.success("OK")
+        ASCIIColors.success("OK")
+        if self.binding_changed:
+            try:
+                self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
+                try:
+                    self.binding.build_model()
+                except Exception as ex:
+                    print(f"Couldn't load model: [{ex}]")
+                    return jsonify({ "status":False, 'error':str(ex)})
+            except Exception as ex:
+                print(f"Couldn't build binding: [{ex}]")
+                return jsonify({"status":False, 'error':str(ex)})
+
         else:
-            ASCIIColors.error("NOK")
-            
-        return jsonify(result)
+            if self.model_changed:
+                try:
+                    self.binding.build_model()
+                except Exception as ex:
+                    print(f"Couldn't load model: [{ex}]")
+                    return jsonify({ "status":False, 'error':str(ex)})
+        self.rebuild_personalities()
+        return jsonify({"status":True})
     
 
     
@@ -708,7 +724,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
             
     def get_generation_status(self):
-        return jsonify({"status":self.process.start_signal.is_set()}) 
+        return jsonify({"status":not self.is_ready}) 
     
     def stop_gen(self):
         self.cancel_gen = True
@@ -754,9 +770,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
         except Exception as e:
             print(f"Error occurred while parsing JSON: {e}")
             return
-        print(f"- Reinstalling binding {data['name']}...",end="")
+        ASCIIColors.info(f"- Reinstalling binding {data['name']}...")
         try:
-            self.binding = self.process.load_binding(self.config["binding_name"], install=True, force_install=True)
+            self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL)
             return jsonify({"status": True}) 
         except Exception as ex:
             print(f"Couldn't build binding: [{ex}]")
@@ -783,7 +799,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         config_file = package_full_path / "config.yaml"
         if config_file.exists():
             self.config["personalities"].append(package_path)
-            self.mounted_personalities = self.process.rebuild_personalities()
+            self.mounted_personalities = self.rebuild_personalities()
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             self.apply_settings()
             ASCIIColors.success("ok")
@@ -813,11 +829,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
             if self.config["active_personality_id"]>=index:
                 self.config["active_personality_id"]=0
             if len(self.config["personalities"])>0:
-                self.mounted_personalities = self.process.rebuild_personalities()
+                self.mounted_personalities = self.rebuild_personalities()
                 self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             else:
                 self.personalities = ["english/generic/lollms"]
-                self.mounted_personalities = self.process.rebuild_personalities()
+                self.mounted_personalities = self.rebuild_personalities()
                 self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             self.apply_settings()
             ASCIIColors.success("ok")
@@ -1249,18 +1265,19 @@ if __name__ == "__main__":
             print("WebSocket error:", e)
             super().handle_error(environ, start_response, e)
     
-    url = f'http://{config["host"]}:{config["port"]}'
-    
-    print(f"Please open your browser and go to {url} to view the ui")
+
 
     # chong -add socket server    
     app.config['debug'] = config["debug"]
 
     if config["debug"]:
-        print("debug mode:true")    
+        ASCIIColors.info("debug mode:true")    
     else:
-        print("debug mode:false")
+        ASCIIColors.info("debug mode:false")
     
+    url = f'http://{config["host"]}:{config["port"]}'
+    
+    print(f"Please open your browser and go to {url} to view the ui")
     socketio.run(app, host=config["host"], port=config["port"])
     # http_server = WSGIServer((config["host"], config["port"]), app, handler_class=WebSocketHandler)
     # http_server.serve_forever()

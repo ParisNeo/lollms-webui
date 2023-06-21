@@ -13,8 +13,9 @@ from api.db import DiscussionsDB
 from api.helpers import compare_lists
 from pathlib import Path
 import importlib
+from lollms.config import InstallOption
 from lollms.personality import AIPersonality, MSG_TYPE
-from lollms.binding import LOLLMSConfig
+from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding
 from lollms.paths import LollmsPaths
 from lollms.helpers import ASCIIColors
 import multiprocessing as mp
@@ -85,420 +86,33 @@ def parse_requirements_file(requirements_path):
 # ===========================================================
 
 
-class ModelProcess:
-    def __init__(self, lollms_paths:LollmsPaths, config:LOLLMSConfig=None):
-        self.config = config
-        self.lollms_paths = lollms_paths
-        self.generate_queue = mp.Queue()
-        self.generation_queue = mp.Queue()
-        self.cancel_queue = mp.Queue(maxsize=1)
-        self.clear_queue_queue = mp.Queue(maxsize=1)
-        self.set_config_queue = mp.Queue(maxsize=1)
-        self.set_config_result_queue = mp.Queue(maxsize=1)
-
-        self.process = None
-        # Create synchronization objects
-        self.start_signal = mp.Event()
-        self.completion_signal = mp.Event()
-
-        self.model_ready  = mp.Value('i', 0)
-        self.curent_text = ""
-        self.ready = False
-        
-        
-
-        self.id=0
-        self.n_predict=2048
-        self.reset_config_result()
-
-    def reset_config_result(self):
-        self._set_config_result = {
-            'status': True,
-            'binding_status':True,
-            'model_status':True,
-            'personalities_status':True,
-            'errors':[]
-            }
-        
-    def remove_text_from_string(self, string, text_to_find):
-        """
-        Removes everything from the first occurrence of the specified text in the string (case-insensitive).
-
-        Parameters:
-        string (str): The original string.
-        text_to_find (str): The text to find in the string.
-
-        Returns:
-        str: The updated string.
-        """
-        index = string.lower().find(text_to_find.lower())
-
-        if index != -1:
-            string = string[:index]
-
-        return string
-        
-    def load_binding(self, binding_name:str, install=False, force_install=False):
-        if install:
-            print(f"Loading binding {binding_name} install ON")
-        else:
-            print(f"Loading binding : {binding_name} install is off")
-
-        if binding_name is None:
-            self.model
-
-
-        binding_path = self.lollms_paths.bindings_zoo_path/binding_name
-        if install:
-            # first find out if there is a requirements.txt file
-            install_file_name="install.py"
-            install_script_path = binding_path / install_file_name        
-            if install_script_path.exists() or force_install:
-                module_name = install_file_name[:-3]  # Remove the ".py" extension
-                module_spec = importlib.util.spec_from_file_location(module_name, str(install_script_path))
-                module = importlib.util.module_from_spec(module_spec)
-                module_spec.loader.exec_module(module)
-                if hasattr(module, "Install"):
-                    module.Install(self.config)
-
-        # define the full absolute path to the module
-        absolute_path = binding_path.resolve()
-
-        # infer the module name from the file path
-        module_name = binding_path.stem
-
-        # use importlib to load the module from the file path
-        loader = importlib.machinery.SourceFileLoader(module_name, str(absolute_path/"__init__.py"))
-        binding_module = loader.load_module()
-        binding_class = getattr(binding_module, binding_module.binding_name)
-        return binding_class
-
-    def start(self):
-        if self.process is None:
-            self.process = mp.Process(target=self._run)
-            self.process.start()
-
-    def stop(self):
-        if self.process is not None:
-            self.generate_queue.put(None)
-            self.process.join()
-            self.process = None
-        
-    def set_config(self, config):
-        try:
-            self.set_config_result_queue.get_nowait()
-        except:
-            pass
-        self.set_config_queue.put(config)
-        # Wait for it t o be consumed
-        while self.set_config_result_queue.empty():
-            time.sleep(0.1)
-        return self.set_config_result_queue.get()
-
-    def generate(self, full_prompt, prompt, id, n_predict):
-        self.start_signal.clear()
-        self.completion_signal.clear()
-        self.generate_queue.put((full_prompt, prompt, id, n_predict))
-
-    def cancel_generation(self):
-        self.completion_signal.set()
-        self.cancel_queue.put(('cancel',))
-        ASCIIColors.error("Canel request received")
-
-    def clear_queue(self):
-        self.clear_queue_queue.put(('clear_queue',))
-    
-    def rebuild_binding(self, config):
-        try:
-            ASCIIColors.success(" ******************* Building Binding from main Process *************************")
-            binding = self.load_binding(config["binding_name"], install=True)
-            ASCIIColors.success("Binding loaded successfully")
-        except Exception as ex:
-            ASCIIColors.error("Couldn't build binding.")
-            ASCIIColors.error("-----------------")
-            print(f"It seems that there is no valid binding selected. Please use the ui settings to select a binding.\nHere is encountered error: {ex}")
-            ASCIIColors.error("-----------------")
-            binding = None
-        return binding
-            
-    def _rebuild_model(self):
-        try:
-            self.reset_config_result()
-            ASCIIColors.success(" ******************* Building Binding from generation Process *************************")
-            self.binding = self.load_binding(self.config["binding_name"], install=True)
-            ASCIIColors.success("Binding loaded successfully")
-            try:
-                model_file = self.lollms_paths.personal_models_path/self.config["binding_name"]/self.config["model_name"]
-                print(f"Loading model : {model_file}")
-                self.model = self.binding(self.config)
-                self.model_ready.value = 1
-                print("Model created successfully\n")
-            except Exception as ex:
-                if self.config["model_name"] is None:
-                    print("No model is selected.\nPlease select a backend and a model to start using the ui.")
-                else:
-                    print(f"Couldn't build model {self.config['model_name']} : {ex}")
-                self.model = None
-                self._set_config_result['status'] ='failed'
-                self._set_config_result['model_status'] ='failed'
-                self._set_config_result['errors'].append(f"couldn't build model:{ex}")
-        except Exception as ex:
-            traceback.print_exc()
-            print("Couldn't build model")
-            print(ex)
-            self.binding = None
-            self.model = None
-            self._set_config_result['status'] ='failed'
-            self._set_config_result['binding_status'] ='failed'
-            self._set_config_result['errors'].append(f"couldn't build binding:{ex}")
-
-    def rebuild_personalities(self):
-        mounted_personalities=[]
-        ASCIIColors.success(f" ******************* Building mounted Personalities from main Process *************************")
-        for i,personality in enumerate(self.config['personalities']):
-            try:
-                personality_path = self.lollms_paths.personalities_zoo_path/f"{personality}"
-                if i==self.config["active_personality_id"]:
-                    ASCIIColors.red("*", end="")
-                print(f" {personality}")
-                print(f"Loading from {personality_path}")
-                personality = AIPersonality(self.lollms_paths, personality_path, run_scripts=False)
-                mounted_personalities.append(personality)
-            except Exception as ex:
-                ASCIIColors.error(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
-                if self.config["debug"]:
-                    print(ex)
-                personality = AIPersonality(self.lollms_paths)
-        print(f'selected : {self.config["active_personality_id"]}')
-        ASCIIColors.success(f" ************ Personalities mounted (Main process) ***************************")
-            
-        return mounted_personalities
-    
-    def _rebuild_personalities(self):
-        self.mounted_personalities=[]
-        failed_personalities=[]
-        self.reset_config_result()
-        ASCIIColors.success(f" ******************* Building mounted Personalities from generation Process *************************")
-        for i,personality in enumerate(self.config['personalities']):
-            try:
-                if i==self.config["active_personality_id"]:
-                    ASCIIColors.red("*", end="")
-                print(f" {personality}")
-                personality_path = self.lollms_paths.personalities_zoo_path/f"{personality}"
-                personality = AIPersonality(self.lollms_paths, personality_path, run_scripts=True, model=self.model)
-                self.mounted_personalities.append(personality)
-            except Exception as ex:
-                ASCIIColors.error(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
-                ASCIIColors.error(f"Exception received is: {ex}")
-                personality = AIPersonality(self.lollms_paths, model=self.model)
-                failed_personalities.append(personality_path)
-                self._set_config_result['errors'].append(f"couldn't build personalities:{ex}")
-                
-        print(f'selected : {self.config["active_personality_id"]}')            
-        ASCIIColors.success(f" ************ Personalities mounted (Generation process) ***************************")
-        if len(failed_personalities)==len(self.config['personalities']):
-            self._set_config_result['status'] ='failed'
-            self._set_config_result['personalities_status'] ='failed'
-        elif len(failed_personalities)>0:
-            self._set_config_result['status'] ='semi_failed'
-            self._set_config_result['personalities_status'] ='semi_failed'
-
-        if self.config['active_personality_id']<len(self.mounted_personalities):
-            self.personality = self.mounted_personalities[self.config['active_personality_id']]
-            ASCIIColors.success("Personality set successfully")
-        else:
-
-            ASCIIColors.error("Failed to set personality. Please select a valid one")
-
-    def _run(self):     
-        self._rebuild_model()
-        self._rebuild_personalities()
-        self.check_set_config_thread = threading.Thread(target=self._check_set_config_queue, args=())
-        print("Launching config verification thread")
-        self.check_set_config_thread.start()
-        self.check_cancel_thread = threading.Thread(target=self._check_cancel_queue, args=())
-        print("Launching cancel verification thread")
-        self.check_cancel_thread.start()
-        
-        self._check_clear_thread = threading.Thread(target=self._check_clear_queue, args=())
-        print("Launching clear verification thread")
-        self._check_clear_thread.start()
-                
-        if self.model_ready.value == 1:
-            # self.n_predict = 1
-            # self._generate("I",1)
-            print()
-            print("Ready to receive data")
-        else:
-            print("No model loaded. Waiting for new configuration instructions")
-                    
-        self.ready = True
-        ASCIIColors.blue(f"Your personal data is stored here :{self.lollms_paths.personal_path}")
-        ASCIIColors.blue(f"Listening on :http://{self.config['host']}:{self.config['port']}")
-        while True:
-            try:
-                if not self.generate_queue.empty():
-                    command = self.generate_queue.get()
-                    if command is not None:
-                        if self.cancel_queue.empty() and self.clear_queue_queue.empty():
-                            self.id=command[2]
-                            self.n_predict=command[3]
-                            if self.personality.processor is not None:
-                                if self.personality.processor_cfg is not None:
-                                    if "custom_workflow" in self.personality.processor_cfg:
-                                        if self.personality.processor_cfg["custom_workflow"]:
-                                            ASCIIColors.success("Running workflow")
-                                            self.completion_signal.clear()
-                                            self.start_signal.set()
-
-                                            output = self.personality.processor.run_workflow( command[1], command[0], self._callback)
-                                            self._callback(output, 0)
-                                            self.completion_signal.set()
-                                            self.start_signal.clear()
-                                            print("Finished executing the workflow")
-                                            continue
-                            self.start_signal.set()
-                            self.completion_signal.clear()
-                            self._generate(command[0], self.n_predict, self._callback)
-                            self.completion_signal.set()
-                            self.start_signal.clear()
-                            print("Finished executing the generation")
-            except Exception as ex:
-                print("Couldn't start generation")
-                print(ex)
-            time.sleep(1)
-    def _generate(self, prompt, n_predict=50, callback=None):
-        self.curent_text = ""
-        if self.model is not None:
-            ASCIIColors.info("warmup")
-            self.id = self.id
-            if self.config["override_personality_model_parameters"]:
-                output = self.model.generate(
-                    prompt,
-                    callback=callback,
-                    n_predict=n_predict,
-                    temperature=self.config['temperature'],
-                    top_k=self.config['top_k'],
-                    top_p=self.config['top_p'],
-                    repeat_penalty=self.config['repeat_penalty'],
-                    repeat_last_n = self.config['repeat_last_n'],
-                    seed=self.config['seed'],
-                    n_threads=self.config['n_threads']
-                )
-            else:
-                output = self.model.generate(
-                    prompt,
-                    callback=callback,
-                    n_predict=self.n_predict,
-                    temperature=self.personality.model_temperature,
-                    top_k=self.personality.model_top_k,
-                    top_p=self.personality.model_top_p,
-                    repeat_penalty=self.personality.model_repeat_penalty,
-                    repeat_last_n = self.personality.model_repeat_last_n,
-                    #seed=self.config['seed'],
-                    n_threads=self.config['n_threads']
-                )
-        else:
-            print("No model is installed or selected. Please make sure to install a model and select it inside your configuration before attempting to communicate with the model.")
-            print("To do this: Install the model to your models/<binding name> folder.")
-            print("Then set your model information in your local configuration file that you can find in configs/local_config.yaml")
-            print("You can also use the ui to set your model in the settings page.")
-            output = ""
-        return output
-
-    def _callback(self, text, text_type=0):
-        self.curent_text += text
-        detected_anti_prompt = False
-        anti_prompt_to_remove=""
-        for prompt in self.personality.anti_prompts:
-            if prompt.lower() in self.curent_text.lower():
-                detected_anti_prompt=True
-                anti_prompt_to_remove = prompt.lower()
-                
-        if not detected_anti_prompt:
-            if not self.ready:
-                return True
-            else:
-                # Stream the generated text to the main process
-                self.generation_queue.put((text,self.id, text_type))
-                # if stop generation is detected then stop
-                if not self.completion_signal.is_set():
-                    return True
-                else:
-                    return False
-        else:
-            self.curent_text = self.remove_text_from_string(self.curent_text, anti_prompt_to_remove)
-            print("The model is halucinating")
-            return False
-
-
-    def _check_cancel_queue(self):
-        while True:
-            command = self.cancel_queue.get()
-            if command is not None:
-                self._cancel_generation()        
-                print("Stop generation received")
-
-    def _check_clear_queue(self):
-        while True:
-            command = self.clear_queue_queue.get()
-            if command is not None:
-                self._clear_queue()
-                print("Clear received")
-
-    def _check_set_config_queue(self):
-        while True:
-            config = self.set_config_queue.get()
-            if config is not None:
-                print("Inference process : Setting configuration")
-                self.reset_config_result()
-                self._set_config(config)
-                self.set_config_result_queue.put(self._set_config_result)
-
-    def _cancel_generation(self):
-        self.completion_signal.set()
-            
-    def _clear_queue(self):
-        while not self.generate_queue.empty():
-            self.generate_queue.get()
-
-    def _set_config(self, config):
-        bk_cfg = self.config
-        self.config = config
-        ASCIIColors.info("Upgrading configuration...",end="")
-        
-        # verify that the binding is the same
-        if self.config["binding_name"]!=bk_cfg["binding_name"] or self.config["model_name"]!=bk_cfg["model_name"]:
-            self._rebuild_model()
-            
-        # verify that the personality is the same
-        
-        if not compare_lists(self.config["personalities"], bk_cfg["personalities"]):
-            self._rebuild_personalities()
-
-
 class LoLLMsAPPI():
     def __init__(self, config:LOLLMSConfig, socketio, config_file_path:str, lollms_paths: LollmsPaths) -> None:
         self.lollms_paths = lollms_paths
         self.config = config
+        self.is_ready = True
         self.menu = MainMenu(self)
 
         
         self.socketio = socketio
-        #Create and launch the process
-        self.process = ModelProcess(self.lollms_paths, config)
-        self.binding = self.process.rebuild_binding(self.config)
+        # Check model
+        if config.binding_name is None:
+            self.menu.select_model()
 
+        self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
+        
         # Check model
         if config.model_name is None:
-            self.menu.select_model()       
+            self.menu.select_model()
 
+        self.model = self.binding.build_model()
 
-        self.mounted_personalities = self.process.rebuild_personalities()
+        self.mounted_personalities = []
+        self.mounted_personalities = self.rebuild_personalities()
         if self.config["active_personality_id"]<len(self.mounted_personalities):
-            self.personality = self.mounted_personalities[self.config["active_personality_id"]]
+            self.personality:AIPersonality = self.mounted_personalities[self.config["active_personality_id"]]
         else:
-            self.personality = None
+            self.personality:AIPersonality = None
         if config["debug"]:
             print(print(f"{self.personality}"))
         self.config_file_path = config_file_path
@@ -587,7 +201,7 @@ class LoLLMsAPPI():
         @socketio.on('generate_msg')
         def generate_msg(data):
             self.current_room_id = request.sid
-            if self.process.model_ready.value==1:
+            if self.is_ready:
                 if self.current_discussion is None:
                     if self.db.does_last_discussion_have_messages():
                         self.current_discussion = self.db.create_discussion()
@@ -603,9 +217,15 @@ class LoLLMsAPPI():
 
                 self.current_user_message_id = message_id
                 ASCIIColors.green("Starting message generation by"+self.personality.name)
-                tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
-                tpe.start()
+
+                task = self.socketio.start_background_task(self.start_message_generation, message, message_id)
+
+                #tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
+                #tpe.start()
             else:
+                self.socketio.emit("buzzy", {"message":"I am buzzy. Come back later."}, room=self.current_room_id)
+                self.socketio.sleep(0)
+                ASCIIColors.warning(f"OOps request {self.current_room_id}  refused!! Server buzy")
                 self.socketio.emit('infos',
                         {
                             "status":'model_not_ready',
@@ -624,6 +244,7 @@ class LoLLMsAPPI():
                             'finished_generating_at': self.current_discussion.current_message_finished_generating_at,
                         }, room=self.current_room_id
                 )
+                self.socketio.sleep(0)
 
         @socketio.on('generate_msg_from')
         def handle_connection(data):
@@ -634,8 +255,43 @@ class LoLLMsAPPI():
             tpe.start()
         # generation status
         self.generating=False
-        self.process.start()
+        ASCIIColors.blue(f"Your personal data is stored here :{self.lollms_paths.personal_path}")
+        ASCIIColors.blue(f"Listening on :http://{self.config['host']}:{self.config['port']}")
 
+
+    def rebuild_personalities(self):
+        loaded = self.mounted_personalities
+        loaded_names = [p.personality_folder_name for p in loaded]
+        mounted_personalities=[]
+        ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
+        ASCIIColors.success(f" ║           Building mounted Personalities         ║ ")
+        ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
+        for i,personality in enumerate(self.config['personalities']):
+            if personality in loaded_names:
+                mounted_personalities.append(loaded[loaded_names.index(personality)])
+            else:
+                try:
+                    personality_path = self.lollms_paths.personalities_zoo_path/f"{personality}"
+                    if i==self.config["active_personality_id"]:
+                        ASCIIColors.red("*", end="")
+                    print(f" {personality}")
+                    print(f"Loading from {personality_path}")
+                    personality = AIPersonality(personality_path,
+                                                self.lollms_paths, 
+                                                self.config,
+                                                run_scripts=False)
+                    mounted_personalities.append(personality)
+                except Exception as ex:
+                    ASCIIColors.error(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+                    if self.config["debug"]:
+                        print(ex)
+                    personality = AIPersonality(self.lollms_paths)
+        print(f'selected : {self.config["active_personality_id"]}')
+        ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
+        ASCIIColors.success(f" ║                      Done                        ║ ")
+        ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
+            
+        return mounted_personalities
 
     #properties
     @property
@@ -672,6 +328,8 @@ class LoLLMsAPPI():
             ASCIIColors.error(f"{self.config.get_model_path_infos()}")
             print("Please select a valid model or install a new one from a url")
             self.menu.select_model()        
+
+
     def load_model(self):
         try:
             print("update_settings : New model selected")
@@ -765,7 +423,7 @@ class LoLLMsAPPI():
         return message_id
 
     def prepare_reception(self):
-        self.bot_says = ""
+        self.current_generated_text = ""
         self.full_text = ""
         self.is_bot_text_started = False
 
@@ -828,7 +486,24 @@ class LoLLMsAPPI():
         
         return discussion_messages # Removes the last return
 
+    def remove_text_from_string(self, string, text_to_find):
+        """
+        Removes everything from the first occurrence of the specified text in the string (case-insensitive).
 
+        Parameters:
+        string (str): The original string.
+        text_to_find (str): The text to find in the string.
+
+        Returns:
+        str: The updated string.
+        """
+        index = string.lower().find(text_to_find.lower())
+
+        if index != -1:
+            string = string[:index]
+
+        return string
+    
     def process_chunk(self, chunk, message_type:MSG_TYPE):
         """
         0 : a regular message
@@ -836,29 +511,125 @@ class LoLLMsAPPI():
         2 : A hidden message
         """
         if message_type == MSG_TYPE.MSG_TYPE_CHUNK:
-            self.bot_says += chunk
-        if message_type == MSG_TYPE.MSG_TYPE_FULL:
-            self.bot_says = chunk
-        if message_type.value < 2:
-            ASCIIColors.green(f"generated:{len(self.bot_says)} words", end='\r')
+            self.current_generated_text += chunk
+            detected_anti_prompt = False
+            anti_prompt_to_remove=""
+            for prompt in self.personality.anti_prompts:
+                if prompt.lower() in self.current_generated_text.lower():
+                    detected_anti_prompt=True
+                    anti_prompt_to_remove = prompt.lower()
+                    
+            if not detected_anti_prompt:
+                    ASCIIColors.green(f"generated:{len(self.current_generated_text)} words", end='\r')
+                    self.socketio.emit('message', {
+                                                    'data': self.current_generated_text, 
+                                                    'user_message_id':self.current_user_message_id, 
+                                                    'ai_message_id':self.current_ai_message_id, 
+                                                    'discussion_id':self.current_discussion.discussion_id,
+                                                    'message_type': message_type.value
+                                                }, room=self.current_room_id
+                                        )
+                    self.current_discussion.update_message(self.current_ai_message_id, self.current_generated_text)
+                    if self.cancel_gen:
+                        ASCIIColors.warning("Generation canceled")
+                        self.cancel_gen = False
+
+
+                    # if stop generation is detected then stop
+                    if not self.cancel_gen:
+                        return True
+                    else:
+                        return False
+            else:
+                self.current_generated_text = self.remove_text_from_string(self.current_generated_text, anti_prompt_to_remove)
+                print("The model is halucinating")
+                return False
+
+        # Stream the generated text to the main process
+        elif message_type == MSG_TYPE.MSG_TYPE_FULL:
+            self.current_generated_text = chunk
             self.socketio.emit('message', {
-                                            'data': self.bot_says, 
+                                            'data': self.current_generated_text, 
                                             'user_message_id':self.current_user_message_id, 
                                             'ai_message_id':self.current_ai_message_id, 
                                             'discussion_id':self.current_discussion.discussion_id,
                                             'message_type': message_type.value
                                         }, room=self.current_room_id
                                 )
-        if self.cancel_gen:
-            ASCIIColors.warning("Generation canceled")
-            self.process.cancel_generation()
-            self.cancel_gen = False
+            return True
+        # Stream the generated text to the main process
+        else:
+            self.socketio.emit('message', {
+                                            'data': self.current_generated_text, 
+                                            'user_message_id':self.current_user_message_id, 
+                                            'ai_message_id':self.current_ai_message_id, 
+                                            'discussion_id':self.current_discussion.discussion_id,
+                                            'message_type': message_type.value
+                                        }, room=self.current_room_id
+                                )
 
-        self.current_discussion.update_message(self.current_ai_message_id, self.bot_says)
-                  
+        return True
+
+
+    def generate(self, full_prompt, prompt, n_predict=50, callback=None):
+        if self.personality.processor is not None:
+            if self.personality.processor_cfg is not None:
+                if "custom_workflow" in self.personality.processor_cfg:
+                    if self.personality.processor_cfg["custom_workflow"]:
+                        ASCIIColors.success("Running workflow")
+                        self.completion_signal.clear()
+                        self.start_signal.set()
+
+                        output = self.personality.processor.run_workflow( prompt, full_prompt, self.process_chunk)
+                        self._callback(output, 0)
+                        self.completion_signal.set()
+                        self.start_signal.clear()
+                        print("Finished executing the workflow")
+                        return
+
+        self._generate(full_prompt, n_predict, callback)
+        print("Finished executing the generation")
+
+    def _generate(self, prompt, n_predict=50, callback=None):
+        self.current_generated_text = ""
+        if self.model is not None:
+            ASCIIColors.info("warmup")
+            if self.config["override_personality_model_parameters"]:
+                output = self.model.generate(
+                    prompt,
+                    callback=callback,
+                    n_predict=n_predict,
+                    temperature=self.config['temperature'],
+                    top_k=self.config['top_k'],
+                    top_p=self.config['top_p'],
+                    repeat_penalty=self.config['repeat_penalty'],
+                    repeat_last_n = self.config['repeat_last_n'],
+                    seed=self.config['seed'],
+                    n_threads=self.config['n_threads']
+                )
+            else:
+                output = self.model.generate(
+                    prompt,
+                    callback=callback,
+                    n_predict=self.personality.model_n_predicts,
+                    temperature=self.personality.model_temperature,
+                    top_k=self.personality.model_top_k,
+                    top_p=self.personality.model_top_p,
+                    repeat_penalty=self.personality.model_repeat_penalty,
+                    repeat_last_n = self.personality.model_repeat_last_n,
+                    #seed=self.config['seed'],
+                    n_threads=self.config['n_threads']
+                )
+        else:
+            print("No model is installed or selected. Please make sure to install a model and select it inside your configuration before attempting to communicate with the model.")
+            print("To do this: Install the model to your models/<binding name> folder.")
+            print("Then set your model information in your local configuration file that you can find in configs/local_config.yaml")
+            print("You can also use the ui to set your model in the settings page.")
+            output = ""
+        return output
+                     
     def start_message_generation(self, message, message_id):
-        bot_says = ""
-
+        ASCIIColors.info(f"Text generation requested by client: {self.current_room_id}")
         # send the message to the bot
         print(f"Received message : {message}")
         if self.current_discussion:
@@ -893,26 +664,18 @@ class LoLLMsAPPI():
             self.discussion_messages, self.current_message = self.prepare_query(message_id)
             self.prepare_reception()
             self.generating = True
-            self.process.generate(self.discussion_messages, self.current_message, message_id, n_predict = self.config['n_predict'])
-            while(not self.process.completion_signal.is_set() or not self.process.generation_queue.empty()):  # Simulating other commands being issued
-                try:
-                    chunk, tok, message_type = self.process.generation_queue.get(False, 2)
-                    if chunk!="":
-                        self.process_chunk(chunk, message_type)
-                except Exception as ex:
-                    time.sleep(0.1)
-
+            self.generate(self.discussion_messages, self.current_message, n_predict = self.config['n_predict'], callback=self.process_chunk)
             print()
             print("## Done Generation ##")
             print()
 
-            self.current_discussion.update_message(self.current_ai_message_id, self.bot_says)
-            self.full_message_list.append(self.bot_says)
+            self.current_discussion.update_message(self.current_ai_message_id, self.current_generated_text)
+            self.full_message_list.append(self.current_generated_text)
             self.cancel_gen = False
 
             # Send final message
             self.socketio.emit('final', {
-                                            'data': self.bot_says, 
+                                            'data': self.current_generated_text, 
                                             'ai_message_id':self.current_ai_message_id, 
                                             'parent':self.current_user_message_id, 'discussion_id':self.current_discussion.discussion_id,
                                             "status":'model_not_ready',
@@ -920,7 +683,7 @@ class LoLLMsAPPI():
                                             'logo': "",
                                             "bot": self.personality.name,
                                             "user": self.personality.user_name,
-                                            "message":self.bot_says,
+                                            "message":self.current_generated_text,
                                             "user_message_id": self.current_user_message_id,
                                             "ai_message_id": self.current_ai_message_id,
 
