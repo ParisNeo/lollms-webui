@@ -580,13 +580,8 @@ class LoLLMsAPPI():
                 if "custom_workflow" in self.personality.processor_cfg:
                     if self.personality.processor_cfg["custom_workflow"]:
                         ASCIIColors.success("Running workflow")
-                        self.completion_signal.clear()
-                        self.start_signal.set()
-
                         output = self.personality.processor.run_workflow( prompt, full_prompt, self.process_chunk)
-                        self._callback(output, 0)
-                        self.completion_signal.set()
-                        self.start_signal.clear()
+                        self.process_chunk(output, MSG_TYPE.MSG_TYPE_FULL)
                         print("Finished executing the workflow")
                         return
 
