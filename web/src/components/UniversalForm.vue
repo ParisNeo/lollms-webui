@@ -31,13 +31,16 @@
                 <div class="flex flex-col relative no-scrollbar overflow-y-scroll p-2">
                     <!-- odd:bg-bg-light-tone odd:dark:bg-bg-dark-tone even:bg-bg-light-tone-panel dark:even:bg-bg-dark-tone-panel -->
                     <div class="px-2 " v-for="(item, index) in controls_array">
-                        <div class="">
-                            <div v-if="item.type != 'bool'">
+
+                        <div v-if="item.type == 'str'">
+                            <div v-if="!item.options">
+
+
                                 <label
-                                    class="mb-2 relative flex item-center gap-2 text-sm font-medium text-gray-900 dark:text-white select-none"
+                                    class="mb-2 relative flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white select-none"
                                     :class="item.help ? 'cursor-pointer ' : ''">
                                     <!-- TITLE -->
-                                    <div>
+                                    <div class="text-base font-semibold">
                                         {{ item.name }}:
                                     </div>
 
@@ -45,7 +48,7 @@
                                     <label v-if="item.help" class="relative inline-flex">
                                         <input type="checkbox" v-model="item.isHelp" class="sr-only peer">
                                         <div
-                                            class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-secondary">
+                                            class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary">
                                             <i data-feather="help-circle" class="w-5 h-5 "></i>
                                         </div>
                                     </label>
@@ -58,21 +61,130 @@
 
                                 <input type="text" v-model="item.value"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    placeholder="Enter value">
-
-                                <input v-if="(item.min != null && item.max != null)" type="range" v-model="item.value"
-                                    :min="item.min" :max="item.max" step="0.1"
-                                    class="flex-none h-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    placeholder="Enter string">
                             </div>
+                            <div v-if="item.options">
+                                <label
+                                    class="mb-2 relative flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white select-none"
+                                    :class="item.help ? 'cursor-pointer ' : ''">
+                                    <!-- TITLE -->
+                                    <div class="text-base font-semibold">
+                                        {{ item.name }}:
+                                    </div>
+
+                                    <!-- HELP BUTTON -->
+                                    <label v-if="item.help" class="relative inline-flex">
+                                        <input type="checkbox" v-model="item.isHelp" class="sr-only peer">
+                                        <div
+                                            class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary">
+                                            <i data-feather="help-circle" class="w-5 h-5 "></i>
+                                        </div>
+                                    </label>
+
+                                </label>
+                                <!-- HELP DESCRIPTION -->
+                                <p v-if="item.isHelp" class="text-sm font-normal text-gray-700 dark:text-gray-400 mb-2">
+                                    {{ item.help }}
+                                </p>
+                                <select v-model="item.value"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                                    <option v-for="op in item.options" :value="op" :selected="item.value === op">{{
+                                        op
+                                    }}
+
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                        </div>
+                        <div v-if="item.type == 'int' || item.type == 'float'">
+                            <label
+                                class="mb-2 relative flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white select-none"
+                                :class="item.help ? 'cursor-pointer ' : ''">
+                                <!-- TITLE -->
+                                <div class="text-base font-semibold">
+                                    {{ item.name }}:
+                                </div>
+
+                                <!-- HELP BUTTON -->
+                                <label v-if="item.help" class="relative inline-flex">
+                                    <input type="checkbox" v-model="item.isHelp" class="sr-only peer">
+                                    <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary">
+                                        <i data-feather="help-circle" class="w-5 h-5 "></i>
+                                    </div>
+                                </label>
+
+                            </label>
+                            <!-- HELP DESCRIPTION -->
+                            <p v-if="item.isHelp" class="text-sm font-normal text-gray-700 dark:text-gray-400 mb-2">
+                                {{ item.help }}
+                            </p>
+
+                            <input type="number" v-model="item.value"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="Enter number">
+
+                            <input v-if="(item.min != null && item.max != null)" type="range" v-model="item.value"
+                                :min="item.min" :max="item.max" step="0.1"
+                                class="flex-none h-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         </div>
                         <div v-if="item.type == 'bool'">
-                            <div class="flex items-center ">
+                            <div class="mb-2 relative flex items-center gap-2">
+
+                                <label for="default-checkbox" class="text-base font-semibold">
+                                    {{ item.name }}:
+                                </label>
                                 <input type="checkbox" v-model="item.value"
                                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                <label for="default-checkbox" class="ml-2 text-sm font-medium">{{ item.name
-                                }}</label>
-                            </div>
 
+                                <!-- HELP BUTTON -->
+                                <label v-if="item.help" class="relative inline-flex">
+                                    <input type="checkbox" v-model="item.isHelp" class="sr-only peer">
+                                    <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary">
+                                        <i data-feather="help-circle" class="w-5 h-5 "></i>
+                                    </div>
+                                </label>
+
+
+                            </div>
+                            <!-- HELP DESCRIPTION -->
+                            <p v-if="item.isHelp" class="text-sm font-normal text-gray-700 dark:text-gray-400 mb-2">
+                                {{ item.help }}
+                            </p>
+
+                        </div>
+                        <div v-if="item.type == 'list'">
+
+
+                            <label
+                                class="mb-2 relative flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white select-none"
+                                :class="item.help ? 'cursor-pointer ' : ''">
+                                <!-- TITLE -->
+                                <div class="text-base font-semibold">
+                                    {{ item.name }}:
+                                </div>
+
+                                <!-- HELP BUTTON -->
+                                <label v-if="item.help" class="relative inline-flex">
+                                    <input type="checkbox" v-model="item.isHelp" class="sr-only peer">
+                                    <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary">
+                                        <i data-feather="help-circle" class="w-5 h-5 "></i>
+                                    </div>
+                                </label>
+
+                            </label>
+                            <!-- HELP DESCRIPTION -->
+                            <p v-if="item.isHelp" class="text-sm font-normal text-gray-700 dark:text-gray-400 mb-2">
+                                {{ item.help }}
+                            </p>
+
+                            <input type="text" v-model="item.value"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="Enter comma separated values">
                         </div>
                         <hr class="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700">
                     </div>
@@ -80,7 +192,7 @@
                     <!-- SUBMIT AND CANCEL BUTTONS -->
                     <div class="flex  flex-row flex-grow gap-3">
                         <div class="p-2 text-center grow">
-                            <button @click.stop="hide(true)" type="submit"
+                            <button @click.stop="hide(true)" type="button"
                                 class="mr-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm  sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                 {{ ConfirmButtonText }}
                             </button>
@@ -134,9 +246,13 @@ export default {
     methods: {
         hide(response) {
             this.show = false;
+            
             if (this.resolve) {
-                this.resolve(response);
+                if(response){
+                    this.resolve(this.controls_array);
                 this.resolve = null;
+                }
+
             }
         },
         showForm(controls_array, title, ConfirmButtonText, DenyButtonText) {
