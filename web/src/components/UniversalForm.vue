@@ -33,18 +33,26 @@
                     <div class="px-2 " v-for="(item, index) in controls_array">
                         <div class="">
                             <div v-if="item.type != 'bool'">
-                                <label class="flex item-center gap-2 text-sm font-medium text-gray-900 dark:text-white"
+                                <label class="relative flex item-center gap-2 text-sm font-medium text-gray-900 dark:text-white"
                                     for="file_input">
-                                    {{ item.name }}:
-
-                                    <label class="relative inline-flex items-center mb-5 cursor-pointer">
-                                        <input type="checkbox" value="" class="sr-only peer">
-                                        <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-secondary">
+                                    <div>
+                                        {{ item.name }}:
+                                    </div>
+                                   
+       
+                                    <label class="relative inline-flex mb-5 cursor-pointer">
+                                        <input type="checkbox" value="" class="sr-only peer" >
+                                        <div
+                                            class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-secondary">
                                             <i data-feather="help-circle" class="w-5 h-5 "></i>
                                         </div>
-                                        <p class="text-sm font-normal text-gray-700 dark:text-gray-400 mb-2 hidden peer-checked:visible">
-                                    {{ item.help }}
-                                </p>
+                                        <div class="peer-checked:hidden">
+                                            <p class="text-sm font-normal text-gray-700 dark:text-gray-400 mb-2">
+                                            {{ item.help }}
+                                        </p>
+
+                                        </div>
+
                                     </label>
 
                                     <button class="text-sm  hover:text-secondary duration-75 active:scale-90" title="Help"
