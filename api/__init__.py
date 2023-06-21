@@ -261,7 +261,7 @@ class LoLLMsAPPI():
 
     def rebuild_personalities(self):
         loaded = self.mounted_personalities
-        loaded_names = [p.personality_folder_name for p in loaded]
+        loaded_names = [f"{p.language}/{p.category}/{p.personality_folder_name}" for p in loaded]
         mounted_personalities=[]
         ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
         ASCIIColors.success(f" ║           Building mounted Personalities         ║ ")
@@ -270,8 +270,8 @@ class LoLLMsAPPI():
             if personality in loaded_names:
                 mounted_personalities.append(loaded[loaded_names.index(personality)])
             else:
+                personality_path = self.lollms_paths.personalities_zoo_path/f"{personality}"
                 try:
-                    personality_path = self.lollms_paths.personalities_zoo_path/f"{personality}"
                     if i==self.config["active_personality_id"]:
                         ASCIIColors.red("*", end="")
                     print(f" {personality}")
@@ -279,13 +279,13 @@ class LoLLMsAPPI():
                     personality = AIPersonality(personality_path,
                                                 self.lollms_paths, 
                                                 self.config,
-                                                run_scripts=False)
+                                                run_scripts=True)
                     mounted_personalities.append(personality)
                 except Exception as ex:
-                    ASCIIColors.error(f"Personality file not found or is corrupted ({personality_path}).\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+                    ASCIIColors.error(f"Personality file not found or is corrupted ({personality_path}).\nReturned the following exception:{ex}\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
                     if self.config["debug"]:
                         print(ex)
-                    personality = AIPersonality(self.lollms_paths)
+                    personality = AIPersonality(personality_path, self.lollms_paths, self.config, self.model, run_scripts=True,installation_option=InstallOption.FORCE_INSTALL)
         print(f'selected : {self.config["active_personality_id"]}')
         ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
         ASCIIColors.success(f" ║                      Done                        ║ ")
@@ -529,6 +529,7 @@ class LoLLMsAPPI():
                                                     'message_type': message_type.value
                                                 }, room=self.current_room_id
                                         )
+                    self.socketio.sleep(0)
                     self.current_discussion.update_message(self.current_ai_message_id, self.current_generated_text)
                     if self.cancel_gen:
                         ASCIIColors.warning("Generation canceled")
@@ -556,6 +557,7 @@ class LoLLMsAPPI():
                                             'message_type': message_type.value
                                         }, room=self.current_room_id
                                 )
+            self.socketio.sleep(0)
             return True
         # Stream the generated text to the main process
         else:
@@ -567,6 +569,7 @@ class LoLLMsAPPI():
                                             'message_type': message_type.value
                                         }, room=self.current_room_id
                                 )
+            self.socketio.sleep(0)
 
         return True
 
@@ -659,6 +662,7 @@ class LoLLMsAPPI():
                         'finished_generating_at': self.current_discussion.current_message_finished_generating_at,                        
                     }, room=self.current_room_id
             )
+            self.socketio.sleep(0)
 
             # prepare query and reception
             self.discussion_messages, self.current_message = self.prepare_query(message_id)
@@ -695,6 +699,7 @@ class LoLLMsAPPI():
 
                                         }, room=self.current_room_id
                                 )
+            self.socketio.sleep(0)
 
             print()
             print("## Done ##")

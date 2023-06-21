@@ -332,6 +332,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                                         personality_info['description'] = config_data.get('personality_description',"")
                                         personality_info['author'] = config_data.get('author', 'ParisNeo')
                                         personality_info['version'] = config_data.get('version', '1.0.0')
+                                        personality_info['installed'] = (self.personality.lollms_paths.personal_configuration_path/f"personality_{personality_folder.stem}.yaml").exists()
                                     scripts_path = personality_folder / 'scripts'
                                     personality_info['has_scripts'] = scripts_path.is_dir()
                                     real_assets_path = personality_folder/ 'assets'
@@ -779,11 +780,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return jsonify({"status":False, 'error':str(ex)})
         
 
-    
-
-
     def mount_personality(self):
-        print("- Mounting personality ...",end="")
+        print("- Mounting personality ")
         try:
             data = request.get_json()
             # Further processing of the data
