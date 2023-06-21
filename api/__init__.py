@@ -279,13 +279,20 @@ class LoLLMsAPPI():
                     personality = AIPersonality(personality_path,
                                                 self.lollms_paths, 
                                                 self.config,
+                                                model=self.model,
                                                 run_scripts=True)
                     mounted_personalities.append(personality)
                 except Exception as ex:
                     ASCIIColors.error(f"Personality file not found or is corrupted ({personality_path}).\nReturned the following exception:{ex}\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
                     if self.config["debug"]:
                         print(ex)
-                    personality = AIPersonality(personality_path, self.lollms_paths, self.config, self.model, run_scripts=True,installation_option=InstallOption.FORCE_INSTALL)
+                    personality = AIPersonality(
+                                                personality_path, 
+                                                self.lollms_paths, 
+                                                self.config, 
+                                                self.model, 
+                                                run_scripts=True,
+                                                installation_option=InstallOption.FORCE_INSTALL)
         print(f'selected : {self.config["active_personality_id"]}')
         ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
         ASCIIColors.success(f" ║                      Done                        ║ ")
@@ -528,8 +535,12 @@ class LoLLMsAPPI():
                 if "custom_workflow" in self.personality.processor_cfg:
                     if self.personality.processor_cfg["custom_workflow"]:
                         ASCIIColors.success("Running workflow")
-                        output = self.personality.processor.run_workflow( prompt, full_prompt, self.process_chunk)
-                        self.process_chunk(output, MSG_TYPE.MSG_TYPE_FULL)
+                        try:
+                            output = self.personality.processor.run_workflow( prompt, full_prompt, self.process_chunk)
+                            self.process_chunk(output, MSG_TYPE.MSG_TYPE_FULL)
+                        except Exception as ex:
+                            ASCIIColors.error(f"Workflow run failed.\nError:{ex}")
+                            self.process_chunk(f"Workflow run failed\nError:{ex}", MSG_TYPE.MSG_TYPE_EXCEPTION)                   
                         print("Finished executing the workflow")
                         return
 
