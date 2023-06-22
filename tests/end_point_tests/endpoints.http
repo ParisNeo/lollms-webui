@@ -112,6 +112,18 @@ Content-Type: application/json
 }
 
 
+############################################
+### Get active personality settings
+############################################
+GET http://localhost:9600/get_active_personality_settings
+
+############################################
+### Get active binding settings
+############################################
+GET http://localhost:9600/get_active_binding_settings
+
+
+
 ####@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 ####@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 ###

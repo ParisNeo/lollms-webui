@@ -106,6 +106,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint("/select_personality", "select_personality", self.select_personality, methods=["POST"])
         self.add_endpoint("/get_personality_settings", "get_personality_settings", self.get_personality_settings, methods=["POST"])
 
+        self.add_endpoint("/get_active_personality_settings", "get_active_personality_settings", self.get_active_personality_settings, methods=["GET"])
+        self.add_endpoint("/get_active_binding_settings", "get_active_binding_settings", self.get_active_binding_settings, methods=["GET"])
 
         self.add_endpoint(
             "/disk_usage", "disk_usage", self.disk_usage, methods=["GET"]
@@ -877,6 +879,26 @@ class LoLLMsWebUI(LoLLMsAPPI):
             ASCIIColors.error(f"nok : Personality not found @ {language}/{category}/{name}")
             return jsonify({"status": False, "error":"Couldn't unmount personality"})         
          
+    def get_active_personality_settings(self):
+        print("- Retreiving personality settings")
+        if self.personality.processor is not None:
+            if hasattr(self.personality.processor,"personality_config"):
+                return jsonify(self.personality.processor.personality_config.config_template.template)
+            else:
+                return jsonify({})        
+        else:
+            return jsonify({})               
+
+    def get_active_binding_settings(self):
+        print("- Retreiving binding settings")
+        if self.binding is not None:
+            if hasattr(self.binding,"binding_config"):
+                return jsonify(self.binding.binding_config.config_template.template)
+            else:
+                return jsonify({})        
+        else:
+            return jsonify({})  
+         
     def get_personality_settings(self):
         print("- Retreiving personality settings")
         try:
@@ -906,6 +928,29 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 return jsonify({})        
         else:
             return jsonify({})       
+
+
+
+    def get_binding_settings(self):
+        print("- Retreiving personality settings")
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
+
+        if personality.processor is not None:
+            if hasattr(personality.processor,"personality_config"):
+                return jsonify(personality.processor.personality_config.config_template.template)
+            else:
+                return jsonify({})        
+        else:
+            return jsonify({})   
+
+
+
+
 
     def select_personality(self):
 
