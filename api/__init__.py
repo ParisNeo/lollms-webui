@@ -204,12 +204,17 @@ class LoLLMsAPPI():
             save_path = self.lollms_paths.personal_uploads_path/filename  # Specify the desired folder path
 
             try:
-                file.save(save_path)
-                # File saved successfully
-                socketio.emit('progress', {'progress': 100})
+                if not self.personality.processor is None:
+                    self.personality.processor.add_file(save_path)
+                    file.save(save_path)
+                    # File saved successfully
+                    socketio.emit('progress', {'status':True, 'progress': 100})
+                else:
+                    # Personality doesn't support file sending
+                    socketio.emit('progress', {'status':False, 'error': "Personality doesn't support file sending"})
             except Exception as e:
                 # Error occurred while saving the file
-                socketio.emit('progress', {'error': str(e)})
+                socketio.emit('progress', {'status':False, 'error': str(e)})
             
 
         
