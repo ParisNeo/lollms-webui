@@ -75,11 +75,118 @@
                         <div class=" text-base font-semibold cursor-pointer select-none items-center">
 
                             <div class="flex gap-2 items-center ">
-                                <!-- <svg class="flex-shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                    viewBox="0 0 24 24">
-                                    <path fill="currentColor"
-                                        d="M17 17H7V7h10m4 4V9h-2V7a2 2 0 0 0-2-2h-2V3h-2v2h-2V3H9v2H7c-1.11 0-2 .89-2 2v2H3v2h2v2H3v2h2v2a2 2 0 0 0 2 2h2v2h2v-2h2v2h2v-2h2a2 2 0 0 0 2-2v-2h2v-2h-2v-2m-6 2h-2v-2h2m2-2H9v6h6V9Z" />
-                                </svg> -->
+                               <!-- GPU IMAGE  -->
+                                <svg aria-hidden="true" class="w-10 h-10  fill-secondary" viewBox="0 -3 82 66" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M 5.9133057,14.000286 H 70.974329 a 8.9999999,8.9999999 0 0 1 8.999987,8.999998 V 47.889121 H 5.9133057 Z"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1116" />
+                                    <path d="m 5.9133057,28.634282 h -2.244251 v -9.367697 h 2.244251 z"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1118" />
+                                    <path d="M 5.9133057,42.648417 H 3.6690547 V 33.28072 h 2.244251 z"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1120" />
+                                    <path d="m 5.9133057,47.889121 v 4.42369"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1122" />
+                                    <path d="M 5.9133057,14.000286 H 2.3482707"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1124" />
+                                    <path d="M 2.3482707,14.000286 V 10.006515"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1126" />
+                                    <path
+                                        d="m 74.31472,30.942798 a 11.594069,11.594069 0 0 0 -23.188136,0 11.594069,11.594069 0 0 0 23.188136,0 z"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1128" />
+                                    <path d="m 54.568046,22.699178 a 8.1531184,8.1531184 0 0 0 8.154326,8.24362"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1130" />
+                                    <path d="M 73.935201,28.000658 A 8.1531184,8.1531184 0 0 0 62.721525,30.944293"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1132" />
+                                    <path d="m 70.873258,39.186418 a 8.1531184,8.1531184 0 0 0 -8.152606,-8.24362"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1134" />
+                                    <path d="M 59.657782,42.124981 A 8.1531184,8.1531184 0 0 0 62.719435,30.940687"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1136" />
+                                    <path d="M 51.50515,33.881361 A 8.1531184,8.1531184 0 0 0 62.720652,30.942798"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1138" />
+                                    <path d="M 65.783521,19.760615 A 8.1531184,8.1531184 0 0 0 62.721869,30.944909"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1140" />
+                                    <path d="m 62.720652,22.789678 a 8.1531184,8.1531184 0 0 0 -3.06287,-3.029063"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1142" />
+                                    <path d="m 69.782328,26.864746 a 8.1531184,8.1531184 0 0 0 1.09093,-4.165568"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1144" />
+                                    <path d="m 69.781455,35.019358 a 8.1531184,8.1531184 0 0 0 4.154699,-1.137997"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1146" />
+                                    <path d="m 62.722372,39.09293 a 8.1531184,8.1531184 0 0 0 3.064668,3.031085"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1148" />
+                                    <path d="m 55.659849,35.019358 a 8.1531184,8.1531184 0 0 0 -1.091803,4.16706"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1150" />
+                                    <path d="M 55.659849,26.866238 A 8.1531184,8.1531184 0 0 0 51.50515,28.004235"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1152" />
+                                    <path d="m 22.744016,47.889121 h 38.934945 v 4.42369 H 22.744016 Z"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1154" />
+                                    <path d="m 20.54627,47.889121 h -4.395478 v 4.42369 h 4.395478 z"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1156" />
+                                    <path
+                                        d="m 40.205007,30.942798 a 11.594071,11.594071 0 0 0 -23.188141,0 11.594071,11.594071 0 0 0 23.188141,0 z"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1158" />
+                                    <path d="m 20.458317,22.699178 a 8.1531184,8.1531184 0 0 0 8.154342,8.24362"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1160" />
+                                    <path d="m 35.672615,26.864746 a 8.1531184,8.1531184 0 0 0 1.09093,-4.165568"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1162" />
+                                    <path d="M 39.825489,28.000658 A 8.1531184,8.1531184 0 0 0 28.611786,30.944293"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1164" />
+                                    <path d="m 28.612659,39.09293 a 8.1531184,8.1531184 0 0 0 3.064669,3.031085"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1166" />
+                                    <path d="m 36.763545,39.186418 a 8.1531184,8.1531184 0 0 0 -8.152606,-8.24362"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1168" />
+                                    <path d="m 21.550126,35.019358 a 8.1531184,8.1531184 0 0 0 -1.091809,4.16706"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1170" />
+                                    <path d="M 25.54807,42.124981 A 8.1531184,8.1531184 0 0 0 28.609722,30.940687"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1172" />
+                                    <path d="m 21.550126,26.866238 a 8.1531184,8.1531184 0 0 0 -4.154684,1.137997"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1174" />
+                                    <path d="M 17.395442,33.881361 A 8.1531184,8.1531184 0 0 0 28.610939,30.942798"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1176" />
+                                    <path d="M 28.610939,22.789678 A 8.1531184,8.1531184 0 0 0 25.54807,19.760615"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1178" />
+                                    <path d="M 31.673809,19.760615 A 8.1531184,8.1531184 0 0 0 28.612156,30.944909"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1180" />
+                                    <path d="m 35.671742,35.019358 a 8.1531184,8.1531184 0 0 0 4.154673,-1.137997"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1182" />
+                                </svg>
+                                <h3 class="font-bold font-large text-lg">
+                                    <div>{{ vram_usage }} / {{ vram_total_space }}</div>
+                                </h3>
                                 <i data-feather="cpu" class="w-5 h-5 mx-1 flex-shrink-0"></i>
                                 <h3 class="font-bold font-large text-lg">
                                     <div>{{ ram_usage }} / {{ ram_total_space }}</div>
@@ -96,8 +203,7 @@
 
                     <div class="mb-2">
 
-                        <label for="disk"
-                            class=" flex items-center gap-1 ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        <label class=" flex items-center gap-1 ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                                 <path fill="currentColor"
                                     d="M17 17H7V7h10m4 4V9h-2V7a2 2 0 0 0-2-2h-2V3h-2v2h-2V3H9v2H7c-1.11 0-2 .89-2 2v2H3v2h2v2H3v2h2v2a2 2 0 0 0 2 2h2v2h2v-2h2v2h2v-2h2a2 2 0 0 0 2-2v-2h2v-2h-2v-2m-6 2h-2v-2h2m2-2H9v6h6V9Z" />
@@ -105,7 +211,7 @@
                             Ram usage:
                         </label>
                         <div class="flex flex-col mx-2">
-                            <div><b>Avaliable space:&nbsp;</b>{{ ram_available_space }}</div>
+                            <div><b>Avaliable ram:&nbsp;</b>{{ ram_available_space }}</div>
                             <div><b>Ram usage:&nbsp;</b> {{ ram_usage }} / {{ ram_total_space }}</div>
                         </div>
                         <div class="p-2 ">
@@ -117,13 +223,12 @@
                         </div>
                     </div>
                     <div class="mb-2">
-                        <label for="disk"
-                            class="flex items-center gap-1 ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        <label class="flex items-center gap-1 ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             <i data-feather="hard-drive" class="w-5 h-5"></i>
                             Disk usage:
                         </label>
                         <div class="flex flex-col mx-2">
-                            <div><b>Avaliable space:&nbsp;</b>{{ disk_available_space }}</div>
+                            <div><b>Avaliable disk space:&nbsp;</b>{{ disk_available_space }}</div>
                             <div><b>Disk usage:&nbsp;</b> {{ disk_binding_models_usage }} / {{ disk_total_space }}</div>
                         </div>
                         <div class="p-2 ">
@@ -134,7 +239,131 @@
 
                         </div>
                     </div>
+                    <div class="mb-2">
+                        <label class="flex items-center gap-1 ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            <!-- GPU IMAGE  -->
+                            <svg aria-hidden="true" class="w-10 h-10 -my-5 fill-secondary" viewBox="0 -3 82 66" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M 5.9133057,14.000286 H 70.974329 a 8.9999999,8.9999999 0 0 1 8.999987,8.999998 V 47.889121 H 5.9133057 Z"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1116" />
+                                    <path d="m 5.9133057,28.634282 h -2.244251 v -9.367697 h 2.244251 z"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1118" />
+                                    <path d="M 5.9133057,42.648417 H 3.6690547 V 33.28072 h 2.244251 z"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1120" />
+                                    <path d="m 5.9133057,47.889121 v 4.42369"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1122" />
+                                    <path d="M 5.9133057,14.000286 H 2.3482707"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1124" />
+                                    <path d="M 2.3482707,14.000286 V 10.006515"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1126" />
+                                    <path
+                                        d="m 74.31472,30.942798 a 11.594069,11.594069 0 0 0 -23.188136,0 11.594069,11.594069 0 0 0 23.188136,0 z"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1128" />
+                                    <path d="m 54.568046,22.699178 a 8.1531184,8.1531184 0 0 0 8.154326,8.24362"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1130" />
+                                    <path d="M 73.935201,28.000658 A 8.1531184,8.1531184 0 0 0 62.721525,30.944293"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1132" />
+                                    <path d="m 70.873258,39.186418 a 8.1531184,8.1531184 0 0 0 -8.152606,-8.24362"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1134" />
+                                    <path d="M 59.657782,42.124981 A 8.1531184,8.1531184 0 0 0 62.719435,30.940687"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1136" />
+                                    <path d="M 51.50515,33.881361 A 8.1531184,8.1531184 0 0 0 62.720652,30.942798"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1138" />
+                                    <path d="M 65.783521,19.760615 A 8.1531184,8.1531184 0 0 0 62.721869,30.944909"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1140" />
+                                    <path d="m 62.720652,22.789678 a 8.1531184,8.1531184 0 0 0 -3.06287,-3.029063"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1142" />
+                                    <path d="m 69.782328,26.864746 a 8.1531184,8.1531184 0 0 0 1.09093,-4.165568"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1144" />
+                                    <path d="m 69.781455,35.019358 a 8.1531184,8.1531184 0 0 0 4.154699,-1.137997"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1146" />
+                                    <path d="m 62.722372,39.09293 a 8.1531184,8.1531184 0 0 0 3.064668,3.031085"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1148" />
+                                    <path d="m 55.659849,35.019358 a 8.1531184,8.1531184 0 0 0 -1.091803,4.16706"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1150" />
+                                    <path d="M 55.659849,26.866238 A 8.1531184,8.1531184 0 0 0 51.50515,28.004235"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1152" />
+                                    <path d="m 22.744016,47.889121 h 38.934945 v 4.42369 H 22.744016 Z"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1154" />
+                                    <path d="m 20.54627,47.889121 h -4.395478 v 4.42369 h 4.395478 z"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1156" />
+                                    <path
+                                        d="m 40.205007,30.942798 a 11.594071,11.594071 0 0 0 -23.188141,0 11.594071,11.594071 0 0 0 23.188141,0 z"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1158" />
+                                    <path d="m 20.458317,22.699178 a 8.1531184,8.1531184 0 0 0 8.154342,8.24362"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1160" />
+                                    <path d="m 35.672615,26.864746 a 8.1531184,8.1531184 0 0 0 1.09093,-4.165568"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1162" />
+                                    <path d="M 39.825489,28.000658 A 8.1531184,8.1531184 0 0 0 28.611786,30.944293"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1164" />
+                                    <path d="m 28.612659,39.09293 a 8.1531184,8.1531184 0 0 0 3.064669,3.031085"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1166" />
+                                    <path d="m 36.763545,39.186418 a 8.1531184,8.1531184 0 0 0 -8.152606,-8.24362"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1168" />
+                                    <path d="m 21.550126,35.019358 a 8.1531184,8.1531184 0 0 0 -1.091809,4.16706"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1170" />
+                                    <path d="M 25.54807,42.124981 A 8.1531184,8.1531184 0 0 0 28.609722,30.940687"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1172" />
+                                    <path d="m 21.550126,26.866238 a 8.1531184,8.1531184 0 0 0 -4.154684,1.137997"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1174" />
+                                    <path d="M 17.395442,33.881361 A 8.1531184,8.1531184 0 0 0 28.610939,30.942798"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1176" />
+                                    <path d="M 28.610939,22.789678 A 8.1531184,8.1531184 0 0 0 25.54807,19.760615"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1178" />
+                                    <path d="M 31.673809,19.760615 A 8.1531184,8.1531184 0 0 0 28.612156,30.944909"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1180" />
+                                    <path d="m 35.671742,35.019358 a 8.1531184,8.1531184 0 0 0 4.154673,-1.137997"
+                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
+                                        id="path1182" />
+                                </svg>
+                            GPU usage:
+                        </label>
+                        <div class="flex flex-col mx-2">
+                            <div><b>Avaliable vram:&nbsp;</b>{{ vram_available_space }}</div>
+                            <div><b>GPU usage:&nbsp;</b> {{ vram_usage }} / {{ vram_total_space }}</div>
+                        </div>
+                        <div class="p-2 ">
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                <div class="bg-blue-600 h-2.5 rounded-full" :style="'width: ' + vram_percent_usage + '%;'">
+                                </div>
+                            </div>
 
+                        </div>
+                    </div>
 
 
                 </div>
@@ -545,7 +774,8 @@
                                         :key="'index-' + index + '-' + pers.name" :personality="pers"
                                         :full_path="pers.full_path"
                                         :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === pers.full_path)"
-                                        :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted" />
+                                        :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted"
+                                        :on-settings="onSettingsPersonality" />
                                 </TransitionGroup>
                             </div>
                         </div>
@@ -819,6 +1049,7 @@
     font-weight: bold;
 }
 </style>
+
 <script>
 import filesize from '../plugins/filesize'
 import axios from "axios";
@@ -833,6 +1064,7 @@ import PersonalityEntry from "../components/PersonalityEntry.vue";
 import BindingEntry from "../components/BindingEntry.vue";
 import socket from '@/services/websocket.js'
 import defaultModelImgPlaceholder from "../assets/default_model.png"
+
 import defaultPersonalityImgPlaceholder from "../assets/logo.svg"
 import AddModelDialog from "@/components/AddModelDialog.vue";
 import UniversalForm from '../components/UniversalForm.vue';
@@ -892,6 +1124,7 @@ export default {
             isModelSelected: false,
             diskUsage: {},
             ramUsage: {},
+            vramUsage: {},
             mountedPersArr: [],
             isMounted: false, // Needed to wait for $refs to be rendered
             bUrl: bUrl, // for personality images
@@ -1197,9 +1430,37 @@ export default {
 
             const newItem = { name: "babagaga", value: ['lol', 'asdasd', 'hhhhhh'], type: 'list', help: 'smelly ' }
             arr2.push(newItem)
-           // this.$refs.universalForm.showForm(arr2, "Baba booey form", "Go for torps", "go home").then(res => {
-           //     console.log('finished', res)
-           // }) // disabled to not break UI just add endpoint or anything
+            // this.$refs.universalForm.showForm(arr2, "Baba booey form", "Go for torps", "go home").then(res => {
+            //     console.log('finished', res)
+            // }) // disabled to not break UI just add endpoint or anything
+        },
+        onSettingsPersonality(persEntry) {
+            try {
+                axios.post('/get_personality_settings',
+                    {
+                        language: persEntry.personality.language,
+                        category: persEntry.personality.category,
+                        folder: persEntry.personality.folder
+                    }).then(res => {
+
+                        if (res) {
+
+                            console.log('pers sett', res)
+                            if (res.data) {
+                                this.$refs.universalForm.showForm(res.data, "Personality settings - " + persEntry.personality.name, "Save changes", "Cancel").then(res => {
+                                    this.$refs.toast.showToast("Personality settings updated successfully!", 4, true)
+
+                                    //console.log('finished', res)
+                                })
+                            }
+
+                        }
+                    })
+
+            } catch (error) {
+                this.$refs.toast.showToast("Could not open personality settings. Endpoint error: " + error.message, 4, false)
+            }
+
         },
         // messagebox ok stuff
         onMessageBoxOk() {
@@ -1770,6 +2031,7 @@ export default {
         this.isLoading = false
         this.diskUsage = await this.api_get_req("disk_usage")
         this.ramUsage = await this.api_get_req("ram_usage")
+        this.vramUsage = await this.api_get_req("vram_usage")
         this.getMountedPersonalities()
         this.isMounted = true
 
@@ -1804,6 +2066,20 @@ export default {
         },
         ram_total_space() {
             return this.computedFileSize(this.ramUsage.total_space)
+        },
+        vram_available_space() {
+            return this.computedFileSize(this.vramUsage.gpu_0_total_vram - this.vramUsage.gpu_0_used_vram)
+        },
+        vram_usage() {
+            return this.computedFileSize(this.vramUsage.gpu_0_used_vram)
+        },
+        vram_percent_usage() {
+            const percentage = (this.vramUsage.gpu_0_used_vram / this.vramUsage.gpu_0_total_vram) * 100
+            return percentage.toFixed(2)
+
+        },
+        vram_total_space() {
+            return this.computedFileSize(this.vramUsage.gpu_0_total_vram)
         },
         imgBinding() {
             if (!this.isMounted) {
