@@ -325,7 +325,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                         personalities[language_folder.name][category_folder.name] = []
                         for personality_folder in category_folder.iterdir():
                             pers = personality_folder.stem
-                            if personality_folder.is_dir():
+                            if personality_folder.is_dir() and personality_folder.stem !='.git':
                                 personality_info = {"folder":personality_folder.stem}
                                 config_path = personality_folder / 'config.yaml'
                                 if not config_path.exists():
