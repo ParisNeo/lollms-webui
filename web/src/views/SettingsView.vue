@@ -545,7 +545,8 @@
                                         :key="'index-' + index + '-' + pers.name" :personality="pers"
                                         :full_path="pers.full_path"
                                         :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === pers.full_path)"
-                                        :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted" />
+                                        :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted"
+                                        :on-settings="onSettingsPersonality" />
                                 </TransitionGroup>
                             </div>
                         </div>
@@ -892,6 +893,7 @@ export default {
             isModelSelected: false,
             diskUsage: {},
             ramUsage: {},
+            vramUsage: {},
             mountedPersArr: [],
             isMounted: false, // Needed to wait for $refs to be rendered
             bUrl: bUrl, // for personality images
@@ -1197,9 +1199,37 @@ export default {
 
             const newItem = { name: "babagaga", value: ['lol', 'asdasd', 'hhhhhh'], type: 'list', help: 'smelly ' }
             arr2.push(newItem)
-           // this.$refs.universalForm.showForm(arr2, "Baba booey form", "Go for torps", "go home").then(res => {
-           //     console.log('finished', res)
-           // }) // disabled to not break UI just add endpoint or anything
+            // this.$refs.universalForm.showForm(arr2, "Baba booey form", "Go for torps", "go home").then(res => {
+            //     console.log('finished', res)
+            // }) // disabled to not break UI just add endpoint or anything
+        },
+        onSettingsPersonality(persEntry) {
+            try {
+                axios.post('/get_personality_settings',
+                {
+                    language: persEntry.personality.language,
+                    category: persEntry.personality.category,
+                    folder: persEntry.personality.folder
+                }).then(res => {
+
+                    if (res) {
+
+                        console.log('pers sett', res)
+                        if(res.data){
+                            this.$refs.universalForm.showForm(res.data, "Personality settings - "+persEntry.personality.name, "Save changes", "Cancel").then(res => {
+                                this.$refs.toast.showToast("Personality settings updated successfully!", 4, true)
+                            
+                                //console.log('finished', res)
+                        })
+                        }
+
+                    }
+                })
+
+            } catch (error) {
+                this.$refs.toast.showToast("Could not open personality settings. Endpoint error: "+error.message, 4, false)
+            }
+            
         },
         // messagebox ok stuff
         onMessageBoxOk() {
@@ -1770,6 +1800,7 @@ export default {
         this.isLoading = false
         this.diskUsage = await this.api_get_req("disk_usage")
         this.ramUsage = await this.api_get_req("ram_usage")
+        this.vramUsage = await this.api_get_req("vram_usage")
         this.getMountedPersonalities()
         this.isMounted = true
 

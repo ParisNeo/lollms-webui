@@ -1,12 +1,13 @@
 <template>
   <div
     class=" items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer  active:scale-95 duration-75 select-none"
-    @click.stop="toggleSelected" :class="selected ? ' border-primary-light' : 'border-transparent'">
+    @click.stop="toggleSelected" :class="selected ? 'border-primary-light' : 'border-transparent'">
 
 
     <div class="flex flex-row items-center  flex-shrink-0 gap-3">
       <img ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)"
-        class="w-10 h-10 rounded-full object-fill text-red-700">
+        class="w-10 h-10 rounded-full object-fill text-red-700" >
+        <!-- :class="personality.installed ? 'grayscale-0':'grayscale'" -->
       <h3 class="font-bold font-large text-lg line-clamp-3">
         {{ personality.name }}
       </h3>
@@ -14,24 +15,20 @@
         <!-- EMPTY SPACE FILLER -->
       </div>
       <!-- ADVANCED OPTIONS - NOT IMPLEMENTED -->
-      <div class="flex-none">
-
-        <!-- CHECKBOX MOUNTED  -->
+      <div class="flex items-center">
+        <button v-if="personality.has_scripts" type="button" title="Settings"
+            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="toggleSettings">
+            <i data-feather="sliders" class="w-5"></i>
+            <span class="sr-only">Settings</span>
+          </button>
+        <!-- BUTTON MOUNTED  -->
         <button type="button" @click.stop="toggleMounted"
           class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" :class="isMounted ? ' bg-red-700 rounded-lg hover:bg-red-800 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800':''">
           {{isMounted ? 'Unmount':'Mount'}}
-          <!-- <span
-            class="inline-flex items-center justify-center w-4 h-4 ml-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
-            <input disabled id="default-checkbox" type="checkbox" v-model="isMounted" 
-              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-          </span> -->
+
         </button>
 
-        <!-- <div class="flex items-center mb-4" @click.stop title="Click to mount/unmount">
-          <input id="default-checkbox" type="checkbox" v-model="isMounted" @change.stop="toggleMounted"
-            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-          <label for="default-checkbox" class="ml-2 text-sm font-medium">Mounted</label>
-        </div> -->
+
       </div>
 
 
@@ -78,7 +75,9 @@ export default {
     onSelected: Function,
     selected: Boolean,
     onMounted: Function,
-    full_path:String
+    full_path:String,
+    onSettings:Function
+
 
   },
   data() {
@@ -112,6 +111,9 @@ export default {
     },
     toggleMounted() {
       this.onMounted(this)
+    },
+    toggleSettings() {
+      this.onSettings(this)
     },
 
   }
