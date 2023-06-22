@@ -898,6 +898,36 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 return jsonify({})        
         else:
             return jsonify({})  
+        
+
+    def set_active_personality_settings(self):
+        print("- Setting personality settings")
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
+        
+        if self.personality.processor is not None:
+            if hasattr(self.personality.processor,"personality_config"):
+                self.personality.processor.personality_config.update_template(data)
+                return jsonify()
+            else:
+                return jsonify({'status':False})        
+        else:
+            return jsonify({})               
+
+    def get_active_binding_settings(self):
+        print("- Retreiving binding settings")
+        if self.binding is not None:
+            if hasattr(self.binding,"binding_config"):
+                return jsonify(self.binding.binding_config.config_template.template)
+            else:
+                return jsonify({})        
+        else:
+            return jsonify({})  
+        
          
     def get_personality_settings(self):
         print("- Retreiving personality settings")
