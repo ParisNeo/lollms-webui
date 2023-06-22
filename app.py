@@ -104,6 +104,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint("/mount_personality", "mount_personality", self.mount_personality, methods=["POST"])
         self.add_endpoint("/unmount_personality", "unmount_personality", self.unmount_personality, methods=["POST"])
         self.add_endpoint("/select_personality", "select_personality", self.select_personality, methods=["POST"])
+        self.add_endpoint("/get_personality_settings", "get_personality_settings", self.get_personality_settings, methods=["POST"])
 
 
         self.add_endpoint(
@@ -376,11 +377,14 @@ class LoLLMsWebUI(LoLLMsAPPI):
                                     print(f"Couldn't load personality from {personality_folder} [{ex}]")
         return json.dumps(personalities)
     
-    def get_personality():
+    def get_personality(self):
         lang = request.args.get('language')
         category = request.args.get('category')
         name = request.args.get('name')
-        personality_folder = Path("personalities")/f"{lang}"/f"{category}"/f"{name}"
+        if category!="personal":
+            personality_folder = self.lollms_paths.personalities_zoo_path/f"{lang}"/f"{category}"/f"{name}"
+        else:
+            personality_folder = self.lollms_paths.personal_personalities_path/f"{lang}"/f"{category}"/f"{name}"
         personality_path = personality_folder/f"config.yaml"
         personality_info = {}
         with open(personality_path) as config_file:
@@ -872,7 +876,37 @@ class LoLLMsWebUI(LoLLMsAPPI):
         except:
             ASCIIColors.error(f"nok : Personality not found @ {language}/{category}/{name}")
             return jsonify({"status": False, "error":"Couldn't unmount personality"})         
-            
+         
+    def get_personality_settings(self):
+        print("- Retreiving personality settings")
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
+        language = data['language']
+        category = data['category']
+        name = data['folder']
+
+        if category.startswith("personal"):
+            personality_folder = self.lollms_paths.personal_personalities_path/f"{language}"/f"{category}"/f"{name}"
+        else:
+            personality_folder = self.lollms_paths.personalities_zoo_path/f"{language}"/f"{category}"/f"{name}"
+
+        personality = AIPersonality(personality_folder,
+                                    self.lollms_paths, 
+                                    self.config,
+                                    model=self.model,
+                                    run_scripts=True)
+        if personality.processor is not None:
+            if hasattr(personality.processor,"personality_config"):
+                return jsonify(personality.processor.personality_config.config_template.template)
+            else:
+                return jsonify({})        
+        else:
+            return jsonify({})       
+
     def select_personality(self):
 
         data = request.get_json()

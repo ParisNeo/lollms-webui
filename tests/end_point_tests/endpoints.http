@@ -87,7 +87,7 @@ Content-Type: application/json
 {
     "language": "english",
     "category": "generic",
-    "name": "lollms"
+    "folder": "lollms"
 }
 ############################################
 ### Select personality
@@ -98,6 +98,19 @@ Content-Type: application/json
 {
     "id": 0 // Array index from get_config.personalities array
 }
+
+############################################
+### Get personality settings
+############################################
+POST http://localhost:9600/get_personality_settings
+Content-Type: application/json
+
+{
+    "language": "english",
+    "category": "data",
+    "folder": "text2bulletpoints"
+}
+
 
 ####@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 ####@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

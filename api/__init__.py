@@ -274,8 +274,10 @@ class LoLLMsAPPI():
                 try:
                     if i==self.config["active_personality_id"]:
                         ASCIIColors.red("*", end="")
-                    print(f" {personality}")
-                    print(f"Loading from {personality_path}")
+                        ASCIIColors.green(f" {personality}")
+                    else:
+                        ASCIIColors.yellow(f" {personality}")
+                        
                     personality = AIPersonality(personality_path,
                                                 self.lollms_paths, 
                                                 self.config,
