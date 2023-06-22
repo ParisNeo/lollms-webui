@@ -729,7 +729,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
     
     def stop_gen(self):
         self.cancel_gen = True
-        self.process.cancel_generation()
         return jsonify({"status": True})    
     
 
