@@ -559,15 +559,14 @@ class LoLLMsWebUI(LoLLMsAPPI):
             "nb_gpus": 0
             }
         
-        ram = psutil.virtual_memory()
         ram_usage = {
             "nb_gpus": len(vram_info)
         }
         
         if vram_info is not None:
             for i, gpu in enumerate(vram_info):
-                ram_usage[f"gpu_{i}_total_vram"] = int(gpu[0])
-                ram_usage[f"gpu_{i}_used_vram"] = int(gpu[1])
+                ram_usage[f"gpu_{i}_total_vram"] = int(gpu[0])*1024*1024
+                ram_usage[f"gpu_{i}_used_vram"] = int(gpu[1])*1024*1024
         else:
             # Set all VRAM-related entries to None
             ram_usage["gpu_0_total_vram"] = None
