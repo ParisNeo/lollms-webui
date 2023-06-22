@@ -136,3 +136,8 @@ GET http://localhost:9600/disk_usage
 ### Get ram usage
 ############################################
 GET http://localhost:9600/ram_usage
+
+############################################
+### Get vram usage
+############################################
+GET http://localhost:9600/vram_usage

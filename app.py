@@ -48,6 +48,7 @@ from geventwebsocket.handler import WebSocketHandler
 import logging
 import psutil
 from lollms.main_config import LOLLMSConfig
+from typing import Optional
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -111,6 +112,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         self.add_endpoint(
             "/ram_usage", "ram_usage", self.ram_usage, methods=["GET"]
+        )
+        self.add_endpoint(
+            "/vram_usage", "vram_usage", self.vram_usage, methods=["GET"]
         )
 
 
@@ -535,6 +539,32 @@ class LoLLMsWebUI(LoLLMsAPPI):
             "percent_usage":ram.percent,
             "ram_usage": ram.used
             })
+
+    def vram_usage(self) -> Optional[dict]:
+        try:
+            output = subprocess.check_output(['nvidia-smi', '--query-gpu=memory.total,memory.used', '--format=csv,nounits,noheader'])
+            lines = output.decode().strip().split('\n')
+            vram_info = [line.split(',') for line in lines]
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            return {
+            "nb_gpus": 0
+            }
+        
+        ram = psutil.virtual_memory()
+        ram_usage = {
+            "nb_gpus": len(vram_info)
+        }
+        
+        if vram_info is not None:
+            for i, gpu in enumerate(vram_info):
+                ram_usage[f"gpu_{i}_total_vram"] = int(gpu[0])
+                ram_usage[f"gpu_{i}_used_vram"] = int(gpu[1])
+        else:
+            # Set all VRAM-related entries to None
+            ram_usage["gpu_0_total_vram"] = None
+            ram_usage["gpu_0_used_vram"] = None
+        
+        return jsonify(ram_usage)
 
     def disk_usage(self):
         current_drive = Path.cwd().anchor
