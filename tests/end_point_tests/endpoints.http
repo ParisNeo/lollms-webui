@@ -87,7 +87,7 @@ Content-Type: application/json
 {
     "language": "english",
     "category": "generic",
-    "name": "lollms"
+    "folder": "lollms"
 }
 ############################################
 ### Select personality
@@ -98,6 +98,31 @@ Content-Type: application/json
 {
     "id": 0 // Array index from get_config.personalities array
 }
+
+############################################
+### Get personality settings
+############################################
+POST http://localhost:9600/get_personality_settings
+Content-Type: application/json
+
+{
+    "language": "english",
+    "category": "data",
+    "folder": "text2bulletpoints"
+}
+
+
+############################################
+### Get active personality settings
+############################################
+GET http://localhost:9600/get_active_personality_settings
+
+############################################
+### Get active binding settings
+############################################
+GET http://localhost:9600/get_active_binding_settings
+
+
 
 ####@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 ####@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -136,3 +161,8 @@ GET http://localhost:9600/disk_usage
 ### Get ram usage
 ############################################
 GET http://localhost:9600/ram_usage
+
+############################################
+### Get vram usage
+############################################
+GET http://localhost:9600/vram_usage

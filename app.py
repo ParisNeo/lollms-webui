@@ -48,6 +48,7 @@ from geventwebsocket.handler import WebSocketHandler
 import logging
 import psutil
 from lollms.main_config import LOLLMSConfig
+from typing import Optional
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -103,7 +104,13 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint("/mount_personality", "mount_personality", self.mount_personality, methods=["POST"])
         self.add_endpoint("/unmount_personality", "unmount_personality", self.unmount_personality, methods=["POST"])
         self.add_endpoint("/select_personality", "select_personality", self.select_personality, methods=["POST"])
+        self.add_endpoint("/get_personality_settings", "get_personality_settings", self.get_personality_settings, methods=["POST"])
 
+        self.add_endpoint("/get_active_personality_settings", "get_active_personality_settings", self.get_active_personality_settings, methods=["GET"])
+        self.add_endpoint("/get_active_binding_settings", "get_active_binding_settings", self.get_active_binding_settings, methods=["GET"])
+
+        self.add_endpoint("/set_active_personality_settings", "set_active_personality_settings", self.set_active_personality_settings, methods=["POST"])
+        self.add_endpoint("/set_active_binding_settings", "set_active_binding_settings", self.set_active_binding_settings, methods=["POST"])
 
         self.add_endpoint(
             "/disk_usage", "disk_usage", self.disk_usage, methods=["GET"]
@@ -111,6 +118,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         self.add_endpoint(
             "/ram_usage", "ram_usage", self.ram_usage, methods=["GET"]
+        )
+        self.add_endpoint(
+            "/vram_usage", "vram_usage", self.vram_usage, methods=["GET"]
         )
 
 
@@ -372,11 +382,14 @@ class LoLLMsWebUI(LoLLMsAPPI):
                                     print(f"Couldn't load personality from {personality_folder} [{ex}]")
         return json.dumps(personalities)
     
-    def get_personality():
+    def get_personality(self):
         lang = request.args.get('language')
         category = request.args.get('category')
         name = request.args.get('name')
-        personality_folder = Path("personalities")/f"{lang}"/f"{category}"/f"{name}"
+        if category!="personal":
+            personality_folder = self.lollms_paths.personalities_zoo_path/f"{lang}"/f"{category}"/f"{name}"
+        else:
+            personality_folder = self.lollms_paths.personal_personalities_path/f"{lang}"/f"{category}"/f"{name}"
         personality_path = personality_folder/f"config.yaml"
         personality_info = {}
         with open(personality_path) as config_file:
@@ -535,6 +548,32 @@ class LoLLMsWebUI(LoLLMsAPPI):
             "percent_usage":ram.percent,
             "ram_usage": ram.used
             })
+
+    def vram_usage(self) -> Optional[dict]:
+        try:
+            output = subprocess.check_output(['nvidia-smi', '--query-gpu=memory.total,memory.used', '--format=csv,nounits,noheader'])
+            lines = output.decode().strip().split('\n')
+            vram_info = [line.split(',') for line in lines]
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            return {
+            "nb_gpus": 0
+            }
+        
+        ram = psutil.virtual_memory()
+        ram_usage = {
+            "nb_gpus": len(vram_info)
+        }
+        
+        if vram_info is not None:
+            for i, gpu in enumerate(vram_info):
+                ram_usage[f"gpu_{i}_total_vram"] = int(gpu[0])
+                ram_usage[f"gpu_{i}_used_vram"] = int(gpu[1])
+        else:
+            # Set all VRAM-related entries to None
+            ram_usage["gpu_0_total_vram"] = None
+            ram_usage["gpu_0_used_vram"] = None
+        
+        return jsonify(ram_usage)
 
     def disk_usage(self):
         current_drive = Path.cwd().anchor
@@ -729,7 +768,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
     
     def stop_gen(self):
         self.cancel_gen = True
-        self.process.cancel_generation()
         return jsonify({"status": True})    
     
 
@@ -843,7 +881,128 @@ class LoLLMsWebUI(LoLLMsAPPI):
         except:
             ASCIIColors.error(f"nok : Personality not found @ {language}/{category}/{name}")
             return jsonify({"status": False, "error":"Couldn't unmount personality"})         
-            
+         
+    def get_active_personality_settings(self):
+        print("- Retreiving personality settings")
+        if self.personality.processor is not None:
+            if hasattr(self.personality.processor,"personality_config"):
+                return jsonify(self.personality.processor.personality_config.config_template.template)
+            else:
+                return jsonify({})        
+        else:
+            return jsonify({})               
+
+    def get_active_binding_settings(self):
+        print("- Retreiving binding settings")
+        if self.binding is not None:
+            if hasattr(self.binding,"binding_config"):
+                return jsonify(self.binding.binding_config.config_template.template)
+            else:
+                return jsonify({})        
+        else:
+            return jsonify({})  
+        
+
+    def set_active_personality_settings(self):
+        print("- Setting personality settings")
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
+        
+        if self.personality.processor is not None:
+            if hasattr(self.personality.processor,"personality_config"):
+                self.personality.processor.personality_config.update_template(data)
+                return jsonify({'status':True})
+            else:
+                return jsonify({'status':False})        
+        else:
+            return jsonify({'status':False})            
+
+    def get_active_binding_settings(self):
+        print("- Retreiving binding settings")
+        if self.binding is not None:
+            if hasattr(self.binding,"binding_config"):
+                return jsonify(self.binding.binding_config.config_template.template)
+            else:
+                return jsonify({})        
+        else:
+            return jsonify({})  
+    
+    def set_active_binding_settings(self):
+        print("- Setting binding settings")
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
+        
+        if self.binding is not None:
+            if hasattr(self.binding,"binding_config"):
+                self.binding.binding_config.update_template(data)
+                return jsonify({'status':True})
+            else:
+                return jsonify({'status':False})        
+        else:
+            return jsonify({'status':False})     
+    
+         
+    def get_personality_settings(self):
+        print("- Retreiving personality settings")
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
+        language = data['language']
+        category = data['category']
+        name = data['folder']
+
+        if category.startswith("personal"):
+            personality_folder = self.lollms_paths.personal_personalities_path/f"{language}"/f"{category}"/f"{name}"
+        else:
+            personality_folder = self.lollms_paths.personalities_zoo_path/f"{language}"/f"{category}"/f"{name}"
+
+        personality = AIPersonality(personality_folder,
+                                    self.lollms_paths, 
+                                    self.config,
+                                    model=self.model,
+                                    run_scripts=True)
+        if personality.processor is not None:
+            if hasattr(personality.processor,"personality_config"):
+                return jsonify(personality.processor.personality_config.config_template.template)
+            else:
+                return jsonify({})        
+        else:
+            return jsonify({})       
+
+
+
+    def get_binding_settings(self):
+        print("- Retreiving personality settings")
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
+
+        if personality.processor is not None:
+            if hasattr(personality.processor,"personality_config"):
+                return jsonify(personality.processor.personality_config.config_template.template)
+            else:
+                return jsonify({})        
+        else:
+            return jsonify({})   
+
+
+
+
+
     def select_personality(self):
 
         data = request.get_json()

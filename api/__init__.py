@@ -274,8 +274,10 @@ class LoLLMsAPPI():
                 try:
                     if i==self.config["active_personality_id"]:
                         ASCIIColors.red("*", end="")
-                    print(f" {personality}")
-                    print(f"Loading from {personality_path}")
+                        ASCIIColors.green(f" {personality}")
+                    else:
+                        ASCIIColors.yellow(f" {personality}")
+                        
                     personality = AIPersonality(personality_path,
                                                 self.lollms_paths, 
                                                 self.config,
@@ -486,15 +488,12 @@ class LoLLMsAPPI():
                                         )
                     self.socketio.sleep(0)
                     self.current_discussion.update_message(self.current_ai_message_id, self.current_generated_text)
-                    if self.cancel_gen:
-                        ASCIIColors.warning("Generation canceled")
-                        self.cancel_gen = False
-
-
                     # if stop generation is detected then stop
                     if not self.cancel_gen:
                         return True
                     else:
+                        self.cancel_gen = False
+                        ASCIIColors.warning("Generation canceled")
                         return False
             else:
                 self.current_generated_text = self.remove_text_from_string(self.current_generated_text, anti_prompt_to_remove)
