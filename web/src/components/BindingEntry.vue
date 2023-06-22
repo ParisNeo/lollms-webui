@@ -22,7 +22,7 @@
             <i data-feather="tool" class="w-5"></i>
             <span class="sr-only">Reinstall binding</span>
           </button>
-          <button type="button" title="Settings"
+          <button v-if="selected" type="button" title="Settings"
             class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="toggleSettings">
             <i data-feather="sliders" class="w-5"></i>
             <span class="sr-only">Settings</span>
@@ -139,6 +139,15 @@ export default {
     }
 
   },
+  watch:{
+    selected(){
+      nextTick(() => {
+      feather.replace()
+
+
+    })
+    }
+  }
 
 };
 </script>

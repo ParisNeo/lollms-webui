@@ -75,7 +75,7 @@
                         <div class=" text-base font-semibold cursor-pointer select-none items-center">
 
                             <div class="flex gap-2 items-center ">
-                               <!-- GPU IMAGE  -->
+                                <!-- GPU IMAGE  -->
                                 <svg aria-hidden="true" class="w-10 h-10  fill-secondary" viewBox="0 -3 82 66" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -243,113 +243,79 @@
                         <label class="flex items-center gap-1 ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             <!-- GPU IMAGE  -->
                             <svg aria-hidden="true" class="w-10 h-10 -my-5 fill-secondary" viewBox="0 -3 82 66" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M 5.9133057,14.000286 H 70.974329 a 8.9999999,8.9999999 0 0 1 8.999987,8.999998 V 47.889121 H 5.9133057 Z"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1116" />
-                                    <path d="m 5.9133057,28.634282 h -2.244251 v -9.367697 h 2.244251 z"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1118" />
-                                    <path d="M 5.9133057,42.648417 H 3.6690547 V 33.28072 h 2.244251 z"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1120" />
-                                    <path d="m 5.9133057,47.889121 v 4.42369"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1122" />
-                                    <path d="M 5.9133057,14.000286 H 2.3482707"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1124" />
-                                    <path d="M 2.3482707,14.000286 V 10.006515"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1126" />
-                                    <path
-                                        d="m 74.31472,30.942798 a 11.594069,11.594069 0 0 0 -23.188136,0 11.594069,11.594069 0 0 0 23.188136,0 z"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1128" />
-                                    <path d="m 54.568046,22.699178 a 8.1531184,8.1531184 0 0 0 8.154326,8.24362"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1130" />
-                                    <path d="M 73.935201,28.000658 A 8.1531184,8.1531184 0 0 0 62.721525,30.944293"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1132" />
-                                    <path d="m 70.873258,39.186418 a 8.1531184,8.1531184 0 0 0 -8.152606,-8.24362"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1134" />
-                                    <path d="M 59.657782,42.124981 A 8.1531184,8.1531184 0 0 0 62.719435,30.940687"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1136" />
-                                    <path d="M 51.50515,33.881361 A 8.1531184,8.1531184 0 0 0 62.720652,30.942798"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1138" />
-                                    <path d="M 65.783521,19.760615 A 8.1531184,8.1531184 0 0 0 62.721869,30.944909"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1140" />
-                                    <path d="m 62.720652,22.789678 a 8.1531184,8.1531184 0 0 0 -3.06287,-3.029063"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1142" />
-                                    <path d="m 69.782328,26.864746 a 8.1531184,8.1531184 0 0 0 1.09093,-4.165568"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1144" />
-                                    <path d="m 69.781455,35.019358 a 8.1531184,8.1531184 0 0 0 4.154699,-1.137997"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1146" />
-                                    <path d="m 62.722372,39.09293 a 8.1531184,8.1531184 0 0 0 3.064668,3.031085"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1148" />
-                                    <path d="m 55.659849,35.019358 a 8.1531184,8.1531184 0 0 0 -1.091803,4.16706"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1150" />
-                                    <path d="M 55.659849,26.866238 A 8.1531184,8.1531184 0 0 0 51.50515,28.004235"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1152" />
-                                    <path d="m 22.744016,47.889121 h 38.934945 v 4.42369 H 22.744016 Z"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1154" />
-                                    <path d="m 20.54627,47.889121 h -4.395478 v 4.42369 h 4.395478 z"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1156" />
-                                    <path
-                                        d="m 40.205007,30.942798 a 11.594071,11.594071 0 0 0 -23.188141,0 11.594071,11.594071 0 0 0 23.188141,0 z"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1158" />
-                                    <path d="m 20.458317,22.699178 a 8.1531184,8.1531184 0 0 0 8.154342,8.24362"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1160" />
-                                    <path d="m 35.672615,26.864746 a 8.1531184,8.1531184 0 0 0 1.09093,-4.165568"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1162" />
-                                    <path d="M 39.825489,28.000658 A 8.1531184,8.1531184 0 0 0 28.611786,30.944293"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1164" />
-                                    <path d="m 28.612659,39.09293 a 8.1531184,8.1531184 0 0 0 3.064669,3.031085"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1166" />
-                                    <path d="m 36.763545,39.186418 a 8.1531184,8.1531184 0 0 0 -8.152606,-8.24362"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1168" />
-                                    <path d="m 21.550126,35.019358 a 8.1531184,8.1531184 0 0 0 -1.091809,4.16706"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1170" />
-                                    <path d="M 25.54807,42.124981 A 8.1531184,8.1531184 0 0 0 28.609722,30.940687"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1172" />
-                                    <path d="m 21.550126,26.866238 a 8.1531184,8.1531184 0 0 0 -4.154684,1.137997"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1174" />
-                                    <path d="M 17.395442,33.881361 A 8.1531184,8.1531184 0 0 0 28.610939,30.942798"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1176" />
-                                    <path d="M 28.610939,22.789678 A 8.1531184,8.1531184 0 0 0 25.54807,19.760615"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1178" />
-                                    <path d="M 31.673809,19.760615 A 8.1531184,8.1531184 0 0 0 28.612156,30.944909"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1180" />
-                                    <path d="m 35.671742,35.019358 a 8.1531184,8.1531184 0 0 0 4.154673,-1.137997"
-                                        style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                        id="path1182" />
-                                </svg>
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M 5.9133057,14.000286 H 70.974329 a 8.9999999,8.9999999 0 0 1 8.999987,8.999998 V 47.889121 H 5.9133057 Z"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1116" />
+                                <path d="m 5.9133057,28.634282 h -2.244251 v -9.367697 h 2.244251 z"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1118" />
+                                <path d="M 5.9133057,42.648417 H 3.6690547 V 33.28072 h 2.244251 z"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1120" />
+                                <path d="m 5.9133057,47.889121 v 4.42369"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1122" />
+                                <path d="M 5.9133057,14.000286 H 2.3482707"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1124" />
+                                <path d="M 2.3482707,14.000286 V 10.006515"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1126" />
+                                <path
+                                    d="m 74.31472,30.942798 a 11.594069,11.594069 0 0 0 -23.188136,0 11.594069,11.594069 0 0 0 23.188136,0 z"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1128" />
+                                <path d="m 54.568046,22.699178 a 8.1531184,8.1531184 0 0 0 8.154326,8.24362"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1130" />
+                                <path d="M 73.935201,28.000658 A 8.1531184,8.1531184 0 0 0 62.721525,30.944293"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1132" />
+                                <path d="m 70.873258,39.186418 a 8.1531184,8.1531184 0 0 0 -8.152606,-8.24362"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1134" />
+                                <path d="M 59.657782,42.124981 A 8.1531184,8.1531184 0 0 0 62.719435,30.940687"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1136" />
+                                <path d="M 51.50515,33.881361 A 8.1531184,8.1531184 0 0 0 62.720652,30.942798"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1138" />
+                                <path d="M 65.783521,19.760615 A 8.1531184,8.1531184 0 0 0 62.721869,30.944909"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1140" />
+                                <path d="m 62.720652,22.789678 a 8.1531184,8.1531184 0 0 0 -3.06287,-3.029063"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1142" />
+                                <path d="m 69.782328,26.864746 a 8.1531184,8.1531184 0 0 0 1.09093,-4.165568"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1144" />
+                                <path d="m 69.781455,35.019358 a 8.1531184,8.1531184 0 0 0 4.154699,-1.137997"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1146" />
+                                <path d="m 62.722372,39.09293 a 8.1531184,8.1531184 0 0 0 3.064668,3.031085"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1148" />
+                                <path d="m 55.659849,35.019358 a 8.1531184,8.1531184 0 0 0 -1.091803,4.16706"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1150" />
+                                <path d="M 55.659849,26.866238 A 8.1531184,8.1531184 0 0 0 51.50515,28.004235"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1152" />
+                                <path d="m 22.744016,47.889121 h 38.934945 v 4.42369 H 22.744016 Z"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1154" />
+                                <path d="m 20.54627,47.889121 h -4.395478 v 4.42369 h 4.395478 z"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1156" />
+                                <path
+                                    d="m 40.205007,30.942798 a 11.594071,11.594071 0 0 0 -23.188141,0 11.594071,11.594071 0 0 0 23.188141,0 z"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1158" />
+                                <path d="m 20.458317,22.699178 a 8.1531184,8.1531184 0 0 0 8.154342,8.24362"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1160" />
+                                <path d="m 35.672615,26.864746 a 8.1531184,8.1531184 0 0 0 1.09093,-4.165568"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1162" />
+                                <path d="M 39.825489,28.000658 A 8.1531184,8.1531184 0 0 0 28.611786,30.944293"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1164" />
+                                <path d="m 28.612659,39.09293 a 8.1531184,8.1531184 0 0 0 3.064669,3.031085"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1166" />
+                                <path d="m 36.763545,39.186418 a 8.1531184,8.1531184 0 0 0 -8.152606,-8.24362"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1168" />
+                                <path d="m 21.550126,35.019358 a 8.1531184,8.1531184 0 0 0 -1.091809,4.16706"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1170" />
+                                <path d="M 25.54807,42.124981 A 8.1531184,8.1531184 0 0 0 28.609722,30.940687"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1172" />
+                                <path d="m 21.550126,26.866238 a 8.1531184,8.1531184 0 0 0 -4.154684,1.137997"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1174" />
+                                <path d="M 17.395442,33.881361 A 8.1531184,8.1531184 0 0 0 28.610939,30.942798"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1176" />
+                                <path d="M 28.610939,22.789678 A 8.1531184,8.1531184 0 0 0 25.54807,19.760615"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1178" />
+                                <path d="M 31.673809,19.760615 A 8.1531184,8.1531184 0 0 0 28.612156,30.944909"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1180" />
+                                <path d="m 35.671742,35.019358 a 8.1531184,8.1531184 0 0 0 4.154673,-1.137997"
+                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1182" />
+                            </svg>
                             GPU usage:
                         </label>
                         <div class="flex flex-col mx-2">
@@ -1423,41 +1389,102 @@ export default {
                     return { 'status': false }
                 });
         },
-        onSettingsBinding() {
+        onSettingsBinding(bindingEntry) {
 
-            const arr = '[{"name":"model_name","type":"str","value":"DreamShaper_5_beta2_noVae_half_pruned.ckpt", "help":"Name of the model to be loaded for stable diffusion generation"},{"name":"ddim_steps","type":"int","value":50, "min":10, "max":1024},{"name":"scale","type":"float","value":7.5, "min":0.1, "max":100.0},{"name":"W","type":"int","value":512, "min":10, "max":2048},{"name":"H","type":"int","value":512, "min":10, "max":2048},{"name":"skip_grid","type":"bool","value":true,"help":"Skip building a grid of generated images"},{"name":"batch_size","type":"int","value":1, "min":1, "max":100,"help":"Number of images per batch (requires more memory)"},{"name":"num_images","type":"int","value":1, "min":1, "max":100,"help":"Number of batch of images to generate (to speed up put a batch of n and a single num images, to save vram, put a batch of 1 and num_img of n)"},{"name":"seed","type":"int","value":-1},                {"name":"servers_addresses","type":"list","value":[], "help":"A list of server addresses for example [\'http://localhost:9601\', \'http://localhost:9602\']"},{"name":"keep_only_active_servers","type":"bool","value":true, "help":"If true, then only active servers will be kept in the loop"},{"name":"sampler_name","type":"str","value":"ddim","help":"Supported sampler names: ddim, dpms, plms", "options":["ddim","dpms","plms"]}]'
-            const arr2 = JSON.parse(arr)
+            try {
+                this.isLoading = true
+                axios.get('/get_active_binding_settings').then(res => {
+                    this.isLoading = false
+                    if (res) {
 
-            const newItem = { name: "babagaga", value: ['lol', 'asdasd', 'hhhhhh'], type: 'list', help: 'smelly ' }
-            arr2.push(newItem)
-            // this.$refs.universalForm.showForm(arr2, "Baba booey form", "Go for torps", "go home").then(res => {
-            //     console.log('finished', res)
-            // }) // disabled to not break UI just add endpoint or anything
+                        console.log('binding sett', res)
+
+                        if (res.data && Object.keys(res.data).length > 0) {
+
+                            // open form
+
+                            this.$refs.universalForm.showForm(res.data, "Binding settings - " + bindingEntry.binding.name, "Save changes", "Cancel").then(res => {
+                                // send new data
+                                try {
+                                    axios.post('/set_active_binding_settings',
+                                        res).then(response => {
+
+                                            if (response && response.data) {
+                                                console.log('binding set with new settings', response.data)
+                                                this.$refs.toast.showToast("Binding settings updated successfully!", 4, true)
+
+                                            } else {
+                                                this.$refs.toast.showToast("Did not get binding settings responses.\n" + response, 4, false)
+                                                this.isLoading = false
+                                            }
+
+
+                                        })
+                                } catch (error) {
+                                    this.$refs.toast.showToast("Did not get binding settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.isLoading = false
+                                }
+
+
+
+                            })
+                        } else {
+                            this.$refs.toast.showToast("Binding has no settings", 4, false)
+                            this.isLoading = false
+                        }
+
+                    }
+                })
+
+            } catch (error) {
+                this.isLoading = false
+                this.$refs.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
+            }
         },
         onSettingsPersonality(persEntry) {
             try {
-                axios.post('/get_personality_settings',
-                    {
-                        language: persEntry.personality.language,
-                        category: persEntry.personality.category,
-                        folder: persEntry.personality.folder
-                    }).then(res => {
+                this.isLoading = true
+                axios.get('/get_active_personality_settings').then(res => {
+                    this.isLoading = false
+                    if (res) {
 
-                        if (res) {
+                        console.log('pers sett', res)
+                        if (res.data && Object.keys(res.data).length > 0) {
+                           
+                            this.$refs.universalForm.showForm(res.data, "Personality settings - " + persEntry.personality.name, "Save changes", "Cancel").then(res => {
 
-                            console.log('pers sett', res)
-                            if (res.data) {
-                                this.$refs.universalForm.showForm(res.data, "Personality settings - " + persEntry.personality.name, "Save changes", "Cancel").then(res => {
-                                    this.$refs.toast.showToast("Personality settings updated successfully!", 4, true)
+                                // send new data
+                                try {
+                                    axios.post('/set_active_personality_settings',
+                                        res).then(response => {
 
-                                    //console.log('finished', res)
-                                })
-                            }
+                                            if (response && response.data) {
+                                                console.log('personality set with new settings', response.data)
+                                                this.$refs.toast.showToast("Personality settings updated successfully!", 4, true)
 
+                                            } else {
+                                                this.$refs.toast.showToast("Did not get Personality settings responses.\n" + response, 4, false)
+                                                this.isLoading = false
+                                            }
+
+
+                                        })
+                                } catch (error) {
+                                    this.$refs.toast.showToast("Did not get Personality settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.isLoading = false
+                                }
+
+                            })
+                        } else {
+                            this.$refs.toast.showToast("Personality has no settings", 4, false)
+                            this.isLoading = false
                         }
-                    })
+
+                    }
+                })
 
             } catch (error) {
+                this.isLoading = false
                 this.$refs.toast.showToast("Could not open personality settings. Endpoint error: " + error.message, 4, false)
             }
 

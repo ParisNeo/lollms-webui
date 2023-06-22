@@ -16,7 +16,7 @@
       </div>
       <!-- ADVANCED OPTIONS - NOT IMPLEMENTED -->
       <div class="flex items-center">
-        <button v-if="personality.has_scripts" type="button" title="Settings"
+        <button v-if="selected" type="button" title="Settings"
             class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="toggleSettings">
             <i data-feather="sliders" class="w-5"></i>
             <span class="sr-only">Settings</span>
@@ -116,6 +116,15 @@ export default {
       this.onSettings(this)
     },
 
+  },
+  watch:{
+    selected(){
+      nextTick(() => {
+      feather.replace()
+
+
+    })
+    }
   }
 };
 </script>
