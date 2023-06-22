@@ -181,8 +181,20 @@ class LoLLMsAPPI():
                 socketio.emit('install_progress',{'status': True, 'error': ''}, room=room_id)
             tpe = threading.Thread(target=install_model_, args=())
             tpe.start()
-            
-            
+
+        @socketio.on('upload_file')
+        def upload_file(data):
+            file = data['file']
+            filename = file.filename
+            save_path = self.lollms_paths.uploads_path /filename  # Specify the desired folder path
+
+            try:
+                file.save(save_path)
+                # File saved successfully
+                socketio.emit('progress', {'progress': 100})
+            except Exception as e:
+                # Error occurred while saving the file
+                socketio.emit('progress', {'error': str(e)})
         @socketio.on('uninstall_model')
         def uninstall_model(data):
             model_path = data['path']
