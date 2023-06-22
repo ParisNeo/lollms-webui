@@ -109,6 +109,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint("/get_active_personality_settings", "get_active_personality_settings", self.get_active_personality_settings, methods=["GET"])
         self.add_endpoint("/get_active_binding_settings", "get_active_binding_settings", self.get_active_binding_settings, methods=["GET"])
 
+        self.add_endpoint("/set_active_personality_settings", "set_active_personality_settings", self.set_active_personality_settings, methods=["POST"])
+        self.add_endpoint("/set_active_binding_settings", "set_active_binding_settings", self.set_active_binding_settings, methods=["POST"])
+
         self.add_endpoint(
             "/disk_usage", "disk_usage", self.disk_usage, methods=["GET"]
         )
@@ -912,11 +915,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
         if self.personality.processor is not None:
             if hasattr(self.personality.processor,"personality_config"):
                 self.personality.processor.personality_config.update_template(data)
-                return jsonify()
+                return jsonify({'status':True})
             else:
                 return jsonify({'status':False})        
         else:
-            return jsonify({})               
+            return jsonify({'status':False})            
 
     def get_active_binding_settings(self):
         print("- Retreiving binding settings")
@@ -927,7 +930,25 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 return jsonify({})        
         else:
             return jsonify({})  
+    
+    def set_active_binding_settings(self):
+        print("- Setting binding settings")
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
         
+        if self.binding is not None:
+            if hasattr(self.binding,"binding_config"):
+                self.binding.binding_config.update_template(data)
+                return jsonify({'status':True})
+            else:
+                return jsonify({'status':False})        
+        else:
+            return jsonify({'status':False})     
+    
          
     def get_personality_settings(self):
         print("- Retreiving personality settings")
