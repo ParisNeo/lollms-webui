@@ -1059,7 +1059,51 @@ export default {
     },
     created() {
 
+        socket.on('install_progress', progressListener);
+
     }, methods: {
+        async progressListener(response){
+
+            console.log("received something");
+            
+                if (response.status === 'progress') {
+                    console.log(`Progress = ${response.progress}`);
+                    model_object.progress = response.progress
+                    model_object.installing = true
+                    if (model_object.progress == 100) {
+                        const index = this.models.findIndex((model) => model.path === path);
+                        this.models[index].isInstalled = true;
+                        this.showProgress = false;
+                        model_object.installing = false
+                    }
+                } else if (response.status === 'succeeded') {
+                    console.log("Received succeeded")
+                    socket.off('install_progress', progressListener);
+                    console.log("Installed successfully")
+                    // Update the isInstalled property of the corresponding model
+                    const index = this.models.findIndex((model) => model.path === path);
+                    this.models[index].isInstalled = true;
+                    this.showProgress = false;
+                    model_object.installing = false
+                    this.$refs.toast.showToast("Model:\n" + model_object.title + "\ninstalled!", 4, true)
+                    this.api_get_req("disk_usage").then(response => {
+                        this.diskUsage = response
+                    })
+                } else if (response.status === 'failed') {
+                    socket.off('install_progress', progressListener);
+                    console.log("Install failed")
+                    // Installation failed or encountered an error
+                    model_object.installing = false;
+                    v
+                    this.showProgress = false;
+                    console.error('Installation failed:', response.error);
+                    this.$refs.toast.showToast("Model:\n" + model_object.title + "\nfailed to install!", 4, false)
+                    this.api_get_req("disk_usage").then(response => {
+                        this.diskUsage = response
+                    })
+                }
+
+        },
         showAddModelDialog() {
             this.$refs.addmodeldialog.showDialog("").then(() => {
                 console.log(this.$refs.addmodeldialog.model_path);
@@ -2121,29 +2165,6 @@ export default {
 
 
         },
-        // filterPersonalities_computed() {
-
-
-
-
-
-        //     const searchTerm = this.searchPersonality.toLowerCase()
-        //     const seachedPersonalities = this.personalities.filter((item) =>{
-
-        //         if(item.name.toLowerCase().includes(searchTerm) || item.description.toLowerCase().includes(searchTerm) || item.full_path.toLowerCase().includes(searchTerm)){
-        //             return item
-        //         }
-
-        //     })
-
-
-
-
-
-        //         return seachedPersonalities.sort()
-
-
-        // },
 
 
     },
