@@ -1,48 +1,58 @@
 <template>
   <div
     class=" items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer  active:scale-95 duration-75 select-none"
-    @click.stop="toggleSelected" :class="selected ? 'border-primary-light' : 'border-transparent'">
+    @click.stop="toggleSelected" :class="selected ? 'border-primary-light' : 'border-transparent'"
+    :title="!personality.installed ? 'Not installed' : ''">
 
+    <div :class="!personality.installed ? 'opacity-50' : ''">
 
-    <div class="flex flex-row items-center  flex-shrink-0 gap-3">
-      <img ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)"
-        class="w-10 h-10 rounded-full object-fill text-red-700" >
+      <div class="flex flex-row items-center  flex-shrink-0 gap-3">
+        <img ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)"
+          class="w-10 h-10 rounded-full object-fill text-red-700">
         <!-- :class="personality.installed ? 'grayscale-0':'grayscale'" -->
-      <h3 class="font-bold font-large text-lg line-clamp-3">
-        {{ personality.name }}
-      </h3>
-      <div class="grow">
-        <!-- EMPTY SPACE FILLER -->
-      </div>
-      <!-- ADVANCED OPTIONS - NOT IMPLEMENTED -->
-      <div class="flex items-center">
-        <button v-if="selected" type="button" title="Settings"
-            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="toggleSettings">
+        <h3 class="font-bold font-large text-lg line-clamp-3">
+          {{ personality.name }}
+        </h3>
+        <div class="grow">
+          <!-- EMPTY SPACE FILLER -->
+        </div>
+        <!-- ADVANCED OPTIONS - NOT IMPLEMENTED -->
+        <div class="flex items-center">
+          <button v-if="!personality.installed" type="button" title="Not installed"
+            class="hover:text-red-600 duration-75 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
+            @click.stop="">
+            <i data-feather="slash" class="w-5"></i>
+            <span class="sr-only">Not installed</span>
+          </button>
+          <button v-if="selected" type="button" title="Settings"
+            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
+            @click.stop="toggleSettings">
             <i data-feather="sliders" class="w-5"></i>
             <span class="sr-only">Settings</span>
           </button>
-        <!-- BUTTON MOUNTED  -->
-        <button type="button" @click.stop="toggleMounted"
-          class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" :class="isMounted ? ' bg-red-700 rounded-lg hover:bg-red-800 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800':''">
-          {{isMounted ? 'Unmount':'Mount'}}
+          <!-- BUTTON MOUNTED  -->
+          <button type="button" @click.stop="toggleMounted"
+            class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            :class="isMounted ? ' bg-red-700 rounded-lg hover:bg-red-800 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800' : ''">
+            {{ isMounted ? 'Unmount' : 'Mount' }}
 
-        </button>
+          </button>
+
+
+        </div>
 
 
       </div>
-
-
-    </div>
-    <div class="">
       <div class="">
+        <div class="">
 
-        <div class="flex items-center">
-          <i data-feather="user" class="w-5 m-1"></i>
-          <b>Author:&nbsp;</b>
+          <div class="flex items-center">
+            <i data-feather="user" class="w-5 m-1"></i>
+            <b>Author:&nbsp;</b>
 
-          {{ personality.author }}
-        </div>
-        <!-- <div class="">
+            {{ personality.author }}
+          </div>
+          <!-- <div class="">
   <b>Language:&nbsp;</b>
   {{ personality.language }}
 </div>
@@ -50,16 +60,16 @@
   <b>Category:&nbsp;</b>
   {{ personality.category }}
 </div> -->
-      </div>
-      <div class="flex items-center">
-        <i data-feather="info" class="w-5 m-1"></i>
-        <b>Description:&nbsp;</b><br>
-      </div>
-      <p class="mx-1 opacity-80 line-clamp-3" :title="personality.description">{{ personality.description }}</p>
+        </div>
+        <div class="flex items-center">
+          <i data-feather="info" class="w-5 m-1"></i>
+          <b>Description:&nbsp;</b><br>
+        </div>
+        <p class="mx-1 opacity-80 line-clamp-3" :title="personality.description">{{ personality.description }}</p>
 
 
+      </div>
     </div>
-
   </div>
 </template>
 
@@ -75,15 +85,15 @@ export default {
     onSelected: Function,
     selected: Boolean,
     onMounted: Function,
-    full_path:String,
-    onSettings:Function
+    full_path: String,
+    onSettings: Function
 
 
   },
   data() {
     return {
       isMounted: false,
-      name:this.personality.name
+      name: this.personality.name
     };
   },
   mounted() {
@@ -117,13 +127,13 @@ export default {
     },
 
   },
-  watch:{
-    selected(){
+  watch: {
+    selected() {
       nextTick(() => {
-      feather.replace()
+        feather.replace()
 
 
-    })
+      })
     }
   }
 };

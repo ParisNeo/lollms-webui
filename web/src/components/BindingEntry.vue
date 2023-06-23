@@ -1,14 +1,13 @@
 <template>
   <div class=" items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer select-none"
-    @click.stop="toggleSelected" :class="selected ? ' border-primary-light' : 'border-transparent'">
+    @click.stop="toggleSelected" :class="selected ? ' border-primary-light' : 'border-transparent'"
+    :title="!binding.installed ? 'Not installed' : ''">
 
-    <div :class="isTemplate ? 'opacity-50' : ''">
-      <!-- 
-<div class="inline-flex items-center"> -->
-
+    <div :class="!binding.installed ? 'opacity-50' : ''">
 
       <div class="flex flex-row items-center   gap-3 ">
-        <img ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-full object-fill text-blue-700">
+        <img ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)"
+          class="w-10 h-10 rounded-full object-fill text-blue-700">
         <h3 class="font-bold font-large text-lg truncate">
           {{ binding.name }}
         </h3>
@@ -16,14 +15,23 @@
           <!-- EMPTY SPACE FILLER -->
         </div>
         <!-- ADVANCED OPTIONS -->
-        <div  class="flex-none gap-1">
-          <button type="button" title="Reinstall binding"
-            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="toggleReinstall">
+        <div class="flex-none gap-1">
+          <button v-if="!binding.installed" type="button" title="Not installed"
+            class="hover:text-red-600 duration-75 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
+            @click.stop="">
+            <i data-feather="slash" class="w-5"></i>
+            <span class="sr-only">Not installed</span>
+          </button>
+
+          <button v-if="binding.installed" type="button" title="Reinstall binding"
+            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
+            @click.stop="toggleReinstall">
             <i data-feather="tool" class="w-5"></i>
             <span class="sr-only">Reinstall binding</span>
           </button>
           <button v-if="selected" type="button" title="Settings"
-            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="toggleSettings">
+            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
+            @click.stop="toggleSettings">
             <i data-feather="sliders" class="w-5"></i>
             <span class="sr-only">Settings</span>
           </button>
@@ -62,13 +70,14 @@
             {{ binding.version }}
           </div>
           <div class="flex items-center">
-         
+
             <i data-feather="github" class="w-5 m-1"></i>
             <b>Link:&nbsp;</b>
-            <a :href="binding.link" target="_blank" class="flex items-center  hover:text-secondary duration-75 active:scale-90">
-            {{ binding.link }}
-          </a>
-        </div>
+            <a :href="binding.link" target="_blank"
+              class="flex items-center  hover:text-secondary duration-75 active:scale-90">
+              {{ binding.link }}
+            </a>
+          </div>
         </div>
         <div class="flex items-center">
           <i data-feather="info" class="w-5 m-1"></i>
@@ -100,7 +109,7 @@ export default {
   data() {
     return {
       isTemplate: false,
-      
+
     };
   },
   mounted() {
@@ -139,13 +148,13 @@ export default {
     }
 
   },
-  watch:{
-    selected(){
+  watch: {
+    selected() {
       nextTick(() => {
-      feather.replace()
+        feather.replace()
 
 
-    })
+      })
     }
   }
 
