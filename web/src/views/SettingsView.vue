@@ -441,57 +441,13 @@
                 <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
                     <div class="mb-2" v-if="configFile.binding_name">
 
-                        <!-- <div >
-
-
-                            <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                Add models:
-                            </label>
-                            <div class="p-2 ">
-
-                                <form>
-                                    <div class="mb-3">
-                                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                            for="file_input">Select
-                                            files</label>
-
-
-                                        <input
-                                            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                                            id="multiple_files" type="file" multiple>
-                                    </div>
-
-                                    <button type="submit"
-                                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Upload</button>
-                                </form>
-
-                            </div>
-
-                            <div class="p-2  ">
-
-                                <form>
-                                    <div class="mb-3">
-                                        <label for="email"
-                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Model
-                                            URL</label>
-                                        <input type="email" id="email"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                            placeholder="url" required>
-                                    </div>
-
-                                    <button type="submit"
-                                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Download</button>
-                                </form>
-
-                            </div>
-                        </div> -->
                     </div>
                     <div v-if="models.length > 0" class="mb-2">
                         <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Models: ({{ models.length }})
                         </label>
 
-                        <div class="overflow-y-auto no-scrollbar p-2 pb-0 " :class="mzl_collapsed ? '' : 'max-h-96'">
+                        <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4" :class="mzl_collapsed ? '' : 'max-h-96'">
                             <TransitionGroup name="list">
                                 <model-entry ref="modelZoo" v-for="(model, index) in models"
                                     :key="'index-' + index + '-' + model.title" :title="model.title" :icon="model.icon"
@@ -499,7 +455,7 @@
                                     :license="model.license" :description="model.description"
                                     :is-installed="model.isInstalled" :on-install="onInstall" :on-uninstall="onUninstall"
                                     :on-selected="onSelected" :selected="model.title === configFile.model_name"
-                                    :model="model" :model_type="model.model_type" :on-copy="onCopy" />
+                                    :model="model" :model_type="model.model_type" :on-copy="onCopy" :on-copy-link="onCopyLink" />
                             </TransitionGroup>
                         </div>
                     </div>
@@ -1252,6 +1208,11 @@ export default {
 
             this.$refs.toast.showToast("Copied model info to clipboard!", 4, true)
             navigator.clipboard.writeText(content.trim());
+        },
+        onCopyLink(modelEntry) {
+
+            this.$refs.toast.showToast("Copied link to clipboard!", 4, true)
+            navigator.clipboard.writeText(modelEntry.path);
         },
 
         // Model installation

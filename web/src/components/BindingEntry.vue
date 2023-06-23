@@ -1,7 +1,7 @@
 <template>
   <div class=" items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer select-none"
     @click.stop="toggleSelected" :class="selected ? ' border-primary-light' : 'border-transparent'"
-    :title="!binding.installed ? 'Not installed' : ''">
+    :title="!binding.installed ? 'Not installed' : binding.name">
 
     <div :class="!binding.installed ? 'opacity-50' : ''">
 
