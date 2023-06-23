@@ -27,6 +27,7 @@ from tqdm import tqdm
 import traceback
 import sys
 from lollms.console import MainMenu
+import urllib
 
 __author__ = "parisneo"
 __github__ = "https://github.com/ParisNeo/lollms-webui"
@@ -171,6 +172,19 @@ class LoLLMsAPPI():
         @socketio.on('install_model')
         def install_model(data):
             room_id = request.sid 
+            
+            def get_file_size(url):
+                # Send a HEAD request to retrieve file metadata
+                response = urllib.request.urlopen(url)
+                
+                # Extract the Content-Length header value
+                file_size = response.headers.get('Content-Length')
+                
+                # Convert the file size to integer
+                if file_size:
+                    file_size = int(file_size)
+                
+                return file_size            
             def install_model_():
                 print("Install model triggered")
                 model_path = data["path"]
@@ -186,7 +200,11 @@ class LoLLMsAPPI():
                 model_url = model_path
                 signature = f"{model_name}_{binding_folder}_{model_url}"
                 self.download_infos[signature]={
+                    "start_time":datetime.now(),
+                    "total_size":get_file_size(model_path),
+                    "downloaded_size":0,
                     "progress":0,
+                    "speed":0,
                     "cancel":False
                 }
                 
@@ -197,7 +215,12 @@ class LoLLMsAPPI():
                                                         'error': 'model already exists',
                                                         'model_name' : model_name,
                                                         'binding_folder' : binding_folder,
-                                                        'model_url' : model_url
+                                                        'model_url' : model_url,
+                                                        'start_time': self.download_infos[signature]['start_time'],
+                                                        'total_size': self.download_infos[signature]['total_size'],
+                                                        'downloaded_size': self.download_infos[signature]['downloaded_size'],
+                                                        'progress': self.download_infos[signature]['progress'],
+                                                        'speed': self.download_infos[signature]['speed'],
                                                     }, room=room_id
                                 )
                 
@@ -206,17 +229,37 @@ class LoLLMsAPPI():
                                                 'progress': progress,
                                                 'model_name' : model_name,
                                                 'binding_folder' : binding_folder,
-                                                'model_url' : model_url
+                                                'model_url' : model_url,
+                                                'start_time': self.download_infos[signature]['start_time'],
+                                                'total_size': self.download_infos[signature]['total_size'],
+                                                'downloaded_size': self.download_infos[signature]['downloaded_size'],
+                                                'progress': self.download_infos[signature]['progress'],
+                                                'speed': self.download_infos[signature]['speed'],
+
                                                 }, room=room_id)
                 
-                def callback(progress):
-                    socketio.emit('install_progress',{
-                                                    'status': 'progress',
-                                                    'progress': progress,
-                                                    'model_name' : model_name,
-                                                    'binding_folder' : binding_folder,
-                                                    'model_url' : model_url
-                                                    }, room=room_id)
+                def callback(downloaded_size, total_size):
+                    progress = (downloaded_size / total_size) * 100
+                    now = datetime.now()
+                    dt = (now - self.download_infos[signature]['start_time']).total_seconds()
+                    speed = downloaded_size/dt
+                    self.download_infos[signature]['downloaded_size'] = downloaded_size
+                    self.download_infos[signature]['speed'] = speed
+
+                    if self.download_infos[signature]['progress']-progress>2:
+                        self.download_infos[signature]['progress'] = progress
+                        socketio.emit('install_progress',{
+                                                        'status': 'progress',
+                                                        'progress': progress,
+                                                        'model_name' : model_name,
+                                                        'binding_folder' : binding_folder,
+                                                        'model_url' : model_url,
+                                                        'start_time': self.download_infos[signature]['start_time'],
+                                                        'total_size': self.download_infos[signature]['total_size'],
+                                                        'downloaded_size': self.download_infos[signature]['downloaded_size'],
+                                                        'progress': self.download_infos[signature]['progress'],
+                                                        'speed': self.download_infos[signature]['speed'],
+                                                        }, room=room_id)
                     
                     if self.download_infos[signature]["cancel"]:
                         raise Exception("canceled")
@@ -231,7 +274,12 @@ class LoLLMsAPPI():
                                     'error': 'canceled',
                                     'model_name' : model_name,
                                     'binding_folder' : binding_folder,
-                                    'model_url' : model_url
+                                    'model_url' : model_url,
+                                    'start_time': self.download_infos[signature]['start_time'],
+                                    'total_size': self.download_infos[signature]['total_size'],
+                                    'downloaded_size': self.download_infos[signature]['downloaded_size'],
+                                    'progress': self.download_infos[signature]['progress'],
+                                    'speed': self.download_infos[signature]['speed'],
                                 }, room=room_id
                         )
                         del self.download_infos[signature]
@@ -239,13 +287,37 @@ class LoLLMsAPPI():
                         return
 
                 else:
-                    self.download_file(model_path, installation_path, callback)
+                    try:
+                        self.download_file(model_path, installation_path, callback)
+                    except Exception as ex:
+                        ASCIIColors.warning(str(ex))
+                        socketio.emit('install_progress',{
+                                    'status': False,
+                                    'error': 'canceled',
+                                    'model_name' : model_name,
+                                    'binding_folder' : binding_folder,
+                                    'model_url' : model_url,
+                                    'start_time': self.download_infos[signature]['start_time'],
+                                    'total_size': self.download_infos[signature]['total_size'],
+                                    'downloaded_size': self.download_infos[signature]['downloaded_size'],
+                                    'progress': self.download_infos[signature]['progress'],
+                                    'speed': self.download_infos[signature]['speed'],
+                                }, room=room_id
+                        )
+                        del self.download_infos[signature]
+                        installation_path.unlink()
+                        return                        
                 socketio.emit('install_progress',{
                                                 'status': True, 
                                                 'error': '',
                                                 'model_name' : model_name,
                                                 'binding_folder' : binding_folder,
-                                                'model_url' : model_url
+                                                'model_url' : model_url,
+                                                'start_time': self.download_infos[signature]['start_time'],
+                                                'total_size': self.download_infos[signature]['total_size'],
+                                                'downloaded_size': self.download_infos[signature]['downloaded_size'],
+                                                'progress': self.download_infos[signature]['progress'],
+                                                'speed': self.download_infos[signature]['speed'],
                                                 }, room=room_id)
                 del self.download_infos[signature]
                 
@@ -517,8 +589,7 @@ class LoLLMsAPPI():
                             file.write(chunk)
                             downloaded_size += len(chunk)
                             if callback is not None:
-                                percentage = (downloaded_size / total_size) * 100
-                                callback(percentage)
+                                callback(downloaded_size, total_size)
                             progress_bar.update(len(chunk))
 
             if callback is not None:
