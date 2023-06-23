@@ -315,13 +315,22 @@ class LoLLMsAPPI():
                     ASCIIColors.error(f"Personality file not found or is corrupted ({personality_path}).\nReturned the following exception:{ex}\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
                     if self.config["debug"]:
                         print(ex)
-                    personality = AIPersonality(
-                                                personality_path, 
-                                                self.lollms_paths, 
-                                                self.config, 
-                                                self.model, 
-                                                run_scripts=True,
-                                                installation_option=InstallOption.FORCE_INSTALL)
+                    try:
+                        personality = AIPersonality(
+                                                    personality_path, 
+                                                    self.lollms_paths, 
+                                                    self.config, 
+                                                    self.model, 
+                                                    run_scripts=True,
+                                                    installation_option=InstallOption.FORCE_INSTALL)
+                    except:
+                        ASCIIColors.error(f"Couldn't load personality at {personality_path}")
+                        personality = AIPersonality(None,                                                    self.lollms_paths, 
+                                                    self.config, 
+                                                    self.model, 
+                                                    run_scripts=True,
+                                                    installation_option=InstallOption.FORCE_INSTALL)
+                        ASCIIColors.info("Reverted to default personality")
         print(f'selected : {self.config["active_personality_id"]}')
         ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
         ASCIIColors.success(f" ║                      Done                        ║ ")
