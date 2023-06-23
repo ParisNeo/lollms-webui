@@ -172,20 +172,48 @@ class LoLLMsAPPI():
                 print("Model install requested")
                 print(f"Model path : {model_path}")
 
+                model_name = filename
+                binding_folder = self.config["binding_name"]
+                model_url = model_path
                 if installation_path.exists():
                     print("Error: Model already exists")
-                    socketio.emit('install_progress',{'status': False, 'error': 'model already exists', 'url':model_path}, room=room_id)
+                    socketio.emit('install_progress',{
+                                                        'status': False,
+                                                        'error': 'model already exists',
+                                                        'model_name' : model_name,
+                                                        'binding_folder' : binding_folder,
+                                                        'model_url' : model_url
+                                                    }, room=room_id
+                                )
                 
-                socketio.emit('install_progress',{'status': 'progress', 'progress': progress, 'url':model_path}, room=room_id)
+                socketio.emit('install_progress',{
+                                                'status': 'progress',
+                                                'progress': progress,
+                                                'model_name' : model_name,
+                                                'binding_folder' : binding_folder,
+                                                'model_url' : model_url
+                                                }, room=room_id)
                 
                 def callback(progress):
-                    socketio.emit('install_progress',{'status': 'progress', 'progress': progress, 'url':model_path}, room=room_id)
+                    socketio.emit('install_progress',{
+                                                    'status': 'progress',
+                                                    'progress': progress,
+                                                    'model_name' : model_name,
+                                                    'binding_folder' : binding_folder,
+                                                    'model_url' : model_url
+                                                    }, room=room_id)
                     
                 if hasattr(self.binding, "download_model"):
                     self.binding.download_model(model_path, installation_path, callback)
                 else:
                     self.download_file(model_path, installation_path, callback)
-                socketio.emit('install_progress',{'status': True, 'error': '', 'url':model_path}, room=room_id)
+                socketio.emit('install_progress',{
+                                                'status': True, 
+                                                'error': '',
+                                                'model_name' : model_name,
+                                                'binding_folder' : binding_folder,
+                                                'model_url' : model_url
+                                                }, room=room_id)
             tpe = threading.Thread(target=install_model_, args=())
             tpe.start()
 
