@@ -76,8 +76,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         self.app = _app
         self.cancel_gen = False
-        self.binding_changed = False
-        self.model_changed = False
 
         app.template_folder = "web/dist"
         if config["active_personality_id"]>=len(config["personalities"]):
@@ -317,11 +315,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
         personalities = {}
         for language_folder in personalities_folder.iterdir():
             lang = language_folder.stem
-            if language_folder.is_dir():
+            if language_folder.is_dir() and not language_folder.stem.startswith('.'):
                 personalities[language_folder.name] = {}
                 for category_folder in  language_folder.iterdir():
                     cat = category_folder.stem
-                    if category_folder.is_dir():
+                    if category_folder.is_dir() and not category_folder.stem.startswith('.'):
                         personalities[language_folder.name][category_folder.name] = []
                         for personality_folder in category_folder.iterdir():
                             pers = personality_folder.stem
@@ -329,12 +327,14 @@ class LoLLMsWebUI(LoLLMsAPPI):
                                 personality_info = {"folder":personality_folder.stem}
                                 config_path = personality_folder / 'config.yaml'
                                 if not config_path.exists():
+                                    """
                                     try:
                                         shutil.rmtree(str(config_path.parent))
                                         ASCIIColors.warning(f"Deleted useless personality: {config_path.parent}")
                                     except Exception as ex:
                                         ASCIIColors.warning(f"Couldn't delete personality ({ex})")
-                                    continue
+                                    """
+                                    continue                                    
                                 try:
                                     with open(config_path) as config_file:
                                         config_data = yaml.load(config_file, Loader=yaml.FullLoader)
@@ -483,14 +483,30 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         elif setting_name== "model_name":
             self.config["model_name"]=data['setting_value']
-            self.model_changed = True
+            try:
+                self.binding.build_model()
+            except Exception as ex:
+                print(f"Couldn't load model: [{ex}]")
+                return jsonify({ "status":False, 'error':str(ex)})
+
             print("update_settings : New model selected")
 
         elif setting_name== "binding_name":
             if self.config['binding_name']!= data['setting_value']:
                 print(f"New binding selected : {data['setting_value']}")
                 self.config["binding_name"]=data['setting_value']
-                self.binding_changed = True
+                try:
+                    self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
+                    try:
+                        self.binding.build_model()
+                    except Exception as ex:
+                        print(f"Couldn't load model: [{ex}]")
+                        return jsonify({ "status":False, 'error':str(ex)})
+                except Exception as ex:
+                    print(f"Couldn't build binding: [{ex}]")
+                    return jsonify({"status":False, 'error':str(ex)})
+
+
             else:
                 if self.config["debug"]:
                     print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
@@ -512,25 +528,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
     def apply_settings(self):
         ASCIIColors.success("OK")
-        if self.binding_changed:
-            try:
-                self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
-                try:
-                    self.binding.build_model()
-                except Exception as ex:
-                    print(f"Couldn't load model: [{ex}]")
-                    return jsonify({ "status":False, 'error':str(ex)})
-            except Exception as ex:
-                print(f"Couldn't build binding: [{ex}]")
-                return jsonify({"status":False, 'error':str(ex)})
-
-        else:
-            if self.model_changed:
-                try:
-                    self.binding.build_model()
-                except Exception as ex:
-                    print(f"Couldn't load model: [{ex}]")
-                    return jsonify({ "status":False, 'error':str(ex)})
         self.rebuild_personalities()
         return jsonify({"status":True})
     

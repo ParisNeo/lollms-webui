@@ -153,6 +153,12 @@ class LoLLMsAPPI():
         def disconnect():
             ASCIIColors.error(f'Client {request.sid} disconnected')
 
+        @socketio.on('cancel_generation')
+        def cancel_generation():
+            self.cancel_gen = True
+            ASCIIColors.error(f'Client {request.sid} canceled generation')
+        
+
         @socketio.on('install_model')
         def install_model(data):
             room_id = request.sid 
@@ -209,6 +215,7 @@ class LoLLMsAPPI():
                     file.save(save_path)
                     # File saved successfully
                     socketio.emit('progress', {'status':True, 'progress': 100})
+
                 else:
                     # Personality doesn't support file sending
                     socketio.emit('progress', {'status':False, 'error': "Personality doesn't support file sending"})
@@ -239,7 +246,7 @@ class LoLLMsAPPI():
                 ASCIIColors.green("Starting message generation by"+self.personality.name)
 
                 task = self.socketio.start_background_task(self.start_message_generation, message, message_id)
-
+                ASCIIColors.info("Started generation task")
                 #tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
                 #tpe.start()
             else:
