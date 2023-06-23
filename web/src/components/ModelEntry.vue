@@ -21,7 +21,7 @@
         <i data-feather="trash" class="w-5"></i>
       </button>
     </div>
-    <div
+    <div v-if="installing"
       class="absolute z-10 -m-4 p-5 shadow-md text-center rounded-lg w-full h-full bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel bg-opacity-70 dark:bg-opacity-70 flex justify-center items-center">
     <!-- DOWNLOAD MODEL PANEL SPINNER -->
       <div class="relative flex flex-col items-center justify-center flex-grow h-full">
@@ -45,10 +45,10 @@
 
             <div class="flex justify-between mb-1">
               <span class="text-base font-medium text-blue-700 dark:text-white">Downloading</span>
-              <span class="text-sm font-medium text-blue-700 dark:text-white">45%</span>
+              <span class="text-sm font-medium text-blue-700 dark:text-white">{{ Math.floor(progress) }}%</span>
             </div>
             <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-              <div class="bg-blue-600 h-2.5 rounded-full" style="width: 45%"></div>
+              <div class="bg-blue-600 h-2.5 rounded-full" :style="{ width: progress + '%' }"></div>
             </div>
           </div>
         </div>
@@ -93,7 +93,7 @@
           </button>
           <button v-if="!model.isInstalled" type="button" title="Click to install model"
             class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
-            @click.stop="">
+            @click.stop="toggleInstall">
             <i data-feather="plus-square" class="w-5"></i>
             <span class="sr-only">Install</span>
           </button>

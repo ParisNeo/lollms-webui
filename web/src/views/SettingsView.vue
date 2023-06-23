@@ -447,7 +447,8 @@
                             Models: ({{ models.length }})
                         </label>
 
-                        <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4" :class="mzl_collapsed ? '' : 'max-h-96'">
+                        <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
+                            :class="mzl_collapsed ? '' : 'max-h-96'">
                             <TransitionGroup name="list">
                                 <model-entry ref="modelZoo" v-for="(model, index) in models"
                                     :key="'index-' + index + '-' + model.title" :title="model.title" :icon="model.icon"
@@ -455,7 +456,8 @@
                                     :license="model.license" :description="model.description"
                                     :is-installed="model.isInstalled" :on-install="onInstall" :on-uninstall="onUninstall"
                                     :on-selected="onSelected" :selected="model.title === configFile.model_name"
-                                    :model="model" :model_type="model.model_type" :on-copy="onCopy" :on-copy-link="onCopyLink" />
+                                    :model="model" :model_type="model.model_type" :on-copy="onCopy"
+                                    :on-copy-link="onCopyLink" />
                             </TransitionGroup>
                         </div>
                     </div>
@@ -1057,52 +1059,87 @@ export default {
 
         }
     },
-    created() {
+    async created() {
 
-        socket.on('install_progress', progressListener);
+        //await socket.on('install_progress', this.progressListener);
 
     }, methods: {
-        async progressListener(response){
-
+        async progressListener(response) {
+            // does not work Still freezes UI
             console.log("received something");
-            
-                if (response.status === 'progress') {
-                    console.log(`Progress = ${response.progress}`);
-                    model_object.progress = response.progress
-                    model_object.installing = true
-                    if (model_object.progress == 100) {
-                        const index = this.models.findIndex((model) => model.path === path);
-                        this.models[index].isInstalled = true;
-                        this.showProgress = false;
-                        model_object.installing = false
+
+            // Find model
+
+
+            // 'model_name' : model_name,
+            // 'binding_folder' : binding_folder,
+            // 'model_url' : model_url
+
+
+            if (response.status === 'progress') {
+
+                // FInd model
+                if (this.$refs.modelZoo) {
+                    const index = this.$refs.modelZoo.findIndex(item => item.model.path == response.model_url && item.model.title == response.model_name && this.configFile.binding_name == response.binding_folder)
+                    const modelEntry = this.models[index]
+
+                    if (modelEntry) {
+                        // Model found
+                        console.log('model entry', modelEntry)
+                        modelEntry.installing = true
+                        modelEntry.progress = response.progress
+                        console.log(`Progress = ${response.progress}`);
+                        if (response.progress >= 100) {
+                            modelEntry.installing = false
+                            modelEntry.isInstalled = true
+                        }
                     }
-                } else if (response.status === 'succeeded') {
-                    console.log("Received succeeded")
-                    socket.off('install_progress', progressListener);
-                    console.log("Installed successfully")
-                    // Update the isInstalled property of the corresponding model
-                    const index = this.models.findIndex((model) => model.path === path);
-                    this.models[index].isInstalled = true;
-                    this.showProgress = false;
-                    model_object.installing = false
-                    this.$refs.toast.showToast("Model:\n" + model_object.title + "\ninstalled!", 4, true)
-                    this.api_get_req("disk_usage").then(response => {
-                        this.diskUsage = response
-                    })
-                } else if (response.status === 'failed') {
-                    socket.off('install_progress', progressListener);
-                    console.log("Install failed")
-                    // Installation failed or encountered an error
-                    model_object.installing = false;
-                    v
-                    this.showProgress = false;
+                }
+            } else if (response.status === 'succeeded') {
+                console.log("Received succeeded")
+
+                console.log("Installed successfully")
+
+                if (this.$refs.modelZoo) {
+                    const index = this.$refs.modelZoo.findIndex(item => item.model.path == response.model_url && item.model.title == response.model_name && this.configFile.binding_name == response.binding_folder)
+                    const modelEntry = this.models[index]
+
+                    if (modelEntry) {
+                        // Model found
+
+                        modelEntry.installing = false
+                        modelEntry.isInstalled = true
+
+                    }
+                }
+
+
+                this.$refs.toast.showToast("Model:\n" + model_object.title + "\ninstalled!", 4, true)
+                this.api_get_req("disk_usage").then(response => {
+                    this.diskUsage = response
+                })
+            } else if (response.status === 'failed') {
+
+                console.log("Install failed")
+                // Installation failed or encountered an error
+                if (this.$refs.modelZoo) {
+                    const index = this.$refs.modelZoo.findIndex(item => item.model.path == response.model_url && item.model.title == response.model_name && this.configFile.binding_name == response.binding_folder)
+                    const modelEntry = this.models[index]
+
+                    if (modelEntry) {
+                        // Model found
+
+                        modelEntry.installing = false
+                        modelEntry.isInstalled = false
+
+                    }
                     console.error('Installation failed:', response.error);
                     this.$refs.toast.showToast("Model:\n" + model_object.title + "\nfailed to install!", 4, false)
                     this.api_get_req("disk_usage").then(response => {
                         this.diskUsage = response
                     })
                 }
-
+            }
         },
         showAddModelDialog() {
             this.$refs.addmodeldialog.showDialog("").then(() => {
@@ -1303,7 +1340,7 @@ export default {
                     console.log("Install failed")
                     // Installation failed or encountered an error
                     model_object.installing = false;
-                    v
+                    
                     this.showProgress = false;
                     console.error('Installation failed:', response.error);
                     this.$refs.toast.showToast("Model:\n" + model_object.title + "\nfailed to install!", 4, false)
@@ -1455,7 +1492,7 @@ export default {
 
                         console.log('pers sett', res)
                         if (res.data && Object.keys(res.data).length > 0) {
-                           
+
                             this.$refs.universalForm.showForm(res.data, "Personality settings - " + persEntry.personality.name, "Save changes", "Cancel").then(res => {
 
                                 // send new data
@@ -1527,7 +1564,7 @@ export default {
 
                     if (model.title == response["model_name"]) {
                         model.selected = true;
-
+                        
                     }
                     else {
                         model.selected = false;
@@ -1560,6 +1597,11 @@ export default {
 
 
             this.fetchModels();
+            this.api_get_req("list_bindings")
+            then(response => {
+                this.bindings = response
+                this.bindings.sort((a, b) => a.name.localeCompare(b.name))
+            })
         },
         // Accordeon stuff
         toggleAccordion() {
@@ -1599,7 +1641,12 @@ export default {
 
             this.update_setting('binding_name', value, (res) => {
 
-
+                const index = this.bindings.findIndex(item => item.folder == value)
+                const item = this.bindings[index]
+                if(item){
+                    item.installed=true
+                }
+                
                 this.$refs.toast.showToast("Binding changed.", 4, true)
                 this.settingsChanged = true
                 this.isLoading = false
