@@ -104,7 +104,7 @@ if exist ".git" (
 
 :PULL_CHANGES
 echo Pulling latest changes 
-git pull origin main
+git pull
 goto :CHECK_PYTHON_INSTALL
 
 :CLONE_REPO
