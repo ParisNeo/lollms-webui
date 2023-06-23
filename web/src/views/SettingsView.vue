@@ -185,15 +185,15 @@
                                         id="path1182" />
                                 </svg>
                                 <h3 class="font-bold font-large text-lg">
-                                    <div>{{ vram_usage }} / {{ vram_total_space }}</div>
+                                    <div>{{ vram_usage }} / {{ vram_total_space }} ({{ vram_percent_usage }}%)</div>
                                 </h3>
                                 <i data-feather="cpu" class="w-5 h-5 mx-1 flex-shrink-0"></i>
                                 <h3 class="font-bold font-large text-lg">
-                                    <div>{{ ram_usage }} / {{ ram_total_space }}</div>
+                                    <div>{{ ram_usage }} / {{ ram_total_space }} ({{ ram_percent_usage }}%)</div>
                                 </h3>
                                 <i data-feather="hard-drive" class="w-5 h-5 mx-1 flex-shrink-0"></i>
                                 <h3 class="font-bold font-large text-lg">
-                                    <div> {{ disk_binding_models_usage }} / {{ disk_total_space }}</div>
+                                    <div> {{ disk_binding_models_usage }} / {{ disk_total_space }}  ({{ disk_percent_usage }}%)</div>
                                 </h3>
                             </div>
                         </div>
@@ -1297,7 +1297,7 @@ export default {
         },
         onCancelInstall(modelEntry) {
             modelEntry.installing = false
-            modelEntry.isInstalled = false
+            
             this.$refs.toast.showToast("Model installation aborted", 4, false)
             socket.emit('cancel_install', { model_name: modelEntry.title, binding_folder: this.configFile.binding_name, model_url: modelEntry.path });
         },
