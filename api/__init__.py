@@ -235,6 +235,7 @@ class LoLLMsAPPI():
                                 }, room=room_id
                         )
                         del self.download_infos[signature]
+                        installation_path.unlink()
                         return
 
                 else:
