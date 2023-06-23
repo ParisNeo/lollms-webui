@@ -336,15 +336,15 @@ class LoLLMsWebUI(LoLLMsAPPI):
                                     """
                                     continue                                    
                                 try:
+                                    scripts_path = personality_folder / 'scripts'
+                                    personality_info['has_scripts'] = scripts_path.is_dir()
                                     with open(config_path) as config_file:
                                         config_data = yaml.load(config_file, Loader=yaml.FullLoader)
                                         personality_info['name'] = config_data.get('name',"No Name")
                                         personality_info['description'] = config_data.get('personality_description',"")
                                         personality_info['author'] = config_data.get('author', 'ParisNeo')
                                         personality_info['version'] = config_data.get('version', '1.0.0')
-                                        personality_info['installed'] = (self.lollms_paths.personal_configuration_path/f"personality_{personality_folder.stem}.yaml").exists()
-                                    scripts_path = personality_folder / 'scripts'
-                                    personality_info['has_scripts'] = scripts_path.is_dir()
+                                        personality_info['installed'] = (self.lollms_paths.personal_configuration_path/f"personality_{personality_folder.stem}.yaml").exists() or personality_info['has_scripts']
                                     real_assets_path = personality_folder/ 'assets'
                                     assets_path = Path("personalities") / lang / cat / pers / 'assets'
                                     gif_logo_path = assets_path / 'logo.gif'
