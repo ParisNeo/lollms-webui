@@ -142,6 +142,7 @@ class LoLLMsAPPI():
         # This is used to keep track of messages 
         self.full_message_list = []
         self.current_room_id = None
+        self.download_infos={}
         # =========================================================================================
         # Socket IO stuff    
         # =========================================================================================
@@ -158,7 +159,15 @@ class LoLLMsAPPI():
             self.cancel_gen = True
             ASCIIColors.error(f'Client {request.sid} canceled generation')
         
-
+        @socketio.on('cancel_install')
+        def cancel_install(data):
+            model_name = data["model_name"]
+            binding_folder = data["binding_folder"]
+            model_url = data["model_url"]
+            signature = f"{model_name}_{binding_folder}_{model_url}"
+            self.download_infos[signature]["cancel"]=True
+            
+            
         @socketio.on('install_model')
         def install_model(data):
             room_id = request.sid 
@@ -175,6 +184,12 @@ class LoLLMsAPPI():
                 model_name = filename
                 binding_folder = self.config["binding_name"]
                 model_url = model_path
+                signature = f"{model_name}_{binding_folder}_{model_url}"
+                self.download_infos[signature]={
+                    "progress":0,
+                    "cancel":False
+                }
+                
                 if installation_path.exists():
                     print("Error: Model already exists")
                     socketio.emit('install_progress',{
@@ -203,8 +218,25 @@ class LoLLMsAPPI():
                                                     'model_url' : model_url
                                                     }, room=room_id)
                     
+                    if self.download_infos[signature]["cancel"]:
+                        raise Exception("canceled")
+                    
                 if hasattr(self.binding, "download_model"):
-                    self.binding.download_model(model_path, installation_path, callback)
+                    try:
+                        self.binding.download_model(model_path, installation_path, callback)
+                    except Exception as ex:
+                        ASCIIColors.warning(str(ex))
+                        socketio.emit('install_progress',{
+                                    'status': False,
+                                    'error': 'canceled',
+                                    'model_name' : model_name,
+                                    'binding_folder' : binding_folder,
+                                    'model_url' : model_url
+                                }, room=room_id
+                        )
+                        del self.download_infos[signature]
+                        return
+
                 else:
                     self.download_file(model_path, installation_path, callback)
                 socketio.emit('install_progress',{
@@ -214,6 +246,8 @@ class LoLLMsAPPI():
                                                 'binding_folder' : binding_folder,
                                                 'model_url' : model_url
                                                 }, room=room_id)
+                del self.download_infos[signature]
+                
             tpe = threading.Thread(target=install_model_, args=())
             tpe.start()
 
