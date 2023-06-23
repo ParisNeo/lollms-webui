@@ -293,6 +293,7 @@ class LoLLMsAPPI():
         ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
         ASCIIColors.success(f" ║           Building mounted Personalities         ║ ")
         ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
+        to_remove=[]
         for i,personality in enumerate(self.config['personalities']):
             if personality in loaded_names:
                 mounted_personalities.append(loaded[loaded_names.index(personality)])
@@ -313,6 +314,7 @@ class LoLLMsAPPI():
                     mounted_personalities.append(personality)
                 except Exception as ex:
                     ASCIIColors.error(f"Personality file not found or is corrupted ({personality_path}).\nReturned the following exception:{ex}\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+                    ASCIIColors.info("Trying to force reinstall")
                     if self.config["debug"]:
                         print(ex)
                     try:
@@ -323,24 +325,36 @@ class LoLLMsAPPI():
                                                     self.model, 
                                                     run_scripts=True,
                                                     installation_option=InstallOption.FORCE_INSTALL)
+                        mounted_personalities.append(personality)
                     except:
                         ASCIIColors.error(f"Couldn't load personality at {personality_path}")
+                        ASCIIColors.info(f"Unmounting personality")
+                        to_remove.append(i)
                         personality = AIPersonality(None,                                                    self.lollms_paths, 
                                                     self.config, 
                                                     self.model, 
                                                     run_scripts=True,
                                                     installation_option=InstallOption.FORCE_INSTALL)
+                        mounted_personalities.append(personality)
                         ASCIIColors.info("Reverted to default personality")
         print(f'selected : {self.config["active_personality_id"]}')
         ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
         ASCIIColors.success(f" ║                      Done                        ║ ")
         ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
+        # Sort the indices in descending order to ensure correct removal
+        to_remove.sort(reverse=True)
+
+        # Remove elements from the list based on the indices
+        for index in to_remove:
+            if 0 <= index < len(mounted_personalities):
+                mounted_personalities.pop(index)
+                self.config["personalities"].pop(index)
+                ASCIIColors.info(f"removed personality {personality_path}")
+
+        if self.config["active_personality_id"]>=len(self.config["personalities"]):
+            self.config["active_personality_id"]=0
             
         return mounted_personalities
-
-
-
-
     # ================================== LOLLMSApp
 
     def load_binding(self):
