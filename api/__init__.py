@@ -225,7 +225,7 @@ class LoLLMsAPPI():
                                 )
                 
                 socketio.emit('install_progress',{
-                                                'status': 'progress',
+                                                'status': True,
                                                 'progress': progress,
                                                 'model_name' : model_name,
                                                 'binding_folder' : binding_folder,
@@ -249,8 +249,7 @@ class LoLLMsAPPI():
                     if self.download_infos[signature]['progress']-progress>2:
                         self.download_infos[signature]['progress'] = progress
                         socketio.emit('install_progress',{
-                                                        'status': 'progress',
-                                                        'progress': progress,
+                                                        'status': True,
                                                         'model_name' : model_name,
                                                         'binding_folder' : binding_folder,
                                                         'model_url' : model_url,
@@ -316,7 +315,7 @@ class LoLLMsAPPI():
                                                 'start_time': self.download_infos[signature]['start_time'],
                                                 'total_size': self.download_infos[signature]['total_size'],
                                                 'downloaded_size': self.download_infos[signature]['downloaded_size'],
-                                                'progress': self.download_infos[signature]['progress'],
+                                                'progress': 100,
                                                 'speed': self.download_infos[signature]['speed'],
                                                 }, room=room_id)
                 del self.download_infos[signature]
