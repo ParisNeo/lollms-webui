@@ -14,8 +14,9 @@ from api.helpers import compare_lists
 from pathlib import Path
 import importlib
 from lollms.config import InstallOption
-from lollms.personality import AIPersonality, MSG_TYPE
-from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding
+from lollms.types import MSG_TYPE
+from lollms.personality import AIPersonality, PersonalityBuilder
+from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding, ModelBuilder
 from lollms.paths import LollmsPaths
 from lollms.helpers import ASCIIColors
 import multiprocessing as mp
@@ -152,6 +153,12 @@ class LoLLMsAPPI():
         def disconnect():
             ASCIIColors.error(f'Client {request.sid} disconnected')
 
+        @socketio.on('cancel_generation')
+        def cancel_generation():
+            self.cancel_gen = True
+            ASCIIColors.error(f'Client {request.sid} canceled generation')
+        
+
         @socketio.on('install_model')
         def install_model(data):
             room_id = request.sid 
@@ -181,8 +188,7 @@ class LoLLMsAPPI():
                 socketio.emit('install_progress',{'status': True, 'error': ''}, room=room_id)
             tpe = threading.Thread(target=install_model_, args=())
             tpe.start()
-            
-            
+
         @socketio.on('uninstall_model')
         def uninstall_model(data):
             model_path = data['path']
@@ -195,6 +201,27 @@ class LoLLMsAPPI():
 
             installation_path.unlink()
             socketio.emit('install_progress',{'status': True, 'error': ''}, room=request.sid)
+
+
+        @socketio.on('upload_file')
+        def upload_file(data):
+            file = data['file']
+            filename = file.filename
+            save_path = self.lollms_paths.personal_uploads_path/filename  # Specify the desired folder path
+
+            try:
+                if not self.personality.processor is None:
+                    self.personality.processor.add_file(save_path)
+                    file.save(save_path)
+                    # File saved successfully
+                    socketio.emit('progress', {'status':True, 'progress': 100})
+
+                else:
+                    # Personality doesn't support file sending
+                    socketio.emit('progress', {'status':False, 'error': "Personality doesn't support file sending"})
+            except Exception as e:
+                # Error occurred while saving the file
+                socketio.emit('progress', {'status':False, 'error': str(e)})
             
 
         
@@ -219,7 +246,7 @@ class LoLLMsAPPI():
                 ASCIIColors.green("Starting message generation by"+self.personality.name)
 
                 task = self.socketio.start_background_task(self.start_message_generation, message, message_id)
-
+                ASCIIColors.info("Started generation task")
                 #tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
                 #tpe.start()
             else:
@@ -301,6 +328,51 @@ class LoLLMsAPPI():
         ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
             
         return mounted_personalities
+
+
+
+
+    # ================================== LOLLMSApp
+
+    def load_binding(self):
+        if self.config.binding_name is None:
+            print(f"No bounding selected")
+            print("Please select a valid model or install a new one from a url")
+            self.menu.select_binding()
+            # cfg.download_model(url)
+        else:
+            try:
+                self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
+            except Exception as ex:
+                print(ex)
+                print(f"Couldn't find binding. Please verify your configuration file at {self.config.file_path} or use the next menu to select a valid binding")
+                print(f"Trying to reinstall binding")
+                self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL)
+                self.menu.select_binding()
+
+    def load_model(self):
+        try:
+            self.active_model = ModelBuilder(self.binding).get_model()
+            ASCIIColors.success("Model loaded successfully")
+        except Exception as ex:
+            ASCIIColors.error(f"Couldn't load model.")
+            ASCIIColors.error(f"Binding returned this exception : {ex}")
+            ASCIIColors.error(f"{self.config.get_model_path_infos()}")
+            print("Please select a valid model or install a new one from a url")
+            self.menu.select_model()
+
+    def load_personality(self):
+        try:
+            self.personality = PersonalityBuilder(self.lollms_paths, self.config, self.model).build_personality()
+        except Exception as ex:
+            ASCIIColors.error(f"Couldn't load personality.")
+            ASCIIColors.error(f"Binding returned this exception : {ex}")
+            ASCIIColors.error(f"{self.config.get_personality_path_infos()}")
+            print("Please select a valid model or install a new one from a url")
+            self.menu.select_model()
+        self.cond_tk = self.personality.model.tokenize(self.personality.personality_conditioning)
+        self.n_cond_tk = len(self.cond_tk)
+
 
     #properties
     @property

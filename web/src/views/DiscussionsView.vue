@@ -373,8 +373,11 @@ export default {
                 return {}
             }
         },
+
+        
         async stop_gen() {
             try {
+                socket.emit('cancel_generation', {});
                 const res = await axios.get('/stop_gen')
 
                 if (res) {
