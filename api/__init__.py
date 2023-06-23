@@ -223,12 +223,25 @@ class LoLLMsAPPI():
             installation_dir = self.lollms_paths.personal_models_path/self.config["binding_name"]
             filename = Path(model_path).name
             installation_path = installation_dir / filename
+            
+            model_name = filename
+            binding_folder = self.config["binding_name"]
 
             if not installation_path.exists():
-                socketio.emit('install_progress',{'status': False, 'error': 'The model does not exist', 'url':model_path}, room=request.sid)
+                socketio.emit('install_progress',{
+                                                    'status': False,
+                                                    'error': 'The model does not exist',
+                                                    'model_name' : model_name,
+                                                    'binding_folder' : binding_folder
+                                                }, room=request.sid)
 
             installation_path.unlink()
-            socketio.emit('install_progress',{'status': True, 'error': '', 'url':model_path}, room=request.sid)
+            socketio.emit('install_progress',{
+                                                'status': True, 
+                                                'error': '',
+                                                'model_name' : model_name,
+                                                'binding_folder' : binding_folder
+                                            }, room=request.sid)
 
 
         @socketio.on('upload_file')
