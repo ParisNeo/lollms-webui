@@ -246,7 +246,7 @@ class LoLLMsAPPI():
                     self.download_infos[signature]['downloaded_size'] = downloaded_size
                     self.download_infos[signature]['speed'] = speed
 
-                    if self.download_infos[signature]['progress']-progress>2:
+                    if progress - self.download_infos[signature]['progress']>2:
                         self.download_infos[signature]['progress'] = progress
                         socketio.emit('install_progress',{
                                                         'status': True,
@@ -592,7 +592,7 @@ class LoLLMsAPPI():
                             progress_bar.update(len(chunk))
 
             if callback is not None:
-                callback(100.0)
+                callback(total_size, total_size)
 
             print("File downloaded successfully")
         except Exception as e:
