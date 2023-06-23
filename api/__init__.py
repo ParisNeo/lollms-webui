@@ -174,18 +174,18 @@ class LoLLMsAPPI():
 
                 if installation_path.exists():
                     print("Error: Model already exists")
-                    socketio.emit('install_progress',{'status': False, 'error': 'model already exists'}, room=room_id)
+                    socketio.emit('install_progress',{'status': False, 'error': 'model already exists', 'url':model_path}, room=room_id)
                 
-                socketio.emit('install_progress',{'status': 'progress', 'progress': progress}, room=room_id)
+                socketio.emit('install_progress',{'status': 'progress', 'progress': progress, 'url':model_path}, room=room_id)
                 
                 def callback(progress):
-                    socketio.emit('install_progress',{'status': 'progress', 'progress': progress}, room=room_id)
+                    socketio.emit('install_progress',{'status': 'progress', 'progress': progress, 'url':model_path}, room=room_id)
                     
                 if hasattr(self.binding, "download_model"):
                     self.binding.download_model(model_path, installation_path, callback)
                 else:
                     self.download_file(model_path, installation_path, callback)
-                socketio.emit('install_progress',{'status': True, 'error': ''}, room=room_id)
+                socketio.emit('install_progress',{'status': True, 'error': '', 'url':model_path}, room=room_id)
             tpe = threading.Thread(target=install_model_, args=())
             tpe.start()
 
@@ -197,10 +197,10 @@ class LoLLMsAPPI():
             installation_path = installation_dir / filename
 
             if not installation_path.exists():
-                socketio.emit('install_progress',{'status': False, 'error': 'The model does not exist'}, room=request.sid)
+                socketio.emit('install_progress',{'status': False, 'error': 'The model does not exist', 'url':model_path}, room=request.sid)
 
             installation_path.unlink()
-            socketio.emit('install_progress',{'status': True, 'error': ''}, room=request.sid)
+            socketio.emit('install_progress',{'status': True, 'error': '', 'url':model_path}, room=request.sid)
 
 
         @socketio.on('upload_file')
