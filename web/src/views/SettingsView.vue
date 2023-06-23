@@ -457,7 +457,7 @@
                                     :is-installed="model.isInstalled" :on-install="onInstall" :on-uninstall="onUninstall"
                                     :on-selected="onSelected" :selected="model.title === configFile.model_name"
                                     :model="model" :model_type="model.model_type" :on-copy="onCopy"
-                                    :on-copy-link="onCopyLink" />
+                                    :on-copy-link="onCopyLink" :on-cancel-install="onCancelInstall" />
                             </TransitionGroup>
                         </div>
                     </div>
@@ -1295,6 +1295,12 @@ export default {
             this.$refs.toast.showToast("Copied link to clipboard!", 4, true)
             navigator.clipboard.writeText(modelEntry.path);
         },
+        onCancelInstall(modelEntry) {
+            modelEntry.installing = false
+            modelEntry.isInstalled = false
+            this.$refs.toast.showToast("Model installation aborted", 4, false)
+            socket.emit('cancel_install', { model_name: modelEntry.title, binding_folder: this.configFile.binding_name, model_url: modelEntry.path });
+        },
 
         // Model installation
 
@@ -1312,7 +1318,7 @@ export default {
             // Use an arrow function for progressListener
             const progressListener = (response) => {
                 console.log("received something");
-                if (response.status === 'progress') {
+                if (response.status && response.progress <= 100) {
                     console.log(`Progress = ${response.progress}`);
                     model_object.progress = response.progress
                     model_object.installing = true
@@ -1321,26 +1327,23 @@ export default {
                         this.models[index].isInstalled = true;
                         this.showProgress = false;
                         model_object.installing = false
+
+                        console.log("Received succeeded")
+                        socket.off('install_progress', progressListener);
+                        console.log("Installed successfully")
+                        // Update the isInstalled property of the corresponding model
+
+                        this.$refs.toast.showToast("Model:\n" + model_object.title + "\ninstalled!", 4, true)
+                        this.api_get_req("disk_usage").then(response => {
+                            this.diskUsage = response
+                        })
                     }
-                } else if (response.status === 'succeeded') {
-                    console.log("Received succeeded")
-                    socket.off('install_progress', progressListener);
-                    console.log("Installed successfully")
-                    // Update the isInstalled property of the corresponding model
-                    const index = this.models.findIndex((model) => model.path === path);
-                    this.models[index].isInstalled = true;
-                    this.showProgress = false;
-                    model_object.installing = false
-                    this.$refs.toast.showToast("Model:\n" + model_object.title + "\ninstalled!", 4, true)
-                    this.api_get_req("disk_usage").then(response => {
-                        this.diskUsage = response
-                    })
-                } else if (response.status === 'failed') {
+                } else {
                     socket.off('install_progress', progressListener);
                     console.log("Install failed")
                     // Installation failed or encountered an error
                     model_object.installing = false;
-                    
+
                     this.showProgress = false;
                     console.error('Installation failed:', response.error);
                     this.$refs.toast.showToast("Model:\n" + model_object.title + "\nfailed to install!", 4, false)
@@ -1357,41 +1360,50 @@ export default {
             console.log("Started installation, please wait");
         },
         onUninstall(model_object) {
-            console.log("uninstalling model...")
-            const progressListener = (response) => {
-                if (response.status === 'progress') {
-                    this.progress = response.progress;
-                } else if (response.status === 'succeeded') {
-                    // Installation completed
-                    model_object.uninstalling = false;
-                    socket.off('install_progress', progressListener);
-                    this.showProgress = false;
-                    const index = this.models.findIndex((model) => model.path === model_object.path);
-                    this.models[index].isInstalled = false;
-                    if (model_object.model.isCustomModel) {
-                        this.models = this.models.filter((model) => model.title !== model_object.title)
-                    }
-                    this.$refs.toast.showToast("Model:\n" + model_object.title + "\nwas uninstalled!", 4, true)
-                    this.api_get_req("disk_usage").then(response => {
-                        this.diskUsage = response
-                    })
-                } else if (response.status === 'failed') {
-                    // Installation failed or encountered an error
-                    model_object.uninstalling = false;
-                    this.showProgress = false;
-                    socket.off('install_progress', progressListener);
-                    // eslint-disable-next-line no-undef
-                    console.error('Uninstallation failed:', message.error);
-                    this.$refs.toast.showToast("Model:\n" + model_object.title + "\nfailed to uninstall!", 4, false)
-                    this.api_get_req("disk_usage").then(response => {
-                        this.diskUsage = response
-                    })
+
+            this.$refs.yesNoDialog.askQuestion("Are you sure you want to delete this model?\n [" + model_object.title + "]", 'Yes', 'Cancel').then(yesRes => {
+                if (yesRes) {
+                    console.log("uninstalling model...")
+                    const progressListener = (response) => {
+                        console.log("uninstalling res", response)
+                        if (response.status) {
+                            console.log("uninstalling success", response)
+
+                            // Installation completed
+                            model_object.uninstalling = false;
+                            socket.off('install_progress', progressListener);
+                            this.showProgress = false;
+                            const index = this.models.findIndex((model) => model.path === model_object.path);
+                            this.models[index].isInstalled = false;
+                            if (model_object.model.isCustomModel) {
+                                this.models = this.models.filter((model) => model.title !== model_object.title)
+                            }
+                            this.$refs.toast.showToast("Model:\n" + model_object.title + "\nwas uninstalled!", 4, true)
+                            this.api_get_req("disk_usage").then(response => {
+                                this.diskUsage = response
+                            })
+                        } else{
+                            console.log("uninstalling failed", response)
+                            // Installation failed or encountered an error
+                            model_object.uninstalling = false;
+                            this.showProgress = false;
+                            socket.off('install_progress', progressListener);
+                            // eslint-disable-next-line no-undef
+                            console.error('Uninstallation failed:', message.error);
+                            this.$refs.toast.showToast("Model:\n" + model_object.title + "\nfailed to uninstall!", 4, false)
+                            this.api_get_req("disk_usage").then(response => {
+                                this.diskUsage = response
+                            })
+                        }
+                    };
+
+                    socket.on('install_progress', progressListener);
+
+                    socket.emit('uninstall_model', { path: model_object.path });
+
                 }
-            };
 
-            socket.on('install_progress', progressListener);
-
-            socket.emit('uninstall_model', { path: model_object.path });
+            })
         },
         onSelectedBinding(binding_object) {
 
@@ -1564,7 +1576,7 @@ export default {
 
                     if (model.title == response["model_name"]) {
                         model.selected = true;
-                        
+
                     }
                     else {
                         model.selected = false;
@@ -1643,10 +1655,10 @@ export default {
 
                 const index = this.bindings.findIndex(item => item.folder == value)
                 const item = this.bindings[index]
-                if(item){
-                    item.installed=true
+                if (item) {
+                    item.installed = true
                 }
-                
+
                 this.$refs.toast.showToast("Binding changed.", 4, true)
                 this.settingsChanged = true
                 this.isLoading = false

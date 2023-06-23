@@ -17,7 +17,7 @@
       </button>
       <button
         class=" hover:text-red-600 duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
-        title="Delete file from disk" type="button" @click.stop="">
+        title="Delete file from disk" type="button" @click.stop="toggleInstall">
         <i data-feather="trash" class="w-5"></i>
       </button>
     </div>
@@ -50,6 +50,10 @@
             <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
               <div class="bg-blue-600 h-2.5 rounded-full" :style="{ width: progress + '%' }"></div>
             </div>
+            <div class="flex justify-between mb-1">
+              <span class="text-base font-medium text-blue-700 dark:text-white">Download speed: {{ speed_computed }}/s</span>
+              <span class="text-sm font-medium text-blue-700 dark:text-white">{{ downloaded_size_computed }}/{{ total_size_computed }}</span>
+            </div>
           </div>
         </div>
         <div class="flex flex-grow">
@@ -61,7 +65,7 @@
                                 class="mr-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm  sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                 {{ ConfirmButtonText }}
                             </button> -->
-              <button @click.stop="" type="button" title="Cancel download"
+              <button @click.stop="toggleCancelInstall" type="button" title="Cancel download"
                 class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
                 Cancel
               </button>
@@ -99,7 +103,7 @@
           </button>
           <button v-if="model.isInstalled"
             class=" hover:text-red-600 duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
-            title="Delete file from disk" type="button" @click.stop="">
+            title="Delete file from disk" type="button" @click.stop="toggleInstall">
             <i data-feather="trash" class="w-5"></i>
           </button>
           <button
@@ -214,6 +218,7 @@ export default {
     description: String,
     isInstalled: Boolean,
     onInstall: Function,
+    onCancelInstall: Function,
     onUninstall: Function,
     onSelected: Function,
     onCopy: Function,
@@ -225,6 +230,10 @@ export default {
   data() {
     return {
       progress: 0,
+      speed: 0,
+      total_size: 0,
+      downloaded_size: 0,
+      start_time: '',
       installing: false,
       uninstalling: false,
       failedToLoad: false,
@@ -331,6 +340,10 @@ export default {
       this.onCopyLink(this)
       //navigator.clipboard.writeText(this.path)
     },
+    toggleCancelInstall() {
+      this.onCancelInstall(this)
+      
+    },
     handleSelection() {
       if (this.isInstalled && !this.selected) {
         this.onSelected(this);
@@ -341,6 +354,18 @@ export default {
       this.$emit('copy', 'this.message.content')
 
     },
+  },
+  computed:{
+    speed_computed(){
+      return filesize(this.speed)
+    },
+    total_size_computed(){
+      return filesize(this.total_size)
+    },
+    downloaded_size_computed(){
+      return filesize(this.downloaded_size)
+    },
+    
   },
   watch: {
     linkNotValid() {
