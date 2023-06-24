@@ -4,6 +4,20 @@
 >
 >It is mandatory to have python [3.10](https://www.python.org/downloads/release/python-31010/) (The official one, not the one from Microsoft Store) and [git](https://git-scm.com/download/win) installed.
 
+### Prerequisites
+
+Before you continue make sure you have these aditional applications installed:
+
+Lately some bindings use Nvidia GPU (CUDA) for computing and is 3x faster than CPU. In order to run these bindings on CUDA device, you will need to install cuda toolkit.
+
+- [Nvidia CUDA toolkit 11.7 or higher](https://developer.nvidia.com/cuda-downloads)
+
+For CUDA and other packages to be compiled you will also need C++ build tools. The easiest way is to download Visual studio community. Make sure you choose C++ build tools at the installation screen.
+
+- [Visual Studio Community](https://visualstudio.microsoft.com/vs/community/)
+
+After these two are installed make sure to reboot your system before continuing.
+
 ### Manual Simple install:
 
 1. Download this repository .zip:
@@ -22,9 +36,31 @@
 git clone https://github.com/ParisNeo/lollms-webui.git
 ```
 
-4. Install/run application by double clicking on `webui.bat` file from Windows explorer as normal user.
+4. Install/run application by double clicking on `webui.bat` file from Windows explorer as normal user and follow the on screen instructions.
 
 ## Linux
+
+### Prerequisites
+
+> **Note**
+>
+>This was tested on Ubuntu 22.04 or higher.
+
+Before you continue make sure you have these aditional applications installed:
+
+Lately some bindings use Nvidia GPU (CUDA) for computing and is 3x faster than CPU. In order to run these bindings on CUDA device, you will need to install cuda toolkit.
+
+```bash
+sudo apt install nvidia-cuda-toolkit
+```
+
+For CUDA and other packages to be compiled you will also need C++ build tools. The easiest way is to download Visual studio community. Make sure you choose C++ build tools at the installation screen.
+
+```bash
+sudo apt install build-essential
+```
+
+After these two are installed make sure to reboot your system before continuing.
 
 ### Automatic install
 
