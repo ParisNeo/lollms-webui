@@ -484,7 +484,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         elif setting_name== "model_name":
             self.config["model_name"]=data['setting_value']
             try:
-                self.binding.build_model()
+                self.model = self.binding.build_model()
             except Exception as ex:
                 print(f"Couldn't load model: [{ex}]")
                 return jsonify({ "status":False, 'error':str(ex)})
@@ -497,16 +497,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 self.config["binding_name"]=data['setting_value']
                 try:
                     self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
-                    try:
-                        self.binding.build_model()
-                    except Exception as ex:
-                        print(f"Couldn't load model: [{ex}]")
-                        return jsonify({ "status":False, 'error':str(ex)})
+                    self.model = None
                 except Exception as ex:
                     print(f"Couldn't build binding: [{ex}]")
                     return jsonify({"status":False, 'error':str(ex)})
-
-
             else:
                 if self.config["debug"]:
                     print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
