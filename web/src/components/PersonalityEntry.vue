@@ -52,14 +52,19 @@
 
             {{ personality.author }}
           </div>
-          <!-- <div class="">
-  <b>Language:&nbsp;</b>
-  {{ personality.language }}
-</div>
-<div class="">
-  <b>Category:&nbsp;</b>
-  {{ personality.category }}
-</div> -->
+          <div class="flex items-center">
+            <i data-feather="globe" class="w-5 m-1"></i>
+            <b>Language:&nbsp;</b>
+
+            {{ personality.language }}
+          </div>
+          <div class="flex items-center">
+            <i data-feather="bookmark" class="w-5 m-1"></i>
+            <b>Category:&nbsp;</b>
+
+            {{ personality.category }}
+          </div>
+
         </div>
         <div class="flex items-center">
           <i data-feather="info" class="w-5 m-1"></i>

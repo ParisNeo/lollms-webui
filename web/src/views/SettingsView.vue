@@ -1319,8 +1319,12 @@ export default {
             const progressListener = (response) => {
                 console.log("received something");
                 if (response.status && response.progress <= 100) {
-                    console.log(`Progress = ${response.progress}`);
+                    console.log(`Progress`,response);
                     model_object.progress = response.progress
+                    model_object.speed = response.speed
+                    model_object.total_size = response.total_size
+                    model_object.downloaded_size = response.downloaded_size
+                    model_object.start_time = response.start_time
                     model_object.installing = true
                     if (model_object.progress == 100) {
                         const index = this.models.findIndex((model) => model.path === path);
