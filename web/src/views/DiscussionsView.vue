@@ -1219,6 +1219,9 @@ export default {
             this.$refs.dragdropDiscussion.show = true
 
         },
+        // socketConnected(val){
+        //     console.log('connected',val)
+        // }
 
 
 
@@ -1242,7 +1245,8 @@ export default {
         socket.on('infos', this.createBotMsg)
         socket.on('message', this.streamMessageContent)
         socket.on("final", this.finalMsgEvent)
-
+        // socket.on('connected',this.socketConnected)
+        // socket.on('disconnected',this.socketConnected)
     },
     mounted() {
         //console.log('chatbox mnt',this.$refs)

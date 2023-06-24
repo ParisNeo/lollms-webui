@@ -1216,14 +1216,17 @@ export default {
 
                 //this.settingsChanged = true
 
-                if (pers.isMounted) {
+                if (pers.isMounted && this.configFile.personalities.includes(pers.personality.full_path)) {
 
                     const res = await this.select_personality(pers)
 
-                    if (res.status) {
+                    if (res && res.status && res.active_personality_id > -1) {
                         this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
-
+                        
+                    }else{
+                        this.$refs.toast.showToast("Error on select personality:\n" + pers.name, 4, false)
                     }
+                    this.isLoading = false
 
                 } else {
                     this.onPersonalityMounted(pers)
@@ -1235,7 +1238,7 @@ export default {
                     feather.replace()
 
                 })
-                this.isLoading = false
+                
             }
 
         },
@@ -1827,7 +1830,7 @@ export default {
             this.personalities.sort((a, b) => a.name.localeCompare(b.name))
             this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
             this.personalitiesFiltered.sort()
-
+            console.log('per filtered', this.personalitiesFiltered)
             this.isLoading = false
 
         },
@@ -1955,7 +1958,7 @@ export default {
             const res = await this.mount_personality(pers.personality)
             console.log('mount_personality res', res)
 
-            if (res && res.status) {
+            if (res && res.status && res.active_personality_id > -1 && res.personalities.includes(pers.personality.full_path)) {
                 this.configFile.personalities = res.personalities
                 this.$refs.toast.showToast("Personality mounted", 4, true)
                 pers.isMounted = true
@@ -1968,7 +1971,7 @@ export default {
                 this.getMountedPersonalities()
             } else {
                 pers.isMounted = false
-                this.$refs.toast.showToast("Could not mount personality\nError: " + res.error, 4, false)
+                this.$refs.toast.showToast("Could not mount personality\nError: " + res.error +"\nResponse:\n"+res, 4, false)
             }
             this.isLoading = false
 
@@ -2051,7 +2054,7 @@ export default {
 
         },
         onPersonalityMounted(persItem) {
-            this.isLoading = true
+            //this.isLoading = true
             console.log('on sel ', persItem)
 
             if (this.configFile.personalities.includes(persItem.full_path)) {
@@ -2071,7 +2074,7 @@ export default {
 
             }
 
-            this.isLoading = false
+            //this.isLoading = false
         },
         personalityImgPlacehodler(event) {
             event.target.src = defaultPersonalityImgPlaceholder
