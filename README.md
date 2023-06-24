@@ -33,22 +33,40 @@ Welcome to LoLLMS WebUI (Lord of Large Language Models: One tool to rule them al
 
 Before installing LoLLMS WebUI, make sure you have the following dependencies installed:
 
-- Python 3.10 or higher
-- Git (for cloning the repository)
+- [Python 3.10 or higher](https://www.python.org/downloads/release/python-3100/)
+- Pip - installation depends on OS, but make sure you have it installed.
+- [Git (for cloning the repository)](https://git-scm.com/downloads)
+- [Visual Studio Community](https://visualstudio.microsoft.com/vs/community/) with c++ build tools (for CUDA [nvidia GPU's]) - optional for windows
+- Build essentials (for CUDA [nvidia GPU's]) - optional for linux
+- [Nvidia CUDA toolkit 11.7 or higher](https://developer.nvidia.com/cuda-downloads) (for CUDA [nvidia GPU's]) - optional
+- [Miniconda3](https://docs.conda.io/en/latest/miniconda.html) - optional (more stable than python)
 
 Ensure that the Python installation is in your system's PATH, and you can call it from the terminal. To verify your Python version, run the following command:
 
+Windows:
 ```bash
 python --version
 ```
+
+Linux:
+```bash
+python3 --version
+```
+
 If you receive an error or the version is lower than 3.10, please install a newer version and try again.
 
 ### Installation steps
+
+For detailed installation steps please refer to these documents:
+
+- [Windows 10/11](./docs/usage/AdvancedInstallInstructions.md#windows-10-and-11)
+- [Linux (tested on ubuntu)](./docs/usage/AdvancedInstallInstructions.md#linux)
 #### Easy install
 
 - Download the appropriate application launcher based on your platform:
     For Windows: `webui.bat`
     For Linux: `webui.sh`
+    For Linux: `c_webui.sh` - using miniconda3
 - Place the downloaded launcher in a folder of your choice, for example:
     Windows: `C:\ai\LoLLMS-webui`
     Linux: `/home/user/ai/LoLLMS-webui`
@@ -66,8 +84,8 @@ cd lollms-webui
 Now create a new conda environment, activate it and install requirements
 
 ```bash
-conda create -n LoLLMS-webui python=3.10
-conda activate LoLLMS-webui
+conda create --prefix ./env python=3.10
+conda activate ./env
 pip install -r requirements.txt
 ```
 #### Using Docker
