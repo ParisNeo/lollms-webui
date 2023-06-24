@@ -377,8 +377,9 @@
                             <TransitionGroup name="list">
                                 <BindingEntry ref="bindingZoo" v-for="(binding, index) in bindings"
                                     :key="'index-' + index + '-' + binding.folder" :binding="binding"
-                                    :on-selected="onSelectedBinding" :on-reinstall="onReinstallBinding" :on-install="onInstallBinding"
-                                    :on-settings="onSettingsBinding" :selected="binding.folder === configFile.binding_name">
+                                    :on-selected="onSelectedBinding" :on-reinstall="onReinstallBinding"
+                                    :on-install="onInstallBinding" :on-settings="onSettingsBinding"
+                                    :selected="binding.folder === configFile.binding_name">
                                 </BindingEntry>
                             </TransitionGroup>
                         </div>
@@ -509,7 +510,7 @@
 
                     <div class="mb-2">
 
-                        <div class="p-2 ">
+                        <div class="p-2 " v-if="!modelDownlaodInProgress">
 
                             <form>
                                 <div class="mb-3">
@@ -531,19 +532,80 @@
 
                         <div class="p-2  ">
 
-                            <form>
+                            <div v-if="!modelDownlaodInProgress">
                                 <div class="mb-3">
                                     <label for="email"
                                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Model
                                         URL</label>
-                                    <input type="email" id="email"
+                                    <input type="text" v-model="addModel.url"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                         placeholder="url" required>
                                 </div>
 
-                                <button type="submit"
+                                <button type="button" @click.stop="onInstallAddModel()"
                                     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Download</button>
-                            </form>
+                            </div>
+                            <div v-if="modelDownlaodInProgress"
+                                class="relative flex flex-col items-center justify-center flex-grow h-full">
+                                <div role="status" class=" justify-center ">
+                                    <!-- SPINNER -->
+
+                                </div>
+                                <div class="relative flex flex-row flex-grow items-center w-full h-full bottom-0">
+                                    <!-- PROGRESS BAR -->
+                                    <div class="w-full p-2">
+
+
+                                        <div class="flex justify-between mb-1">
+                                            <span
+                                                class="flex flex-row items-center gap-2 text-base font-medium text-blue-700 dark:text-white">
+                                                Downloading
+                                                <svg aria-hidden="true"
+                                                    class="w-4 h-4 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-secondary"
+                                                    viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                                        fill="currentColor" />
+                                                    <path
+                                                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                                        fill="currentFill" />
+                                                </svg>
+                                                <span class="sr-only">Loading...</span>
+                                            </span>
+                                            <span class="text-sm font-medium text-blue-700 dark:text-white">{{
+                                                Math.floor(addModel.progress) }}%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                            <div class="bg-blue-600 h-2.5 rounded-full"
+                                                :style="{ width: addModel.progress + '%' }">
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-between mb-1">
+                                            <span class="text-base font-medium text-blue-700 dark:text-white">Download
+                                                speed: {{ speed_computed }}/s</span>
+                                            <span class="text-sm font-medium text-blue-700 dark:text-white">{{
+                                                downloaded_size_computed }}/{{ total_size_computed }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex flex-grow">
+                                    <!-- CANCEL BUTTON -->
+
+                                    <div class="flex  flex-row flex-grow gap-3">
+                                        <div class="p-2 text-center grow">
+                                            <!-- <button @click.stop="hide(true)" type="button"
+                                class="mr-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm  sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                {{ ConfirmButtonText }}
+                            </button> -->
+                                            <button @click.stop="onCancelInstall" type="button" title="Cancel download"
+                                                class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                                                Cancel
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
                     </div>
@@ -1043,7 +1105,9 @@ export default {
             searchPersonality: "",
             searchPersonalityTimer: {},
             searchPersonalityTimerInterval: 1500, // timeout in ms
-            searchPersonalityInProgress: false
+            searchPersonalityInProgress: false,
+            addModel: {},
+            modelDownlaodInProgress: false,
 
         }
     },
@@ -1222,8 +1286,8 @@ export default {
 
                     if (res && res.status && res.active_personality_id > -1) {
                         this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
-                        
-                    }else{
+
+                    } else {
                         this.$refs.toast.showToast("Error on select personality:\n" + pers.name, 4, false)
                     }
                     this.isLoading = false
@@ -1238,7 +1302,7 @@ export default {
                     feather.replace()
 
                 })
-                
+
             }
 
         },
@@ -1286,11 +1350,18 @@ export default {
             this.$refs.toast.showToast("Copied link to clipboard!", 4, true)
             navigator.clipboard.writeText(modelEntry.path);
         },
-        onCancelInstall(modelEntry) {
-            modelEntry.installing = false
+        onCancelInstall() {
 
+            const modelEntry = this.addModel
+
+            const keys = Object.keys(this.addModel)
+            if (keys.includes('url')) {
+                return
+            }
+            this.modelDownlaodInProgress = false
+            this.addModel = {}
             this.$refs.toast.showToast("Model installation aborted", 4, false)
-            socket.emit('cancel_install', { model_name: modelEntry.title, binding_folder: this.configFile.binding_name, model_url: modelEntry.path });
+            socket.emit('cancel_install', { model_name: modelEntry.model_name, binding_folder: modelEntry.binding_folder, model_url: modelEntry.model_url });
         },
 
         // Model installation
@@ -1354,6 +1425,68 @@ export default {
             socket.emit('install_model', { path: path });
             console.log("Started installation, please wait");
         },
+        onInstallAddModel() {
+
+
+
+            if (!this.addModel.url) {
+
+                this.$refs.toast.showToast("Link is empty", 4, false)
+                return
+            }
+            let path = this.addModel.url;
+
+            this.addModel.progress = 0;
+            console.log("installing...");
+            console.log("value ", this.addModel.url);
+            this.modelDownlaodInProgress = true
+            // Use an arrow function for progressListener
+            const progressListener = (response) => {
+                console.log("received something");
+                if (response.status && response.progress <= 100) {
+                    console.log(`Progress`, response);
+                    this.addModel = response
+                    // this.addModel.progress = response.progress
+                    // this.addModel.speed = response.speed
+                    // this.addModel.total_size = response.total_size
+                    // this.addModel.downloaded_size = response.downloaded_size
+                    // this.addModel.start_time = response.start_time
+                    this.modelDownlaodInProgress = true
+                    if (this.addModel.progress == 100) {
+
+                        this.modelDownlaodInProgress = true
+
+                        console.log("Received succeeded")
+                        socket.off('install_progress', progressListener);
+                        console.log("Installed successfully")
+                        // Update the isInstalled property of the corresponding model
+
+                        this.$refs.toast.showToast("Model:\n" + this.addModel.model_name + "\ninstalled!", 4, true)
+                        this.api_get_req("disk_usage").then(response => {
+                            this.diskUsage = response
+                        })
+                    }
+                } else {
+                    socket.off('install_progress', progressListener);
+                    console.log("Install failed")
+                    // Installation failed or encountered an error
+                    this.modelDownlaodInProgress = false;
+
+
+                    console.error('Installation failed:', response.error);
+                    this.$refs.toast.showToast("Model:\n" + this.addModel.model_name + "\nfailed to install!", 4, false)
+                    this.api_get_req("disk_usage").then(response => {
+                        this.diskUsage = response
+                    })
+                }
+            };
+
+            socket.on('install_progress', progressListener);
+
+
+            socket.emit('install_model', { path: path });
+            console.log("Started installation, please wait");
+        },
         onUninstall(model_object) {
 
             this.$refs.yesNoDialog.askQuestion("Are you sure you want to delete this model?\n [" + model_object.title + "]", 'Yes', 'Cancel').then(yesRes => {
@@ -1402,7 +1535,7 @@ export default {
         },
         onSelectedBinding(binding_object) {
             if (!binding_object.binding.installed) {
-                this.$refs.toast.showToast("Binding is not installed:\n" + binding_object.binding.name , 4, false)
+                this.$refs.toast.showToast("Binding is not installed:\n" + binding_object.binding.name, 4, false)
                 return
             }
             if (this.configFile.binding_name != binding_object.binding.folder) {
@@ -1418,7 +1551,7 @@ export default {
             }
         },
         onInstallBinding(binding_object) {
-            
+
             if (this.configFile.binding_name != binding_object.binding.folder) {
 
                 // disabled for now
@@ -1971,7 +2104,7 @@ export default {
                 this.getMountedPersonalities()
             } else {
                 pers.isMounted = false
-                this.$refs.toast.showToast("Could not mount personality\nError: " + res.error +"\nResponse:\n"+res, 4, false)
+                this.$refs.toast.showToast("Could not mount personality\nError: " + res.error + "\nResponse:\n" + res, 4, false)
             }
             this.isLoading = false
 
@@ -2236,6 +2369,15 @@ export default {
 
 
         },
+        speed_computed() {
+            return filesize(this.addModel.speed)
+        },
+        total_size_computed() {
+            return filesize(this.addModel.total_size)
+        },
+        downloaded_size_computed() {
+            return filesize(this.addModel.downloaded_size)
+        },
 
 
     },
@@ -2344,7 +2486,7 @@ export default {
         if (!this.isModelSelected) {
             const res = await this.$refs.yesNoDialog.askQuestion("Did You forgot to select model?\nYou need to select model before you leave, or else.", 'Ok', 'Cancel')
             if (res) {
-               //
+                //
 
             }
 
