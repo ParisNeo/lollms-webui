@@ -92,8 +92,8 @@ if ping -q -c 1 google.com >/dev/null 2>&1; then
 
     # Create a new Conda environment
     echo -n "Creating Conda environment..."
-    conda create -n <conda_environment_name> python=3.10
-    conda activate <conda_environment_name>
+    conda create --prefix ./env python=3.10
+    conda activate ./env
     echo "is created"
 
     # Install the required packages
