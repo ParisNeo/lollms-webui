@@ -377,8 +377,8 @@ export default {
         
         async stop_gen() {
             try {
-                socket.emit('cancel_generation', {});
-                const res = await axios.get('/stop_gen')
+                socket.emit('cancel_generation');
+                //const res = await axios.get('/stop_gen')
 
                 if (res) {
                     return res.data
