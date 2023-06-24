@@ -1,9 +1,9 @@
 <template>
-  <div class=" items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer select-none"
-    @click.stop="toggleSelected" :class="selected ? ' border-primary-light' : 'border-transparent'"
+  <div class=" items-start p-4 hover:bg-primary-light hover:border-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer select-none"
+    @click.stop="toggleSelected" :class="selected ? ' border-primary bg-primary' : 'border-transparent'"
     :title="!binding.installed ? 'Not installed' : binding.name">
 
-    <div :class="!binding.installed ? 'opacity-50' : ''">
+    <div>
 
       <div class="flex flex-row items-center   gap-3 ">
         <img ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)"
@@ -16,14 +16,15 @@
         </div>
         <!-- ADVANCED OPTIONS -->
         <div class="flex-none gap-1">
-          <button v-if="!binding.installed" type="button" title="Not installed"
+
+          <!-- <button v-if="!binding.installed" type="button" title="Not installed"
             class="hover:text-red-600 duration-75 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
             @click.stop="">
             <i data-feather="slash" class="w-5"></i>
             <span class="sr-only">Not installed</span>
-          </button>
+          </button> -->
 
-          <button v-if="binding.installed" type="button" title="Reinstall binding"
+          <!-- <button v-if="binding.installed" type="button" title="Reinstall binding"
             class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
             @click.stop="toggleReinstall">
             <i data-feather="tool" class="w-5"></i>
@@ -34,7 +35,7 @@
             @click.stop="toggleSettings">
             <i data-feather="sliders" class="w-5"></i>
             <span class="sr-only">Settings</span>
-          </button>
+          </button> -->
           <!-- - NOT IMPLEMENTED -->
           <!-- 
           <button type="button" title="Help - Not implemented"
@@ -44,6 +45,27 @@
           </button> -->
         </div>
 
+      </div>
+      <div class="flex items-center flex-row-reverse gap-2 my-1">
+        <!-- CONTROLS -->
+        <button v-if="!binding.installed" title="Click to install" type="button" @click.stop="toggleInstall"
+          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          Install
+
+          <span class="sr-only">Click to install</span>
+        </button>
+        <button v-if="binding.installed" title="Click to Reinstall binding" type="button"  @click.stop="toggleReinstall"
+          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+          Reinstall binding
+
+          <span class="sr-only">Reinstall binding</span>
+        </button>
+        <button v-if="selected" title="Click to open Settings" type="button" @click.stop="toggleSettings"
+          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          Settings
+
+          <span class="sr-only">Settings</span>
+        </button>
       </div>
       <!-- <div class="  justify-end">
           <i data-feather="sliders" class="w-5 m-1"></i>
@@ -102,6 +124,7 @@ export default {
     binding: {},
     onSelected: Function,
     onReinstall: Function,
+    onInstall: Function,
     onSettings: Function,
     selected: Boolean,
 
@@ -131,7 +154,10 @@ export default {
       event.target.src = botImgPlaceholder
     },
     toggleSelected() {
-      this.onSelected(this)
+        this.onSelected(this)
+    },
+    toggleInstall() {
+        this.onInstall(this)
     },
     toggleReinstall() {
       this.onReinstall(this)

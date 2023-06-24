@@ -193,7 +193,8 @@
                                 </h3>
                                 <i data-feather="hard-drive" class="w-5 h-5 mx-1 flex-shrink-0"></i>
                                 <h3 class="font-bold font-large text-lg">
-                                    <div> {{ disk_binding_models_usage }} / {{ disk_total_space }}  ({{ disk_percent_usage }}%)</div>
+                                    <div> {{ disk_binding_models_usage }} / {{ disk_total_space }} ({{ disk_percent_usage
+                                    }}%)</div>
                                 </h3>
                             </div>
                         </div>
@@ -376,7 +377,7 @@
                             <TransitionGroup name="list">
                                 <BindingEntry ref="bindingZoo" v-for="(binding, index) in bindings"
                                     :key="'index-' + index + '-' + binding.folder" :binding="binding"
-                                    :on-selected="onSelectedBinding" :on-reinstall="onReinstallBinding"
+                                    :on-selected="onSelectedBinding" :on-reinstall="onReinstallBinding" :on-install="onInstallBinding"
                                     :on-settings="onSettingsBinding" :selected="binding.folder === configFile.binding_name">
                                 </BindingEntry>
                             </TransitionGroup>
@@ -647,9 +648,10 @@
                                     class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                     placeholder="Search personality..." required v-model="searchPersonality"
                                     @keyup.stop="searchPersonality_func">
-                                    <button v-if="searchPersonality" @click.stop="searchPersonality=''" type="button" class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                        Clear search</button>
-   
+                                <button v-if="searchPersonality" @click.stop="searchPersonality = ''" type="button"
+                                    class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                    Clear search</button>
+
                                 <!-- @input="filterPersonalities()" -->
 
                             </div>
@@ -1283,7 +1285,7 @@ export default {
         },
         onCancelInstall(modelEntry) {
             modelEntry.installing = false
-            
+
             this.$refs.toast.showToast("Model installation aborted", 4, false)
             socket.emit('cancel_install', { model_name: modelEntry.title, binding_folder: this.configFile.binding_name, model_url: modelEntry.path });
         },
@@ -1305,7 +1307,7 @@ export default {
             const progressListener = (response) => {
                 console.log("received something");
                 if (response.status && response.progress <= 100) {
-                    console.log(`Progress`,response);
+                    console.log(`Progress`, response);
                     model_object.progress = response.progress
                     model_object.speed = response.speed
                     model_object.total_size = response.total_size
@@ -1372,7 +1374,7 @@ export default {
                             this.api_get_req("disk_usage").then(response => {
                                 this.diskUsage = response
                             })
-                        } else{
+                        } else {
                             console.log("uninstalling failed", response)
                             // Installation failed or encountered an error
                             model_object.uninstalling = false;
@@ -1396,7 +1398,24 @@ export default {
             })
         },
         onSelectedBinding(binding_object) {
+            if (!binding_object.binding.installed) {
+                this.$refs.toast.showToast("Binding is not installed:\n" + binding_object.binding.name , 4, false)
+                return
+            }
+            if (this.configFile.binding_name != binding_object.binding.folder) {
 
+                // disabled for now
+                // if (binding_object.binding.folder === 'backend_template' || binding_object.binding.folder === 'binding_template') {
+                //     this.$refs.toast.showToast("Cannot select template", 4, false)
+
+                //     return
+                // }
+                this.update_binding(binding_object.binding.folder)
+                //console.log('lol',binding_object)
+            }
+        },
+        onInstallBinding(binding_object) {
+            
             if (this.configFile.binding_name != binding_object.binding.folder) {
 
                 // disabled for now
@@ -2310,9 +2329,19 @@ export default {
         // console.log('did settings?',this.settingsChanged)
         await this.$router.isReady()
         if (this.settingsChanged) {
-            const res = await this.$refs.yesNoDialog.askQuestion("You forgot to apply changes?\nYou need to apply changes before you leave, or else.", 'Apply configuration', 'Cancel')
+            const res = await this.$refs.yesNoDialog.askQuestion("Did You forgot to apply changes?\nYou need to apply changes before you leave, or else.", 'Apply configuration', 'Cancel')
             if (res) {
                 this.applyConfiguration()
+
+            }
+
+            return false
+
+        }
+        if (!this.isModelSelected) {
+            const res = await this.$refs.yesNoDialog.askQuestion("Did You forgot to select model?\nYou need to select model before you leave, or else.", 'Ok', 'Cancel')
+            if (res) {
+               //
 
             }
 

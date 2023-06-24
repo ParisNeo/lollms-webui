@@ -1,8 +1,8 @@
 <template>
   <div
-    class="relative items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer select-none"
-    @click.stop="toggleSelected" :class="selected ? ' border-primary-light' : 'border-transparent'" :title="title">
-
+    class="relative items-start p-4 hover:bg-primary-light  hover:border-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer select-none"
+    @click.stop="toggleSelected" :class="selected ? ' border-primary bg-primary' : 'border-transparent'" :title="title">
+<!-- CUSTOM MODEL VIEW -->
     <div class="flex flex-row" v-if="model.isCustomModel">
       <div class="flex gap-3 items-center grow">
         <img :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-lg object-fill">
@@ -76,7 +76,7 @@
       </div>
 
     </div>
-    <div v-if="!model.isCustomModel" :class="!model.isInstalled ? 'opacity-50' : ''">
+    <div >
 
       <div class="flex flex-row items-center   gap-3 ">
         <img ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-lg object-fill"
@@ -89,7 +89,7 @@
         </div>
         <!-- ADVANCED OPTIONS -->
         <div class="flex-none gap-1">
-          <button v-if="!model.isInstalled" type="button" title="Not installed"
+          <!-- <button v-if="!model.isInstalled" type="button" title="Not installed"
             class="hover:text-red-600 duration-75 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
             @click.stop="">
             <i data-feather="slash" class="w-5"></i>
@@ -110,7 +110,7 @@
             class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
             title="Copy model info to clipboard" @click.stop="toggleCopy()">
             <i data-feather="clipboard" class="w-5"></i>
-          </button>
+          </button> -->
           <!-- <button v-if="selected" type="button" title="Settings"
             class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
             @click.stop="toggleSettings">
@@ -127,16 +127,44 @@
         </div>
 
       </div>
+      <div class="flex items-center flex-row-reverse gap-2 my-1">
+        <!-- CONTROLS -->
+        <button  type="button" title="Copy model info to clipboard" @click.stop="toggleCopy()"
+          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          Copy info
 
+          <span class="sr-only">Settings</span>
+        </button>
+        <div class="flex flex-row  items-center ">
+
+<div v-if="linkNotValid" class="text-base text-red-600 flex  items-center mt-1 ">
+  <i data-feather="alert-triangle" class="flex-shrink-0 mx-1"></i>
+  Link is not valid
+</div>
+</div>
+        <button v-if="!model.isInstalled && !linkNotValid" title="Click to install" type="button" @click.stop="toggleInstall"
+          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          Install
+
+          <span class="sr-only">Click to install</span>
+        </button>
+        <button v-if="model.isInstalled"  title="Delete file from disk" type="button" @click.stop="toggleInstall"
+          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+          Uninstall
+
+          <span class="sr-only">Remove</span>
+        </button>
+
+      </div>
       <div class="" :title="!model.isInstalled ? 'Not installed' : title">
         <div class="">
-          <div class="flex flex-row  items-center ">
+          <!-- <div class="flex flex-row  items-center ">
 
             <div v-if="linkNotValid" class="text-base text-red-600 flex  items-center mt-1 ">
               <i data-feather="alert-triangle" class="flex-shrink-0 mx-1"></i>
               Link is not valid
             </div>
-          </div>
+          </div> -->
           <div class="flex flex-row  items-center ">
 
             <i data-feather="download" class="w-5 m-1 flex-shrink-0"></i>
@@ -152,10 +180,11 @@
               Click here to download
 
             </a>
+            <div class="grow"></div>
             <button
               class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
               title="Copy link to clipboard" @click.stop="toggleCopyLink()">
-              <i data-feather="copy" class="w-5"></i>
+              <i data-feather="clipboard" class="w-5"></i>
             </button>
 
           </div>
