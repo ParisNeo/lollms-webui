@@ -184,7 +184,8 @@ class LoLLMsAPPI():
                 if file_size:
                     file_size = int(file_size)
                 
-                return file_size            
+                return file_size   
+                     
             def install_model_():
                 print("Install model triggered")
                 model_path = data["path"]
