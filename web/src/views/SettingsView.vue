@@ -647,6 +647,9 @@
                                     class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                     placeholder="Search personality..." required v-model="searchPersonality"
                                     @keyup.stop="searchPersonality_func">
+                                    <button v-if="searchPersonality" @click.stop="searchPersonality=''" type="button" class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                        Clear search</button>
+   
                                 <!-- @input="filterPersonalities()" -->
 
                             </div>
@@ -704,24 +707,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <div v-if="searchPersonality">
-                        <div v-if="filterPersonalities_computed.length > 0" class="mb-2">
-                            <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                Personalities found: ({{ filterPersonalities_computed.length }})
-                            </label>
-                            <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
-                                :class="pzl_collapsed ? '' : 'max-h-96'">
-                                <TransitionGroup name="bounce">
-                                    <personality-entry ref="personalitiesZooSearch"
-                                        v-for="(pers, index) in filterPersonalities_computed"
-                                        :key="'index-' + index + '-' + pers.name" :personality="pers"
-                                        :full_path="pers.full_path"
-                                        :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === pers.full_path)"
-                                        :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted" />
-                                </TransitionGroup>
-                            </div>
-                        </div>
-                    </div> -->
+
                     <!-- EXPAND / COLLAPSE BUTTON -->
                     <button v-if="pzl_collapsed"
                         class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "

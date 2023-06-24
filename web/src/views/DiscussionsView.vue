@@ -679,7 +679,12 @@ export default {
 
                         // Create new User message
                         // Temp data
-                        const lastmsgid = Number(this.discussionArr[this.discussionArr.length - 1].id) + 1
+                        let lastmsgid =0
+                        if(this.discussionArr.length>0){
+                            lastmsgid= Number(this.discussionArr[this.discussionArr.length - 1].id) + 1
+                        }
+                        
+                        
                         let usrMessage = {
                             message: msg,
                             id: lastmsgid,
