@@ -831,10 +831,16 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             self.apply_settings()
             ASCIIColors.success("ok")
-            return jsonify({"status": True,
-                            "personalities":self.config["personalities"],
-                            "active_personality_id":self.config["active_personality_id"]
-                            })         
+            if self.config["active_personality_id"]<0:
+                return jsonify({"status": False,
+                                "personalities":self.config["personalities"],
+                                "active_personality_id":self.config["active_personality_id"]
+                                })         
+            else:
+                return jsonify({"status": True,
+                                "personalities":self.config["personalities"],
+                                "active_personality_id":self.config["active_personality_id"]
+                                })         
         else:
             pth = str(config_file).replace('\\','/')
             ASCIIColors.error(f"nok : Personality not found @ {pth}")
