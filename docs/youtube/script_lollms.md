@@ -18,3 +18,18 @@ As usual, go to the github repository then to the release page. Now you have man
 Download the file to a folder where you want to install the application. 
 
 Once it is downloaded, go to the folder and double click the script to run it.
+Now just follow the instructions.
+The tool start by cloning the project into a subfolder called lollms-webui.
+If you don't have conda, this will ask you if you want to install it. I already have conda, so it will just create a conda environment in the lollms-webui/env folder and will install every thing in there. This is to ensure that your system is not polluted with useless libraries if ever you want to delete this tool.
+When you are asked to install cuda, the answer depends on your system. If you have an nvidea GPU accept, otherwize refuse.
+You will be asked to select a personal folder. This folder will contain:
+- the bindings zoo
+- the installed models
+- the personalities zoo
+- the configurations
+- the data files
+- the outputs of the models which can be text, images, or even executable code etc
+- the configuration files
+- the discussion database
+Make sure to put this folder to a partition that has enough space as models may be heavy sometimes. 
+Here I just press enter to choose the default location which is my documents folder.

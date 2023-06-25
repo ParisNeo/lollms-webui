@@ -1,6 +1,6 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
 version: 7
-binding_name: py_llama_cpp
+binding_name: null
 model_name: null
 
 # Host information
