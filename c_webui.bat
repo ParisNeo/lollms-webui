@@ -132,13 +132,10 @@ if %errorlevel% equ 0 (
         echo Environment already exists. Skipping environment creation.
         conda activate ./env
     )
-    cd
-    pause
+
     echo Activating environment
     conda activate ./env
     echo Conda environment is created
-    pause
-
     REM Install the required packages
     echo Installing requirements using pip...
     pip install -r requirements.txt
@@ -148,23 +145,13 @@ if %errorlevel% equ 0 (
         exit /b 1
     )
 
+    echo "Cleanup"
     REM Cleanup
     if exist "./tmp" (
         rmdir /s /q "./tmp"
         echo Cleaning tmp folder
     )
     
-    conda list | findstr /i /c:"cudatoolkit-dev" >nul
-    if errorlevel 1 (
-        echo CUDA package not found. Installing...
-        set /p install_cuda=Do you want to install CUDA? (Y/N) 
-
-        if /i "%install_cuda%"=="Y" (
-            conda install -c conda-forge cudatoolkit-dev
-        )
-    ) else (
-        echo CUDA package is already installed.
-    )
     echo Launching application
     REM Launch the Python application
     python app.py
