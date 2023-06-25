@@ -158,10 +158,6 @@ class LoLLMsAPPI():
         def disconnect():
             ASCIIColors.error(f'Client {request.sid} disconnected')
 
-        @socketio.on('cancel_generation')
-        def cancel_generation():
-            self.cancel_gen = True
-            ASCIIColors.error(f'Client {request.sid} canceled generation')
         
         @socketio.on('cancel_install')
         def cancel_install(data):
@@ -374,6 +370,10 @@ class LoLLMsAPPI():
                 # Error occurred while saving the file
                 socketio.emit('progress', {'status':False, 'error': str(e)})
             
+        @socketio.on('cancel_generation')
+        def cancel_generation():
+            self.cancel_gen = True
+            ASCIIColors.error(f'Client {request.sid} canceled generation')
 
         
         @socketio.on('generate_msg')

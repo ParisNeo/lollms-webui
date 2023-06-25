@@ -120,8 +120,9 @@ if %errorlevel% equ 0 (
     )
     echo Deactivating any activated environment
     conda deactivate
-    set INSTALL_ENV_DIR=%cd%\lollms-webui\env
-    echo checking %INSTALL_ENV_DIR% existance
+
+set INSTALL_ENV_DIR=%cd%\lollms-webui\env
+echo checking %INSTALL_ENV_DIR% existance
 
     rem Check the error level to determine if the file exists
     if not exist "%INSTALL_ENV_DIR%" (

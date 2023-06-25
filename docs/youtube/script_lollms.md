@@ -33,3 +33,15 @@ You will be asked to select a personal folder. This folder will contain:
 - the discussion database
 Make sure to put this folder to a partition that has enough space as models may be heavy sometimes. 
 Here I just press enter to choose the default location which is my documents folder.
+The first time you run this application, you are prompted to select the binding. bindings are bridge modules that allows lollms to talk to different libraries that can run language models. If you are using a mac, I would recommend using gpt4all binding. If you have a powerful GPU and want to use as many models as possible then you go with ctransformers. The fastest for llama models is the official llama cpp binding. The Pyllamacpp is a tiny stable binding that runs with only llama models but can run on any pc seamlessly. As of today, GPTQ binding can run but it is still in experimental stage. Maybe use it in few weeks. I have a GPU, and want to test many models, so I'll go with CTransformers.
+This may take few minutes to complete as it should install many modules.
+Let's fastforward.
+Once the binding is installed, you need to select a first model. You have the choice between installing a model from the internet or link to a local model file. This allows you tu mutualize models with other tools like Gpt4all or oobbabooga's text generation webui.
+Let's choose to install a model from internet.
+I advise you to checkout TheBlokes's hugging face space as he has a huge library of quantized models that you can download and use. Let's select a small model.
+C Transformers is compatible with GGML models. So make sure you select a GGML one. Let's go with a very tiny orca mini 3B model quantized to 4 bits.
+Copy and paste the model link to the console then press enter.
+Downloading the model takes some time, so let's fast forward.
+Once the model is downloaded, you can select it.
+Now open your browser at the shown address. The default one is localhost:9600. You can change the address or port in the configuration file that you can find in your personal folder / configs / local_config.yaml. if you put 0.0.0.0 all your ip addresses will expose the ui. Make sure you use this in trustworthy networks as people may have access to your discussions. To stay safe, just use localhost to force a local use. The remote use may be useful if you want to use the app on your phone or another low power terminal. I will show you later how you can use multi servers / clients with secure access while keeping your data private without exposing them.
+Now to start a conversation, just press + and start typing your prompt to the ai in the input area. you validate either by pressing enter, or by pressing the validation button. You can make a multiline prompt by holding shift key and pressing enter.
