@@ -45,3 +45,15 @@ Downloading the model takes some time, so let's fast forward.
 Once the model is downloaded, you can select it.
 Now open your browser at the shown address. The default one is localhost:9600. You can change the address or port in the configuration file that you can find in your personal folder / configs / local_config.yaml. if you put 0.0.0.0 all your ip addresses will expose the ui. Make sure you use this in trustworthy networks as people may have access to your discussions. To stay safe, just use localhost to force a local use. The remote use may be useful if you want to use the app on your phone or another low power terminal. I will show you later how you can use multi servers / clients with secure access while keeping your data private without exposing them.
 Now to start a conversation, just press + and start typing your prompt to the ai in the input area. you validate either by pressing enter, or by pressing the validation button. You can make a multiline prompt by holding shift key and pressing enter.
+Let's ask it to make a short love story.
+As you can see, the ai did come up with something. This model is very very small, so don't expect it to have a high peformance.
+Now let's install a littble bit bigger model like the Falcon 7B.
+To do this, we go to settings tab.
+There are many changes since last time. Now you can monitor disk usage as well as both ram and v-ram usages if you have a cuda enabled GPU.
+You can also install more bindings and select them as well as updating their configuration from the ui.
+Check out the new models zoo. There are many many models out there. Feel free to try some of them to find which one fits you better.
+Now let's find our falcon 7B model. For now the search option is not yet implemented but it is going to be implemented next week, so stay tuned.
+
+Let's select a 4 bits quantization which is a good ratio between size and performance.
+Press install and wait for it to download the model. You can install multiple models simultaniously. Make sure you have enough disk space as some of those models are very big.
+Once installed, we can ask the same question and compare the output.

@@ -1,5 +1,4 @@
 @echo off
-
 set environment_path=%cd%/lollms-webui/env
 
 
@@ -121,11 +120,10 @@ if %errorlevel% equ 0 (
     echo Deactivating any activated environment
     conda deactivate
 
-set INSTALL_ENV_DIR=%cd%\lollms-webui\env
-echo checking %INSTALL_ENV_DIR% existance
+    echo checking %environment_path% existance
 
     rem Check the error level to determine if the file exists
-    if not exist "%INSTALL_ENV_DIR%" (
+    if not exist "%environment_path%" (
         REM Create a new Conda environment
         echo Creating Conda environment...
         conda create --prefix ./env python=3.10

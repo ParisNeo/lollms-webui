@@ -397,6 +397,7 @@ class LoLLMsAPPI():
                 ASCIIColors.green("Starting message generation by"+self.personality.name)
 
                 task = self.socketio.start_background_task(self.start_message_generation, message, message_id)
+                self.socketio.sleep(0)
                 ASCIIColors.info("Started generation task")
                 #tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
                 #tpe.start()
