@@ -39,7 +39,6 @@ echo \u001b[0m
 
 echo Testing internet connection
 ping -n 1 google.com >nul
-echo here
 if %errorlevel% equ 0 (
     echo Internet Connection working fine
     
@@ -64,13 +63,16 @@ if %errorlevel% equ 0 (
         git pull origin main
     ) else (
         if exist lollms-webui (
-            cd lollms-webui
+            cd ./lollms-webui
         ) else (
             echo Cloning repository...
             git clone https://github.com/ParisNeo/lollms-webui.git ./lollms-webui
-            cd lollms-webui
+            cd ./lollms-webui
+            echo Cloned successfully
         )
     )
+
+    
     echo Pulling latest version...
     git pull
 
@@ -113,14 +115,13 @@ if %errorlevel% equ 0 (
             )
         )
     )
-
-    set "filename=./env"
+    set filename=./env
     echo Deactivating any activated environment
     conda deactivate
+    echo checking %filename% existance
 
     rem Check the error level to determine if the file exists
-    cd %filename%
-    IF !ERRORLEVEL! GTR 0 (
+    if not exist "%filename%" (
         REM Create a new Conda environment
         echo Creating Conda environment...
         conda create --prefix ./env python=3.10
@@ -128,14 +129,15 @@ if %errorlevel% equ 0 (
         pip install --upgrade pip setuptools wheel
         conda install -c conda-forge cudatoolkit-dev
     ) else (
-        echo %CD%
-        cd ..
         echo Environment already exists. Skipping environment creation.
         conda activate ./env
     )
+    cd
+    pause
     echo Activating environment
     conda activate ./env
     echo Conda environment is created
+    pause
 
     REM Install the required packages
     echo Installing requirements using pip...
