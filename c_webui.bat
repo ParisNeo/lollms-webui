@@ -1,6 +1,9 @@
 @echo off
 
-echo \u001b[34m
+set environment_path=%cd%/lollms-webui/env
+
+
+echo "\u001b[34m"
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
@@ -115,13 +118,13 @@ if %errorlevel% equ 0 (
             )
         )
     )
-    set filename=./env
     echo Deactivating any activated environment
     conda deactivate
-    echo checking %filename% existance
+    set INSTALL_ENV_DIR=%cd%\lollms-webui\env
+    echo checking %INSTALL_ENV_DIR% existance
 
     rem Check the error level to determine if the file exists
-    if not exist "%filename%" (
+    if not exist "%INSTALL_ENV_DIR%" (
         REM Create a new Conda environment
         echo Creating Conda environment...
         conda create --prefix ./env python=3.10
@@ -145,16 +148,21 @@ if %errorlevel% equ 0 (
         exit /b 1
     )
 
-    echo "Cleanup"
+    echo Cleanup
     REM Cleanup
     if exist "./tmp" (
-        rmdir /s /q "./tmp"
         echo Cleaning tmp folder
+        rmdir /s /q "./tmp"
+        echo Done
     )
-    
-    echo Launching application
+    echo Ready
+    echo launching app
     REM Launch the Python application
-    python app.py
+    python app.py %*
+    set app_result=%errorlevel%
+
+    pause >nul
+    exit /b 0
 
 ) else (
     REM Go to webui folder
@@ -163,6 +171,13 @@ if %errorlevel% equ 0 (
     REM Activate environment
     conda activate ./env
 
+    echo launching app
     REM Launch the Python application
-    python app.py
+    python app.py %*
+    set app_result=%errorlevel%
+
+    pause >nul
+    exit /b 0
 )
+
+

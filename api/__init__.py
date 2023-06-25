@@ -99,7 +99,7 @@ class LoLLMsAPPI():
         self.socketio = socketio
         # Check model
         if config.binding_name is None:
-            self.menu.select_model()
+            self.menu.select_binding()
 
         self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
         
