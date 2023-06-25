@@ -430,8 +430,8 @@ class LoLLMsAPPI():
             tpe.start()
         # generation status
         self.generating=False
-        ASCIIColors.blue(f"Your personal data is stored here :{self.lollms_paths.personal_path}")
-        ASCIIColors.blue(f"Listening on :http://{self.config['host']}:{self.config['port']}")
+        ASCIIColors.blue(f"Your personal data is stored here :",end="")
+        ASCIIColors.green(f"{self.lollms_paths.personal_path}")
 
 
     def rebuild_personalities(self):
