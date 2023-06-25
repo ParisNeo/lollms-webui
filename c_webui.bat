@@ -1,3 +1,4 @@
+@echo off
 
 echo \u001b[34m
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
@@ -35,9 +36,10 @@ echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo \u001b[0m
-@echo off
 
+echo Testing internet connection
 ping -n 1 google.com >nul
+echo here
 if %errorlevel% equ 0 (
     echo Internet Connection working fine
     
@@ -78,24 +80,65 @@ if %errorlevel% equ 0 (
     if %errorlevel% equ 0 (
         echo Conda is installed
     ) else (
-        set /p choice=Conda is not installed. Would you like to install Conda? [Y/N]
+        set /p choice="Conda is not installed. Would you like to install Conda? [Y/N]:"
         if /i "%choice%"=="Y" (
             echo Installing Conda...
-            REM Replace the following lines with appropriate Conda installation commands for Windows
-            echo Please install Conda and try again.
-            exit /b 1
+            set "miniconda_installer_url=https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe"
+            set "miniconda_installer=miniconda_installer_filename.exe"
+            rem Download the Miniconda installer using curl.
+            curl -o "%miniconda_installer%" "%miniconda_installer_url%"            
+            if exist "%miniconda_installer%" (
+                echo Miniconda installer downloaded successfully.
+                echo Installing Miniconda...
+                echo.
+
+                rem Run the Miniconda installer.
+                "%miniconda_installer%" /InstallationType=JustMe /AddToPath=yes /RegisterPython=0 /S /D="%USERPROFILE%\Miniconda"
+
+                if %errorlevel% equ 0 (
+                    echo Miniconda has been installed successfully in "%USERPROFILE%\Miniconda".
+                ) else (
+                    echo Failed to install Miniconda.
+                )
+
+                rem Clean up the Miniconda installer file.
+                del "%miniconda_installer%"
+
+                rem Activate Miniconda.
+                call "%USERPROFILE%\Miniconda\Scripts\activate"
+
+            ) else (
+                echo Failed to download the Miniconda installer.
+                exit /b 1
+            )
         )
     )
 
-    REM Create a new Conda environment
-    echo Creating Conda environment...
-    conda create --prefix ./env python=3.10
+    set "filename=./env"
+    echo Deactivating any activated environment
+    conda deactivate
+
+    rem Check the error level to determine if the file exists
+    cd %filename%
+    IF !ERRORLEVEL! GTR 0 (
+        REM Create a new Conda environment
+        echo Creating Conda environment...
+        conda create --prefix ./env python=3.10
+        conda activate ./env
+        pip install --upgrade pip setuptools wheel
+        conda install -c conda-forge cudatoolkit-dev
+    ) else (
+        echo %CD%
+        cd ..
+        echo Environment already exists. Skipping environment creation.
+        conda activate ./env
+    )
+    echo Activating environment
     conda activate ./env
     echo Conda environment is created
 
     REM Install the required packages
-    echo Installing requirements...
-    pip install --upgrade pip setuptools wheel
+    echo Installing requirements using pip...
     pip install -r requirements.txt
 
     if %errorlevel% neq 0 (
@@ -108,7 +151,29 @@ if %errorlevel% equ 0 (
         rmdir /s /q "./tmp"
         echo Cleaning tmp folder
     )
+    
+    conda list | findstr /i /c:"cudatoolkit-dev" >nul
+    if errorlevel 1 (
+        echo CUDA package not found. Installing...
+        set /p install_cuda=Do you want to install CUDA? (Y/N) 
 
+        if /i "%install_cuda%"=="Y" (
+            conda install -c conda-forge cudatoolkit-dev
+        )
+    ) else (
+        echo CUDA package is already installed.
+    )
+    echo Launching application
+    REM Launch the Python application
+    python app.py
+
+) else (
+    REM Go to webui folder
+    cd lollms-webui
+
+    REM Activate environment
+    conda activate ./env
+
+    REM Launch the Python application
+    python app.py
 )
-REM Launch the Python application
-python app.py

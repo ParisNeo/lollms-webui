@@ -68,7 +68,24 @@ from api.config import load_config, save_config
 from api import LoLLMsAPPI
 import shutil
 import markdown
+import socket
 
+def get_ip_address():
+    # Create a socket object
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    
+    try:
+        # Connect to a remote host (doesn't matter which one)
+        sock.connect(('8.8.8.8', 80))
+        
+        # Get the local IP address of the socket
+        ip_address = sock.getsockname()[0]
+        return ip_address
+    except socket.error:
+        return None
+    finally:
+        # Close the socket
+        sock.close()
 
 class LoLLMsWebUI(LoLLMsAPPI):
     def __init__(self, _app, _socketio, config:LOLLMSConfig, config_file_path:Path|str, lollms_paths:LollmsPaths) -> None:
@@ -1430,9 +1447,16 @@ if __name__ == "__main__":
     else:
         ASCIIColors.info("debug mode:false")
     
-    url = f'http://{config["host"]}:{config["port"]}'
+
+        
     
-    print(f"Please open your browser and go to {url} to view the ui")
+    url = f'http://{config["host"]}:{config["port"]}'
+    if config["host"]=="0.0.0.0":
+        print(f'Please open your browser and go to http://localhost:{config["port"]} to view the ui')
+        ASCIIColors.success(f'This server is visible from a remote PC. use this address http://{get_ip_address()}:{config["port"]}')
+    else:
+        print(f"Please open your browser and go to {url} to view the ui")
+    
     socketio.run(app, host=config["host"], port=config["port"])
     # http_server = WSGIServer((config["host"], config["port"]), app, handler_class=WebSocketHandler)
     # http_server.serve_forever()

@@ -12,4 +12,9 @@ The third use is by directly using out web-ui to interact with the language mode
 The web-ui has multiple functionalities and allow you to handle many tasks.
 
 Now let's install the application.
-As usual, go to 
+To install the application, you need to have already installed git and python 3.10 with its pip package manager. You can optionally have anaconda or miniconda installed if you want to use that option. To use the GPU, you also need to install Cuda toolkit v 11.7 or higher or use the conda installation script that will automatically install conda build tools. Make sure git, python and cuda are added to your path environment variable and let's begin.
+As usual, go to the github repository then to the release page. Now you have many options depending on your system and your preference. for windows, you can use webui.bat or c_webui.bat, for linux, you can use webui.sh or c-webui.sh. C stands for conda, so if you havn't installed conda, don't use that file.
+
+Download the file to a folder where you want to install the application. 
+
+Once it is downloaded, go to the folder and double click the script to run it.

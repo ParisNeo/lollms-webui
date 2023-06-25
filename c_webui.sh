@@ -111,7 +111,12 @@ if ping -q -c 1 google.com >/dev/null 2>&1; then
       rm -rf "./tmp"
       echo "Cleaning tmp folder"
     fi
-
+    # Launch the Python application
+    python app.py
+else
+    # go to the ui folder
+    cd lollms-webui
+    conda activate ./env
+    # Launch the Python application
+    python app.py
 fi
-# Launch the Python application
-python app.py
