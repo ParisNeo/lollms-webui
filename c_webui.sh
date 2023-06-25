@@ -112,6 +112,6 @@ if ping -q -c 1 google.com >/dev/null 2>&1; then
       echo "Cleaning tmp folder"
     fi
 
-    # Launch the Python application
-    python app.py
 fi
+# Launch the Python application
+python app.py
