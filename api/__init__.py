@@ -107,8 +107,11 @@ class LoLLMsAPPI():
         if config.model_name is None:
             self.menu.select_model()
 
-        self.model = self.binding.build_model()
-
+        try:
+            self.model = self.binding.build_model()
+        except Exception as ex:
+            ASCIIColors.error(f"Couldn't build model. Try to reinstall binding {self.config['binding_name']}")
+            self.model =  None
         self.mounted_personalities = []
         self.mounted_personalities = self.rebuild_personalities()
         if self.config["active_personality_id"]<len(self.mounted_personalities):
