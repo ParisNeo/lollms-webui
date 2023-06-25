@@ -1397,7 +1397,7 @@ if __name__ == "__main__":
         
     
     url = f'http://{config["host"]}:{config["port"]}'
-    if config["host"]=="0.0.0.0":
+    if config["host"]=="localhost":
         print(f'Please open your browser and go to http://localhost:{config["port"]} to view the ui')
         ASCIIColors.success(f'This server is visible from a remote PC. use this address http://{get_ip_address()}:{config["port"]}')
     else:
