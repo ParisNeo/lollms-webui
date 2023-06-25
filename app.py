@@ -219,9 +219,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
             "/set_model", "set_model", self.set_model, methods=["POST"]
         )
         
-        self.add_endpoint(
-            "/update_model_params", "update_model_params", self.update_model_params, methods=["POST"]
-        )
 
         self.add_endpoint(
             "/get_config", "get_config", self.get_config, methods=["GET"]
@@ -1165,65 +1162,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return jsonify(self.process.set_config(self.config))
 
         return jsonify({"status": "succeeded"})    
-    
-    def update_model_params(self):
-        data = request.get_json()
-        binding =  str(data["binding"])
-        model =  str(data["model_name"])
-        personality_language =  str(data["personality_language"])
-        personality_category =  str(data["personality_category"])
-        personality =  str(data["personality"])
-        
-        if self.config['binding_name']!=binding or  self.config['model_name'] != model:
-            print("update_model_params: New model selected")
-            
-            self.config['binding_name'] = binding
-            self.config['model_name'] = model
-
-        self.config['personality_language'] = personality_language
-        self.config['personality_category'] = personality_category
-        self.config['personality'] = personality
-
-        personality_fn = lollms_path/f"personalities_zoo/{self.personality_language}/{self.personality_category}/{self.personality_name}"
-        print(f"Loading personality : {personality_fn}")
-
-        self.config['n_predict'] = int(data["nPredict"])
-        self.config['seed'] = int(data["seed"])
-        self.config['model_name'] = str(data["model_name"])
-        self.config['voice'] = str(data["voice"])
-        self.config['language'] = str(data["language"])
-        
-        self.config['temperature'] = float(data["temperature"])
-        self.config['top_k'] = int(data["topK"])
-        self.config['top_p'] = float(data["topP"])
-        self.config['repeat_penalty'] = float(data["repeatPenalty"])
-        self.config['repeat_last_n'] = int(data["repeatLastN"])
-
-        self.config.save_config(self.config_file_path)
-
-        
-        # Fixed missing argument
-        self.binding = self.process.rebuild_binding(self.config)
-
-        print("==============================================")
-        print("Parameters changed to:")
-        print(f"\tBinding:{self.config['binding_name']}")
-        print(f"\tModel:{self.config['model_name']}")
-        print(f"\tPersonality language:{self.config['personality_language']}")
-        print(f"\tPersonality category:{self.config['personality_category']}")
-        print(f"\tPersonality:{self.config['personality']}")
-        print(f"\tLanguage:{self.config['language']}")
-        print(f"\tVoice:{self.config['voice']}")
-        print(f"\tTemperature:{self.config['temperature']}")
-        print(f"\tNPredict:{self.config['n_predict']}")
-        print(f"\tSeed:{self.config['seed']}")
-        print(f"\top_k:{self.config['top_k']}")
-        print(f"\top_p:{self.config['top_p']}")
-        print(f"\trepeat_penalty:{self.config['repeat_penalty']}")
-        print(f"\trepeat_last_n:{self.config['repeat_last_n']}")
-        print("==============================================")
-
-        return jsonify(self.process.set_config(self.config))
     
     
     def get_available_models(self):
