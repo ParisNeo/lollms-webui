@@ -572,8 +572,13 @@
                                                 </svg>
                                                 <span class="sr-only">Loading...</span>
                                             </span>
+                                            
                                             <span class="text-sm font-medium text-blue-700 dark:text-white">{{
                                                 Math.floor(addModel.progress) }}%</span>
+                                        </div>
+                                        <div class="mx-1 opacity-80 line-clamp-1" :title="addModel.url">
+                                            {{addModel.url}}
+
                                         </div>
                                         <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
                                             <div class="bg-blue-600 h-2.5 rounded-full"
@@ -1354,10 +1359,10 @@ export default {
 
             const modelEntry = this.addModel
 
-            const keys = Object.keys(this.addModel)
-            if (keys.includes('url')) {
-                return
-            }
+            // const keys = Object.keys(this.addModel)
+            // if (keys.includes('url')) {
+            //     return
+            // }
             this.modelDownlaodInProgress = false
             this.addModel = {}
             this.$refs.toast.showToast("Model installation aborted", 4, false)
@@ -1446,6 +1451,7 @@ export default {
                 if (response.status && response.progress <= 100) {
                     console.log(`Progress`, response);
                     this.addModel = response
+                    this.addModel.url = path
                     // this.addModel.progress = response.progress
                     // this.addModel.speed = response.speed
                     // this.addModel.total_size = response.total_size
@@ -1460,7 +1466,7 @@ export default {
                         socket.off('install_progress', progressListener);
                         console.log("Installed successfully")
                         // Update the isInstalled property of the corresponding model
-
+                        this.addModel={}
                         this.$refs.toast.showToast("Model:\n" + this.addModel.model_name + "\ninstalled!", 4, true)
                         this.api_get_req("disk_usage").then(response => {
                             this.diskUsage = response
@@ -1471,7 +1477,7 @@ export default {
                     console.log("Install failed")
                     // Installation failed or encountered an error
                     this.modelDownlaodInProgress = false;
-
+                    
 
                     console.error('Installation failed:', response.error);
                     this.$refs.toast.showToast("Model:\n" + this.addModel.model_name + "\nfailed to install!", 4, false)
