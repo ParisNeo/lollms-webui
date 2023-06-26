@@ -58,7 +58,7 @@ if ping -q -c 1 google.com >/dev/null 2>&1; then
     # Check if repository exists
     if [[ -d .git ]] ;then
       echo "Pulling latest changes"
-      git pull origin main
+      git pull 
     else
       if [[ -d lollms-webui ]] ;then
         cd lollms-webui

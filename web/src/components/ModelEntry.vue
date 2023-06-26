@@ -2,7 +2,7 @@
   <div
     class="relative items-start p-4 hover:bg-primary-light  hover:border-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer select-none"
     @click.stop="toggleSelected" :class="selected ? ' border-primary bg-primary' : 'border-transparent'" :title="title">
-<!-- CUSTOM MODEL VIEW -->
+    <!-- CUSTOM MODEL VIEW -->
     <div class="flex flex-row" v-if="model.isCustomModel">
       <div class="flex gap-3 items-center grow">
         <img :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-lg object-fill">
@@ -10,20 +10,35 @@
           {{ title }}
         </h3>
       </div>
-      <button type="button" title="Custom model / local model"
-        class="font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
-        <i data-feather="box" class="w-5"></i>
-        <span class="sr-only">Custom model / local model</span>
-      </button>
-      <button
-        class=" hover:text-red-600 duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
-        title="Delete file from disk" type="button" @click.stop="toggleInstall">
-        <i data-feather="trash" class="w-5"></i>
-      </button>
+
+
+    </div>
+    <div v-if="model.isCustomModel" class="flex items-center flex-row gap-2 my-1">
+      <!-- CONTROLS -->
+      <div class="flex grow items-center">
+        <button type="button" title="Custom model / local model"
+          class="font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
+          <i data-feather="box" class="w-5"></i>
+          <span class="sr-only">Custom model / local model</span>
+        </button>
+        Custom model
+      </div>
+      <div>
+        <button v-if="model.isInstalled" title="Delete file from disk" type="button" @click.stop="toggleInstall"
+          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+          Uninstall
+
+          <span class="sr-only">Remove</span>
+        </button>
+      </div>
+
+
+
+
     </div>
     <div v-if="installing"
       class="absolute z-10 -m-4 p-5 shadow-md text-center rounded-lg w-full h-full bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel bg-opacity-70 dark:bg-opacity-70 flex justify-center items-center">
-    <!-- DOWNLOAD MODEL PANEL SPINNER -->
+      <!-- DOWNLOAD MODEL PANEL SPINNER -->
       <div class="relative flex flex-col items-center justify-center flex-grow h-full">
         <div role="status" class=" justify-center ">
           <!-- SPINNER -->
@@ -51,8 +66,10 @@
               <div class="bg-blue-600 h-2.5 rounded-full" :style="{ width: progress + '%' }"></div>
             </div>
             <div class="flex justify-between mb-1">
-              <span class="text-base font-medium text-blue-700 dark:text-white">Download speed: {{ speed_computed }}/s</span>
-              <span class="text-sm font-medium text-blue-700 dark:text-white">{{ downloaded_size_computed }}/{{ total_size_computed }}</span>
+              <span class="text-base font-medium text-blue-700 dark:text-white">Download speed: {{ speed_computed
+              }}/s</span>
+              <span class="text-sm font-medium text-blue-700 dark:text-white">{{ downloaded_size_computed }}/{{
+                total_size_computed }}</span>
             </div>
           </div>
         </div>
@@ -76,7 +93,7 @@
       </div>
 
     </div>
-    <div >
+    <div v-if="!model.isCustomModel">
 
       <div class="flex flex-row items-center   gap-3 ">
         <img ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-lg object-fill"
@@ -129,7 +146,7 @@
       </div>
       <div class="flex items-center flex-row-reverse gap-2 my-1">
         <!-- CONTROLS -->
-        <button  type="button" title="Copy model info to clipboard" @click.stop="toggleCopy()"
+        <button type="button" title="Copy model info to clipboard" @click.stop="toggleCopy()"
           class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
           Copy info
 
@@ -137,18 +154,19 @@
         </button>
         <div class="flex flex-row  items-center ">
 
-<div v-if="linkNotValid" class="text-base text-red-600 flex  items-center mt-1 ">
-  <i data-feather="alert-triangle" class="flex-shrink-0 mx-1"></i>
-  Link is not valid
-</div>
-</div>
-        <button v-if="!model.isInstalled && !linkNotValid" title="Click to install" type="button" @click.stop="toggleInstall"
+          <div v-if="linkNotValid" class="text-base text-red-600 flex  items-center mt-1 ">
+            <i data-feather="alert-triangle" class="flex-shrink-0 mx-1"></i>
+            Link is not valid
+          </div>
+        </div>
+        <button v-if="!model.isInstalled && !linkNotValid" title="Click to install" type="button"
+          @click.stop="toggleInstall"
           class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
           Install
 
           <span class="sr-only">Click to install</span>
         </button>
-        <button v-if="model.isInstalled"  title="Delete file from disk" type="button" @click.stop="toggleInstall"
+        <button v-if="model.isInstalled" title="Delete file from disk" type="button" @click.stop="toggleInstall"
           class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
           Uninstall
 
@@ -371,7 +389,7 @@ export default {
     },
     toggleCancelInstall() {
       this.onCancelInstall(this)
-      
+
     },
     handleSelection() {
       if (this.isInstalled && !this.selected) {
@@ -384,17 +402,17 @@ export default {
 
     },
   },
-  computed:{
-    speed_computed(){
+  computed: {
+    speed_computed() {
       return filesize(this.speed)
     },
-    total_size_computed(){
+    total_size_computed() {
       return filesize(this.total_size)
     },
-    downloaded_size_computed(){
+    downloaded_size_computed() {
       return filesize(this.downloaded_size)
     },
-    
+
   },
   watch: {
     linkNotValid() {
