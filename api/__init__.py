@@ -107,16 +107,20 @@ class LoLLMsAPPI():
         if config.model_name is None:
             self.menu.select_model()
 
-        self.model = self.binding.build_model()
-
         self.mounted_personalities = []
-        self.mounted_personalities = self.rebuild_personalities()
-        if self.config["active_personality_id"]<len(self.mounted_personalities):
-            self.personality:AIPersonality = self.mounted_personalities[self.config["active_personality_id"]]
-        else:
-            self.personality:AIPersonality = None
-        if config["debug"]:
-            print(print(f"{self.personality}"))
+        try:
+            self.model = self.binding.build_model()
+            self.mounted_personalities = self.rebuild_personalities()
+            if self.config["active_personality_id"]<len(self.mounted_personalities):
+                self.personality:AIPersonality = self.mounted_personalities[self.config["active_personality_id"]]
+            else:
+                self.personality:AIPersonality = None
+            if config["debug"]:
+                print(print(f"{self.personality}"))
+            
+        except Exception as ex:
+            ASCIIColors.error(f"Couldn't load model:\nException generated:{ex}")
+            self.model = None
         self.config_file_path = config_file_path
         self.cancel_gen = False
 

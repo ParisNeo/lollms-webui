@@ -41,6 +41,9 @@ from flask import (
     stream_with_context,
     send_from_directory
 )
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
+
 from flask_socketio import SocketIO, emit
 from pathlib import Path
 import yaml
@@ -88,7 +91,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
         # Endpoints
         # =========================================================================================
 
-
+        
+        self.add_endpoint("/install_model_from_path", "install_model_from_path", self.install_model_from_path, methods=["GET"])
+        
         self.add_endpoint("/reinstall_binding", "reinstall_binding", self.reinstall_binding, methods=["POST"])
 
 
@@ -800,13 +805,38 @@ class LoLLMsWebUI(LoLLMsAPPI):
                         "active_personality_id":self.config["active_personality_id"]
                         })         
 
+    def install_model_from_path(self):
+        ASCIIColors.info(f"- Selecting model ...")
+        # Define the file types
+        filetypes = [
+            ("Model file", self.binding.file_extension),
+        ]
+        # Create the Tkinter root window
+        root = Tk()
+
+        # Hide the root window
+        root.withdraw()
+
+        # Open the file dialog
+        file_path = askopenfilename(filetypes=filetypes)
+        
+        file_path = Path(file_path)
+        #
+        with open(str(self.lollms_paths.personal_models_path/self.config.binding_name/(file_path.stem+".reference")),"w") as f:
+            f.write(file_path)
+        
+        return jsonify({
+                        "status": True
+                    })
+        
+        
     def reinstall_binding(self):
         try:
             data = request.get_json()
             # Further processing of the data
         except Exception as e:
             print(f"Error occurred while parsing JSON: {e}")
-            return
+            return jsonify({"status":False, 'error':str(ex)})
         ASCIIColors.info(f"- Reinstalling binding {data['name']}...")
         try:
             self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL)
