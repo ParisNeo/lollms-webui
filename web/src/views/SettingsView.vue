@@ -1454,7 +1454,7 @@ export default {
                     this.modelDownlaodInProgress = true
                     if (this.addModel.progress == 100) {
 
-                        this.modelDownlaodInProgress = true
+                        this.modelDownlaodInProgress = false
 
                         console.log("Received succeeded")
                         socket.off('install_progress', progressListener);
