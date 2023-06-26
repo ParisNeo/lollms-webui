@@ -519,13 +519,15 @@
                                         files</label>
 
 
-                                    <input
+                                    <input @change="setFileList"
                                         class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                                        id="multiple_files" type="file" multiple>
+                                        ref="fileDialogAddModel" type="file" multiple>
                                 </div>
 
-                                <button type="submit"
+                                <button type="button" @click.stop="uploadLocalModel"
                                     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Upload</button>
+
+
                             </form>
 
                         </div>
@@ -572,12 +574,12 @@
                                                 </svg>
                                                 <span class="sr-only">Loading...</span>
                                             </span>
-                                            
+
                                             <span class="text-sm font-medium text-blue-700 dark:text-white">{{
                                                 Math.floor(addModel.progress) }}%</span>
                                         </div>
                                         <div class="mx-1 opacity-80 line-clamp-1" :title="addModel.url">
-                                            {{addModel.url}}
+                                            {{ addModel.url }}
 
                                         </div>
                                         <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
@@ -1113,6 +1115,7 @@ export default {
             searchPersonalityInProgress: false,
             addModel: {},
             modelDownlaodInProgress: false,
+            uploadData: [],
 
         }
     },
@@ -1466,7 +1469,7 @@ export default {
                         socket.off('install_progress', progressListener);
                         console.log("Installed successfully")
                         // Update the isInstalled property of the corresponding model
-                        this.addModel={}
+                        this.addModel = {}
                         this.$refs.toast.showToast("Model:\n" + this.addModel.model_name + "\ninstalled!", 4, true)
                         this.api_get_req("disk_usage").then(response => {
                             this.diskUsage = response
@@ -1477,7 +1480,7 @@ export default {
                     console.log("Install failed")
                     // Installation failed or encountered an error
                     this.modelDownlaodInProgress = false;
-                    
+
 
                     console.error('Installation failed:', response.error);
                     this.$refs.toast.showToast("Model:\n" + this.addModel.model_name + "\nfailed to install!", 4, false)
@@ -1492,6 +1495,75 @@ export default {
 
             socket.emit('install_model', { path: path });
             console.log("Started installation, please wait");
+        },
+        uploadLocalModel() {
+
+
+            if (this.uploadData.length == 0) {
+
+                this.$refs.toast.showToast("No files to upload", 4, false)
+                return
+            }
+            let path = this.addModel.url;
+
+            this.addModel.progress = 0;
+            console.log("installing...");
+            console.log("value ", this.addModel.url);
+            this.modelDownlaodInProgress = true
+            // Use an arrow function for progressListener
+            const progressListener = (response) => {
+                console.log("received something");
+                if (response.status && response.progress <= 100) {
+                    console.log(`Progress`, response);
+                    this.addModel = response
+                    this.addModel.url = path
+                    // this.addModel.progress = response.progress
+                    // this.addModel.speed = response.speed
+                    // this.addModel.total_size = response.total_size
+                    // this.addModel.downloaded_size = response.downloaded_size
+                    // this.addModel.start_time = response.start_time
+                    this.modelDownlaodInProgress = true
+                    if (this.addModel.progress == 100) {
+
+                        this.modelDownlaodInProgress = false
+
+                        console.log("Received succeeded")
+                        socket.off('progress', progressListener);
+                        console.log("Installed successfully")
+                        // Update the isInstalled property of the corresponding model
+                        this.addModel = {}
+                        this.$refs.toast.showToast("Model:\n" + this.addModel.model_name + "\ninstalled!", 4, true)
+                        this.api_get_req("disk_usage").then(response => {
+                            this.diskUsage = response
+                        })
+                    }
+                } else {
+                    socket.off('progress', progressListener);
+                    console.log("Install failed")
+                    // Installation failed or encountered an error
+                    this.modelDownlaodInProgress = false;
+
+
+                    console.error('Installation failed:', response.error);
+                    this.$refs.toast.showToast("Model:\n" + this.addModel.model_name + "\nfailed to install!", 4, false)
+                    this.api_get_req("disk_usage").then(response => {
+                        this.diskUsage = response
+                    })
+                }
+            };
+
+            socket.on('progress', progressListener);
+
+
+            socket.emit('send_file', { file: this.uploadData });
+            console.log("Started installation, please wait");
+
+
+        },
+        setFileList(event) {
+            this.uploadData = event.target.files
+            console.log('set file list', this.uploadData)
+
         },
         onUninstall(model_object) {
 
