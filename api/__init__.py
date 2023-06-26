@@ -99,7 +99,7 @@ class LoLLMsAPPI():
         self.socketio = socketio
         # Check model
         if config.binding_name is None:
-            self.menu.select_model()
+            self.menu.select_binding()
 
         self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
         
@@ -107,6 +107,11 @@ class LoLLMsAPPI():
         if config.model_name is None:
             self.menu.select_model()
 
+        try:
+            self.model = self.binding.build_model()
+        except Exception as ex:
+            ASCIIColors.error(f"Couldn't build model. Try to reinstall binding {self.config['binding_name']}")
+            self.model =  None
         self.mounted_personalities = []
         try:
             self.model = self.binding.build_model()
@@ -159,10 +164,6 @@ class LoLLMsAPPI():
         def disconnect():
             ASCIIColors.error(f'Client {request.sid} disconnected')
 
-        @socketio.on('cancel_generation')
-        def cancel_generation():
-            self.cancel_gen = True
-            ASCIIColors.error(f'Client {request.sid} canceled generation')
         
         @socketio.on('cancel_install')
         def cancel_install(data):
@@ -188,7 +189,8 @@ class LoLLMsAPPI():
                 if file_size:
                     file_size = int(file_size)
                 
-                return file_size            
+                return file_size   
+                     
             def install_model_():
                 print("Install model triggered")
                 model_path = data["path"]
@@ -374,6 +376,10 @@ class LoLLMsAPPI():
                 # Error occurred while saving the file
                 socketio.emit('progress', {'status':False, 'error': str(e)})
             
+        @socketio.on('cancel_generation')
+        def cancel_generation():
+            self.cancel_gen = True
+            ASCIIColors.error(f'Client {request.sid} canceled generation')
 
         
         @socketio.on('generate_msg')
@@ -397,6 +403,7 @@ class LoLLMsAPPI():
                 ASCIIColors.green("Starting message generation by"+self.personality.name)
 
                 task = self.socketio.start_background_task(self.start_message_generation, message, message_id)
+                self.socketio.sleep(0)
                 ASCIIColors.info("Started generation task")
                 #tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
                 #tpe.start()
@@ -433,8 +440,8 @@ class LoLLMsAPPI():
             tpe.start()
         # generation status
         self.generating=False
-        ASCIIColors.blue(f"Your personal data is stored here :{self.lollms_paths.personal_path}")
-        ASCIIColors.blue(f"Listening on :http://{self.config['host']}:{self.config['port']}")
+        ASCIIColors.blue(f"Your personal data is stored here :",end="")
+        ASCIIColors.green(f"{self.lollms_paths.personal_path}")
 
 
     def rebuild_personalities(self):

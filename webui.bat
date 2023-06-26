@@ -183,17 +183,16 @@ powershell -Command "Invoke-WebRequest -Uri 'https://bootstrap.pypa.io/get-pip.p
 REM Install pip
 echo Installing pip...
 python tmp/get-pip.py
-
+REM Upgrading pip setuptools and wheel
+echo Updating pip setuptools and wheel
+python -m pip install --upgrade pip setuptools wheel
+goto PIP_SKIP
 :PIP_CANCEL
 echo Please install pip and try again.
 pause
 exit /b 1
 
 :PIP_SKIP
-
-REM Upgrading pip setuptools and wheel
-echo Updating pip setuptools and wheel
-python -m pip install --upgrade pip setuptools wheel
 
 REM Check if pip is installed
 set /p="Checking for virtual environment..." <nul

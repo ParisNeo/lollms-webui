@@ -57,7 +57,7 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
-socketio = SocketIO(app,  cors_allowed_origins="*", async_mode='gevent', ping_timeout=200, ping_interval=15)
+socketio = SocketIO(app,  cors_allowed_origins="*", async_mode='gevent', ping_timeout=1200, ping_interval=4000)
 
 app.config['SECRET_KEY'] = 'secret!'
 # Set the logging level to WARNING or higher
@@ -71,7 +71,24 @@ from api.config import load_config, save_config
 from api import LoLLMsAPPI
 import shutil
 import markdown
+import socket
 
+def get_ip_address():
+    # Create a socket object
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    
+    try:
+        # Connect to a remote host (doesn't matter which one)
+        sock.connect(('8.8.8.8', 80))
+        
+        # Get the local IP address of the socket
+        ip_address = sock.getsockname()[0]
+        return ip_address
+    except socket.error:
+        return None
+    finally:
+        # Close the socket
+        sock.close()
 
 class LoLLMsWebUI(LoLLMsAPPI):
     def __init__(self, _app, _socketio, config:LOLLMSConfig, config_file_path:Path|str, lollms_paths:LollmsPaths) -> None:
@@ -207,9 +224,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
             "/set_model", "set_model", self.set_model, methods=["POST"]
         )
         
-        self.add_endpoint(
-            "/update_model_params", "update_model_params", self.update_model_params, methods=["POST"]
-        )
 
         self.add_endpoint(
             "/get_config", "get_config", self.get_config, methods=["GET"]
@@ -489,7 +503,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         elif setting_name== "model_name":
             self.config["model_name"]=data['setting_value']
             try:
-                self.binding.build_model()
+                self.model = self.binding.build_model()
             except Exception as ex:
                 print(f"Couldn't load model: [{ex}]")
                 return jsonify({ "status":False, 'error':str(ex)})
@@ -502,16 +516,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 self.config["binding_name"]=data['setting_value']
                 try:
                     self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
-                    try:
-                        self.binding.build_model()
-                    except Exception as ex:
-                        print(f"Couldn't load model: [{ex}]")
-                        return jsonify({ "status":False, 'error':str(ex)})
+                    self.model = None
                 except Exception as ex:
                     print(f"Couldn't build binding: [{ex}]")
                     return jsonify({"status":False, 'error':str(ex)})
-
-
             else:
                 if self.config["debug"]:
                     print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
@@ -840,6 +848,14 @@ class LoLLMsWebUI(LoLLMsAPPI):
         ASCIIColors.info(f"- Reinstalling binding {data['name']}...")
         try:
             self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL)
+            try:
+                self.model = self.binding.build_model()
+            except Exception as ex:
+                print(f"Couldn't build model: [{ex}]")
+            try:
+                self.rebuild_personalities()
+            except Exception as ex:
+                print(f"Couldn't reload personalities: [{ex}]")
             return jsonify({"status": True}) 
         except Exception as ex:
             print(f"Couldn't build binding: [{ex}]")
@@ -867,10 +883,16 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             self.apply_settings()
             ASCIIColors.success("ok")
-            return jsonify({"status": True,
-                            "personalities":self.config["personalities"],
-                            "active_personality_id":self.config["active_personality_id"]
-                            })         
+            if self.config["active_personality_id"]<0:
+                return jsonify({"status": False,
+                                "personalities":self.config["personalities"],
+                                "active_personality_id":self.config["active_personality_id"]
+                                })         
+            else:
+                return jsonify({"status": True,
+                                "personalities":self.config["personalities"],
+                                "active_personality_id":self.config["active_personality_id"]
+                                })         
         else:
             pth = str(config_file).replace('\\','/')
             ASCIIColors.error(f"nok : Personality not found @ {pth}")
@@ -1171,65 +1193,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         return jsonify({"status": "succeeded"})    
     
-    def update_model_params(self):
-        data = request.get_json()
-        binding =  str(data["binding"])
-        model =  str(data["model_name"])
-        personality_language =  str(data["personality_language"])
-        personality_category =  str(data["personality_category"])
-        personality =  str(data["personality"])
-        
-        if self.config['binding_name']!=binding or  self.config['model_name'] != model:
-            print("update_model_params: New model selected")
-            
-            self.config['binding_name'] = binding
-            self.config['model_name'] = model
-
-        self.config['personality_language'] = personality_language
-        self.config['personality_category'] = personality_category
-        self.config['personality'] = personality
-
-        personality_fn = lollms_path/f"personalities_zoo/{self.personality_language}/{self.personality_category}/{self.personality_name}"
-        print(f"Loading personality : {personality_fn}")
-
-        self.config['n_predict'] = int(data["nPredict"])
-        self.config['seed'] = int(data["seed"])
-        self.config['model_name'] = str(data["model_name"])
-        self.config['voice'] = str(data["voice"])
-        self.config['language'] = str(data["language"])
-        
-        self.config['temperature'] = float(data["temperature"])
-        self.config['top_k'] = int(data["topK"])
-        self.config['top_p'] = float(data["topP"])
-        self.config['repeat_penalty'] = float(data["repeatPenalty"])
-        self.config['repeat_last_n'] = int(data["repeatLastN"])
-
-        self.config.save_config(self.config_file_path)
-
-        
-        # Fixed missing argument
-        self.binding = self.process.rebuild_binding(self.config)
-
-        print("==============================================")
-        print("Parameters changed to:")
-        print(f"\tBinding:{self.config['binding_name']}")
-        print(f"\tModel:{self.config['model_name']}")
-        print(f"\tPersonality language:{self.config['personality_language']}")
-        print(f"\tPersonality category:{self.config['personality_category']}")
-        print(f"\tPersonality:{self.config['personality']}")
-        print(f"\tLanguage:{self.config['language']}")
-        print(f"\tVoice:{self.config['voice']}")
-        print(f"\tTemperature:{self.config['temperature']}")
-        print(f"\tNPredict:{self.config['n_predict']}")
-        print(f"\tSeed:{self.config['seed']}")
-        print(f"\top_k:{self.config['top_k']}")
-        print(f"\top_p:{self.config['top_p']}")
-        print(f"\trepeat_penalty:{self.config['repeat_penalty']}")
-        print(f"\trepeat_last_n:{self.config['repeat_last_n']}")
-        print("==============================================")
-
-        return jsonify(self.process.set_config(self.config))
-    
     
     def get_available_models(self):
         """Get the available models
@@ -1460,9 +1423,16 @@ if __name__ == "__main__":
     else:
         ASCIIColors.info("debug mode:false")
     
-    url = f'http://{config["host"]}:{config["port"]}'
+
+        
     
-    print(f"Please open your browser and go to {url} to view the ui")
+    url = f'http://{config["host"]}:{config["port"]}'
+    if config["host"]!="localhost":
+        print(f'Please open your browser and go to http://localhost:{config["port"]} to view the ui')
+        ASCIIColors.success(f'This server is visible from a remote PC. use this address http://{get_ip_address()}:{config["port"]}')
+    else:
+        print(f"Please open your browser and go to {url} to view the ui")
+    
     socketio.run(app, host=config["host"], port=config["port"])
     # http_server = WSGIServer((config["host"], config["port"]), app, handler_class=WebSocketHandler)
     # http_server.serve_forever()

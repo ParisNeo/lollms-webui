@@ -1,5 +1,8 @@
+@echo off
+set environment_path=%cd%/lollms-webui/env
 
-echo \u001b[34m
+
+echo "\u001b[34m"
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
@@ -35,159 +38,145 @@ echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo \u001b[0m
-echo Checking internet connection
 
-ping google.com -n 1 >nul 2>&1
-if errorlevel 1 (
-    echo Internet connection not available
-    goto NO_INTERNET
-) else (
-    goto INTERNET_OK
-)
-:NO_INTERNET
+echo Testing internet connection
+ping -n 1 google.com >nul
+if %errorlevel% equ 0 (
+    echo Internet Connection working fine
+    
+    REM Install Git
+    echo Checking for Git...
+    where git >nul 2>nul
+    if %errorlevel% equ 0 (
+        echo Git is installed
+    ) else (
+        set /p choice=Git is not installed. Would you like to install Git? [Y/N]
+        if /i "%choice%"=="Y" (
+            echo Installing Git...
+            REM Replace the following two lines with appropriate Git installation commands for Windows
+            echo Please install Git and try again.
+            exit /b 1
+        )
+    )
+    
+    REM Check if repository exists
+    if exist .git (
+        echo Pulling latest changes
+        git pull origin main
+    ) else (
+        if exist lollms-webui (
+            cd ./lollms-webui
+        ) else (
+            echo Cloning repository...
+            git clone https://github.com/ParisNeo/lollms-webui.git ./lollms-webui
+            cd ./lollms-webui
+            echo Cloned successfully
+        )
+    )
 
-if exist lollms-webui (
-    echo lollms-webui folder found
-    cd lollms-webui
-    set /p="Activating Conda environment ..." <nul
-    call activate <conda_environment_name>
-)
-goto END
-
-:INTERNET_OK
-echo \e[32mInternet connection working fine
-
-REM Check if Git is installed
-echo "Checking for git..."
-where git >nul 2>&1
-if %ERRORLEVEL% EQU 0 (
-    goto GIT_CHECKED
-) else (
-    goto GIT_INSTALL
-)
-:GIT_FINISH
-
-REM Check if Git is installed
-:GIT_CHECKED
-echo "Git is installed."
-goto GIT_SKIP
-
-:GIT_INSTALL
-echo.
-choice /C YN /M "Do you want to download and install Git?"
-if errorlevel 2 goto GIT_CANCEL
-if errorlevel 1 goto GIT_INSTALL_2
-
-:GIT_INSTALL_2
-echo "Git is not installed. Installing Git..."
-powershell.exe -Command "Start-Process https://git-scm.com/download/win -Wait"
-goto GIT_SKIP
-
-:GIT_CANCEL
-echo.
-echo Git download cancelled.
-echo Please install Git and try again.
-pause
-exit /b 1
-
-:GIT_SKIP
-
-REM Check if repository exists 
-echo checking git repository
-if exist ".git" (
-    goto :PULL_CHANGES
-) else (
-    goto :CLONE_REPO
-)
-
-:PULL_CHANGES
-echo Pulling latest changes 
-git pull origin main
-goto :CHECK_CONDA_INSTALL
-
-:CLONE_REPO
-REM Check if repository exists 
-if exist lollms-webui (
-    echo lollms-webui folder found
-    cd lollms-webui
-    echo Pulling latest changes 
+    
+    echo Pulling latest version...
     git pull
+
+    REM Install Conda
+    echo Checking for Conda...
+    where conda >nul 2>nul
+    if %errorlevel% equ 0 (
+        echo Conda is installed
+    ) else (
+        set /p choice="Conda is not installed. Would you like to install Conda? [Y/N]:"
+        if /i "%choice%"=="Y" (
+            echo Installing Conda...
+            set "miniconda_installer_url=https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe"
+            set "miniconda_installer=miniconda_installer_filename.exe"
+            rem Download the Miniconda installer using curl.
+            curl -o "%miniconda_installer%" "%miniconda_installer_url%"            
+            if exist "%miniconda_installer%" (
+                echo Miniconda installer downloaded successfully.
+                echo Installing Miniconda...
+                echo.
+
+                rem Run the Miniconda installer.
+                "%miniconda_installer%" /InstallationType=JustMe /AddToPath=yes /RegisterPython=0 /S /D="%USERPROFILE%\Miniconda"
+
+                if %errorlevel% equ 0 (
+                    echo Miniconda has been installed successfully in "%USERPROFILE%\Miniconda".
+                ) else (
+                    echo Failed to install Miniconda.
+                )
+
+                rem Clean up the Miniconda installer file.
+                del "%miniconda_installer%"
+
+                rem Activate Miniconda.
+                call "%USERPROFILE%\Miniconda\Scripts\activate"
+
+            ) else (
+                echo Failed to download the Miniconda installer.
+                exit /b 1
+            )
+        )
+    )
+    echo Deactivating any activated environment
+    conda deactivate
+
+    echo checking %environment_path% existance
+
+    rem Check the error level to determine if the file exists
+    if not exist "%environment_path%" (
+        REM Create a new Conda environment
+        echo Creating Conda environment...
+        conda create --prefix ./env python=3.10
+        conda activate ./env
+        pip install --upgrade pip setuptools wheel
+        conda install -c conda-forge cudatoolkit-dev
+    ) else (
+        echo Environment already exists. Skipping environment creation.
+        conda activate ./env
+    )
+
+    echo Activating environment
+    conda activate ./env
+    echo Conda environment is created
+    REM Install the required packages
+    echo Installing requirements using pip...
+    pip install -r requirements.txt
+
+    if %errorlevel% neq 0 (
+        echo Failed to install required packages. Please check your internet connection and try again.
+        exit /b 1
+    )
+
+    echo Cleanup
+    REM Cleanup
+    if exist "./tmp" (
+        echo Cleaning tmp folder
+        rmdir /s /q "./tmp"
+        echo Done
+    )
+    echo Ready
+    echo launching app
+    REM Launch the Python application
+    python app.py %*
+    set app_result=%errorlevel%
+
+    pause >nul
+    exit /b 0
+
 ) else (
-    echo Cloning repository...
-    rem Clone the Git repository into a temporary directory
-    git clone https://github.com/ParisNeo/lollms-webui.git ./lollms-webui
+    REM Go to webui folder
     cd lollms-webui
-    echo Pulling latest changes 
-    git pull
+
+    REM Activate environment
+    conda activate ./env
+
+    echo launching app
+    REM Launch the Python application
+    python app.py %*
+    set app_result=%errorlevel%
+
+    pause >nul
+    exit /b 0
 )
 
-:CHECK_CONDA_INSTALL
-REM Check if Conda is installed
-set /p="Checking for Conda..." <nul
-where conda >nul 2>&1
-if %ERRORLEVEL% EQU 0 (
-    goto CONDA_CHECKED
-) else (
-    goto CONDA_INSTALL
-)
-:CONDA_CHECKED
-echo "Conda is installed."
-goto CONDA_SKIP
 
-:CONDA_INSTALL
-echo.
-choice /C YN /M "Do you want to download and install Conda?"
-if errorlevel 2 goto CONDA_CANCEL
-if errorlevel 1 goto CONDA_INSTALL_2
-
-:CONDA_INSTALL_2
-REM Download Conda installer
-if not exist "./tmp" mkdir "./tmp"
-echo Downloading Conda installer...
-powershell -Command "Invoke-WebRequest -Uri 'https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe' -OutFile 'tmp/conda.exe'"
-REM Install Conda
-echo Installing Conda...
-tmp/conda.exe /InstallationType=JustMe /AddToPath=0 /RegisterPython=0 /S
-
-:CONDA_CANCEL
-echo Please install Conda and try again.
-pause
-exit /b 1
-
-:CONDA_SKIP
-
-REM Activate Conda environment
-set /p="Activating Conda environment ..." <nul
-conda activate <conda_environment_name>
-echo OK
-
-REM Install the required packages
-echo Installing requirements ...
-conda install --file requirements.txt
-
-if %ERRORLEVEL% neq 0 (
-    echo Failed to install required packages. Please check your internet connection and try again.
-    pause
-    exit /b 1
-)
-
-echo Checking models...
-if not exist \models (
-    md \models
-)
-
-:END
-if exist "./tmp"  (
-echo Cleaning tmp folder
-rd /s /q "./tmp"
-)
-
-echo Conda environment activated and packages installed successfully.
-echo Launching application...
-
-REM Run the Python app
-python app.py %*
-set app_result=%errorlevel%
-
-pause >nul
-exit /b 0

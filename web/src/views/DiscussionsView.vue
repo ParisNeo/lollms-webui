@@ -377,8 +377,8 @@ export default {
         
         async stop_gen() {
             try {
-                socket.emit('cancel_generation', {});
-                const res = await axios.get('/stop_gen')
+                socket.emit('cancel_generation');
+                //const res = await axios.get('/stop_gen')
 
                 if (res) {
                     return res.data
@@ -679,7 +679,12 @@ export default {
 
                         // Create new User message
                         // Temp data
-                        const lastmsgid = Number(this.discussionArr[this.discussionArr.length - 1].id) + 1
+                        let lastmsgid =0
+                        if(this.discussionArr.length>0){
+                            lastmsgid= Number(this.discussionArr[this.discussionArr.length - 1].id) + 1
+                        }
+                        
+                        
                         let usrMessage = {
                             message: msg,
                             id: lastmsgid,
@@ -1214,6 +1219,9 @@ export default {
             this.$refs.dragdropDiscussion.show = true
 
         },
+        // socketConnected(val){
+        //     console.log('connected',val)
+        // }
 
 
 
@@ -1237,7 +1245,8 @@ export default {
         socket.on('infos', this.createBotMsg)
         socket.on('message', this.streamMessageContent)
         socket.on("final", this.finalMsgEvent)
-
+        // socket.on('connected',this.socketConnected)
+        // socket.on('disconnected',this.socketConnected)
     },
     mounted() {
         //console.log('chatbox mnt',this.$refs)

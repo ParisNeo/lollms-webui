@@ -72,31 +72,31 @@ if ping -q -c 1 google.com >/dev/null 2>&1; then
     git pull
 
     # Install Python 3.10 and pip
-    echo -n "Checking for python3.10..."
-    if command -v python3.10 > /dev/null 2>&1; then
+    echo -n "Checking for python3..."
+    if command -v python3 > /dev/null 2>&1; then
       echo "is installed"
     else
-      read -p "Python3.10 is not installed. Would you like to install Python3.10? [Y/N] " choice
+      read -p "python3 is not installed. Would you like to install python3? [Y/N] " choice
       if [ "$choice" = "Y" ] || [ "$choice" = "y" ]; then
-        echo "Installing Python3.10..."
+        echo "Installing python3..."
         sudo apt update
-        sudo apt install -y python3.10 python3.10-venv
+        sudo apt install -y python3 python3-venv
       else
-        echo "Please install Python3.10 and try again."
+        echo "Please install python3 and try again."
         exit 1
       fi
     fi
 
     # Install venv module
     echo -n "Checking for venv module..."
-    if python3.10 -m venv env > /dev/null 2>&1; then
+    if python3 -m venv env > /dev/null 2>&1; then
       echo "is installed"
     else
       read -p "venv module is not available. Would you like to install it? [Y/N] " choice
       if [ "$choice" = "Y" ] || [ "$choice" = "y" ]; then
         echo "Installing venv module..."
         sudo apt update
-        sudo apt install -y python3.10-venv
+        sudo apt install -y python3-venv
       else
         echo "Please install venv module and try again."
         exit 1
@@ -105,7 +105,7 @@ if ping -q -c 1 google.com >/dev/null 2>&1; then
 
     # Create a new virtual environment
     echo -n "Creating virtual environment..."
-    python3.10 -m venv env
+    python3 -m venv env
     if [ $? -ne 0 ]; then
       echo "Failed to create virtual environment. Please check your Python installation and try again."
       exit 1
@@ -122,8 +122,8 @@ echo "is active"
 
 # Install the required packages
 echo "Installing requirements..."
-python3.10 -m pip install pip --upgrade
-python3.10 -m pip install --upgrade -r requirements.txt
+python3 -m pip install pip --upgrade
+python3 -m pip install --upgrade -r requirements.txt
 
 if [ $? -ne 0 ]; then
   echo "Failed to install required packages. Please check your internet connection and try again."
