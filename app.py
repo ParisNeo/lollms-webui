@@ -1078,8 +1078,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
     def send_file(self):
         file = request.files['file']
-        Path("uploads").mkdir(exist_ok=True, parents=True)
-        file.save('uploads/' + file.filename)
+        file.save(self.lollms_paths.personal_uploads_path / file.filename)
+        if self.personality.processor:
+            self.personality.processor.add_file(self.lollms_paths.personal_uploads_path / file.filename)
         return jsonify({"status": True})   
     
     def upload_model(self):      
