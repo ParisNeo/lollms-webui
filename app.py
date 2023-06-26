@@ -119,6 +119,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint("/add_reference_to_local_model", "add_reference_to_local_model", self.add_reference_to_local_model, methods=["POST"])
         
         self.add_endpoint("/send_file", "send_file", self.send_file, methods=["POST"])
+        self.add_endpoint("/upload_model", "upload_model", self.upload_model, methods=["POST"])
+        
         
         self.add_endpoint("/list_mounted_personalities", "list_mounted_personalities", self.list_mounted_personalities, methods=["POST"])
         self.add_endpoint("/mount_personality", "mount_personality", self.mount_personality, methods=["POST"])
@@ -1078,7 +1080,13 @@ class LoLLMsWebUI(LoLLMsAPPI):
         file = request.files['file']
         Path("uploads").mkdir(exist_ok=True, parents=True)
         file.save('uploads/' + file.filename)
-        return jsonify({"status": True})         
+        return jsonify({"status": True})   
+    
+    def upload_model(self):      
+        file = request.files['file']
+        Path("uploads").mkdir(exist_ok=True, parents=True)
+        file.save(self.lollms_paths.personal_models_path/self.config.binding_name/file.filename)
+        return jsonify({"status": True})   
 
     def rename(self):
         data = request.get_json()
