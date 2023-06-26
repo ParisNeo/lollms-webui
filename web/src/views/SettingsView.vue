@@ -1555,7 +1555,7 @@ export default {
             socket.on('progress', progressListener);
 
 
-            socket.emit('send_file', { file: this.uploadData });
+           // socket.emit('send_file', { file: this.uploadData });
             console.log("Started installation, please wait");
 
 
