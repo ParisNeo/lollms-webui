@@ -62,7 +62,7 @@ if %errorlevel% equ 0 (
     REM Check if repository exists
     if exist .git (
         echo Pulling latest changes
-        git pull origin main
+        git pull 
     ) else (
         if exist lollms-webui (
             cd ./lollms-webui
