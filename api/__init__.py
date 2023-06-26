@@ -107,11 +107,6 @@ class LoLLMsAPPI():
         if config.model_name is None:
             self.menu.select_model()
 
-        try:
-            self.model = self.binding.build_model()
-        except Exception as ex:
-            ASCIIColors.error(f"Couldn't build model. Try to reinstall binding {self.config['binding_name']}")
-            self.model =  None
         self.mounted_personalities = []
         try:
             self.model = self.binding.build_model()

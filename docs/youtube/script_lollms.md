@@ -56,4 +56,6 @@ Now let's find our falcon 7B model. For now the search option is not yet impleme
 
 Let's select a 4 bits quantization which is a good ratio between size and performance.
 Press install and wait for it to download the model. You can install multiple models simultaniously. Make sure you have enough disk space as some of those models are very big.
-Once installed, we can ask the same question and compare the output.
+Now let's take a look at the new personalities system.
+The new system allows us to mount multiple personalities in the same session. This means that we can create a multipersonalities discussion.
+
