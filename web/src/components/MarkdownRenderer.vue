@@ -84,6 +84,18 @@ const markdownIt = new MarkdownIt('commonmark', {
   },
 }).use(emoji).use(attrs); // Add attrs plugin for adding attributes to elements
 
+markdownIt.renderer.rules.link_open = (tokens, idx, options, env, self) => {
+  const token = tokens[idx];
+  const hrefIndex = token.attrIndex('href');
+  if (hrefIndex >= 0) {
+    const hrefValue = token.attrs[hrefIndex][1];
+    token.attrs[hrefIndex][1] = `style="color: blue; font-weight: bold; text-decoration: underline;" ${hrefValue}`;
+  }
+  return self.renderToken(tokens, idx, options);
+};
+
+
+
 export default {
   name: 'MarkdownRenderer',
   props: {
