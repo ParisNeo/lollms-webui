@@ -737,7 +737,7 @@ class LoLLMsAPPI():
                                                     'user_message_id':self.current_user_message_id, 
                                                     'ai_message_id':self.current_ai_message_id, 
                                                     'discussion_id':self.current_discussion.discussion_id,
-                                                    'message_type': message_type.value
+                                                    'message_type': MSG_TYPE.MSG_TYPE_FULL.value
                                                 }, room=self.current_room_id
                                         )
                     self.socketio.sleep(0)
