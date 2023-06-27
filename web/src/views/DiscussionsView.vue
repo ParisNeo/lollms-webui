@@ -625,7 +625,7 @@ export default {
             // "message":message,#markdown.markdown(message),
             // "user_message_id": self.current_user_message_id,
             // "ai_message_id": self.current_ai_message_id,
-            console.log(msgObj);
+            console.log('create bot', msgObj);
             if (msgObj["status"] == "generation_started") {
                 this.updateLastUserMsg(msgObj)
                 // Create response message
@@ -706,7 +706,7 @@ export default {
         },
         streamMessageContent(msgObj) {
             // Streams response message content from binding
-            //console.log('stream msg',msgObj)
+            console.log('stream msg',msgObj)
             const parent = msgObj.user_message_id
             const discussion_id = msgObj.discussion_id
             this.setDiscussionLoading(discussion_id, true);
