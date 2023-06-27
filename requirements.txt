@@ -10,4 +10,5 @@ gevent-websocket
 lollms
 langchain
 requests
+eventlet
 websocket-client

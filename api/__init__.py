@@ -751,7 +751,7 @@ class LoLLMsAPPI():
                         return False
             else:
                 self.current_generated_text = self.remove_text_from_string(self.current_generated_text, anti_prompt_to_remove)
-                print("The model is halucinating")
+                ASCIIColors.warning("The model is halucinating")
                 return False
 
         # Stream the generated text to the main process
