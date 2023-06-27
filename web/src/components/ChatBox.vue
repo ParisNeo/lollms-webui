@@ -86,12 +86,15 @@
 
                         </button>
                     </div>
+                    <div v-if="showPersonalities" class="flex items-center mx-1">
+                        <MountedPersonalitiesList  @click.stop=""/>
+                    </div>
                     <!-- CHAT BOX -->
-                    <div class="flex flex-row flex-grow items-center gap-2 ">
-                        <!-- <div class="w-24">
+                    <div class="flex flex-row flex-grow items-center gap-2 overflow-visible">
+                        <div class="w-24 overflow-visible">
                             <MountedPersonalities  @click.stop=""/>
 
-                        </div> -->
+                        </div>
                        
 
                         <div class="relative grow">
@@ -141,6 +144,7 @@
             </div>
         </form>
     </div>
+
 </template>
 <style scoped>
 /* THESE ARE FOR TransitionGroup components */
@@ -175,16 +179,19 @@ import { nextTick, TransitionGroup } from 'vue'
 import feather from 'feather-icons'
 import filesize from '../plugins/filesize'
 import MountedPersonalities from './MountedPersonalities.vue'
+import MountedPersonalitiesList from './MountedPersonalitiesList.vue'
 export default {
     name: 'ChatBox',
     emits: ["messageSentEvent", "stopGenerating"],
     props: {
 
-        loading: false
+        loading: false,
+        discussionList:[]
 
     },
     components: {
-        MountedPersonalities
+        MountedPersonalities,
+        MountedPersonalitiesList
     },
     setup() {
 
@@ -195,7 +202,8 @@ export default {
         return {
             message: "",
             fileList: [],
-            totalSize: 0
+            totalSize: 0,
+            showPersonalities:true
         }
     },
     methods: {

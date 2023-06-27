@@ -189,7 +189,7 @@
 
             </div>
             <div class=" bottom-0 container flex flex-row items-center justify-center " v-if="currentDiscussion.id">
-                <ChatBox ref="chatBox" @messageSentEvent="sendMsg" :loading="isGenerating" @stopGenerating="stopGenerating">
+                <ChatBox ref="chatBox" @messageSentEvent="sendMsg" :loading="isGenerating" :discussionList="list" @stopGenerating="stopGenerating">
                 </ChatBox>
             </div>
             <!-- CAN ADD FOOTER PANEL HERE -->

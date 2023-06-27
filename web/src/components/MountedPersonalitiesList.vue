@@ -1,50 +1,48 @@
 <template>
     <!-- LIST OF MOUNTED PERSONALITIES -->
     <div
-        class="overflow-visible text-base font-semibold cursor-pointer select-none items-center flex flex-row overflow-x-auto -my-2 pr-2 scrollbar-thin scrollbar-track-bg-light scrollbar-thumb-bg-light-tone hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark dark:scrollbar-thumb-bg-dark-tone dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+        class="text-left overflow-visible text-base font-semibold cursor-pointer select-none items-center flex flex-row overflow-x-auto -my-2 pr-2 scrollbar-thin scrollbar-track-bg-light scrollbar-thumb-bg-light-tone hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark dark:scrollbar-thumb-bg-dark-tone dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
         <!-- LIST -->
-        <div class="flex -space-x-4 items-center overflow-visible my-2 mx-2">
-            <!-- ITEM -->
-            <div class="relative  hover:-translate-y-2 duration-300 hover:z-10 shrink-0 overflow-visible"
-                v-for="(item, index) in mountedPersArr" :key="index + '-' + item.name">
-                <div class="group items-center flex flex-row overflow-visible">
-                    <button @click.stop="onPersonalitySelected(item)">
-
-                        <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
-                            class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary "
-                            :class="configFile.active_personality_id == configFile.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
-                            :title="item.name">
-                    </button>
-                    <button @click.stop="onPersonalityMounted(item)">
-
-                        <span
-                            class="hidden group-hover:block top-0 left-7 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
-                            title="Unmount personality">
-                            <!-- UNMOUNT BUTTON -->
-                            <svg aria-hidden="true" class="w-4 h-4 text-red-600 hover:text-red-500 " fill="currentColor"
-                                viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-
-                        </span>
-                    </button>
-                </div>
+        <div v-if="mountedPersArr.length > 0" class="m-2">
+            <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Mounted Personalities: ({{ mountedPersArr.length }})
+            </label>
+            <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-4 md:grid-cols-2 gap-4 max-h-96">
+                <TransitionGroup name="bounce">
+                    <personality-entry ref="personalitiesZoo" v-for="(pers, index) in mountedPersArr"
+                        :key="'index-' + index + '-' + pers.name" :personality="pers" :full_path="pers.full_path"
+                        :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === pers.full_path)"
+                        :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted"
+                        :on-settings="onSettingsPersonality" />
+                </TransitionGroup>
             </div>
         </div>
 
+
+
+        <Toast ref="toast">
+        </Toast>
     </div>
 </template>
 
 <script>
 import axios from "axios";
 import defaultPersonalityImgPlaceholder from "../assets/logo.svg"
-
+import PersonalityEntry from './PersonalityEntry.vue'
+import Toast from './Toast.vue'
 const bUrl = import.meta.env.VITE_GPT4ALL_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
-    name: 'MountedPersonalities',
+    props: {
+
+
+
+    },
+    components: {
+        PersonalityEntry,
+        Toast,
+    },
+    name: 'MountedPersonalitiesList',
     setup() {
 
 
@@ -54,7 +52,7 @@ export default {
             personalities: [],
             bUrl: bUrl,
             isMounted: false,
-            isLoading:false
+            isLoading: false
         }
     },
     async mounted() {
@@ -192,6 +190,8 @@ export default {
                     const res = await this.select_personality(pers)
                     if (res) {
                         if (res.status) {
+                            await this.constructor()
+
                             this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
 
                         }
@@ -205,6 +205,54 @@ export default {
 
 
                 this.isLoading = false
+            }
+
+        },
+        onSettingsPersonality(persEntry) {
+            try {
+                this.isLoading = true
+                axios.get('/get_active_personality_settings').then(res => {
+                    this.isLoading = false
+                    if (res) {
+
+                        console.log('pers sett', res)
+                        if (res.data && Object.keys(res.data).length > 0) {
+
+                            this.$refs.universalForm.showForm(res.data, "Personality settings - " + persEntry.personality.name, "Save changes", "Cancel").then(res => {
+
+                                // send new data
+                                try {
+                                    axios.post('/set_active_personality_settings',
+                                        res).then(response => {
+
+                                            if (response && response.data) {
+                                                console.log('personality set with new settings', response.data)
+                                                this.$refs.toast.showToast("Personality settings updated successfully!", 4, true)
+
+                                            } else {
+                                                this.$refs.toast.showToast("Did not get Personality settings responses.\n" + response, 4, false)
+                                                this.isLoading = false
+                                            }
+
+
+                                        })
+                                } catch (error) {
+                                    this.$refs.toast.showToast("Did not get Personality settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.isLoading = false
+                                }
+
+                            })
+                        } else {
+                            this.$refs.toast.showToast("Personality has no settings", 4, false)
+                            this.isLoading = false
+                        }
+
+                    }
+                })
+
+            } catch (error) {
+                this.isLoading = false
+                this.$refs.toast.showToast("Could not open personality settings. Endpoint error: " + error.message, 4, false)
             }
 
         },

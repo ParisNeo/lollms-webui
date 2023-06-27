@@ -8,8 +8,8 @@
                     <img :src="getImgUrl()" @error="defaultImg($event)" :data-popover-target="'avatar' + message.id" data-popover-placement="bottom"
                         class="w-10 h-10 rounded-full object-fill text-red-700">
                         
-                        
-                    <div data-popper :id="'avatar' + message.id"   role="tooltip"
+                        <!-- ADDITIONAL INFO -->
+                    <!-- <div data-popper :id="'avatar' + message.id"   role="tooltip"
                         class=" -mx-2 absolute invisible rounded-lg bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel block  m-2 p-1 opacity-0 z-10  transition-opacity ease-in-out  duration-500 group-hover/avatar:visible group-hover/avatar:opacity-100 ">
                         
                         <div class="relative flex flex-row items-start">
@@ -25,7 +25,7 @@
                             
                         </div>
                      
-                    </div>
+                    </div> -->
                     
                     
                 </div>
