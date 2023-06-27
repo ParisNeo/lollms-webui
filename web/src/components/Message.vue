@@ -9,12 +9,12 @@
                         class="w-10 h-10 rounded-full object-fill text-red-700">
                         
                         
-                    <div data-popper :id="'avatar' + message.id"
-                        class=" -mx-2 absolute invisible rounded-lg bg-bg-light dark:bg-bg-dark block  m-2 p-1 opacity-0 z-10  transition-opacity ease-in-out  duration-200 group-hover/avatar:visible group-hover/avatar:opacity-100 ">
-                        <div data-popper-arrow class="-z-20 absolute mx-4 -my-1 top-0 "></div>
-                        <div class="relative flex flex-row items-center">
+                    <div data-popper :id="'avatar' + message.id"   role="tooltip"
+                        class=" -mx-2 absolute invisible rounded-lg bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel block  m-2 p-1 opacity-0 z-10  transition-opacity ease-in-out  duration-500 group-hover/avatar:visible group-hover/avatar:opacity-100 ">
+                        
+                        <div class="relative flex flex-row items-start">
                             
-                            <img :src="getImgUrl()" @error="defaultImg($event)" class=" rounded-lg w-60 h-60" />
+                            <img :src="getImgUrl()" @error="defaultImg($event)" class=" border-2 border-primary p-1 rounded-lg w-60 h-60" />
 
                             <div class="flex flex-col justify-between p-4 leading-normal">
                                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Noteworthy
@@ -24,7 +24,7 @@
                             </div>
                             
                         </div>
-                        
+                     
                     </div>
                     
                     
