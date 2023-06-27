@@ -89,10 +89,12 @@ markdownIt.renderer.rules.link_open = (tokens, idx, options, env, self) => {
   const hrefIndex = token.attrIndex('href');
   if (hrefIndex >= 0) {
     const hrefValue = token.attrs[hrefIndex][1];
-    token.attrs[hrefIndex][1] = `style="color: blue; font-weight: bold; text-decoration: underline;" ${hrefValue}`;
+    token.attrs[hrefIndex][1] = hrefValue;
+    token.attrPush(['style', 'color: blue; font-weight: bold; text-decoration: underline;']);
   }
   return self.renderToken(tokens, idx, options);
 };
+
 
 
 
