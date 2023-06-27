@@ -714,6 +714,13 @@ class LoLLMsAPPI():
         1 : a notification message
         2 : A hidden message
         """
+        if message_type == MSG_TYPE.MSG_TYPE_STEP_START:
+            ASCIIColors.info("--> Step started:"+chunk)
+        if message_type == MSG_TYPE.MSG_TYPE_STEP_END:
+            ASCIIColors.success("--> Step ended:"+chunk)
+        if message_type == MSG_TYPE.MSG_TYPE_EXCEPTION:
+            ASCIIColors.error("--> Exception from personality:"+chunk)
+        
         if message_type == MSG_TYPE.MSG_TYPE_CHUNK:
             self.current_generated_text += chunk
             detected_anti_prompt = False
@@ -760,10 +767,10 @@ class LoLLMsAPPI():
                                 )
             self.socketio.sleep(0)
             return True
-        # Stream the generated text to the main process
+        # Stream the generated text to the frontend
         else:
             self.socketio.emit('message', {
-                                            'data': self.current_generated_text, 
+                                            'data': chunk, 
                                             'user_message_id':self.current_user_message_id, 
                                             'ai_message_id':self.current_ai_message_id, 
                                             'discussion_id':self.current_discussion.discussion_id,
