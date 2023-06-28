@@ -73,3 +73,5 @@ Few days have passed and now the personality system has been enhanced. Let's sta
 
 
 Let's talk to empror Napoleon Bonaparte and ask it about his plans after conquering Egypt.Now, as you can see, you have a new module in the ui that shows the current personality icon. When we press the + button, we can select the personality to talk to.
+
+With this, we can make personalities talk to each other by selecting next personality and pressing the regenerate answer button. This will be refined in the future. It is still a work in progress but the feature is pretty much usable right now. You can explore impossible discussions between personalities that never lived in the same era, never spoken the same language and sometimes the discussions get really interesting. Be aware that the quality of the discussions depend heavily on the model you use. You can view which model was used to generate each message as well as time needed to generate the answer. Feel free to explore these things and share your findings on internet.
