@@ -162,4 +162,11 @@ export default {
 
 <style>
 /* Include any additional styles you need */
+ul {
+  list-style-type: disc;
+}
+
+ol {
+  list-style-type: decimal;
+}
 </style>
