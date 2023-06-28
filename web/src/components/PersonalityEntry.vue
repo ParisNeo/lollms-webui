@@ -1,7 +1,7 @@
 <template>
   <div
-    class=" items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer  active:scale-95 duration-75 select-none"
-    @click.stop="toggleSelected" :class="selected ? 'border-primary-light' : 'border-transparent'"
+    class=" min-w-96 items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer  active:scale-95 duration-75 select-none"
+    @click.stop="toggleSelected" :class="selected_computed ? 'border-primary-light' : 'border-transparent'"
     :title="!personality.installed ? 'Not installed' : ''">
 
     <div :class="!personality.installed ? 'opacity-50' : ''">
@@ -24,7 +24,7 @@
             <i data-feather="slash" class="w-5"></i>
             <span class="sr-only">Not installed</span>
           </button>
-          <button v-if="selected" type="button" title="Settings"
+          <button v-if="selected_computed" type="button" title="Settings"
             class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
             @click.stop="toggleSettings">
             <i data-feather="sliders" class="w-5"></i>
@@ -112,7 +112,9 @@ export default {
     })
   },
   computed: {
-
+selected_computed(){
+  return this.selected
+}
   },
   methods: {
     getImgUrl() {

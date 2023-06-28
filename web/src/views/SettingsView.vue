@@ -1291,7 +1291,7 @@ export default {
                 if (pers.isMounted && this.configFile.personalities.includes(pers.personality.full_path)) {
 
                     const res = await this.select_personality(pers)
-
+                    console.log('pers is mounted',res)
                     if (res && res.status && res.active_personality_id > -1) {
                         this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
 
@@ -1301,6 +1301,7 @@ export default {
                     this.isLoading = false
 
                 } else {
+                    console.log('mounting pers')
                     this.onPersonalityMounted(pers)
 
                 }

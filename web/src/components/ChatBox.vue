@@ -86,13 +86,16 @@
 
                         </button>
                     </div>
+                    <div v-if="showPersonalities" class="container">
+                        <MountedPersonalitiesList ref="mountedPersList" :on-mount-unmount="onMountUnmountFun" />
+                    </div>
                     <!-- CHAT BOX -->
-                    <div class="flex flex-row flex-grow items-center gap-2 ">
-                        <!-- <div class="w-24">
-                            <MountedPersonalities  @click.stop=""/>
+                    <div class="flex flex-row flex-grow items-center gap-2 overflow-visible">
+                        <div class="w-fit">
+                            <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" />
 
-                        </div> -->
-                       
+                        </div>
+
 
                         <div class="relative grow">
                             <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"
@@ -175,6 +178,7 @@ import { nextTick, TransitionGroup } from 'vue'
 import feather from 'feather-icons'
 import filesize from '../plugins/filesize'
 import MountedPersonalities from './MountedPersonalities.vue'
+import MountedPersonalitiesList from './MountedPersonalitiesList.vue'
 export default {
     name: 'ChatBox',
     emits: ["messageSentEvent", "stopGenerating"],
@@ -184,7 +188,8 @@ export default {
 
     },
     components: {
-        MountedPersonalities
+        MountedPersonalities,
+        MountedPersonalitiesList
     },
     setup() {
 
@@ -195,10 +200,19 @@ export default {
         return {
             message: "",
             fileList: [],
-            totalSize: 0
+            totalSize: 0,
+            showPersonalities: false
         }
     },
     methods: {
+        onShowPersListFun(comp) {
+            this.showPersonalities = comp.show
+
+        },
+        onMountUnmountFun(comp) {
+            console.log('mountunmount chat')
+            this.$refs.mountedPers.constructor()
+        },
         computedFileSize(size) {
             nextTick(() => {
                 feather.replace()
