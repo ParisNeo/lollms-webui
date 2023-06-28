@@ -12,7 +12,7 @@ const store = createStore({
     state () {
       return {
         // count: 0,
-        mountedPersonalities: {},
+        mountedPersonalities: [],
         settingsChanged:false
       }
     },

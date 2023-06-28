@@ -7,11 +7,12 @@
             <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 Mounted Personalities: ({{ mountedPersArr.length }})
             </label>
-            <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-4 md:grid-cols-2 gap-4 max-h-96">
+            <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-1 md:grid-cols-1 gap-4 max-h-96">
                 <TransitionGroup name="bounce">
                     <personality-entry ref="personalitiesZoo" v-for="(pers, index) in mountedPersArr"
-                        :key="'index-' + index + '-' + pers.name" :personality="pers" :full_path="pers.full_path"
-                        :selected="configFile.personalities[configFile.active_personality_id]==pers.full_path"
+                        :key="'index-' + index + '-' + pers.name + new Date().getTime()" :personality="pers"
+                        :full_path="pers.full_path"
+                        :selected="configFile.personalities[configFile.active_personality_id] === pers.full_path"
                         :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted"
                         :on-settings="onSettingsPersonality" />
                 </TransitionGroup>
@@ -25,13 +26,38 @@
         <UniversalForm ref="universalForm" class="z-20" />
     </div>
 </template>
+<style scoped>
+.bounce-enter-active {
+    animation: bounce-in 0.5s;
+}
 
-<script>
-import axios from "axios";
+.bounce-leave-active {
+    animation: bounce-in 0.5s reverse;
+}
+
+@keyframes bounce-in {
+    0% {
+        transform: scale(0);
+    }
+
+    50% {
+        transform: scale(1.25);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+</style>
+<script >
 import defaultPersonalityImgPlaceholder from "../assets/logo.svg"
 import PersonalityEntry from './PersonalityEntry.vue'
 import Toast from './Toast.vue'
 import UniversalForm from './UniversalForm.vue';
+
+
+import axios from "axios";
+
 const bUrl = import.meta.env.VITE_GPT4ALL_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
@@ -46,7 +72,7 @@ export default {
         UniversalForm,
     },
     name: 'MountedPersonalitiesList',
-    setup() {
+    data() {
 
 
         return {
@@ -59,7 +85,7 @@ export default {
         }
     },
     async mounted() {
-    await this.constructor()
+        await this.constructor()
         this.isMounted = true
     },
     async activated() {
@@ -69,20 +95,18 @@ export default {
 
     },
     methods: {
-        async constructor() {
-           this.api_get_req("get_config").then((res)=>{
-            this.configFile=res
-              this.getPersonalitiesArr().then(() => {
-                this.getMountedPersonalities()
-                this.$forceUpdate()
-            })
-            })
+        async constructor() {           
+            
+            this.configFile = await this.api_get_req("get_config")
+            this.getPersonalitiesArr()
             let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
             this.configFile.personality_language = personality_path_infos["personality_language"]
             this.configFile.personality_category = personality_path_infos["personality_category"]
             this.configFile.personality_folder = personality_path_infos["personality_name"]
 
-            await this.getPersonalitiesArr()
+
+            this.$forceUpdate()
+            //await this.getPersonalitiesArr()
         },
         async api_get_req(endpoint) {
             try {
@@ -101,7 +125,7 @@ export default {
 
         },
         async getPersonalitiesArr() {
-            this.isLoading = true
+
             this.personalities = []
             const dictionary = await this.api_get_req("get_all_personalities")
             const config = await this.api_get_req("get_config")
@@ -147,10 +171,10 @@ export default {
             this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
             this.personalitiesFiltered.sort()
 
-            this.isLoading = false
 
-            // this.getMountedPersonalities()
-            //     this.$forceUpdate()
+
+             this.getMountedPersonalities()
+                 this.$forceUpdate()
 
         },
         personalityImgPlacehodler(event) {
@@ -175,14 +199,11 @@ export default {
 
             }
 
-            this.isLoading = true
+            this.$forceUpdate()
         },
         async onPersonalitySelected(pers) {
             // eslint-disable-next-line no-unused-vars
-            if (this.isLoading) {
-                this.$refs.toast.showToast("Loading... please wait", 4, false)
-            }
-            this.isLoading = true
+
             console.log('ppa', pers)
             if (pers) {
 
@@ -192,7 +213,7 @@ export default {
                 }
 
 
-                this.settingsChanged = true
+
 
                 if (pers.isMounted) {
 
@@ -202,7 +223,7 @@ export default {
                             await this.constructor()
 
                             this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
-                           
+                            console.log('ssss', this.configFile)
                         }
                     }
 
@@ -213,15 +234,15 @@ export default {
                 }
 
 
-                this.isLoading = false
+
             }
 
         },
         onSettingsPersonality(persEntry) {
             try {
-                this.isLoading = true
+
                 axios.get('/get_active_personality_settings').then(res => {
-                    this.isLoading = false
+
                     if (res) {
 
                         console.log('pers sett', res)
@@ -240,27 +261,27 @@ export default {
 
                                             } else {
                                                 this.$refs.toast.showToast("Did not get Personality settings responses.\n" + response, 4, false)
-                                                this.isLoading = false
+
                                             }
 
 
                                         })
                                 } catch (error) {
                                     this.$refs.toast.showToast("Did not get Personality settings responses.\n Endpoint error: " + error.message, 4, false)
-                                    this.isLoading = false
+
                                 }
 
                             })
                         } else {
                             this.$refs.toast.showToast("Personality has no settings", 4, false)
-                            this.isLoading = false
+
                         }
 
                     }
                 })
 
             } catch (error) {
-                this.isLoading = false
+
                 this.$refs.toast.showToast("Could not open personality settings. Endpoint error: " + error.message, 4, false)
             }
 
@@ -298,11 +319,12 @@ export default {
 
 
             try {
-                this.isLoading = true
+
                 const res = await axios.post('/unmount_personality', obj);
-                this.isLoading = false
+
 
                 if (res) {
+                    this.$forceUpdate()
                     return res.data
                 }
             } catch (error) {
@@ -330,6 +352,7 @@ export default {
                     this.configFile.personality_language = personality_path_infos["personality_language"]
                     this.configFile.personality_category = personality_path_infos["personality_category"]
                     this.configFile.personality_folder = personality_path_infos["personality_name"]
+                    this.$forceUpdate()
                     return res.data
 
                 }
@@ -340,7 +363,7 @@ export default {
 
         },
         async mountPersonality(pers) {
-            this.isLoading = true
+
             console.log('mount pers', pers)
             if (!pers) { return }
 
@@ -367,11 +390,11 @@ export default {
                 pers.isMounted = false
                 this.$refs.toast.showToast("Could not mount personality\nError: " + res.error, 4, false)
             }
-            this.isLoading = false
+
 
         },
         async unmountPersonality(pers) {
-            this.isLoading = true
+
             if (!pers) { return }
 
             const res = await this.unmount_personality(pers.personality || pers)
@@ -396,7 +419,7 @@ export default {
                     this.$refs.personalitiesZoo[persIdZoo].isMounted = false
 
                 }
-
+                this.$forceUpdate()
 
                 //pers.isMounted = false
                 this.getMountedPersonalities()
@@ -416,7 +439,7 @@ export default {
                 this.$refs.toast.showToast("Could not unmount personality\nError: " + res.error, 4, false)
             }
 
-            this.isLoading = false
+
         },
         getMountedPersonalities() {
 

@@ -86,7 +86,7 @@
 
                         </button>
                     </div>
-                    <div v-if="showPersonalities" class="flex items-center mx-1">
+                    <div v-if="showPersonalities" class="container">
                         <MountedPersonalitiesList ref="mountedPersList" />
                     </div>
                     <!-- CHAT BOX -->

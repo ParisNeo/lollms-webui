@@ -10,7 +10,7 @@
 
             <img :src="bUrl + mountedPers.avatar" @error="personalityImgPlacehodler"
                 class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary  border-secondary"
-                :title="mountedPers.name">
+                :title="mountedPers.name" :key="mountedPers.key">
 
             <div class="flex items-center justify-center w-8 h-8 cursor-pointer text-xs font-medium text-white bg-gray-700 border-2 border-white rounded-full hover:bg-gray-600 dark:border-gray-800"
                 @click.stop="toggleShowPersList" title="Click to show more">+{{ mountedPersArr.length - 1 }}</div>
@@ -18,7 +18,7 @@
         <div class="flex -space-x-4 " v-if="mountedPersArr.length == 1">
             <img :src="bUrl + mountedPers.avatar" @error="personalityImgPlacehodler"
                 class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary cursor-pointer  border-secondary"
-                :title="mountedPers.name" @click.stop="toggleShowPersList">
+                :title="mountedPers.name" @click.stop="toggleShowPersList" :key="mountedPers.key">
         </div>
 
     </div>
@@ -27,6 +27,7 @@
 <script>
 import axios from "axios";
 import defaultPersonalityImgPlaceholder from "../assets/logo.svg"
+import { nextTick } from "vue";
 
 const bUrl = import.meta.env.VITE_GPT4ALL_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
@@ -65,13 +66,9 @@ export default {
             this.onShowPersList(this)
         },
         async constructor() {
-             this.api_get_req("get_config").then((res)=>{
-                this.configFile =res
-              this.getPersonalitiesArr().then(() => {
-                this.getMountedPersonalities()
-                this.$forceUpdate()
-            })
-            })
+            
+            this.configFile = await this.api_get_req("get_config")
+            this.getPersonalitiesArr()
             let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
             this.configFile.personality_language = personality_path_infos["personality_language"]
             this.configFile.personality_category = personality_path_infos["personality_category"]
@@ -143,7 +140,11 @@ export default {
             // this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
             // this.personalitiesFiltered.sort()
 
-
+       
+                this.getMountedPersonalities()
+                nextTick(()=>{
+                    this.$forceUpdate()
+                })
 
         },
         personalityImgPlacehodler(event) {
@@ -385,7 +386,8 @@ export default {
             console.log('fig', this.configFile.personality_category)
 
             this.mountedPers = this.personalities[this.personalities.findIndex(item => item.full_path == this.configFile.personalities[this.configFile.active_personality_id])]
-
+            const dd = new Date()
+            this.mountedPers.key = dd.getTime()
         },
     }
 }
