@@ -10,7 +10,7 @@
             <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-1 md:grid-cols-1 gap-4 max-h-96">
                 <TransitionGroup name="bounce">
                     <personality-entry ref="personalitiesZoo" v-for="(pers, index) in mountedPersArr"
-                        :key="'index-' + index + '-' + pers.name + new Date().getTime()" :personality="pers"
+                        :key="'index-' + index + '-' + pers.name" :personality="pers"
                         :full_path="pers.full_path"
                         :selected="configFile.personalities[configFile.active_personality_id] === pers.full_path"
                         :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted"
@@ -105,8 +105,6 @@ export default {
             this.configFile.personality_folder = personality_path_infos["personality_name"]
 
 
-            this.$forceUpdate()
-            //await this.getPersonalitiesArr()
         },
         async api_get_req(endpoint) {
             try {
@@ -168,13 +166,13 @@ export default {
             }
 
             this.personalities.sort((a, b) => a.name.localeCompare(b.name))
-            this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
-            this.personalitiesFiltered.sort()
+            // this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
+            // this.personalitiesFiltered.sort()
 
 
 
              this.getMountedPersonalities()
-                 this.$forceUpdate()
+   
 
         },
         personalityImgPlacehodler(event) {
@@ -199,7 +197,7 @@ export default {
 
             }
 
-            this.$forceUpdate()
+    
         },
         async onPersonalitySelected(pers) {
             // eslint-disable-next-line no-unused-vars
@@ -324,7 +322,7 @@ export default {
 
 
                 if (res) {
-                    this.$forceUpdate()
+                    
                     return res.data
                 }
             } catch (error) {
@@ -352,7 +350,7 @@ export default {
                     this.configFile.personality_language = personality_path_infos["personality_language"]
                     this.configFile.personality_category = personality_path_infos["personality_category"]
                     this.configFile.personality_folder = personality_path_infos["personality_name"]
-                    this.$forceUpdate()
+                   
                     return res.data
 
                 }
@@ -401,36 +399,35 @@ export default {
 
 
             if (res.status) {
+                console.log('unmount response',res)
+                this.configFile.active_personality_id=res.active_personality_id
                 this.configFile.personalities = res.personalities
                 this.$refs.toast.showToast("Personality unmounted", 4, true)
-                const persId = this.personalities.findIndex(item => item.full_path == pers.full_path)
-                const persFilteredId = this.personalitiesFiltered.findIndex(item => item.full_path == pers.full_path)
-                const persIdZoo = this.$refs.personalitiesZoo.findIndex(item => item.full_path == pers.full_path)
+
+                const activePersPath = this.configFile.personalities[this.configFile.active_personality_id]
+
+                console.log()
+                const persId = this.personalities.findIndex(item => item.full_path == activePersPath)
+                //const persFilteredId = this.personalitiesFiltered.findIndex(item => item.full_path == pers.full_path)
+                //const persIdZoo = this.$refs.personalitiesZoo.findIndex(item => item.full_path == pers.full_path)
                 console.log('ppp', this.personalities[persId])
+                const activePers =this.personalities[persId]
+                activePers.isMounted = false
+                activePers.selected = true
+                //this.$refs.personalitiesZoo[persIdZoo].isMounted = false
 
-                this.personalities[persId].isMounted = false
-
-                if (persFilteredId > -1) {
-                    this.personalitiesFiltered[persFilteredId].isMounted = false
-
-                }
-
-                if (persIdZoo > -1) {
-                    this.$refs.personalitiesZoo[persIdZoo].isMounted = false
-
-                }
-                this.$forceUpdate()
+               
 
                 //pers.isMounted = false
                 this.getMountedPersonalities()
                 // Select some other personality
-                const lastPers = this.mountedPersArr[this.mountedPersArr.length - 1]
-
-                console.log(lastPers, this.mountedPersArr.length)
+                //const lastPers = this.mountedPersArr[this.mountedPersArr.length - 1]
+               
+                //console.log(lastPers, this.mountedPersArr.length)
                 // const res2 = await this.select_personality(lastPers.personality)
-                const res2 = await this.select_personality(pers.personality)
+                const res2 = await this.select_personality(activePers)
                 if (res2.status) {
-                    this.$refs.toast.showToast("Selected personality:\n" + lastPers.name, 4, true)
+                    this.$refs.toast.showToast("Selected personality:\n" + activePers.name, 4, true)
 
                 }
 

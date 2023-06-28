@@ -10,7 +10,7 @@
 
             <img :src="bUrl + mountedPers.avatar" @error="personalityImgPlacehodler"
                 class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary  border-secondary"
-                :title="mountedPers.name" :key="mountedPers.key">
+                :title="mountedPers.name" >
 
             <div class="flex items-center justify-center w-8 h-8 cursor-pointer text-xs font-medium text-white bg-gray-700 border-2 border-white rounded-full hover:bg-gray-600 dark:border-gray-800"
                 @click.stop="toggleShowPersList" title="Click to show more">+{{ mountedPersArr.length - 1 }}</div>
@@ -18,7 +18,7 @@
         <div class="flex -space-x-4 " v-if="mountedPersArr.length == 1">
             <img :src="bUrl + mountedPers.avatar" @error="personalityImgPlacehodler"
                 class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary cursor-pointer  border-secondary"
-                :title="mountedPers.name" @click.stop="toggleShowPersList" :key="mountedPers.key">
+                :title="mountedPers.name" @click.stop="toggleShowPersList" >
         </div>
 
     </div>
@@ -36,7 +36,7 @@ export default {
     props: {
         onShowPersList: Function,
     },
-    setup() {
+    data() {
 
 
         return {
@@ -137,13 +137,12 @@ export default {
             }
 
             this.personalities.sort((a, b) => a.name.localeCompare(b.name))
-            // this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
-            // this.personalitiesFiltered.sort()
+
 
        
                 this.getMountedPersonalities()
                 nextTick(()=>{
-                    this.$forceUpdate()
+                  
                 })
 
         },
@@ -383,11 +382,10 @@ export default {
             this.mountedPersArr = mountedPersArr
             //this.mountedPersArr = mountedPersArr
             console.log('getMountedPersonalities', mountedPersArr)
-            console.log('fig', this.configFile.personality_category)
+            console.log('fig', this)
 
             this.mountedPers = this.personalities[this.personalities.findIndex(item => item.full_path == this.configFile.personalities[this.configFile.active_personality_id])]
-            const dd = new Date()
-            this.mountedPers.key = dd.getTime()
+
         },
     }
 }
