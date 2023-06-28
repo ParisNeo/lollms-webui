@@ -70,7 +70,12 @@ export default {
     },
     methods: {
         async constructor() {
-            this.configFile = await this.api_get_req("get_config")
+            this.configFile = await this.api_get_req("get_config").then(()=>{
+              this.getPersonalitiesArr().then(() => {
+                this.getMountedPersonalities()
+                this.$forceUpdate()
+            })
+            })
             let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
             this.configFile.personality_language = personality_path_infos["personality_language"]
             this.configFile.personality_category = personality_path_infos["personality_category"]
@@ -143,8 +148,8 @@ export default {
 
             this.isLoading = false
 
-            this.getMountedPersonalities()
-                this.$forceUpdate()
+            // this.getMountedPersonalities()
+            //     this.$forceUpdate()
 
         },
         personalityImgPlacehodler(event) {
