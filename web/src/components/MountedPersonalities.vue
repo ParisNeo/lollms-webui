@@ -65,7 +65,8 @@ export default {
             this.onShowPersList(this)
         },
         async constructor() {
-            this.configFile = await this.api_get_req("get_config").then(()=>{
+             this.api_get_req("get_config").then((res)=>{
+                this.configFile =res
               this.getPersonalitiesArr().then(() => {
                 this.getMountedPersonalities()
                 this.$forceUpdate()
