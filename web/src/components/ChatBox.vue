@@ -87,12 +87,12 @@
                         </button>
                     </div>
                     <div v-if="showPersonalities" class="container">
-                        <MountedPersonalitiesList ref="mountedPersList" />
+                        <MountedPersonalitiesList ref="mountedPersList" :on-mount-unmount="onMountUnmountFun" />
                     </div>
                     <!-- CHAT BOX -->
                     <div class="flex flex-row flex-grow items-center gap-2 overflow-visible">
                         <div class="w-fit">
-                            <MountedPersonalities :onShowPersList="onShowPersList" />
+                            <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" />
 
                         </div>
 
@@ -205,9 +205,13 @@ export default {
         }
     },
     methods: {
-        onShowPersList(comp) {
+        onShowPersListFun(comp) {
             this.showPersonalities = comp.show
 
+        },
+        onMountUnmountFun(comp) {
+            console.log('mountunmount chat')
+            this.$refs.mountedPers.constructor()
         },
         computedFileSize(size) {
             nextTick(() => {

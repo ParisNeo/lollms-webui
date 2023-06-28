@@ -10,8 +10,7 @@
             <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-1 md:grid-cols-1 gap-4 max-h-96">
                 <TransitionGroup name="bounce">
                     <personality-entry ref="personalitiesZoo" v-for="(pers, index) in mountedPersArr"
-                        :key="'index-' + index + '-' + pers.name" :personality="pers"
-                        :full_path="pers.full_path"
+                        :key="'index-' + index + '-' + pers.name" :personality="pers" :full_path="pers.full_path"
                         :selected="configFile.personalities[configFile.active_personality_id] === pers.full_path"
                         :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted"
                         :on-settings="onSettingsPersonality" />
@@ -62,7 +61,7 @@ const bUrl = import.meta.env.VITE_GPT4ALL_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
     props: {
-
+        onMountUnmount: Function
 
 
     },
@@ -95,8 +94,12 @@ export default {
 
     },
     methods: {
-        async constructor() {           
-            
+        toggleMountUnmount() {
+            console.log('moununmoun pers list')
+            this.onMountUnmount(this)
+        },
+        async constructor() {
+
             this.configFile = await this.api_get_req("get_config")
             this.getPersonalitiesArr()
             let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
@@ -171,8 +174,8 @@ export default {
 
 
 
-             this.getMountedPersonalities()
-   
+            this.getMountedPersonalities()
+
 
         },
         personalityImgPlacehodler(event) {
@@ -197,7 +200,7 @@ export default {
 
             }
 
-    
+
         },
         async onPersonalitySelected(pers) {
             // eslint-disable-next-line no-unused-vars
@@ -322,7 +325,7 @@ export default {
 
 
                 if (res) {
-                    
+
                     return res.data
                 }
             } catch (error) {
@@ -345,12 +348,13 @@ export default {
                 const res = await axios.post('/select_personality', obj);
 
                 if (res) {
+                    this.toggleMountUnmount()
                     this.configFile = await this.api_get_req("get_config")
                     let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
                     this.configFile.personality_language = personality_path_infos["personality_language"]
                     this.configFile.personality_category = personality_path_infos["personality_category"]
                     this.configFile.personality_folder = personality_path_infos["personality_name"]
-                   
+
                     return res.data
 
                 }
@@ -377,7 +381,7 @@ export default {
                 this.configFile.personalities = res.personalities
                 this.$refs.toast.showToast("Personality mounted", 4, true)
                 pers.isMounted = true
-
+                this.toggleMountUnmount()
                 const res2 = await this.select_personality(pers.personality)
                 if (res2.status) {
                     this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
@@ -399,8 +403,9 @@ export default {
 
 
             if (res.status) {
-                console.log('unmount response',res)
-                this.configFile.active_personality_id=res.active_personality_id
+                this.toggleMountUnmount()
+                console.log('unmount response', res)
+                this.configFile.active_personality_id = res.active_personality_id
                 this.configFile.personalities = res.personalities
                 this.$refs.toast.showToast("Personality unmounted", 4, true)
 
@@ -411,18 +416,18 @@ export default {
                 //const persFilteredId = this.personalitiesFiltered.findIndex(item => item.full_path == pers.full_path)
                 //const persIdZoo = this.$refs.personalitiesZoo.findIndex(item => item.full_path == pers.full_path)
                 console.log('ppp', this.personalities[persId])
-                const activePers =this.personalities[persId]
+                const activePers = this.personalities[persId]
                 activePers.isMounted = false
                 activePers.selected = true
                 //this.$refs.personalitiesZoo[persIdZoo].isMounted = false
 
-               
+
 
                 //pers.isMounted = false
                 this.getMountedPersonalities()
                 // Select some other personality
                 //const lastPers = this.mountedPersArr[this.mountedPersArr.length - 1]
-               
+
                 //console.log(lastPers, this.mountedPersArr.length)
                 // const res2 = await this.select_personality(lastPers.personality)
                 const res2 = await this.select_personality(activePers)
