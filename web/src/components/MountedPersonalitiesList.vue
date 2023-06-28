@@ -11,7 +11,7 @@
                 <TransitionGroup name="bounce">
                     <personality-entry ref="personalitiesZoo" v-for="(pers, index) in mountedPersArr"
                         :key="'index-' + index + '-' + pers.name" :personality="pers" :full_path="pers.full_path"
-                        :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === pers.full_path)"
+                        :selected="configFile.personalities[configFile.active_personality_id]==pers.full_path"
                         :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted"
                         :on-settings="onSettingsPersonality" />
                 </TransitionGroup>
@@ -22,6 +22,7 @@
 
         <Toast ref="toast">
         </Toast>
+        <UniversalForm ref="universalForm" class="z-20" />
     </div>
 </template>
 
@@ -30,6 +31,7 @@ import axios from "axios";
 import defaultPersonalityImgPlaceholder from "../assets/logo.svg"
 import PersonalityEntry from './PersonalityEntry.vue'
 import Toast from './Toast.vue'
+import UniversalForm from './UniversalForm.vue';
 const bUrl = import.meta.env.VITE_GPT4ALL_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
@@ -41,6 +43,7 @@ export default {
     components: {
         PersonalityEntry,
         Toast,
+        UniversalForm,
     },
     name: 'MountedPersonalitiesList',
     setup() {
@@ -56,7 +59,7 @@ export default {
         }
     },
     async mounted() {
-        await this.constructor()
+    await this.constructor()
         this.isMounted = true
     },
     async activated() {
@@ -73,10 +76,7 @@ export default {
             this.configFile.personality_category = personality_path_infos["personality_category"]
             this.configFile.personality_folder = personality_path_infos["personality_name"]
 
-            await this.getPersonalitiesArr().then(() => {
-                this.getMountedPersonalities()
-                this.$forceUpdate()
-            })
+            await this.getPersonalitiesArr()
         },
         async api_get_req(endpoint) {
             try {
@@ -143,6 +143,9 @@ export default {
 
             this.isLoading = false
 
+            this.getMountedPersonalities()
+                this.$forceUpdate()
+
         },
         personalityImgPlacehodler(event) {
             event.target.src = defaultPersonalityImgPlaceholder
@@ -193,7 +196,7 @@ export default {
                             await this.constructor()
 
                             this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
-
+                           
                         }
                     }
 
@@ -430,7 +433,7 @@ export default {
             this.mountedPersArr = mountedPersArr
             //this.mountedPersArr = mountedPersArr
             console.log('getMountedPersonalities', mountedPersArr)
-            console.log('fig', this.configFile.personality_category)
+            console.log('fig', this.configFile)
 
         },
     }

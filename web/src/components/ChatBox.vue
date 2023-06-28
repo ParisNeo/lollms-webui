@@ -87,15 +87,15 @@
                         </button>
                     </div>
                     <div v-if="showPersonalities" class="flex items-center mx-1">
-                        <MountedPersonalitiesList  @click.stop=""/>
+                        <MountedPersonalitiesList ref="mountedPersList" />
                     </div>
                     <!-- CHAT BOX -->
                     <div class="flex flex-row flex-grow items-center gap-2 overflow-visible">
-                        <div class="w-24 overflow-visible">
-                            <MountedPersonalities  @click.stop=""/>
+                        <div class="w-fit">
+                            <MountedPersonalities :onShowPersList="onShowPersList" />
 
                         </div>
-                       
+
 
                         <div class="relative grow">
                             <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"
@@ -144,7 +144,6 @@
             </div>
         </form>
     </div>
-
 </template>
 <style scoped>
 /* THESE ARE FOR TransitionGroup components */
@@ -185,8 +184,7 @@ export default {
     emits: ["messageSentEvent", "stopGenerating"],
     props: {
 
-        loading: false,
-        discussionList:[]
+        loading: false
 
     },
     components: {
@@ -203,10 +201,14 @@ export default {
             message: "",
             fileList: [],
             totalSize: 0,
-            showPersonalities:true
+            showPersonalities: false
         }
     },
     methods: {
+        onShowPersList(comp) {
+            this.showPersonalities = comp.show
+
+        },
         computedFileSize(size) {
             nextTick(() => {
                 feather.replace()
