@@ -69,4 +69,7 @@ To select another personality to interact with Einstein, just go to the settings
 Let's select Jack Sparrow.
 To trigger generation, just press the refresh button from previous message and the tool will use your active personality to generate the next mesasge. you can go on doing this and exploring possible interactions between AI-s.
 
-Now let's take a look in
+Few days have passed and now the personality system has been enhanced. Let's start by mounting personalities to use in a multipersonalities conversation.
+
+
+Let's talk to empror Napoleon Bonaparte and ask it about his plans after conquering Egypt.Now, as you can see, you have a new module in the ui that shows the current personality icon. When we press the + button, we can select the personality to talk to.

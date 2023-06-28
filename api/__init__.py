@@ -167,7 +167,11 @@ class LoLLMsAPPI():
             model_url = data["model_url"]
             signature = f"{model_name}_{binding_folder}_{model_url}"
             self.download_infos[signature]["cancel"]=True
-            
+            self.socketio.emit('canceled', {
+                                            'status': True
+                                            },
+                                            room=self.current_room_id
+                                )            
             
         @socketio.on('install_model')
         def install_model(data):
@@ -263,6 +267,7 @@ class LoLLMsAPPI():
                     
                     if self.download_infos[signature]["cancel"]:
                         raise Exception("canceled")
+                        
                     
                 if hasattr(self.binding, "download_model"):
                     try:
