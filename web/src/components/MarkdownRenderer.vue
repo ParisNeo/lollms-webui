@@ -1,6 +1,6 @@
 <template>
   <div class="break-all">
-    <div v-html="renderedMarkdown" class=""></div>
+    <div v-html="renderedMarkdown" class="markdown-content"></div>
   </div>
 </template>
 
@@ -82,6 +82,7 @@ const markdownIt = new MarkdownIt('commonmark', {
       '</div>';
     return codeString;
   },
+  bulletListMarker: '•',
 }).use(emoji).use(attrs); // Add attrs plugin for adding attributes to elements
 
 markdownIt.renderer.rules.link_open = (tokens, idx, options, env, self) => {
@@ -161,4 +162,11 @@ export default {
 
 <style>
 /* Include any additional styles you need */
+ul {
+  list-style-type: disc;
+}
+
+ol {
+  list-style-type: decimal;
+}
 </style>

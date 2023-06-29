@@ -1291,7 +1291,7 @@ export default {
                 if (pers.isMounted && this.configFile.personalities.includes(pers.personality.full_path)) {
 
                     const res = await this.select_personality(pers)
-
+                    console.log('pers is mounted',res)
                     if (res && res.status && res.active_personality_id > -1) {
                         this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
 
@@ -1301,6 +1301,7 @@ export default {
                     this.isLoading = false
 
                 } else {
+                    console.log('mounting pers')
                     this.onPersonalityMounted(pers)
 
                 }
@@ -1361,7 +1362,7 @@ export default {
         onCancelInstall() {
 
             const modelEntry = this.addModel
-
+console.log('cancel install', modelEntry)
             // const keys = Object.keys(this.addModel)
             // if (keys.includes('url')) {
             //     return
@@ -1383,12 +1384,14 @@ export default {
             let path = model_object.path;
             this.showProgress = true;
             this.progress = 0;
-            console.log("installing...");
-
+            this.addModel={ model_name: model_object.model.title, binding_folder: this.configFile.binding_name, model_url: model_object.path }
+            console.log("installing...", this.addModel);
+           
             // Use an arrow function for progressListener
             const progressListener = (response) => {
                 console.log("received something");
                 if (response.status && response.progress <= 100) {
+                    this.addModel=response
                     console.log(`Progress`, response);
                     model_object.progress = response.progress
                     model_object.speed = response.speed

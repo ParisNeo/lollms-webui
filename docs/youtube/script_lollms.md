@@ -58,4 +58,20 @@ Let's select a 4 bits quantization which is a good ratio between size and perfor
 Press install and wait for it to download the model. You can install multiple models simultaniously. Make sure you have enough disk space as some of those models are very big.
 Now let's take a look at the new personalities system.
 The new system allows us to mount multiple personalities in the same session. This means that we can create a multipersonalities discussion.
+There are many categories for english language. I will probably create more languages in the future and translate those personality files.
+There are in total over 260 personalities in different fields and sorts. You can checkout the Job category where you cvan find multiple personalities.
+We can activate personalities like shoping in a mall. Those personalities will be loaded at startup and will be easily accessible in the mounted personalities list.
+Most personalities just have a yaml conditioning file and a logo in the assets folder. But some other personalities are more advanted with behavior and configuration parameters. Here we are going to show simple conversational personalities.
+You can either use the personalities category organization or the search bar.
+Once you finish mounting personalities, you can start a conversation. Here we talk to Einstein.
+Let's ask it to teach us relativity.
+To select another personality to interact with Einstein, just go to the settings page and select the personality you want to use. We are developing fast access to personalities in the main discussion page, it should be out in few days from now. 
+Let's select Jack Sparrow.
+To trigger generation, just press the refresh button from previous message and the tool will use your active personality to generate the next mesasge. you can go on doing this and exploring possible interactions between AI-s.
 
+Few days have passed and now the personality system has been enhanced. Let's start by mounting personalities to use in a multipersonalities conversation.
+
+
+Let's talk to empror Napoleon Bonaparte and ask it about his plans after conquering Egypt.Now, as you can see, you have a new module in the ui that shows the current personality icon. When we press the + button, we can select the personality to talk to.
+
+With this, we can make personalities talk to each other by selecting next personality and pressing the regenerate answer button. This will be refined in the future. It is still a work in progress but the feature is pretty much usable right now. You can explore impossible discussions between personalities that never lived in the same era, never spoken the same language and sometimes the discussions get really interesting. Be aware that the quality of the discussions depend heavily on the model you use. You can view which model was used to generate each message as well as time needed to generate the answer. Feel free to explore these things and share your findings on internet.

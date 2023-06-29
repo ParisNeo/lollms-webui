@@ -1,41 +1,76 @@
 <template>
     <!-- LIST OF MOUNTED PERSONALITIES -->
-
-
-    <div class="w-fit select-none">
-
-
-        <div class="flex -space-x-4 " v-if="mountedPersArr.length > 1">
-
-
-            <img :src="bUrl + mountedPers.avatar" @error="personalityImgPlacehodler"
-                class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary  border-secondary"
-                :title="mountedPers.name" >
-
-            <div class="flex items-center justify-center w-8 h-8 cursor-pointer text-xs font-medium text-white bg-gray-700 border-2 border-white rounded-full hover:bg-gray-600 dark:border-gray-800"
-                @click.stop="toggleShowPersList" title="Click to show more">+{{ mountedPersArr.length - 1 }}</div>
-        </div>
-        <div class="flex -space-x-4 " v-if="mountedPersArr.length == 1">
-            <img :src="bUrl + mountedPers.avatar" @error="personalityImgPlacehodler"
-                class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary cursor-pointer  border-secondary"
-                :title="mountedPers.name" @click.stop="toggleShowPersList" >
+    <div
+        class="text-left overflow-visible text-base font-semibold cursor-pointer select-none items-center flex flex-row overflow-x-auto -my-2 pr-2 scrollbar-thin scrollbar-track-bg-light scrollbar-thumb-bg-light-tone hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark dark:scrollbar-thumb-bg-dark-tone dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+        <!-- LIST -->
+        <div v-if="mountedPersArr.length > 0" class="m-2">
+            <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Mounted Personalities: ({{ mountedPersArr.length }})
+            </label>
+            <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-1 md:grid-cols-1 gap-4 max-h-96">
+                <TransitionGroup name="bounce">
+                    <personality-entry ref="personalitiesZoo" v-for="(pers, index) in mountedPersArr"
+                        :key="'index-' + index + '-' + pers.name" :personality="pers" :full_path="pers.full_path"
+                        :selected="configFile.personalities[configFile.active_personality_id] === pers.full_path"
+                        :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted"
+                        :on-settings="onSettingsPersonality" />
+                </TransitionGroup>
+            </div>
         </div>
 
+
+
+        <Toast ref="toast">
+        </Toast>
+        <UniversalForm ref="universalForm" class="z-20" />
     </div>
 </template>
+<style scoped>
+.bounce-enter-active {
+    animation: bounce-in 0.5s;
+}
 
-<script>
-import axios from "axios";
+.bounce-leave-active {
+    animation: bounce-in 0.5s reverse;
+}
+
+@keyframes bounce-in {
+    0% {
+        transform: scale(0);
+    }
+
+    50% {
+        transform: scale(1.25);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+</style>
+<script >
 import defaultPersonalityImgPlaceholder from "../assets/logo.svg"
-import { nextTick } from "vue";
+import PersonalityEntry from './PersonalityEntry.vue'
+import Toast from './Toast.vue'
+import UniversalForm from './UniversalForm.vue';
+
+
+import axios from "axios";
 
 const bUrl = import.meta.env.VITE_GPT4ALL_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
-    name: 'MountedPersonalities',
     props: {
-        onShowPersList: Function,
+        onMountUnmount: Function
+
+
     },
+    components: {
+        PersonalityEntry,
+        Toast,
+        UniversalForm,
+    },
+    name: 'MountedPersonalitiesList',
     data() {
 
 
@@ -45,9 +80,7 @@ export default {
             personalities: [],
             bUrl: bUrl,
             isMounted: false,
-            mountedPers: {},
-            show: false
-
+            isLoading: false
         }
     },
     async mounted() {
@@ -61,12 +94,12 @@ export default {
 
     },
     methods: {
-        toggleShowPersList() {
-            this.show = !this.show
-            this.onShowPersList(this)
+        toggleMountUnmount() {
+            console.log('moununmoun pers list')
+            this.onMountUnmount(this)
         },
         async constructor() {
-            
+
             this.configFile = await this.api_get_req("get_config")
             this.getPersonalitiesArr()
             let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
@@ -75,7 +108,6 @@ export default {
             this.configFile.personality_folder = personality_path_infos["personality_name"]
 
 
-            
         },
         async api_get_req(endpoint) {
             try {
@@ -137,13 +169,13 @@ export default {
             }
 
             this.personalities.sort((a, b) => a.name.localeCompare(b.name))
+            // this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
+            // this.personalitiesFiltered.sort()
 
 
-       
-                this.getMountedPersonalities()
-                nextTick(()=>{
-                  
-                })
+
+            this.getMountedPersonalities()
+
 
         },
         personalityImgPlacehodler(event) {
@@ -172,9 +204,6 @@ export default {
         },
         async onPersonalitySelected(pers) {
             // eslint-disable-next-line no-unused-vars
-            if (this.isLoading) {
-                this.$refs.toast.showToast("Loading... please wait", 4, false)
-            }
 
             console.log('ppa', pers)
             if (pers) {
@@ -185,15 +214,17 @@ export default {
                 }
 
 
-                this.settingsChanged = true
+
 
                 if (pers.isMounted) {
 
                     const res = await this.select_personality(pers)
                     if (res) {
                         if (res.status) {
-                            this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
+                            await this.constructor()
 
+                            this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
+                            console.log('ssss', this.configFile)
                         }
                     }
 
@@ -205,6 +236,54 @@ export default {
 
 
 
+            }
+
+        },
+        onSettingsPersonality(persEntry) {
+            try {
+
+                axios.get('/get_active_personality_settings').then(res => {
+
+                    if (res) {
+
+                        console.log('pers sett', res)
+                        if (res.data && Object.keys(res.data).length > 0) {
+
+                            this.$refs.universalForm.showForm(res.data, "Personality settings - " + persEntry.personality.name, "Save changes", "Cancel").then(res => {
+
+                                // send new data
+                                try {
+                                    axios.post('/set_active_personality_settings',
+                                        res).then(response => {
+
+                                            if (response && response.data) {
+                                                console.log('personality set with new settings', response.data)
+                                                this.$refs.toast.showToast("Personality settings updated successfully!", 4, true)
+
+                                            } else {
+                                                this.$refs.toast.showToast("Did not get Personality settings responses.\n" + response, 4, false)
+
+                                            }
+
+
+                                        })
+                                } catch (error) {
+                                    this.$refs.toast.showToast("Did not get Personality settings responses.\n Endpoint error: " + error.message, 4, false)
+
+                                }
+
+                            })
+                        } else {
+                            this.$refs.toast.showToast("Personality has no settings", 4, false)
+
+                        }
+
+                    }
+                })
+
+            } catch (error) {
+
+                this.$refs.toast.showToast("Could not open personality settings. Endpoint error: " + error.message, 4, false)
             }
 
         },
@@ -246,6 +325,7 @@ export default {
 
 
                 if (res) {
+
                     return res.data
                 }
             } catch (error) {
@@ -268,11 +348,13 @@ export default {
                 const res = await axios.post('/select_personality', obj);
 
                 if (res) {
+                    this.toggleMountUnmount()
                     this.configFile = await this.api_get_req("get_config")
                     let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
                     this.configFile.personality_language = personality_path_infos["personality_language"]
                     this.configFile.personality_category = personality_path_infos["personality_category"]
                     this.configFile.personality_folder = personality_path_infos["personality_name"]
+
                     return res.data
 
                 }
@@ -299,7 +381,7 @@ export default {
                 this.configFile.personalities = res.personalities
                 this.$refs.toast.showToast("Personality mounted", 4, true)
                 pers.isMounted = true
-
+                this.toggleMountUnmount()
                 const res2 = await this.select_personality(pers.personality)
                 if (res2.status) {
                     this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
@@ -321,36 +403,36 @@ export default {
 
 
             if (res.status) {
+                this.toggleMountUnmount()
+                console.log('unmount response', res)
+                this.configFile.active_personality_id = res.active_personality_id
                 this.configFile.personalities = res.personalities
                 this.$refs.toast.showToast("Personality unmounted", 4, true)
-                const persId = this.personalities.findIndex(item => item.full_path == pers.full_path)
-                const persFilteredId = this.personalitiesFiltered.findIndex(item => item.full_path == pers.full_path)
-                const persIdZoo = this.$refs.personalitiesZoo.findIndex(item => item.full_path == pers.full_path)
+
+                const activePersPath = this.configFile.personalities[this.configFile.active_personality_id]
+
+                console.log()
+                const persId = this.personalities.findIndex(item => item.full_path == activePersPath)
+                //const persFilteredId = this.personalitiesFiltered.findIndex(item => item.full_path == pers.full_path)
+                //const persIdZoo = this.$refs.personalitiesZoo.findIndex(item => item.full_path == pers.full_path)
                 console.log('ppp', this.personalities[persId])
+                const activePers = this.personalities[persId]
+                activePers.isMounted = false
+                activePers.selected = true
+                //this.$refs.personalitiesZoo[persIdZoo].isMounted = false
 
-                this.personalities[persId].isMounted = false
-
-                if (persFilteredId > -1) {
-                    this.personalitiesFiltered[persFilteredId].isMounted = false
-
-                }
-
-                if (persIdZoo > -1) {
-                    this.$refs.personalitiesZoo[persIdZoo].isMounted = false
-
-                }
 
 
                 //pers.isMounted = false
                 this.getMountedPersonalities()
                 // Select some other personality
-                const lastPers = this.mountedPersArr[this.mountedPersArr.length - 1]
+                //const lastPers = this.mountedPersArr[this.mountedPersArr.length - 1]
 
-                console.log(lastPers, this.mountedPersArr.length)
+                //console.log(lastPers, this.mountedPersArr.length)
                 // const res2 = await this.select_personality(lastPers.personality)
-                const res2 = await this.select_personality(pers.personality)
+                const res2 = await this.select_personality(activePers)
                 if (res2.status) {
-                    this.$refs.toast.showToast("Selected personality:\n" + lastPers.name, 4, true)
+                    this.$refs.toast.showToast("Selected personality:\n" + activePers.name, 4, true)
 
                 }
 
@@ -382,9 +464,7 @@ export default {
             this.mountedPersArr = mountedPersArr
             //this.mountedPersArr = mountedPersArr
             console.log('getMountedPersonalities', mountedPersArr)
-            console.log('fig', this)
-
-            this.mountedPers = this.personalities[this.personalities.findIndex(item => item.full_path == this.configFile.personalities[this.configFile.active_personality_id])]
+            console.log('fig', this.configFile)
 
         },
     }

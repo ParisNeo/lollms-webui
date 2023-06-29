@@ -1,11 +1,35 @@
 <template>
     <div
-        class="group rounded-lg m-2 shadow-lg hover:border-primary dark:hover:border-primary hover:border-solid hover:border-2 border-2 border-transparent even:bg-bg-light-discussion-odd dark:even:bg-bg-dark-discussion-odd flex flex-col flex-grow flex-wrap overflow-x-hidden p-4 pb-2">
+        class="relative group rounded-lg m-2 shadow-lg hover:border-primary dark:hover:border-primary hover:border-solid hover:border-2 border-2 border-transparent even:bg-bg-light-discussion-odd dark:even:bg-bg-dark-discussion-odd flex flex-col flex-grow flex-wrap overflow-visible p-4 pb-2 ">
         <div class="flex flex-row  gap-2 ">
-            <div class="flex-shrink-0 ">
+            <div class=" flex-shrink-0">
                 <!-- AVATAR -->
-                <img :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-full object-fill text-red-700">
+                <div class="group/avatar " >
+                    <img :src="getImgUrl()" @error="defaultImg($event)" :data-popover-target="'avatar' + message.id" data-popover-placement="bottom"
+                        class="w-10 h-10 rounded-full object-fill text-red-700">
+                        
+                        <!-- ADDITIONAL INFO -->
+                    <!-- <div data-popper :id="'avatar' + message.id"   role="tooltip"
+                        class=" -mx-2 absolute invisible rounded-lg bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel block  m-2 p-1 opacity-0 z-10  transition-opacity ease-in-out  duration-500 group-hover/avatar:visible group-hover/avatar:opacity-100 ">
+                        
+                        <div class="relative flex flex-row items-start">
+                            
+                            <img :src="getImgUrl()" @error="defaultImg($event)" class=" border-2 border-primary p-1 rounded-lg w-60 h-60" />
 
+                            <div class="flex flex-col justify-between p-4 leading-normal">
+                                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Noteworthy
+                                    technology acquisitions 2021</h5>
+                                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise
+                                    technology acquisitions of 2021 so far, in reverse chronological order.</p>
+                            </div>
+                            
+                        </div>
+                     
+                    </div> -->
+                    
+                    
+                </div>
+                
             </div>
 
             <div class="flex flex-col w-full flex-grow-0 ">
@@ -325,17 +349,17 @@ export default {
             const endTime = new Date(Date.parse(this.message.finished_generating_at))
             //const spentTime = new Date(endTime - startTime)
             const same = endTime.getTime() === startTime.getTime();
-            if(same){
-                
+            if (same) {
+
                 return undefined
             }
 
-            if(!endTime.getTime()){
-                return undefined 
+            if (!endTime.getTime()) {
+                return undefined
             }
             let timeDiff = endTime.getTime() - startTime.getTime();
 
-            
+
             const hours = Math.floor(timeDiff / (1000 * 60 * 60));
 
             timeDiff -= hours * (1000 * 60 * 60);
@@ -364,8 +388,8 @@ export default {
             // let m = addZero(spentTime.getMinutes());
             // let s = addZero(spentTime.getSeconds());
             const time = addZero(hours) + "h:" + addZero(mins) + "m:" + addZero(secs) + 's';
-            
-            
+
+
             return time
 
 
