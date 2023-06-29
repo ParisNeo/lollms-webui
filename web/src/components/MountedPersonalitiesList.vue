@@ -415,12 +415,12 @@ export default {
                 console.log()
                 const persId = this.personalities.findIndex(item => item.full_path == activePersPath)
                 //const persFilteredId = this.personalitiesFiltered.findIndex(item => item.full_path == pers.full_path)
-                //const persIdZoo = this.$refs.personalitiesZoo.findIndex(item => item.full_path == pers.full_path)
+                const persIdZoo = this.$refs.personalitiesZoo.findIndex(item => item.full_path == pers.full_path)
                 console.log('ppp', this.personalities[persId])
                 const activePers = this.personalities[persId]
                 activePers.isMounted = false
                 activePers.selected = true
-                //this.$refs.personalitiesZoo[persIdZoo].isMounted = false
+                this.$refs.personalitiesZoo[persIdZoo].isMounted = false
 
 
 
@@ -469,12 +469,16 @@ export default {
             this.mountedPersArr = []
             this.mountedPersArr = mountedPersArr
             //this.mountedPersArr = mountedPersArr
-
+            console.log('discussionPersonalities',this.discussionPersonalities)
             if (this.discussionPersonalities.length > 0) {
                 for (let i = 0; i < this.discussionPersonalities.length; i++) {
                     const per = this.discussionPersonalities[i]
-                    const perIndex =this.mountedPersArr.includes(item => item.full_path == per)
-                    if (!perIndex|| undefined) {
+                    console.log('discussionPersonalities - per', per)
+                    const perIndex =this.mountedPersArr.findIndex((item) => item.full_path == per)
+                    console.log('discussionPersonalities -includes', perIndex)
+                    console.log('discussionPersonalities -mounted list', this.mountedPersArr) 
+
+                    if (perIndex==-1) {
                         
                         const index2 = this.personalities.findIndex(item2 => item2.full_path == per)
                         // const index22 = this.personalities.filter(item2 => item2.full_path.localeCompare(per) ==1 ) 
