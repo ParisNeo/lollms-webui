@@ -13,34 +13,33 @@
         <h3 class="font-bold font-large text-lg line-clamp-3">
           {{ personality.name }}
         </h3>
-        <div class="grow">
-          <!-- EMPTY SPACE FILLER -->
-        </div>
-        <!-- ADVANCED OPTIONS - NOT IMPLEMENTED -->
-        <div class="flex items-center">
-          <button v-if="!personality.installed" type="button" title="Not installed"
-            class="hover:text-red-600 duration-75 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
-            @click.stop="">
-            <i data-feather="slash" class="w-5"></i>
-            <span class="sr-only">Not installed</span>
-          </button>
-          <button v-if="selected_computed" type="button" title="Settings"
-            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
-            @click.stop="toggleSettings">
-            <i data-feather="sliders" class="w-5"></i>
-            <span class="sr-only">Settings</span>
-          </button>
-          <!-- BUTTON MOUNTED  -->
-          <button type="button" @click.stop="toggleMounted"
-            class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            :class="isMounted ? ' bg-red-700 rounded-lg hover:bg-red-800 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800' : ''">
-            {{ isMounted ? 'Unmount' : 'Mount' }}
-
-          </button>
 
 
-        </div>
 
+
+      </div>
+      <div class="flex items-center flex-row-reverse gap-2 my-1">
+        <!-- CONTROLS -->
+        <button v-if="selected_computed" type="button" title="Settings" @click.stop="toggleSettings"
+          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          Settings
+
+          <span class="sr-only">Settings</span>
+        </button>
+
+        <button v-if="!isMounted" title="Mount personality" type="button"
+          @click.stop="toggleMounted"
+          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          Mount
+
+          <span class="sr-only">Click to install</span>
+        </button>
+        <button v-if="isMounted" title="Unmount personality" type="button" @click.stop="toggleMounted"
+          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+          Unmount
+
+          <span class="sr-only">Remove</span>
+        </button>
 
       </div>
       <div class="">

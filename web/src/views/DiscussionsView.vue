@@ -189,7 +189,7 @@
 
             </div>
             <div class=" bottom-0 container flex flex-row items-center justify-center " v-if="currentDiscussion.id">
-                <ChatBox ref="chatBox" @messageSentEvent="sendMsg" :loading="isGenerating" :discussionList="list" @stopGenerating="stopGenerating">
+                <ChatBox ref="chatBox" @messageSentEvent="sendMsg" :loading="isGenerating" :discussionList="discussionArr" @stopGenerating="stopGenerating">
                 </ChatBox>
             </div>
             <!-- CAN ADD FOOTER PANEL HERE -->
@@ -289,6 +289,7 @@ export default {
             try {
                 if (id) {
                     this.loading = true
+                    this.discussionArr=[]
                     this.setDiscussionLoading(id, this.loading)
                     const res = await axios.post('/load_discussion', {
                         id: id
@@ -1259,10 +1260,10 @@ export default {
         // If anyone knows hor to fix scroll issue when changing pages, please do fix it :D
         console.log("Websocket connected (activated)", this.socketConnected)
         //console.log('settings changed acc', this.$store.state.settingsChanged)
+        // await this.getPersonalityAvatars()
         await this.getPersonalityAvatars()
-
         if (this.isCreated) {
-            this.loadLastUsedDiscussion()
+           // this.loadLastUsedDiscussion()
             nextTick(() => {
 
                 const msgList = document.getElementById('messages-list')

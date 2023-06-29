@@ -25,7 +25,7 @@ POST http://localhost:9600/delete_discussion
 Content-Type: application/json
 
 {
-    "id": 0 // Discussion ID Must be integer
+    "id": 0 
 }
 ############################################
 ### Edit discussion title
