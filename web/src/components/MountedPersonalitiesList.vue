@@ -7,7 +7,7 @@
             <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 Mounted Personalities: ({{ mountedPersArr.length }})
             </label>
-            <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-1 md:grid-cols-1 gap-4 max-h-96">
+            <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4 max-h-96">
                 <TransitionGroup name="bounce">
                     <personality-entry ref="personalitiesZoo" v-for="(pers, index) in mountedPersArr"
                         :key="'index-' + index + '-' + pers.name" :personality="pers" :full_path="pers.full_path"
@@ -61,7 +61,8 @@ const bUrl = import.meta.env.VITE_GPT4ALL_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
     props: {
-        onMountUnmount: Function
+        onMountUnmount: Function,
+        discussionPersonalities: Array
 
 
     },
@@ -454,16 +455,45 @@ export default {
 
                 const pers = this.personalities[index]
                 if (pers) {
+                    console.log('adding from config')
                     mountedPersArr.push(pers)
                 }
                 else {
-                    mountedPersArr.push(this.personalities[this.personalities.findIndex(item => item.full_path == "english/generic/lollms")])
+                    console.log('adding default')
+                    const index = this.personalities.findIndex(item2 => item2.full_path == "english/generic/lollms")
+
+                    const pers = this.personalities[index]
+                    mountedPersArr.push(pers)
                 }
             }
             this.mountedPersArr = []
             this.mountedPersArr = mountedPersArr
             //this.mountedPersArr = mountedPersArr
-            console.log('getMountedPersonalities', mountedPersArr)
+
+            if (this.discussionPersonalities.length > 0) {
+                for (let i = 0; i < this.discussionPersonalities.length; i++) {
+                    const per = this.discussionPersonalities[i]
+                    const perIndex =this.mountedPersArr.includes(item => item.full_path == per)
+                    if (!perIndex|| undefined) {
+                        
+                        const index2 = this.personalities.findIndex(item2 => item2.full_path == per)
+                        // const index22 = this.personalities.filter(item2 => item2.full_path.localeCompare(per) ==1 ) 
+
+                        const pers = this.personalities[index2]
+                        console.log('adding discucc121',pers, per)
+                        if(pers){
+                            this.mountedPersArr.push(pers)
+                        console.log('adding discucc',pers)
+                        }
+
+                    }
+
+                }
+
+            }
+
+
+            console.log('getMountedPersonalities', this.mountedPersArr)
             console.log('fig', this.configFile)
 
         },

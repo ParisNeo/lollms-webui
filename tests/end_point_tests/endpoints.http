@@ -18,7 +18,7 @@ POST http://localhost:9600/load_discussion
 Content-Type: application/json
 
 {
-    "id": 1 // Discussion ID Must be integer
+    "id": 5 
 }
 ############################################
 ### Delete Discussion by ID
@@ -27,7 +27,7 @@ POST http://localhost:9600/delete_discussion
 Content-Type: application/json
 
 {
-    "id": 0 // Discussion ID Must be integer
+    "id": 0 
 }
 ############################################
 ### Edit discussion title

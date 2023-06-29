@@ -86,8 +86,8 @@
 
                         </button>
                     </div>
-                    <div v-if="showPersonalities" class="container">
-                        <MountedPersonalitiesList ref="mountedPersList" :on-mount-unmount="onMountUnmountFun" />
+                    <div v-if="showPersonalities" class="">
+                        <MountedPersonalitiesList ref="mountedPersList" :on-mount-unmount="onMountUnmountFun" :discussionPersonalities="allDiscussionPersonalities"/>
                     </div>
                     <!-- CHAT BOX -->
                     <div class="flex flex-row flex-grow items-center gap-2 overflow-visible">
@@ -174,7 +174,7 @@ import MountedPersonalitiesComponent from './MountedPersonalitiesComponent.vue'
 
 </script> -->
 <script>
-import { nextTick, TransitionGroup } from 'vue'
+import { nextTick, ref, TransitionGroup } from 'vue'
 import feather from 'feather-icons'
 import filesize from '../plugins/filesize'
 import MountedPersonalities from './MountedPersonalities.vue'
@@ -183,7 +183,7 @@ export default {
     name: 'ChatBox',
     emits: ["messageSentEvent", "stopGenerating"],
     props: {
-
+        discussionList: Array,
         loading: false
 
     },
@@ -202,6 +202,27 @@ export default {
             fileList: [],
             totalSize: 0,
             showPersonalities: false
+        }
+    },
+    computed: {
+        allDiscussionPersonalities() {
+            if (this.discussionList.length > 0) {
+
+                let persArray = []
+                for (let i = 0; i < this.discussionList.length; i++) {
+                    if (!persArray.includes(this.discussionList[i].personality) && !this.discussionList[i].personality=="") {
+                        persArray.push(this.discussionList[i].personality)
+                    };
+                }
+
+
+
+
+                console.log('conputer pers', persArray)
+                console.log('dis conputer pers', this.discussionList)
+                return persArray
+            }
+
         }
     },
     methods: {
@@ -277,10 +298,14 @@ export default {
             },
             deep: true
         },
+        discussionList(val){
+
+            console.log('discussion arr',val)
+        }
 
     },
     mounted() {
-
+        console.log('mnted all chat', this.allDiscussionPersonalities)
         nextTick(() => {
             feather.replace()
         })
