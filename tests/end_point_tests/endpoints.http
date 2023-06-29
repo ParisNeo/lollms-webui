@@ -17,9 +17,7 @@ GET http://localhost:9600/list_discussions
 POST http://localhost:9600/load_discussion
 Content-Type: application/json
 
-{
-    "id": 1 // Discussion ID Must be integer
-}
+{"id": 1}
 ############################################
 ### Delete Discussion by ID
 ############################################
