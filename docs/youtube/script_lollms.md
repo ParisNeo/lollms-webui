@@ -78,4 +78,13 @@ With this, we can make personalities talk to each other by selecting next person
 
 Now let me show you this new binding made for those who have a network with a powerful pc or server and many low grade PCs or terminals. We can use this new binding to create a text generation service for all those little PCs which is really interesting if you have a company and want to keep your data local while investing in only a handful of nodes, servers or high end PCs and give the text generation service to all your workers. This can also be done at home where you may have a PC with GPU and few laptops or raspberry pi that can benefit from the text generation service on your PC. I personally do that and it is a great trade off allowing for mutualization of resources.
 
-First, instead of running the whole backend on the server
+First we need to install the lollms library and run the lollms server. go to the console and type:
+pip install --upgrade lollms
+This will install the library along with the server, a console generation tool and a settings tool.
+Once the installation is done, just run lollms-server and follow the instruction. The first time you use it, it will ask for the path to your personal data folder. You can use the same folder as the webui if you want to mutualize your models and settings. The server bindings and model names are exclusive to each application. This is logical as if you want to use the lollms remote nodes for the client, you would use another binding for the server. In fact the server configuration file has a prefix lollms_server. 
+
+Now we need to come back to our web-ui and configure the servers we want to use. Here we used a local server, so we just use its name as http://localhost:9600 but you can run the server on a different PC. Just make sure you run the lollms-server with the option --host 0.0.0.0 which will expose the server on all ip adresses of your PC. You can also specify the IP address. You can run multiple servers on the same node by changing the port number using --port parameter of the lollms-server. You can also add multiple server paths in the configuration by separating them using a comma. Make sure this parameter is a list of strings put inside brackets just as in python. 
+
+You can view in the console what servers are active at the moment. You can  choose to completely remove the inactive servers from the list for the current session or to continue trying to connect to them whenever a new generation is attempted.
+
+Now that our remote service is up, we can use it as we use any local binding.

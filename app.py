@@ -996,6 +996,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
         if self.binding is not None:
             if hasattr(self.binding,"binding_config"):
                 self.binding.binding_config.update_template(data)
+                self.binding.binding_config.config.save_config()
+                self.binding= BindingBuilder().build_binding(self.config, self.lollms_paths)
+                self.model = self.binding.build_model()
                 return jsonify({'status':True})
             else:
                 return jsonify({'status':False})        
