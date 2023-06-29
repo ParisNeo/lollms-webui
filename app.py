@@ -967,6 +967,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         if self.personality.processor is not None:
             if hasattr(self.personality.processor,"personality_config"):
                 self.personality.processor.personality_config.update_template(data)
+                self.personality.processor.personality_config.config.save_config()
                 return jsonify({'status':True})
             else:
                 return jsonify({'status':False})        
