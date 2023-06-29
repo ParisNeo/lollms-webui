@@ -10,15 +10,15 @@
 
             <img :src="bUrl + mountedPers.avatar" @error="personalityImgPlacehodler"
                 class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:z-20 hover:-translate-y-2 duration-150  border-secondary cursor-pointer"
-                :title="mountedPers.name" >
+                :title="'Active personality: '+mountedPers.name" >
 
-            <div class="flex items-center justify-center w-8 h-8 cursor-pointer text-xs font-medium text-white bg-gray-700 border-2 border-white rounded-full hover:bg-gray-600 dark:border-gray-800 hover:z-20 hover:-translate-y-2 duration-150 active:scale-90"
+            <div class="flex items-center justify-center w-8 h-8 cursor-pointer text-xs font-medium bg-bg-light dark:bg-bg-dark border-2 hover:border-secondary  rounded-full hover:bg-bg-light-tone dark:hover:bg-bg-dark-tone dark:border-gray-800 hover:z-20 hover:-translate-y-2 duration-150 active:scale-90"
                 @click.stop="toggleShowPersList" title="Click to show more">+{{ mountedPersArr.length - 1 }}</div>
         </div>
         <div class="flex -space-x-4 " v-if="mountedPersArr.length == 1">
             <img :src="bUrl + mountedPers.avatar" @error="personalityImgPlacehodler"
                 class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:z-20 cursor-pointer  border-secondary"
-                :title="mountedPers.name" @click.stop="toggleShowPersList" >
+                :title="'Active personality: '+mountedPers.name" @click.stop="toggleShowPersList" >
         </div>
 
     </div>
@@ -62,8 +62,8 @@ export default {
     },
     methods: {
         toggleShowPersList() {
-            this.show = !this.show
-            this.onShowPersList(this)
+            //this.show = !this.show
+            this.onShowPersList()
         },
         async constructor() {
             

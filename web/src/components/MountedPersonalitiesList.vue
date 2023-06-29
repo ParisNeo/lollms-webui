@@ -1,24 +1,50 @@
 <template>
     <!-- LIST OF MOUNTED PERSONALITIES -->
     <div
-        class="text-left overflow-visible text-base font-semibold cursor-pointer select-none items-center flex flex-row overflow-x-auto -my-2 pr-2 scrollbar-thin scrollbar-track-bg-light scrollbar-thumb-bg-light-tone hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark dark:scrollbar-thumb-bg-dark-tone dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+        class="text-left overflow-visible text-base font-semibold cursor-pointer select-none items-center flex flex-col flex-grow w-full overflow-x-auto scrollbar-thin scrollbar-track-bg-light scrollbar-thumb-bg-light-tone hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark dark:scrollbar-thumb-bg-dark-tone dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
         <!-- LIST -->
-        <div v-if="mountedPersArr.length > 0" class="m-2">
-            <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Mounted Personalities: ({{ mountedPersArr.length }})
-            </label>
-            <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4 max-h-96">
-                <TransitionGroup name="bounce">
-                    <personality-entry ref="personalitiesZoo" v-for="(pers, index) in mountedPersArr"
-                        :key="'index-' + index + '-' + pers.name" :personality="pers" :full_path="pers.full_path"
-                        :selected="configFile.personalities[configFile.active_personality_id] === pers.full_path"
-                        :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted"
-                        :on-settings="onSettingsPersonality" />
-                </TransitionGroup>
-            </div>
+        <!-- SPINNER -->
+        <div v-if="isLoading" role="status" class="flex justify-center overflow-y-hidden ">
+            <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                    fill="currentColor" />
+                <path
+                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                    fill="currentFill" />
+            </svg>
+            <span class="sr-only">Loading...</span>
         </div>
+        <div>
 
 
+
+            <div v-if="mountedPersArr.length > 0" :class="isLoading?'pointer-events-none opacity-30 cursor-default':''">
+
+                <!-- EXPAND / COLLAPSE BUTTON -->
+
+                <button
+                    class="mt-0 w-full text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
+                    title="Close personality list" type="button" @click.stop="toggleShowPersList">
+
+                    <i data-feather="chevron-down"></i>
+                </button>
+                <label class="block my-2 text-sm font-medium text-gray-900 dark:text-white">
+                    Mounted Personalities: ({{ mountedPersArr.length }})
+                </label>
+                <div class="overflow-y-auto no-scrollbar pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4 max-h-96">
+                    <TransitionGroup name="bounce">
+                        <personality-entry ref="personalitiesZoo" v-for="(pers, index) in mountedPersArr"
+                            :key="'index-' + index + '-' + pers.name" :personality="pers" :full_path="pers.full_path"
+                            :selected="configFile.personalities[configFile.active_personality_id] === pers.full_path"
+                            :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted"
+                            :on-settings="onSettingsPersonality" />
+                    </TransitionGroup>
+                </div>
+            </div>
+
+        </div>
 
         <Toast ref="toast">
         </Toast>
@@ -62,8 +88,8 @@ axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
     props: {
         onMountUnmount: Function,
-        discussionPersonalities: Array
-
+        discussionPersonalities: Array,
+        onShowPersList: Function,
 
     },
     components: {
@@ -95,12 +121,16 @@ export default {
 
     },
     methods: {
+        toggleShowPersList() {
+            //this.show = !this.show
+            this.onShowPersList()
+        },
         toggleMountUnmount() {
             console.log('moununmoun pers list')
             this.onMountUnmount(this)
         },
         async constructor() {
-
+            this.isLoading = true
             this.configFile = await this.api_get_req("get_config")
             this.getPersonalitiesArr()
             let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
@@ -127,7 +157,7 @@ export default {
 
         },
         async getPersonalitiesArr() {
-
+            this.isLoading = true
             this.personalities = []
             const dictionary = await this.api_get_req("get_all_personalities")
             const config = await this.api_get_req("get_config")
@@ -176,7 +206,7 @@ export default {
 
 
             this.getMountedPersonalities()
-
+            this.isLoading = false
 
         },
         personalityImgPlacehodler(event) {
@@ -445,7 +475,7 @@ export default {
 
         },
         getMountedPersonalities() {
-
+            this.isLoading = true
             let mountedPersArr = []
             console.log(this.configFile.personalities.length)
             // console.log('perrs listo',this.personalities)
@@ -469,25 +499,25 @@ export default {
             this.mountedPersArr = []
             this.mountedPersArr = mountedPersArr
             //this.mountedPersArr = mountedPersArr
-            console.log('discussionPersonalities',this.discussionPersonalities)
+            console.log('discussionPersonalities', this.discussionPersonalities)
             if (this.discussionPersonalities.length > 0) {
                 for (let i = 0; i < this.discussionPersonalities.length; i++) {
                     const per = this.discussionPersonalities[i]
                     console.log('discussionPersonalities - per', per)
-                    const perIndex =this.mountedPersArr.findIndex((item) => item.full_path == per)
+                    const perIndex = this.mountedPersArr.findIndex((item) => item.full_path == per)
                     console.log('discussionPersonalities -includes', perIndex)
-                    console.log('discussionPersonalities -mounted list', this.mountedPersArr) 
+                    console.log('discussionPersonalities -mounted list', this.mountedPersArr)
 
-                    if (perIndex==-1) {
-                        
+                    if (perIndex == -1) {
+
                         const index2 = this.personalities.findIndex(item2 => item2.full_path == per)
                         // const index22 = this.personalities.filter(item2 => item2.full_path.localeCompare(per) ==1 ) 
 
                         const pers = this.personalities[index2]
-                        console.log('adding discucc121',pers, per)
-                        if(pers){
+                        console.log('adding discucc121', pers, per)
+                        if (pers) {
                             this.mountedPersArr.push(pers)
-                        console.log('adding discucc',pers)
+                            console.log('adding discucc', pers)
                         }
 
                     }
@@ -496,7 +526,7 @@ export default {
 
             }
 
-
+            this.isLoading = false
             console.log('getMountedPersonalities', this.mountedPersArr)
             console.log('fig', this.configFile)
 

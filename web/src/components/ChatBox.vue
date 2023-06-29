@@ -16,51 +16,64 @@
             <div class="px-3 py-3 rounded-lg bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel shadow-lg  ">
 
                 <div class="flex flex-col gap-2">
+                    <!-- EXPAND / COLLAPSE BUTTON -->
+
+                    <button v-if="fileList.length > 0"
+                        class="mx-1 w-full text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
+                        :title="showFileList ? 'Hide file list' : 'Show file list'" type="button"
+                        @click.stop=" showFileList = !showFileList">
+
+                        <i data-feather="list"></i>
+                    </button>
                     <!-- FILES     -->
-                    <div v-if="fileList.length > 0" class="flex flex-col max-h-64  ">
-                        <TransitionGroup name="list" tag="div"
-                            class="flex flex-col flex-grow overflow-y-auto scrollbar-thin scrollbar-track-bg-light scrollbar-thumb-bg-light-tone hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark dark:scrollbar-thumb-bg-dark-tone dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
-                            <div v-for="(file, index) in fileList" :key="index + '-' + file.name">
-                                <div class="  m-1" :title="file.name">
-
-                                    <div
-                                        class="flex flex-row items-center gap-1 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary">
-                                        <div>
-                                            <i data-feather="file" class="w-5 h-5"></i>
-
-                                        </div>
+                    <div v-if="fileList.length > 0 && showFileList ==true">
 
 
-                                        <div class="line-clamp-1 w-3/5">
-                                            {{ file.name }}
+                        <div v-if="fileList.length > 0" class="flex flex-col max-h-64  ">
+                            <TransitionGroup name="list" tag="div"
+                                class="flex flex-col flex-grow overflow-y-auto scrollbar-thin scrollbar-track-bg-light scrollbar-thumb-bg-light-tone hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark dark:scrollbar-thumb-bg-dark-tone dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+                                <div v-for="(file, index) in fileList" :key="index + '-' + file.name">
+                                    <div class="  m-1" :title="file.name">
 
-                                        </div>
-                                        <div class="grow">
+                                        <div
+                                            class="flex flex-row items-center gap-1 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary">
+                                            <div>
+                                                <i data-feather="file" class="w-5 h-5"></i>
 
-                                        </div>
+                                            </div>
 
-                                        <div class="flex flex-row items-center">
-                                            <p class="whitespace-nowrap">
-                                                {{ computedFileSize(file.size) }}
 
-                                            </p>
-                                            <button type="button" title="Remove item"
-                                                class="flex items-center p-0.5 text-sm rounded-sm hover:text-red-600 active:scale-75"
-                                                @click="removeItem(file)">
-                                                <i data-feather="x" class="w-5 h-5 "></i>
+                                            <div class="line-clamp-1 w-3/5">
+                                                {{ file.name }}
 
-                                            </button>
+                                            </div>
+                                            <div class="grow">
+
+                                            </div>
+
+                                            <div class="flex flex-row items-center">
+                                                <p class="whitespace-nowrap">
+                                                    {{ computedFileSize(file.size) }}
+
+                                                </p>
+                                                <button type="button" title="Remove item"
+                                                    class="flex items-center p-0.5 text-sm rounded-sm hover:text-red-600 active:scale-75"
+                                                    @click="removeItem(file)">
+                                                    <i data-feather="x" class="w-5 h-5 "></i>
+
+                                                </button>
+
+                                            </div>
+
 
                                         </div>
 
 
                                     </div>
-
-
                                 </div>
-                            </div>
-                        </TransitionGroup>
+                            </TransitionGroup>
 
+                        </div>
                     </div>
                     <div v-if="fileList.length > 0" class="flex items-center mx-1">
 
@@ -86,14 +99,17 @@
 
                         </button>
                     </div>
-                    <div v-if="showPersonalities" class="">
-                        <MountedPersonalitiesList ref="mountedPersList" :on-mount-unmount="onMountUnmountFun" :discussionPersonalities="allDiscussionPersonalities"/>
+                    <div v-if="showPersonalities" class="mx-1">
+
+
+                        <MountedPersonalitiesList ref="mountedPersList" :onShowPersList="onShowPersListFun"
+                            :on-mount-unmount="onMountUnmountFun" :discussionPersonalities="allDiscussionPersonalities" />
                     </div>
                     <!-- CHAT BOX -->
                     <div class="flex flex-row flex-grow items-center gap-2 overflow-visible">
                         <div class="w-fit">
                             <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" />
-
+                            <!-- :onShowPersList="onShowPersListFun" -->
                         </div>
 
 
@@ -201,6 +217,7 @@ export default {
             message: "",
             fileList: [],
             totalSize: 0,
+            showFileList: true,
             showPersonalities: false
         }
     },
@@ -210,7 +227,7 @@ export default {
 
                 let persArray = []
                 for (let i = 0; i < this.discussionList.length; i++) {
-                    if (!persArray.includes(this.discussionList[i].personality) && !this.discussionList[i].personality=="") {
+                    if (!persArray.includes(this.discussionList[i].personality) && !this.discussionList[i].personality == "") {
                         persArray.push(this.discussionList[i].personality)
                     };
                 }
@@ -227,7 +244,7 @@ export default {
     },
     methods: {
         onShowPersListFun(comp) {
-            this.showPersonalities = comp.show
+            this.showPersonalities = !this.showPersonalities
 
         },
         onMountUnmountFun(comp) {
@@ -278,6 +295,11 @@ export default {
         }
     },
     watch: {
+        showFileList() {
+            nextTick(() => {
+                feather.replace()
+            })
+        },
         loading(newval, oldval) {
             nextTick(() => {
                 feather.replace()
@@ -298,9 +320,9 @@ export default {
             },
             deep: true
         },
-        discussionList(val){
+        discussionList(val) {
 
-            console.log('discussion arr',val)
+            console.log('discussion arr', val)
         }
 
     },
