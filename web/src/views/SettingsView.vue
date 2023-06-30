@@ -441,26 +441,97 @@
 
 
                 <div :class="{ 'hidden': mzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
-                    <div class="mb-2" v-if="configFile.binding_name">
+                    <!-- SEARCH BAR -->
+                    <div class="mx-2 mb-4">
+
+                        <form>
+
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <div v-if="searchModelInProgress">
+                                        <!-- SPINNER -->
+                                        <div role="status">
+                                            <svg aria-hidden="true"
+                                                class="inline w-4 h-4 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                                                viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                                    fill="currentColor" />
+                                                <path
+                                                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                                    fill="currentFill" />
+                                            </svg>
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </div>
+                                    <div v-if="!searchModelInProgress">
+                                        <!-- SEARCH -->
+                                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                        </svg>
+                                    </div>
+
+                                </div>
+                                <input type="search"
+                                    class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    placeholder="Search models..." required v-model="searchModel"
+                                    @keyup.stop="searchModel_func">
+                                <button v-if="searchModel" @click.stop="searchModel = ''" type="button"
+                                    class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                    Clear search</button>
+
+                                <!-- @input="filterPersonalities()" -->
+
+                            </div>
+                        </form>
 
                     </div>
-                    <div v-if="models.length > 0" class="mb-2">
-                        <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Models: ({{ models.length }})
-                        </label>
+                    <div v-if="searchModel">
+                        <div v-if="modelsFiltered.length > 0" class="mb-2">
+                            <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                Search results: ({{ modelsFiltered.length }})
+                            </label>
 
-                        <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
-                            :class="mzl_collapsed ? '' : 'max-h-96'">
-                            <TransitionGroup name="list">
-                                <model-entry ref="modelZoo" v-for="(model, index) in models"
-                                    :key="'index-' + index + '-' + model.title" :title="model.title" :icon="model.icon"
-                                    :path="model.path" :owner="model.owner" :owner_link="model.owner_link"
-                                    :license="model.license" :description="model.description"
-                                    :is-installed="model.isInstalled" :on-install="onInstall" :on-uninstall="onUninstall"
-                                    :on-selected="onSelected" :selected="model.title === configFile.model_name"
-                                    :model="model" :model_type="model.model_type" :on-copy="onCopy"
-                                    :on-copy-link="onCopyLink" :on-cancel-install="onCancelInstall" />
-                            </TransitionGroup>
+                            <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
+                                :class="mzl_collapsed ? '' : 'max-h-96'">
+                                <TransitionGroup name="list">
+                                    <model-entry ref="modelZoo" v-for="(model, index) in modelsFiltered"
+                                        :key="'index-' + index + '-' + model.title" :title="model.title" :icon="model.icon"
+                                        :path="model.path" :owner="model.owner" :owner_link="model.owner_link"
+                                        :license="model.license" :description="model.description"
+                                        :is-installed="model.isInstalled" :on-install="onInstall"
+                                        :on-uninstall="onUninstall" :on-selected="onSelected"
+                                        :selected="model.title === configFile.model_name" :model="model"
+                                        :model_type="model.model_type" :on-copy="onCopy" :on-copy-link="onCopyLink"
+                                        :on-cancel-install="onCancelInstall" />
+                                </TransitionGroup>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div v-if="!searchModel">
+
+                        <div v-if="models.length > 0" class="mb-2">
+                            <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                Models: ({{ models.length }})
+                            </label>
+
+                            <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
+                                :class="mzl_collapsed ? '' : 'max-h-96'">
+                                <TransitionGroup name="list">
+                                    <model-entry ref="modelZoo" v-for="(model, index) in models"
+                                        :key="'index-' + index + '-' + model.title" :title="model.title" :icon="model.icon"
+                                        :path="model.path" :owner="model.owner" :owner_link="model.owner_link"
+                                        :license="model.license" :description="model.description"
+                                        :is-installed="model.isInstalled" :on-install="onInstall"
+                                        :on-uninstall="onUninstall" :on-selected="onSelected"
+                                        :selected="model.title === configFile.model_name" :model="model"
+                                        :model_type="model.model_type" :on-copy="onCopy" :on-copy-link="onCopyLink"
+                                        :on-cancel-install="onCancelInstall" />
+                                </TransitionGroup>
+                            </div>
                         </div>
                     </div>
                     <!-- EXPAND / COLLAPSE BUTTON -->
@@ -515,8 +586,7 @@
                             <form>
                                 <div class="mb-3">
                                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                        for="file_input">Select
-                                        files</label>
+                                        for="file_input">Upload model:</label>
 
 
                                     <input @change="setFileList"
@@ -536,12 +606,11 @@
 
                             <div v-if="!modelDownlaodInProgress">
                                 <div class="mb-3">
-                                    <label for="email"
-                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Model
-                                        URL</label>
+                                    <label 
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Download from web:</label>
                                     <input type="text" v-model="addModel.url"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="url" required>
+                                        placeholder="Enter URL ..." required>
                                 </div>
 
                                 <button type="button" @click.stop="onInstallAddModel()"
@@ -763,7 +832,8 @@
 
                         <div v-if="personalitiesFiltered.length > 0" class="mb-2">
                             <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                Personalities: ({{ personalitiesFiltered.length }})
+                                {{ searchPersonality ? 'Search results' : 'Personalities' }}: ({{ personalitiesFiltered.length
+                                }})
                             </label>
                             <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
                                 :class="pzl_collapsed ? '' : 'max-h-96'">
@@ -1074,6 +1144,7 @@ export default {
             models: [],
             personalities: [],
             personalitiesFiltered: [],
+            modelsFiltered: [],
             bindings: [],
             // Accordeon stuff 
             collapsedArr: [],
@@ -1110,9 +1181,12 @@ export default {
             isMounted: false, // Needed to wait for $refs to be rendered
             bUrl: bUrl, // for personality images
             searchPersonality: "",
+            searchModel: "",
             searchPersonalityTimer: {},
             searchPersonalityTimerInterval: 1500, // timeout in ms
+            searchModelTimerInterval: 1500, // timeout in ms
             searchPersonalityInProgress: false,
+            searchModelInProgress: false,
             addModel: {},
             modelDownlaodInProgress: false,
             uploadData: [],
@@ -1124,6 +1198,55 @@ export default {
         //await socket.on('install_progress', this.progressListener);
 
     }, methods: {
+        async constructor() {
+            this.isLoading = true
+            nextTick(() => {
+                feather.replace()
+
+            })
+
+            this.configFile = await this.api_get_req("get_config")
+            let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
+            this.configFile.personality_language = personality_path_infos["personality_language"]
+            this.configFile.personality_category = personality_path_infos["personality_category"]
+            this.configFile.personality_folder = personality_path_infos["personality_name"]
+
+
+            if (this.configFile.model_name) {
+                this.isModelSelected = true
+            }
+
+            this.fetchModels();
+
+            this.bindingsArr = await this.api_get_req("list_bindings")
+            this.modelsArr = await this.api_get_req("list_models")
+            this.persLangArr = await this.api_get_req("list_personalities_languages")
+            this.persCatgArr = await this.api_get_req("list_personalities_categories")
+            this.persArr = await this.api_get_req("list_personalities")
+            this.langArr = await this.api_get_req("list_languages")
+
+
+            this.bindingsArr.sort((a, b) => a.name.localeCompare(b.name))
+            this.modelsArr.sort()
+            this.persLangArr.sort()
+            this.persCatgArr.sort()
+            this.persArr.sort()
+            this.langArr.sort()
+
+
+            await this.getPersonalitiesArr()
+
+
+            this.bindings = await this.api_get_req("list_bindings")
+            this.bindings.sort((a, b) => a.name.localeCompare(b.name))
+            this.isLoading = false
+            this.diskUsage = await this.api_get_req("disk_usage")
+            this.ramUsage = await this.api_get_req("ram_usage")
+            this.vramUsage = await this.api_get_req("vram_usage")
+            this.getMountedPersonalities()
+            this.isMounted = true
+
+        },
         async progressListener(response) {
             // does not work Still freezes UI
             console.log("received something");
@@ -1291,7 +1414,7 @@ export default {
                 if (pers.isMounted && this.configFile.personalities.includes(pers.personality.full_path)) {
 
                     const res = await this.select_personality(pers)
-                    console.log('pers is mounted',res)
+                    console.log('pers is mounted', res)
                     if (res && res.status && res.active_personality_id > -1) {
                         this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
 
@@ -1362,7 +1485,7 @@ export default {
         onCancelInstall() {
 
             const modelEntry = this.addModel
-console.log('cancel install', modelEntry)
+            console.log('cancel install', modelEntry)
             // const keys = Object.keys(this.addModel)
             // if (keys.includes('url')) {
             //     return
@@ -1384,14 +1507,14 @@ console.log('cancel install', modelEntry)
             let path = model_object.path;
             this.showProgress = true;
             this.progress = 0;
-            this.addModel={ model_name: model_object.model.title, binding_folder: this.configFile.binding_name, model_url: model_object.path }
+            this.addModel = { model_name: model_object.model.title, binding_folder: this.configFile.binding_name, model_url: model_object.path }
             console.log("installing...", this.addModel);
-           
+
             // Use an arrow function for progressListener
             const progressListener = (response) => {
                 console.log("received something");
                 if (response.status && response.progress <= 100) {
-                    this.addModel=response
+                    this.addModel = response
                     console.log(`Progress`, response);
                     model_object.progress = response.progress
                     model_object.speed = response.speed
@@ -1558,7 +1681,7 @@ console.log('cancel install', modelEntry)
             socket.on('progress', progressListener);
 
 
-           // socket.emit('send_file', { file: this.uploadData });
+            // socket.emit('send_file', { file: this.uploadData });
             console.log("Started installation, please wait");
 
 
@@ -2058,7 +2181,7 @@ console.log('cancel install', modelEntry)
             const searchTerm = this.searchPersonality.toLowerCase()
             const seachedPersonalities = this.personalities.filter((item) => {
 
-                if (item.name.toLowerCase().includes(searchTerm) || item.description.toLowerCase().includes(searchTerm) || item.full_path.toLowerCase().includes(searchTerm)) {
+                if (item.name && item.name.toLowerCase().includes(searchTerm) || item.description && item.description.toLowerCase().includes(searchTerm) || item.full_path && item.full_path.toLowerCase().includes(searchTerm)) {
                     return item
                 }
 
@@ -2074,6 +2197,34 @@ console.log('cancel install', modelEntry)
                 this.personalitiesFiltered.sort()
             }
             this.searchPersonalityInProgress = false
+
+        },
+        async filterModels() {
+            if (!this.searchModel) {
+                this.modelsFiltered = this.models
+                this.modelsFiltered.sort()
+                this.searchModelInProgress = false
+                return
+            }
+            const searchTerm = this.searchModel.toLowerCase()
+            const seachedModels = this.models.filter((item) => {
+
+                if (item.title && item.title.toLowerCase().includes(searchTerm) || item.description && item.description.toLowerCase().includes(searchTerm) || item.path && item.path.toLowerCase().includes(searchTerm)) {
+                    return item
+                }
+
+            })
+
+
+
+            if (seachedModels.length > 0) {
+
+                this.modelsFiltered = seachedModels.sort()
+            } else {
+                this.modelsFiltered = this.models
+                this.modelsFiltered.sort()
+            }
+            this.searchModelInProgress = false
 
         },
         computedFileSize(size) {
@@ -2299,63 +2450,24 @@ console.log('cancel install', modelEntry)
                 this.searchPersonalityInProgress = true
                 setTimeout(this.filterPersonalities, this.searchPersonalityTimerInterval)
             }
+        },
+        searchModel_func() {
+            clearTimeout(this.searchModelTimer)
+            if (this.searchModel) {
+                this.searchModelInProgress = true
+                setTimeout(this.filterModels, this.searchModelTimer)
+            }
         }
 
 
     }, async mounted() {
-
-        //this.$refs.mountedPersonalities
-        this.isLoading = true
-        nextTick(() => {
-            feather.replace()
-
-        })
-
-        this.configFile = await this.api_get_req("get_config")
-        let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
-        this.configFile.personality_language = personality_path_infos["personality_language"]
-        this.configFile.personality_category = personality_path_infos["personality_category"]
-        this.configFile.personality_folder = personality_path_infos["personality_name"]
-
-
-        if (this.configFile.model_name) {
-            this.isModelSelected = true
-        }
-
-        this.fetchModels();
-
-        this.bindingsArr = await this.api_get_req("list_bindings")
-        this.modelsArr = await this.api_get_req("list_models")
-        this.persLangArr = await this.api_get_req("list_personalities_languages")
-        this.persCatgArr = await this.api_get_req("list_personalities_categories")
-        this.persArr = await this.api_get_req("list_personalities")
-        this.langArr = await this.api_get_req("list_languages")
-
-
-        this.bindingsArr.sort((a, b) => a.name.localeCompare(b.name))
-        this.modelsArr.sort()
-        this.persLangArr.sort()
-        this.persCatgArr.sort()
-        this.persArr.sort()
-        this.langArr.sort()
-
-
-        await this.getPersonalitiesArr()
-
-
-        this.bindings = await this.api_get_req("list_bindings")
-        this.bindings.sort((a, b) => a.name.localeCompare(b.name))
-        this.isLoading = false
-        this.diskUsage = await this.api_get_req("disk_usage")
-        this.ramUsage = await this.api_get_req("ram_usage")
-        this.vramUsage = await this.api_get_req("vram_usage")
-        this.getMountedPersonalities()
-        this.isMounted = true
-
+        this.constructor()
 
     },
     activated() {
-
+        if (this.isMounted) {
+            this.constructor()
+        }
     },
     computed: {
         disk_available_space() {
@@ -2539,6 +2651,11 @@ console.log('cancel install', modelEntry)
         searchPersonality(val) {
             if (val == "") {
                 this.filterPersonalities()
+            }
+        },
+        searchModel(val) {
+            if (val == "") {
+                this.filterModels()
             }
         },
         mzdc_collapsed() {

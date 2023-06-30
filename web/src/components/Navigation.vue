@@ -1,7 +1,7 @@
 <template>
     <div class="container flex flex-col sm:flex-row item-center gap-2 py-1 ">
-        <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
-            <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0 ">
+        <div class="items-center justify-between  w-full flex-row md:w-auto md:order-1">
+            <ul class="flex flex-row font-medium p-0 mt-4 space-x-8  ">
 
                 <li>
                     <RouterLink  :to="{ name: 'discussions' }" class="p-2"
