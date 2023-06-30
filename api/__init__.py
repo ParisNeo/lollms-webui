@@ -28,6 +28,7 @@ import traceback
 import sys
 from lollms.console import MainMenu
 import urllib
+import traceback
 
 __author__ = "parisneo"
 __github__ = "https://github.com/ParisNeo/lollms-webui"
@@ -719,6 +720,8 @@ class LoLLMsAPPI():
         1 : a notification message
         2 : A hidden message
         """
+        if message_type == MSG_TYPE.MSG_TYPE_STEP:
+            ASCIIColors.info("--> Step:"+chunk)
         if message_type == MSG_TYPE.MSG_TYPE_STEP_START:
             ASCIIColors.info("--> Step started:"+chunk)
         if message_type == MSG_TYPE.MSG_TYPE_STEP_END:
@@ -797,7 +800,12 @@ class LoLLMsAPPI():
                             output = self.personality.processor.run_workflow( prompt, full_prompt, self.process_chunk)
                             self.process_chunk(output, MSG_TYPE.MSG_TYPE_FULL)
                         except Exception as ex:
+                            # Catch the exception and get the traceback as a list of strings
+                            traceback_lines = traceback.format_exception(type(ex), ex, ex.__traceback__)
+                            # Join the traceback lines into a single string
+                            traceback_text = ''.join(traceback_lines)
                             ASCIIColors.error(f"Workflow run failed.\nError:{ex}")
+                            ASCIIColors.error(traceback_text)
                             self.process_chunk(f"Workflow run failed\nError:{ex}", MSG_TYPE.MSG_TYPE_EXCEPTION)                   
                         print("Finished executing the workflow")
                         return
