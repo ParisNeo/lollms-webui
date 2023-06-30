@@ -9,31 +9,11 @@ import { nextTick } from 'vue';
 import feather from 'feather-icons';
 import MarkdownIt from 'markdown-it';
 import emoji from 'markdown-it-emoji';
-import hljs from 'highlight.js/lib/core';
+//import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/tomorrow-night-blue.css';
 import 'highlight.js/styles/tokyo-night-dark.css';
+import hljs  from 'highlight.js/lib/common';
 
-
-// Import individual language modules
-import javascript from 'highlight.js/lib/languages/javascript';
-import xml from 'highlight.js/lib/languages/xml';
-import css from 'highlight.js/lib/languages/css';
-import python from 'highlight.js/lib/languages/python';
-import java from 'highlight.js/lib/languages/java';
-import csharp from 'highlight.js/lib/languages/csharp';
-import cpp from 'highlight.js/lib/languages/cpp';
-import ruby from 'highlight.js/lib/languages/ruby';
-import php from 'highlight.js/lib/languages/php';
-import swift from 'highlight.js/lib/languages/swift';
-import go from 'highlight.js/lib/languages/go';
-import rust from 'highlight.js/lib/languages/rust';
-import typescript from 'highlight.js/lib/languages/typescript';
-import shell from 'highlight.js/lib/languages/shell';
-import markdown from 'highlight.js/lib/languages/markdown';
-import json from 'highlight.js/lib/languages/json';
-import yaml from 'highlight.js/lib/languages/yaml';
-import sql from 'highlight.js/lib/languages/sql';
-// ... import other language modules
 
 
 import 'highlight.js/styles/tomorrow-night-blue.css';
@@ -104,7 +84,7 @@ const markdownIt = new MarkdownIt('commonmark', {
       '<code id="code_' +
       id +
       '" class="overflow-x-auto break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">' +
-      markdownIt.utils.escapeHtml(str) +
+      hljs.highlightAuto(str).value +
       '</code>' +
       '</pre>' +
       '</div>';
@@ -113,25 +93,7 @@ const markdownIt = new MarkdownIt('commonmark', {
   bulletListMarker: '•',
 }).use(emoji).use(attrs); // Add attrs plugin for adding attributes to elements
 
-// Register all language modules
-hljs.registerLanguage('javascript', javascript);
-hljs.registerLanguage('xml', xml);
-hljs.registerLanguage('css', css);
-hljs.registerLanguage('python', python);
-hljs.registerLanguage('java', java);
-hljs.registerLanguage('csharp', csharp);
-hljs.registerLanguage('cpp', cpp);
-hljs.registerLanguage('ruby', ruby);
-hljs.registerLanguage('php', php);
-hljs.registerLanguage('swift', swift);
-hljs.registerLanguage('go', go);
-hljs.registerLanguage('rust', rust);
-hljs.registerLanguage('typescript', typescript);
-hljs.registerLanguage('shell', shell);
-hljs.registerLanguage('markdown', markdown);
-hljs.registerLanguage('json', json);
-hljs.registerLanguage('yaml', yaml);
-hljs.registerLanguage('sql', sql);
+
 // ... register other languages
 
 
