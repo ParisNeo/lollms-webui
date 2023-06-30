@@ -586,8 +586,7 @@
                             <form>
                                 <div class="mb-3">
                                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                        for="file_input">Select
-                                        files</label>
+                                        for="file_input">Upload model:</label>
 
 
                                     <input @change="setFileList"
@@ -607,12 +606,11 @@
 
                             <div v-if="!modelDownlaodInProgress">
                                 <div class="mb-3">
-                                    <label for="email"
-                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Model
-                                        URL</label>
+                                    <label 
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Download from web:</label>
                                     <input type="text" v-model="addModel.url"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="url" required>
+                                        placeholder="Enter URL ..." required>
                                 </div>
 
                                 <button type="button" @click.stop="onInstallAddModel()"
