@@ -12,6 +12,32 @@ import emoji from 'markdown-it-emoji';
 import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/tomorrow-night-blue.css';
 import 'highlight.js/styles/tokyo-night-dark.css';
+
+
+// Import individual language modules
+import javascript from 'highlight.js/lib/languages/javascript';
+import xml from 'highlight.js/lib/languages/xml';
+import css from 'highlight.js/lib/languages/css';
+import python from 'highlight.js/lib/languages/python';
+import java from 'highlight.js/lib/languages/java';
+import csharp from 'highlight.js/lib/languages/csharp';
+import cpp from 'highlight.js/lib/languages/cpp';
+import ruby from 'highlight.js/lib/languages/ruby';
+import php from 'highlight.js/lib/languages/php';
+import swift from 'highlight.js/lib/languages/swift';
+import go from 'highlight.js/lib/languages/go';
+import rust from 'highlight.js/lib/languages/rust';
+import typescript from 'highlight.js/lib/languages/typescript';
+import shell from 'highlight.js/lib/languages/shell';
+import markdown from 'highlight.js/lib/languages/markdown';
+import json from 'highlight.js/lib/languages/json';
+import yaml from 'highlight.js/lib/languages/yaml';
+import sql from 'highlight.js/lib/languages/sql';
+// ... import other language modules
+
+
+import 'highlight.js/styles/tomorrow-night-blue.css';
+import 'highlight.js/styles/tokyo-night-dark.css';
 import attrs from 'markdown-it-attrs';
 
 function generateUniqueId() {
@@ -27,6 +53,7 @@ const markdownIt = new MarkdownIt('commonmark', {
   linkify: true,
   typographer: true,
   highlight: (str, lang) => {
+    let id = generateUniqueId();
     if (lang && hljs.getLanguage(lang)) {
       try {
         const highlightedCode = hljs.highlight(lang, str).value;
@@ -34,7 +61,9 @@ const markdownIt = new MarkdownIt('commonmark', {
           '<div class="bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel p-2 rounded-lg shadow-sm">' +
           lang +
           '<button class="px-2 py-1 ml-10 mb-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">' +
-          '<span class="mr-1" id="copy-btn" onclick="copyContentToClipboard(' +
+          '<span class="mr-1" id="copy-btn_' +
+          id +
+          '" onclick="copyContentToClipboard(' +
           id +
           ')">Copy</span>' +
           '<span class="hidden text-xs text-green-500" id="copyed-btn_' +
@@ -56,7 +85,6 @@ const markdownIt = new MarkdownIt('commonmark', {
         console.error(`Syntax highlighting failed for language '${lang}':`, error);
       }
     }
-    let id = generateUniqueId();
     let codeString =
       '<div class="bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel p-2 rounded-lg shadow-sm">' +
       lang +
@@ -85,6 +113,31 @@ const markdownIt = new MarkdownIt('commonmark', {
   bulletListMarker: '•',
 }).use(emoji).use(attrs); // Add attrs plugin for adding attributes to elements
 
+// Register all language modules
+hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('xml', xml);
+hljs.registerLanguage('css', css);
+hljs.registerLanguage('python', python);
+hljs.registerLanguage('java', java);
+hljs.registerLanguage('csharp', csharp);
+hljs.registerLanguage('cpp', cpp);
+hljs.registerLanguage('ruby', ruby);
+hljs.registerLanguage('php', php);
+hljs.registerLanguage('swift', swift);
+hljs.registerLanguage('go', go);
+hljs.registerLanguage('rust', rust);
+hljs.registerLanguage('typescript', typescript);
+hljs.registerLanguage('shell', shell);
+hljs.registerLanguage('markdown', markdown);
+hljs.registerLanguage('json', json);
+hljs.registerLanguage('yaml', yaml);
+hljs.registerLanguage('sql', sql);
+// ... register other languages
+
+
+hljs.configure({ languages: [] }); // Reset languages
+hljs.configure({ languages: ['javascript'] }); // Set JavaScript as the default language
+
 markdownIt.renderer.rules.link_open = (tokens, idx, options, env, self) => {
   const token = tokens[idx];
   const hrefIndex = token.attrIndex('href');
@@ -95,6 +148,7 @@ markdownIt.renderer.rules.link_open = (tokens, idx, options, env, self) => {
   }
   return self.renderToken(tokens, idx, options);
 };
+
 
 // Define a custom rendering function for lists
 const renderList = (tokens, idx, options, env, self) => {
@@ -157,12 +211,6 @@ export default {
         window.getSelection().addRange(range);
         document.execCommand('copy');
         window.getSelection().removeAllRanges();
-
-        this.isCopied = true;
-
-        setTimeout(() => {
-          this.isCopied = false;
-        }, 1500);
       }
       `;
     script.async = true; // Set to true if the script should be loaded asynchronously

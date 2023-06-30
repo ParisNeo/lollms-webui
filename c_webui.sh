@@ -98,6 +98,8 @@ if ping -q -c 1 google.com >/dev/null 2>&1; then
 
     # Install the required packages
     echo "Installing requirements..."
+    conda install -c gcc
+    conda install -c conda-forge cudatoolkit-dev
     pip install --upgrade pip setuptools wheel
     pip install -r requirements.txt
 
