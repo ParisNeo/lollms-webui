@@ -237,7 +237,9 @@
           <i data-feather="info" class="w-5 m-1"></i>
           <b>Description:&nbsp;</b><br>
         </div>
-        <p class="mx-1 opacity-80 line-clamp-3" :title="description">{{ description }}</p>
+        <!-- <p class="mx-1 opacity-80 line-clamp-3" :title="description">{{ description }}</p> -->
+        <p class="mx-1 opacity-80 line-clamp-3" :title="description">{{ description.replace(/<\/?[^>]+>/ig, " ") }}</p>
+        <!-- <p class="mx-1 opacity-80 line-clamp-3" :title="description"><span v-html="description"></span></p> -->
 
 
       </div>
