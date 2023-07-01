@@ -563,7 +563,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
     def vram_usage(self) -> Optional[dict]:
         try:
-            output = subprocess.check_output(['nvidia-smi', '--query-gpu=memory.total,memory.used', '--format=csv,nounits,noheader'])
+            output = subprocess.check_output(['nvidia-smi', '--query-gpu=memory.total,memory.used,gpu_name', '--format=csv,nounits,noheader'])
             lines = output.decode().strip().split('\n')
             vram_info = [line.split(',') for line in lines]
         except (subprocess.CalledProcessError, FileNotFoundError):
@@ -579,10 +579,12 @@ class LoLLMsWebUI(LoLLMsAPPI):
             for i, gpu in enumerate(vram_info):
                 ram_usage[f"gpu_{i}_total_vram"] = int(gpu[0])*1024*1024
                 ram_usage[f"gpu_{i}_used_vram"] = int(gpu[1])*1024*1024
+                ram_usage[f"gpu_{i}_model"] = gpu[2].strip()
         else:
             # Set all VRAM-related entries to None
             ram_usage["gpu_0_total_vram"] = None
             ram_usage["gpu_0_used_vram"] = None
+            ram_usage["gpu_0_model"] = None
         
         return jsonify(ram_usage)
 
