@@ -28,6 +28,7 @@ import traceback
 import sys
 from lollms.console import MainMenu
 import urllib
+import traceback
 
 __author__ = "parisneo"
 __github__ = "https://github.com/ParisNeo/lollms-webui"
@@ -444,6 +445,19 @@ class LoLLMsAPPI():
         ASCIIColors.green(f"{self.lollms_paths.personal_path}")
 
 
+        @socketio.on('continue_generate_msg_from')
+        def handle_connection(data):
+            message_id = int(data['id'])
+            message = data["prompt"]
+            self.current_user_message_id = message_id
+            tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
+            tpe.start()
+        # generation status
+        self.generating=False
+        ASCIIColors.blue(f"Your personal data is stored here :",end="")
+        ASCIIColors.green(f"{self.lollms_paths.personal_path}")
+
+
     def rebuild_personalities(self):
         loaded = self.mounted_personalities
         loaded_names = [f"{p.language}/{p.category}/{p.personality_folder_name}" for p in loaded]
@@ -645,7 +659,7 @@ class LoLLMsAPPI():
         self.condition_chatbot()
         return timestamp
 
-    def prepare_query(self, message_id=-1):
+    def prepare_query(self, message_id=-1, is_continue=False):
         messages = self.current_discussion.get_messages()
         self.full_message_list = []
         for message in messages:
@@ -658,17 +672,20 @@ class LoLLMsAPPI():
             else:
                 break
 
-        if self.personality.processor is not None:
-            preprocessed_prompt = self.personality.processor.process_model_input(message["content"])
-        else:
-            preprocessed_prompt = message["content"]
-        if preprocessed_prompt is not None:
-            self.full_message_list.append(self.personality.user_message_prefix+preprocessed_prompt+self.personality.link_text+self.personality.ai_message_prefix)
-        else:
-            self.full_message_list.append(self.personality.user_message_prefix+message["content"]+self.personality.link_text+self.personality.ai_message_prefix)
-
-
         link_text = self.personality.link_text
+        if not is_continue:
+            if self.personality.processor is not None:
+                preprocessed_prompt = self.personality.processor.process_model_input(message["content"])
+            else:
+                preprocessed_prompt = message["content"]
+
+            if preprocessed_prompt is not None:
+                self.full_message_list.append(self.personality.user_message_prefix+preprocessed_prompt+self.personality.link_text+self.personality.ai_message_prefix)
+            else:
+                self.full_message_list.append(self.personality.user_message_prefix+message["content"]+self.personality.link_text+self.personality.ai_message_prefix)
+        else:
+            self.full_message_list.append(self.personality.ai_message_prefix+message["content"])
+
 
         discussion_messages = self.personality.personality_conditioning+ link_text.join(self.full_message_list)
 
@@ -719,6 +736,8 @@ class LoLLMsAPPI():
         1 : a notification message
         2 : A hidden message
         """
+        if message_type == MSG_TYPE.MSG_TYPE_STEP:
+            ASCIIColors.info("--> Step:"+chunk)
         if message_type == MSG_TYPE.MSG_TYPE_STEP_START:
             ASCIIColors.info("--> Step started:"+chunk)
         if message_type == MSG_TYPE.MSG_TYPE_STEP_END:
@@ -797,7 +816,12 @@ class LoLLMsAPPI():
                             output = self.personality.processor.run_workflow( prompt, full_prompt, self.process_chunk)
                             self.process_chunk(output, MSG_TYPE.MSG_TYPE_FULL)
                         except Exception as ex:
+                            # Catch the exception and get the traceback as a list of strings
+                            traceback_lines = traceback.format_exception(type(ex), ex, ex.__traceback__)
+                            # Join the traceback lines into a single string
+                            traceback_text = ''.join(traceback_lines)
                             ASCIIColors.error(f"Workflow run failed.\nError:{ex}")
+                            ASCIIColors.error(traceback_text)
                             self.process_chunk(f"Workflow run failed\nError:{ex}", MSG_TYPE.MSG_TYPE_EXCEPTION)                   
                         print("Finished executing the workflow")
                         return
@@ -843,41 +867,44 @@ class LoLLMsAPPI():
             output = ""
         return output
                      
-    def start_message_generation(self, message, message_id):
+    def start_message_generation(self, message, message_id, is_continue=False):
         ASCIIColors.info(f"Text generation requested by client: {self.current_room_id}")
         # send the message to the bot
         print(f"Received message : {message}")
         if self.current_discussion:
             # First we need to send the new message ID to the client
-            self.current_ai_message_id = self.current_discussion.add_message(
-                self.personality.name, 
-                "", 
-                parent = self.current_user_message_id,
-                binding = self.config["binding_name"],
-                model = self.config["model_name"], 
-                personality = self.config["personalities"][self.config["active_personality_id"]]
-            )  # first the content is empty, but we'll fill it at the end
-            self.socketio.emit('infos',
-                    {
-                        "status":'generation_started',
-                        "type": "input_message_infos",
-                        "bot": self.personality.name,
-                        "user": self.personality.user_name,
-                        "message":message,#markdown.markdown(message),
-                        "user_message_id": self.current_user_message_id,
-                        "ai_message_id": self.current_ai_message_id,
+            if is_continue:
+                self.current_ai_message_id = message_id
+            else:
+                self.current_ai_message_id = self.current_discussion.add_message(
+                    self.personality.name, 
+                    "", 
+                    parent = self.current_user_message_id,
+                    binding = self.config["binding_name"],
+                    model = self.config["model_name"], 
+                    personality = self.config["personalities"][self.config["active_personality_id"]]
+                )  # first the content is empty, but we'll fill it at the end
+                self.socketio.emit('infos',
+                        {
+                            "status":'generation_started',
+                            "type": "input_message_infos",
+                            "bot": self.personality.name,
+                            "user": self.personality.user_name,
+                            "message":message,#markdown.markdown(message),
+                            "user_message_id": self.current_user_message_id,
+                            "ai_message_id": self.current_ai_message_id,
 
-                        'binding': self.current_discussion.current_message_binding,
-                        'model': self.current_discussion.current_message_model,
-                        'personality': self.current_discussion.current_message_personality,
-                        'created_at': self.current_discussion.current_message_created_at,
-                        'finished_generating_at': self.current_discussion.current_message_finished_generating_at,                        
-                    }, room=self.current_room_id
+                            'binding': self.current_discussion.current_message_binding,
+                            'model': self.current_discussion.current_message_model,
+                            'personality': self.current_discussion.current_message_personality,
+                            'created_at': self.current_discussion.current_message_created_at,
+                            'finished_generating_at': self.current_discussion.current_message_finished_generating_at,                        
+                        }, room=self.current_room_id
             )
             self.socketio.sleep(0)
 
             # prepare query and reception
-            self.discussion_messages, self.current_message = self.prepare_query(message_id)
+            self.discussion_messages, self.current_message = self.prepare_query(message_id, is_continue)
             self.prepare_reception()
             self.generating = True
             self.generate(self.discussion_messages, self.current_message, n_predict = self.config['n_predict'], callback=self.process_chunk)
@@ -913,14 +940,21 @@ class LoLLMsAPPI():
                                 )
             self.socketio.sleep(0)
 
-            print()
-            print("## Done ##")
-            print()
+            ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
+            ASCIIColors.success(f" ║                        Done                      ║ ")
+            ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
         else:
-            #No discussion available
-            print("No discussion selected!!!")
-            print("## Done ##")
-            print()
             self.cancel_gen = False
+            #No discussion available
+            ASCIIColors.warning("No discussion selected!!!")
+            self.socketio.emit('message', {
+                                            'data': "No discussion selected!!!", 
+                                            'user_message_id':self.current_user_message_id, 
+                                            'ai_message_id':self.current_ai_message_id, 
+                                            'discussion_id':0,
+                                            'message_type': MSG_TYPE.MSG_TYPE_EXCEPTION.value
+                                        }, room=self.current_room_id
+                                )            
+            print()
             return ""
     

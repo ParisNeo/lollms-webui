@@ -507,7 +507,13 @@ class LoLLMsWebUI(LoLLMsAPPI):
             try:
                 self.model = self.binding.build_model()
             except Exception as ex:
-                print(f"Couldn't load model: [{ex}]")
+                # Catch the exception and get the traceback as a list of strings
+                traceback_lines = traceback.format_exception(type(ex), ex, ex.__traceback__)
+
+                # Join the traceback lines into a single string
+                traceback_text = ''.join(traceback_lines)
+                ASCIIColors.error(f"Couldn't load model: [{ex}]")
+                ASCIIColors.error(traceback_text)
                 return jsonify({ "status":False, 'error':str(ex)})
 
             print("update_settings : New model selected")
