@@ -756,7 +756,7 @@
                 <div :class="{ 'hidden': mzdc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
 
                     <div class="mb-2">
-
+                        <!-- HIDDEN UNTIL ITS FIXED
                         <div class="p-2 " v-if="!modelDownlaodInProgress">
 
                             <form>
@@ -776,7 +776,7 @@
 
                             </form>
 
-                        </div>
+                        </div> -->
 
                         <div class="p-2  ">
 
