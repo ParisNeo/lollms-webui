@@ -229,7 +229,9 @@
 <script>
 
 export default {
+    
     setup() { },
+    
     data() {
         return {
             list: [], // Discussion list

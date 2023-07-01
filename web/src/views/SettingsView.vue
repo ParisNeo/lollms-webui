@@ -606,8 +606,8 @@
 
                             <div v-if="!modelDownlaodInProgress">
                                 <div class="mb-3">
-                                    <label 
-                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Download from web:</label>
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Download
+                                        from web:</label>
                                     <input type="text" v-model="addModel.url"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                         placeholder="Enter URL ..." required>
@@ -832,7 +832,8 @@
 
                         <div v-if="personalitiesFiltered.length > 0" class="mb-2">
                             <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                {{ searchPersonality ? 'Search results' : 'Personalities' }}: ({{ personalitiesFiltered.length
+                                {{ searchPersonality ? 'Search results' : 'Personalities' }}: ({{
+                                    personalitiesFiltered.length
                                 }})
                             </label>
                             <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
@@ -1245,6 +1246,57 @@ export default {
             this.vramUsage = await this.api_get_req("vram_usage")
             this.getMountedPersonalities()
             this.isMounted = true
+            const lala = await this.getVramUsage()
+            
+
+        },
+        async getVramUsage() {
+            const resp = await this.api_get_req("vram_usage")
+            // {
+            //   "gpu_0_total_vram": 11811160064,
+            //   "gpu_0_used_vram": 3177185280,
+            //   "nb_gpus": 1
+            // }
+
+            const gpuArr = []
+
+            if (resp.nb_gpus > 0) {
+                // Get keys
+                const keys = Object.keys(resp)
+                // for each gpu
+                for (let i = 0; i < resp.nb_gpus; i++) {
+                    // // For each key
+                    // for (let j = 0; j < keys.length; j++) {
+                    //     // if matches with array index then create gpu object
+                    //     if(keys[j].includes(i)){
+
+                    //         const gpuKey = keys[j]
+                    //         const gpuVal = resp.index
+                    //     }
+
+
+                    // }
+
+                    const total_vram = resp[`gpu_${i}_total_vram`];
+                 
+                    const used_vram = resp[`gpu_${i}_used_vram`];
+            
+
+
+                    gpuArr.push({ total_vram : total_vram, used_vram: used_vram, gpu_index: i });
+
+                }
+                const result = {
+
+                    "nb_gpus": resp.nb_gpus,
+                    "gpus":gpuArr
+                }
+                console.log('gpu usage: ',result)
+                return result
+
+            }
+
+
 
         },
         async progressListener(response) {
