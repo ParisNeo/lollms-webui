@@ -1278,12 +1278,12 @@ export default {
                     // }
 
                     const total_vram = resp[`gpu_${i}_total_vram`];
-                 
                     const used_vram = resp[`gpu_${i}_used_vram`];
+                    const model = resp[`gpu_${i}_model`];
             
 
 
-                    gpuArr.push({ total_vram : total_vram, used_vram: used_vram, gpu_index: i });
+                    gpuArr.push({ total_vram : total_vram, used_vram: used_vram, gpu_index: i, gpu_model:model });
 
                 }
                 const result = {
