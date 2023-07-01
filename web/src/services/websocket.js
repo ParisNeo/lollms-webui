@@ -3,7 +3,7 @@
 // Description :
 // All websocket stuff can be found here.
 // More info can be found here https://socket.io/how-to/use-with-vue
-import { createApp } from 'vue';
+// import { createApp } from 'vue';
 import io from 'socket.io-client';
 
 // fixes issues when people not hosting this site on local network
@@ -31,11 +31,11 @@ socket.on("disconnect", () => {
   console.log('WebSocket disonnected (websocket)');
 });
 
-const app = createApp(/* your root component */);
+// const app = createApp(/* your root component */);
 
-app.config.globalProperties.$socket = socket;
+// app.config.globalProperties.$socket = socket;
 
-app.mount(/* your root element */);
+// app.mount(/* your root element */);
 
 export default socket;
 
