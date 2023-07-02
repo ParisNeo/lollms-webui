@@ -980,15 +980,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
         else:
             return jsonify({'status':False})            
 
-    def get_active_binding_settings(self):
-        print("- Retreiving binding settings")
-        if self.binding is not None:
-            if hasattr(self.binding,"binding_config"):
-                return jsonify(self.binding.binding_config.config_template.template)
-            else:
-                return jsonify({})        
-        else:
-            return jsonify({})  
     
     def set_active_binding_settings(self):
         print("- Setting binding settings")
@@ -1001,6 +992,16 @@ class LoLLMsWebUI(LoLLMsAPPI):
         
         if self.binding is not None:
             if hasattr(self.binding,"binding_config"):
+                for entry in data:
+                    if entry["type"]=="list" and type(entry["value"])==str:
+                        try:
+                            v = json.loads(entry["value"])
+                        except:
+                            v= ""
+                        if type(v)==list:
+                            entry["value"] = v
+                        else:
+                            entry["value"] = [entry["value"]]
                 self.binding.binding_config.update_template(data)
                 self.binding.binding_config.config.save_config()
                 self.binding= BindingBuilder().build_binding(self.config, self.lollms_paths)
@@ -1042,24 +1043,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
         else:
             return jsonify({})       
 
-
-
-    def get_binding_settings(self):
-        print("- Retreiving personality settings")
-        try:
-            data = request.get_json()
-            # Further processing of the data
-        except Exception as e:
-            print(f"Error occurred while parsing JSON: {e}")
-            return
-
-        if personality.processor is not None:
-            if hasattr(personality.processor,"personality_config"):
-                return jsonify(personality.processor.personality_config.config_template.template)
-            else:
-                return jsonify({})        
-        else:
-            return jsonify({})   
 
 
 

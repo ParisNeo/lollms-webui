@@ -25,7 +25,7 @@ class DiscussionsDB:
 
 
     def create_tables(self):
-        db_version = 6
+        db_version = 7
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
 
@@ -58,6 +58,7 @@ class DiscussionsDB:
                     created_at TIMESTAMP,
                     finished_generating_at TIMESTAMP,
                     discussion_id INTEGER NOT NULL,
+                    metadata JSON,
                     FOREIGN KEY (discussion_id) REFERENCES discussion(id),
                     FOREIGN KEY (parent) REFERENCES message(id)
                 )
@@ -94,6 +95,7 @@ class DiscussionsDB:
                     'rank',
                     'parent',
                     'created_at',
+                    'metadata',
                     'finished_generating_at',
                     'discussion_id'
                 ]
@@ -109,9 +111,11 @@ class DiscussionsDB:
                             cursor.execute(f"ALTER TABLE {table} ADD COLUMN {column} INTEGER PRIMARY KEY AUTOINCREMENT")
                         elif column.endswith('_at'):
                             cursor.execute(f"ALTER TABLE {table} ADD COLUMN {column} TIMESTAMP")
+                        elif column=='metadata':
+                            cursor.execute(f"ALTER TABLE {table} ADD COLUMN {column} JSON")
                         else:
                             cursor.execute(f"ALTER TABLE {table} ADD COLUMN {column} TEXT")
-
+                        ASCIIColors.yellow(f"Added column :{column}")
             conn.commit()
 
 
