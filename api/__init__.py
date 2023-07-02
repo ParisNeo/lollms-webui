@@ -396,7 +396,8 @@ class LoLLMsAPPI():
                 message = data["prompt"]
                 message_id = self.current_discussion.add_message(
                     "user", 
-                    message, 
+                    message,
+                    message_type=DiscussionsDB.MSG_TYPE_NORMAL_USER,
                     parent=self.message_id
                 )
 
@@ -631,8 +632,8 @@ class LoLLMsAPPI():
     
         if self.personality.welcome_message!="":
             message_id = self.current_discussion.add_message(
-                self.personality.name, self.personality.welcome_message, 
-                DiscussionsDB.MSG_TYPE_NORMAL,
+                self.personality.name, self.personality.welcome_message,
+                DiscussionsDB.MSG_TYPE_NORMAL_AI if self.personality.include_welcome_message_in_disucssion else DiscussionsDB.MSG_TYPE_USER_ONLY,
                 0,
                 -1,
                 binding= self.config["binding_name"],
@@ -664,7 +665,7 @@ class LoLLMsAPPI():
         self.full_message_list = []
         for message in messages:
             if message["id"]< message_id or message_id==-1: 
-                if message["type"]==self.db.MSG_TYPE_NORMAL:
+                if message["type"]==self.db.MSG_TYPE_NORMAL_USER or message["type"]==self.db.MSG_TYPE_NORMAL_AI:
                     if message["sender"]==self.personality.name:
                         self.full_message_list.append(self.personality.ai_message_prefix+message["content"])
                     else:
@@ -879,10 +880,11 @@ class LoLLMsAPPI():
                 self.current_ai_message_id = self.current_discussion.add_message(
                     self.personality.name, 
                     "", 
-                    parent = self.current_user_message_id,
-                    binding = self.config["binding_name"],
-                    model = self.config["model_name"], 
-                    personality = self.config["personalities"][self.config["active_personality_id"]]
+                    message_type    = DiscussionsDB.MSG_TYPE_NORMAL_AI,
+                    parent          = self.current_user_message_id,
+                    binding         = self.config["binding_name"],
+                    model           = self.config["model_name"], 
+                    personality     = self.config["personalities"][self.config["active_personality_id"]]
                 )  # first the content is empty, but we'll fill it at the end
                 self.socketio.emit('infos',
                         {
