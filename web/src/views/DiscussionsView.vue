@@ -234,6 +234,14 @@ export default {
     
     data() {
         return {
+            // To be synced with the backend database types
+            msgTypes: {
+                MSG_TYPE_NORMAL_USER: 0,
+                MSG_TYPE_NORMAL_AI: 1,
+                MSG_TYPE_CONDITIONNING: 2,
+                MSG_TYPE_HIDDEN: 3,
+                MSG_TYPE_USER_ONLY: 4
+            },
             list: [], // Discussion list
             tempList: [], // Copy of Discussion list (used for keeping the original list during filtering discussions/searching action)
             currentDiscussion: {}, // Current/selected discussion id
@@ -300,8 +308,13 @@ export default {
                     this.setDiscussionLoading(id, this.loading)
                     if (res) {
                         // Filter out the user and bot entries
-                        this.discussionArr = res.data.filter((item) => item.type == 0)
-
+                        this.discussionArr = res.data.filter((item) => 
+                                                                item.type == this.msgTypes.MSG_TYPE_NORMAL_AI ||
+                                                                item.type == this.msgTypes.MSG_TYPE_NORMAL_USER ||
+                                                                item.type == this.msgTypes.MSG_TYPE_USER_ONLY
+                                                            )
+                        console.log("this.discussionArr")
+                        console.log(this.discussionArr)
                     }
 
                 }
@@ -598,12 +611,11 @@ export default {
                 binding: msgObj.binding,
                 content: msgObj.message,
                 created_at: msgObj.created_at,
+                type: msgObj.type,
                 finished_generating_at: msgObj.finished_generating_at,
                 id: msgObj.user_message_id,
                 model: msgObj.model,
-                
                 personality: msgObj.personality,
-                
                 sender: msgObj.user,
                 
             }

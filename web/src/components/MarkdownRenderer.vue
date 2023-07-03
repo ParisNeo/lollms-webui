@@ -9,6 +9,8 @@ import { nextTick } from 'vue';
 import feather from 'feather-icons';
 import MarkdownIt from 'markdown-it';
 import emoji from 'markdown-it-emoji';
+import anchor from 'markdown-it-anchor';
+import implicitFigures from 'markdown-it-implicit-figures';
 //import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/tomorrow-night-blue.css';
 import 'highlight.js/styles/tokyo-night-dark.css';
@@ -26,7 +28,7 @@ function generateUniqueId() {
 }
 
 const markdownIt = new MarkdownIt('commonmark', {
-  html: false,
+  html: true,
   xhtmlOut: true,
   breaks: true,
   linkify: true,
@@ -90,7 +92,7 @@ const markdownIt = new MarkdownIt('commonmark', {
     return codeString;
   },
   bulletListMarker: '•',
-}).use(emoji).use(attrs); // Add attrs plugin for adding attributes to elements
+}).use(attrs).use(anchor).use(implicitFigures).use(emoji); // Add attrs plugin for adding attributes to elements
 
 
 // ... register other languages

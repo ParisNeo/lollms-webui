@@ -12,8 +12,12 @@ __license__ = "Apache 2.0"
 
 # =================================== Database ==================================================================
 class DiscussionsDB:
-    MSG_TYPE_NORMAL         = 0
-    MSG_TYPE_CONDITIONNING  = 1
+    MSG_TYPE_NORMAL_USER    = 0 # A normal message from user
+    MSG_TYPE_NORMAL_AI      = 1 # A normal message from ai
+
+    MSG_TYPE_CONDITIONNING  = 2 # This is the AI conditionning (to be protected from window sliding)
+    MSG_TYPE_HIDDEN         = 3 # Don't show this to user
+    MSG_TYPE_USER_ONLY      = 4 # Don't give this to the AI
 
     def __init__(self, db_path="database.db"):
         self.db_path = Path(db_path)
@@ -21,7 +25,7 @@ class DiscussionsDB:
 
 
     def create_tables(self):
-        db_version = 6
+        db_version = 7
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
 
@@ -54,6 +58,7 @@ class DiscussionsDB:
                     created_at TIMESTAMP,
                     finished_generating_at TIMESTAMP,
                     discussion_id INTEGER NOT NULL,
+                    metadata JSON,
                     FOREIGN KEY (discussion_id) REFERENCES discussion(id),
                     FOREIGN KEY (parent) REFERENCES message(id)
                 )
@@ -90,6 +95,7 @@ class DiscussionsDB:
                     'rank',
                     'parent',
                     'created_at',
+                    'metadata',
                     'finished_generating_at',
                     'discussion_id'
                 ]
@@ -105,9 +111,11 @@ class DiscussionsDB:
                             cursor.execute(f"ALTER TABLE {table} ADD COLUMN {column} INTEGER PRIMARY KEY AUTOINCREMENT")
                         elif column.endswith('_at'):
                             cursor.execute(f"ALTER TABLE {table} ADD COLUMN {column} TIMESTAMP")
+                        elif column=='metadata':
+                            cursor.execute(f"ALTER TABLE {table} ADD COLUMN {column} JSON")
                         else:
                             cursor.execute(f"ALTER TABLE {table} ADD COLUMN {column} TEXT")
-
+                        ASCIIColors.yellow(f"Added column :{column}")
             conn.commit()
 
 
