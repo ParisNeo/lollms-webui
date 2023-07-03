@@ -92,7 +92,7 @@ const markdownIt = new MarkdownIt('commonmark', {
     return codeString;
   },
   bulletListMarker: '•',
-}).use(emoji).use(attrs).use(anchor).use(implicitFigures); // Add attrs plugin for adding attributes to elements
+}).use(attrs).use(anchor).use(implicitFigures).use(emoji); // Add attrs plugin for adding attributes to elements
 
 
 // ... register other languages

@@ -91,3 +91,7 @@ Now that our remote service is up, we can use it as we use any local binding.
 Let's ask Carl sagan what is cosmos.
 
 If we look at the Lollms console, we can see that it got the prompt and is generating the words.
+
+As you can see, generative AI has a huge potential to help us enhance our productivity. This tool is a little glimpse of what AI models especially generative models are capable of. AI is a tool, it can be used for good, as for bad. I hope you use this tool wizely and bare in mind that the future of humanity may depend on how we use these technologies. It is now impossible to stop AI development but we should tame it and make sure that its goals are aligned with ours. It can lead us to a bright future where we fix urgent problems like climate change and resource depletion, where we aceive great science discoveries, like building a better physics theory that can fuse quantum physics and general relativity. Or it can lead us to a dark world where AI empowers a handful of ritch people and enslaves the rest. I personally think that open source is the way to ensure fair access to every one to those tools.
+
+I hope that you have liked this video. If you did, please consider leaving a thumb up, a sub to the channel and a comment. Thank you for watching. C ya
