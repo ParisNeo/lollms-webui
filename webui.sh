@@ -1,4 +1,5 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
+echo "\u001b[34m"
 echo "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
 echo "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
 echo "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
@@ -33,85 +34,86 @@ echo "HHHHHHHHHHHH.HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
 echo "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
 echo "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
-# Install git
-echo -n "Checking for Git..."
-if command -v git > /dev/null 2>&1; then
-  echo "is installed"
-else
-  read -p "Git is not installed. Would you like to install Git? [Y/N] " choice
-  if [ "$choice" = "Y" ] || [ "$choice" = "y" ]; then
-    echo "Installing Git..."
-    sudo apt update
-    sudo apt install -y git
-  else
-    echo "Please install Git and try again."
-    exit 1
-  fi
+echo "\u001b[0m"
+
+if ping -q -c 1 google.com >/dev/null 2>&1; then
+    echo -e "\e[32mInternet Connection working fine\e[0m"
+    # Install git
+    echo -n "Checking for Git..."
+    if command -v git > /dev/null 2>&1; then
+      echo "is installed"
+    else
+      read -p "Git is not installed. Would you like to install Git? [Y/N] " choice
+      if [ "$choice" = "Y" ] || [ "$choice" = "y" ]; then
+        echo "Installing Git..."
+        sudo apt update
+        sudo apt install -y git
+      else
+        echo "Please install Git and try again."
+        exit 1
+      fi
+    fi
+
+    # Check if repository exists
+    if [[ -d .git ]] ;then
+    echo Pulling latest changes
+    git pull 
+    else
+      if [[ -d lollms-webui ]] ;then
+        cd lollms-webui
+      else
+        echo Cloning repository...
+        rem Clone the Git repository into a temporary directory
+        git clone https://github.com/ParisNeo/lollms-webui.git ./lollms-webui
+        cd lollms-webui
+      fi
+    fi
+    echo Pulling latest version...
+    git pull
+
+    # Install Python 3.10 and pip
+    echo -n "Checking for python3..."
+    if command -v python3 > /dev/null 2>&1; then
+      echo "is installed"
+    else
+      read -p "python3 is not installed. Would you like to install python3? [Y/N] " choice
+      if [ "$choice" = "Y" ] || [ "$choice" = "y" ]; then
+        echo "Installing python3..."
+        sudo apt update
+        sudo apt install -y python3 python3-venv
+      else
+        echo "Please install python3 and try again."
+        exit 1
+      fi
+    fi
+
+    # Install venv module
+    echo -n "Checking for venv module..."
+    if python3 -m venv env > /dev/null 2>&1; then
+      echo "is installed"
+    else
+      read -p "venv module is not available. Would you like to install it? [Y/N] " choice
+      if [ "$choice" = "Y" ] || [ "$choice" = "y" ]; then
+        echo "Installing venv module..."
+        sudo apt update
+        sudo apt install -y python3-venv
+      else
+        echo "Please install venv module and try again."
+        exit 1
+      fi
+    fi
+
+    # Create a new virtual environment
+    echo -n "Creating virtual environment..."
+    python3 -m venv env
+    if [ $? -ne 0 ]; then
+      echo "Failed to create virtual environment. Please check your Python installation and try again."
+      exit 1
+    else
+      echo "is created"
+    fi
 fi
 
-# Check if repository exists 
-if [[ -d .git ]] ;then
-echo Pulling latest changes 
-git pull origin main
-else
-  if [[ -d GPT4All ]] ;then
-    cd GPT4All
-  else
-    echo Cloning repository...
-    rem Clone the Git repository into a temporary directory
-    git clone https://github.com/nomic-ai/gpt4all-ui.git ./GPT4All
-    cd GPT4All
-  fi
-fi
-echo Pulling latest version...
-git pull
-# Download latest personalities
-if ! test -d ./tmp/personalities; then
-  git clone https://github.com/ParisNeo/GPT4All_Personalities.git ./tmp/personalities
-fi
-cp ./tmp/personalities/* ./personalities/
-
-# Install Python 3.10 and pip
-echo -n "Checking for python3.10..."
-if command -v python3.10 > /dev/null 2>&1; then
-  echo "is installed"
-else
-  read -p "Python3.10 is not installed. Would you like to install Python3.10? [Y/N] " choice
-  if [ "$choice" = "Y" ] || [ "$choice" = "y" ]; then
-    echo "Installing Python3.10..."
-    sudo apt update
-    sudo apt install -y python3.10 python3.10-venv
-  else
-    echo "Please install Python3.10 and try again."
-    exit 1
-  fi
-fi
-
-# Install venv module
-echo -n "Checking for venv module..."
-if python3.10 -m venv env > /dev/null 2>&1; then
-  echo "is installed"
-else
-  read -p "venv module is not available. Would you like to install it? [Y/N] " choice
-  if [ "$choice" = "Y" ] || [ "$choice" = "y" ]; then
-    echo "Installing venv module..."
-    sudo apt update
-    sudo apt install -y python3.10-venv
-  else
-    echo "Please install venv module and try again."
-    exit 1
-  fi
-fi
-
-# Create a new virtual environment
-echo -n "Creating virtual environment..."
-python3.10 -m venv env
-if [ $? -ne 0 ]; then
-  echo "Failed to create virtual environment. Please check your Python installation and try again."
-  exit 1
-else
-  echo "is created"
-fi
 
 # Activate the virtual environment
 echo -n "Activating virtual environment..."
@@ -120,59 +122,15 @@ echo "is active"
 
 # Install the required packages
 echo "Installing requirements..."
-python3.10 -m pip install pip --upgrade
-python3.10 -m pip install -r requirements.txt
+python3 -m pip install pip --upgrade
+python3 -m pip install --upgrade -r requirements.txt
 
 if [ $? -ne 0 ]; then
   echo "Failed to install required packages. Please check your internet connection and try again."
   exit 1
 fi
 
-# Checking model
 
-MODEL="./models/llama_cpp/gpt4all-lora-quantized-ggml.bin"
-MODEL_URL="https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin"
-
-if [ -f "$MODEL" ]; then
-  echo "File $MODEL already exists. Skipping download."
-else
-  echo "File $MODEL does not exist."
-  echo "What would you like to do?"
-  select option in "Download" "Download using browser" "Skip"; do
-    case $option in
-      Download)
-        if [ -x "$(command -v wget)" ]; then
-          wget "$MODEL_URL" -P ./models/llama_cpp/
-        elif [ -x "$(command -v curl)" ]; then
-          curl -o "$MODEL" "$MODEL_URL"
-        else
-          echo "Error: neither wget nor curl is installed. Please install one of them and try again."
-          exit 1
-        fi
-        break
-        ;;
-      "Download using browser")
-        if [ -x "$(command -v xdg-open)" ]; then
-          xdg-open "$MODEL_URL"
-        elif [ -x "$(command -v gnome-open)" ]; then
-          gnome-open "$MODEL_URL"
-        elif [ -x "$(command -v kde-open)" ]; then
-          kde-open "$MODEL_URL"
-        elif [ -x "$(command -v open)" ]; then
-          open "$MODEL_URL"
-        else
-          echo "Error: could not detect a default browser. Please open the link in your web browser manually and press any key to continue."
-          read -n 1 -s -r -p "Press any key to continue"$'\n'
-        fi
-        break
-        ;;
-      Skip)
-        echo "Skipping downloading $MODEL"
-        break
-        ;;
-    esac
-  done
-fi
 
 
 # Cleanup

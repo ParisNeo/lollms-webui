@@ -13,7 +13,7 @@ fetch('/settings')
 .then(response => response.text())
 .then(html => {
   document.getElementById('settings').innerHTML = html;
-  backendInput = document.getElementById('backend');  
+  bindingInput = document.getElementById('binding');  
   modelInput = document.getElementById('model');
   personalityLanguageInput = document.getElementById('personalities_language');
   personalityCategoryInput = document.getElementById('personalities_category');
@@ -21,7 +21,7 @@ fetch('/settings')
   languageInput = document.getElementById('language');
   voiceInput = document.getElementById('voice');
   seedInput = document.getElementById('seed');
-  tempInput = document.getElementById('temp');
+  tempInput = document.getElementById('temperature');
   nPredictInput = document.getElementById('n-predict');
   topKInput = document.getElementById('top-k');
   topPInput = document.getElementById('top-p');
@@ -43,7 +43,7 @@ fetch('/settings')
       .then((data) => {
         console.log("Received config")
         console.log(data);
-        selectOptionByText(backendInput, data["backend"])
+        selectOptionByText(bindingInput, data["binding"])
         selectOptionByText(modelInput, data["model"])
         selectOptionByText(personalityLanguageInput, data["personality_language"])
         selectOptionByText(personalityCategoryInput, data["personality_category"])
@@ -51,7 +51,7 @@ fetch('/settings')
         languageInput.value = data["language"]
         voiceInput.value = data["voice"]
         seedInput.value = data["seed"]
-        tempInput.value = data["temp"]
+        tempInput.value = data["temperature"]
         nPredictInput.value = data["n_predict"]
         topKInput.value = data["top_k"]
         topPInput.value = data["top_p"]
@@ -59,7 +59,7 @@ fetch('/settings')
         repeatPenaltyInput.textContent  = data["repeat_penalty"]
         repeatLastNInput.textContent  = data["repeat_last_n"]
     
-        temperatureValue.textContent =`Temperature(${data["temp"]})`
+        temperatureValue.textContent =`Temperature(${data["temperature"]})`
         n_predictValue.textContent =`N Predict(${data["n_predict"]})`
         
         topkValue.textContent =`Top-K(${data["top_k"]})`
@@ -74,25 +74,25 @@ fetch('/settings')
 
   }  
   
-  backendInput.addEventListener('input',() => {
-    console.log(`Backend (${backendInput.value})`)
+  bindingInput.addEventListener('input',() => {
+    console.log(`Binding (${bindingInput.value})`)
     // Use fetch to send form values to Flask endpoint
-    fetch('/set_backend', {
+    fetch('/set_binding', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({"backend":backendInput.value}),
+      body: JSON.stringify({"binding":bindingInput.value}),
     })
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
         if(data["status"]==="no_models_found"){
-          alert("No models found for this backend. Make sure you select a backend that you have models for or download models from links in our repository")  
+          alert("No models found for this binding. Make sure you select a binding that you have models for or download models from links in our repository")  
         }
         else{
           populate_settings();
-          alert("Backend set successfully")  
+          alert("Binding set successfully")  
         }
       })
       .catch((error) => {
@@ -115,7 +115,7 @@ fetch('/settings')
       .then((data) => {
         console.log(data);
         populate_settings();
-        alert("Backend set successfully")
+        alert("Binding set successfully")
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -159,14 +159,14 @@ fetch('/settings')
     // Get form values and put them in an object
     const formValues = {
       seed: seedInput.value,
-      backend: backendInput.value,
+      binding: bindingInput.value,
       model: modelInput.value,
       personality_language:personalityLanguageInput.value,
       personality_category:personalityCategoryInput.value,
       personality: personalityInput.value,
       language: languageInput.value,
       voice: voiceInput.value,
-      temp: tempInput.value,
+      temperature: tempInput.value,
       nPredict: nPredictInput.value,
       topK: topKInput.value,
       topP: topPInput.value,
@@ -197,17 +197,17 @@ fetch('/settings')
 
   function populate_settings(){
     // Get a reference to the <select> element
-    const selectBackend = document.getElementById('backend');
+    const selectBinding = document.getElementById('binding');
     const selectModel = document.getElementById('model');
   
     const selectPersonalityLanguage = document.getElementById('personalities_language');
     const selectPersonalityCategory = document.getElementById('personalities_category');
     const selectPersonality = document.getElementById('personalities');
   
-    function populate_backends(){
-      selectBackend.innerHTML = "";
+    function populate_bindings(){
+      selectBinding.innerHTML = "";
       // Fetch the list of .bin files from the models subfolder
-      fetch('/list_backends')
+      fetch('/list_bindings')
       .then(response => response.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -216,7 +216,7 @@ fetch('/settings')
             const optionElement = document.createElement('option');
             optionElement.value = filename;
             optionElement.textContent = filename;
-            selectBackend.appendChild(optionElement);
+            selectBinding.appendChild(optionElement);
           });
   
           // fetch('/get_args')
@@ -356,7 +356,7 @@ fetch('/settings')
     });
   
   
-    populate_backends()
+    populate_bindings()
     populate_models()
     populate_personalities_languages()
     populate_personalities_categories()

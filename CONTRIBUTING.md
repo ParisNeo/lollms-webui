@@ -1,4 +1,4 @@
-# Contributing to GPT4All-ui
+# Contributing to lollms-webui
 
 Thank you for your interest in contributing to [Your Repository Name]! We appreciate your efforts to help make our project better.
 
@@ -30,4 +30,4 @@ To submit a contribution, please follow these steps:
 
 Once your pull request is approved, your changes will be merged into the main repository.
 
-Thank you for your contributions to GPT4All-ui!
+Thank you for your contributions to lollms-webui!

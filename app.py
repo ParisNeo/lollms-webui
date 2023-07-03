@@ -1,8 +1,8 @@
 ######
-# Project       : GPT4ALL-UI
+# Project       : lollms-webui
 # Author        : ParisNeo with the help of the community
 # Supported by Nomic-AI
-# Licence       : Apache 2.0
+# license       : Apache 2.0
 # Description   : 
 # A front end Flask application for llamacpp models.
 # The official GPT4All Web ui
@@ -10,19 +10,28 @@
 ######
 
 __author__ = "parisneo"
-__github__ = "https://github.com/nomic-ai/gpt4all-ui"
+__github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-
+import os
 import logging
 import argparse
 import json
 import re
 import traceback
-import threading
 import sys
-from pyGpt4All.db import DiscussionsDB, Discussion
+from tqdm import tqdm
+import subprocess
+import signal
+from lollms.config import InstallOption
+from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding
+from lollms.personality import AIPersonality, MSG_TYPE
+from lollms.config import BaseConfig
+from lollms.helpers import ASCIIColors
+from lollms.paths import LollmsPaths
+from api.db import DiscussionsDB, Discussion
+from api.helpers import compare_lists
 from flask import (
     Flask,
     Response,
@@ -32,33 +41,113 @@ from flask import (
     stream_with_context,
     send_from_directory
 )
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
+
 from flask_socketio import SocketIO, emit
 from pathlib import Path
-import gc
+import yaml
+from geventwebsocket.handler import WebSocketHandler
+import logging
+import psutil
+from lollms.main_config import LOLLMSConfig
+from typing import Optional
+
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
 app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
-socketio = SocketIO(app)
+socketio = SocketIO(app,  cors_allowed_origins="*", async_mode='gevent', ping_timeout=1200, ping_interval=4000)
+
+app.config['SECRET_KEY'] = 'secret!'
 # Set the logging level to WARNING or higher
 logging.getLogger('socketio').setLevel(logging.WARNING)
 logging.getLogger('engineio').setLevel(logging.WARNING)
+logging.getLogger('werkzeug').setLevel(logging.ERROR)
+logging.basicConfig(level=logging.WARNING)
 
 import time
-from pyGpt4All.config import load_config, save_config
-from pyGpt4All.api import GPT4AllAPI
+from api.config import load_config, save_config
+from api import LoLLMsAPPI
 import shutil
 import markdown
+import socket
 
+def get_ip_address():
+    # Create a socket object
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    
+    try:
+        # Connect to a remote host (doesn't matter which one)
+        sock.connect(('8.8.8.8', 80))
+        
+        # Get the local IP address of the socket
+        ip_address = sock.getsockname()[0]
+        return ip_address
+    except socket.error:
+        return None
+    finally:
+        # Close the socket
+        sock.close()
 
-class Gpt4AllWebUI(GPT4AllAPI):
-    def __init__(self, _app, _socketio, config:dict, personality:dict, config_file_path) -> None:
-        super().__init__(config, personality, config_file_path)
+class LoLLMsWebUI(LoLLMsAPPI):
+    def __init__(self, _app, _socketio, config:LOLLMSConfig, config_file_path:Path|str, lollms_paths:LollmsPaths) -> None:
+        super().__init__(config, _socketio, config_file_path, lollms_paths)
 
         self.app = _app
         self.cancel_gen = False
-        self.socketio = _socketio
+
+        app.template_folder = "web/dist"
+        if config["active_personality_id"]>=len(config["personalities"]):
+            config["active_personality_id"] = 0
+        self.personality_language= config["personalities"][config["active_personality_id"]].split("/")[0]
+        self.personality_category= config["personalities"][config["active_personality_id"]].split("/")[1]
+        self.personality_name= config["personalities"][config["active_personality_id"]].split("/")[2]
+
+        # =========================================================================================
+        # Endpoints
+        # =========================================================================================
+
+        
+        self.add_endpoint("/install_model_from_path", "install_model_from_path", self.install_model_from_path, methods=["GET"])
+        
+        self.add_endpoint("/reinstall_binding", "reinstall_binding", self.reinstall_binding, methods=["POST"])
+
+
+        self.add_endpoint("/switch_personal_path", "switch_personal_path", self.switch_personal_path, methods=["POST"])
+
+        self.add_endpoint("/add_reference_to_local_model", "add_reference_to_local_model", self.add_reference_to_local_model, methods=["POST"])
+        
+        self.add_endpoint("/send_file", "send_file", self.send_file, methods=["POST"])
+        self.add_endpoint("/upload_model", "upload_model", self.upload_model, methods=["POST"])
+        
+        
+        self.add_endpoint("/list_mounted_personalities", "list_mounted_personalities", self.list_mounted_personalities, methods=["POST"])
+        self.add_endpoint("/mount_personality", "mount_personality", self.mount_personality, methods=["POST"])
+        self.add_endpoint("/unmount_personality", "unmount_personality", self.unmount_personality, methods=["POST"])
+        self.add_endpoint("/select_personality", "select_personality", self.select_personality, methods=["POST"])
+        self.add_endpoint("/get_personality_settings", "get_personality_settings", self.get_personality_settings, methods=["POST"])
+
+        self.add_endpoint("/get_active_personality_settings", "get_active_personality_settings", self.get_active_personality_settings, methods=["GET"])
+        self.add_endpoint("/get_active_binding_settings", "get_active_binding_settings", self.get_active_binding_settings, methods=["GET"])
+
+        self.add_endpoint("/set_active_personality_settings", "set_active_personality_settings", self.set_active_personality_settings, methods=["POST"])
+        self.add_endpoint("/set_active_binding_settings", "set_active_binding_settings", self.set_active_binding_settings, methods=["POST"])
+
+        self.add_endpoint(
+            "/disk_usage", "disk_usage", self.disk_usage, methods=["GET"]
+        )
+
+        self.add_endpoint(
+            "/ram_usage", "ram_usage", self.ram_usage, methods=["GET"]
+        )
+        self.add_endpoint(
+            "/vram_usage", "vram_usage", self.vram_usage, methods=["GET"]
+        )
 
 
         self.add_endpoint(
-            "/list_backends", "list_backends", self.list_backends, methods=["GET"]
+            "/list_bindings", "list_bindings", self.list_bindings, methods=["GET"]
         )
         self.add_endpoint(
             "/list_models", "list_models", self.list_models, methods=["GET"]
@@ -81,21 +170,31 @@ class Gpt4AllWebUI(GPT4AllAPI):
             "/list_discussions", "list_discussions", self.list_discussions, methods=["GET"]
         )
         
-        self.add_endpoint("/set_personality_language", "set_personality_language", self.set_personality_language, methods=["GET"])
-        self.add_endpoint("/set_personality_category", "set_personality_category", self.set_personality_category, methods=["GET"])
+        self.add_endpoint("/delete_personality", "delete_personality", self.delete_personality, methods=["GET"])
         
         
         self.add_endpoint("/", "", self.index, methods=["GET"])
+        self.add_endpoint("/<path:filename>", "serve_static", self.serve_static, methods=["GET"])
+        
+        self.add_endpoint("/images/<path:filename>", "serve_images", self.serve_images, methods=["GET"])
+        self.add_endpoint("/bindings/<path:filename>", "serve_bindings", self.serve_bindings, methods=["GET"])
+        self.add_endpoint("/personalities/<path:filename>", "serve_personalities", self.serve_personalities, methods=["GET"])
+        self.add_endpoint("/outputs/<path:filename>", "serve_outputs", self.serve_outputs, methods=["GET"])
+        self.add_endpoint("/data/<path:filename>", "serve_data", self.serve_data, methods=["GET"])
+        self.add_endpoint("/help/<path:filename>", "serve_help", self.serve_help, methods=["GET"])
+        
+        self.add_endpoint("/uploads/<path:filename>", "serve_uploads", self.serve_uploads, methods=["GET"])
+
+        
         self.add_endpoint("/export_discussion", "export_discussion", self.export_discussion, methods=["GET"])
         self.add_endpoint("/export", "export", self.export, methods=["GET"])
         self.add_endpoint(
             "/new_discussion", "new_discussion", self.new_discussion, methods=["GET"]
         )
-        self.add_endpoint("/generate", "generate", self.generate, methods=["POST"])
         self.add_endpoint("/stop_gen", "stop_gen", self.stop_gen, methods=["GET"])
 
-        self.add_endpoint("/run_to", "run_to", self.run_to, methods=["POST"])
         self.add_endpoint("/rename", "rename", self.rename, methods=["POST"])
+        self.add_endpoint("/edit_title", "edit_title", self.edit_title, methods=["POST"])
         self.add_endpoint(
             "/load_discussion", "load_discussion", self.load_discussion, methods=["POST"]
         )
@@ -120,20 +219,26 @@ class Gpt4AllWebUI(GPT4AllAPI):
         )
         
         self.add_endpoint(
-            "/set_backend", "set_backend", self.set_backend, methods=["POST"]
+            "/set_binding", "set_binding", self.set_binding, methods=["POST"]
         )
         
         self.add_endpoint(
             "/set_model", "set_model", self.set_model, methods=["POST"]
         )
         
-        self.add_endpoint(
-            "/update_model_params", "update_model_params", self.update_model_params, methods=["POST"]
-        )
 
         self.add_endpoint(
             "/get_config", "get_config", self.get_config, methods=["GET"]
         )
+
+        self.add_endpoint(
+            "/get_current_personality_path_infos", "get_current_personality_path_infos", self.get_current_personality_path_infos, methods=["GET"]
+        )
+
+        self.add_endpoint(
+            "/get_available_models", "get_available_models", self.get_available_models, methods=["GET"]
+        )
+
 
         self.add_endpoint(
             "/extensions", "extensions", self.extensions, methods=["GET"]
@@ -154,78 +259,415 @@ class Gpt4AllWebUI(GPT4AllAPI):
             "/help", "help", self.help, methods=["GET"]
         )
         
+        self.add_endpoint(
+            "/get_generation_status", "get_generation_status", self.get_generation_status, methods=["GET"]
+        )
+        
+        self.add_endpoint(
+            "/update_setting", "update_setting", self.update_setting, methods=["POST"]
+        )
+        self.add_endpoint(
+            "/apply_settings", "apply_settings", self.apply_settings, methods=["POST"]
+        )
+        
+
+        self.add_endpoint(
+            "/save_settings", "save_settings", self.save_settings, methods=["POST"]
+        )
+
+        self.add_endpoint(
+            "/get_current_personality", "get_current_personality", self.get_current_personality, methods=["GET"]
+        )
+        
+
+        self.add_endpoint(
+            "/get_all_personalities", "get_all_personalities", self.get_all_personalities, methods=["GET"]
+        )
+
+        self.add_endpoint(
+            "/get_personality", "get_personality", self.get_personality, methods=["GET"]
+        )
         
         
-        # Socket IO stuff    
-        @socketio.on('connect')
-        def test_connect():
-            print('Client connected')
+        self.add_endpoint(
+            "/reset", "reset", self.reset, methods=["GET"]
+        )
+        
+        self.add_endpoint(
+            "/export_multiple_discussions", "export_multiple_discussions", self.export_multiple_discussions, methods=["POST"]
+        )      
+        self.add_endpoint(
+            "/import_multiple_discussions", "import_multiple_discussions", self.import_multiple_discussions, methods=["POST"]
+        )      
 
-        @socketio.on('disconnect')
-        def test_disconnect():
-            print('Client disconnected')
-
-        @socketio.on('stream-text')
-        def handle_stream_text(data):
-            text = data['prompt']
-            words = text.split()
-            for word in words:
-                emit('stream-word', {'word': word})
-                time.sleep(1)  # sleep for 1 second to simulate processing time
-            emit('stream-end')    
         
         
-        @socketio.on('connected')
-        def handle_connection(data):
-            if "data" in data and data["data"]=='Connected!':
-                return
-            if self.current_discussion is None:
-                if self.db.does_last_discussion_have_messages():
-                    self.current_discussion = self.db.create_discussion()
-                else:
-                    self.current_discussion = self.db.load_last_discussion()
+    def export_multiple_discussions(self):
+        data = request.get_json()
+        discussion_ids = data["discussion_ids"]
+        discussions = self.db.export_discussions_to_json(discussion_ids)
+        return jsonify(discussions)
+          
+    def import_multiple_discussions(self):
+        discussions = request.get_json()["jArray"]
+        self.db.import_from_json(discussions)
+        return jsonify(discussions)
+        
+    def reset(self):
+        os.kill(os.getpid(), signal.SIGINT)  # Send the interrupt signal to the current process
+        subprocess.Popen(['python', 'app.py'])  # Restart the app using subprocess
 
-            message = data["prompt"]
-            message_id = self.current_discussion.add_message(
-                "user", message, parent=self.current_message_id
-            )
-            message = data["prompt"]
-            self.current_message_id = message_id
-            tpe = threading.Thread(target=self.parse_to_prompt_stream, args=(message, message_id))
-            tpe.start()
+        return 'App is resetting...'
 
-            # self.parse_to_prompt_stream(message, message_id)
+    def save_settings(self):
+        self.config.save_config(self.config_file_path)
+        if self.config["debug"]:
+            print("Configuration saved")
+        # Tell that the setting was changed
+        self.socketio.emit('save_settings', {"status":True})
+        return jsonify({"status":True})
+    
+
+    def get_current_personality(self):
+        return jsonify({"personality":self.personality.as_dict()})
+    
+    def get_all_personalities(self):
+        personalities_folder = self.lollms_paths.personalities_zoo_path
+        personalities = {}
+        for language_folder in personalities_folder.iterdir():
+            lang = language_folder.stem
+            if language_folder.is_dir() and not language_folder.stem.startswith('.'):
+                personalities[language_folder.name] = {}
+                for category_folder in  language_folder.iterdir():
+                    cat = category_folder.stem
+                    if category_folder.is_dir() and not category_folder.stem.startswith('.'):
+                        personalities[language_folder.name][category_folder.name] = []
+                        for personality_folder in category_folder.iterdir():
+                            pers = personality_folder.stem
+                            if personality_folder.is_dir() and not personality_folder.stem.startswith('.'):
+                                personality_info = {"folder":personality_folder.stem}
+                                config_path = personality_folder / 'config.yaml'
+                                if not config_path.exists():
+                                    """
+                                    try:
+                                        shutil.rmtree(str(config_path.parent))
+                                        ASCIIColors.warning(f"Deleted useless personality: {config_path.parent}")
+                                    except Exception as ex:
+                                        ASCIIColors.warning(f"Couldn't delete personality ({ex})")
+                                    """
+                                    continue                                    
+                                try:
+                                    scripts_path = personality_folder / 'scripts'
+                                    personality_info['has_scripts'] = scripts_path.is_dir()
+                                    with open(config_path) as config_file:
+                                        config_data = yaml.load(config_file, Loader=yaml.FullLoader)
+                                        personality_info['name'] = config_data.get('name',"No Name")
+                                        personality_info['description'] = config_data.get('personality_description',"")
+                                        personality_info['author'] = config_data.get('author', 'ParisNeo')
+                                        personality_info['version'] = config_data.get('version', '1.0.0')
+                                        personality_info['installed'] = (self.lollms_paths.personal_configuration_path/f"personality_{personality_folder.stem}.yaml").exists() or personality_info['has_scripts']
+                                    real_assets_path = personality_folder/ 'assets'
+                                    assets_path = Path("personalities") / lang / cat / pers / 'assets'
+                                    gif_logo_path = assets_path / 'logo.gif'
+                                    webp_logo_path = assets_path / 'logo.webp'
+                                    png_logo_path = assets_path / 'logo.png'
+                                    jpg_logo_path = assets_path / 'logo.jpg'
+                                    jpeg_logo_path = assets_path / 'logo.jpeg'
+                                    bmp_logo_path = assets_path / 'logo.bmp'
+
+                                    gif_logo_path_ = real_assets_path / 'logo.gif'
+                                    webp_logo_path_ = real_assets_path / 'logo.webp'
+                                    png_logo_path_ = real_assets_path / 'logo.png'
+                                    jpg_logo_path_ = real_assets_path / 'logo.jpg'
+                                    jpeg_logo_path_ = real_assets_path / 'logo.jpeg'
+                                    bmp_logo_path_ = real_assets_path / 'logo.bmp'
+
+                                    personality_info['has_logo'] = png_logo_path.is_file() or gif_logo_path.is_file()
+                                    
+                                    if gif_logo_path_.exists():
+                                        personality_info['avatar'] = str(gif_logo_path).replace("\\","/")
+                                    elif webp_logo_path_.exists():
+                                        personality_info['avatar'] = str(webp_logo_path).replace("\\","/")
+                                    elif png_logo_path_.exists():
+                                        personality_info['avatar'] = str(png_logo_path).replace("\\","/")
+                                    elif jpg_logo_path_.exists():
+                                        personality_info['avatar'] = str(jpg_logo_path).replace("\\","/")
+                                    elif jpeg_logo_path_.exists():
+                                        personality_info['avatar'] = str(jpeg_logo_path).replace("\\","/")
+                                    elif bmp_logo_path_.exists():
+                                        personality_info['avatar'] = str(bmp_logo_path).replace("\\","/")
+                                    else:
+                                        personality_info['avatar'] = ""
+                                    personalities[language_folder.name][category_folder.name].append(personality_info)
+                                except Exception as ex:
+                                    print(f"Couldn't load personality from {personality_folder} [{ex}]")
+        return json.dumps(personalities)
+    
+    def get_personality(self):
+        lang = request.args.get('language')
+        category = request.args.get('category')
+        name = request.args.get('name')
+        if category!="personal":
+            personality_folder = self.lollms_paths.personalities_zoo_path/f"{lang}"/f"{category}"/f"{name}"
+        else:
+            personality_folder = self.lollms_paths.personal_personalities_path/f"{lang}"/f"{category}"/f"{name}"
+        personality_path = personality_folder/f"config.yaml"
+        personality_info = {}
+        with open(personality_path) as config_file:
+            config_data = yaml.load(config_file, Loader=yaml.FullLoader)
+            personality_info['name'] = config_data.get('name',"unnamed")
+            personality_info['description'] = config_data.get('personality_description',"")
+            personality_info['author'] = config_data.get('creator', 'ParisNeo')
+            personality_info['version'] = config_data.get('version', '1.0.0')
+        scripts_path = personality_folder / 'scripts'
+        personality_info['has_scripts'] = scripts_path.is_dir()
+        assets_path = personality_folder / 'assets'
+        gif_logo_path = assets_path / 'logo.gif'
+        webp_logo_path = assets_path / 'logo.webp'
+        png_logo_path = assets_path / 'logo.png'
+        jpg_logo_path = assets_path / 'logo.jpg'
+        jpeg_logo_path = assets_path / 'logo.jpeg'
+        bmp_logo_path = assets_path / 'logo.bmp'
+        
+        personality_info['has_logo'] = png_logo_path.is_file() or gif_logo_path.is_file()
+        
+        if gif_logo_path.exists():
+            personality_info['avatar'] = str(gif_logo_path).replace("\\","/")
+        elif webp_logo_path.exists():
+            personality_info['avatar'] = str(webp_logo_path).replace("\\","/")
+        elif png_logo_path.exists():
+            personality_info['avatar'] = str(png_logo_path).replace("\\","/")
+        elif jpg_logo_path.exists():
+            personality_info['avatar'] = str(jpg_logo_path).replace("\\","/")
+        elif jpeg_logo_path.exists():
+            personality_info['avatar'] = str(jpeg_logo_path).replace("\\","/")
+        elif bmp_logo_path.exists():
+            personality_info['avatar'] = str(bmp_logo_path).replace("\\","/")
+        else:
+            personality_info['avatar'] = ""
+        return json.dumps(personality_info)
+        
+    # Settings (data: {"setting_name":<the setting name>,"setting_value":<the setting value>})
+    def update_setting(self):
+        data = request.get_json()
+        setting_name = data['setting_name']
+        if setting_name== "temperature":
+            self.config["temperature"]=float(data['setting_value'])
+        elif setting_name== "n_predict":
+            self.config["n_predict"]=int(data['setting_value'])
+        elif setting_name== "top_k":
+            self.config["top_k"]=int(data['setting_value'])
+        elif setting_name== "top_p":
+            self.config["top_p"]=float(data['setting_value'])
             
-            #self.socketio.emit('message', {'data': 'WebSocket connected!'})
+        elif setting_name== "repeat_penalty":
+            self.config["repeat_penalty"]=float(data['setting_value'])
+        elif setting_name== "repeat_last_n":
+            self.config["repeat_last_n"]=int(data['setting_value'])
 
-            #for i in range(10):
-            #    socketio.emit('message', {'data': 'Message ' + str(i)})  
+        elif setting_name== "n_threads":
+            self.config["n_threads"]=int(data['setting_value'])
+        elif setting_name== "ctx_size":
+            self.config["ctx_size"]=int(data['setting_value'])
 
-    def list_backends(self):
-        backends_dir = Path('./backends')  # replace with the actual path to the models folder
-        backends = [f.stem for f in backends_dir.iterdir() if f.is_dir() and f.stem!="__pycache__"]
-        return jsonify(backends)
+
+        elif setting_name== "language":
+            self.config["language"]=data['setting_value']
+
+        elif setting_name== "personality_language":
+            self.personality_language=data['setting_value']
+                
+        elif setting_name== "personality_category":
+            self.personality_category=data['setting_value']
+
+        elif setting_name== "personality_folder":
+            self.personality_name=data['setting_value']
+            if len(self.config["personalities"])>0:
+                if self.config["active_personality_id"]<len(self.config["personalities"]):
+                    self.config["personalities"][self.config["active_personality_id"]] = f"{self.personality_language}/{self.personality_category}/{self.personality_name}"
+                else:
+                    self.config["active_personality_id"] = 0
+                    self.config["personalities"][self.config["active_personality_id"]] = f"{self.personality_language}/{self.personality_category}/{self.personality_name}"
+                
+                if self.personality_category!="Custom":
+                    personality_fn = self.lollms_paths.personalities_zoo_path/self.config["personalities"][self.config["active_personality_id"]]
+                else:
+                    personality_fn = self.lollms_paths.personal_personalities_path/self.config["personalities"][self.config["active_personality_id"]].split("/")[-1]
+                self.personality.load_personality(personality_fn)
+            else:
+                self.config["personalities"].append(f"{self.personality_language}/{self.personality_category}/{self.personality_name}")
+        elif setting_name== "override_personality_model_parameters":
+            self.config["override_personality_model_parameters"]=bool(data['setting_value'])
+            
+            
+
+
+        elif setting_name== "model_name":
+            self.config["model_name"]=data['setting_value']
+            if self.config["model_name"] is not None:
+                try:
+                    self.model = self.binding.build_model()
+                except Exception as ex:
+                    # Catch the exception and get the traceback as a list of strings
+                    traceback_lines = traceback.format_exception(type(ex), ex, ex.__traceback__)
+
+                    # Join the traceback lines into a single string
+                    traceback_text = ''.join(traceback_lines)
+                    ASCIIColors.error(f"Couldn't load model: [{ex}]")
+                    ASCIIColors.error(traceback_text)
+                    return jsonify({ "status":False, 'error':str(ex)})
+            else:
+                ASCIIColors.warning("Trying to set a None model. Please select a model for the binding")
+            print("update_settings : New model selected")
+
+        elif setting_name== "binding_name":
+            if self.config['binding_name']!= data['setting_value']:
+                print(f"New binding selected : {data['setting_value']}")
+                self.config["binding_name"]=data['setting_value']
+                try:
+                    self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
+                    self.model = None
+                except Exception as ex:
+                    print(f"Couldn't build binding: [{ex}]")
+                    return jsonify({"status":False, 'error':str(ex)})
+            else:
+                if self.config["debug"]:
+                    print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
+                return jsonify({'setting_name': data['setting_name'], "status":True})
+
+        else:
+            if self.config["debug"]:
+                print(f"Configuration {data['setting_name']} couldn't be set to {data['setting_value']}")
+            return jsonify({'setting_name': data['setting_name'], "status":False})
+
+        if self.config["debug"]:
+            print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
+            
+        ASCIIColors.success(f"Configuration {data['setting_name']} updated")
+        # Tell that the setting was changed
+        return jsonify({'setting_name': data['setting_name'], "status":True})
+
+
+
+    def apply_settings(self):
+        ASCIIColors.success("OK")
+        self.rebuild_personalities()
+        return jsonify({"status":True})
+    
+
+    
+    def ram_usage(self):
+        """
+        Returns the RAM usage in bytes.
+        """
+        ram = psutil.virtual_memory()
+        return jsonify({
+            "total_space":ram.total,
+            "available_space":ram.free,
+
+            "percent_usage":ram.percent,
+            "ram_usage": ram.used
+            })
+
+    def vram_usage(self) -> Optional[dict]:
+        try:
+            output = subprocess.check_output(['nvidia-smi', '--query-gpu=memory.total,memory.used', '--format=csv,nounits,noheader'])
+            lines = output.decode().strip().split('\n')
+            vram_info = [line.split(',') for line in lines]
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            return {
+            "nb_gpus": 0
+            }
+        
+        ram_usage = {
+            "nb_gpus": len(vram_info)
+        }
+        
+        if vram_info is not None:
+            for i, gpu in enumerate(vram_info):
+                ram_usage[f"gpu_{i}_total_vram"] = int(gpu[0])*1024*1024
+                ram_usage[f"gpu_{i}_used_vram"] = int(gpu[1])*1024*1024
+        else:
+            # Set all VRAM-related entries to None
+            ram_usage["gpu_0_total_vram"] = None
+            ram_usage["gpu_0_used_vram"] = None
+        
+        return jsonify(ram_usage)
+
+    def disk_usage(self):
+        current_drive = Path.cwd().anchor
+        drive_disk_usage = psutil.disk_usage(current_drive)
+        try:
+            models_folder_disk_usage = psutil.disk_usage(str(self.lollms_paths.personal_models_path/f'{self.config["binding_name"]}'))
+            return jsonify( {
+                "total_space":drive_disk_usage.total,
+                "available_space":drive_disk_usage.free,
+                "usage":drive_disk_usage.used,
+                "percent_usage":drive_disk_usage.percent,
+
+                "binding_disk_total_space":models_folder_disk_usage.total,
+                "binding_disk_available_space":drive_disk_usage.free,
+                "binding_models_usage": models_folder_disk_usage.used,
+                "binding_models_percent_usage": models_folder_disk_usage.percent,
+                })
+        except Exception as ex:
+            return jsonify({
+                "total_space":drive_disk_usage.total,
+                "available_space":drive_disk_usage.free,
+                "percent_usage":drive_disk_usage.percent,
+
+                "binding_disk_total_space": None,
+                "binding_disk_available_space": None,
+                "binding_models_usage": None,
+                "binding_models_percent_usage": None,
+                })
+
+    def list_bindings(self):
+        bindings_dir = self.lollms_paths.bindings_zoo_path  # replace with the actual path to the models folder
+        bindings=[]
+        for f in bindings_dir.iterdir():
+            card = f/"binding_card.yaml"
+            if card.exists():
+                try:
+                    bnd = load_config(card)
+                    bnd["folder"]=f.stem
+                    icon_path = Path(f"bindings/{f.name}/logo.png")
+                    installed = (self.lollms_paths.personal_configuration_path/f"binding_{f.stem}.yaml").exists()
+                    bnd["installed"]=installed
+                    if Path(self.lollms_paths.bindings_zoo_path/f"{f.name}/logo.png").exists():
+                        bnd["icon"]=str(icon_path)
+
+                    bindings.append(bnd)
+                except Exception as ex:
+                    print(f"Couldn't load backend card : {f}\n\t{ex}")
+        return jsonify(bindings)
 
 
     def list_models(self):
-        models_dir = Path('./models')/self.config["backend"]  # replace with the actual path to the models folder
-        models = [f.name for f in models_dir.glob(self.backend.file_extension)]
-        return jsonify(models)
+        if self.binding is not None:
+            models = self.binding.list_models(self.config)
+            return jsonify(models)
+        else:
+            return jsonify([])
     
 
     def list_personalities_languages(self):
-        personalities_languages_dir = Path(f'./personalities')  # replace with the actual path to the models folder
+        personalities_languages_dir = self.lollms_paths.personalities_zoo_path  # replace with the actual path to the models folder
         personalities_languages = [f.stem for f in personalities_languages_dir.iterdir() if f.is_dir()]
         return jsonify(personalities_languages)
 
     def list_personalities_categories(self):
-        personalities_categories_dir = Path(f'./personalities/{self.config["personality_language"]}')  # replace with the actual path to the models folder
+        personalities_categories_dir = self.lollms_paths.personalities_zoo_path/f'{self.personality_language}'  # replace with the actual path to the models folder
         personalities_categories = [f.stem for f in personalities_categories_dir.iterdir() if f.is_dir()]
         return jsonify(personalities_categories)
     
     def list_personalities(self):
-        personalities_dir = Path(f'./personalities/{self.config["personality_language"]}/{self.config["personality_category"]}')  # replace with the actual path to the models folder
-        personalities = [f.stem for f in personalities_dir.glob('*.yaml')]
+        try:
+            personalities_dir = self.lollms_paths.personalities_zoo_path/f'{self.personality_language}/{self.personality_category}'  # replace with the actual path to the models folder
+            personalities = [f.stem for f in personalities_dir.iterdir() if f.is_dir()]
+        except Exception as ex:
+            personalities=[]
+            ASCIIColors.error(f"No personalities found. Using default one {ex}")
         return jsonify(personalities)
 
     def list_languages(self):
@@ -246,15 +688,16 @@ class Gpt4AllWebUI(GPT4AllAPI):
         return jsonify(discussions)
 
 
-    def set_personality_language(self):
+    def delete_personality(self):
         lang = request.args.get('language')
-        self.config['personality_language'] = lang
-        return jsonify({'success':True})
-
-    def set_personality_category(self):
         category = request.args.get('category')
-        self.config['personality_category'] = category
-        return jsonify({'success':True})
+        name = request.args.get('name')
+        path = Path("personalities")/lang/category/name
+        try:
+            shutil.rmtree(path)
+            return jsonify({'status':True})
+        except Exception as ex:
+            return jsonify({'status':False,'error':str(ex)})
 
     def add_endpoint(
         self,
@@ -271,19 +714,67 @@ class Gpt4AllWebUI(GPT4AllAPI):
 
     def index(self):
         return render_template("index.html")
+    
+    def serve_static(self, filename):
+        root_dir = os.getcwd()
+        path = os.path.join(root_dir, 'web/dist/')+"/".join(filename.split("/")[:-1])                            
+        fn = filename.split("/")[-1]
+        return send_from_directory(path, fn)
 
-    def format_message(self, message):
-        # Look for a code block within the message
-        pattern = re.compile(r"(```.*?```)", re.DOTALL)
-        match = pattern.search(message)
+    
+    def serve_images(self, filename):
+        root_dir = os.getcwd()
+        path = os.path.join(root_dir, 'images/')+"/".join(filename.split("/")[:-1])
+                            
+        fn = filename.split("/")[-1]
+        return send_from_directory(path, fn)
+    
+    def serve_bindings(self, filename):
+        path = str(self.lollms_paths.bindings_zoo_path/("/".join(filename.split("/")[:-1])))
+                            
+        fn = filename.split("/")[-1]
+        return send_from_directory(path, fn)
 
-        # If a code block is found, replace it with a <code> tag
-        if match:
-            code_block = match.group(1)
-            message = message.replace(code_block, f"<code>{code_block[3:-3]}</code>")
+    def serve_personalities(self, filename):
+        path = str(self.lollms_paths.personalities_zoo_path/("/".join(filename.split("/")[:-1])))
+                            
+        fn = filename.split("/")[-1]
+        return send_from_directory(path, fn)
 
-        # Return the formatted message
-        return message
+    def serve_outputs(self, filename):
+        root_dir = self.lollms_paths.personal_path / "outputs"
+        root_dir.mkdir(exist_ok=True, parents=True)
+        path = str(root_dir/"/".join(filename.split("/")[:-1]))
+                            
+        fn = filename.split("/")[-1]
+        return send_from_directory(path, fn)
+
+    def serve_help(self, filename):
+        root_dir = Path(__file__).parent/f"help"
+        root_dir.mkdir(exist_ok=True, parents=True)
+        path = str(root_dir/"/".join(filename.split("/")[:-1]))
+                            
+        fn = filename.split("/")[-1]
+        return send_from_directory(path, fn)
+
+    def serve_data(self, filename):
+        root_dir = self.lollms_paths.personal_path / "data"
+        root_dir.mkdir(exist_ok=True, parents=True)
+        path = str(root_dir/"/".join(filename.split("/")[:-1]))
+                            
+        fn = filename.split("/")[-1]
+        return send_from_directory(path, fn)
+
+    def serve_uploads(self, filename):
+        root_dir = self.lollms_paths.personal_path / "uploads"
+        root_dir.mkdir(exist_ok=True, parents=True)
+
+        path = str(root_dir+"/".join(filename.split("/")[:-1]))
+                            
+        fn = filename.split("/")[-1]
+        return send_from_directory(path, fn)
+
+
 
     def export(self):
         return jsonify(self.db.export_to_json())
@@ -292,90 +783,320 @@ class Gpt4AllWebUI(GPT4AllAPI):
         return jsonify({"discussion_text":self.get_discussion_to()})
     
 
-    def parse_to_prompt_stream(self, message, message_id):
-        bot_says = ""
-
-        # send the message to the bot
-        print(f"Received message : {message}")
-        # First we need to send the new message ID to the client
-        response_id = self.current_discussion.add_message(
-            self.personality["name"], "", parent = message_id
-        )  # first the content is empty, but we'll fill it at the end
-        socketio.emit('infos',
-                {
-                    "type": "input_message_infos",
-                    "bot": self.personality["name"],
-                    "user": self.personality["user_name"],
-                    "message":markdown.markdown(message),
-                    "id": message_id,
-                    "response_id": response_id,
-                }
-            )  
-
-
-        # prepare query and reception
-        self.discussion_messages = self.prepare_query(message_id)
-        self.prepare_reception()
-        self.generating = True
-        # app.config['executor'] = ThreadPoolExecutor(max_workers=1)
-        # app.config['executor'].submit(self.generate_message)
-        self.generate_message()
-        print("## Done ##")
-        self.current_discussion.update_message(response_id, self.bot_says)
-        self.full_message_list.append(self.bot_says)
-        bot_says = markdown.markdown(self.bot_says)
-
-        socketio.emit('final', {'data': bot_says})
-        self.cancel_gen = False
-        return bot_says
-    
-    
-  
-
-    def generate(self):
-
-        if self.current_discussion is None:
-            if self.db.does_last_discussion_have_messages():
-                self.current_discussion = self.db.create_discussion()
-            else:
-                self.current_discussion = self.db.load_last_discussion()
-
-        message = request.json["message"]
-        message_id = self.current_discussion.add_message(
-            "user", message, parent=self.current_message_id
-        )
-        message = f"{request.json['message']}"
-        self.current_message_id = message_id
-
-        # Segmented (the user receives the output as it comes)
-        # We will first send a json entry that contains the message id and so on, then the text as it goes
-        return Response(
-            stream_with_context(
-                self.parse_to_prompt_stream(message, message_id)
-            ), content_type='text/plain; charset=utf-8'
-        )
+            
+    def get_generation_status(self):
+        return jsonify({"status":not self.is_ready}) 
     
     def stop_gen(self):
         self.cancel_gen = True
-        return jsonify({"status": "ok"}) 
-           
-    def run_to(self):
+        return jsonify({"status": True})    
+    
+
+    def switch_personal_path(self):
         data = request.get_json()
-        message_id = int(data["id"])
-        # Segmented (the user receives the output as it comes)
-        # We will first send a json entry that contains the message id and so on, then the text as it goes
-        return Response(
-            stream_with_context(
-                self.parse_to_prompt_stream("",message_id)
-            )
-        )
+        path = data["path"]
+        global_paths_cfg = Path("./global_paths_cfg.yaml")
+        if global_paths_cfg.exists():
+            try:
+                cfg = BaseConfig()
+                cfg.load_config(global_paths_cfg)
+                cfg.lollms_personal_path = path
+                cfg.save_config(global_paths_cfg)
+                return jsonify({"status": True})         
+            except Exception as ex:
+                print(ex)
+                return jsonify({"status": False, 'error':f"Couldn't switch path: {ex}"})         
+    
+    def add_reference_to_local_model(self):     
+        data = request.get_json()
+        path = data["path"]
+        if path.exists():
+            self.conversation.config.reference_model(path)
+            return jsonify({"status": True})         
+        else:        
+            return jsonify({"status": True})         
+
+    def list_mounted_personalities(self):
+        print("- Listing mounted personalities")
+        return jsonify({"status": True,
+                        "personalities":self.config["personalities"],
+                        "active_personality_id":self.config["active_personality_id"]
+                        })         
+
+    def install_model_from_path(self):
+        ASCIIColors.info(f"- Selecting model ...")
+        # Define the file types
+        filetypes = [
+            ("Model file", self.binding.file_extension),
+        ]
+        # Create the Tkinter root window
+        root = Tk()
+
+        # Hide the root window
+        root.withdraw()
+
+        # Open the file dialog
+        file_path = askopenfilename(filetypes=filetypes)
+        
+        file_path = Path(file_path)
+        #
+        with open(str(self.lollms_paths.personal_models_path/self.config.binding_name/(file_path.stem+".reference")),"w") as f:
+            f.write(file_path)
+        
+        return jsonify({
+                        "status": True
+                    })
+        
+        
+    def reinstall_binding(self):
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return jsonify({"status":False, 'error':str(ex)})
+        ASCIIColors.info(f"- Reinstalling binding {data['name']}...")
+        try:
+            self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL)
+            try:
+                self.model = self.binding.build_model()
+            except Exception as ex:
+                print(f"Couldn't build model: [{ex}]")
+            try:
+                self.rebuild_personalities()
+            except Exception as ex:
+                print(f"Couldn't reload personalities: [{ex}]")
+            return jsonify({"status": True}) 
+        except Exception as ex:
+            print(f"Couldn't build binding: [{ex}]")
+            return jsonify({"status":False, 'error':str(ex)})
+        
+
+    def mount_personality(self):
+        print("- Mounting personality")
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
+        language = data['language']
+        category = data['category']
+        name = data['folder']
+
+        package_path = f"{language}/{category}/{name}"
+        package_full_path = self.lollms_paths.personalities_zoo_path/package_path
+        config_file = package_full_path / "config.yaml"
+        if config_file.exists():
+            self.config["personalities"].append(package_path)
+            self.mounted_personalities = self.rebuild_personalities()
+            self.personality = self.mounted_personalities[self.config["active_personality_id"]]
+            self.apply_settings()
+            ASCIIColors.success("ok")
+            if self.config["active_personality_id"]<0:
+                return jsonify({"status": False,
+                                "personalities":self.config["personalities"],
+                                "active_personality_id":self.config["active_personality_id"]
+                                })         
+            else:
+                return jsonify({"status": True,
+                                "personalities":self.config["personalities"],
+                                "active_personality_id":self.config["active_personality_id"]
+                                })         
+        else:
+            pth = str(config_file).replace('\\','/')
+            ASCIIColors.error(f"nok : Personality not found @ {pth}")
+            return jsonify({"status": False, "error":f"Personality not found @ {pth}"})         
+
+    def unmount_personality(self):
+        print("- Unmounting personality ...")
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
+        language    = data['language']
+        category    = data['category']
+        name        = data['folder']
+        try:
+            index = self.config["personalities"].index(f"{language}/{category}/{name}")
+            self.config["personalities"].remove(f"{language}/{category}/{name}")
+            if self.config["active_personality_id"]>=index:
+                self.config["active_personality_id"]=0
+            if len(self.config["personalities"])>0:
+                self.mounted_personalities = self.rebuild_personalities()
+                self.personality = self.mounted_personalities[self.config["active_personality_id"]]
+            else:
+                self.personalities = ["english/generic/lollms"]
+                self.mounted_personalities = self.rebuild_personalities()
+                self.personality = self.mounted_personalities[self.config["active_personality_id"]]
+            self.apply_settings()
+            ASCIIColors.success("ok")
+            return jsonify({
+                        "status": True,
+                        "personalities":self.config["personalities"],
+                        "active_personality_id":self.config["active_personality_id"]
+                        })         
+        except:
+            ASCIIColors.error(f"nok : Personality not found @ {language}/{category}/{name}")
+            return jsonify({"status": False, "error":"Couldn't unmount personality"})         
+         
+    def get_active_personality_settings(self):
+        print("- Retreiving personality settings")
+        if self.personality.processor is not None:
+            if hasattr(self.personality.processor,"personality_config"):
+                return jsonify(self.personality.processor.personality_config.config_template.template)
+            else:
+                return jsonify({})        
+        else:
+            return jsonify({})               
+
+    def get_active_binding_settings(self):
+        print("- Retreiving binding settings")
+        if self.binding is not None:
+            if hasattr(self.binding,"binding_config"):
+                return jsonify(self.binding.binding_config.config_template.template)
+            else:
+                return jsonify({})        
+        else:
+            return jsonify({})  
+        
+
+    def set_active_personality_settings(self):
+        print("- Setting personality settings")
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
+        
+        if self.personality.processor is not None:
+            if hasattr(self.personality.processor,"personality_config"):
+                self.personality.processor.personality_config.update_template(data)
+                self.personality.processor.personality_config.config.save_config()
+                return jsonify({'status':True})
+            else:
+                return jsonify({'status':False})        
+        else:
+            return jsonify({'status':False})            
+
+    
+    def set_active_binding_settings(self):
+        print("- Setting binding settings")
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
+        
+        if self.binding is not None:
+            if hasattr(self.binding,"binding_config"):
+                for entry in data:
+                    if entry["type"]=="list" and type(entry["value"])==str:
+                        try:
+                            v = json.loads(entry["value"])
+                        except:
+                            v= ""
+                        if type(v)==list:
+                            entry["value"] = v
+                        else:
+                            entry["value"] = [entry["value"]]
+                self.binding.binding_config.update_template(data)
+                self.binding.binding_config.config.save_config()
+                self.binding= BindingBuilder().build_binding(self.config, self.lollms_paths)
+                self.model = self.binding.build_model()
+                return jsonify({'status':True})
+            else:
+                return jsonify({'status':False})        
+        else:
+            return jsonify({'status':False})     
+    
+         
+    def get_personality_settings(self):
+        print("- Retreiving personality settings")
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
+        language = data['language']
+        category = data['category']
+        name = data['folder']
+
+        if category.startswith("personal"):
+            personality_folder = self.lollms_paths.personal_personalities_path/f"{language}"/f"{category}"/f"{name}"
+        else:
+            personality_folder = self.lollms_paths.personalities_zoo_path/f"{language}"/f"{category}"/f"{name}"
+
+        personality = AIPersonality(personality_folder,
+                                    self.lollms_paths, 
+                                    self.config,
+                                    model=self.model,
+                                    run_scripts=True)
+        if personality.processor is not None:
+            if hasattr(personality.processor,"personality_config"):
+                return jsonify(personality.processor.personality_config.config_template.template)
+            else:
+                return jsonify({})        
+        else:
+            return jsonify({})       
+
+
+
+
+
+
+    def select_personality(self):
+
+        data = request.get_json()
+        id = data['id']
+        print(f"- Selecting active personality {id} ...",end="")
+        if id<len(self.config["personalities"]):
+            self.config["active_personality_id"]=id
+            self.personality = self.mounted_personalities[self.config["active_personality_id"]]
+            self.apply_settings()
+            ASCIIColors.success("ok")
+            print(f"Mounted {self.personality.name}")
+            return jsonify({
+                "status": True,
+                "personalities":self.config["personalities"],
+                "active_personality_id":self.config["active_personality_id"]                
+                })
+        else:
+            ASCIIColors.error(f"nok : personality id out of bounds @ {id} >= {len(self.config['personalities'])}")
+            return jsonify({"status": False, "error":"Invalid ID"})         
+                    
+
+    def send_file(self):
+        file = request.files['file']
+        file.save(self.lollms_paths.personal_uploads_path / file.filename)
+        if self.personality.processor:
+            self.personality.processor.add_file(self.lollms_paths.personal_uploads_path / file.filename)
+        return jsonify({"status": True})   
+    
+    def upload_model(self):      
+        file = request.files['file']
+        file.save(self.lollms_paths.personal_models_path/self.config.binding_name/file.filename)
+        return jsonify({"status": True})   
 
     def rename(self):
         data = request.get_json()
         title = data["title"]
         self.current_discussion.rename(title)
         return "renamed successfully"
-
+    
+    def edit_title(self):
+        data = request.get_json()
+        title = data["title"]
+        discussion_id = data["id"]
+        self.current_discussion = Discussion(discussion_id, self.db)
+        self.current_discussion.rename(title)
+        return "title renamed successfully"
+    
     def load_discussion(self):
         data = request.get_json()
         if "id" in data:
@@ -388,8 +1109,7 @@ class Gpt4AllWebUI(GPT4AllAPI):
             else:
                 self.current_discussion = self.db.create_discussion()
         messages = self.current_discussion.get_messages()
-        for message in messages:
-            message["content"] = markdown.markdown(message["content"])
+
         
         return jsonify(messages), {'Content-Type': 'application/json; charset=utf-8'}
 
@@ -404,127 +1124,162 @@ class Gpt4AllWebUI(GPT4AllAPI):
     def update_message(self):
         discussion_id = request.args.get("id")
         new_message = request.args.get("message")
-        self.current_discussion.update_message(discussion_id, new_message)
-        return jsonify({"status": "ok"})
+        try:
+            self.current_discussion.update_message(discussion_id, new_message)
+            return jsonify({"status": True})
+        except Exception as ex:
+            return jsonify({"status": False, "error":str(ex)})
+
 
     def message_rank_up(self):
         discussion_id = request.args.get("id")
-        new_rank = self.current_discussion.message_rank_up(discussion_id)
-        return jsonify({"new_rank": new_rank})
+        try:
+            new_rank = self.current_discussion.message_rank_up(discussion_id)
+            return jsonify({"status": True, "new_rank": new_rank})
+        except Exception as ex:
+            return jsonify({"status": False, "error":str(ex)})
 
     def message_rank_down(self):
         discussion_id = request.args.get("id")
-        new_rank = self.current_discussion.message_rank_down(discussion_id)
-        return jsonify({"new_rank": new_rank})
+        try:
+            new_rank = self.current_discussion.message_rank_down(discussion_id)
+            return jsonify({"status": True, "new_rank": new_rank})
+        except Exception as ex:
+            return jsonify({"status": False, "error":str(ex)})
 
     def delete_message(self):
         discussion_id = request.args.get("id")
-        new_rank = self.current_discussion.delete_message(discussion_id)
-        return jsonify({"new_rank": new_rank})
+        if self.current_discussion is None:
+            return jsonify({"status": False,"message":"No discussion is selected"})
+        else:
+            new_rank = self.current_discussion.delete_message(discussion_id)
+            return jsonify({"status":True,"new_rank": new_rank})
 
 
     def new_discussion(self):
         title = request.args.get("title")
         timestamp = self.create_new_discussion(title)
-        # app.config['executor'] = ThreadPoolExecutor(max_workers=1)
-        # app.config['executor'].submit(self.create_chatbot)
-        # target=self.create_chatbot()
         
         # Return a success response
-        return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp, "welcome_message":self.personality["welcome_message"], "sender":self.personality["name"]})
+        return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp, "welcome_message":self.personality.welcome_message, "sender":self.personality.name})
 
-    def set_backend(self):
+    def set_binding(self):
         data = request.get_json()
-        backend =  str(data["backend"])
-        if self.config['backend']!= backend:
-            print("New backend selected")
+        binding =  str(data["binding"])
+        if self.config['binding_name']!= binding:
+            print("New binding selected")
             
-            self.config['backend'] = backend
-            models_dir = Path('./models')/self.config["backend"]  # replace with the actual path to the models folder
-            models = [f.name for f in models_dir.glob(self.backend.file_extension)]
-            if len(models)>0:            
-                self.config['model'] = models[0]
-                self.load_backend(self.BACKENDS_LIST[self.config["backend"]])
-                # Build chatbot
-                self.chatbot_bindings = self.create_chatbot()
-                return jsonify({"status": "ok"})
-            else:
-                return jsonify({"status": "no_models_found"})
-
+            self.config['binding_name'] = binding
+            try:
+                binding_ =self.process.load_binding(config["binding_name"],True)
+                models = binding_.list_models(self.config)
+                if len(models)>0:      
+                    self.binding = binding_
+                    self.config['model_name'] = models[0]
+                    # Build chatbot
+                    return jsonify(self.process.set_config(self.config))
+                else:
+                    return jsonify({"status": "no_models_found"})
+            except :
+                return jsonify({"status": "failed"})
+                
         return jsonify({"status": "error"})
 
     def set_model(self):
         data = request.get_json()
-        model =  str(data["model"])
-        if self.config['model']!= model:
-            print("New model selected")            
-            self.config['model'] = model
-            # Build chatbot
-            self.chatbot_bindings = self.create_chatbot()
-            return jsonify({"status": "ok"})
+        model =  str(data["model_name"])
+        if self.config['model_name']!= model:
+            print("set_model: New model selected")            
+            self.config['model_name'] = model
+            # Build chatbot            
+            return jsonify(self.process.set_config(self.config))
 
-        return jsonify({"status": "error"})    
+        return jsonify({"status": "succeeded"})    
     
-    def update_model_params(self):
-        data = request.get_json()
-        backend =  str(data["backend"])
-        model =  str(data["model"])
-        personality_language =  str(data["personality_language"])
-        personality_category =  str(data["personality_category"])
-        personality =  str(data["personality"])
-        
-        if self.config['backend']!=backend or  self.config['model'] != model:
-            print("New model selected")
-            
-            self.config['backend'] = backend
-            self.config['model'] = model
-            self.create_chatbot()
-
-        self.config['personality_language'] = personality_language
-        self.config['personality_category'] = personality_category
-        self.config['personality'] = personality
-
-        personality_fn = f"personalities/{self.config['personality_language']}/{self.config['personality_category']}/{self.config['personality']}.yaml"
-        print(f"Loading personality : {personality_fn}")
-        self.personality = load_config(personality_fn)
-
-        self.config['n_predict'] = int(data["nPredict"])
-        self.config['seed'] = int(data["seed"])
-        self.config['model'] = str(data["model"])
-        self.config['voice'] = str(data["voice"])
-        self.config['language'] = str(data["language"])
-        
-        self.config['temp'] = float(data["temp"])
-        self.config['top_k'] = int(data["topK"])
-        self.config['top_p'] = float(data["topP"])
-        self.config['repeat_penalty'] = float(data["repeatPenalty"])
-        self.config['repeat_last_n'] = int(data["repeatLastN"])
-
-        save_config(self.config, self.config_file_path)
-
-        print("==============================================")
-        print("Parameters changed to:")
-        print(f"\tBackend:{self.config['backend']}")
-        print(f"\tModel:{self.config['model']}")
-        print(f"\tPersonality language:{self.config['personality_language']}")
-        print(f"\tPersonality category:{self.config['personality_category']}")
-        print(f"\tPersonality:{self.config['personality']}")
-        print(f"\tLanguage:{self.config['language']}")
-        print(f"\tVoice:{self.config['voice']}")
-        print(f"\tTemperature:{self.config['temp']}")
-        print(f"\tNPredict:{self.config['n_predict']}")
-        print(f"\tSeed:{self.config['seed']}")
-        print(f"\top_k:{self.config['top_k']}")
-        print(f"\top_p:{self.config['top_p']}")
-        print(f"\trepeat_penalty:{self.config['repeat_penalty']}")
-        print(f"\trepeat_last_n:{self.config['repeat_last_n']}")
-        print("==============================================")
-
-        return jsonify({"status":"ok"})
     
+    def get_available_models(self):
+        """Get the available models
+
+        Returns:
+            _type_: _description_
+        """
+        if self.binding is None:
+            return jsonify([])
+        model_list = self.binding.get_available_models()
+
+        models = []
+        for model in model_list:
+            try:
+                filename = model.get('filename',"")
+                server = model.get('server',"")
+                image_url = model.get("icon", '/images/default_model.png')
+                license = model.get("license", 'unknown')
+                owner = model.get("owner", 'unknown')
+                owner_link = model.get("owner_link", 'https://github.com/ParisNeo')
+                filesize = int(model.get('filesize',0))
+                description = model.get('description',"")
+                model_type = model.get("model_type","")
+                if server.endswith("/"):
+                    path = f'{server}{filename}'
+                else:
+                    path = f'{server}/{filename}'
+                local_path = lollms_paths.personal_models_path/f'{self.config["binding_name"]}/{filename}'
+                is_installed = local_path.exists() or model_type.lower()=="api"
+                models.append({
+                    'title': filename,
+                    'icon': image_url,  # Replace with the path to the model icon
+                    'license': license,
+                    'owner': owner,
+                    'owner_link': owner_link,
+                    'description': description,
+                    'isInstalled': is_installed,
+                    'path': path,
+                    'filesize': filesize,
+                    'model_type': model_type
+                })
+            except Exception as ex:
+                print("#################################")
+                print(ex)
+                print("#################################")
+                print(f"Problem with model : {model}")
+        return jsonify(models)
+
+
+    def train(self):
+        form_data = request.form
+
+        # Create and populate the config file
+        config = {
+            'model_name': form_data['model_name'],
+            'tokenizer_name': form_data['tokenizer_name'],
+            'dataset_path': form_data['dataset_path'],
+            'max_length': form_data['max_length'],
+            'batch_size': form_data['batch_size'],
+            'lr': form_data['lr'],
+            'num_epochs': form_data['num_epochs'],
+            'output_dir': form_data['output_dir'],
+        }
+
+        with open('train/configs/train/local_cfg.yaml', 'w') as f:
+            yaml.dump(config, f)
+
+        # Trigger the train.py script
+        # Place your code here to run the train.py script with the created config file
+        # accelerate launch --dynamo_backend=inductor --num_processes=8 --num_machines=1 --machine_rank=0 --deepspeed_multinode_launcher standard --mixed_precision=bf16  --use_deepspeed --deepspeed_config_file=configs/deepspeed/ds_config_gptj.json train.py --config configs/train/finetune_gptj.yaml
+
+        subprocess.check_call(["accelerate","launch", "--dynamo_backend=inductor", "--num_processes=8", "--num_machines=1", "--machine_rank=0", "--deepspeed_multinode_launcher standard", "--mixed_precision=bf16", "--use_deepspeed", "--deepspeed_config_file=train/configs/deepspeed/ds_config_gptj.json", "train/train.py", "--config", "train/configs/train/local_cfg.yaml"])
+
+        return jsonify({'message': 'Training started'})
     
     def get_config(self):
-        return jsonify(self.config)
+        return jsonify(self.config.to_dict())
+    
+    def get_current_personality_path_infos(self):
+        return jsonify({
+            "personality_language":self.personality_language,
+            "personality_category":self.personality_category, 
+            "personality_name":self.personality_name
+        })
 
     def main(self):
         return render_template("main.html")
@@ -541,12 +1296,42 @@ class Gpt4AllWebUI(GPT4AllAPI):
     def extensions(self):
         return render_template("extensions.html")
 
+def sync_cfg(default_config, config):
+    """Syncs a configuration with the default configuration
+
+    Args:
+        default_config (_type_): _description_
+        config (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    added_entries = []
+    removed_entries = []
+
+    # Ensure all fields from default_config exist in config
+    for key, value in default_config.items():
+        if key not in config:
+            config[key] = value
+            added_entries.append(key)
+
+    # Remove fields from config that don't exist in default_config
+    for key in list(config.config.keys()):
+        if key not in default_config:
+            del config.config[key]
+            removed_entries.append(key)
+
+    config["version"]=default_config["version"]
     
+    return config, added_entries, removed_entries
 
 if __name__ == "__main__":
+    lollms_paths = LollmsPaths.find_paths(force_local=True, custom_default_cfg_path="configs/config.yaml")
+    db_folder = lollms_paths.personal_path/"databases"
+    db_folder.mkdir(parents=True, exist_ok=True)
     parser = argparse.ArgumentParser(description="Start the chatbot Flask app.")
     parser.add_argument(
-        "-c", "--config", type=str, default="default", help="Sets the configuration file to be used."
+        "-c", "--config", type=str, default="local_config", help="Sets the configuration file to be used."
     )
 
     parser.add_argument(
@@ -600,6 +1385,7 @@ if __name__ == "__main__":
         "--debug",
         dest="debug",
         action="store_true",
+        default=None,
         help="launch Flask server in debug mode",
     )
     parser.add_argument(
@@ -609,31 +1395,47 @@ if __name__ == "__main__":
     parser.add_argument(
         "--db_path", type=str, default=None, help="Database path"
     )
-    parser.set_defaults(debug=False)
     args = parser.parse_args()
 
-    # The default configuration must be kept unchanged as it is committed to the repository, 
-    # so we have to make a copy that is not comitted
-    if args.config=="default":
-        args.config = "local_default"
-        if not Path(f"configs/local_default.yaml").exists():
-            print("No local configuration file found. Building from scratch")
-            shutil.copy(f"configs/default.yaml", f"configs/local_default.yaml")
-    config_file_path = f"configs/{args.config}.yaml"
-    config = load_config(config_file_path)
-
+    # Configuration loading part
+    config = LOLLMSConfig.autoload(lollms_paths)
+    
     # Override values in config with command-line arguments
     for arg_name, arg_value in vars(args).items():
         if arg_value is not None:
             config[arg_name] = arg_value
 
-    personality = load_config(f"personalities/{config['personality_language']}/{config['personality_category']}/{config['personality']}.yaml")
-
     # executor = ThreadPoolExecutor(max_workers=1)
     # app.config['executor'] = executor
-    bot = Gpt4AllWebUI(app, socketio, config, personality, config_file_path)
+    bot = LoLLMsWebUI(app, socketio, config, config.file_path, lollms_paths)
+
+    # chong Define custom WebSocketHandler with error handling 
+    class CustomWebSocketHandler(WebSocketHandler):
+        def handle_error(self, environ, start_response, e):
+            # Handle the error here
+            print("WebSocket error:", e)
+            super().handle_error(environ, start_response, e)
+    
+
+
+    # chong -add socket server    
+    app.config['debug'] = config["debug"]
 
     if config["debug"]:
-        app.run(debug=True, host=config["host"], port=config["port"])
+        ASCIIColors.info("debug mode:true")    
     else:
-        app.run(host=config["host"], port=config["port"])
+        ASCIIColors.info("debug mode:false")
+    
+
+        
+    
+    url = f'http://{config["host"]}:{config["port"]}'
+    if config["host"]!="localhost":
+        print(f'Please open your browser and go to http://localhost:{config["port"]} to view the ui')
+        ASCIIColors.success(f'This server is visible from a remote PC. use this address http://{get_ip_address()}:{config["port"]}')
+    else:
+        print(f"Please open your browser and go to {url} to view the ui")
+    
+    socketio.run(app, host=config["host"], port=config["port"])
+    # http_server = WSGIServer((config["host"], config["port"]), app, handler_class=WebSocketHandler)
+    # http_server.serve_forever()

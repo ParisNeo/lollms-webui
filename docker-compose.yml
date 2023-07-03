@@ -6,10 +6,10 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
+      - ./data:/srv/help
       - ./data:/srv/data
-      - ./data/.nomic:/root/.nomic/
-      - ./models:/srv/models
+      - ./data/.parisneo:/root/.parisneo/
       - ./configs:/srv/configs
-      - ./personalities:/srv/personalities
+      - ./web:/srv/web
     ports: 
       - "9600:9600"

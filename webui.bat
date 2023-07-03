@@ -1,5 +1,6 @@
 @echo off
 
+echo \u001b[34m
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
@@ -34,9 +35,28 @@ echo HHHHHHHHHHHH.HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 echo HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+echo \u001b[0m
+echo Checking internet connection
 
+ping google.com -n 1 >nul 2>&1
+if errorlevel 1 (
+    echo Internet connection not available
+    goto NO_INTERNET
+) else (
+	goto INTERNET_OK
+)
+:NO_INTERNET
 
+if exist lollms-webui (
+    echo lollms-webui folder found
+    cd lollms-webui
+    set /p="Activating virtual environment ..." <nul
+    call env\Scripts\activate.bat
+)
+goto END
 
+:INTERNET_OK
+echo \e[32mInternet connection working fine
 
 REM Check if Git is installed
 echo "Checking for git..."
@@ -83,30 +103,24 @@ if exist ".git" (
 
 :PULL_CHANGES
 echo Pulling latest changes 
-git pull origin main
-goto :GET_PERSONALITIES
+git pull
+goto :CHECK_PYTHON_INSTALL
 
 :CLONE_REPO
 REM Check if repository exists 
-if exist GPT4All (
-    echo GPT4All folder found
-    cd GPT4All
+if exist lollms-webui (
+    echo lollms-webui folder found
+    cd lollms-webui
     echo Pulling latest changes 
     git pull
 ) else (
     echo Cloning repository...
     rem Clone the Git repository into a temporary directory
-    git clone https://github.com/nomic-ai/gpt4all-ui.git ./GPT4All
-    cd GPT4All
+    git clone https://github.com/ParisNeo/lollms-webui.git ./lollms-webui
+    cd lollms-webui
     echo Pulling latest changes 
     git pull
 )
-
-:GET_PERSONALITIES
-REM Download latest personalities
-if not exist tmp\personalities git clone https://github.com/ParisNeo/GPT4All_Personalities.git tmp\personalities
-xcopy /s tmp\personalities\* personalities /Y
-goto :CHECK_PYTHON_INSTALL
 
 :CHECK_PYTHON_INSTALL
 REM Check if Python is installed
@@ -168,17 +182,16 @@ powershell -Command "Invoke-WebRequest -Uri 'https://bootstrap.pypa.io/get-pip.p
 REM Install pip
 echo Installing pip...
 python tmp/get-pip.py
-
+REM Upgrading pip setuptools and wheel
+echo Updating pip setuptools and wheel
+python -m pip install --upgrade pip setuptools wheel
+goto PIP_SKIP
 :PIP_CANCEL
 echo Please install pip and try again.
 pause
 exit /b 1
 
 :PIP_SKIP
-
-REM Upgrading pip setuptools and wheel
-echo Updating pip setuptools and wheel
-python -m pip install --upgrade pip setuptools wheel
 
 REM Check if pip is installed
 set /p="Checking for virtual environment..." <nul
@@ -236,7 +249,7 @@ echo OK
 REM Install the required packages
 echo Installing requirements ...
 python -m pip install pip --upgrade
-python -m pip install -r requirements.txt
+python -m pip install --upgrade -r requirements.txt --ignore-installed 
 if %ERRORLEVEL% neq 0 (
     echo Failed to install required packages. Please check your internet connection and try again.
     pause
@@ -247,45 +260,6 @@ echo Checking models...
 if not exist \models (
     md \models
 )
-
-if not exist ./models/llama_cpp/gpt4all-lora-quantized-ggml.bin (
-    echo.
-    choice /C YNB /M "The default model file (gpt4all-lora-quantized-ggml.bin) does not exist. Do you want to download it? Press B to download it with a browser (faster)."
-    if errorlevel 3 goto DOWNLOAD_WITH_BROWSER
-    if errorlevel 2 goto DOWNLOAD_SKIP
-    if errorlevel 1 goto MODEL_DOWNLOAD
-) ELSE (
-    echo Model already installed
-    goto CONTINUE
-)
-
-:DOWNLOAD_WITH_BROWSER
-start https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin
-echo Link has been opened with the default web browser, make sure to save it into the models/llama_cpp folder before continuing. Press any key to continue...
-pause
-goto :CONTINUE
-
-:MODEL_DOWNLOAD
-echo.
-echo Downloading latest model...
-set clone_dir=%cd%
-powershell -Command "Invoke-WebRequest -Uri 'https://huggingface.co/ParisNeo/GPT4All/resolve/main/gpt4all-lora-quantized-ggml.bin' -OutFile %clone_dir%'/models/llama_cpp/gpt4all-lora-quantized-ggml.bin'"
-if errorlevel 1 (
-    echo Failed to download model. Please check your internet connection.
-    choice /C YN /M "Do you want to try downloading again?"
-    if errorlevel 2 goto DOWNLOAD_SKIP
-    if errorlevel 1 goto MODEL_DOWNLOAD
-) else (
-    echo Model successfully downloaded.
-)
-goto :CONTINUE
-
-:DOWNLOAD_SKIP
-echo.
-echo Skipping download of model file...
-goto :CONTINUE
-
-:CONTINUE
 
 :END
 if exist "./tmp"  (

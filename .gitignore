@@ -11,6 +11,7 @@ __pycache__/
 build/
 develop-eggs/
 dist/
+!web/dist
 downloads/
 eggs/
 .eggs/
@@ -103,6 +104,7 @@ celerybeat.pid
 
 # Environments
 .env
+!web/.env
 .venv
 env/
 venv/
@@ -142,14 +144,14 @@ dmypy.json
 
 # Temporary files
 tmp/
-
+temp/
 # configurations other than the default one
 configs/*
-!configs/default.yaml
+!configs/config.yaml
 
 # personalities other than the default one
 personalities/*
-!personalities/english/general/gpt4all_chatbot.yaml
+!personalities/english/default/*
 
 # personalities other than the default one
 databases/*
@@ -158,3 +160,38 @@ databases/*
 # extensions
 extensions/
 !extensions/.keep
+
+web/.env.build
+web/.env.dev
+web/.env.development
+node_modules/
+
+# Google chrome files
+*.crdownload
+
+# outputs folder
+outputs
+# junk stuff
+./src
+
+# ignore installation files
+.installed
+
+test.http
+
+shared/*
+!shared/.keep
+
+
+uploads
+global_paths_cfg.yaml
+
+.vscode
+
+# Endpoint test files using REST client (VSCODE Extension)
+
+tests/end_point_tests/*_local.http
+
+personalities_zoo
+bindings_zoo
+user_data

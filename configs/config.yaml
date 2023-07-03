@@ -1,0 +1,31 @@
+# =================== Lord Of Large Language Models Configuration file =========================== 
+version: 7
+binding_name: null
+model_name: null
+
+# Host information
+host: localhost
+port: 9600
+
+# Genreration parameters 
+seed: -1
+n_predict: 1024
+ctx_size: 2048
+temperature: 0.9
+top_k: 50
+top_p: 0.95
+repeat_last_n: 40
+repeat_penalty: 1.2
+
+n_threads: 8
+
+#Personality parameters
+personalities: ["english/generic/lollms"]
+active_personality_id: 0
+override_personality_model_parameters: false #if true the personality parameters are overriden by those of the configuration (may affect personality behaviour) 
+
+user_name: user
+
+# UI parameters
+debug: False
+db_path: database.db
