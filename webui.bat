@@ -58,7 +58,6 @@ goto END
 :INTERNET_OK
 echo \e[32mInternet connection working fine
 
-
 REM Check if Git is installed
 echo "Checking for git..."
 where git >nul 2>&1

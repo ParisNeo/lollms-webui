@@ -756,7 +756,7 @@ class LoLLMsAPPI():
                     anti_prompt_to_remove = prompt.lower()
                     
             if not detected_anti_prompt:
-                    ASCIIColors.green(f"generated:{len(self.current_generated_text)} words", end='\r')
+                    ASCIIColors.green(f"generated:{len(self.current_generated_text.split())} words", end='\r', flush=True)
                     self.socketio.emit('message', {
                                                     'data': self.current_generated_text, 
                                                     'user_message_id':self.current_user_message_id, 

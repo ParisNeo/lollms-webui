@@ -43,7 +43,7 @@ echo Testing internet connection
 ping -n 1 google.com >nul
 if %errorlevel% equ 0 (
     echo Internet Connection working fine
-    
+
     REM Install Git
     echo Checking for Git...
     where git >nul 2>nul

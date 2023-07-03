@@ -7,8 +7,9 @@ pyyaml
 markdown
 gevent
 gevent-websocket
-lollms
+lollms==2.1.14
 langchain
 requests
 eventlet
 websocket-client
+pywhispercpp
