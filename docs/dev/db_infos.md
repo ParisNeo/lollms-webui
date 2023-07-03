@@ -1,4 +1,6 @@
 # Database Documentation
+* TOC
+{:toc}
 
 ## Introduction
 This project implements a discussion forum and utilizes a SQLite database to store discussions and messages.
