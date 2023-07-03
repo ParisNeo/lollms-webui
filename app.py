@@ -504,18 +504,20 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         elif setting_name== "model_name":
             self.config["model_name"]=data['setting_value']
-            try:
-                self.model = self.binding.build_model()
-            except Exception as ex:
-                # Catch the exception and get the traceback as a list of strings
-                traceback_lines = traceback.format_exception(type(ex), ex, ex.__traceback__)
+            if self.config["model_name"] is not None:
+                try:
+                    self.model = self.binding.build_model()
+                except Exception as ex:
+                    # Catch the exception and get the traceback as a list of strings
+                    traceback_lines = traceback.format_exception(type(ex), ex, ex.__traceback__)
 
-                # Join the traceback lines into a single string
-                traceback_text = ''.join(traceback_lines)
-                ASCIIColors.error(f"Couldn't load model: [{ex}]")
-                ASCIIColors.error(traceback_text)
-                return jsonify({ "status":False, 'error':str(ex)})
-
+                    # Join the traceback lines into a single string
+                    traceback_text = ''.join(traceback_lines)
+                    ASCIIColors.error(f"Couldn't load model: [{ex}]")
+                    ASCIIColors.error(traceback_text)
+                    return jsonify({ "status":False, 'error':str(ex)})
+            else:
+                ASCIIColors.warning("Trying to set a None model. Please select a model for the binding")
             print("update_settings : New model selected")
 
         elif setting_name== "binding_name":
@@ -871,7 +873,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         
 
     def mount_personality(self):
-        print("- Mounting personality ")
+        print("- Mounting personality")
         try:
             data = request.get_json()
             # Further processing of the data
@@ -907,7 +909,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return jsonify({"status": False, "error":f"Personality not found @ {pth}"})         
 
     def unmount_personality(self):
-        print("- Unmounting personality ...",end="")
+        print("- Unmounting personality ...")
         try:
             data = request.get_json()
             # Further processing of the data
