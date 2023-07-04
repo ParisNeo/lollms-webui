@@ -229,7 +229,9 @@
 <script>
 
 export default {
+    
     setup() { },
+    
     data() {
         return {
             // To be synced with the backend database types
@@ -1354,6 +1356,7 @@ import axios from 'axios'
 import { nextTick, TransitionGroup } from 'vue'
 
 import socket from '@/services/websocket.js'
+
 
 import { onMounted } from 'vue'
 import { initFlowbite } from 'flowbite'
