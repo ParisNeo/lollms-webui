@@ -29,6 +29,7 @@ import sys
 from lollms.console import MainMenu
 import urllib
 import traceback
+import gc
 
 __author__ = "parisneo"
 __github__ = "https://github.com/ParisNeo/lollms-webui"
@@ -538,6 +539,9 @@ class LoLLMsAPPI():
             # cfg.download_model(url)
         else:
             try:
+                self.binding = None
+                self.model = None
+                gc.collect()
                 self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
             except Exception as ex:
                 print(ex)
