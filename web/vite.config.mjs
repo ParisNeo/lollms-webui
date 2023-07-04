@@ -9,7 +9,7 @@ export default ({ mode }) => {
   process.env = {...process.env, ...loadEnv(mode, process.cwd())};
   
   return defineConfig({
-  
+    
   plugins: [
     vue()
   ],
@@ -26,6 +26,13 @@ export default ({ mode }) => {
         secure: process.env.VITE_GPT4ALL_API_SECURE,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
+      // "/": {
+      //   target: process.env.VITE_GPT4ALL_API,
+      //   changeOrigin: process.env.VITE_GPT4ALL_API_CHANGE_ORIGIN,
+      //   secure: process.env.VITE_GPT4ALL_API_SECURE,
+        
+      // },
+
     },
   }
 })}
