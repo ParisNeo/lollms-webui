@@ -19,6 +19,7 @@ from lollms.personality import AIPersonality, PersonalityBuilder
 from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding, ModelBuilder
 from lollms.paths import LollmsPaths
 from lollms.helpers import ASCIIColors
+from lollms.app import LollmsApplication
 import multiprocessing as mp
 import threading
 import time
@@ -90,39 +91,13 @@ def parse_requirements_file(requirements_path):
 # ===========================================================
 
 
-class LoLLMsAPPI():
+class LoLLMsAPPI(LollmsApplication):
     def __init__(self, config:LOLLMSConfig, socketio, config_file_path:str, lollms_paths: LollmsPaths) -> None:
-        self.lollms_paths = lollms_paths
-        self.config = config
-        self.is_ready = True
-        self.menu = MainMenu(self)
 
+        super().__init__("Lollms_webui",config, lollms_paths)
+        self.is_ready = True
         
         self.socketio = socketio
-        # Check model
-        if config.binding_name is None:
-            self.menu.select_binding()
-
-        self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
-        
-        # Check model
-        if config.model_name is None:
-            self.menu.select_model()
-
-        self.mounted_personalities = []
-        try:
-            self.model = self.binding.build_model()
-            self.mounted_personalities = self.rebuild_personalities()
-            if self.config["active_personality_id"]<len(self.mounted_personalities):
-                self.personality:AIPersonality = self.mounted_personalities[self.config["active_personality_id"]]
-            else:
-                self.personality:AIPersonality = None
-            if config["debug"]:
-                print(print(f"{self.personality}"))
-            
-        except Exception as ex:
-            ASCIIColors.error(f"Couldn't load model:\nException generated:{ex}")
-            self.model = None
         self.config_file_path = config_file_path
         self.cancel_gen = False
 
@@ -531,49 +506,6 @@ class LoLLMsAPPI():
         return mounted_personalities
     # ================================== LOLLMSApp
 
-    def load_binding(self):
-        if self.config.binding_name is None:
-            print(f"No bounding selected")
-            print("Please select a valid model or install a new one from a url")
-            self.menu.select_binding()
-            # cfg.download_model(url)
-        else:
-            try:
-                self.binding = None
-                self.model = None
-                gc.collect()
-                self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
-            except Exception as ex:
-                print(ex)
-                print(f"Couldn't find binding. Please verify your configuration file at {self.config.file_path} or use the next menu to select a valid binding")
-                print(f"Trying to reinstall binding")
-                self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL)
-                self.menu.select_binding()
-
-    def load_model(self):
-        try:
-            self.active_model = ModelBuilder(self.binding).get_model()
-            ASCIIColors.success("Model loaded successfully")
-        except Exception as ex:
-            ASCIIColors.error(f"Couldn't load model.")
-            ASCIIColors.error(f"Binding returned this exception : {ex}")
-            ASCIIColors.error(f"{self.config.get_model_path_infos()}")
-            print("Please select a valid model or install a new one from a url")
-            self.menu.select_model()
-
-    def load_personality(self):
-        try:
-            self.personality = PersonalityBuilder(self.lollms_paths, self.config, self.model).build_personality()
-        except Exception as ex:
-            ASCIIColors.error(f"Couldn't load personality.")
-            ASCIIColors.error(f"Binding returned this exception : {ex}")
-            ASCIIColors.error(f"{self.config.get_personality_path_infos()}")
-            print("Please select a valid model or install a new one from a url")
-            self.menu.select_model()
-        self.cond_tk = self.personality.model.tokenize(self.personality.personality_conditioning)
-        self.n_cond_tk = len(self.cond_tk)
-
-
     #properties
     @property
     def message_id(self):
@@ -760,7 +692,6 @@ class LoLLMsAPPI():
                     anti_prompt_to_remove = prompt.lower()
                     
             if not detected_anti_prompt:
-                    ASCIIColors.green(f"generated:{len(self.current_generated_text.split())} words", end='\r', flush=True)
                     self.socketio.emit('message', {
                                                     'data': self.current_generated_text, 
                                                     'user_message_id':self.current_user_message_id, 

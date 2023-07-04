@@ -92,17 +92,28 @@ def get_ip_address():
 
 class LoLLMsWebUI(LoLLMsAPPI):
     def __init__(self, _app, _socketio, config:LOLLMSConfig, config_file_path:Path|str, lollms_paths:LollmsPaths) -> None:
+        if len(config.personalities)==0:
+            config.personalities.append("english/generic/lollms")
+            config["active_personality_id"] = 0
+            config.save_config()
+
+        if config["active_personality_id"]>=len(config["personalities"]) or config["active_personality_id"]<0:
+            config["active_personality_id"] = 0
         super().__init__(config, _socketio, config_file_path, lollms_paths)
 
         self.app = _app
         self.cancel_gen = False
 
         app.template_folder = "web/dist"
-        if config["active_personality_id"]>=len(config["personalities"]):
-            config["active_personality_id"] = 0
-        self.personality_language= config["personalities"][config["active_personality_id"]].split("/")[0]
-        self.personality_category= config["personalities"][config["active_personality_id"]].split("/")[1]
-        self.personality_name= config["personalities"][config["active_personality_id"]].split("/")[2]
+
+        if len(config["personalities"])>0:
+            self.personality_language= config["personalities"][config["active_personality_id"]].split("/")[0]
+            self.personality_category= config["personalities"][config["active_personality_id"]].split("/")[1]
+            self.personality_name= config["personalities"][config["active_personality_id"]].split("/")[2]
+        else:
+            self.personality_language = "english"
+            self.personality_category = "generic"
+            self.personality_name = "lollms"
 
         # =========================================================================================
         # Endpoints
@@ -123,9 +134,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
         
         
         self.add_endpoint("/list_mounted_personalities", "list_mounted_personalities", self.list_mounted_personalities, methods=["POST"])
-        self.add_endpoint("/mount_personality", "mount_personality", self.mount_personality, methods=["POST"])
-        self.add_endpoint("/unmount_personality", "unmount_personality", self.unmount_personality, methods=["POST"])
-        self.add_endpoint("/select_personality", "select_personality", self.select_personality, methods=["POST"])
+
+        self.add_endpoint("/mount_personality", "mount_personality", self.p_mount_personality, methods=["POST"])
+        self.add_endpoint("/unmount_personality", "unmount_personality", self.p_unmount_personality, methods=["POST"])        
+        self.add_endpoint("/select_personality", "select_personality", self.p_select_personality, methods=["POST"])
+
         self.add_endpoint("/get_personality_settings", "get_personality_settings", self.get_personality_settings, methods=["POST"])
 
         self.add_endpoint("/get_active_personality_settings", "get_active_personality_settings", self.get_active_personality_settings, methods=["GET"])
@@ -571,7 +584,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
     def vram_usage(self) -> Optional[dict]:
         try:
-            output = subprocess.check_output(['nvidia-smi', '--query-gpu=memory.total,memory.used', '--format=csv,nounits,noheader'])
+            output = subprocess.check_output(['nvidia-smi', '--query-gpu=memory.total,memory.used,gpu_name', '--format=csv,nounits,noheader'])
             lines = output.decode().strip().split('\n')
             vram_info = [line.split(',') for line in lines]
         except (subprocess.CalledProcessError, FileNotFoundError):
@@ -587,10 +600,12 @@ class LoLLMsWebUI(LoLLMsAPPI):
             for i, gpu in enumerate(vram_info):
                 ram_usage[f"gpu_{i}_total_vram"] = int(gpu[0])*1024*1024
                 ram_usage[f"gpu_{i}_used_vram"] = int(gpu[1])*1024*1024
+                ram_usage[f"gpu_{i}_model"] = gpu[2].strip()
         else:
             # Set all VRAM-related entries to None
             ram_usage["gpu_0_total_vram"] = None
             ram_usage["gpu_0_used_vram"] = None
+            ram_usage["gpu_0_model"] = None
         
         return jsonify(ram_usage)
 
@@ -872,7 +887,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return jsonify({"status":False, 'error':str(ex)})
         
 
-    def mount_personality(self):
+    def p_mount_personality(self):
         print("- Mounting personality")
         try:
             data = request.get_json()
@@ -908,7 +923,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             ASCIIColors.error(f"nok : Personality not found @ {pth}")
             return jsonify({"status": False, "error":f"Personality not found @ {pth}"})         
 
-    def unmount_personality(self):
+    def p_unmount_personality(self):
         print("- Unmounting personality ...")
         try:
             data = request.get_json()
@@ -1050,7 +1065,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
 
 
-    def select_personality(self):
+    def p_select_personality(self):
 
         data = request.get_json()
         id = data['id']
@@ -1275,11 +1290,18 @@ class LoLLMsWebUI(LoLLMsAPPI):
         return jsonify(self.config.to_dict())
     
     def get_current_personality_path_infos(self):
-        return jsonify({
-            "personality_language":self.personality_language,
-            "personality_category":self.personality_category, 
-            "personality_name":self.personality_name
-        })
+        if self.personality is None:
+            return jsonify({
+                "personality_language":"",
+                "personality_category":"", 
+                "personality_name":""
+            })
+        else:
+            return jsonify({
+                "personality_language":self.personality_language,
+                "personality_category":self.personality_category, 
+                "personality_name":self.personality_name
+            })
 
     def main(self):
         return render_template("main.html")
