@@ -444,17 +444,16 @@ class LoLLMsAPPI(LollmsApplication):
         ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
         to_remove=[]
         for i,personality in enumerate(self.config['personalities']):
+            if i==self.config["active_personality_id"]:
+                ASCIIColors.red("*", end="")
+                ASCIIColors.green(f" {personality}")
+            else:
+                ASCIIColors.yellow(f" {personality}")
             if personality in loaded_names:
                 mounted_personalities.append(loaded[loaded_names.index(personality)])
             else:
                 personality_path = self.lollms_paths.personalities_zoo_path/f"{personality}"
                 try:
-                    if i==self.config["active_personality_id"]:
-                        ASCIIColors.red("*", end="")
-                        ASCIIColors.green(f" {personality}")
-                    else:
-                        ASCIIColors.yellow(f" {personality}")
-                        
                     personality = AIPersonality(personality_path,
                                                 self.lollms_paths, 
                                                 self.config,
@@ -792,7 +791,7 @@ class LoLLMsAPPI(LollmsApplication):
                     top_p=self.personality.model_top_p,
                     repeat_penalty=self.personality.model_repeat_penalty,
                     repeat_last_n = self.personality.model_repeat_last_n,
-                    #seed=self.config['seed'],
+                    seed=self.config['seed'],
                     n_threads=self.config['n_threads']
                 )
         else:

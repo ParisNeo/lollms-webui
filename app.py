@@ -53,6 +53,8 @@ import psutil
 from lollms.main_config import LOLLMSConfig
 from typing import Optional
 
+import gc
+
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
@@ -668,18 +670,18 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
     def list_personalities_languages(self):
         personalities_languages_dir = self.lollms_paths.personalities_zoo_path  # replace with the actual path to the models folder
-        personalities_languages = [f.stem for f in personalities_languages_dir.iterdir() if f.is_dir()]
+        personalities_languages = [f.stem for f in personalities_languages_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]
         return jsonify(personalities_languages)
 
     def list_personalities_categories(self):
         personalities_categories_dir = self.lollms_paths.personalities_zoo_path/f'{self.personality_language}'  # replace with the actual path to the models folder
-        personalities_categories = [f.stem for f in personalities_categories_dir.iterdir() if f.is_dir()]
+        personalities_categories = [f.stem for f in personalities_categories_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]
         return jsonify(personalities_categories)
     
     def list_personalities(self):
         try:
             personalities_dir = self.lollms_paths.personalities_zoo_path/f'{self.personality_language}/{self.personality_category}'  # replace with the actual path to the models folder
-            personalities = [f.stem for f in personalities_dir.iterdir() if f.is_dir()]
+            personalities = [f.stem for f in personalities_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]
         except Exception as ex:
             personalities=[]
             ASCIIColors.error(f"No personalities found. Using default one {ex}")
@@ -872,11 +874,19 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return jsonify({"status":False, 'error':str(ex)})
         ASCIIColors.info(f"- Reinstalling binding {data['name']}...")
         try:
+            ASCIIColors.info("Unmounting binding and model")
+            self.binding = None
+            self.model = None
+            gc.collect()
+            
+            ASCIIColors.info("Reinstalling binding")
             self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL)
+            ASCIIColors.info("Loading model")
             try:
                 self.model = self.binding.build_model()
             except Exception as ex:
                 print(f"Couldn't build model: [{ex}]")
+                self.trace_exception(ex)
             try:
                 self.rebuild_personalities()
             except Exception as ex:
