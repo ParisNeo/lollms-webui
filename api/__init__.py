@@ -611,15 +611,7 @@ class LoLLMsAPPI(LollmsApplication):
 
         link_text = self.personality.link_text
         if not is_continue:
-            if self.personality.processor is not None:
-                preprocessed_prompt = self.personality.processor.process_model_input(message["content"])
-            else:
-                preprocessed_prompt = message["content"]
-
-            if preprocessed_prompt is not None:
-                self.full_message_list.append(self.personality.user_message_prefix+preprocessed_prompt+self.personality.link_text+self.personality.ai_message_prefix)
-            else:
-                self.full_message_list.append(self.personality.user_message_prefix+message["content"]+self.personality.link_text+self.personality.ai_message_prefix)
+            self.full_message_list.append(self.personality.user_message_prefix+message["content"]+self.personality.link_text+self.personality.ai_message_prefix)
         else:
             self.full_message_list.append(self.personality.ai_message_prefix+message["content"])
 
@@ -748,23 +740,20 @@ class LoLLMsAPPI(LollmsApplication):
 
     def generate(self, full_prompt, prompt, n_predict=50, callback=None):
         if self.personality.processor is not None:
-            if self.personality.processor_cfg is not None:
-                if "custom_workflow" in self.personality.processor_cfg:
-                    if self.personality.processor_cfg["custom_workflow"]:
-                        ASCIIColors.success("Running workflow")
-                        try:
-                            output = self.personality.processor.run_workflow( prompt, full_prompt, self.process_chunk)
-                            self.process_chunk(output, MSG_TYPE.MSG_TYPE_FULL)
-                        except Exception as ex:
-                            # Catch the exception and get the traceback as a list of strings
-                            traceback_lines = traceback.format_exception(type(ex), ex, ex.__traceback__)
-                            # Join the traceback lines into a single string
-                            traceback_text = ''.join(traceback_lines)
-                            ASCIIColors.error(f"Workflow run failed.\nError:{ex}")
-                            ASCIIColors.error(traceback_text)
-                            self.process_chunk(f"Workflow run failed\nError:{ex}", MSG_TYPE.MSG_TYPE_EXCEPTION)                   
-                        print("Finished executing the workflow")
-                        return
+            ASCIIColors.success("Running workflow")
+            try:
+                output = self.personality.processor.run_workflow( prompt, full_prompt, self.process_chunk)
+                self.process_chunk(output, MSG_TYPE.MSG_TYPE_FULL)
+            except Exception as ex:
+                # Catch the exception and get the traceback as a list of strings
+                traceback_lines = traceback.format_exception(type(ex), ex, ex.__traceback__)
+                # Join the traceback lines into a single string
+                traceback_text = ''.join(traceback_lines)
+                ASCIIColors.error(f"Workflow run failed.\nError:{ex}")
+                ASCIIColors.error(traceback_text)
+                self.process_chunk(f"Workflow run failed\nError:{ex}", MSG_TYPE.MSG_TYPE_EXCEPTION)                   
+            print("Finished executing the workflow")
+            return
 
         self._generate(full_prompt, n_predict, callback)
         print("Finished executing the generation")

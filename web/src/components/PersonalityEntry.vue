@@ -13,10 +13,6 @@
         <h3 class="font-bold font-large text-lg line-clamp-3">
           {{ personality.name }}
         </h3>
-
-
-
-
       </div>
       <div class="flex items-center flex-row-reverse gap-2 my-1">
         <!-- CONTROLS -->
@@ -26,7 +22,12 @@
 
           <span class="sr-only">Settings</span>
         </button>
+        <button v-if="personality.installed" title="Click to Reinstall personality" type="button"  @click.stop="toggleReinstall"
+          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+          Reinstall personality
 
+          <span class="sr-only">Reinstall personality</span>
+        </button>
         <button v-if="!isMounted" title="Mount personality" type="button"
           @click.stop="toggleMounted"
           class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -89,10 +90,9 @@ export default {
     onSelected: Function,
     selected: Boolean,
     onMounted: Function,
+    onReinstall: Function,
     full_path: String,
     onSettings: Function
-
-
   },
   data() {
     return {
@@ -130,6 +130,9 @@ selected_computed(){
     },
     toggleSettings() {
       this.onSettings(this)
+    },
+    toggleReinstall() {
+      this.onReinstall(this)
     },
 
   },

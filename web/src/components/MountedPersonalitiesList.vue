@@ -126,7 +126,6 @@ export default {
             this.onShowPersList()
         },
         toggleMountUnmount() {
-            console.log('moununmoun pers list')
             this.onMountUnmount(this)
         },
         async constructor() {
