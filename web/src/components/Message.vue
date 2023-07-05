@@ -117,6 +117,9 @@
 
                 <div class="overflow-x-auto w-full ">
                     <!-- MESSAGE CONTENT -->
+                    <div v-for="(step, index) in steps" :key="index" class="step">
+                        <Step :done="step.done" :message="step.message" />
+                    </div>
                     <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :markdown-text="message.content">
                     </MarkdownRenderer>
                     <textarea v-if="editMsgMode" ref="mdTextarea" :rows="4"
@@ -163,12 +166,14 @@ const bUrl = import.meta.env.VITE_GPT4ALL_API_BASEURL
 import { nextTick } from 'vue'
 import feather from 'feather-icons'
 import MarkdownRenderer from './MarkdownRenderer.vue';
+import Step from './Step.vue';
 export default {
     // eslint-disable-next-line vue/multi-word-component-names
     name: 'Message',
     emits: ['copy', 'delete', 'rankUp', 'rankDown', 'updateMessage', 'resendMessage'],
     components: {
-        MarkdownRenderer
+        MarkdownRenderer,
+        Step
     },
     props: {
         message: Object,
@@ -177,7 +182,7 @@ export default {
     data() {
         return {
             expanded: false,
-
+            steps: [],
             new_message_content: '',
             showConfirmation: false,
             editMsgMode: false,
@@ -186,7 +191,8 @@ export default {
 
         }
     }, mounted() {
-
+        console.log("Mounted message")
+        console.log(this.message)
         this.new_message_content = this.message.content
         nextTick(() => {
             feather.replace()

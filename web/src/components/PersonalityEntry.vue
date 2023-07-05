@@ -22,7 +22,7 @@
 
           <span class="sr-only">Settings</span>
         </button>
-        <button v-if="personality.installed" title="Click to Reinstall personality" type="button"  @click.stop="toggleReinstall"
+        <button v-if="selected_computed" title="Click to Reinstall personality" type="button"  @click.stop="toggleReinstall"
           class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
           Reinstall personality
 

@@ -1019,7 +1019,7 @@
                                         :key="'index-' + index + '-' + pers.name" :personality="pers"
                                         :full_path="pers.full_path"
                                         :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === pers.full_path)"
-                                        :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted"
+                                        :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted" on-reinstall="onPersonalityReinstall"
                                         :on-settings="onSettingsPersonality" />
                                 </TransitionGroup>
                             </div>
@@ -2646,6 +2646,31 @@ export default {
                 //this.$store.state.mountedPersonalities = this.$refs.mountedPersonalities
             })
 
+        },
+        onPersonalityReinstall(persItem){
+            console.log('on reinstall ', persItem)
+            this.isLoading = true
+            axios.post('/reinstall_binding', { name: binding_object.binding.folder }).then((res) => {
+
+                if (res) {
+                    this.isLoading = false
+                    console.log('reinstall_binding', res)
+                    if (res.data.status) {
+                        this.$refs.toast.showToast("Reinstalled binding successfully!", 4, true)
+                    } else {
+                        this.$refs.toast.showToast("Could not reinstall binding", 4, false)
+                    }
+                    return res.data;
+                }
+                this.isLoading = false
+            })
+                // eslint-disable-next-line no-unused-vars
+
+                .catch(error => {
+                    this.isLoading = false
+                    this.$refs.toast.showToast("Could not reinstall binding\n" + error.message, 4, false)
+                    return { 'status': false }
+                });
         },
         onPersonalityMounted(persItem) {
             //this.isLoading = true

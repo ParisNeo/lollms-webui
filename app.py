@@ -126,6 +126,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint("/install_model_from_path", "install_model_from_path", self.install_model_from_path, methods=["GET"])
         
         self.add_endpoint("/reinstall_binding", "reinstall_binding", self.reinstall_binding, methods=["POST"])
+        self.add_endpoint("/reinstall_personality", "reinstall_personality", self.reinstall_personality, methods=["POST"])
 
         self.add_endpoint("/switch_personal_path", "switch_personal_path", self.switch_personal_path, methods=["POST"])
 
@@ -864,14 +865,27 @@ class LoLLMsWebUI(LoLLMsAPPI):
                         "status": True
                     })
         
+    def reinstall_personality(self):
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return jsonify({"status":False, 'error':str(e)})
         
+        ASCIIColors.info(f"- Reinstalling personality {data['name']}...")
+        try:
+            ASCIIColors.info("Unmounting personality")
+        except Exception as e:
+            return jsonify({"status":False, 'error':str(e)})
+
     def reinstall_binding(self):
         try:
             data = request.get_json()
             # Further processing of the data
         except Exception as e:
             print(f"Error occurred while parsing JSON: {e}")
-            return jsonify({"status":False, 'error':str(ex)})
+            return jsonify({"status":False, 'error':str(e)})
         ASCIIColors.info(f"- Reinstalling binding {data['name']}...")
         try:
             ASCIIColors.info("Unmounting binding and model")

@@ -730,8 +730,13 @@ export default {
                 this.isGenerating = true;
                 const index = this.discussionArr.findIndex((x) => x.parent == parent && x.id == msgObj.ai_message_id)
                 const messageItem = this.discussionArr[index]
-                if (messageItem) {
+                if (messageItem && msgObj.type<2) {
                     messageItem.content = msgObj.data
+                }
+                else{
+                    if (msgObj.type == 1){
+                        messageItem.steps
+                    }
                 }
                 // // Disables as per request
                 // nextTick(() => {
