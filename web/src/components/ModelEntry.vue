@@ -27,7 +27,6 @@
         <button v-if="model.isInstalled" title="Delete file from disk" type="button" @click.stop="toggleInstall"
           class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
           Uninstall
-
           <span class="sr-only">Remove</span>
         </button>
       </div>
