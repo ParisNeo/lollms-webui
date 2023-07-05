@@ -584,6 +584,7 @@ class LoLLMsAPPI(LollmsApplication):
 
     def prepare_reception(self):
         self.current_generated_text = ""
+        self.nb_received_tokens = 0
         self.full_text = ""
         self.is_bot_text_started = False
 
@@ -717,6 +718,8 @@ class LoLLMsAPPI(LollmsApplication):
         # Stream the generated text to the main process
         elif message_type == MSG_TYPE.MSG_TYPE_FULL:
             self.current_generated_text = chunk
+            self.nb_received_tokens += 1
+            ASCIIColors.green(f"Received {self.nb_received_tokens} tokens",end="\r",flush=True)
             self.socketio.emit('message', {
                                             'data': self.current_generated_text, 
                                             'user_message_id':self.current_user_message_id, 
@@ -767,6 +770,7 @@ class LoLLMsAPPI(LollmsApplication):
 
     def _generate(self, prompt, n_predict=50, callback=None):
         self.current_generated_text = ""
+        self.nb_received_tokens = 0
         if self.model is not None:
             ASCIIColors.info("warmup")
             if self.config["override_personality_model_parameters"]:
