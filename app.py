@@ -52,6 +52,7 @@ import logging
 import psutil
 from lollms.main_config import LOLLMSConfig
 from typing import Optional
+import gc
 
 import gc
 
@@ -878,12 +879,14 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.binding = None
             self.model = None
             gc.collect()
-            
             ASCIIColors.info("Reinstalling binding")
             self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL)
-            ASCIIColors.info("Loading model")
+            ASCIIColors.info("Binding reinstalled successfully")
+
             try:
+                ASCIIColors.info("Reloading model")
                 self.model = self.binding.build_model()
+                ASCIIColors.info("Model reloaded successfully")
             except Exception as ex:
                 print(f"Couldn't build model: [{ex}]")
                 self.trace_exception(ex)
