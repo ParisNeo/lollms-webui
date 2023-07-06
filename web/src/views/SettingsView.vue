@@ -713,12 +713,12 @@
                     <!-- EXPAND / COLLAPSE BUTTON -->
                     <button v-if="mzl_collapsed"
                         class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
-                        title="Collapse" type="button" @click="mzl_collapsed = !mzl_collapsed">
+                        title="Collapse" type="button" @click="open_mzl">
                         <i data-feather="chevron-up"></i>
                     </button>
                     <button v-else
                         class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
-                        title="Expand" type="button" @click="mzl_collapsed = !mzl_collapsed">
+                        title="Expand" type="button" @click="open_mzl">
                         <i data-feather="chevron-down"></i>
                     </button>
                 </div>
@@ -1426,6 +1426,11 @@ export default {
 
 
         },
+        async open_mzl(){
+            this.mzl_collapsed = !this.mzl_collapsed; 
+            console.log("Fetching models")
+            //this.fetchModels();
+        },        
         async getVramUsage() {
             const resp = await this.api_get_req("vram_usage")
             // {
@@ -1584,7 +1589,6 @@ export default {
 
         },
         fetchModels() {
-
             axios.get('/get_available_models')
                 .then(response => {
 
@@ -2129,12 +2133,6 @@ export default {
         refresh() {
 
 
-
-            this.api_get_req("list_models").then(response => {
-                this.modelsArr = response
-                this.modelsArr.sort()
-            })
-
             this.api_get_req("list_personalities_categories").then(response => {
                 this.persCatgArr = response
                 this.persCatgArr.sort()
@@ -2186,7 +2184,7 @@ export default {
             })
 
 
-            this.fetchModels();
+            //this.fetchModels();
             this.api_get_req("list_bindings")
             then(response => {
                 this.bindings = response

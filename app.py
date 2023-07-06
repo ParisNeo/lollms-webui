@@ -664,6 +664,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
     def list_models(self):
         if self.binding is not None:
             models = self.binding.list_models(self.config)
+            ASCIIColors.yellow("Listing models")
             return jsonify(models)
         else:
             return jsonify([])

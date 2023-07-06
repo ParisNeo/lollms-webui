@@ -290,7 +290,7 @@ export default {
     };
   },
   async mounted() {
-    this.fileSize = await this.getFileSize(this.model.path)
+    //this.fileSize = await this.getFileSize(this.model.path)
     //console.log('model path', this.model.path)
     nextTick(() => {
       feather.replace()
@@ -367,6 +367,10 @@ export default {
       event.target.src = defaultImgPlaceholder
     },
     toggleInstall() {
+      this.getFileSize(this.model.path).then(data=>{
+        this.fileSize = data
+      })
+
       if (this.isInstalled) {
         this.uninstalling = true;
         // Simulate uninstallation delay (replace this with your WebSocket logic)
@@ -378,6 +382,9 @@ export default {
       }
     },
     toggleSelected() {
+      this.getFileSize(this.model.path).then(data=>{
+        this.fileSize = data
+      })
       this.onSelected(this)
     },
     toggleCopy() {
