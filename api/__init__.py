@@ -373,7 +373,7 @@ class LoLLMsAPPI(LollmsApplication):
                 message_id = self.current_discussion.add_message(
                     "user", 
                     message,
-                    message_type=DiscussionsDB.MSG_TYPE_NORMAL_USER,
+                    message_type=MSG_TYPE.MSG_TYPE_FULL.value,
                     parent=self.message_id
                 )
 
@@ -566,9 +566,10 @@ class LoLLMsAPPI(LollmsApplication):
             self.current_discussion = self.db.load_last_discussion()
     
         if self.personality.welcome_message!="":
+            message_type = MSG_TYPE.MSG_TYPE_FULL.value if self.personality.include_welcome_message_in_disucssion else MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value
             message_id = self.current_discussion.add_message(
                 self.personality.name, self.personality.welcome_message,
-                DiscussionsDB.MSG_TYPE_NORMAL_AI if self.personality.include_welcome_message_in_disucssion else DiscussionsDB.MSG_TYPE_USER_ONLY,
+                message_type,
                 0,
                 -1,
                 binding= self.config["binding_name"],
@@ -601,7 +602,7 @@ class LoLLMsAPPI(LollmsApplication):
         self.full_message_list = []
         for message in messages:
             if message["id"]< message_id or message_id==-1: 
-                if message["type"]==self.db.MSG_TYPE_NORMAL_USER or message["type"]==self.db.MSG_TYPE_NORMAL_AI:
+                if message["type"]==MSG_TYPE.MSG_TYPE_FULL:
                     if message["sender"]==self.personality.name:
                         self.full_message_list.append(self.personality.ai_message_prefix+message["content"])
                     else:
@@ -626,7 +627,7 @@ class LoLLMsAPPI(LollmsApplication):
         self.full_message_list = []
         for message in messages:
             if message["id"]<= message_id or message_id==-1: 
-                if message["type"]!=self.db.MSG_TYPE_CONDITIONNING:
+                if message["type"]!=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER:
                     if message["sender"]==self.personality.name:
                         self.full_message_list.append(self.personality.ai_message_prefix+message["content"])
                     else:
@@ -809,7 +810,7 @@ class LoLLMsAPPI(LollmsApplication):
                 self.current_ai_message_id = self.current_discussion.add_message(
                     self.personality.name, 
                     "", 
-                    message_type    = DiscussionsDB.MSG_TYPE_NORMAL_AI,
+                    message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
                     parent          = self.current_user_message_id,
                     binding         = self.config["binding_name"],
                     model           = self.config["model_name"], 

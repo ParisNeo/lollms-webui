@@ -499,31 +499,34 @@ export default {
             this.mountedPersArr = mountedPersArr
             //this.mountedPersArr = mountedPersArr
             console.log('discussionPersonalities', this.discussionPersonalities)
-            if (this.discussionPersonalities.length > 0) {
-                for (let i = 0; i < this.discussionPersonalities.length; i++) {
-                    const per = this.discussionPersonalities[i]
-                    console.log('discussionPersonalities - per', per)
-                    const perIndex = this.mountedPersArr.findIndex((item) => item.full_path == per)
-                    console.log('discussionPersonalities -includes', perIndex)
-                    console.log('discussionPersonalities -mounted list', this.mountedPersArr)
+            if (this.discussionPersonalities!=undefined){
+                if (this.discussionPersonalities.length > 0) {
+                    for (let i = 0; i < this.discussionPersonalities.length; i++) {
+                        const per = this.discussionPersonalities[i]
+                        console.log('discussionPersonalities - per', per)
+                        const perIndex = this.mountedPersArr.findIndex((item) => item.full_path == per)
+                        console.log('discussionPersonalities -includes', perIndex)
+                        console.log('discussionPersonalities -mounted list', this.mountedPersArr)
 
-                    if (perIndex == -1) {
+                        if (perIndex == -1) {
 
-                        const index2 = this.personalities.findIndex(item2 => item2.full_path == per)
-                        // const index22 = this.personalities.filter(item2 => item2.full_path.localeCompare(per) ==1 ) 
+                            const index2 = this.personalities.findIndex(item2 => item2.full_path == per)
+                            // const index22 = this.personalities.filter(item2 => item2.full_path.localeCompare(per) ==1 ) 
 
-                        const pers = this.personalities[index2]
-                        console.log('adding discucc121', pers, per)
-                        if (pers) {
-                            this.mountedPersArr.push(pers)
-                            console.log('adding discucc', pers)
+                            const pers = this.personalities[index2]
+                            console.log('adding discucc121', pers, per)
+                            if (pers) {
+                                this.mountedPersArr.push(pers)
+                                console.log('adding discucc', pers)
+                            }
+
                         }
 
                     }
 
                 }
+            } 
 
-            }
 
             this.isLoading = false
             console.log('getMountedPersonalities', this.mountedPersArr)

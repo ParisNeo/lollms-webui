@@ -12,13 +12,7 @@ __license__ = "Apache 2.0"
 
 # =================================== Database ==================================================================
 class DiscussionsDB:
-    MSG_TYPE_NORMAL_USER    = 0 # A normal message from user
-    MSG_TYPE_NORMAL_AI      = 1 # A normal message from ai
-
-    MSG_TYPE_CONDITIONNING  = 2 # This is the AI conditionning (to be protected from window sliding)
-    MSG_TYPE_HIDDEN         = 3 # Don't show this to user
-    MSG_TYPE_USER_ONLY      = 4 # Don't give this to the AI
-
+    
     def __init__(self, db_path="database.db"):
         self.db_path = Path(db_path)
         self.db_path .parent.mkdir(exist_ok=True, parents= True)
