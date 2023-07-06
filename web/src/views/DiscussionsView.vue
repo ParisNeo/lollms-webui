@@ -227,6 +227,7 @@
 }
 </style>
 <script>
+import { mapMutations } from 'vuex';
 
 export default {
     
@@ -281,6 +282,7 @@ export default {
         }
     },
     methods: {
+        ...mapMutations(['setConnectionStatus']),
         async api_get_req(endpoint) {
             try {
                 const res = await axios.get("/" + endpoint);
@@ -542,6 +544,17 @@ export default {
                 })
             }
         },
+        socketIOConnected() {
+            console.log("Websocket connected")
+            this.setConnectionStatus(true);
+            return true
+        },
+        socketIODisonnected() {
+            console.log("Websocket disconnected")
+            this.setConnectionStatus(false);
+            return true
+        },
+
         scrollToElement(el) {
 
             if (el) {
@@ -667,6 +680,7 @@ export default {
                     rank: 0,
                     sender: msgObj.bot,
                     created_at: msgObj.created_at,
+                    steps: []
                     //type: msgObj.type
                 }
                 this.discussionArr.push(responseMessage)
@@ -737,6 +751,7 @@ export default {
         streamMessageContent(msgObj) {
             // Streams response message content from binding
             console.log('stream msg',msgObj)
+            console.log('stream msg type : ',msgObj.message_type)
             const parent = msgObj.user_message_id
             const discussion_id = msgObj.discussion_id
             this.setDiscussionLoading(discussion_id, true);
@@ -745,12 +760,22 @@ export default {
                 this.isGenerating = true;
                 const index = this.discussionArr.findIndex((x) => x.parent == parent && x.id == msgObj.ai_message_id)
                 const messageItem = this.discussionArr[index]
-                if (messageItem && msgObj.type<2) {
+                if (messageItem && msgObj.message_type<2) {
                     messageItem.content = msgObj.data
                 }
-                else{
-                    if (msgObj.type == this.msgTypes){
-                        messageItem.steps
+                else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_START){
+                    console.log("Step started: ",msgObj.data)
+                    messageItem.steps.push({"message":msgObj.data,"done":false})
+
+                
+                } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_END) {
+                    console.log("Step ended:", msgObj.data);
+
+                    // Find the step with the matching message and update its 'done' property to true
+                    const matchingStep = messageItem.steps.find(step => step.message === msgObj.data);
+
+                    if (matchingStep) {
+                        matchingStep.done = true;
                     }
                 }
                 // // Disables as per request
@@ -1007,6 +1032,7 @@ export default {
                     parent: msgObj.user_message_id,
                     personality:msgObj.personality,
                     rank:0,
+                    steps:this.discussionArr[index].steps,
                     sender:msgObj.bot,
                     type:msgObj.type
                 }
@@ -1284,8 +1310,8 @@ export default {
         socket.on('infos', this.createBotMsg)
         socket.on('message', this.streamMessageContent)
         socket.on("final", this.finalMsgEvent)
-        // socket.on('connected',this.socketConnected)
-        // socket.on('disconnected',this.socketConnected)
+        socket.on('connected',this.socketIOConnected)
+        socket.on('disconnected',this.socketIODisconnected)
     },
     mounted() {
         //console.log('chatbox mnt',this.$refs)
@@ -1297,6 +1323,7 @@ export default {
         // To fix scrolling back to last message, this hook is needed.
         // If anyone knows hor to fix scroll issue when changing pages, please do fix it :D
         console.log("Websocket connected (activated)", this.socketConnected)
+        
         //console.log('settings changed acc', this.$store.state.settingsChanged)
         // await this.getPersonalityAvatars()
         await this.getPersonalityAvatars()
@@ -1354,6 +1381,11 @@ export default {
     },
     computed: {
         socketConnected() {
+            console.log("Websocket connected")
+            return true
+        },
+        socketDisconnected() {
+            console.log("Websocket disconnected")
             return true
         },
         selectedDiscussions() {

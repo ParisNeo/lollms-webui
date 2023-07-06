@@ -1477,6 +1477,15 @@ export default {
                 return result
 
             }
+            else{
+                const result = {
+                "nb_gpus": 0,
+                "gpus": []
+                }
+                //console.log('gpu usage: ',result)
+                return result
+
+            }
 
 
 

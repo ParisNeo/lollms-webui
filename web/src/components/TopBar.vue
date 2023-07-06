@@ -16,6 +16,7 @@
             </RouterLink>
             <!-- GITHUB AND THEME BUTTONS -->
             <div class="flex gap-3 flex-1 items-center justify-end">
+                <div title="Connection status" :class="['dot', { 'dot-green': isConnected, 'dot-red': !isConnected }]"></div>
                 <a href="https://github.com/ParisNeo/lollms-webui" target="_blank">
 
                     <div class="text-2xl  hover:text-primary duration-150" title="Visit repository page">
@@ -52,8 +53,20 @@ import { nextTick } from 'vue'
 import feather from 'feather-icons'
 </script>
 <script>
+import { mapState } from 'vuex';
+
 export default {
     name: 'TopBar',
+    computed:{
+        ...mapState(['isConnected']),
+        // Add a watcher to log the changes
+        isConnectedWatcher: {
+        handler(newValue) {
+            console.log('isConnected:', newValue);
+        },
+        immediate: true,
+        }
+    },
     data() {
         return {
             codeBlockStylesheet:'',
@@ -154,3 +167,18 @@ export default {
 }
 
 </script>
+<style>
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot-green {
+  background-color: green;
+}
+
+.dot-red {
+  background-color: red;
+}
+</style>

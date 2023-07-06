@@ -13,13 +13,17 @@ const store = createStore({
       return {
         // count: 0,
         mountedPersonalities: [],
-        settingsChanged:false
+        settingsChanged:false,
+        isConnected: false, // Add the isConnected property
       }
     },
     mutations: {
       // increment (state) {
       //   state.count++
       // }
+      setConnectionStatus(state, status) {
+        state.isConnected = status;
+      },      
     }
   })
 
