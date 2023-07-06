@@ -381,13 +381,13 @@ class LoLLMsAPPI(LollmsApplication):
                 ASCIIColors.green("Starting message generation by"+self.personality.name)
 
                 task = self.socketio.start_background_task(self.start_message_generation, message, message_id)
-                self.socketio.sleep(0)
+                self.socketio.sleep(0.01)
                 ASCIIColors.info("Started generation task")
                 #tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id))
                 #tpe.start()
             else:
                 self.socketio.emit("buzzy", {"message":"I am buzzy. Come back later."}, room=self.current_room_id)
-                self.socketio.sleep(0)
+                self.socketio.sleep(0.01)
                 ASCIIColors.warning(f"OOps request {self.current_room_id}  refused!! Server buzy")
                 self.socketio.emit('infos',
                         {
@@ -407,7 +407,7 @@ class LoLLMsAPPI(LollmsApplication):
                             'finished_generating_at': self.current_discussion.current_message_finished_generating_at,
                         }, room=self.current_room_id
                 )
-                self.socketio.sleep(0)
+                self.socketio.sleep(0.01)
 
         @socketio.on('generate_msg_from')
         def handle_connection(data):
@@ -694,7 +694,7 @@ class LoLLMsAPPI(LollmsApplication):
                                                     'message_type': MSG_TYPE.MSG_TYPE_FULL.value
                                                 }, room=self.current_room_id
                                         )
-                    self.socketio.sleep(0)
+                    self.socketio.sleep(0.01)
                     self.current_discussion.update_message(self.current_ai_message_id, self.current_generated_text)
                     # if stop generation is detected then stop
                     if not self.cancel_gen:
@@ -721,7 +721,7 @@ class LoLLMsAPPI(LollmsApplication):
                                             'message_type': message_type.value
                                         }, room=self.current_room_id
                                 )
-            self.socketio.sleep(0)
+            self.socketio.sleep(0.01)
             return True
         # Stream the generated text to the frontend
         else:
@@ -733,7 +733,7 @@ class LoLLMsAPPI(LollmsApplication):
                                             'message_type': message_type.value
                                         }, room=self.current_room_id
                                 )
-            self.socketio.sleep(0)
+            self.socketio.sleep(0.01)
 
         return True
 
@@ -832,7 +832,7 @@ class LoLLMsAPPI(LollmsApplication):
                             'finished_generating_at': self.current_discussion.current_message_finished_generating_at,                        
                         }, room=self.current_room_id
             )
-            self.socketio.sleep(0)
+            self.socketio.sleep(0.01)
 
             # prepare query and reception
             self.discussion_messages, self.current_message = self.prepare_query(message_id, is_continue)
@@ -869,7 +869,7 @@ class LoLLMsAPPI(LollmsApplication):
 
                                         }, room=self.current_room_id
                                 )
-            self.socketio.sleep(0)
+            self.socketio.sleep(0.01)
 
             ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
             ASCIIColors.success(f" ║                        Done                      ║ ")
