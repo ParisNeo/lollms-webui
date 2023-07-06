@@ -117,9 +117,13 @@
 
                 <div class="overflow-x-auto w-full ">
                     <!-- MESSAGE CONTENT -->
-                    <div v-for="(step, index) in steps" :key="index" class="step">
-                        <Step :done="step.done" :message="step.message" />
+                    <div class="flex flex-col items-start w-full">
+                        <div v-for="(step, index) in message.steps" :key="'step-' + message.id + '-' + index" class="step font-bold" :style="{ backgroundColor: step.done ? 'transparent' : 'inherit' }">
+                            <Step :done="step.done" :message="step.message" />
+                        </div>
                     </div>
+
+
                     <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :markdown-text="message.content">
                     </MarkdownRenderer>
                     <textarea v-if="editMsgMode" ref="mdTextarea" :rows="4"
@@ -182,7 +186,6 @@ export default {
     data() {
         return {
             expanded: false,
-            steps: [],
             new_message_content: '',
             showConfirmation: false,
             editMsgMode: false,

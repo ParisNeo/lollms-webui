@@ -8,7 +8,7 @@ import './assets/tailwind.css'
 const app = createApp(App)
 
 // Create a new store instance.
-const store = createStore({
+export const store = createStore({
     state () {
       return {
         // count: 0,
@@ -20,13 +20,9 @@ const store = createStore({
     mutations: {
       // increment (state) {
       //   state.count++
-      // }
-      setConnectionStatus(state, status) {
-        state.isConnected = status;
-      },      
+      // }    
     }
   })
-
 
 app.use(router)
 app.use(store)

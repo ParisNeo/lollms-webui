@@ -17,9 +17,10 @@ var globals={
 var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
 socket.on('connect', function() {
+    console.log("Disconnected")
 });
 socket.on('disconnect', function() {
-console.log("Disconnected")
+    console.log("Disconnected")
 });
 socket.on('infos', function(msg) {
     console.log(msg)

@@ -1196,6 +1196,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return jsonify({"status": False,"message":"No discussion is selected"})
         else:
             new_rank = self.current_discussion.delete_message(discussion_id)
+            ASCIIColors.yellow("Message deleted")
             return jsonify({"status":True,"new_rank": new_rank})
 
 

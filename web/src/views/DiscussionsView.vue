@@ -170,7 +170,7 @@
             <!-- CHAT AREA -->
             <div class=" container pt-4 pb-10 mb-28">
                 <TransitionGroup v-if="discussionArr.length > 0" name="list">
-                    <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg" :id="'msg-' + msg.id"
+                    <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg"  :id="'msg-' + msg.id"
                         ref="messages" @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
                         @rankDown="rankDownMessage" @updateMessage="updateMessage" @resendMessage="resendMessage"
                         :avatar="getAvatar(msg.sender)" />
@@ -227,7 +227,7 @@
 }
 </style>
 <script>
-import { mapMutations } from 'vuex';
+
 
 export default {
     
@@ -282,7 +282,16 @@ export default {
         }
     },
     methods: {
-        ...mapMutations(['setConnectionStatus']),
+        socketIOConnected() {
+            console.log("socketIOConnected")
+            this.$store.state.isConnected=true;
+            return true
+        },
+        socketIODisonnected() {
+            console.log("socketIOConnected")
+            this.$store.state.isConnected=false;
+            return true
+        },
         async api_get_req(endpoint) {
             try {
                 const res = await axios.get("/" + endpoint);
@@ -544,16 +553,6 @@ export default {
                 })
             }
         },
-        socketIOConnected() {
-            console.log("Websocket connected")
-            this.setConnectionStatus(true);
-            return true
-        },
-        socketIODisonnected() {
-            console.log("Websocket disconnected")
-            this.setConnectionStatus(false);
-            return true
-        },
 
         scrollToElement(el) {
 
@@ -614,7 +613,8 @@ export default {
                 //parent: 10,
                 rank: 0,
                 sender: msgObj.user,
-                created_at: msgObj.created_at
+                created_at: msgObj.created_at,
+                steps: []
                 //type: 0
             }
             this.discussionArr.push(usrMessage)
@@ -766,6 +766,9 @@ export default {
                 else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_START){
                     console.log("Step started: ",msgObj.data)
                     messageItem.steps.push({"message":msgObj.data,"done":false})
+                    console.log("Steps: ",messageItem.steps)
+                    console.log("this.discussionArr: ",this.discussionArr)
+                    
 
                 
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_END) {
@@ -1309,9 +1312,10 @@ export default {
         // socket responses
         socket.on('infos', this.createBotMsg)
         socket.on('message', this.streamMessageContent)
-        socket.on("final", this.finalMsgEvent)
+        socket.on('final', this.finalMsgEvent)
         socket.on('connected',this.socketIOConnected)
         socket.on('disconnected',this.socketIODisconnected)
+        console.log("Added events")
     },
     mounted() {
         //console.log('chatbox mnt',this.$refs)
@@ -1323,7 +1327,7 @@ export default {
         // To fix scrolling back to last message, this hook is needed.
         // If anyone knows hor to fix scroll issue when changing pages, please do fix it :D
         console.log("Websocket connected (activated)", this.socketConnected)
-        
+
         //console.log('settings changed acc', this.$store.state.settingsChanged)
         // await this.getPersonalityAvatars()
         await this.getPersonalityAvatars()
@@ -1377,15 +1381,17 @@ export default {
 
             })
         },
-
+        
     },
     computed: {
         socketConnected() {
-            console.log("Websocket connected")
+            console.log(" --- > Websocket connected")
+            this.$store.state.isConnected=true;// ('setConnectionStatus', true);
             return true
         },
         socketDisconnected() {
-            console.log("Websocket disconnected")
+            this.$store.state.isConnected=false;// .$store.commit('setConnectionStatus', false);
+            console.log(" --- > Websocket disconnected")
             return true
         },
         selectedDiscussions() {
