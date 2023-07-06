@@ -566,7 +566,7 @@ class LoLLMsAPPI(LollmsApplication):
             self.current_discussion = self.db.load_last_discussion()
     
         if self.personality.welcome_message!="":
-            message_type = MSG_TYPE.MSG_TYPE_FULL.value if self.personality.include_welcome_message_in_disucssion else MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value
+            message_type = MSG_TYPE.MSG_TYPE_FULL.value# if self.personality.include_welcome_message_in_disucssion else MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value
             message_id = self.current_discussion.add_message(
                 self.personality.name, self.personality.welcome_message,
                 message_type,
