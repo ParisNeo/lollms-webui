@@ -2051,6 +2051,7 @@ export default {
                 //     return
                 // }
                 this.update_binding(binding_object.binding.folder)
+                this.fetchModels();
                 //console.log('lol',binding_object)
             }
         },

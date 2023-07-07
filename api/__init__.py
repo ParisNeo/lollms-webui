@@ -682,7 +682,9 @@ class LoLLMsAPPI(LollmsApplication):
         if message_type == MSG_TYPE.MSG_TYPE_CHUNK:
             self.current_generated_text += chunk
             self.nb_received_tokens += 1
-            ASCIIColors.green(f"Received {self.nb_received_tokens} tokens",end="\r",flush=True)
+            ASCIIColors.green(f"Received {self.nb_received_tokens} tokens",end="\r")
+            sys.stdout = sys.__stdout__
+            sys.stdout.flush()
             detected_anti_prompt = False
             anti_prompt_to_remove=""
             for prompt in self.personality.anti_prompts:
