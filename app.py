@@ -28,7 +28,7 @@ from lollms.config import InstallOption
 from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding
 from lollms.personality import AIPersonality, MSG_TYPE
 from lollms.config import BaseConfig
-from lollms.helpers import ASCIIColors
+from lollms.helpers import ASCIIColors, trace_exception
 from lollms.paths import LollmsPaths
 from api.db import DiscussionsDB, Discussion
 from api.helpers import compare_lists
@@ -904,7 +904,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 ASCIIColors.info("Model reloaded successfully")
             except Exception as ex:
                 print(f"Couldn't build model: [{ex}]")
-                self.trace_exception(ex)
+                trace_exception(ex)
             try:
                 self.rebuild_personalities()
             except Exception as ex:
