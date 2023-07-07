@@ -325,8 +325,10 @@ class LoLLMsAPPI(LollmsApplication):
                                                     'model_name' : model_name,
                                                     'binding_folder' : binding_folder
                                                 }, room=request.sid)
-
-            installation_path.unlink()
+            try:
+                installation_path.unlink()
+            except Exception as ex:
+                ASCIIColors.error(f"Couldn't delete {installation_path}, please delete it manually and restart the app")
             socketio.emit('install_progress',{
                                                 'status': True, 
                                                 'error': '',
