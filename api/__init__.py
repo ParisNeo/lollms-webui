@@ -29,7 +29,6 @@ import traceback
 import sys
 from lollms.console import MainMenu
 import urllib
-import traceback
 import gc
 
 __author__ = "parisneo"
@@ -265,7 +264,10 @@ class LoLLMsAPPI(LollmsApplication):
                                 }, room=room_id
                         )
                         del self.download_infos[signature]
-                        installation_path.unlink()
+                        try:
+                            installation_path.unlink()
+                        except Exception as ex:
+                            ASCIIColors.error(f"Couldn't delete file. Please try to remove it manually.\n{installation_path}")
                         return
 
                 else:
@@ -759,7 +761,7 @@ class LoLLMsAPPI(LollmsApplication):
         self._generate(full_prompt, n_predict, callback)
         print("Finished executing the generation")
 
-    def _generate(self, prompt, n_predict=50, callback=None):
+    def _generate(self, prompt, n_predict=1024, callback=None):
         self.current_generated_text = ""
         self.nb_received_tokens = 0
         if self.model is not None:
@@ -781,7 +783,7 @@ class LoLLMsAPPI(LollmsApplication):
                 output = self.model.generate(
                     prompt,
                     callback=callback,
-                    n_predict=self.personality.model_n_predicts,
+                    n_predict=min(n_predict,self.personality.model_n_predicts),
                     temperature=self.personality.model_temperature,
                     top_k=self.personality.model_top_k,
                     top_p=self.personality.model_top_p,

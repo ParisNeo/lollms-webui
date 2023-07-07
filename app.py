@@ -1252,6 +1252,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         model_list = self.binding.get_available_models()
 
         models = []
+        ASCIIColors.yellow("Recovering available models")
         for model in model_list:
             try:
                 filename = model.get('filename',"")

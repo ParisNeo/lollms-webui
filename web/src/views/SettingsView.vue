@@ -1597,13 +1597,50 @@ export default {
             this.mzdc_collapsed = val
 
         },
+        fetchBindings() {
+            this.api_get_req("list_bindings")
+            then(response => {
+                this.bindings = response
+                this.bindings.sort((a, b) => a.name.localeCompare(b.name))
+            })
+        },
+        fetchMainConfig(){
+            this.api_get_req("get_config").then(response => {
+                this.getPersonalitiesArr().then(() => {
+                    this.getMountedPersonalities()
+                })
+
+                console.log("Received config")
+                this.configFile = response
+
+
+            }).then(() => {
+                this.api_get_req("get_current_personality_path_infos").then(response => {
+                    this.configFile.personality_language = response["personality_language"]
+                    this.configFile.personality_category = response["personality_category"]
+                    this.configFile.personality_folder = response["personality_name"]
+                    console.log("received infos")
+                });
+            })
+        },
+
         fetchModels() {
+            this.api_get_req("get_available_models")
             axios.get('/get_available_models')
                 .then(response => {
 
                     this.models = response.data;
                     this.models.sort((a, b) => a.title.localeCompare(b.title))
                     this.fetchCustomModels()
+                    this.models.forEach(model => {
+                        if (model.title == this.configFile["model_name"]) {
+                            model.selected = true;
+                        }
+                        else {
+                            model.selected = false;
+                        }
+                    });
+
                 })
                 .catch(error => {
                     console.log(error.message, 'fetchModels');
@@ -1633,6 +1670,27 @@ export default {
                 .catch(error => {
                     console.log(error.message, 'fetchCustomModels');
                 });
+        },
+        fetchPersonalities(){
+            this.api_get_req("list_personalities_categories").then(response => {
+                this.persCatgArr = response
+                this.persCatgArr.sort()
+            })
+
+            this.api_get_req("list_personalities").then(response => {
+                this.persArr = response
+                this.persArr.sort()
+                console.log(`Listed personalities:\n${response}`)
+            })
+        },
+        fetchHardwareInfos(){
+            this.api_get_req("disk_usage").then(response => {
+                this.diskUsage = response
+            })
+
+            this.api_get_req("ram_usage").then(response => {
+                this.ramUsage = response
+            })
         },
         async onPersonalitySelected(pers) {
             console.log('on pers', pers)
@@ -2141,64 +2199,12 @@ export default {
         // Refresh stuff
         refresh() {
 
+            this.fetchMainConfig();
+            this.fetchBindings();
+            this.fetchModels();
+            this.fetchPersonalities();
+            this.fetchHardwareInfos();
 
-            this.api_get_req("list_personalities_categories").then(response => {
-                this.persCatgArr = response
-                this.persCatgArr.sort()
-            })
-
-            this.api_get_req("get_config").then(response => {
-                this.getPersonalitiesArr().then(() => {
-                    this.getMountedPersonalities()
-
-
-                })
-
-                console.log("Received config")
-                this.configFile = response
-
-                this.models.forEach(model => {
-
-                    if (model.title == response["model_name"]) {
-                        model.selected = true;
-
-                    }
-                    else {
-                        model.selected = false;
-                    }
-                });
-            }).then(() => {
-                this.api_get_req("get_current_personality_path_infos").then(response => {
-                    this.configFile.personality_language = response["personality_language"]
-                    this.configFile.personality_category = response["personality_category"]
-                    this.configFile.personality_folder = response["personality_name"]
-                    console.log("received infos")
-                });
-            })
-
-
-
-            this.api_get_req("list_personalities").then(response => {
-                this.persArr = response
-                this.persArr.sort()
-                console.log(`Listed personalities:\n${response}`)
-            })
-
-            this.api_get_req("disk_usage").then(response => {
-                this.diskUsage = response
-            })
-
-            this.api_get_req("ram_usage").then(response => {
-                this.ramUsage = response
-            })
-
-
-            //this.fetchModels();
-            this.api_get_req("list_bindings")
-            then(response => {
-                this.bindings = response
-                this.bindings.sort((a, b) => a.name.localeCompare(b.name))
-            })
         },
         // Accordeon stuff
         toggleAccordion() {
@@ -2252,7 +2258,9 @@ export default {
                 this.update_model(null)
                 this.configFile.model_name = null
 
-                this.refresh();
+                this.fetchMainConfig();
+                this.fetchBindings();
+                this.fetchModels();
                 nextTick(() => {
                     feather.replace()
 
