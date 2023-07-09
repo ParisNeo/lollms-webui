@@ -20,7 +20,6 @@ export const store = createStore({
         config:null,
         mountedPers:null,
         personalities:null,
-        personality_path_infos:null
       }
     },
     mutations: {
@@ -33,9 +32,6 @@ export const store = createStore({
       setMountedPers(state, mountedPers) {
         state.mountedPers = mountedPers;
       },
-      setPersonalityPathInfos(state, personality_path_infos) {
-        state.personality_path_infos = personality_path_infos;
-      }      
 
       // increment (state) {
       //   state.count++
@@ -135,11 +131,6 @@ export const store = createStore({
 
           this.state.mountedPers = this.state.personalities[this.state.personalities.findIndex(item => item.full_path == this.state.config.personalities[this.state.config.active_personality_id])]
       },
-      async refreshPersonalityPath({ commit }){
-        this.state.personality_path_infos = await api_get_req("get_current_personality_path_infos")
-      }
-
-
     }    
 })
 async function api_get_req(endpoint) {

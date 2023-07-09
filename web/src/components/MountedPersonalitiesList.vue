@@ -35,7 +35,7 @@
                 </label>
                 <div class="overflow-y-auto no-scrollbar pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4 max-h-96">
                     <TransitionGroup name="bounce">
-                        <personality-entry ref="personalitiesZoo" v-for="(pers, index) in mountedPersArr"
+                        <personality-entry ref="personalitiesZoo" v-for="(pers, index) in this.$store.state.mountedPersArr"
                             :key="'index-' + index + '-' + pers.name" :personality="pers" :full_path="pers.full_path"
                             :selected="configFile.personalities[configFile.active_personality_id] === pers.full_path"
                             :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted"
@@ -144,7 +144,7 @@ export default {
             console.log('personalities')
             console.log(this.personalities)
 
-            let personality_path_infos = this.$store.state.personality_path_infos
+            let personality_path_infos = store.state.config.personalities[store.state.config.active_personality_id]
             console.log('personality_path_infos')
             console.log(personality_path_infos)
             this.configFile.personality_language = personality_path_infos["personality_language"];

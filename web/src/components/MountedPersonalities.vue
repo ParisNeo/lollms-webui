@@ -13,9 +13,9 @@
                 @click.stop="toggleShowPersList" title="Click to show more">+{{ mountedPersArr.length - 1 }}</div>
         </div>
         <div class="flex -space-x-4 " v-if="mountedPersArr.length == 1">
-            <img :src="bUrl + mountedPers.avatar" @error="personalityImgPlacehodler"
+            <img :src="bUrl + this.$store.state.mountedPers.avatar" @error="personalityImgPlacehodler"
                 class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:z-20 cursor-pointer  border-secondary"
-                :title="'Active personality: '+mountedPers.name" @click.stop="toggleShowPersList" >
+                :title="'Active personality: '+this.$store.state.mountedPers.name" @click.stop="toggleShowPersList" >
         </div>
         <div v-if="mountedPersArr.length == 0" title="Loading personalities">
             <!-- SPINNER -->
@@ -98,7 +98,7 @@ export default {
             console.log('personalities')
             console.log(this.personalities)
 
-            let personality_path_infos = store.state.personality_path_infos
+            let personality_path_infos = store.state.config.personalities[store.state.config.active_personality_id]
             console.log('personality_path_infos')
             console.log(personality_path_infos)
             this.configFile.personality_language = personality_path_infos["personality_language"];
