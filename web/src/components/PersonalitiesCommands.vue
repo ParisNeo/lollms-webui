@@ -5,7 +5,7 @@
           <i data-feather="command" class="w-6 h-6"></i>
         </button>
         <div v-if="showMenu" id="commands-menu-items" class="absolute mt-4 bg-white border border-gray-300 z-10">
-          <button v-for="command in commands" :key="command.value" @click.prevent="execute_cmd(command.value)" class="menu-button py-2 px-4 cursor-pointer bg-blue-500 text-white dark:bg-blue-200 dark:text-gray-800 hover:bg-blue-400" :class="{ 'bg-blue-400 text-white': hoveredCommand === command.value }" :title="command.help" @mouseover="hoveredCommand = command.value" @mouseout="hoveredCommand = null" @click="executeCommand(command.value)">
+          <button v-for="command in commands" :key="command.value" @click.prevent="execute_cmd(command.value)" class="menu-button py-2 px-4 cursor-pointer bg-blue-500 text-white dark:bg-blue-200 dark:text-gray-800 hover:bg-blue-400" :class="{ 'bg-blue-400 text-white': hoveredCommand === command.value }" :title="command.help" @mouseover="hoveredCommand = command.value" @mouseout="hoveredCommand = null">
             {{ command.name }}
           </button>
         </div>
@@ -40,6 +40,7 @@ props: {
     type: Array,
     required: true,
     },
+    sendCommand:Function
 },
 data() {
     return {
@@ -55,6 +56,7 @@ methods: {
     },
     execute_cmd(cmd) {
     this.showMenu = !this.showMenu;
+    this.sendCommand(cmd);
     },
     showHelp(command) {
     this.showHelpText = true;

@@ -113,6 +113,7 @@
                             <PersonalitiesCommands
                                 v-if="personalities_ready" 
                                 :commandsList="this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands"
+                                :sendCommand="sendMessageEvent"
                                 ref="personalityCMD"
                             ></PersonalitiesCommands>
                         </div>
