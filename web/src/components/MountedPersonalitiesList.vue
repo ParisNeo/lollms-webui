@@ -129,13 +129,28 @@ export default {
             this.onMountUnmount(this)
         },
         async constructor() {
-            this.isLoading = true
-            this.configFile = await this.api_get_req("get_config")
-            this.getPersonalitiesArr()
-            let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
-            this.configFile.personality_language = personality_path_infos["personality_language"]
-            this.configFile.personality_category = personality_path_infos["personality_category"]
-            this.configFile.personality_folder = personality_path_infos["personality_name"]
+            this.configFile = this.$store.state.config
+            console.log('configFile')
+            console.log(this.configFile)
+            await new Promise((resolve) => {
+                const waitForPersonalities = setInterval(() => {
+                if (this.$store.state.personalities) {
+                    clearInterval(waitForPersonalities);
+                    resolve();
+                }
+                }, 100);
+            });            
+            this.personalities = this.$store.state.personalities
+            console.log('personalities')
+            console.log(this.personalities)
+
+            let personality_path_infos = this.$store.state.personality_path_infos
+            console.log('personality_path_infos')
+            console.log(personality_path_infos)
+            this.configFile.personality_language = personality_path_infos["personality_language"];
+            this.configFile.personality_category = personality_path_infos["personality_category"];
+            this.configFile.personality_folder = personality_path_infos["personality_name"];
+            this.mountedPersArr = this.$store.state.mountedPersArr
 
 
         },

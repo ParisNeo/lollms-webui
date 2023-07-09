@@ -383,6 +383,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
                                         personality_info['author'] = config_data.get('author', 'ParisNeo')
                                         personality_info['version'] = config_data.get('version', '1.0.0')
                                         personality_info['installed'] = (self.lollms_paths.personal_configuration_path/f"personality_{personality_folder.stem}.yaml").exists() or personality_info['has_scripts']
+                                        personality_info['help'] = config_data.get('help', '')
+                                        personality_info['commands'] = config_data.get('commands', '')
                                     real_assets_path = personality_folder/ 'assets'
                                     assets_path = Path("personalities") / lang / cat / pers / 'assets'
                                     gif_logo_path = assets_path / 'logo.gif'

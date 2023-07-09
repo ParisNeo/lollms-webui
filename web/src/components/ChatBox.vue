@@ -100,18 +100,22 @@
                         </button>
                     </div>
                     <div v-if="showPersonalities" class="mx-1">
-
-
                         <MountedPersonalitiesList ref="mountedPersList" :onShowPersList="onShowPersListFun"
                             :on-mount-unmount="onMountUnmountFun" :discussionPersonalities="allDiscussionPersonalities" />
                     </div>
                     <!-- CHAT BOX -->
                     <div class="flex flex-row flex-grow items-center gap-2 overflow-visible">
                         <div class="w-fit">
-                            <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" />
+                            <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
                             <!-- :onShowPersList="onShowPersListFun" -->
                         </div>
-
+                        <div class="w-fit">
+                            <PersonalitiesCommands
+                                v-if="personalities_ready" 
+                                :commandsList="this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands"
+                                ref="personalityCMD"
+                            ></PersonalitiesCommands>
+                        </div>
 
                         <div class="relative grow">
                             <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"
@@ -130,7 +134,6 @@
                         </div>
                         <!-- BUTTONS -->
                         <div class="inline-flex justify-center  rounded-full ">
-
                             <button v-if="!loading" type="button" @click="submit"
                                 class=" w-6 hover:text-secondary duration-75 active:scale-90">
 
@@ -195,6 +198,9 @@ import feather from 'feather-icons'
 import filesize from '../plugins/filesize'
 import MountedPersonalities from './MountedPersonalities.vue'
 import MountedPersonalitiesList from './MountedPersonalitiesList.vue'
+import PersonalitiesCommands from './PersonalitiesCommands.vue';
+import { useStore } from 'vuex'; // Import the useStore function
+import { inject } from 'vue';
 export default {
     name: 'ChatBox',
     emits: ["messageSentEvent", "stopGenerating"],
@@ -205,7 +211,8 @@ export default {
     },
     components: {
         MountedPersonalities,
-        MountedPersonalitiesList
+        MountedPersonalitiesList,
+        PersonalitiesCommands
     },
     setup() {
 
@@ -218,10 +225,17 @@ export default {
             fileList: [],
             totalSize: 0,
             showFileList: true,
-            showPersonalities: false
+            showPersonalities: false,
+            personalities_ready: false,
         }
     },
     computed: {
+        config() {
+            return this.$store.state.config;
+        },
+        mountedPers(){
+            return this.$store.state.mountedPers;
+        },
         allDiscussionPersonalities() {
             if (this.discussionList.length > 0) {
 
@@ -232,9 +246,6 @@ export default {
                     };
                 }
 
-
-
-
                 console.log('conputer pers', persArray)
                 console.log('dis conputer pers', this.discussionList)
                 return persArray
@@ -243,12 +254,17 @@ export default {
         }
     },
     methods: {
+        onPersonalitiesReadyFun(){
+            console.log("Personalities ready")
+            console.log(this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id]);
+            this.personalities_ready = true;
+        },
         onShowPersListFun(comp) {
             this.showPersonalities = !this.showPersonalities
 
         },
         onMountUnmountFun(comp) {
-            console.log('mountunmount chat')
+            console.log('Mounting/unmounting chat')
             this.$refs.mountedPers.constructor()
         },
         computedFileSize(size) {
