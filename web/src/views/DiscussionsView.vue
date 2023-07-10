@@ -1,6 +1,6 @@
 <template>
     <transition name="fade-and-fly">
-        <div v-if="!$store.state.ready" class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center">
+        <div v-if="!isReady" class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center">
         <!-- SPINNER -->
         <div role="status" class="text-center flex items-center">
             <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101"
@@ -16,7 +16,7 @@
         </div>        
     </div>
     </transition>
-    <button v-if="this.$store.state.ready" @click="togglePanel" class="absolute top-0 left-0 z-50 p-2 m-2 bg-white rounded-full shadow-md  bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-primary-light dark:hover:bg-primary">
+    <button v-if="isReady" @click="togglePanel" class="absolute top-0 left-0 z-50 p-2 m-2 bg-white rounded-full shadow-md  bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-primary-light dark:hover:bg-primary">
                     <div v-show="panelCollapsed" ><i data-feather='chevron-right'></i></div>
                     <div v-show="!panelCollapsed" ><i data-feather='chevron-left'></i></div>
     </button>        
@@ -182,7 +182,7 @@
         </div>
     </div>
     </transition>
-    <div v-if="this.$store.state.ready===true" class="relative flex flex-col flex-grow " @dragover.stop.prevent="setDropZoneChat()">
+    <div v-if="isReady" class="relative flex flex-col flex-grow " @dragover.stop.prevent="setDropZoneChat()">
         <div class="z-20 h-max">
             <DragDrop ref="dragdropChat" @panelDrop="setFileListChat"></DragDrop>
         </div>
@@ -1419,6 +1419,9 @@ export default {
         
     },
     computed: {
+        isReady(){
+            return this.$store.state.ready
+        },
         showPanel() {
            return this.$store.state.ready && !this.panelCollapsed;
         },
