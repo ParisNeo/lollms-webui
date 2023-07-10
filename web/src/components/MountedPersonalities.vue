@@ -44,6 +44,8 @@ import { useStore } from 'vuex'; // Import the useStore function
 import { computed } from 'vue'; // Import the computed function
 import { watch, ref } from 'vue';
 
+import feather from 'feather-icons'
+
 const bUrl = import.meta.env.VITE_GPT4ALL_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 
@@ -82,29 +84,24 @@ export default {
             this.onShowPersList()
         },
         async constructor() {
-            const store = useStore();
-            this.configFile = store.state.config
-            console.log('configFile')
-            console.log(this.configFile)
-            await new Promise((resolve) => {
-                const waitForPersonalities = setInterval(() => {
-                if (store.state.personalities) {
-                    clearInterval(waitForPersonalities);
-                    resolve();
-                }
-                }, 100);
-            });            
-            this.personalities = store.state.personalities
+            nextTick(() => {
+                feather.replace()
+            })            
+            while (this.$store.state.personalities === null) {
+                await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for 100ms
+            }  
+            this.configFile = this.$store.state.config         
+            this.personalities = this.$store.state.personalities
             console.log('personalities')
             console.log(this.personalities)
 
-            let personality_path_infos = store.state.config.personalities[store.state.config.active_personality_id]
+            let personality_path_infos = this.$store.state.config.personalities[this.$store.state.config.active_personality_id].split('/')
             console.log('personality_path_infos')
             console.log(personality_path_infos)
-            this.configFile.personality_language = personality_path_infos["personality_language"];
-            this.configFile.personality_category = personality_path_infos["personality_category"];
-            this.configFile.personality_folder = personality_path_infos["personality_name"];
-            this.mountedPersArr = store.state.mountedPersArr
+            this.configFile.personality_language = personality_path_infos[0];
+            this.configFile.personality_category = personality_path_infos[1];
+            this.configFile.personality_folder = personality_path_infos[2];
+            this.mountedPersArr = this.$store.state.mountedPersArr
             console.log(this.mountedPersArr);
             console.log("Ready")
             this.onReady();
@@ -133,8 +130,11 @@ export default {
         async getPersonalitiesArr() {
 
             this.personalities = []
-            const dictionary = await this.api_get_req("get_all_personalities")
-            const config = await this.api_get_req("get_config")
+            while (this.$store.state.ready === false) {
+                await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for 100ms
+            }              
+            const dictionary = this.$store.state.personalities
+            const config = this.$store.state.config
             //this.configFile=config
             //console.log('asdas',config)
             // console.log("all_personalities")
@@ -175,8 +175,6 @@ export default {
 
             this.personalities.sort((a, b) => a.name.localeCompare(b.name))
 
-
-       
                 this.getMountedPersonalities()
                 nextTick(()=>{
                   

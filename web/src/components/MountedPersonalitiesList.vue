@@ -79,7 +79,7 @@ import defaultPersonalityImgPlaceholder from "../assets/logo.svg"
 import PersonalityEntry from './PersonalityEntry.vue'
 import Toast from './Toast.vue'
 import UniversalForm from './UniversalForm.vue';
-
+import feather from 'feather-icons'
 
 import axios from "axios";
 
@@ -144,7 +144,7 @@ export default {
             console.log('personalities')
             console.log(this.personalities)
 
-            let personality_path_infos = store.state.config.personalities[store.state.config.active_personality_id]
+            let personality_path_infos = this.$store.state.config.personalities[this.$store.state.config.active_personality_id]
             console.log('personality_path_infos')
             console.log(personality_path_infos)
             this.configFile.personality_language = personality_path_infos["personality_language"];

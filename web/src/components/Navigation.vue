@@ -1,5 +1,5 @@
 <template>
-    <div class="container flex flex-col sm:flex-row item-center gap-2 py-1 ">
+    <div v-if="$store.state.ready" class="container flex flex-col sm:flex-row item-center gap-2 py-1 ">
         <div class="items-center justify-between  w-full flex-row md:w-auto md:order-1">
             <ul class="flex flex-row font-medium p-0 mt-4 space-x-8  ">
 
@@ -43,6 +43,7 @@
 import { nextTick } from 'vue'
 import feather from 'feather-icons'
 import { RouterLink } from 'vue-router'
+import { store } from '../main';
 
 
 </script>

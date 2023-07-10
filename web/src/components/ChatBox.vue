@@ -109,7 +109,7 @@
                             <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
                             <!-- :onShowPersList="onShowPersListFun" -->
                         </div>
-                        <div class="w-fit">
+                        <div class="w-6">
                             <PersonalitiesCommands
                                 v-if="personalities_ready" 
                                 :commandsList="this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands"

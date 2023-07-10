@@ -1,6 +1,29 @@
 <template>
-    <div
-        class="relative flex flex-col no-scrollbar shadow-lg min-w-[24rem] max-w-[24rem] bg-bg-light-tone dark:bg-bg-dark-tone">
+    <transition name="fade-and-fly">
+        <div v-if="!$store.state.ready" class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center">
+        <!-- SPINNER -->
+        <div role="status" class="text-center flex items-center">
+            <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101"
+                fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                    fill="currentColor" />
+                <path
+                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                    fill="currentFill" />
+            </svg>
+            <span class="text-2xl font-bold ml-4">Loading...</span>
+        </div>        
+    </div>
+    </transition>
+    <button v-if="this.$store.state.ready" @click="togglePanel" class="absolute top-0 left-0 z-50 p-2 m-2 bg-white rounded-full shadow-md">
+                    <div v-show="panelCollapsed" ><i data-feather='chevron-right'></i></div>
+                    <div v-show="!panelCollapsed" ><i data-feather='chevron-left'></i></div>
+    </button>        
+    <transition name="slide-right">
+    <div  v-if="showPanel"
+        class="relative flex flex-col no-scrollbar shadow-lg min-w-[24rem] max-w-[24rem] bg-bg-light-tone dark:bg-bg-dark-tone"
+        >
         <!-- LEFT SIDE PANEL -->
         <div id="leftPanel" class="flex flex-col flex-grow overflow-y-scroll no-scrollbar "
             @dragover.stop.prevent="setDropZoneDiscussion()">
@@ -158,7 +181,8 @@
             </div>
         </div>
     </div>
-    <div class="relative flex flex-col flex-grow " @dragover.stop.prevent="setDropZoneChat()">
+    </transition>
+    <div v-if="this.$store.state.ready===true" class="relative flex flex-col flex-grow " @dragover.stop.prevent="setDropZoneChat()">
         <div class="z-20 h-max">
             <DragDrop ref="dragdropChat" @panelDrop="setFileListChat"></DragDrop>
         </div>
@@ -203,6 +227,49 @@
 
 
 <style scoped>
+.slide-right-enter-active {
+  transition: transform 0.3s ease;
+}
+
+.slide-right-leave-active {
+  transition: transform 0.3s ease;
+}
+
+.slide-right-enter,
+.slide-right-leave-to {
+  transform: translateX(-100%);
+}
+
+.fade-and-fly-enter-active {
+  animation: fade-and-fly-enter 0.5s ease;
+}
+
+.fade-and-fly-leave-active {
+  animation: fade-and-fly-leave 0.5s ease;
+}
+
+@keyframes fade-and-fly-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fade-and-fly-leave {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px) scale(1.2);
+  }
+}
+
 /* THESE ARE FOR TransitionGroup components */
 .list-move,
 /* apply transition to moving elements */
@@ -280,10 +347,14 @@ export default {
             personalityAvatars: [], // object array of personality name: and avatar: props
             fileList: [],
             isDragOverDiscussion: false,
-            isDragOverChat: false
+            isDragOverChat: false,
+            panelCollapsed: false // left panel collapse
         }
     },
     methods: {
+        togglePanel() {
+            this.panelCollapsed = !this.panelCollapsed;
+        },
         socketIOConnected() {
             console.log("socketIOConnected")
             this.$store.state.isConnected=true;
@@ -1196,35 +1267,10 @@ export default {
 
         },
         async getPersonalityAvatars() {
-
-            let personalities = []
-            const dictionary = await this.api_get_req("get_all_personalities")
-            const langkeys = Object.keys(dictionary); // returns languages folder names
-            for (let i = 0; i < langkeys.length; i++) {
-                const langkey = langkeys[i];
-                const catdictionary = dictionary[langkey];
-                const catkeys = Object.keys(catdictionary); // returns categories
-
-                for (let j = 0; j < catkeys.length; j++) {
-                    const catkey = catkeys[j];
-                    const personalitiesArray = catdictionary[catkey];
-                    const modPersArr = personalitiesArray.map((item) => {
-                        let newItem = {}
-                        newItem = item
-                        newItem.category = catkey // add new props to items
-                        newItem.language = langkey // add new props to items
-                        return newItem
-                    })
-
-
-                    if (personalities.length == 0) {
-                        personalities = modPersArr
-                    } else {
-                        personalities = personalities.concat(modPersArr)
-                    }
-                }
-
-            }
+            while (this.$store.state.personalities === null) {
+                await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for 100ms
+            }  
+            let personalities = this.$store.state.personalities
 
             this.personalityAvatars = personalities.map(item => {
                 const newItem = {
@@ -1233,8 +1279,6 @@ export default {
                 }
                 return newItem
             })
-
-
         },
         getAvatar(sender) {
             const index = this.personalityAvatars.findIndex((x) => x.name === sender)
@@ -1300,9 +1344,6 @@ export default {
     },
     async created() {
         // Constructor
-
-
-
         this.setPageTitle()
         await this.list_discussions()
 
@@ -1388,6 +1429,9 @@ export default {
         
     },
     computed: {
+        showPanel() {
+           return this.$store.state.ready && !this.panelCollapsed;
+        },
         socketConnected() {
             console.log(" --- > Websocket connected")
             this.$store.state.isConnected=true;// ('setConnectionStatus', true);
