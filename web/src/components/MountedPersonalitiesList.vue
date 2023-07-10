@@ -102,9 +102,6 @@ export default {
 
 
         return {
-            configFile: {},
-            mountedPersArr: [],
-            personalities: [],
             bUrl: bUrl,
             isMounted: false,
             isLoading: false
@@ -120,6 +117,33 @@ export default {
         }
 
     },
+    computed:{
+        configFile: {
+            get() {
+                return this.$store.state.config;
+            },
+            set(value) {
+                this.$store.commit('setConfig', value);
+            },
+        },
+
+        personalities:{
+            get() {
+                return this.$store.state.personalities;
+            },
+            set(value) {
+                this.$store.commit('setPersonalities', value);
+            }
+        },
+        mountedPersArr:{
+            get() {
+                return this.$store.state.mountedPersArr;
+            },
+            set(value) {
+                this.$store.commit('setMountedPers', value);
+            }
+        },
+    },
     methods: {
         toggleShowPersList() {
             //this.show = !this.show
@@ -129,30 +153,6 @@ export default {
             this.onMountUnmount(this)
         },
         async constructor() {
-            this.configFile = this.$store.state.config
-            console.log('configFile')
-            console.log(this.configFile)
-            await new Promise((resolve) => {
-                const waitForPersonalities = setInterval(() => {
-                if (this.$store.state.personalities) {
-                    clearInterval(waitForPersonalities);
-                    resolve();
-                }
-                }, 100);
-            });            
-            this.personalities = this.$store.state.personalities
-            console.log('personalities')
-            console.log(this.personalities)
-
-            let personality_path_infos = this.$store.state.config.personalities[this.$store.state.config.active_personality_id]
-            console.log('personality_path_infos')
-            console.log(personality_path_infos)
-            this.configFile.personality_language = personality_path_infos["personality_language"];
-            this.configFile.personality_category = personality_path_infos["personality_category"];
-            this.configFile.personality_folder = personality_path_infos["personality_name"];
-            this.mountedPersArr = this.$store.state.mountedPersArr
-
-
         },
         async api_get_req(endpoint) {
             try {
@@ -168,59 +168,6 @@ export default {
                 return
             }
 
-
-        },
-        async getPersonalitiesArr() {
-            this.isLoading = true
-            this.personalities = []
-            const dictionary = await this.api_get_req("get_all_personalities")
-            const config = await this.api_get_req("get_config")
-            //this.configFile=config
-            //console.log('asdas',config)
-            // console.log("all_personalities")
-            // console.log(dictionary)
-            const langkeys = Object.keys(dictionary); // returns languages folder names
-            for (let i = 0; i < langkeys.length; i++) {
-                const langkey = langkeys[i];
-                const catdictionary = dictionary[langkey];
-                const catkeys = Object.keys(catdictionary); // returns categories
-
-                for (let j = 0; j < catkeys.length; j++) {
-                    const catkey = catkeys[j];
-                    const personalitiesArray = catdictionary[catkey];
-                    const modPersArr = personalitiesArray.map((item) => {
-
-                        const isMounted = config.personalities.includes(langkey + '/' + catkey + '/' + item.folder)
-                        // if (isMounted) {
-                        //     console.log(item)
-                        // }
-                        let newItem = {}
-                        newItem = item
-                        newItem.category = catkey // add new props to items
-                        newItem.language = langkey // add new props to items
-                        newItem.full_path = langkey + '/' + catkey + '/' + item.folder // add new props to items
-                        newItem.isMounted = isMounted // add new props to items
-                        return newItem
-                    })
-
-
-                    if (this.personalities.length == 0) {
-                        this.personalities = modPersArr
-                    } else {
-                        this.personalities = this.personalities.concat(modPersArr)
-                    }
-                }
-
-            }
-
-            this.personalities.sort((a, b) => a.name.localeCompare(b.name))
-            // this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
-            // this.personalitiesFiltered.sort()
-
-
-
-            this.getMountedPersonalities()
-            this.isLoading = false
 
         },
         personalityImgPlacehodler(event) {
@@ -267,9 +214,8 @@ export default {
                     if (res) {
                         if (res.status) {
                             await this.constructor()
-
                             this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
-                            console.log('ssss', this.configFile)
+
                         }
                     }
 
@@ -394,11 +340,12 @@ export default {
 
                 if (res) {
                     this.toggleMountUnmount()
-                    this.configFile = await this.api_get_req("get_config")
-                    let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
-                    this.configFile.personality_language = personality_path_infos["personality_language"]
-                    this.configFile.personality_category = personality_path_infos["personality_category"]
-                    this.configFile.personality_folder = personality_path_infos["personality_name"]
+                    this.$store.dispatch('refreshConfig').then(() => {
+                        console.log("recovered config")
+                        this.$store.dispatch('refreshPersonalitiesArr').then(() => {
+                        this.$store.dispatch('refreshMountedPersonalities');
+                        });
+                    });
 
                     return res.data
 

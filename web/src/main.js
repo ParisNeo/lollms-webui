@@ -19,6 +19,7 @@ export const store = createStore({
         isConnected: false, // Add the isConnected property
         config:null,
         mountedPers:null,
+        mountedPersArr:null,
         bindingsArr:null,
         modelsArr:null,
         models_zoo:null,
@@ -42,6 +43,9 @@ export const store = createStore({
       },
       setMountedPers(state, mountedPers) {
         state.mountedPers = mountedPers;
+      },
+      setMountedPersArr(state, mountedPersArr) {
+        state.mountedPersArr = mountedPersArr;
       },
       setBindingsArr(state, bindingsArr) {
         state.bindingsArr = bindingsArr;
@@ -76,6 +80,9 @@ export const store = createStore({
       getPersonalities(state) {
         return state.personalities;
       },
+      getMountedPersArr(state) {
+        return state.mountedPersArr;
+      },
       getMountedPers(state) {
         return state.mountedPers;
       },
@@ -102,11 +109,14 @@ export const store = createStore({
       async refreshConfig({ commit }) {
         console.log("Fetching configuration");
         try {
-          const configFile = await api_get_req('get_config');
+          const configFile = await api_get_req('get_config')
+          let personality_path_infos = configFile.personalities[configFile.active_personality_id].split("/")
+          //let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
+          configFile.personality_language = personality_path_infos[0]
+          configFile.personality_category = personality_path_infos[1]
+          configFile.personality_folder = personality_path_infos[2]
+
           commit('setConfig', configFile);
-          console.log("Configurations recovered")
-          console.log(configFile)
-          console.log(this.state.config)
         } catch (error) {
           console.log(error.message, 'refreshConfig');
           // Handle error
@@ -150,7 +160,7 @@ export const store = createStore({
           }
 
           personalities.sort((a, b) => a.name.localeCompare(b.name))
-          this.state
+          console.log('personalities',personalities)
           commit('setPersonalities', personalities);
 
           console.log("Done loading personalities")
@@ -171,11 +181,7 @@ export const store = createStore({
                   mountedPersArr.push(this.state.personalities[this.state.personalities.findIndex(item => item.full_path == "english/generic/lollms")])
               }
           }
-          this.mountedPersArr = []
-          this.state.mountedPersArr = mountedPersArr
-          console.log('refreshMountedPersonalities', mountedPersArr)
-          console.log('fig', this)
-
+          commit('setMountedPersArr', mountedPersArr);
           this.state.mountedPers = this.state.personalities[this.state.personalities.findIndex(item => item.full_path == this.state.config.personalities[this.state.config.active_personality_id])]
       },
       async refreshBindings({ commit }) {
@@ -255,7 +261,7 @@ export const store = createStore({
         console.log("Refreshing models zoo")
         axios.get('/get_available_models')
         .then(response => {
-          console.log("found models")
+            console.log("found models")
             let models_zoo = response.data
             models_zoo.sort((a, b) => a.title.localeCompare(b.title))
 
@@ -292,7 +298,7 @@ export const store = createStore({
                   model.selected = false; 
                 }
             });            
-            commit('setModelsZoo',models_zoo)
+            commit('setModelsZoo', models_zoo)
             console.log("Models zoo loaded successfully")
 
         })
@@ -334,7 +340,8 @@ app.mixin({
       actionsExecuted = true;
       console.log("Calling")
       this.$store.dispatch('refreshConfig').then(() => {
-        this.$store.dispatch('refreshPersonalitiesArr').then(() => {
+          console.log("recovered config")
+          this.$store.dispatch('refreshPersonalitiesArr').then(() => {
           this.$store.dispatch('refreshMountedPersonalities');
           this.$store.dispatch('refreshBindings');
           this.$store.dispatch('refreshModels');

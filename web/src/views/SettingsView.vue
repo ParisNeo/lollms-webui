@@ -497,8 +497,8 @@
                         </label>
                         <div class="flex flex-col mx-2">
                             <div><b>Model:&nbsp;</b>{{ item.gpu_model }}</div>
-                            <div><b>Avaliable vram:&nbsp;</b>{{ item.available_space }}</div>
-                            <div><b>GPU usage:&nbsp;</b> {{ item.used_vram }} / {{ item.total_vram }} ({{ item.percentage
+                            <div><b>Avaliable vram:&nbsp;</b>{{  this.computedFileSize(item.available_space) }}</div>
+                            <div><b>GPU usage:&nbsp;</b> {{ this.computedFileSize(item.used_vram) }} / {{ this.computedFileSize(item.total_vram) }} ({{ item.percentage
                             }}%)</div>
                         </div>
                         <div class="p-2 ">
@@ -612,7 +612,7 @@
                                 <div class="flex gap-1 items-center">
                                     <img :src="imgModel" class="w-8 h-8 rounded-lg object-fill">
                                     <h3 class="font-bold font-large text-lg line-clamp-1">
-                                        {{ configFile.model_name }}
+                                        {{ model_name }}
                                     </h3>
                                 </div>
                             </div>
@@ -739,7 +739,7 @@
                         <div v-show="!mzdc_collapsed" ><i data-feather='chevron-down'></i></div>
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
                             Add models for binding</h3>
-                        <div v-if="!configFile.binding_name" class="text-base text-red-600 flex gap-3 items-center mr-2">
+                        <div v-if="!binding_name" class="text-base text-red-600 flex gap-3 items-center mr-2">
                             <i data-feather="alert-triangle" class="flex-shrink-0"></i>
                             No binding selected!
                         </div>
@@ -888,7 +888,6 @@
                         <!-- LIST OF MOUNTED PERSONALITIES -->
                         <div class="mr-2 font-bold font-large text-lg line-clamp-1">
                             {{ active_pesonality }}
-
                         </div>
                         <div v-if="configFile.personalities" class="mr-2">|</div>
                         <div v-if="configFile.personalities"
@@ -1011,8 +1010,6 @@
                         </select>
                     </div>
                     <div>
-
-
                         <div v-if="personalitiesFiltered.length > 0" class="mb-2">
                             <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                 {{ searchPersonality ? 'Search results' : 'Personalities' }}: ({{
@@ -1355,7 +1352,6 @@ export default {
             isLoading: false,
             settingsChanged: false,
             isModelSelected: false,
-            mountedPersArr: [],
             isMounted: false, // Needed to wait for $refs to be rendered
             bUrl: bUrl, // for personality images
             searchPersonality: "",
@@ -1385,11 +1381,6 @@ export default {
                 await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for 100ms
             }  
 
-            let personality_path_infos = this.configFile.personalities[this.configFile.active_personality_id]
-            //let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
-            this.configFile.personality_language = personality_path_infos["personality_language"]
-            this.configFile.personality_category = personality_path_infos["personality_category"]
-            this.configFile.personality_folder = personality_path_infos["personality_name"]
 
 
             if (this.configFile.model_name) {
@@ -1409,6 +1400,9 @@ export default {
 
 
             //await this.getPersonalitiesArr()
+            this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
+            this.personalitiesFiltered.sort()
+            //mountedPersArr
             this.modelsFiltered = this.models
 
             //this.bindings = await this.api_get_req("list_bindings")
@@ -1604,11 +1598,13 @@ export default {
                 if (model_object.isInstalled) {
 
                     if (this.configFile.model_name != model_object.title) {
-                        this.update_model(model_object.title)
-                        this.configFile.model_name = model_object.title
-                        this.$refs.toast.showToast("Selected model:\n" + model_object.title, 4, true)
-                        this.settingsChanged = true
-                        this.isModelSelected = true
+                        this.update_model(model_object.title).then((res)=>{
+                            console.log("update_model",res)
+                            this.configFile.model_name = model_object.title
+                            this.$refs.toast.showToast("Selected model:\n" + model_object.title, 4, true)
+                            this.settingsChanged = true
+                            this.isModelSelected = true
+                        });
                     }
 
                 } else {
@@ -1892,9 +1888,6 @@ export default {
                 //     return
                 // }
                 this.update_binding(binding_object.binding.folder)
-                this.$store.dispatch('refreshConfig');
-                this.$store.dispatch('refreshModelsZoo');
-                //console.log('lol',binding_object)
             }
         },
         onInstallBinding(binding_object) {
@@ -2053,42 +2046,37 @@ export default {
         toggleAccordion() {
             this.showAccordion = !this.showAccordion;
         },
-        update_setting(setting_name_val, setting_value_val, next) {
+        async update_setting(setting_name_val, setting_value_val, next) {
             this.isLoading = true
             const obj = {
                 setting_name: setting_name_val,
                 setting_value: setting_value_val
             }
 
-            axios.post('/update_setting', obj).then((res) => {
+            let res = await axios.post('/update_setting', obj)
 
-                if (res) {
-                    this.isLoading = false
-                    console.log('update_setting', res)
-                    if (next !== undefined) {
-
-                        next(res)
-                    }
-                    return res.data;
-                }
+            if (res) {
                 this.isLoading = false
-            })
-                // eslint-disable-next-line no-unused-vars
+                console.log('update_setting', res)
+                if (next !== undefined) {
 
-                .catch(error => {
-                    this.isLoading = false
-                    return { 'status': false }
-                });
+                    next(res)
+                }
+                return res.data;
+            }
+            this.isLoading = false
+
         },
         update_binding(value) {
 
             // eslint-disable-next-line no-unused-vars
             this.isLoading = true
-
+            console.log("updating binding_name")
             this.update_setting('binding_name', value, (res) => {
+                console.log("updated binding_name")
 
-                const index = this.bindings.findIndex(item => item.folder == value)
-                const item = this.bindings[index]
+                const index = this.bindingsArr.findIndex(item => item.folder == value)
+                const item = this.bindingsArr[index]
                 if (item) {
                     item.installed = true
                 }
@@ -2096,13 +2084,16 @@ export default {
                 this.settingsChanged = true
                 this.isLoading = false
 
+                console.log("updating model")
                 // If binding changes then reset model
-                this.update_model(null)
-                this.configFile.model_name = null
-
-                this.$store.dispatch('refreshConfig');
-                this.$store.dispatch('refreshModelsZoo');
-                this.$refs.toast.showToast("Binding changed.", 4, true)
+                this.update_model(null).then(()=>{
+                    console.log("updated model")
+                    this.configFile.model_name = null
+                    this.$store.dispatch('refreshConfig');
+                    this.$store.dispatch('refreshModelsZoo');
+                    this.$refs.toast.showToast("Binding changed.", 4, true)
+                    this.$forceUpdate();
+                });
                 //this.fetchMainConfig();
                 //this.fetchBindings();
                 //this.fetchModels();
@@ -2114,15 +2105,14 @@ export default {
             })
 
         },
-        update_model(value) {
+        async update_model(value) {
+            console.log("hjsdfhksdjufkdshf")
             if (!value) this.isModelSelected = false
             // eslint-disable-next-line no-unused-vars
             this.isLoading = true
-            this.update_setting('model_name', value, (res) => {
-
-                //this.fetchModels();
-                this.isLoading = false
-            })
+            let res = await this.update_setting('model_name', value)
+            this.isLoading = false
+            return res
         },
         applyConfiguration() {
 
@@ -2385,11 +2375,12 @@ export default {
                 const res = await axios.post('/select_personality', obj);
 
                 if (res) {
-                    this.configFile = await this.api_get_req("get_config")
-                    let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
-                    this.configFile.personality_language = personality_path_infos["personality_language"]
-                    this.configFile.personality_category = personality_path_infos["personality_category"]
-                    this.configFile.personality_folder = personality_path_infos["personality_name"]
+
+                    this.$store.dispatch('refreshConfig').then(() => {
+                        this.$store.dispatch('refreshPersonalitiesArr').then(() => {
+                        this.$store.dispatch('refreshMountedPersonalities');                
+                        });
+                    });
                     return res.data
 
                 }
@@ -2424,7 +2415,7 @@ export default {
                     this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
 
                 }
-                this.getMountedPersonalities()
+                this.$store.dispatch('refreshMountedPersonalities');
             } else {
                 pers.isMounted = false
                 this.$refs.toast.showToast("Could not mount personality\nError: " + res.error + "\nResponse:\n" + res, 4, false)
@@ -2523,7 +2514,6 @@ export default {
             } else {
                 //persItem.ismounted = true
                 this.mountPersonality(persItem)
-
             }
 
             //this.isLoading = false
@@ -2572,6 +2562,14 @@ export default {
             },
             set(value) {
                 this.$store.commit('setPersonalities', value);
+            }
+        },
+        mountedPersArr:{
+            get() {
+                return this.$store.state.mountedPersArr;
+            },
+            set(value) {
+                this.$store.commit('setMountedPers', value);
             }
         },
         bindingsArr: {
@@ -2687,6 +2685,12 @@ export default {
             catch (error) {
                 return defaultModelImgPlaceholder
             }
+        },
+        model_name() {
+            if (!this.isMounted) {
+                return
+            }
+            return this.configFile.model_name
         },
         binding_name() {
             if (!this.isMounted) {

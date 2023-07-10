@@ -109,9 +109,9 @@
                             <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
                             <!-- :onShowPersList="onShowPersListFun" -->
                         </div>
-                        <div class="w-6">
+                        <div class="w-fit">
                             <PersonalitiesCommands
-                                v-if="personalities_ready" 
+                                v-if="personalities_ready && this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands!=''" 
                                 :commandsList="this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands"
                                 :sendCommand="sendMessageEvent"
                                 ref="personalityCMD"
@@ -256,8 +256,6 @@ export default {
     },
     methods: {
         onPersonalitiesReadyFun(){
-            console.log("Personalities ready")
-            console.log(this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id]);
             this.personalities_ready = true;
         },
         onShowPersListFun(comp) {

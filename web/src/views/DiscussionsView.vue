@@ -16,7 +16,7 @@
         </div>        
     </div>
     </transition>
-    <button v-if="this.$store.state.ready" @click="togglePanel" class="absolute top-0 left-0 z-50 p-2 m-2 bg-white rounded-full shadow-md">
+    <button v-if="this.$store.state.ready" @click="togglePanel" class="absolute top-0 left-0 z-50 p-2 m-2 bg-white rounded-full shadow-md  bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-primary-light dark:hover:bg-primary">
                     <div v-show="panelCollapsed" ><i data-feather='chevron-right'></i></div>
                     <div v-show="!panelCollapsed" ><i data-feather='chevron-left'></i></div>
     </button>        
@@ -823,8 +823,6 @@ export default {
         },
         streamMessageContent(msgObj) {
             // Streams response message content from binding
-            console.log('stream msg',msgObj)
-            console.log('stream msg type : ',msgObj.message_type)
             const parent = msgObj.user_message_id
             const discussion_id = msgObj.discussion_id
             this.setDiscussionLoading(discussion_id, true);
@@ -833,21 +831,13 @@ export default {
                 this.isGenerating = true;
                 const index = this.discussionArr.findIndex((x) => x.parent == parent && x.id == msgObj.ai_message_id)
                 const messageItem = this.discussionArr[index]
-                console.log("Message type")
-                console.log(msgObj.message_type)
                 if (messageItem && msgObj.message_type<this.msgTypes.MSG_TYPE_FULL_INVISIBLE_TO_USER) {
                     messageItem.content = msgObj.data
                 }
                 else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_START){
-                    console.log("Step started: ",msgObj.data)
                     messageItem.steps.push({"message":msgObj.data,"done":false})
-                    console.log("Steps: ",messageItem.steps)
-                    console.log("this.discussionArr: ",this.discussionArr)
-                    
-
                 
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_END) {
-                    console.log("Step ended:", msgObj.data);
 
                     // Find the step with the matching message and update its 'done' property to true
                     const matchingStep = messageItem.steps.find(step => step.message === msgObj.data);
