@@ -594,7 +594,7 @@ class LoLLMsAPPI(LollmsApplication):
         self.full_message_list = []
         for message in messages:
             if message["id"]< message_id or message_id==-1: 
-                if message["type"]==MSG_TYPE.MSG_TYPE_FULL:
+                if message["type"]<=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER.value and message["type"]!=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value:
                     if message["sender"]==self.personality.name:
                         self.full_message_list.append(self.personality.ai_message_prefix+message["content"])
                     else:
@@ -610,9 +610,9 @@ class LoLLMsAPPI(LollmsApplication):
 
 
         discussion_messages = self.personality.personality_conditioning+ link_text.join(self.full_message_list)
-
+        tokens = self.model.tokenize(discussion_messages)
         
-        return discussion_messages, message["content"]
+        return discussion_messages, message["content"], tokens
 
     def get_discussion_to(self, message_id=-1):
         messages = self.current_discussion.get_messages()
@@ -751,13 +751,13 @@ class LoLLMsAPPI(LollmsApplication):
             return
 
         self._generate(full_prompt, n_predict, callback)
-        print("Finished executing the generation")
+        ASCIIColors.success("\nFinished executing the generation")
 
     def _generate(self, prompt, n_predict=1024, callback=None):
         self.current_generated_text = ""
         self.nb_received_tokens = 0
         if self.model is not None:
-            ASCIIColors.info("warmup")
+            ASCIIColors.info(f"warmup for generating {n_predict} tokens")
             if self.config["override_personality_model_parameters"]:
                 output = self.model.generate(
                     prompt,
@@ -830,10 +830,10 @@ class LoLLMsAPPI(LollmsApplication):
             self.socketio.sleep(0.01)
 
             # prepare query and reception
-            self.discussion_messages, self.current_message = self.prepare_query(message_id, is_continue)
+            self.discussion_messages, self.current_message, tokens = self.prepare_query(message_id, is_continue)
             self.prepare_reception()
             self.generating = True
-            self.generate(self.discussion_messages, self.current_message, n_predict = self.config['n_predict'], callback=self.process_chunk)
+            self.generate(self.discussion_messages, self.current_message, n_predict = self.config.ctx_size-len(tokens)-1, callback=self.process_chunk)
             print()
             print("## Done Generation ##")
             print()

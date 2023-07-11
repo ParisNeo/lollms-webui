@@ -982,7 +982,7 @@
                         <label for="persLang" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Personalities Languages: ({{ persLangArr.length }})
                         </label>
-                        <select id="persLang" @change="update_setting('personality_language', $event.target.value, refresh)"
+                        <select id="persLang" @change="update_personality_language($event.target.value, refresh)"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                             <option v-for="item in persLangArr" :selected="item === this.configFile.personality_language">{{
@@ -997,7 +997,7 @@
                         <label for="persCat" class="block  mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Personalities Category: ({{ persCatgArr.length }})
                         </label>
-                        <select id="persCat" @change="update_setting('personality_category', $event.target.value, refresh)"
+                        <select id="persCat" @change="update_personality_category($event.target.value, refresh)"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                             <option v-for="(item, index) in persCatgArr" :key="index"
@@ -1321,6 +1321,10 @@ export default {
     data() {
 
         return {
+            // Current personality language
+            personality_language:null,
+            // Current personality category
+            personality_category:null,
             // install custom model
             addModelDialogVisibility: false,
             modelPath: '',
@@ -1400,6 +1404,8 @@ export default {
 
 
             //await this.getPersonalitiesArr()
+            this.personality_language = this.configFile.personality_language
+            this.personality_category = this.configFile.personality_category
             this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
             this.personalitiesFiltered.sort()
             //mountedPersArr
@@ -2032,9 +2038,25 @@ export default {
         onMessageBoxOk() {
             console.log("OK button clicked");
         },
+        update_personality_language(lang, next){
+            this.personality_language = lang
+            next()
+        },
+
+        update_personality_category(cat, next){
+            this.personality_category = cat
+            next()
+        },
         // Refresh stuff
         refresh() {
             console.log("Refreshing")
+            this.$store.dispatch('refreshConfig').then(() => {
+                console.log(this.personality_language)
+                console.log(this.personality_category)
+                this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.personality_category && item.language === this.personality_language)
+                this.personalitiesFiltered.sort()
+            });
+            
             //this.fetchMainConfig();
             //this.fetchBindings();
             //this.fetchModels();
