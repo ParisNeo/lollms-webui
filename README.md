@@ -54,6 +54,8 @@ Personalities bag where you can activate simultaniously multiple personalities
 ![image](https://github.com/ParisNeo/lollms-webui/assets/827993/0955adc2-5e3b-4a49-9f54-7340be942d05)
 Multiple personalities discussions
 ![image](https://github.com/ParisNeo/lollms-webui/assets/827993/32f630b8-712e-4d4c-8a69-fb932a3c856c)
+Hot personality selection
+![image](https://github.com/ParisNeo/lollms-webui/assets/827993/fbc7f249-d94c-4525-99b3-b0195b5bd800)
 
 Artbot
   ![image](https://github.com/ParisNeo/lollms-webui/assets/827993/45b507b5-d9be-4111-8ad4-266e27e334d4)
