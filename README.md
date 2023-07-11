@@ -46,13 +46,26 @@ Models search options
 ![image](https://github.com/ParisNeo/lollms-webui/assets/827993/2441830d-0eca-4df7-8fa1-ffef4e16be8d)
 Custom models installation
 ![image](https://github.com/ParisNeo/lollms-webui/assets/827993/50286fdf-16be-48e8-8bfa-d4e47b2160ff)
-Huge personaloities library (about 300 personalities)
+Huge personalities library (about 300 personalities split in 36 categories)
+![image](https://github.com/ParisNeo/lollms-webui/assets/827993/188847e6-7c49-45e1-acf5-ca5a1f32ff53)
+Personalities search option
+![image](https://github.com/ParisNeo/lollms-webui/assets/827993/3b88a665-edb9-4ede-922a-3f2df9e749f2)
+Personalities bag where you can activate simultaniously multiple personalities
+![image](https://github.com/ParisNeo/lollms-webui/assets/827993/0955adc2-5e3b-4a49-9f54-7340be942d05)
+Multiple personalities discussions
+![image](https://github.com/ParisNeo/lollms-webui/assets/827993/32f630b8-712e-4d4c-8a69-fb932a3c856c)
+Hot personality selection
+![image](https://github.com/ParisNeo/lollms-webui/assets/827993/fbc7f249-d94c-4525-99b3-b0195b5bd800)
+
 Artbot
   ![image](https://github.com/ParisNeo/lollms-webui/assets/827993/45b507b5-d9be-4111-8ad4-266e27e334d4)
 Lollms personality maker
   ![image](https://github.com/ParisNeo/lollms-webui/assets/827993/338a250b-1298-42a7-b4ec-a9f674353dea)
+Chat with docs with commands like send file and set database
+![image](https://github.com/ParisNeo/lollms-webui/assets/827993/9b9da237-2fa8-410c-a05a-28d0aa2dc494)
 
 Python Specialist
+![image](https://github.com/ParisNeo/lollms-webui/assets/827993/01eee298-00e1-4caa-97c1-97b74ba8956d)
 
 
 
