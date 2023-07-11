@@ -12,7 +12,7 @@
 
 Welcome to LoLLMS WebUI (Lord of Large Language Models: One tool to rule them all), the hub for LLM (Large Language Model) models. This project aims to provide a user-friendly interface to access and utilize various LLM models for a wide range of tasks. Whether you need help with writing, coding, organizing data, generating images, or seeking answers to your questions, LoLLMS WebUI has got you covered.
 
-[Click here for my youtube video on how to use the tool](https://youtu.be/ds_U0TDzbzI)
+[Click here for my youtube video on how to use the tool]([https://youtu.be/ds_U0TDzbzI](https://youtu.be/MxXNGv1zJ1A))
 ## Features
 
 - Choose your preferred binding, model, and personality for your tasks
@@ -26,6 +26,18 @@ Welcome to LoLLMS WebUI (Lord of Large Language Models: One tool to rule them al
 - Local database storage for your discussions
 - Search, export, and delete multiple discussions
 - Support for Docker, conda, and manual virtual environment setups
+
+## Screenshots
+Main page
+  ![image](https://github.com/ParisNeo/lollms-webui/assets/827993/9fd5ed82-cdff-467f-b159-9df61bc36b96)
+Artbot
+  ![image](https://github.com/ParisNeo/lollms-webui/assets/827993/45b507b5-d9be-4111-8ad4-266e27e334d4)
+Lollms personality maker
+  ![image](https://github.com/ParisNeo/lollms-webui/assets/827993/338a250b-1298-42a7-b4ec-a9f674353dea)
+Python Specialist
+   ![image](https://github.com/ParisNeo/lollms-webui/assets/827993/95a071cf-7f2c-4d5c-870d-7b364eac48f2)
+
+
 
 ## Installation
 
