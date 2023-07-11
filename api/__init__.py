@@ -153,18 +153,6 @@ class LoLLMsAPPI(LollmsApplication):
         def install_model(data):
             room_id = request.sid 
             
-            def get_file_size(url):
-                # Send a HEAD request to retrieve file metadata
-                response = urllib.request.urlopen(url)
-                
-                # Extract the Content-Length header value
-                file_size = response.headers.get('Content-Length')
-                
-                # Convert the file size to integer
-                if file_size:
-                    file_size = int(file_size)
-                
-                return file_size   
                      
             def install_model_():
                 print("Install model triggered")
@@ -182,7 +170,7 @@ class LoLLMsAPPI(LollmsApplication):
                 signature = f"{model_name}_{binding_folder}_{model_url}"
                 self.download_infos[signature]={
                     "start_time":datetime.now(),
-                    "total_size":get_file_size(model_path),
+                    "total_size":self.binding.get_file_size(model_path),
                     "downloaded_size":0,
                     "progress":0,
                     "speed":0,
