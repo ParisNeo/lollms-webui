@@ -1,6 +1,6 @@
 <template>
     <div :class="selected ? 'bg-bg-light-discussion dark:bg-bg-dark-discussion shadow-md' : ''"
-        class=" flex flex-row sm:flex-row item-center shadow-sm gap-2 py-2 my-2 hover:shadow-md hover:bg-primary-light dark:hover:bg-primary rounded-md p-2 duration-75 group cursor-pointer"
+        class=" flex flex-row sm:flex-row  flex-wrap flex-shrink: 0 item-center shadow-sm gap-2 py-2 my-2 hover:shadow-md hover:bg-primary-light dark:hover:bg-primary rounded-md p-2 duration-75 group cursor-pointer"
         :id="'dis-' + id" @click.stop="selectEvent()">
 
         <!-- PRE TITLE SECTION -->
@@ -19,11 +19,8 @@
                 :class="loading ? 'min-h-full w-2 rounded-xl self-stretch animate-bounce bg-accent ' : '  '"></div>
 
         </div>
-       
-
-        
         <!-- TITLE -->
-        <p v-if="!editTitle" :title="title" class="line-clamp-1 w-full ml-1 -mx-5">{{ title ? title === "untitled" ? "New discussion" :
+        <p v-if="!editTitle" :title="title" class="line-clamp-1 w-4/6 ml-1 -mx-5 ">{{ title ? title === "untitled" ? "New discussion" :
             title : "New discussion" }}</p>
 
         <input v-if="editTitle" type="text" id="title-box" ref="titleBox"

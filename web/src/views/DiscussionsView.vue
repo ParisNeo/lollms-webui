@@ -78,9 +78,6 @@
                 <!-- SEARCH BAR -->
                 <!-- <Transition name="expand" > -->
                 <div v-if="isSearch" class="flex-row  items-center gap-3 flex-0 w-full">
-
-
-
                     <div class="p-4 pt-2 ">
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
