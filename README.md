@@ -65,6 +65,7 @@ Chat with docs with commands like send file and set database
 ![image](https://github.com/ParisNeo/lollms-webui/assets/827993/9b9da237-2fa8-410c-a05a-28d0aa2dc494)
 
 Python Specialist
+![image](https://github.com/ParisNeo/lollms-webui/assets/827993/01eee298-00e1-4caa-97c1-97b74ba8956d)
 
 
 
