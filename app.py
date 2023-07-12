@@ -41,8 +41,6 @@ from flask import (
     stream_with_context,
     send_from_directory
 )
-from tkinter import Tk
-from tkinter.filedialog import askopenfilename
 
 from flask_socketio import SocketIO, emit
 from pathlib import Path
@@ -840,6 +838,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
                         })         
 
     def install_model_from_path(self):
+        from tkinter import Tk
+        from tkinter.filedialog import askopenfilename
+        
         ASCIIColors.info(f"- Selecting model ...")
         # Define the file types
         filetypes = [
