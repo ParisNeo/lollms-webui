@@ -1,6 +1,6 @@
 @echo off
 
-echo " \u001b[34m"
+echo \u001b[34m
 echo "      ___       ___           ___       ___       ___           ___      "
 echo "     /\__\     /\  \         /\__\     /\__\     /\__\         /\  \     "
 echo "    /:/  /    /::\  \       /:/  /    /:/  /    /::|  |       /::\  \    "
@@ -12,8 +12,8 @@ echo "  \:\  \    \:\  /:/  /   \:\  \    \:\  \         /:/  /   \:\ \:\__\   "
 echo "   \:\  \    \:\/:/  /     \:\  \    \:\  \       /:/  /     \:\/:/  /   "
 echo "    \:\__\    \::/  /       \:\__\    \:\__\     /:/  /       \::/  /    "
 echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
-echo " By ParisNeo"
-echo " \u001b[0m"
+echo By ParisNeo
+echo \u001b[0m
 echo Checking internet connection
 
 ping google.com -n 1 >nul 2>&1
