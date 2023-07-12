@@ -1,7 +1,7 @@
 @echo off
 set environment_path=%cd%/lollms-webui/env
 
-echo "\u001b[34m"
+echo \u001b[34m
 echo "      ___       ___           ___       ___       ___           ___      "
 echo "     /\__\     /\  \         /\__\     /\__\     /\__\         /\  \     "
 echo "    /:/  /    /::\  \       /:/  /    /:/  /    /::|  |       /::\  \    "
@@ -13,7 +13,7 @@ echo "  \:\  \    \:\  /:/  /   \:\  \    \:\  \         /:/  /   \:\ \:\__\   "
 echo "   \:\  \    \:\/:/  /     \:\  \    \:\  \       /:/  /     \:\/:/  /   "
 echo "    \:\__\    \::/  /       \:\__\    \:\__\     /:/  /       \::/  /    "
 echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
-echo " By ParisNeo"
+echo By ParisNeo
 echo \u001b[0m
 
 echo Testing internet connection
