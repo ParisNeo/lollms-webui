@@ -18,7 +18,7 @@ from lollms.types import MSG_TYPE
 from lollms.personality import AIPersonality, PersonalityBuilder
 from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding, ModelBuilder
 from lollms.paths import LollmsPaths
-from lollms.helpers import ASCIIColors
+from lollms.helpers import ASCIIColors, trace_exception
 from lollms.app import LollmsApplication
 import multiprocessing as mp
 import threading
@@ -466,8 +466,9 @@ class LoLLMsAPPI(LollmsApplication):
                                                     run_scripts=True,
                                                     installation_option=InstallOption.FORCE_INSTALL)
                         mounted_personalities.append(personality)
-                    except:
+                    except Exception as ex:
                         ASCIIColors.error(f"Couldn't load personality at {personality_path}")
+                        trace_exception(ex)
                         ASCIIColors.info(f"Unmounting personality")
                         to_remove.append(i)
                         personality = AIPersonality(None,                                                    self.lollms_paths, 
