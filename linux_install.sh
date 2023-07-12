@@ -25,19 +25,31 @@ read -rp "Press Enter to continue..."
 
 clear
 
-echo "What is your GPU?"
-echo
-echo "A) NVIDIA"
-echo "B) None (I want to run in CPU mode)"
+echo "      ___       ___           ___       ___       ___           ___      "
+echo "     /\__\     /\  \         /\__\     /\__\     /\__\         /\  \     "
+echo "    /:/  /    /::\  \       /:/  /    /:/  /    /::|  |       /::\  \    "
+echo "   /:/  /    /:/\:\  \     /:/  /    /:/  /    /:|:|  |      /:/\ \  \   "
+echo "  /:/  /    /:/  \:\  \   /:/  /    /:/  /    /:/|:|__|__   _\:\~\ \  \  "
+echo " /:/__/    /:/__/ \:\__\ /:/__/    /:/__/    /:/ |::::\__\ /\ \:\ \ \__\ "
+echo " \:\  \    \:\  \ /:/  / \:\  \    \:\  \    \/__/~~/:/  / \:\ \:\ \/__/ "
+echo "  \:\  \    \:\  /:/  /   \:\  \    \:\  \         /:/  /   \:\ \:\__\   "
+echo "   \:\  \    \:\/:/  /     \:\  \    \:\  \       /:/  /     \:\/:/  /   "
+echo "    \:\__\    \::/  /       \:\__\    \:\__\     /:/  /       \::/  /    "
+echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
+echo " By ParisNeo"
+
+echo "Please specify if you want to use a GPU or CPU. Note thaty only NVidea GPUs are supported?"
+echo "A) Enable GPU"
+echo "B) Run CPU mode"
 echo
 read -rp "Input> " gpuchoice
 gpuchoice="${gpuchoice:0:1}"
 
 if [[ "${gpuchoice^^}" == "A" ]]; then
-  PACKAGES_TO_INSTALL="python=3.10 cuda-toolkit ninja git"
+  PACKAGES_TO_INSTALL="python=3.10 cuda-toolkit ninja git gcc"
   CHANNEL="-c nvidia/label/cuda-11.7.0 -c nvidia -c conda-forge"
 elif [[ "${gpuchoice^^}" == "B" ]]; then
-  PACKAGES_TO_INSTALL="python=3.10 ninja git"
+  PACKAGES_TO_INSTALL="python=3.10 ninja git gcc"
   CHANNEL="-c conda-forge"
 else
   echo "Invalid choice. Exiting..."
@@ -53,7 +65,7 @@ export TEMP="$PWD/installer_files/temp"
 export TMP="$PWD/installer_files/temp"
 
 MINICONDA_DIR="$PWD/installer_files/miniconda3"
-INSTALL_ENV_DIR="$PWD/installer_files/env"
+INSTALL_ENV_DIR="$PWD/installer_files/lollms_env"
 MINICONDA_DOWNLOAD_URL="https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"
 REPO_URL="https://github.com/ParisNeo/lollms-webui.git"
 
@@ -80,7 +92,7 @@ source "$MINICONDA_DIR/bin/activate" || ( echo "Miniconda hook not found." && ex
 # Create the installer environment
 if [ ! -d "$INSTALL_ENV_DIR" ]; then
   echo "Packages to install: $PACKAGES_TO_INSTALL"
-  conda create --no-shortcuts -y -k -p "$INSTALL_ENV_DIR" $CHANNEL $PACKAGES_TO_INSTALL || ( echo && echo "Conda environment creation failed." && exit 1 )
+  conda create -y -k -p "$INSTALL_ENV_DIR" $CHANNEL $PACKAGES_TO_INSTALL || ( echo && echo "Conda environment creation failed." && exit 1 )
   if [[ "${gpuchoice^^}" == "A" ]]; then
     conda run --live-stream -p "$INSTALL_ENV_DIR" python -m pip install torch==2.0.1+cu117 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117 || ( echo && echo "Pytorch installation failed." && exit 1 )
   elif [[ "${gpuchoice^^}" == "B" ]]; then
@@ -118,6 +130,13 @@ done < requirements.txt
 
 # Install the pip requirements
 python -m pip install -r requirements.txt --upgrade
+
+if [[ -e "../linux_run.sh" ]]; then
+    echo "Linux run found"
+else
+    cp linux_run.sh ../
+    exit 0
+fi
 
 PrintBigMessage() {
   echo

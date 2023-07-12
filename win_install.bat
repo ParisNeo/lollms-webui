@@ -19,11 +19,22 @@ set SPCHARMESSAGE=
 pause
 cls
 
-echo What is your GPU?
-echo.
-echo A) NVIDIA
-echo B) None (I want to run in CPU mode)
-echo.
+echo "      ___       ___           ___       ___       ___           ___      "
+echo "     /\__\     /\  \         /\__\     /\__\     /\__\         /\  \     "
+echo "    /:/  /    /::\  \       /:/  /    /:/  /    /::|  |       /::\  \    "
+echo "   /:/  /    /:/\:\  \     /:/  /    /:/  /    /:|:|  |      /:/\ \  \   "
+echo "  /:/  /    /:/  \:\  \   /:/  /    /:/  /    /:/|:|__|__   _\:\~\ \  \  "
+echo " /:/__/    /:/__/ \:\__\ /:/__/    /:/__/    /:/ |::::\__\ /\ \:\ \ \__\ "
+echo " \:\  \    \:\  \ /:/  / \:\  \    \:\  \    \/__/~~/:/  / \:\ \:\ \/__/ "
+echo "  \:\  \    \:\  /:/  /   \:\  \    \:\  \         /:/  /   \:\ \:\__\   "
+echo "   \:\  \    \:\/:/  /     \:\  \    \:\  \       /:/  /     \:\/:/  /   "
+echo "    \:\__\    \::/  /       \:\__\    \:\__\     /:/  /       \::/  /    "
+echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
+echo " By ParisNeo"
+
+echo Please specify if you want to use a GPU or CPU. Note thaty only NVidea GPUs are supported?
+echo A) Enable GPU
+echo B) Run CPU mode
 set /p "gpuchoice=Input> "
 set gpuchoice=%gpuchoice:~0,1%
 
@@ -47,7 +58,7 @@ SET "TEMP=%cd%\installer_files\temp"
 SET "TMP=%cd%\installer_files\temp"
 
 set MINICONDA_DIR=%cd%\installer_files\miniconda3
-set INSTALL_ENV_DIR=%cd%\installer_files\env
+set INSTALL_ENV_DIR=%cd%\installer_files\lollms_env
 set MINICONDA_DOWNLOAD_URL=https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe
 set REPO_URL=https://github.com/ParisNeo/lollms-webui.git
 
@@ -99,10 +110,10 @@ for /F "delims=" %%a in (requirements.txt) do echo "%%a"| findstr /C:"git+" >nul
 call python -m pip install -r requirements.txt --upgrade
 
 @rem create launcher
-if exist ..\clever_run.bat (
-    echo Clever run found
+if exist ..\win_run.bat (
+    echo Win run found
 ) else (
-  copy clever_run.bat ..\
+  copy win_run.bat ..\
   goto end
 )
 
