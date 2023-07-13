@@ -650,7 +650,15 @@ class LoLLMsAPPI(LollmsApplication):
             self.full_message_list.append(self.personality.ai_message_prefix+message["content"])
 
 
-        discussion_messages = self.personality.personality_conditioning+ link_text.join(self.full_message_list)
+        messages = link_text.join(self.full_message_list)
+        t = self.model.tokenize(messages)
+        n_t = len(t)
+        max_prompt_stx_size = 3*int(self.config.ctx_size/4)
+        if self.n_cond_tk+n_t>max_prompt_stx_size:
+            nb_tk = max_prompt_stx_size-self.n_cond_tk
+            messages = self.model.detokenize(t[-nb_tk:])
+            ASCIIColors.warning(f"Cropping discussion to fit context [using {nb_tk} tokens/{self.config.ctx_size}]")
+        discussion_messages = self.personality.personality_conditioning+ messages
         tokens = self.model.tokenize(discussion_messages)
         
         return discussion_messages, message["content"], tokens
@@ -699,6 +707,7 @@ class LoLLMsAPPI(LollmsApplication):
         1 : a notification message
         2 : A hidden message
         """
+
         if message_type == MSG_TYPE.MSG_TYPE_STEP:
             ASCIIColors.info("--> Step:"+chunk)
         if message_type == MSG_TYPE.MSG_TYPE_STEP_START:
@@ -708,6 +717,7 @@ class LoLLMsAPPI(LollmsApplication):
         if message_type == MSG_TYPE.MSG_TYPE_EXCEPTION:
             ASCIIColors.error("--> Exception from personality:"+chunk)
         
+
         if message_type == MSG_TYPE.MSG_TYPE_CHUNK:
             self.current_generated_text += chunk
             self.nb_received_tokens += 1
