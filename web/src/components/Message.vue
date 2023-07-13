@@ -76,10 +76,14 @@
                                 title="Copy message to clipboard" @click.stop="copyContentToClipboard()">
                                 <i data-feather="copy"></i>
                             </div>
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" title="Resend message"
+                            <div v-if="message.sender!=this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" title="Resend message"
                                 @click.stop="resendMessage()">
                                 <i data-feather="refresh-cw"></i>
                             </div>
+                            <div v-if="message.sender==this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" title="Resend message"
+                                @click.stop="continueMessage()">
+                                <i data-feather="fast-forward"></i>
+                            </div>                            
                             <!-- DELETE CONFIRMATION -->
                             <div v-if="deleteMsgMode" class="flex items-center duration-75">
                                 <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 p-2"
@@ -174,7 +178,7 @@ import Step from './Step.vue';
 export default {
     // eslint-disable-next-line vue/multi-word-component-names
     name: 'Message',
-    emits: ['copy', 'delete', 'rankUp', 'rankDown', 'updateMessage', 'resendMessage'],
+    emits: ['copy', 'delete', 'rankUp', 'rankDown', 'updateMessage', 'resendMessage', 'continueMessage'],
     components: {
         MarkdownRenderer,
         Step
@@ -231,6 +235,9 @@ export default {
         },
         resendMessage() {
             this.$emit('resendMessage', this.message.id, this.new_message_content)
+        },
+        continueMessage() {
+            this.$emit('continueMessage', this.message.id, this.new_message_content)
         },
         getImgUrl() {
 

@@ -196,7 +196,7 @@ export default {
         },
         async onPersonalitySelected(pers) {
             // eslint-disable-next-line no-unused-vars
-
+            feather.replace()
             console.log('ppa', pers)
             if (pers) {
 

@@ -193,7 +193,7 @@
                 <TransitionGroup v-if="discussionArr.length > 0" name="list">
                     <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg"  :id="'msg-' + msg.id"
                         ref="messages" @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
-                        @rankDown="rankDownMessage" @updateMessage="updateMessage" @resendMessage="resendMessage"
+                        @rankDown="rankDownMessage" @updateMessage="updateMessage" @resendMessage="resendMessage" @continueMessage="continueMessage"
                         :avatar="getAvatar(msg.sender)" />
 
                     <!-- REMOVED FOR NOW, NEED MORE TESTING -->
@@ -351,16 +351,6 @@ export default {
     methods: {
         togglePanel() {
             this.panelCollapsed = !this.panelCollapsed;
-        },
-        socketIOConnected() {
-            console.log("socketIOConnected")
-            this.$store.state.isConnected=true;
-            return true
-        },
-        socketIODisonnected() {
-            console.log("socketIOConnected")
-            this.$store.state.isConnected=false;
-            return true
         },
         async api_get_req(endpoint) {
             try {
@@ -633,17 +623,23 @@ export default {
             }
         },
         scrollToElementInContainer(el, containerId) {
-            const topPos = el.offsetTop; //+ el.clientHeight
-            const container = document.getElementById(containerId)
-            // console.log(el.offsetTop , el.clientHeight, container.clientHeight)
+            try{
+                const topPos = el.offsetTop; //+ el.clientHeight
+                const container = document.getElementById(containerId)
+                // console.log(el.offsetTop , el.clientHeight, container.clientHeight)
 
 
-            container.scrollTo(
-                {
-                    top: topPos,
-                    behavior: "smooth",
-                }
-            )
+                container.scrollTo(
+                    {
+                        top: topPos,
+                        behavior: "smooth",
+                    }
+                )
+
+            }
+            catch{
+
+            }
 
         },
         scrollBottom(el) {
@@ -715,7 +711,7 @@ export default {
                 model: msgObj.model,
                 personality: msgObj.personality,
                 sender: msgObj.user,
-                
+                steps:[]
             }
             
             
@@ -723,9 +719,16 @@ export default {
                 this.discussionArr[index] = newMessage;
             }
 
-
-
-
+        },
+        socketIOConnected() {
+            console.log("socketIOConnected")
+            this.$store.dispatch('setIsConnected',true);
+            return true
+        },
+        socketIODisonnected() {
+            console.log("socketIOConnected")
+            this.$store.dispatch('setIsConnected',false);
+            return true
         },
         createBotMsg(msgObj) {
             // Update previous message with reponse user data
@@ -820,11 +823,11 @@ export default {
         },
         streamMessageContent(msgObj) {
             // Streams response message content from binding
+            console.log("Received message",msgObj)
             const parent = msgObj.user_message_id
             const discussion_id = msgObj.discussion_id
             this.setDiscussionLoading(discussion_id, true);
             if (this.currentDiscussion.id == discussion_id) {
-
                 this.isGenerating = true;
                 const index = this.discussionArr.findIndex((x) => x.parent == parent && x.id == msgObj.ai_message_id)
                 const messageItem = this.discussionArr[index]
@@ -852,6 +855,7 @@ export default {
             // Force an immediate UI update
             this.$nextTick(() => {
                 // UI updates are rendered here
+                feather.replace()
             });
 
         },
@@ -1050,6 +1054,10 @@ export default {
 
         },
         resendMessage(msgId, msg) {
+            nextTick(() => {
+                feather.replace()
+
+            })
             // Resend message
             this.isGenerating = true;
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
@@ -1058,6 +1066,30 @@ export default {
                     console.log(res);
                     if (!res.data.status) {
                         socket.emit('generate_msg_from', { prompt: msg, id: msgId });
+
+
+                    }
+                    else {
+                        console.log("Already generating");
+                    }
+                }
+            }).catch((error) => {
+                console.log("Error: Could not get generation status", error);
+            });
+        },
+        continueMessage(msgId, msg) {
+            nextTick(() => {
+                feather.replace()
+
+            })
+            // Resend message
+            this.isGenerating = true;
+            this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
+            axios.get('/get_generation_status', {}).then((res) => {
+                if (res) {
+                    console.log(res);
+                    if (!res.data.status) {
+                        socket.emit('continue_generate_msg_from', { prompt: msg, id: msgId });
 
 
                     }
@@ -1097,7 +1129,7 @@ export default {
                     parent: msgObj.user_message_id,
                     personality:msgObj.personality,
                     rank:0,
-                    steps:this.discussionArr[index].steps,
+                    steps:msgObj.steps,
                     sender:msgObj.bot,
                     type:msgObj.type
                 }

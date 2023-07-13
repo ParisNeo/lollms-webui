@@ -121,6 +121,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
         # Endpoints
         # =========================================================================================
 
+        self.add_endpoint("/reload_binding", "reload_binding", self.reload_binding, methods=["POST"])
+
         
         self.add_endpoint("/install_model_from_path", "install_model_from_path", self.install_model_from_path, methods=["GET"])
         
@@ -911,6 +913,41 @@ class LoLLMsWebUI(LoLLMsAPPI):
             print(f"Couldn't build binding: [{ex}]")
             return jsonify({"status":False, 'error':str(ex)})
         
+    def reload_binding(self):
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return jsonify({"status":False, 'error':str(e)})
+        ASCIIColors.info(f"- Reloading binding {data['name']}...")
+        try:
+            ASCIIColors.info("Unmounting binding and model")
+            self.binding = None
+            self.model = None
+            for personality in self.mounted_personalities:
+                personality.model = None
+            gc.collect()
+            ASCIIColors.info("Reloading binding")
+            self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths)
+            ASCIIColors.info("Binding loaded successfully")
+
+            try:
+                ASCIIColors.info("Reloading model")
+                self.model = self.binding.build_model()
+                ASCIIColors.info("Model reloaded successfully")
+            except Exception as ex:
+                print(f"Couldn't build model: [{ex}]")
+                trace_exception(ex)
+            try:
+                self.rebuild_personalities()
+            except Exception as ex:
+                print(f"Couldn't reload personalities: [{ex}]")
+            return jsonify({"status": True}) 
+        except Exception as ex:
+            print(f"Couldn't build binding: [{ex}]")
+            return jsonify({"status":False, 'error':str(ex)})
+                
 
     def p_mount_personality(self):
         print("- Mounting personality")

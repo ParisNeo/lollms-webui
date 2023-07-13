@@ -312,10 +312,47 @@ class Discussion:
         self.discussions_db = discussions_db
         self.current_message_binding = ""
         self.current_message_model = ""
+        self.content = ""
         self.current_message_personality = ""
         self.current_message_created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.current_message_finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
+    def load_message(self, id):
+        """Gets a list of messages information
+
+        Returns:
+            list: List of entries in the format {"id":message id, "sender":sender name, "content":message content, "type":message type, "rank": message rank}
+        """
+        
+        rows = self.discussions_db.select(
+            "SELECT id, sender, content, type, rank, parent, binding, model, personality, created_at, finished_generating_at FROM message WHERE id=?", (id,)
+        )
+        if len(rows)>0:
+            row = rows[0]
+
+            self.created_at = row[9]                
+            self.current_message_binding = row[6]
+            self.current_message_model = row[7]
+            self.current_message_personality = row[8]
+            self.content = row[2]
+
+            self.current_message_created_at = row[9]
+            self.current_message_finished_generating_at = row[10]        
+
+            return {
+                        "id": row[0],
+                        "sender": row[1],
+                        "content": row[2],
+                        "type": row[3],
+                        "rank": row[4],
+                        "parent": row[5],
+                        "binding":row[6],
+                        "model": row[7],
+                        "personality": row[8],
+                        "created_at": row[9],
+                        "finished_generating_at": row[10]
+                    }
+    
     def add_message(self, sender, content, message_type=0, rank=0, parent=0, binding="", model ="", personality="", created_at=None, finished_generating_at=None):
         """Adds a new message to the discussion
 
@@ -334,6 +371,7 @@ class Discussion:
         self.current_message_binding = binding
         self.current_message_model = model
         self.current_message_personality = personality
+        self.content = content
 
         self.current_message_created_at = created_at
         self.current_message_finished_generating_at = finished_generating_at

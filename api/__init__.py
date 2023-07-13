@@ -458,7 +458,7 @@ class LoLLMsAPPI(LollmsApplication):
             message_id = int(data['id'])
             message = data["prompt"]
             self.current_user_message_id = message_id
-            self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message_id, client_id))
+            self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message_id, client_id, True))
             self.connections[client_id]['generation_thread'].start()
 
         # generation status
@@ -615,11 +615,9 @@ class LoLLMsAPPI(LollmsApplication):
             message_id = 0
         return message_id
 
-    def prepare_reception(self):
-        self.current_generated_text = ""
+    def prepare_reception(self, client_id):
+        self.connections[client_id]["generated_text"] = ""
         self.nb_received_tokens = 0
-        self.full_text = ""
-        self.is_bot_text_started = False
 
     def create_new_discussion(self, title):
         self.current_discussion = self.db.create_discussion(title)
@@ -719,7 +717,7 @@ class LoLLMsAPPI(LollmsApplication):
         
 
         if message_type == MSG_TYPE.MSG_TYPE_CHUNK:
-            self.current_generated_text += chunk
+            self.connections[client_id]["generated_text"] += chunk
             self.nb_received_tokens += 1
             ASCIIColors.green(f"Received {self.nb_received_tokens} tokens",end="\r")
             sys.stdout = sys.__stdout__
@@ -727,13 +725,13 @@ class LoLLMsAPPI(LollmsApplication):
             detected_anti_prompt = False
             anti_prompt_to_remove=""
             for prompt in self.personality.anti_prompts:
-                if prompt.lower() in self.current_generated_text.lower():
+                if prompt.lower() in self.connections[client_id]["generated_text"].lower():
                     detected_anti_prompt=True
                     anti_prompt_to_remove = prompt.lower()
                     
             if not detected_anti_prompt:
                     self.socketio.emit('message', {
-                                                    'data': self.current_generated_text, 
+                                                    'data': self.connections[client_id]["generated_text"], 
                                                     'user_message_id':self.current_user_message_id, 
                                                     'ai_message_id':self.current_ai_message_id, 
                                                     'discussion_id':self.current_discussion.discussion_id,
@@ -741,7 +739,7 @@ class LoLLMsAPPI(LollmsApplication):
                                                 }, room=client_id
                                         )
                     self.socketio.sleep(0.01)
-                    self.current_discussion.update_message(self.current_ai_message_id, self.current_generated_text)
+                    self.current_discussion.update_message(self.current_ai_message_id, self.connections[client_id]["generated_text"])
                     # if stop generation is detected then stop
                     if not self.cancel_gen:
                         return True
@@ -750,17 +748,17 @@ class LoLLMsAPPI(LollmsApplication):
                         ASCIIColors.warning("Generation canceled")
                         return False
             else:
-                self.current_generated_text = self.remove_text_from_string(self.current_generated_text, anti_prompt_to_remove)
+                self.connections[client_id]["generated_text"] = self.remove_text_from_string(self.connections[client_id]["generated_text"], anti_prompt_to_remove)
                 ASCIIColors.warning("The model is halucinating")
                 return False
 
         # Stream the generated text to the main process
         elif message_type == MSG_TYPE.MSG_TYPE_FULL:
-            self.current_generated_text = chunk
+            self.connections[client_id]["generated_text"] = chunk
             self.nb_received_tokens += 1
             ASCIIColors.green(f"Received {self.nb_received_tokens} tokens",end="\r",flush=True)
             self.socketio.emit('message', {
-                                            'data': self.current_generated_text, 
+                                            'data': self.connections[client_id]["generated_text"], 
                                             'user_message_id':self.current_user_message_id, 
                                             'ai_message_id':self.current_ai_message_id, 
                                             'discussion_id':self.current_discussion.discussion_id,
@@ -784,7 +782,7 @@ class LoLLMsAPPI(LollmsApplication):
         return True
 
 
-    def generate(self, full_prompt, prompt, n_predict=50, callback=None):
+    def generate(self, full_prompt, prompt, n_predict, client_id, callback=None):
         if self.personality.processor is not None:
             ASCIIColors.success("Running workflow")
             try:
@@ -803,11 +801,10 @@ class LoLLMsAPPI(LollmsApplication):
             print("Finished executing the workflow")
             return
 
-        self._generate(full_prompt, n_predict, callback)
+        self._generate(full_prompt, n_predict, client_id, callback)
         ASCIIColors.success("\nFinished executing the generation")
 
-    def _generate(self, prompt, n_predict=1024, callback=None):
-        self.current_generated_text = ""
+    def _generate(self, prompt, n_predict, client_id, callback=None):
         self.nb_received_tokens = 0
         if self.model is not None:
             ASCIIColors.info(f"warmup for generating {n_predict} tokens")
@@ -853,7 +850,10 @@ class LoLLMsAPPI(LollmsApplication):
             # First we need to send the new message ID to the client
             if is_continue:
                 self.current_ai_message_id = message_id
+                self.current_discussion.load_message(message_id)
+                self.connections[client_id]["generated_text"] = self.current_discussion.content
             else:
+                self.connections[client_id]["generated_text"] = ""
                 self.current_ai_message_id = self.current_discussion.add_message(
                     self.personality.name, 
                     "", 
@@ -884,12 +884,13 @@ class LoLLMsAPPI(LollmsApplication):
 
             # prepare query and reception
             self.discussion_messages, self.current_message, tokens = self.prepare_query(message_id, is_continue)
-            self.prepare_reception()
+            self.prepare_reception(client_id)
             self.generating = True
             self.generate(
                             self.discussion_messages, 
                             self.current_message, 
-                            n_predict = self.config.ctx_size-len(tokens)-1, 
+                            n_predict = self.config.ctx_size-len(tokens)-1,
+                            client_id=client_id,
                             callback=partial(self.process_chunk,client_id = client_id)
                             
                         )
@@ -897,13 +898,13 @@ class LoLLMsAPPI(LollmsApplication):
             print("## Done Generation ##")
             print()
 
-            self.current_discussion.update_message(self.current_ai_message_id, self.current_generated_text)
-            self.full_message_list.append(self.current_generated_text)
+            self.current_discussion.update_message(self.current_ai_message_id, self.connections[client_id]["generated_text"].strip())
+            self.full_message_list.append(self.connections[client_id]["generated_text"])
             self.cancel_gen = False
 
             # Send final message
             self.socketio.emit('final', {
-                                            'data': self.current_generated_text, 
+                                            'data': self.connections[client_id]["generated_text"], 
                                             'ai_message_id':self.current_ai_message_id, 
                                             'parent':self.current_user_message_id, 'discussion_id':self.current_discussion.discussion_id,
                                             "status":'model_not_ready',
@@ -911,7 +912,7 @@ class LoLLMsAPPI(LollmsApplication):
                                             'logo': "",
                                             "bot": self.personality.name,
                                             "user": self.personality.user_name,
-                                            "message":self.current_generated_text,
+                                            "message":self.connections[client_id]["generated_text"],
                                             "user_message_id": self.current_user_message_id,
                                             "ai_message_id": self.current_ai_message_id,
 

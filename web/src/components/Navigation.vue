@@ -29,6 +29,12 @@
                     </RouterLink>
                 </li>
                 <li>
+                    <RouterLink :to="{ name: 'quantizing' }" class="p-2"
+                        active-class="p-2   bg-bg-light-tone dark:bg-bg-dark-tone rounded-t-lg ">
+                        <a href="#" class=" hover:text-primary duration-150">Quantizing</a>
+                    </RouterLink>
+                </li>                
+                <li>
                     <RouterLink :to="{ name: 'help' }" class="p-2"
                         active-class="p-2   bg-bg-light-tone dark:bg-bg-dark-tone rounded-t-lg ">
                         <a href="#" class=" hover:text-primary duration-150">Help</a>

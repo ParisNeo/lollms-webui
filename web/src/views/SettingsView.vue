@@ -43,6 +43,7 @@
 
                     <!-- SPINNER -->
                     <div v-if="isLoading" role="status">
+                        <p>{{ loading_text }}</p>
                         <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101"
                             fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -558,6 +559,7 @@
                                     :key="'index-' + index + '-' + binding.folder" :binding="binding"
                                     :on-selected="onSelectedBinding" :on-reinstall="onReinstallBinding"
                                     :on-install="onInstallBinding" :on-settings="onSettingsBinding"
+                                    :on-reload-binding="onReloadBinding"
                                     :selected="binding.folder === configFile.binding_name">
                                 </BindingEntry>
                             </TransitionGroup>
@@ -1321,6 +1323,7 @@ export default {
     data() {
 
         return {
+            loading_text:"",
             // Current personality language
             personality_language:null,
             // Current personality category
@@ -1372,10 +1375,16 @@ export default {
         }
     },
     async created() {
-
+        socket.on('loading_text',this.on_loading_text);
         //await socket.on('install_progress', this.progressListener);
 
     }, methods: {
+        on_loading_text(text){
+            
+            console.log("Loading text",text)
+            this.loading_text = text
+
+        },
         async constructor() {
             this.isLoading = true
             nextTick(() => {
@@ -1985,6 +1994,31 @@ export default {
                 this.isLoading = false
                 this.$refs.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
             }
+        },
+        onReloadBinding(binding_object){
+            
+            this.isLoading = true
+            axios.post('/reload_binding', { name: binding_object.binding.folder }).then((res) => {
+
+                if (res) {
+                    this.isLoading = false
+                    console.log('reload_binding', res)
+                    if (res.data.status) {
+                        this.$refs.toast.showToast("Binding reloaded successfully!", 4, true)
+                    } else {
+                        this.$refs.toast.showToast("Could not reinstall binding", 4, false)
+                    }
+                    return res.data;
+                }
+                this.isLoading = false
+            })
+                // eslint-disable-next-line no-unused-vars
+
+                .catch(error => {
+                    this.isLoading = false
+                    this.$refs.toast.showToast("Could not reinstall binding\n" + error.message, 4, false)
+                    return { 'status': false }
+                });
         },
         onSettingsPersonality(persEntry) {
             try {

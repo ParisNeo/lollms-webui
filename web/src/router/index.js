@@ -3,6 +3,7 @@ import ExtensionsView from '../views/ExtensionsView.vue'
 import HelpView from '../views/HelpView.vue'
 import SettingsView from '../views/SettingsView.vue'
 import TrainingView from '../views/TrainingView.vue'
+import QuantizingView from '../views/QuantizingView.vue'
 import DiscussionsView from '../views/DiscussionsView.vue'
 
 
@@ -28,6 +29,11 @@ const router = createRouter({
       path: '/training/',
       name: 'training',
       component: TrainingView
+    },
+    {
+      path: '/quantizing/',
+      name: 'quantizing',
+      component: QuantizingView
     },
     {
       path: '/',
