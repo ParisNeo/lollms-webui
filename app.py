@@ -538,8 +538,14 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 print(f"New binding selected : {data['setting_value']}")
                 self.config["binding_name"]=data['setting_value']
                 try:
+                    self.binding = None
+                    self.model = None
+                    for per in self.mounted_personalities:
+                        per.model = None
+                    gc.collect()
                     self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
                     self.model = None
+                    self.config.save_config()
                 except Exception as ex:
                     print(f"Couldn't build binding: [{ex}]")
                     return jsonify({"status":False, 'error':str(ex)})
@@ -892,6 +898,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
             ASCIIColors.info("Unmounting binding and model")
             self.binding = None
             self.model = None
+            for per in self.mounted_personalities:
+                per.model = None
             gc.collect()
             ASCIIColors.info("Reinstalling binding")
             self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL)
@@ -1083,6 +1091,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
                             entry["value"] = [entry["value"]]
                 self.binding.binding_config.update_template(data)
                 self.binding.binding_config.config.save_config()
+                self.binding = None
+                self.model = None
+                for per in self.mounted_personalities:
+                    per.model = None
+                gc.collect()
                 self.binding= BindingBuilder().build_binding(self.config, self.lollms_paths)
                 self.model = self.binding.build_model()
                 return jsonify({'status':True})
