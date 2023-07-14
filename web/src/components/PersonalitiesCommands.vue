@@ -5,7 +5,7 @@
           <i data-feather="command" class="w-5 h-5"></i>
         </button>
         <div v-if="showMenu" id="commands-menu-items" class="absolute mb-4 bg-white border border-gray-300 z-10 w-fit">
-          <button v-for="command in commands" :key="command.value" @click.prevent="execute_cmd(command.value)" class="menu-button py-2 px-4 cursor-pointer bg-blue-500 text-white dark:bg-blue-200 dark:text-gray-800 hover:bg-blue-400" :class="{ 'bg-blue-400 text-white': hoveredCommand === command.value }" :title="command.help" @mouseover="hoveredCommand = command.value" @mouseout="hoveredCommand = null">
+          <button v-for="command in commands" :key="command.value" @click.prevent="execute_cmd(command)" class="menu-button py-2 px-4 cursor-pointer bg-blue-500 text-white dark:bg-blue-200 dark:text-gray-800 hover:bg-blue-400" :class="{ 'bg-blue-400 text-white': hoveredCommand === command.value }" :title="command.help" @mouseover="hoveredCommand = command.value" @mouseout="hoveredCommand = null">
             {{ command.name }}
           </button>
         </div>
@@ -34,6 +34,7 @@
 
 <script>
 import feather from 'feather-icons'
+import axios from "axios";
 export default {
 props: {
     commandsList: {
@@ -60,6 +61,29 @@ async mounted() {
     })
   },
 methods: {
+    selectFile() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'application/pdf'; // Specify the file type you want to accept
+      input.onchange = (e) => {
+        this.selectedFile = e.target.files[0];
+      };
+      input.click();
+    },
+    uploadFile() {
+      const formData = new FormData();
+      formData.append('file', this.selectedFile);
+
+      axios.post('/send_file', formData)
+        .then(response => {
+          // Handle the server response if needed
+          console.log(response.data);
+        })
+        .catch(error => {
+          // Handle any errors that occur during the upload
+          console.error(error);
+        });
+    }, 
     async constructor() {
       nextTick(() => {
           feather.replace()
@@ -69,8 +93,15 @@ methods: {
     this.showMenu = !this.showMenu;
     },
     execute_cmd(cmd) {
-    this.showMenu = !this.showMenu;
-    this.sendCommand(cmd);
+      this.showMenu = !this.showMenu;
+      if (cmd.hasOwnProperty('is_file')) {
+        console.log("Need to send a file.");
+        this.selectFile()
+        this.uploadFile()
+      } else {
+        this.sendCommand(cmd);
+      }      
+      
     },
 
     handleClickOutside(event) {

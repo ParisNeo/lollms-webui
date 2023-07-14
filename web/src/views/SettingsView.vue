@@ -1576,7 +1576,7 @@ export default {
 
                 //this.settingsChanged = true
 
-                if (pers.isMounted && this.configFile.personalities.includes(pers.personality.full_path)) {
+                if (pers.isMounted && this.configFile.personalities.includes(pers.full_path)) {
 
                     const res = await this.select_personality(pers)
                     console.log('pers is mounted', res)

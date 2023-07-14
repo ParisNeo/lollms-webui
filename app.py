@@ -1136,10 +1136,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return jsonify({})       
 
 
-
-
-
-
     def p_select_personality(self):
 
         data = request.get_json()
@@ -1162,12 +1158,17 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     
 
     def send_file(self):
-        file = request.files['file']
-        file.save(self.lollms_paths.personal_uploads_path / file.filename)
-        if self.personality.processor:
-            self.personality.processor.add_file(self.lollms_paths.personal_uploads_path / file.filename)
-        return jsonify({"status": True})   
-    
+        try:
+            file = request.files['file']
+            file.save(self.lollms_paths.personal_uploads_path / file.filename)
+            if self.personality.processor:
+                self.personality.processor.add_file(self.lollms_paths.personal_uploads_path / file.filename)
+            return jsonify({"status": True})   
+        except Exception as ex:
+            ASCIIColors.error(ex)
+            trace_exception(ex)
+            return jsonify({"status": False})   
+
     def upload_model(self):      
         file = request.files['file']
         file.save(self.lollms_paths.personal_models_path/self.config.binding_name/file.filename)
