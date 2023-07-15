@@ -51,10 +51,17 @@
                         <i data-feather="database"></i>
                     </button>
                     <input type="file" ref="fileDialog" style="display: none" @change="importDiscussions" />
-                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
-                        title="Import discussions" type="button" @click.stop="$refs.fileDialog.click()">
-                        <i data-feather="log-in"></i>
-                    </button>
+                    <div @click="toggleDropdown" class="text-2xl hover:text-secondary duration-75">
+                          <i data-feather="import"></i>  
+                    </div>
+                    <div @click="toggleDropdown" class="text-2xl hover:text-secondary duration-75">
+                      <i data-feather="log-in"></i>  
+                    </div>
+                    
+                    <div v-if="isOpen" class="dropdown">
+                      <button @click="importDiscussions">LOLLMS</button> 
+                      <button @click="importChatGPT">ChatGPT</button>
+                    </div>
                     <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Filter discussions"
                         type="button" @click="isSearch = !isSearch" :class="isSearch ? 'text-secondary' : ''">
                         <i data-feather="search"></i>
@@ -348,10 +355,21 @@ export default {
             panelCollapsed: false // left panel collapse
         }
     },
+    data() {
+      return {
+        isOpen: false
+      }
+    },
     methods: {
         togglePanel() {
             this.panelCollapsed = !this.panelCollapsed;
         },
+        toggleDropdown() {
+            this.isOpen = !this.isOpen;
+        },
+        importChatGPT() {
+            // handle ChatGPT import
+        },  
         async api_get_req(endpoint) {
             try {
                 const res = await axios.get("/" + endpoint);
@@ -365,8 +383,6 @@ export default {
                 console.log(error.message, 'api_get_req')
                 return
             }
-
-
         },
         async list_discussions() {
             try {
