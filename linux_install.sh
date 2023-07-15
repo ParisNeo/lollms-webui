@@ -138,6 +138,13 @@ else
     exit 0
 fi
 
+if [[ -e "../linux_update.sh" ]]; then
+    echo "Linux update found"
+else
+    cp linux_update.sh ../
+    exit 0
+fi
+
 PrintBigMessage() {
   echo
   echo "*******************************************************************"
