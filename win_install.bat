@@ -117,6 +117,13 @@ if exist ..\win_run.bat (
   goto end
 )
 
+if exist ..\win_update.bat (
+    echo Win update found
+) else (
+  copy win_update.bat ..\
+  goto end
+)
+
 :PrintBigMessage
 echo. && echo.
 echo *******************************************************************
