@@ -60,12 +60,7 @@ export default {
     computed:{
         ...mapState(['isConnected']),
         // Add a watcher to log the changes
-        isConnectedWatcher: {
-        handler(newValue) {
-            console.log('isConnected:', newValue);
-        },
-        immediate: true,
-        }
+
     },
     data() {
         return {

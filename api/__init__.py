@@ -444,13 +444,14 @@ class LoLLMsAPPI(LollmsApplication):
         @socketio.on('generate_msg_from')
         def handle_connection(data):
             client_id = request.sid
-            message_id = int(data['id'])
+            id_ = data['id']
+            message_id = int(id_)
             if message_id==-1:
-                message_id = self.message_id
+                self.message_id = message_id
                 message = ""
             else:
                 message = data["prompt"]
-            self.current_user_message_id = message_id
+                self.current_user_message_id = message_id
             self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message_id, client_id))
             self.connections[client_id]['generation_thread'].start()
 
@@ -550,6 +551,9 @@ class LoLLMsAPPI(LollmsApplication):
     @property
     def message_id(self):
         return self._message_id
+    @message_id.setter
+    def message_id(self, id):
+        self._message_id=id
 
     @property
     def current_user_message_id(self):
@@ -639,34 +643,34 @@ class LoLLMsAPPI(LollmsApplication):
     def prepare_query(self, message_id=-1, is_continue=False):
         messages = self.current_discussion.get_messages()
         self.full_message_list = []
-        for message in messages:
-            if message["id"]< message_id or message_id==-1: 
+        for i, message in enumerate(messages):
+            if message["id"]< message_id or (message_id==-1 and i<len(messages)-1): 
                 if message["type"]<=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER.value and message["type"]!=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value:
-                    if message["sender"]==self.personality.name:
-                        self.full_message_list.append(self.personality.ai_message_prefix+message["content"])
-                    else:
-                        self.full_message_list.append(self.personality.user_message_prefix + message["content"])
+                    self.full_message_list.append("\n!@>"+message["sender"]+": "+message["content"].strip())
             else:
                 break
 
         link_text = self.personality.link_text
         if not is_continue:
-            self.full_message_list.append(self.personality.user_message_prefix+message["content"]+self.personality.link_text+self.personality.ai_message_prefix)
+            self.full_message_list.append("\n!@>"+message["sender"]+": "+message["content"].strip()+self.personality.link_text+self.personality.ai_message_prefix)
         else:
-            self.full_message_list.append(self.personality.ai_message_prefix+message["content"])
+            self.full_message_list.append("\n!@>"+message["sender"]+": "+message["content"].strip())
 
 
-        messages = link_text.join(self.full_message_list)
-        t = self.model.tokenize(messages)
+        composed_messages = link_text.join(self.full_message_list)
+        t = self.model.tokenize(composed_messages)
         n_t = len(t)
         max_prompt_stx_size = 3*int(self.config.ctx_size/4)
         if self.n_cond_tk+n_t>max_prompt_stx_size:
             nb_tk = max_prompt_stx_size-self.n_cond_tk
-            messages = self.model.detokenize(t[-nb_tk:])
+            composed_messages = self.model.detokenize(t[-nb_tk:])
             ASCIIColors.warning(f"Cropping discussion to fit context [using {nb_tk} tokens/{self.config.ctx_size}]")
-        discussion_messages = self.personality.personality_conditioning+ messages
+        discussion_messages = self.personality.personality_conditioning+ composed_messages
         tokens = self.model.tokenize(discussion_messages)
         
+        if self.config["debug"]:
+            ASCIIColors.yellow(discussion_messages)
+
         return discussion_messages, message["content"], tokens
 
     def get_discussion_to(self, message_id=-1):

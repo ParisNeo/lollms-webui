@@ -227,30 +227,18 @@ export default {
             feather.replace()
             console.log('ppa', pers)
             if (pers) {
-
-                if (pers.selected) {
-                    this.$refs.toast.showToast("Personality already selected", 4, true)
-                    return
-                }
                 if (pers.isMounted) {
-
                     const res = await this.select_personality(pers)
                     if (res) {
                         if (res.status) {
                             await this.constructor()
                             this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
-                            this.onTalk(pers)
                         }
                     }
-
-
                 } else {
                     this.onPersonalityMounted(pers)
-
                 }
-
-
-
+                this.onTalk(pers)
             }
 
         },
@@ -264,8 +252,6 @@ export default {
                     this.$refs.toast.showToast("Personality already selected", 4, true)
                     return
                 }
-
-
 
 
                 if (pers.isMounted) {

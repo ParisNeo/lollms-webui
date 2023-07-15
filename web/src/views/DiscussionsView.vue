@@ -51,12 +51,10 @@
                         <i data-feather="database"></i>
                     </button>
                     <input type="file" ref="fileDialog" style="display: none" @change="importDiscussions" />
-                    <div @click="toggleDropdown" class="text-2xl hover:text-secondary duration-75">
-                          <i data-feather="import"></i>  
-                    </div>
-                    <div @click="toggleDropdown" class="text-2xl hover:text-secondary duration-75">
-                      <i data-feather="log-in"></i>  
-                    </div>
+                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
+                        title="Import discussions" type="button" @click.stop="$refs.fileDialog.click()">
+                        <i data-feather="log-in"></i>
+                    </button>
                     
                     <div v-if="isOpen" class="dropdown">
                       <button @click="importDiscussions">LOLLMS</button> 
@@ -359,13 +357,9 @@ export default {
             fileList: [],
             isDragOverDiscussion: false,
             isDragOverChat: false,
-            panelCollapsed: false // left panel collapse
+            panelCollapsed: false, // left panel collapse
+            isOpen: false
         }
-    },
-    data() {
-      return {
-        isOpen: false
-      }
     },
     methods: {
         showToastMessage(text){
@@ -412,6 +406,7 @@ export default {
         async load_discussion(id) {
             try {
                 if (id) {
+                    console.log("Loading discussion", id)
                     this.loading = true
                     this.discussionArr=[]
                     this.setDiscussionLoading(id, this.loading)
@@ -607,10 +602,9 @@ export default {
         },
         async selectDiscussion(item) {
             if (item) {
-
+                console.log("this.currentDiscussion",this.currentDiscussion)
                 // When discussion is selected it loads the discussion array
-                if (this.currentDiscussion.id != item.id) {
-
+                if (this.currentDiscussion===undefined) {
                     this.currentDiscussion = item
 
                     this.setPageTitle(item)
@@ -624,7 +618,27 @@ export default {
                             this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
                         }
                     }
+
                 }
+                else{
+                    if (this.currentDiscussion.id != item.id) {
+
+                        this.currentDiscussion = item
+
+                        this.setPageTitle(item)
+
+                        localStorage.setItem('selected_discussion', this.currentDiscussion.id)
+
+                        await this.load_discussion(item.id)
+
+                        if (this.discussionArr.length > 1) {
+                            if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
+                                this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
+                            }
+                        }
+                    }
+                }
+
                 nextTick(() => {
 
 
@@ -814,6 +828,7 @@ export default {
                 if (res) {
                     //console.log(res.data.status);
                     if (!res.data.status) {
+                        console.log('Generating message from ',res.data.status);
                         socket.emit('generate_msg_from', { id: -1 });
                         // Temp data
                         let lastmsgid =0
@@ -941,7 +956,9 @@ export default {
         },
         loadLastUsedDiscussion() {
             // Checks local storage for last selected discussion
+            console.log("Loading last discussion")
             const id = localStorage.getItem('selected_discussion')
+            console.log("Last discussion id: ",id)
             if (id) {
                 const index = this.list.findIndex((x) => x.id == id)
                 const discussionItem = this.list[index]
@@ -1026,6 +1043,7 @@ export default {
             this.isSelectAll = !this.isSelectAll
         },
         createDiscussionList(disList) {
+            console.log("Creating discussions list", disList)
             // This creates a discussion list for UI with additional properties
             if (disList) {
                 const newDisList = disList.map((item) => {
@@ -1042,9 +1060,10 @@ export default {
                 }).sort(function (a, b) {
                     return b.id - a.id
                 })
+
                 this.list = newDisList
                 this.tempList = newDisList
-
+                console.log("List created")
             }
         },
         setDiscussionLoading(id, loading) {
@@ -1411,16 +1430,22 @@ export default {
 
     },
     async created() {
+        this.$nextTick(() => {
+            feather.replace();
+        });           
+        console.log("Waiting to be ready")
+        while (this.$store.state.ready === false) {
+                await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for 100ms
+            }          
         // Constructor
+        console.log("Setting title")
         this.setPageTitle()
+        console.log("listing discussions")
         await this.list_discussions()
-
+        console.log("loading last discussion")
         this.loadLastUsedDiscussion()
-        this.isCreated = true
+        console.log("Discussions view is ready")
 
-        nextTick(() => {
-            feather.replace()
-        })
 
         // socket responses
         socket.on('infos', this.createBotMsg)
@@ -1429,18 +1454,16 @@ export default {
         socket.on('connected',this.socketIOConnected)
         socket.on('disconnected',this.socketIODisconnected)
         console.log("Added events")
+
+        this.isCreated = true
     },
     mounted() {
         //console.log('chatbox mnt',this.$refs)
+        this.$nextTick(() => {
+            feather.replace();
+        });        
     },
     async activated() {
-
-        //console.log('settings changed', this.$store.state.mountedPersonalities)
-        // This lifecycle hook runs every time you switch from other page back to this page (vue-router)
-        // To fix scrolling back to last message, this hook is needed.
-        // If anyone knows hor to fix scroll issue when changing pages, please do fix it :D
-        console.log("Websocket connected (activated)", this.socketConnected)
-
         //console.log('settings changed acc', this.$store.state.settingsChanged)
         // await this.getPersonalityAvatars()
         await this.getPersonalityAvatars()
@@ -1498,18 +1521,19 @@ export default {
     },
     computed: {
         isReady(){
-            return this.$store.state.ready
+            console.log("verify ready", this.isCreated)
+            return this.isCreated
         },
         showPanel() {
            return this.$store.state.ready && !this.panelCollapsed;
         },
         socketConnected() {
             console.log(" --- > Websocket connected")
-            this.$store.state.isConnected=true;// ('setConnectionStatus', true);
+            this.$store.commit('setIsConnected', true);
             return true
         },
         socketDisconnected() {
-            this.$store.state.isConnected=false;// .$store.commit('setConnectionStatus', false);
+            this.$store.commit('setIsConnected', false);
             console.log(" --- > Websocket disconnected")
             return true
         },

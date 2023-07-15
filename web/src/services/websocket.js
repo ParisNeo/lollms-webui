@@ -23,14 +23,6 @@ socket.onerror = (error) => {
   socket.disconnect()
 };
 
-socket.on("connect", () => {
-  console.log('WebSocket connected (websocket)');
-});
-
-socket.on("disconnect", () => {
-  console.log('WebSocket disonnected (websocket)');
-});
-
 // const app = createApp(/* your root component */);
 
 // app.config.globalProperties.$socket = socket;
