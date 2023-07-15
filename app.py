@@ -57,7 +57,7 @@ import gc
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
-app = Flask("GPT4All-WebUI", static_url_path="/static", static_folder="static")
+app = Flask("Lollms-WebUI", static_url_path="/static", static_folder="static")
 #  async_mode='gevent', ping_timeout=1200, ping_interval=120, 
 socketio = SocketIO(app,  cors_allowed_origins="*", async_mode='threading',engineio_options={'websocket_compression': False, 'websocket_ping_interval': 20, 'websocket_ping_timeout': 120, 'websocket_max_queue': 100})
 
