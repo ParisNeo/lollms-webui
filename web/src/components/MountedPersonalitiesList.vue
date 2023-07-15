@@ -39,7 +39,7 @@
                             :key="'index-' + index + '-' + pers.name" :personality="pers" :full_path="pers.full_path"
                             :selected="configFile.personalities[configFile.active_personality_id] === pers.full_path"
                             :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted"
-                            :on-settings="onSettingsPersonality" />
+                            :on-settings="onSettingsPersonality"  :on-reinstall="onPersonalityReinstall"/>
                     </TransitionGroup>
                 </div>
             </div>
@@ -172,6 +172,31 @@ export default {
         },
         personalityImgPlacehodler(event) {
             event.target.src = defaultPersonalityImgPlaceholder
+        },
+        onPersonalityReinstall(persItem){
+            console.log('on reinstall ', persItem)
+            this.isLoading = true
+            axios.post('/reinstall_personality', { name: persItem.personality.full_path }).then((res) => {
+
+                if (res) {
+                    this.isLoading = false
+                    console.log('reinstall_personality', res)
+                    if (res.data.status) {
+                        this.$refs.toast.showToast("Personality reinstalled successfully!", 4, true)
+                    } else {
+                        this.$refs.toast.showToast("Could not reinstall personality", 4, false)
+                    }
+                    return res.data;
+                }
+                this.isLoading = false
+            })
+                // eslint-disable-next-line no-unused-vars
+
+                .catch(error => {
+                    this.isLoading = false
+                    this.$refs.toast.showToast("Could not reinstall personality\n" + error.message, 4, false)
+                    return { 'status': false }
+                });
         },
         onPersonalityMounted(persItem) {
 

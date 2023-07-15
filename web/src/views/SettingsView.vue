@@ -1025,7 +1025,7 @@
                                         :key="'index-' + index + '-' + pers.name" :personality="pers"
                                         :full_path="pers.full_path"
                                         :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === pers.full_path)"
-                                        :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted" on-reinstall="onPersonalityReinstall"
+                                        :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted" :on-reinstall="onPersonalityReinstall"
                                         :on-settings="onSettingsPersonality" />
                                 </TransitionGroup>
                             </div>
@@ -2530,15 +2530,15 @@ export default {
         onPersonalityReinstall(persItem){
             console.log('on reinstall ', persItem)
             this.isLoading = true
-            axios.post('/reinstall_binding', { name: binding_object.binding.folder }).then((res) => {
+            axios.post('/reinstall_personality', { name: persItem.personality.path }).then((res) => {
 
                 if (res) {
                     this.isLoading = false
-                    console.log('reinstall_binding', res)
+                    console.log('reinstall_personality', res)
                     if (res.data.status) {
-                        this.$refs.toast.showToast("Reinstalled binding successfully!", 4, true)
+                        this.$refs.toast.showToast("Personality reinstalled successfully!", 4, true)
                     } else {
-                        this.$refs.toast.showToast("Could not reinstall binding", 4, false)
+                        this.$refs.toast.showToast("Could not reinstall personality", 4, false)
                     }
                     return res.data;
                 }
@@ -2548,7 +2548,7 @@ export default {
 
                 .catch(error => {
                     this.isLoading = false
-                    this.$refs.toast.showToast("Could not reinstall binding\n" + error.message, 4, false)
+                    this.$refs.toast.showToast("Could not reinstall personality\n" + error.message, 4, false)
                     return { 'status': false }
                 });
         },

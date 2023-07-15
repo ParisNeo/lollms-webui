@@ -880,9 +880,26 @@ class LoLLMsWebUI(LoLLMsAPPI):
             print(f"Error occurred while parsing JSON: {e}")
             return jsonify({"status":False, 'error':str(e)})
         
+        personality_path = lollms_paths.personalities_zoo_path / data['name']
         ASCIIColors.info(f"- Reinstalling personality {data['name']}...")
         try:
             ASCIIColors.info("Unmounting personality")
+            idx = self.config.personalities.index(data['name'])
+            print(f"index = {idx}")
+            self.mounted_personalities[idx] = None
+            gc.collect()
+            try:
+                self.mounted_personalities[idx] = AIPersonality(personality_path,
+                                            self.lollms_paths, 
+                                            self.config,
+                                            model=self.model,
+                                            run_scripts=True,installation_option=InstallOption.FORCE_INSTALL)
+                return jsonify({"status":True})
+            except Exception as ex:
+                ASCIIColors.error(f"Personality file not found or is corrupted ({data['name']}).\nReturned the following exception:{ex}\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+                ASCIIColors.info("Trying to force reinstall")
+                return jsonify({"status":False, 'error':str(e)})
+
         except Exception as e:
             return jsonify({"status":False, 'error':str(e)})
 
@@ -1159,6 +1176,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
     def send_file(self):
         try:
+            ASCIIColors.info("Recovering file from front end")
             file = request.files['file']
             file.save(self.lollms_paths.personal_uploads_path / file.filename)
             if self.personality.processor:

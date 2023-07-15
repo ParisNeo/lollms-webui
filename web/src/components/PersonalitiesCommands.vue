@@ -1,19 +1,57 @@
 <template>
-    <div class="menu relative">
-      <div class="commands-menu-items-wrapper">
-        <button id="commands-menu" @click.prevent="toggleMenu" class="menu-button bg-blue-500 text-white dark:bg-blue-200 dark:text-gray-800 rounded-full flex items-center justify-center w-6 h-6 border-none cursor-pointer hover:bg-blue-400 w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:z-20 hover:-translate-y-2 duration-150  border-gray-300 border-secondary cursor-pointer">
-          <i data-feather="command" class="w-5 h-5"></i>
+  <div class="menu relative">
+    <div class="commands-menu-items-wrapper">
+      <button
+        id="commands-menu"
+        @click.prevent="toggleMenu"
+        class="menu-button bg-blue-500 text-white dark:bg-blue-200 dark:text-gray-800 rounded-full flex items-center justify-center w-6 h-6 border-none cursor-pointer hover:bg-blue-400 w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:z-20 hover:-translate-y-2 duration-150  border-gray-300 border-secondary cursor-pointer"
+      >
+        <i data-feather="command" class="w-5 h-5"></i>
+      </button>
+      <div v-if="showMenu" id="commands-menu-items" class="absolute left-0 mt-4 bg-white border border-gray-300 z-10 w-48 overflow-y-auto custom-scrollbar" :style="{ top: '-200px', maxHeight: '200px' }">
+        <button
+          v-for="command in commands"
+          :key="command.value"
+          @click.prevent="execute_cmd(command)"
+          class="menu-button py-2 px-4 w-full text-left cursor-pointer bg-blue-500 text-white dark:bg-blue-200 dark:text-gray-800 hover:bg-blue-400"
+          :class="{ 'bg-blue-400 text-white': hoveredCommand === command.value }"
+          :title="command.help"
+          @mouseover="hoveredCommand = command.value"
+          @mouseout="hoveredCommand = null"
+        >
+          <div class="flex items-center">
+            <img v-if="command.icon" :src="command.icon" alt="Command Icon" class="w-4 h-4 mr-2" style="width: 25px; height: 25px;">
+            <div class="flex-grow">
+              {{ command.name }}
+            </div>
+          </div>
         </button>
-        <div v-if="showMenu" id="commands-menu-items" class="absolute mb-4 bg-white border border-gray-300 z-10 w-fit">
-          <button v-for="command in commands" :key="command.value" @click.prevent="execute_cmd(command)" class="menu-button py-2 px-4 cursor-pointer bg-blue-500 text-white dark:bg-blue-200 dark:text-gray-800 hover:bg-blue-400" :class="{ 'bg-blue-400 text-white': hoveredCommand === command.value }" :title="command.help" @mouseover="hoveredCommand = command.value" @mouseout="hoveredCommand = null">
-            {{ command.name }}
-          </button>
-        </div>
       </div>
     </div>
+  </div>
 </template>
 
+
+
+
+
 <style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
 .menu {
     display: flex;
     flex-direction: column;
@@ -45,6 +83,7 @@ props: {
 },
 data() {
     return {
+    selectedFile: null,
     showMenu: false,
     showHelpText: false,
     helpText: '',
@@ -61,12 +100,13 @@ async mounted() {
     })
   },
 methods: {
-    selectFile() {
+    selectFile(next) {
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = 'application/pdf'; // Specify the file type you want to accept
       input.onchange = (e) => {
         this.selectedFile = e.target.files[0];
+        next()
       };
       input.click();
     },
@@ -96,8 +136,12 @@ methods: {
       this.showMenu = !this.showMenu;
       if (cmd.hasOwnProperty('is_file')) {
         console.log("Need to send a file.");
-        this.selectFile()
-        this.uploadFile()
+        this.selectFile(()=>{
+          if(this.selectedFile!=null){
+            this.uploadFile()
+          }
+
+        });
       } else {
         this.sendCommand(cmd);
       }      
