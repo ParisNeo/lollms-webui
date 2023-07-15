@@ -203,10 +203,7 @@ export default {
         this.new_message_content = this.message.content
         nextTick(() => {
             feather.replace()
-
             this.mdRenderHeight = this.$refs.mdRender.$el.offsetHeight
-
-
         })
 
     }, methods: {

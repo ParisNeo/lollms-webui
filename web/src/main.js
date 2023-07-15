@@ -106,6 +106,7 @@ export const store = createStore({
       },
     },
     actions: {
+
       async refreshConfig({ commit }) {
         console.log("Fetching configuration");
         try {
@@ -160,14 +161,13 @@ export const store = createStore({
           }
 
           personalities.sort((a, b) => a.name.localeCompare(b.name))
-          console.log('personalities',personalities)
+
           commit('setPersonalities', personalities);
 
           console.log("Done loading personalities")
       },
       refreshMountedPersonalities({ commit }) {
           let mountedPersArr = []
-          console.log(this.state.config.personalities.length)
           // console.log('perrs listo',this.state.personalities)
           for (let i = 0; i < this.state.config.personalities.length; i++) {
               const full_path_item = this.state.config.personalities[i]
