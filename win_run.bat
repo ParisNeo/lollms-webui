@@ -57,6 +57,35 @@ if "%git_status%" == "" (
 REM Clean up the temporary file
 del git_status.txt
 
+REM Check for library upgrades in requirements.txt
+pip list --outdated > outdated_libraries.txt
+
+REM Read the outdated library information from the file
+setlocal enabledelayedexpansion
+set "outdated_libraries="
+for /f "skip=2 tokens=1,3" %%a in (outdated_libraries.txt) do (
+    set "outdated_libraries=!outdated_libraries!%%a "
+)
+endlocal & set "outdated_libraries=%outdated_libraries%"
+
+REM Prompt the user to update libraries if there are upgrades available
+if "%outdated_libraries%" == "" (
+    echo No library upgrades available.
+) else (
+    echo Upgrades are available for the following libraries: %outdated_libraries%
+    echo Do you want to update the libraries? (y/n)
+    set /p library_choice=
+    if /i "%library_choice%"=="y" (
+        pip install --upgrade -r requirements.txt
+        echo Libraries have been updated successfully.
+    ) else (
+        echo Skipping the library updates.
+    )
+)
+
+REM Clean up the temporary library information file
+del outdated_libraries.txt
+
 @rem set default cuda toolkit to the one in the environment
 set "CUDA_PATH=%INSTALL_ENV_DIR%"
 
