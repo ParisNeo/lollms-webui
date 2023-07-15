@@ -100,8 +100,11 @@
                         </button>
                     </div>
                     <div v-if="showPersonalities" class="mx-1">
-                        <MountedPersonalitiesList ref="mountedPersList" :onShowPersList="onShowPersListFun"
-                            :on-mount-unmount="onMountUnmountFun" :discussionPersonalities="allDiscussionPersonalities" />
+                        <MountedPersonalitiesList ref="mountedPersList" 
+                            :onShowPersList="onShowPersListFun"
+                            :on-mount-unmount="onMountUnmountFun" 
+                            :on-talk="handleOnTalk"
+                            :discussionPersonalities="allDiscussionPersonalities" />
                     </div>
                     <!-- CHAT BOX -->
                     <div class="flex flex-row flex-grow items-center gap-2 overflow-visible">
@@ -114,6 +117,7 @@
                                 v-if="personalities_ready && this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands!=''" 
                                 :commandsList="this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands"
                                 :sendCommand="sendMessageEvent"
+                                :on-show-toast-message="onShowToastMessage"
                                 ref="personalityCMD"
                             ></PersonalitiesCommands>
                         </div>
@@ -206,8 +210,10 @@ export default {
     name: 'ChatBox',
     emits: ["messageSentEvent", "stopGenerating"],
     props: {
+        onTalk: Function,
         discussionList: Array,
-        loading: false
+        loading: false,
+        onShowToastMessage: Function
 
     },
     components: {
@@ -255,6 +261,7 @@ export default {
         }
     },
     methods: {
+
         onPersonalitiesReadyFun(){
             this.personalities_ready = true;
         },
@@ -262,6 +269,11 @@ export default {
             this.showPersonalities = !this.showPersonalities
 
         },
+        handleOnTalk(pers){
+            this.showPersonalities=false
+            this.onTalk(pers)
+        },
+                            
         onMountUnmountFun(comp) {
             console.log('Mounting/unmounting chat')
             this.$refs.mountedPers.constructor()

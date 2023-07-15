@@ -13,12 +13,13 @@
         <h3 class="font-bold font-large text-lg line-clamp-3">
           {{ personality.name }}
         </h3>
-        <button v-if="selected" type="button" title="Reload personality"
-            @click="toggleReloadBinding"
+        <button type="button" title="Talk"
+            @click="toggleTalk"
             class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
-            <i data-feather="refresh-cw" class="w-5"></i>
-            <span class="sr-only">Help</span>
-          </button>        
+            <i data-feather="send" class="w-5"></i>
+            <span class="sr-only">Talk</span>
+        </button>        
+  
       </div>
       <div class="flex items-center flex-row-reverse gap-2 my-1">
         <!-- CONTROLS -->
@@ -95,6 +96,7 @@ export default {
     personality: {},
     selected: Boolean,
     full_path: String,
+    onTalk:Function,
     onSelected: Function,
     onMounted: Function,
     onReinstall: Function,
@@ -127,6 +129,9 @@ selected_computed(){
     },
     defaultImg(event) {
       event.target.src = botImgPlaceholder
+    },
+    toggleTalk() {
+      this.onTalk(this)
     },
     toggleSelected() {
       this.onSelected(this)

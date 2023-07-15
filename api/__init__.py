@@ -34,15 +34,16 @@ import ctypes
 from functools import partial
 
 def terminate_thread(thread):
-    if not thread.is_alive():
-        return
+    if thread:
+        if not thread.is_alive():
+            return
 
-    thread_id = thread.ident
-    exc = ctypes.py_object(SystemExit)
-    res = ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, exc)
-    if res > 1:
-        ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, None)
-        raise SystemError("Failed to terminate the thread.")
+        thread_id = thread.ident
+        exc = ctypes.py_object(SystemExit)
+        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, exc)
+        if res > 1:
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, None)
+            raise SystemError("Failed to terminate the thread.")
 
 __author__ = "parisneo"
 __github__ = "https://github.com/ParisNeo/lollms-webui"
@@ -150,7 +151,9 @@ class LoLLMsAPPI(LollmsApplication):
                 "current_discussion":None,
                 "generated_text":"",
                 "cancel_generation": False,          
-                "generation_thread": None
+                "generation_thread": None,
+                "current_discussion":None,
+                "current_message_id":0
             }     
             ASCIIColors.success(f'Client {request.sid} connected')
 
@@ -388,6 +391,7 @@ class LoLLMsAPPI(LollmsApplication):
             client_id = request.sid
             self.connections[client_id]["generated_text"]=""
             self.connections[client_id]["cancel_generation"]=False
+            
 
             if self.is_ready:
                 if self.current_discussion is None:
@@ -441,7 +445,11 @@ class LoLLMsAPPI(LollmsApplication):
         def handle_connection(data):
             client_id = request.sid
             message_id = int(data['id'])
-            message = data["prompt"]
+            if message_id==-1:
+                message_id = self.message_id
+                message = ""
+            else:
+                message = data["prompt"]
             self.current_user_message_id = message_id
             self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message_id, client_id))
             self.connections[client_id]['generation_thread'].start()
@@ -786,9 +794,7 @@ class LoLLMsAPPI(LollmsApplication):
         if self.personality.processor is not None:
             ASCIIColors.success("Running workflow")
             try:
-                output = self.personality.processor.run_workflow( prompt, full_prompt, callback)
-                if callback:
-                    callback(output, MSG_TYPE.MSG_TYPE_FULL)
+                self.personality.processor.run_workflow( prompt, full_prompt, callback)
             except Exception as ex:
                 # Catch the exception and get the traceback as a list of strings
                 traceback_lines = traceback.format_exception(type(ex), ex, ex.__traceback__)

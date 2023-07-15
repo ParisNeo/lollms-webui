@@ -210,7 +210,14 @@
 
             </div>
             <div class=" bottom-0 container flex flex-row items-center justify-center " v-if="currentDiscussion.id">
-                <ChatBox ref="chatBox" @messageSentEvent="sendMsg" :loading="isGenerating" :discussionList="discussionArr" @stopGenerating="stopGenerating">
+                <ChatBox ref="chatBox" 
+                    @messageSentEvent="sendMsg" 
+                    :loading="isGenerating" 
+                    :discussionList="discussionArr" 
+                    @stopGenerating="stopGenerating" 
+                    :on-show-toast-message="showToastMessage"
+                    :on-talk="talk"
+                    >
                 </ChatBox>
             </div>
             <!-- CAN ADD FOOTER PANEL HERE -->
@@ -349,6 +356,10 @@ export default {
         }
     },
     methods: {
+        showToastMessage(text){
+            console.log("sending",text)
+            this.$refs.toast.showToast(text, 4, true)
+        },        
         togglePanel() {
             this.panelCollapsed = !this.panelCollapsed;
         },
@@ -780,6 +791,29 @@ export default {
                 this.chime.play()
             }
         },
+        talk(pers){
+            this.isGenerating = true;
+            this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
+            axios.get('/get_generation_status', {}).then((res) => {
+                if (res) {
+                    //console.log(res.data.status);
+                    if (!res.data.status) {
+                        socket.emit('generate_msg_from', { id: -1 });
+                        // Temp data
+                        let lastmsgid =0
+                        if(this.discussionArr.length>0){
+                            lastmsgid= Number(this.discussionArr[this.discussionArr.length - 1].id) + 1
+                        }
+                        
+                    }
+                    else {
+                        console.log("Already generating");
+                    }
+                }
+            }).catch((error) => {
+                console.log("Error: Could not get generation status", error);
+            });
+        },
         sendMsg(msg) {
             // Sends message to binding
             if (!msg) {
@@ -838,13 +872,14 @@ export default {
                     messageItem.steps.push({"message":msgObj.data,"done":false})
                 
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_END) {
-
                     // Find the step with the matching message and update its 'done' property to true
                     const matchingStep = messageItem.steps.find(step => step.message === msgObj.data);
 
                     if (matchingStep) {
                         matchingStep.done = true;
                     }
+                } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_EXCEPTION) {
+                    this.$refs.toast.showToast(msgObj.data, 4, true)
                 }
                 // // Disables as per request
                 // nextTick(() => {
@@ -1066,8 +1101,6 @@ export default {
                     console.log(res);
                     if (!res.data.status) {
                         socket.emit('generate_msg_from', { prompt: msg, id: msgId });
-
-
                     }
                     else {
                         console.log("Already generating");

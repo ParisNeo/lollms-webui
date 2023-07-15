@@ -39,7 +39,9 @@
                             :key="'index-' + index + '-' + pers.name" :personality="pers" :full_path="pers.full_path"
                             :selected="configFile.personalities[configFile.active_personality_id] === pers.full_path"
                             :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted"
-                            :on-settings="onSettingsPersonality"  :on-reinstall="onPersonalityReinstall"/>
+                            :on-settings="onSettingsPersonality"  :on-reinstall="onPersonalityReinstall"
+                            :on-talk="handleOnTalk"
+                           />
                     </TransitionGroup>
                 </div>
             </div>
@@ -87,6 +89,7 @@ const bUrl = import.meta.env.VITE_GPT4ALL_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
 export default {
     props: {
+        onTalk:Function,
         onMountUnmount: Function,
         discussionPersonalities: Array,
         onShowPersList: Function,
@@ -217,6 +220,38 @@ export default {
 
             }
 
+
+        },
+        async handleOnTalk(pers){
+            // eslint-disable-next-line no-unused-vars
+            feather.replace()
+            console.log('ppa', pers)
+            if (pers) {
+
+                if (pers.selected) {
+                    this.$refs.toast.showToast("Personality already selected", 4, true)
+                    return
+                }
+                if (pers.isMounted) {
+
+                    const res = await this.select_personality(pers)
+                    if (res) {
+                        if (res.status) {
+                            await this.constructor()
+                            this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
+                            this.onTalk(pers)
+                        }
+                    }
+
+
+                } else {
+                    this.onPersonalityMounted(pers)
+
+                }
+
+
+
+            }
 
         },
         async onPersonalitySelected(pers) {

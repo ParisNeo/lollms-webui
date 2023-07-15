@@ -79,7 +79,8 @@ props: {
     type: Array,
     required: true,
     },
-    sendCommand:Function
+    sendCommand:Function,
+    onShowToastMessage:Function
 },
 data() {
     return {
@@ -106,6 +107,7 @@ methods: {
       input.accept = 'application/pdf'; // Specify the file type you want to accept
       input.onchange = (e) => {
         this.selectedFile = e.target.files[0];
+        console.log("File selected")
         next()
       };
       input.click();
@@ -113,11 +115,13 @@ methods: {
     uploadFile() {
       const formData = new FormData();
       formData.append('file', this.selectedFile);
+      console.log("Uploading file")
 
       axios.post('/send_file', formData)
         .then(response => {
           // Handle the server response if needed
           console.log(response.data);
+          this.onShowToastMessage("File uploaded successfully")
         })
         .catch(error => {
           // Handle any errors that occur during the upload
