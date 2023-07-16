@@ -7,7 +7,7 @@
 import io from 'socket.io-client';
 
 // fixes issues when people not hosting this site on local network
-const URL = process.env.NODE_ENV === "production" ? undefined : (import.meta.env.VITE_GPT4ALL_API);
+const URL = process.env.NODE_ENV === "production" ? undefined : (import.meta.env.VITE_LOLLMS_API);
 const socket = new io(URL);
 
 socket.onopen = () => {

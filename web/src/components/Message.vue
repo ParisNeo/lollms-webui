@@ -170,7 +170,7 @@
 <script>
 import botImgPlaceholder from "../assets/logo.svg"
 import userImgPlaceholder from "../assets/default_user.svg"
-const bUrl = import.meta.env.VITE_GPT4ALL_API_BASEURL
+const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 import { nextTick } from 'vue'
 import feather from 'feather-icons'
 import MarkdownRenderer from './MarkdownRenderer.vue';

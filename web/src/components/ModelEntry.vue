@@ -254,7 +254,7 @@ import axios from "axios";
 import { nextTick } from 'vue'
 import feather from 'feather-icons'
 import defaultImgPlaceholder from "../assets/default_model.png"
-const bUrl = import.meta.env.VITE_GPT4ALL_API_BASEURL
+const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
   props: {
     title: String,

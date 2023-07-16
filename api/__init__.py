@@ -27,7 +27,7 @@ import requests
 from tqdm import tqdm 
 import traceback
 import sys
-from lollms.console import MainMenu
+from lollms.terminal import MainMenu
 import urllib
 import gc
 import ctypes
@@ -401,8 +401,9 @@ class LoLLMsAPPI(LollmsApplication):
                         self.current_discussion = self.db.load_last_discussion()
 
                 message = data["prompt"]
+                ump = "!@>"+self.config.user_name+": " if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
                 message_id = self.current_discussion.add_message(
-                    "user", 
+                    ump, 
                     message,
                     message_type=MSG_TYPE.MSG_TYPE_FULL.value,
                     parent=self.message_id
@@ -676,13 +677,15 @@ class LoLLMsAPPI(LollmsApplication):
     def get_discussion_to(self, message_id=-1):
         messages = self.current_discussion.get_messages()
         self.full_message_list = []
+        ump = "!@>"+self.config.user_name+": " if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
+
         for message in messages:
             if message["id"]<= message_id or message_id==-1: 
                 if message["type"]!=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER:
                     if message["sender"]==self.personality.name:
                         self.full_message_list.append(self.personality.ai_message_prefix+message["content"])
                     else:
-                        self.full_message_list.append(self.personality.user_message_prefix + message["content"])
+                        self.full_message_list.append(ump + message["content"])
 
         link_text = self.personality.link_text
 

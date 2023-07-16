@@ -122,6 +122,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
         # =========================================================================================
 
         self.add_endpoint("/reload_binding", "reload_binding", self.reload_binding, methods=["POST"])
+        self.add_endpoint("/update_software", "update_software", self.update_software, methods=["GET"])
+        self.add_endpoint("/selectdb", "selectdb", self.selectdb, methods=["GET"])
+
+
 
         
         self.add_endpoint("/install_model_from_path", "install_model_from_path", self.install_model_from_path, methods=["GET"])
@@ -470,6 +474,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
     def update_setting(self):
         data = request.get_json()
         setting_name = data['setting_name']
+
         if setting_name== "temperature":
             self.config["temperature"]=float(data['setting_value'])
         elif setting_name== "n_predict":
@@ -555,9 +560,12 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 return jsonify({'setting_name': data['setting_name'], "status":True})
 
         else:
-            if self.config["debug"]:
-                print(f"Configuration {data['setting_name']} couldn't be set to {data['setting_value']}")
-            return jsonify({'setting_name': data['setting_name'], "status":False})
+            if data['setting_name'] in self.config.config.keys():
+                data['setting_name'] = data['setting_value']
+            else:
+                if self.config["debug"]:
+                    print(f"Configuration {data['setting_name']} couldn't be set to {data['setting_value']}")
+                return jsonify({'setting_name': data['setting_name'], "status":False})
 
         if self.config["debug"]:
             print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
@@ -937,6 +945,42 @@ class LoLLMsWebUI(LoLLMsAPPI):
         except Exception as ex:
             print(f"Couldn't build binding: [{ex}]")
             return jsonify({"status":False, 'error':str(ex)})
+        
+    def update_software(self):
+        # Perform a 'git pull' to check for updates
+        try:
+            # Execute 'git pull' and redirect the output to the console
+            process = subprocess.Popen(['git', 'pull'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+
+            # Read and print the output in real-time
+            while True:
+                output = process.stdout.readline()
+                if output == '' and process.poll() is not None:
+                    break
+                if output:
+                    print(output.strip())
+
+            # Wait for the process to finish and get the return code
+            return_code = process.poll()
+
+            if return_code == 0:
+                return {"status": True}
+            else:
+                return {"status": False, 'error': f"git pull failed with return code {return_code}"}
+        
+        except subprocess.CalledProcessError as ex:
+            # There was an error in 'git pull' command
+            return {"status": False, 'error': str(ex)}
+        
+    def selectdb(self):
+        from tkinter import Tk, filedialog
+        # Initialize Tkinter
+        root = Tk()
+        root.withdraw()
+
+        # Show file selection dialog
+        file_path = filedialog.askopenfilename()
+
         
     def reload_binding(self):
         try:

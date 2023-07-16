@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 7
+version: 9
 binding_name: null
 model_name: null
 
@@ -25,7 +25,13 @@ active_personality_id: 0
 override_personality_model_parameters: false #if true the personality parameters are overriden by those of the configuration (may affect personality behaviour) 
 
 user_name: user
+user_description: ""
+use_user_name_in_discussions: false
+user_avatar: default_user.svg
 
 # UI parameters
 debug: False
 db_path: database.db
+
+# Automatic update
+auto_update: false

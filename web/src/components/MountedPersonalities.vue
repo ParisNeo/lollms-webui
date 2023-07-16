@@ -46,8 +46,8 @@ import { watch, ref } from 'vue';
 
 import feather from 'feather-icons'
 
-const bUrl = import.meta.env.VITE_GPT4ALL_API_BASEURL
-axios.defaults.baseURL = import.meta.env.VITE_GPT4ALL_API_BASEURL
+const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
+axios.defaults.baseURL = import.meta.env.VITE_LOLLMS_API_BASEURL
 
 
 export default {
