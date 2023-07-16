@@ -522,6 +522,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             if self.config["model_name"] is not None:
                 try:
                     self.model = self.binding.build_model()
+                    self.rebuild_personalities()
                 except Exception as ex:
                     # Catch the exception and get the traceback as a list of strings
                     traceback_lines = traceback.format_exception(type(ex), ex, ex.__traceback__)
