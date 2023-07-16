@@ -392,7 +392,7 @@ class LoLLMsAPPI(LollmsApplication):
             self.connections[client_id]["generated_text"]=""
             self.connections[client_id]["cancel_generation"]=False
             
-
+ 
             if self.is_ready:
                 if self.current_discussion is None:
                     if self.db.does_last_discussion_have_messages():
@@ -403,7 +403,7 @@ class LoLLMsAPPI(LollmsApplication):
                 message = data["prompt"]
                 ump = "!@>"+self.config.user_name+": " if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
                 message_id = self.current_discussion.add_message(
-                    ump, 
+                    ump.replace("!@>","").replace(":",""), 
                     message,
                     message_type=MSG_TYPE.MSG_TYPE_FULL.value,
                     parent=self.message_id
@@ -653,9 +653,9 @@ class LoLLMsAPPI(LollmsApplication):
 
         link_text = self.personality.link_text
         if not is_continue:
-            self.full_message_list.append("\n!@>"+message["sender"]+": "+message["content"].strip()+self.personality.link_text+self.personality.ai_message_prefix)
+            self.full_message_list.append("\n!@>"+message["sender"].replace(":","")+": "+message["content"].strip()+self.personality.link_text+self.personality.ai_message_prefix)
         else:
-            self.full_message_list.append("\n!@>"+message["sender"]+": "+message["content"].strip())
+            self.full_message_list.append("\n!@>"+message["sender"].replace(":","")+": "+message["content"].strip())
 
 
         composed_messages = link_text.join(self.full_message_list)
@@ -943,12 +943,14 @@ class LoLLMsAPPI(LollmsApplication):
             ASCIIColors.success(f" ║                        Done                      ║ ")
             ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
         else:
+            ump = "!@>"+self.config.user_name+": " if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
+
             self.cancel_gen = False
             #No discussion available
             ASCIIColors.warning("No discussion selected!!!")
             self.socketio.emit('message', {
                                             'data': "No discussion selected!!!", 
-                                            'user_message_id':self.current_user_message_id, 
+                                            'user_message_id':ump.replace("!@>","").replace(":",""), 
                                             'ai_message_id':self.current_ai_message_id, 
                                             'discussion_id':0,
                                             'message_type': MSG_TYPE.MSG_TYPE_EXCEPTION.value

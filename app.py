@@ -516,9 +516,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 self.config["personalities"].append(f"{self.personality_language}/{self.personality_category}/{self.personality_name}")
         elif setting_name== "override_personality_model_parameters":
             self.config["override_personality_model_parameters"]=bool(data['setting_value'])
-            
-            
-
 
         elif setting_name== "model_name":
             self.config["model_name"]=data['setting_value']
@@ -561,7 +558,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         else:
             if data['setting_name'] in self.config.config.keys():
-                data['setting_name'] = data['setting_value']
+                self.config[data['setting_name']] = data['setting_value']
             else:
                 if self.config["debug"]:
                     print(f"Configuration {data['setting_name']} couldn't be set to {data['setting_value']}")

@@ -604,7 +604,23 @@
         </button>
       </td>
     </tr>
-
+    <!-- Row 3 -->
+    <tr>
+      <td style="min-width: 200px;">
+        <label for="user_name" class="text-sm font-bold" style="margin-right: 1rem;">User avatar:</label>
+      </td>
+      <td style="width: 100%;">
+        <img :src="avatar">
+      </td>
+      <td style="min-width: 300px;">
+        <button
+          class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+          @click="update_setting('user_name', userName)"
+        >
+          Validate
+        </button>
+      </td>
+    </tr>
     <!-- Row 4 -->
     <tr>
       <td style="min-width: 200px;">
