@@ -526,7 +526,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             if self.config["model_name"] is not None:
                 try:
                     self.model = self.binding.build_model()
-                    self.rebuild_personalities()
+                    self.rebuild_personalities(reload_all=True)
                 except Exception as ex:
                     # Catch the exception and get the traceback as a list of strings
                     traceback_lines = traceback.format_exception(type(ex), ex, ex.__traceback__)
@@ -545,6 +545,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 print(f"New binding selected : {data['setting_value']}")
                 self.config["binding_name"]=data['setting_value']
                 try:
+                    if self.binding:
+                        self.binding.destroy_model()
+
                     self.binding = None
                     self.model = None
                     for per in self.mounted_personalities:
@@ -809,7 +812,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         root_dir = self.lollms_paths.personal_path / "uploads"
         root_dir.mkdir(exist_ok=True, parents=True)
 
-        path = str(root_dir+"/".join(filename.split("/")[:-1]))
+        path = str(root_dir/"/".join(filename.split("/")[:-1]))
                             
         fn = filename.split("/")[-1]
         return send_from_directory(path, fn)
@@ -948,7 +951,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 print(f"Couldn't build model: [{ex}]")
                 trace_exception(ex)
             try:
-                self.rebuild_personalities()
+                self.rebuild_personalities(reload_all=True)
             except Exception as ex:
                 print(f"Couldn't reload personalities: [{ex}]")
             return jsonify({"status": True}) 
@@ -1069,7 +1072,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 print(f"Couldn't build model: [{ex}]")
                 trace_exception(ex)
             try:
-                self.rebuild_personalities()
+                self.rebuild_personalities(reload_all=True)
             except Exception as ex:
                 print(f"Couldn't reload personalities: [{ex}]")
             return jsonify({"status": True}) 
@@ -1282,9 +1285,12 @@ class LoLLMsWebUI(LoLLMsAPPI):
         try:
             ASCIIColors.info("Recovering file from front end")
             file = request.files['file']
-            file.save(self.lollms_paths.personal_uploads_path / file.filename)
+            path:Path = self.lollms_paths.personal_uploads_path / self.personality.personality_folder_name
+            path.mkdir(parents=True, exist_ok=True)
+            file_path = path / file.filename
+            file.save( file_path )
             if self.personality.processor:
-                self.personality.processor.add_file(self.lollms_paths.personal_uploads_path / file.filename)
+                self.personality.processor.add_file(file_path)
             return jsonify({"status": True})   
         except Exception as ex:
             ASCIIColors.error(ex)

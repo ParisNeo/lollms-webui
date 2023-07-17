@@ -477,7 +477,7 @@ class LoLLMsAPPI(LollmsApplication):
         ASCIIColors.green(f"{self.lollms_paths.personal_path}")
 
 
-    def rebuild_personalities(self):
+    def rebuild_personalities(self, reload_all=False):
         loaded = self.mounted_personalities
         loaded_names = [f"{p.language}/{p.category}/{p.personality_folder_name}" for p in loaded]
         mounted_personalities=[]
@@ -491,7 +491,7 @@ class LoLLMsAPPI(LollmsApplication):
                 ASCIIColors.green(f" {personality}")
             else:
                 ASCIIColors.yellow(f" {personality}")
-            if personality in loaded_names:
+            if personality in loaded_names and not reload_all:
                 mounted_personalities.append(loaded[loaded_names.index(personality)])
             else:
                 personality_path = self.lollms_paths.personalities_zoo_path/f"{personality}"
@@ -660,10 +660,12 @@ class LoLLMsAPPI(LollmsApplication):
 
         composed_messages = link_text.join(self.full_message_list)
         t = self.model.tokenize(composed_messages)
+        cond_tk = self.model.tokenize(self.personality.personality_conditioning)
         n_t = len(t)
+        n_cond_tk = len(cond_tk)
         max_prompt_stx_size = 3*int(self.config.ctx_size/4)
-        if self.n_cond_tk+n_t>max_prompt_stx_size:
-            nb_tk = max_prompt_stx_size-self.n_cond_tk
+        if n_cond_tk+n_t>max_prompt_stx_size:
+            nb_tk = max_prompt_stx_size-n_cond_tk
             composed_messages = self.model.detokenize(t[-nb_tk:])
             ASCIIColors.warning(f"Cropping discussion to fit context [using {nb_tk} tokens/{self.config.ctx_size}]")
         discussion_messages = self.personality.personality_conditioning+ composed_messages
