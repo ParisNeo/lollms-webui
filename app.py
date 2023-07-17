@@ -125,6 +125,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint("/update_software", "update_software", self.update_software, methods=["GET"])
         self.add_endpoint("/selectdb", "selectdb", self.selectdb, methods=["GET"])
 
+        self.add_endpoint("/restart_program", "restart_program", self.restart_program, methods=["GET"])
+        
 
 
         
@@ -979,7 +981,13 @@ class LoLLMsWebUI(LoLLMsAPPI):
         # Show file selection dialog
         file_path = filedialog.askopenfilename()
 
-        
+    def restart_program(self):
+        ASCIIColors.info("Restarting backen ")
+        ASCIIColors.info("")
+        ASCIIColors.info("Restarting backen ")
+        python = sys.executable
+        os.execl(python, python, *sys.argv)
+
     def reload_binding(self):
         try:
             data = request.get_json()

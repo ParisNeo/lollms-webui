@@ -532,119 +532,128 @@
                 <div :class="{ 'hidden': minconf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
 
 
-  <table style="width: 100%;">
-    <!-- Row 1 -->
-    <tr>
-      <td style="min-width: 200px;">
-        <label for="auto_update" class="text-sm font-bold" style="margin-right: 1rem;">Auto update:</label>
-      </td>
-      <td>
-        <input
-          type="checkbox"
-          id="auto_update"
-          required
-          v-model="auto_update"
-          class="mt-1 px-2 py-1 border border-gray-300 rounded"
-        >
-      </td>
-      <td style="min-width: 300px;">
-        <button
-          class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-          @click="update_setting('auto_update', auto_update)"
-        >
-          Validate
-        </button>
-      </td>
-    </tr>
+                    <table style="width: 100%;">
+                        <!-- Row 1 -->
+                        <tr>
+                        <td style="min-width: 200px;">
+                            <label for="auto_update" class="text-sm font-bold" style="margin-right: 1rem;">Auto update:</label>
+                        </td>
+                        <td>
+                            <input
+                            type="checkbox"
+                            id="auto_update"
+                            required
+                            v-model="auto_update"
+                            class="mt-1 px-2 py-1 border border-gray-300 rounded"
+                            >
+                        </td>
+                        <td style="min-width: 300px;">
+                            <button
+                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                            @click="update_setting('auto_update', auto_update)"
+                            >
+                            Validate
+                            </button>
+                        </td>
+                        </tr>
 
-    <!-- Row 2 -->
-    <tr>
-      <td style="min-width: 200px;">
-        <label for="db_path" class="text-sm font-bold" style="margin-right: 1rem;">Database path:</label>
-      </td>
-      <td style="width: 100%;">
-        <input
-          type="text"
-          id="db_path"
-          required
-          v-model="db_path"
-          class="w-full mt-1 px-2 py-1 border border-gray-300 rounded"
-        >
-      </td>
-      <td style="min-width: 300px;">
-        <button
-          class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-          @click="update_setting('db_path', db_path)"
-        >
-          Select Database
-        </button>
-      </td>
-    </tr>
+                        <!-- Row 2 -->
+                        <tr>
+                        <td style="min-width: 200px;">
+                            <label for="db_path" class="text-sm font-bold" style="margin-right: 1rem;">Database path:</label>
+                        </td>
+                        <td style="width: 100%;">
+                            <input
+                            type="text"
+                            id="db_path"
+                            required
+                            v-model="db_path"
+                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded"
+                            >
+                        </td>
+                        <td style="min-width: 300px;">
+                            <button
+                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                            @click="update_setting('db_path', db_path)"
+                            >
+                            Select Database
+                            </button>
+                        </td>
+                        </tr>
 
-    <!-- Row 3 -->
-    <tr>
-      <td style="min-width: 200px;">
-        <label for="user_name" class="text-sm font-bold" style="margin-right: 1rem;">User name:</label>
-      </td>
-      <td style="width: 100%;">
-        <input
-          type="text"
-          id="user_name"
-          required
-          v-model="userName"
-          class="w-full mt-1 px-2 py-1 border border-gray-300 rounded"
-        >
-      </td>
-      <td style="min-width: 300px;">
-        <button
-          class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-          @click="update_setting('user_name', userName)"
-        >
-          Validate
-        </button>
-      </td>
-    </tr>
-    <!-- Row 3 -->
-    <tr>
-      <td style="min-width: 200px;">
-        <label for="user_name" class="text-sm font-bold" style="margin-right: 1rem;">User avatar:</label>
-      </td>
-      <td style="width: 100%;">
-        <img :src="avatar">
-      </td>
-      <td style="min-width: 300px;">
-        <button
-          class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-          @click="update_setting('user_name', userName)"
-        >
-          Validate
-        </button>
-      </td>
-    </tr>
-    <!-- Row 4 -->
-    <tr>
-      <td style="min-width: 200px;">
-        <label for="use_user_name_in_discussions" class="text-sm font-bold" style="margin-right: 1rem;">Use User Name in discussions:</label>
-      </td>
-      <td>
-        <input
-          type="checkbox"
-          id="use_user_name_in_discussions"
-          required
-          v-model="use_user_name_in_discussions"
-          class=" mt-1 px-2 py-1 border border-gray-300 rounded"
-        >
-      </td>
-      <td style="min-width: 300px;">
-        <button
-          class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-          @click="update_setting('use_user_name_in_discussions', use_user_name_in_discussions)"
-        >
-          Validate
-        </button>
-      </td>
-    </tr>    
-  </table>
+                        <!-- Row 3 -->
+                        <tr>
+                        <td style="min-width: 200px;">
+                            <label for="user_name" class="text-sm font-bold" style="margin-right: 1rem;">User name:</label>
+                        </td>
+                        <td style="width: 100%;">
+                            <input
+                            type="text"
+                            id="user_name"
+                            required
+                            v-model="userName"
+                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded"
+                            >
+                        </td>
+                        <td style="min-width: 300px;">
+                            <button
+                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                            @click="update_setting('user_name', userName)"
+                            >
+                            Validate
+                            </button>
+                        </td>
+                        </tr>
+                        <!-- Row 3 -->
+                        <tr>
+                        <td style="min-width: 200px;">
+                            <label for="user_name" class="text-sm font-bold" style="margin-right: 1rem;">User avatar:</label>
+                        </td>
+                        <td style="width: 100%;">
+                            <img :src="avatar">
+                        </td>
+                        <td style="min-width: 300px;">
+                            <button
+                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                            @click="update_setting('user_name', userName)"
+                            >
+                            Validate
+                            </button>
+                        </td>
+                        </tr>
+                        <!-- Row 4 -->
+                        <tr>
+                        <td style="min-width: 200px;">
+                            <label for="use_user_name_in_discussions" class="text-sm font-bold" style="margin-right: 1rem;">Use User Name in discussions:</label>
+                        </td>
+                        <td>
+                            <input
+                            type="checkbox"
+                            id="use_user_name_in_discussions"
+                            required
+                            v-model="use_user_name_in_discussions"
+                            class=" mt-1 px-2 py-1 border border-gray-300 rounded"
+                            >
+                        </td>
+                        <td style="min-width: 300px;">
+                            <button
+                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                            @click="update_setting('use_user_name_in_discussions', use_user_name_in_discussions)"
+                            >
+                            Validate
+                            </button>
+                        </td>
+                        </tr>    
+                        <!-- Row 0 -->
+                        <tr class="w-full">
+                            <button
+                            class="hover:text-secondary w-full bg-red-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                            @click="api_get_req('restart_program').then((res)=>{this.$refs.toast.showToast('Success!', 4, true)})"
+                            >
+                            Restart program
+                            </button>
+                        </tr>                        
+                    </table>
 
 
 

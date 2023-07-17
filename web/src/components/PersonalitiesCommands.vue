@@ -165,7 +165,7 @@ methods: {
 
         });
       } else {
-        this.sendCommand(cmd);
+        this.sendCommand(cmd.value);
       }      
       
     },
