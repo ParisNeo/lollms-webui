@@ -610,7 +610,7 @@
                             <label for="user_name" class="text-sm font-bold" style="margin-right: 1rem;">User avatar:</label>
                         </td>
                         <td style="width: 100%;">
-                            <img :src="avatar">
+                            <img :src="user_avatar">
                         </td>
                         <td style="min-width: 300px;">
                             <button
@@ -643,18 +643,35 @@
                             Validate
                             </button>
                         </td>
-                        </tr>    
-                        <!-- Row 0 -->
-                        <tr class="w-full">
-                            <button
-                            class="hover:text-secondary w-full bg-red-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                            @click="api_get_req('restart_program').then((res)=>{this.$refs.toast.showToast('Success!', 4, true)})"
-                            >
-                            Restart program
-                            </button>
-                        </tr>                        
+                        </tr>     
                     </table>
 
+                    <!-- Row 0 -->
+                    <div class="w-full">
+                        <button
+                        class="hover:text-secondary w-full bg-red-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                        @click="api_get_req('clear_uploads').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast(['failed!'], 4, false)}})"
+                        >
+                        Clear uploads
+                        </button>
+                    </div>
+                    <div class="w-full">
+                        <button
+                        class="hover:text-secondary w-full bg-red-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                        @click="api_get_req('restart_program').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast(['failed!'], 4, false)}})"
+                        >
+                        Restart program
+                        </button>
+                    </div>
+                    <!-- Row 0 -->
+                    <div class="w-full">
+                        <button
+                        class="hover:text-secondary w-full bg-red-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                        @click="api_get_req('update_software').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast('Success!', 4, true)}})"
+                        >
+                        Upgrade program
+                        </button>
+                    </div>  
 
 
 
@@ -2783,6 +2800,15 @@ export default {
                 set(value) {
                     // You should not set the value directly here; use the updateSetting method instead
                     this.$store.state.config.user_name = value
+                },
+            },
+        user_avatar:{
+                get() {
+                    return "/user_infos/"+this.$store.state.config.user_avatar;
+                },
+                set(value) {
+                    // You should not set the value directly here; use the updateSetting method instead
+                    this.$store.state.config.user_avatar = value
                 },
             },
         auto_update:{

@@ -123,6 +123,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         self.add_endpoint("/reload_binding", "reload_binding", self.reload_binding, methods=["POST"])
         self.add_endpoint("/update_software", "update_software", self.update_software, methods=["GET"])
+        self.add_endpoint("/clear_uploads", "clear_uploads", self.clear_uploads, methods=["GET"])
         self.add_endpoint("/selectdb", "selectdb", self.selectdb, methods=["GET"])
 
         self.add_endpoint("/restart_program", "restart_program", self.restart_program, methods=["GET"])
@@ -198,6 +199,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         
         self.add_endpoint("/", "", self.index, methods=["GET"])
         self.add_endpoint("/<path:filename>", "serve_static", self.serve_static, methods=["GET"])
+        self.add_endpoint("/user_infos/<path:filename>", "serve_user_infos", self.serve_user_infos, methods=["GET"])
         
         self.add_endpoint("/images/<path:filename>", "serve_images", self.serve_images, methods=["GET"])
         self.add_endpoint("/bindings/<path:filename>", "serve_bindings", self.serve_bindings, methods=["GET"])
@@ -765,6 +767,14 @@ class LoLLMsWebUI(LoLLMsAPPI):
         fn = filename.split("/")[-1]
         return send_from_directory(path, fn)
 
+    def serve_user_infos(self, filename):
+        path = str(self.lollms_paths.personal_user_infos_path/("/".join(filename.split("/")[:-1])))
+                            
+        fn = filename.split("/")[-1]
+        return send_from_directory(path, fn)
+
+
+
     def serve_personalities(self, filename):
         path = str(self.lollms_paths.personalities_zoo_path/("/".join(filename.split("/")[:-1])))
                             
@@ -946,7 +956,44 @@ class LoLLMsWebUI(LoLLMsAPPI):
             print(f"Couldn't build binding: [{ex}]")
             return jsonify({"status":False, 'error':str(ex)})
         
+
+    def clear_uploads(self):
+        ASCIIColors.info("")
+        ASCIIColors.info("")
+        ASCIIColors.info("")
+        ASCIIColors.info(" ╔══════════════════════════════════════════════════╗")
+        ASCIIColors.info(" ║               Removing all uploads               ║")
+        ASCIIColors.info(" ╚══════════════════════════════════════════════════╝")
+        ASCIIColors.info("")
+        ASCIIColors.info("")
+        ASCIIColors.info("")        
+        try:
+            folder_path = self.lollms_paths.personal_uploads_path
+            # Iterate over all files and directories in the folder
+            for entry in folder_path.iterdir():
+                if entry.is_file():
+                    # Remove file
+                    entry.unlink()
+                elif entry.is_dir():
+                    # Remove directory (recursively)
+                    shutil.rmtree(entry)
+            print(f"All files and directories inside '{folder_path}' have been removed successfully.")
+            return {"status": True}
+        except OSError as e:
+            ASCIIColors.error(f"Couldn't clear the upload folder.\nMaybe some files are opened somewhere else.\Try doing it manually")
+            return {"status": False, 'error': "Couldn't clear the upload folder.\nMaybe some files are opened somewhere else.\Try doing it manually"}
+
+
     def update_software(self):
+        ASCIIColors.info("")
+        ASCIIColors.info("")
+        ASCIIColors.info("")
+        ASCIIColors.info(" ╔══════════════════════════════════════════════════╗")
+        ASCIIColors.info(" ║               Upgrading backend                  ║")
+        ASCIIColors.info(" ╚══════════════════════════════════════════════════╝")
+        ASCIIColors.info("")
+        ASCIIColors.info("")
+        ASCIIColors.info("")        
         # Perform a 'git pull' to check for updates
         try:
             # Execute 'git pull' and redirect the output to the console
@@ -981,10 +1028,17 @@ class LoLLMsWebUI(LoLLMsAPPI):
         # Show file selection dialog
         file_path = filedialog.askopenfilename()
 
+
     def restart_program(self):
-        ASCIIColors.info("Restarting backen ")
         ASCIIColors.info("")
-        ASCIIColors.info("Restarting backen ")
+        ASCIIColors.info("")
+        ASCIIColors.info("")
+        ASCIIColors.info(" ╔══════════════════════════════════════════════════╗")
+        ASCIIColors.info(" ║              Restarting backend                  ║")
+        ASCIIColors.info(" ╚══════════════════════════════════════════════════╝")
+        ASCIIColors.info("")
+        ASCIIColors.info("")
+        ASCIIColors.info("")
         python = sys.executable
         os.execl(python, python, *sys.argv)
 
@@ -1573,6 +1627,15 @@ if __name__ == "__main__":
         if arg_value is not None:
             config[arg_name] = arg_value
 
+    # Copy user
+    # Assuming the current file's directory contains the 'assets' subfolder
+    current_file_dir = Path(__file__).parent
+    assets_dir = current_file_dir / "assets"
+    default_user_avatar = assets_dir / "default_user.svg"    
+    user_avatar_path = lollms_paths.personal_user_infos_path / "default_user.svg"
+    if not user_avatar_path.exists():
+        # If the user avatar doesn't exist, copy the default avatar from the assets folder
+        shutil.copy(default_user_avatar, user_avatar_path)
     # executor = ThreadPoolExecutor(max_workers=1)
     # app.config['executor'] = executor
     bot = LoLLMsWebUI(app, socketio, config, config.file_path, lollms_paths)
