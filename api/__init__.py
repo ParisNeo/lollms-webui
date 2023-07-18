@@ -36,6 +36,7 @@ from functools import partial
 def terminate_thread(thread):
     if thread:
         if not thread.is_alive():
+            ASCIIColors.yellow("Thread not alive")
             return
 
         thread_id = thread.ident
@@ -44,6 +45,8 @@ def terminate_thread(thread):
         if res > 1:
             ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, None)
             raise SystemError("Failed to terminate the thread.")
+        else:
+            ASCIIColors.yellow("Canceled successfully")
 
 __author__ = "parisneo"
 __github__ = "https://github.com/ParisNeo/lollms-webui"
