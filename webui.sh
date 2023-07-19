@@ -119,4 +119,4 @@ if [ -d "./tmp" ]; then
 fi
 
 # Launch the Python application
-python app.py
+python app.py "$@"
