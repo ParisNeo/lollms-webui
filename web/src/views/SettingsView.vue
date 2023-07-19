@@ -610,7 +610,10 @@
                             <label for="user_name" class="text-sm font-bold" style="margin-right: 1rem;">User avatar:</label>
                         </td>
                         <td style="width: 100%;">
-                            <img :src="user_avatar">
+                            <label for="avatar-upload">
+                                <img :src="user_avatar" class="w-50 h-50" style="max-width: 50px; max-height: 50px; cursor: pointer;">
+                            </label>
+                            <input type="file" id="avatar-upload" style="display: none" @change="uploadAvatar">
                         </td>
                         <td style="min-width: 300px;">
                             <button
@@ -1546,7 +1549,27 @@ export default {
         socket.on('loading_text',this.on_loading_text);
         //await socket.on('install_progress', this.progressListener);
 
-    }, methods: {
+    }, 
+    methods: {
+        uploadAvatar(event){
+            console.log("here")
+            const file = event.target.files[0]; // Get the selected file
+            const formData = new FormData(); // Create a FormData object
+            formData.append('avatar', file); // Add the file to the form data with the key 'avatar'
+            console.log("Uploading avatar")
+            // Make an API request to upload the avatar
+            axios.post('/upload_avatar', formData)
+                .then(response => {
+                console.log("Avatar uploaded successfully")
+                // Assuming the server responds with the file name after successful upload
+                const fileName = response.data.fileName;
+                this.user_avatar = fileName; // Update the user_avatar value with the file name
+                this.update_setting("user_avatar",fileName).then(()=>{})
+                })
+                .catch(error => {
+                console.error('Error uploading avatar:', error);
+                });            
+        },
         async update_software() {
             console.log("Posting")
             const res =  await this.api_get_req('update_software')
@@ -1580,8 +1603,8 @@ export default {
                 this.isModelSelected = true
             }
             this.persLangArr = await this.api_get_req("list_personalities_languages")
-            this.persCatgArr = await this.api_get_req("list_personalities_categories")
-            this.persArr = await this.api_get_req("list_personalities")
+            this.persCatgArr = await this.api_get_req("list_personalities_categories?language="+this.configFile.personality_language)
+            this.persArr = await this.api_get_req("list_personalities?language="+this.configFile.personality_language+"&category"+this.configFile.personality_category)
             this.langArr = await this.api_get_req("list_languages")
 
             this.bindingsArr.sort((a, b) => a.name.localeCompare(b.name))
@@ -2265,12 +2288,16 @@ export default {
         // Refresh stuff
         refresh() {
             console.log("Refreshing")
-            this.$store.dispatch('refreshConfig').then(() => {
+            this.persCatgArr = this.api_get_req("list_personalities_categories?language="+this.configFile.personality_language).then(()=>{
+                this.$store.dispatch('refreshConfig').then(() => {
                 console.log(this.personality_language)
                 console.log(this.personality_category)
+
                 this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.personality_category && item.language === this.personality_language)
                 this.personalitiesFiltered.sort()
             });
+            })
+
             
             //this.fetchMainConfig();
             //this.fetchBindings();

@@ -237,17 +237,8 @@ export default {
             this.$emit('continueMessage', this.message.id, this.new_message_content)
         },
         getImgUrl() {
-
-            if (this.message.sender == "user") {
-                if (this.avatar) {
-
-                    return this.avatar
-                }
-
-                return userImgPlaceholder;
-
-            }
             if (this.avatar) {
+                console.log("Avatar",this.avatar)
                 return bUrl + this.avatar
             }
             return botImgPlaceholder;

@@ -142,6 +142,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         
         self.add_endpoint("/send_file", "send_file", self.send_file, methods=["POST"])
         self.add_endpoint("/upload_model", "upload_model", self.upload_model, methods=["POST"])
+        self.add_endpoint("/upload_avatar", "upload_avatar", self.upload_avatar, methods=["POST"])
         
         
         self.add_endpoint("/list_mounted_personalities", "list_mounted_personalities", self.list_mounted_personalities, methods=["POST"])
@@ -692,13 +693,19 @@ class LoLLMsWebUI(LoLLMsAPPI):
         return jsonify(personalities_languages)
 
     def list_personalities_categories(self):
-        personalities_categories_dir = self.lollms_paths.personalities_zoo_path/f'{self.personality_language}'  # replace with the actual path to the models folder
+        language = request.args.get('language')
+        personalities_categories_dir = self.lollms_paths.personalities_zoo_path/f'{language}'  # replace with the actual path to the models folder
         personalities_categories = [f.stem for f in personalities_categories_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]
         return jsonify(personalities_categories)
     
     def list_personalities(self):
+        language = request.args.get('language')
+        category = request.args.get('category')
+        if not category:
+            return jsonify([])
+            
         try:
-            personalities_dir = self.lollms_paths.personalities_zoo_path/f'{self.personality_language}/{self.personality_category}'  # replace with the actual path to the models folder
+            personalities_dir = self.lollms_paths.personalities_zoo_path/f'{language}/{category}'  # replace with the actual path to the models folder
             personalities = [f.stem for f in personalities_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]
         except Exception as ex:
             personalities=[]
@@ -1302,6 +1309,13 @@ class LoLLMsWebUI(LoLLMsAPPI):
         file.save(self.lollms_paths.personal_models_path/self.config.binding_name/file.filename)
         return jsonify({"status": True})   
 
+    def upload_avatar(self):      
+        file = request.files['avatar']
+        file.save(self.lollms_paths.personal_user_infos_path/file.filename)
+        return jsonify({"status": True})   
+        
+        
+        
     def rename(self):
         data = request.get_json()
         title = data["title"]
@@ -1557,7 +1571,10 @@ if __name__ == "__main__":
     lollms_paths = LollmsPaths.find_paths(force_local=True, custom_default_cfg_path="configs/config.yaml")
     db_folder = lollms_paths.personal_path/"databases"
     db_folder.mkdir(parents=True, exist_ok=True)
+    
+    # Parsong parameters
     parser = argparse.ArgumentParser(description="Start the chatbot Flask app.")
+    
     parser.add_argument(
         "-c", "--config", type=str, default="local_config", help="Sets the configuration file to be used."
     )

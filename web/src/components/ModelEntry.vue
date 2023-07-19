@@ -347,7 +347,7 @@ export default {
 
         } catch (error) {
           console.log(error.message, 'getFileSize')
-          this.linkNotValid = true
+          //this.linkNotValid = true
           return 'Could not be determined'
 
         }

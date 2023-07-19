@@ -404,9 +404,9 @@ class LoLLMsAPPI(LollmsApplication):
                         self.current_discussion = self.db.load_last_discussion()
 
                 message = data["prompt"]
-                ump = "!@>"+self.config.user_name+": " if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
+                ump = self.config.discussion_prompt_separator +self.config.user_name+": " if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
                 message_id = self.current_discussion.add_message(
-                    ump.replace("!@>","").replace(":",""), 
+                    ump.replace(self.config.discussion_prompt_separator,"").replace(":",""), 
                     message,
                     message_type=MSG_TYPE.MSG_TYPE_FULL.value,
                     parent=self.message_id
@@ -650,15 +650,15 @@ class LoLLMsAPPI(LollmsApplication):
         for i, message in enumerate(messages):
             if message["id"]< message_id or (message_id==-1 and i<len(messages)-1): 
                 if message["type"]<=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER.value and message["type"]!=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value:
-                    self.full_message_list.append("\n!@>"+message["sender"]+": "+message["content"].strip())
+                    self.full_message_list.append("\n"+self.config.discussion_prompt_separator+message["sender"]+": "+message["content"].strip())
             else:
                 break
 
         link_text = self.personality.link_text
         if not is_continue:
-            self.full_message_list.append("\n!@>"+message["sender"].replace(":","")+": "+message["content"].strip()+self.personality.link_text+self.personality.ai_message_prefix)
+            self.full_message_list.append("\n"+self.config.discussion_prompt_separator +message["sender"].replace(":","")+": "+message["content"].strip()+self.personality.link_text+self.personality.ai_message_prefix)
         else:
-            self.full_message_list.append("\n!@>"+message["sender"].replace(":","")+": "+message["content"].strip())
+            self.full_message_list.append("\n"+self.config.discussion_prompt_separator +message["sender"].replace(":","")+": "+message["content"].strip())
 
 
         composed_messages = link_text.join(self.full_message_list)
@@ -682,7 +682,7 @@ class LoLLMsAPPI(LollmsApplication):
     def get_discussion_to(self, message_id=-1):
         messages = self.current_discussion.get_messages()
         self.full_message_list = []
-        ump = "!@>"+self.config.user_name+": " if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
+        ump = self.config.discussion_prompt_separator +self.config.user_name+": " if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
 
         for message in messages:
             if message["id"]<= message_id or message_id==-1: 
@@ -744,18 +744,21 @@ class LoLLMsAPPI(LollmsApplication):
             sys.stdout.flush()
             detected_anti_prompt = False
             anti_prompt_to_remove=""
-            for prompt in self.personality.anti_prompts:
-                if prompt.lower() in self.connections[client_id]["generated_text"].lower():
+            for anti_prompt in self.personality.anti_prompts:
+                if anti_prompt.lower() in self.connections[client_id]["generated_text"].lower():
                     detected_anti_prompt=True
-                    anti_prompt_to_remove = prompt.lower()
+                    anti_prompt_to_remove = anti_prompt.lower()
                     
             if not detected_anti_prompt:
                     self.socketio.emit('message', {
-                                                    'data': self.connections[client_id]["generated_text"], 
+                                                    'data': chunk,# self.connections[client_id]["generated_text"], 
                                                     'user_message_id':self.current_user_message_id, 
                                                     'ai_message_id':self.current_ai_message_id, 
                                                     'discussion_id':self.current_discussion.discussion_id,
-                                                    'message_type': MSG_TYPE.MSG_TYPE_FULL.value
+                                                    'message_type': MSG_TYPE.MSG_TYPE_CHUNK.value if self.nb_received_tokens>1 else MSG_TYPE.MSG_TYPE_FULL.value,
+                                                    "user_message_id": self.current_user_message_id,
+                                                    "ai_message_id": self.current_ai_message_id,
+                                                    'finished_generating_at': self.current_discussion.current_message_finished_generating_at,
                                                 }, room=client_id
                                         )
                     self.socketio.sleep(0.01)
@@ -769,6 +772,17 @@ class LoLLMsAPPI(LollmsApplication):
                         return False
             else:
                 self.connections[client_id]["generated_text"] = self.remove_text_from_string(self.connections[client_id]["generated_text"], anti_prompt_to_remove)
+                self.socketio.emit('message', {
+                                                'data': self.connections[client_id]["generated_text"], 
+                                                'user_message_id':self.current_user_message_id, 
+                                                'ai_message_id':self.current_ai_message_id, 
+                                                'discussion_id':self.current_discussion.discussion_id,
+                                                'message_type': MSG_TYPE.MSG_TYPE_FULL.value,
+                                                "user_message_id": self.current_user_message_id,
+                                                "ai_message_id": self.current_ai_message_id,
+                                                'finished_generating_at': self.current_discussion.current_message_finished_generating_at,
+                                            }, room=client_id
+                                    )                
                 ASCIIColors.warning("The model is halucinating")
                 return False
 
@@ -782,7 +796,8 @@ class LoLLMsAPPI(LollmsApplication):
                                             'user_message_id':self.current_user_message_id, 
                                             'ai_message_id':self.current_ai_message_id, 
                                             'discussion_id':self.current_discussion.discussion_id,
-                                            'message_type': message_type.value
+                                            'message_type': message_type.value,
+                                            'finished_generating_at': self.current_discussion.current_message_finished_generating_at,
                                         }, room=client_id
                                 )
             self.socketio.sleep(0.01)
@@ -794,7 +809,8 @@ class LoLLMsAPPI(LollmsApplication):
                                             'user_message_id':self.current_user_message_id, 
                                             'ai_message_id':self.current_ai_message_id, 
                                             'discussion_id':self.current_discussion.discussion_id,
-                                            'message_type': message_type.value
+                                            'message_type': message_type.value,
+                                            'finished_generating_at': self.current_discussion.current_message_finished_generating_at,
                                         }, room=client_id
                                 )
             self.socketio.sleep(0.01)
@@ -873,7 +889,7 @@ class LoLLMsAPPI(LollmsApplication):
             else:
                 self.connections[client_id]["generated_text"] = ""
                 self.current_ai_message_id = self.current_discussion.add_message(
-                    self.personality.name, 
+                    self.personality.name,
                     "", 
                     message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
                     parent          = self.current_user_message_id,
@@ -890,6 +906,7 @@ class LoLLMsAPPI(LollmsApplication):
                             "message":message,#markdown.markdown(message),
                             "user_message_id": self.current_user_message_id,
                             "ai_message_id": self.current_ai_message_id,
+                            "content":"✍ please stand by ...",
 
                             'binding': self.current_discussion.current_message_binding,
                             'model': self.current_discussion.current_message_model,
@@ -910,7 +927,6 @@ class LoLLMsAPPI(LollmsApplication):
                             n_predict = self.config.ctx_size-len(tokens)-1,
                             client_id=client_id,
                             callback=partial(self.process_chunk,client_id = client_id)
-                            
                         )
             print()
             print("## Done Generation ##")
@@ -942,20 +958,21 @@ class LoLLMsAPPI(LollmsApplication):
 
                                         }, room=client_id
                                 )
+
             self.socketio.sleep(0.01)
 
             ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
             ASCIIColors.success(f" ║                        Done                      ║ ")
             ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
         else:
-            ump = "!@>"+self.config.user_name+": " if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
-
+            ump = self.config.discussion_prompt_separator +self.config.user_name+": " if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
+            
             self.cancel_gen = False
             #No discussion available
             ASCIIColors.warning("No discussion selected!!!")
             self.socketio.emit('message', {
                                             'data': "No discussion selected!!!", 
-                                            'user_message_id':ump.replace("!@>","").replace(":",""), 
+                                            'user_message_id':ump.replace(self.config.discussion_prompt_separator,"").replace(":",""), 
                                             'ai_message_id':self.current_ai_message_id, 
                                             'discussion_id':0,
                                             'message_type': MSG_TYPE.MSG_TYPE_EXCEPTION.value

@@ -1,13 +1,17 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 9
+version: 11
 binding_name: null
 model_name: null
+
+# Enables gpu usage
+enable_gpu: true
 
 # Host information
 host: localhost
 port: 9600
 
 # Genreration parameters 
+discussion_prompt_separator: "!@>"
 seed: -1
 n_predict: 1024
 ctx_size: 2048

@@ -438,8 +438,8 @@ export default {
                     if (res) {
                         // Filter out the user and bot entries
                         this.discussionArr = res.data.filter((item) => 
-                                                                item.type == this.msgTypes.MSG_TYPE_CHUNK ||
-                                                                item.type == this.msgTypes.MSG_TYPE_FULL
+                                                                item.type == this.msgTypes.MSG_TYPE_FULL ||
+                                                                item.type == this.msgTypes.MSG_TYPE_FULL_INVISIBLE_TO_AI
                                                             )
                         console.log("this.discussionArr")
                         console.log(this.discussionArr)
@@ -808,14 +808,19 @@ export default {
                 // Create response message
 
                 let responseMessage = {
-                    content: "✍ please stand by ...",//msgObj.message,
+                    content:msgObj.data, //content: "✍ please stand by ...",//msgObj.message,
+                    created_at:msgObj.created_at,
+                    binding:msgObj.binding,
+                    model:msgObj.model,
                     id: msgObj.ai_message_id,
                     parent: msgObj.user_message_id,
+                    personality:msgObj.personality,
                     rank: 0,
                     sender: msgObj.bot,
-                    created_at: msgObj.created_at,
+                    type:msgObj.type,
                     steps: []
                     //type: msgObj.type
+
                 }
                 this.discussionArr.push(responseMessage)
                 // nextTick(() => {
@@ -916,12 +921,17 @@ export default {
                 this.isGenerating = true;
                 const index = this.discussionArr.findIndex((x) => x.parent == parent && x.id == msgObj.ai_message_id)
                 const messageItem = this.discussionArr[index]
-                if (messageItem && msgObj.message_type<this.msgTypes.MSG_TYPE_FULL_INVISIBLE_TO_USER) {
+                if (
+                    messageItem && msgObj.message_type==this.msgTypes.MSG_TYPE_FULL ||
+                    messageItem && msgObj.message_type==this.msgTypes.MSG_TYPE_FULL_INVISIBLE_TO_AI
+                ) {
                     messageItem.content = msgObj.data
+                    messageItem.finished_generating_at = msgObj.finished_generating_at
                 }
-                else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_START){
+                else if(messageItem && msgObj.message_type==this.msgTypes.MSG_TYPE_CHUNK){
+                    messageItem.content += msgObj.data
+                } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_START){
                     messageItem.steps.push({"message":msgObj.data,"done":false})
-                
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_END) {
                     // Find the step with the matching message and update its 'done' property to true
                     const matchingStep = messageItem.steps.find(step => step.message === msgObj.data);
