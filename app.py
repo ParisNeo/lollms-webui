@@ -1312,7 +1312,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
     def upload_avatar(self):      
         file = request.files['avatar']
         file.save(self.lollms_paths.personal_user_infos_path/file.filename)
-        return jsonify({"status": True})   
+        return jsonify({"status": True,"file":file.filename})   
         
         
         

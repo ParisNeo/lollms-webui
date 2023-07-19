@@ -1562,9 +1562,9 @@ export default {
                 .then(response => {
                 console.log("Avatar uploaded successfully")
                 // Assuming the server responds with the file name after successful upload
-                const fileName = response.data.fileName;
+                const fileName = response.fileName;
                 this.user_avatar = fileName; // Update the user_avatar value with the file name
-                this.update_setting("user_avatar",fileName).then(()=>{})
+                this.update_setting("user_avatar", fileName, ()=>{}).then(()=>{})
                 })
                 .catch(error => {
                 console.error('Error uploading avatar:', error);
