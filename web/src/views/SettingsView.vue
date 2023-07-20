@@ -632,7 +632,7 @@
                         </td>
                         <td style="width: 100%;">
                             <label for="avatar-upload">
-                                <img :src="user_avatar" class="w-50 h-50" style="max-width: 50px; max-height: 50px; cursor: pointer;">
+                                <img :src="user_avatar" class="w-50 h-50 rounded-full" style="max-width: 50px; max-height: 50px; cursor: pointer;">
                             </label>
                             <input type="file" id="avatar-upload" style="display: none" @change="uploadAvatar">
                         </td>

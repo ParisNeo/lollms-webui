@@ -197,3 +197,6 @@ bindings_zoo
 user_data
 src/
 src/taming-transformers
+
+# Remove nogpu
+.no_gpu

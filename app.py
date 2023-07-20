@@ -1671,6 +1671,16 @@ if __name__ == "__main__":
         shutil.copy(default_user_avatar, user_avatar_path)
     # executor = ThreadPoolExecutor(max_workers=1)
     # app.config['executor'] = executor
+    # Check if .no_gpu file exists
+    no_gpu_file = Path('.no_gpu')
+    if no_gpu_file.exists():
+        # If the file exists, change self.config.use_gpu to False
+        config.enable_gpu = False
+        config.save_config()
+        
+        # Remove the .no_gpu file
+        no_gpu_file.unlink()
+    
     bot = LoLLMsWebUI(app, socketio, config, config.file_path, lollms_paths)
 
     # chong Define custom WebSocketHandler with error handling 

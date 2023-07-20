@@ -1,13 +1,18 @@
 <template>
-    <div>
-        <div v-for="extension in activeExtensions" :key="extension.name" @click="showExtensionPage(extension)">
+<div>
+    <div v-if="activeExtensions.length > 0">
+    <div v-for="extension in activeExtensions" :key="extension.name" @click="showExtensionPage(extension)">
         <div :class="{ 'active-tab': extension === activeExtension }">{{ extension.name }}</div>
-        </div>
-        <div v-if="activeExtension">
+    </div>
+    <div v-if="activeExtension">
         <!-- Render the selected extension's page here -->
         <iframe :src="activeExtension.page" width="100%" height="500px" frameborder="0"></iframe>
-        </div>
     </div>
+    </div>
+    <div v-else>
+    <p>No extension is active. Please install and activate an extension.</p>
+    </div>
+</div>
 </template>
 
 <script>
