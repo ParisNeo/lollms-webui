@@ -175,6 +175,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
             "/list_bindings", "list_bindings", self.list_bindings, methods=["GET"]
         )
         self.add_endpoint(
+            "/list_extensions", "list_extensions", self.list_extensions, methods=["GET"]
+        )
+        
+        self.add_endpoint(
             "/list_models", "list_models", self.list_models, methods=["GET"]
         )
         self.add_endpoint(
@@ -677,6 +681,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     print(f"Couldn't load backend card : {f}\n\t{ex}")
         return jsonify(bindings)
 
+    def list_extensions(self):
+        return jsonify([])
+
+    
 
     def list_models(self):
         if self.binding is not None:
@@ -1312,7 +1320,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
     def upload_avatar(self):      
         file = request.files['avatar']
         file.save(self.lollms_paths.personal_user_infos_path/file.filename)
-        return jsonify({"status": True,"file":file.filename})   
+        return jsonify({"status": True,"fileName":file.filename})   
         
         
         

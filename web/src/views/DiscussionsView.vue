@@ -50,9 +50,10 @@
             <div class=" sticky z-10 top-0  bg-bg-light-tone dark:bg-bg-dark-tone shadow-md">
 
 
+
+
                 <!-- CONTROL PANEL -->
                 <div class="flex-row p-4  flex items-center gap-3 flex-0">
-
                     <!-- MAIN BUTTONS -->
                     <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Create new discussion"
                         type="button" @click="createNewDiscussion()">
@@ -84,6 +85,21 @@
                         type="button" @click="isSearch = !isSearch" :class="isSearch ? 'text-secondary' : ''">
                         <i data-feather="search"></i>
                     </button>
+                    <button  v-if="!showConfirmation" title="Save configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                        @click="showConfirmation = true">
+                        <i data-feather="save"></i>
+                    </button>
+                    <!-- SAVE CONFIG -->
+                    <div v-if="showConfirmation" class="flex gap-3 flex-1 items-center duration-75">
+                        <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Cancel" type="button"
+                            @click.stop="showConfirmation = false">
+                            <i data-feather="x"></i>
+                        </button>
+                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Confirm save changes"
+                            type="button" @click.stop="save_configuration()">
+                            <i data-feather="check"></i>
+                        </button>
+                    </div>                    
                     <div v-if="loading" title="Loading.." class="flex flex-row flex-grow justify-end">
                         <!-- SPINNER -->
                         <div role="status">
@@ -252,6 +268,7 @@
 
     <Toast ref="toast">
     </Toast>
+    <MessageBox ref="messageBox" />
 </template>
 
 
@@ -382,6 +399,26 @@ export default {
         }
     },
     methods: {
+        save_configuration() {
+            this.showConfirmation = false
+            axios.post('/save_settings', {})
+                .then((res) => {
+                    if (res) {
+                        if (res.status) {
+                            // this.$refs.messageBox.showMessage("Settings saved!")
+                        }
+                        else
+                            this.$refs.messageBox.showMessage("Error: Couldn't save settings!")
+                        return res.data;
+                    }
+                })
+                .catch(error => {
+                    console.log(error.message, 'save_configuration')
+                    this.$refs.messageBox.showMessage("Couldn't save settings!")
+                    return { 'status': false }
+                });
+
+        },        
         showToastMessage(text){
             console.log("sending",text)
             this.$refs.toast.showToast(text, 4, true)
@@ -809,7 +846,7 @@ export default {
 
                 let responseMessage = {
                     //content:msgObj.data, 
-                    content: "✍ please stand by ...",//msgObj.message,
+                    content: msgObj.message,// "✍ please stand by ...",//msgObj.message,
                     created_at:msgObj.created_at,
                     binding:msgObj.binding,
                     model:msgObj.model,
@@ -820,7 +857,6 @@ export default {
                     sender: msgObj.bot,
                     type:msgObj.type,
                     steps: []
-                    //type: msgObj.type
 
                 }
                 this.discussionArr.push(responseMessage)
@@ -1398,9 +1434,13 @@ export default {
             })
         },
         getAvatar(sender) {
+            if (sender.toLowerCase().trim() == this.$store.state.config.user_name.toLowerCase().trim()){
+                return "user_infos/"+this.$store.state.config.user_avatar
+            }
             const index = this.personalityAvatars.findIndex((x) => x.name === sender)
             const pers = this.personalityAvatars[index]
             if (pers) {
+                console.log("Avatar",pers.avatar)
                 return pers.avatar
             }
 
@@ -1584,6 +1624,7 @@ import Message from '../components/Message.vue'
 import ChatBox from '../components/ChatBox.vue'
 import WelcomeComponent from '../components/WelcomeComponent.vue'
 import Toast from '../components/Toast.vue'
+import MessageBox from "@/components/MessageBox.vue";
 import DragDrop from '../components/DragDrop.vue'
 import feather from 'feather-icons'
 

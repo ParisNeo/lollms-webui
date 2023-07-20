@@ -27,8 +27,7 @@ export const store = createStore({
         diskUsage:null,
         ramUsage:null,
         vramUsage:null,
-
-
+        extensionsZoo:null,
       }
     },
     mutations: {
@@ -63,6 +62,9 @@ export const store = createStore({
         state.vramUsage = vramUsage;
       },
       
+      setExtensionsZoo(state, extensionsZoo) {
+        state.extensionsZoo = extensionsZoo;
+      },
       setModelsZoo(state, modelsZoo) {
         state.models_zoo = modelsZoo;
       },
@@ -103,6 +105,9 @@ export const store = createStore({
       },
       getModelsZoo(state) {
         return state.models_zoo;
+      },
+      getExtensionsZoo(state) {
+        return state.extensionsZoo;
       },
     },
     actions: {
@@ -191,6 +196,10 @@ export const store = createStore({
       async refreshModels({ commit }) {
           let modelsArr = await api_get_req("list_models")
           commit('setModelsArr',modelsArr)
+      },
+      async refreshExtensionsZoo({ commit }) {
+          let extensionsZoo = await api_get_req("list_extensions")
+          commit('setExtensionsZoo',extensionsZoo)
       },
 
       async refreshDiskUsage({ commit }) {
@@ -350,6 +359,8 @@ app.mixin({
           this.$store.dispatch('refreshRamUsage');
           this.$store.dispatch('refreshVramUsage');
           this.$store.dispatch('refreshModelsZoo');
+          this.$store.dispatch('refreshExtensionsZoo');
+          
           
           this.$store.state.ready = true
           console.log("done loading data")

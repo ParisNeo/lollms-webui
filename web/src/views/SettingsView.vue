@@ -533,7 +533,28 @@
 
 
                     <table style="width: 100%;">
-                        <!-- Row 1 -->
+                        <tr>
+                        <td style="min-width: 200px;">
+                            <label for="enable_gpu" class="text-sm font-bold" style="margin-right: 1rem;">Enable GPU:</label>
+                        </td>
+                        <td>
+                            <input
+                            type="checkbox"
+                            id="enable_gpu"
+                            required
+                            v-model="enable_gpu"
+                            class="mt-1 px-2 py-1 border border-gray-300 rounded"
+                            >
+                        </td>
+                        <td>
+                            <button
+                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                            @click="update_setting('enable_gpu', enable_gpu)"
+                            >
+                            <i data-feather="check"></i>
+                            </button>
+                        </td>
+                        </tr>
                         <tr>
                         <td style="min-width: 200px;">
                             <label for="auto_update" class="text-sm font-bold" style="margin-right: 1rem;">Auto update:</label>
@@ -547,12 +568,12 @@
                             class="mt-1 px-2 py-1 border border-gray-300 rounded"
                             >
                         </td>
-                        <td style="min-width: 300px;">
+                        <td>
                             <button
                             class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                             @click="update_setting('auto_update', auto_update)"
                             >
-                            Validate
+                            <i data-feather="check"></i>
                             </button>
                         </td>
                         </tr>
@@ -571,12 +592,12 @@
                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded"
                             >
                         </td>
-                        <td style="min-width: 300px;">
+                        <td>
                             <button
                             class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                             @click="update_setting('db_path', db_path)"
                             >
-                            Select Database
+                            <i data-feather="check"></i>
                             </button>
                         </td>
                         </tr>
@@ -595,12 +616,12 @@
                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded"
                             >
                         </td>
-                        <td style="min-width: 300px;">
+                        <td>
                             <button
                             class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                             @click="update_setting('user_name', userName)"
                             >
-                            Validate
+                            <i data-feather="check"></i>
                             </button>
                         </td>
                         </tr>
@@ -615,12 +636,12 @@
                             </label>
                             <input type="file" id="avatar-upload" style="display: none" @change="uploadAvatar">
                         </td>
-                        <td style="min-width: 300px;">
+                        <td>
                             <button
                             class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                             @click="update_setting('user_name', userName)"
                             >
-                            Validate
+                            <i data-feather="check"></i>
                             </button>
                         </td>
                         </tr>
@@ -638,12 +659,12 @@
                             class=" mt-1 px-2 py-1 border border-gray-300 rounded"
                             >
                         </td>
-                        <td style="min-width: 300px;">
+                        <td>
                             <button
                             class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                             @click="update_setting('use_user_name_in_discussions', use_user_name_in_discussions)"
                             >
-                            Validate
+                            <i data-feather="check"></i>
                             </button>
                         </td>
                         </tr>     
@@ -1643,11 +1664,13 @@ export default {
             // Make an API request to upload the avatar
             axios.post('/upload_avatar', formData)
                 .then(response => {
-                console.log("Avatar uploaded successfully")
-                // Assuming the server responds with the file name after successful upload
-                const fileName = response.fileName;
-                this.user_avatar = fileName; // Update the user_avatar value with the file name
-                this.update_setting("user_avatar", fileName, ()=>{}).then(()=>{})
+                    console.log("Avatar uploaded successfully")
+                    this.$refs.toast.showToast("Avatar uploaded successfully!", 4, true)
+                    // Assuming the server responds with the file name after successful upload
+                    const fileName = response.data.fileName;
+                    console.log("response",response);
+                    this.user_avatar = fileName; // Update the user_avatar value with the file name
+                    this.update_setting("user_avatar", fileName, ()=>{}).then(()=>{})
                 })
                 .catch(error => {
                 console.error('Error uploading avatar:', error);
@@ -2355,8 +2378,13 @@ export default {
             if (res) {
                 this.isLoading = false
                 console.log('update_setting', res)
+                if(res['status']){
+                    this.$refs.toast.showToast("Setting updated successfully.\nDon't forget to save to keep the setting permanently.", 4, true)
+                }
+                else{
+                    this.$refs.toast.showToast("Setting update failed.\nPlease view the console for more details.", 4, false)
+                }
                 if (next !== undefined) {
-
                     next(res)
                 }
                 return res.data;
@@ -2869,6 +2897,17 @@ export default {
                     this.$store.state.config.user_avatar = value
                 },
             },
+            
+        enable_gpu:{
+            get() {
+                return this.$store.state.config.enable_gpu;
+            },
+            set(value) {
+                // You should not set the value directly here; use the updateSetting method instead
+                this.$store.state.config.enable_gpu = value
+            },
+
+        },
         auto_update:{
             get() {
                 return this.$store.state.config.auto_update;
