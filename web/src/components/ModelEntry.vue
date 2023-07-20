@@ -244,6 +244,7 @@
       </div>
     </div>
   </div>
+
 </template>
 
 
@@ -254,6 +255,7 @@ import axios from "axios";
 import { nextTick } from 'vue'
 import feather from 'feather-icons'
 import defaultImgPlaceholder from "../assets/default_model.png"
+
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
   props: {
@@ -285,8 +287,8 @@ export default {
       installing: false,
       uninstalling: false,
       failedToLoad: false,
-      fileSize: '',
       linkNotValid: false,
+      selected_variant: ''
     };
   },
   async mounted() {
@@ -299,15 +301,24 @@ export default {
     })
   },
   methods: {
+    formatFileSize(sizeInBytes) {
+    if (sizeInBytes < 1024) {
+      return sizeInBytes + " bytes";
+    } else if (sizeInBytes < 1024 * 1024) {
+      return (sizeInBytes / 1024).toFixed(2) + " KB";
+    } else if (sizeInBytes < 1024 * 1024 * 1024) {
+      return (sizeInBytes / (1024 * 1024)).toFixed(2) + " MB";
+    } else {
+      return (sizeInBytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+    }
+  },    
     computedFileSize(size) {
       return filesize(size)
     },
     async getFileSize(url) {
-      //console.log(this.model_type);
       if (this.model_type != "api") {
         try {
           const res = await axios.head(url)
-          //console.log("addddd",url, res.headers)
           if (res) {
 
             if (res.headers["content-length"]) {
@@ -367,24 +378,17 @@ export default {
       event.target.src = defaultImgPlaceholder
     },
     toggleInstall() {
-      this.getFileSize(this.model.path).then(data=>{
-        this.fileSize = data
-      })
 
       if (this.isInstalled) {
         this.uninstalling = true;
         // Simulate uninstallation delay (replace this with your WebSocket logic)
         this.onUninstall(this);
       } else {
-        this.installing = true;
+        //this.installing = true;
         this.onInstall(this);
-
       }
     },
     toggleSelected() {
-      this.getFileSize(this.model.path).then(data=>{
-        this.fileSize = data
-      })
       this.onSelected(this)
     },
     toggleCopy() {
@@ -405,12 +409,21 @@ export default {
       }
     },
     copyContentToClipboard() {
-      console.log('asdasdas')
       this.$emit('copy', 'this.message.content')
 
     },
   },
   computed: {
+    fileSize: {
+        get() {
+          // console.log(this.model)
+          if (this.model && this.model.variants && this.model.variants.length > 0) {
+            const sizeInBytes = this.model.variants[0]["size"];
+            return this.formatFileSize(sizeInBytes);
+          }
+          return null; // Return null if the conditions are not met
+        },
+    },
     speed_computed() {
       return filesize(this.speed)
     },

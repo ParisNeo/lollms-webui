@@ -300,7 +300,7 @@ class DiscussionsDB:
 
                 # Insert message into the database
                 self.insert("INSERT INTO message (sender, content, type, rank, parent, binding, model, personality, created_at, finished_generating_at, discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                            (sender, content, content_type, rank, parent, model, personality, created_at, finished_generating_at, discussion_id))
+                            (sender, content, content_type, rank, parent, binding, model, personality, created_at, finished_generating_at, discussion_id))
 
             discussions.append(discussion)
 

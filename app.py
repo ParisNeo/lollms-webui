@@ -1447,6 +1447,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             try:
                 filename = model.get('filename',"")
                 server = model.get('server',"")
+                variants = model.get('variants',[])
                 image_url = model.get("icon", '/images/default_model.png')
                 license = model.get("license", 'unknown')
                 owner = model.get("owner", 'unknown')
@@ -1462,6 +1463,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 is_installed = local_path.exists() or model_type.lower()=="api"
                 models.append({
                     'title': filename,
+                    'variants': variants,
                     'icon': image_url,  # Replace with the path to the model icon
                     'license': license,
                     'owner': owner,

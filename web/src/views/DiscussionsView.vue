@@ -808,7 +808,8 @@ export default {
                 // Create response message
 
                 let responseMessage = {
-                    content:msgObj.data, //content: "✍ please stand by ...",//msgObj.message,
+                    //content:msgObj.data, 
+                    content: "✍ please stand by ...",//msgObj.message,
                     created_at:msgObj.created_at,
                     binding:msgObj.binding,
                     model:msgObj.model,
@@ -834,7 +835,6 @@ export default {
                     if (msgObj.type == "input_message_infos") {
                         // This is a user input
                         this.changeTitleUsingUserMSG(this.currentDiscussion.id, msgObj.message)
-
                     }
                 }
                 console.log("infos", msgObj)
@@ -896,7 +896,7 @@ export default {
                             message: msg,
                             id: lastmsgid,
                             rank: 0,
-                            user: "user",
+                            user: this.$store.config.user_name,
                             created_at: new Date().toLocaleString(),
 
                         };
@@ -913,7 +913,7 @@ export default {
         },
         streamMessageContent(msgObj) {
             // Streams response message content from binding
-            console.log("Received message",msgObj)
+            //console.log("Received message",msgObj)
             const parent = msgObj.user_message_id
             const discussion_id = msgObj.discussion_id
             this.setDiscussionLoading(discussion_id, true);

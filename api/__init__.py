@@ -172,17 +172,26 @@ class LoLLMsAPPI(LollmsApplication):
         
         @socketio.on('cancel_install')
         def cancel_install(data):
-            model_name = data["model_name"]
-            binding_folder = data["binding_folder"]
-            model_url = data["model_url"]
-            signature = f"{model_name}_{binding_folder}_{model_url}"
-            self.download_infos[signature]["cancel"]=True
-            self.socketio.emit('canceled', {
-                                            'status': True
-                                            },
-                                            room=request.sid 
-                                )            
-            
+            try:
+                model_name = data["model_name"]
+                binding_folder = data["binding_folder"]
+                model_url = data["model_url"]
+                signature = f"{model_name}_{binding_folder}_{model_url}"
+                self.download_infos[signature]["cancel"]=True
+                self.socketio.emit('canceled', {
+                                                'status': True
+                                                },
+                                                room=request.sid 
+                                    )            
+            except Exception as ex:
+                trace_exception(ex)
+                self.socketio.emit('canceled', {
+                                                'status': False,
+                                                'error':str(ex)
+                                                },
+                                                room=request.sid 
+                                    )            
+
         @socketio.on('install_model')
         def install_model(data):
             room_id = request.sid            
@@ -395,6 +404,14 @@ class LoLLMsAPPI(LollmsApplication):
             self.connections[client_id]["generated_text"]=""
             self.connections[client_id]["cancel_generation"]=False
             
+            if not self.model:
+                self.socketio.emit('model_not_selected',
+                        {
+                            "status":False,
+                            "error":"Model not selected. Please select a model"
+                        }, room=client_id
+                )                
+                return
  
             if self.is_ready:
                 if self.current_discussion is None:

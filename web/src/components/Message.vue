@@ -198,8 +198,6 @@ export default {
 
         }
     }, mounted() {
-        console.log("Mounted message")
-        console.log(this.message)
         this.new_message_content = this.message.content
         nextTick(() => {
             feather.replace()

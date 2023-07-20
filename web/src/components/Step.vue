@@ -25,7 +25,7 @@
                 fill="currentFill" />
         </svg>
     </div>
-    <div class="content flex-1" :class="{'text-green-500': done, 'text-yellow-500': !done}">{{ message }}</div>
+    <div class="content flex-1 px-2" :class="{'text-green-500': done, 'text-yellow-500': !done}">{{ message }}</div>
   </div>
 </template>
 

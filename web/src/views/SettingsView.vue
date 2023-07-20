@@ -866,7 +866,7 @@
                     </div>
                     <div v-if="!searchModel">
 
-                        <div v-if="models.length > 0" class="mb-2">
+                        <div v-if="models && models.length > 0" class="mb-2">
                             <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                 Models: ({{ models.length }})
                             </label>
@@ -1395,6 +1395,13 @@
     <MessageBox ref="messageBox" />
     <Toast ref="toast" />
     <UniversalForm ref="universalForm" class="z-20" />
+    <ChoiceDialog  class="z-20"
+      :show="variantSelectionDialogVisible"
+      :choices="variant_choices"
+      @choice-selected="onVariantChoiceSelected"
+      @close-dialog="oncloseVariantChoiceDialog"
+      @choice-validated="onvalidateVariantChoice"
+    />    
 </template>
 <style scoped>
 /* THESE ARE FOR TransitionGroup components */
@@ -1475,6 +1482,9 @@ import defaultImgPlaceholder from "../assets/default_model.png"
 
 import AddModelDialog from "@/components/AddModelDialog.vue";
 import UniversalForm from '../components/UniversalForm.vue';
+
+import ChoiceDialog from "@/components/ChoiceDialog.vue";
+
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
@@ -1488,11 +1498,17 @@ export default {
         Toast,
         PersonalityEntry,
         BindingEntry,
-        UniversalForm
+        UniversalForm,
+        ChoiceDialog
     },
     data() {
 
         return {
+            // Variant selection
+            variant_choices:[],
+            variantSelectionDialogVisible:false,
+            currenModelToInstall:null,
+            // Loading text
             loading_text:"",
             // Current personality language
             personality_language:null,
@@ -1551,8 +1567,75 @@ export default {
 
     }, 
     methods: {
+
+        onVariantChoiceSelected(choice){
+            this.selected_variant = choice     
+        },
+        oncloseVariantChoiceDialog(){
+        this.variantSelectionDialogVisible=false;
+        },
+        onvalidateVariantChoice(){
+            this.variantSelectionDialogVisible=false;
+            this.currenModelToInstall.installing=true;
+            let model_object = this.currenModelToInstall;
+            if (model_object.linkNotValid) {
+                model_object.installing = false
+                this.$refs.toast.showToast("Link is not valid, file does not exist", 4, false)
+                return
+            }
+            let path = model_object.path;
+            this.showProgress = true;
+            this.progress = 0;
+            this.addModel = { model_name: this.selected_variant.name, binding_folder: this.configFile.binding_name, model_url: model_object.path }
+            console.log("installing...", this.addModel);
+
+            // Use an arrow function for progressListener
+            const progressListener = (response) => {
+                console.log("received something");
+                if (response.status && response.progress <= 100) {
+                    this.addModel = response
+                    console.log(`Progress`, response);
+                    model_object.progress = response.progress
+                    model_object.speed = response.speed
+                    model_object.total_size = response.total_size
+                    model_object.downloaded_size = response.downloaded_size
+                    model_object.start_time = response.start_time
+                    model_object.installing = true
+                    if (model_object.progress == 100) {
+                        const index = this.models.findIndex((model) => model.path === path);
+                        this.models[index].isInstalled = true;
+                        this.showProgress = false;
+                        model_object.installing = false
+
+                        console.log("Received succeeded")
+                        socket.off('install_progress', progressListener);
+                        console.log("Installed successfully")
+                        // Update the isInstalled property of the corresponding model
+
+                        this.$refs.toast.showToast("Model:\n" + model_object.title + "\ninstalled!", 4, true)
+                        this.$store.dispatch('refreshDiskUsage');
+                    }
+                } else {
+                    socket.off('install_progress', progressListener);
+                    console.log("Install failed")
+                    // Installation failed or encountered an error
+                    model_object.installing = false;
+
+                    this.showProgress = false;
+                    console.error('Installation failed:', response.error);
+                    this.$refs.toast.showToast("Model:\n" + model_object.title + "\nfailed to install!", 4, false)
+                    this.$store.dispatch('refreshDiskUsage');
+                }
+            };
+
+            socket.on('install_progress', progressListener);
+
+
+            socket.emit('install_model', { path: path });
+            console.log("Started installation, please wait");               
+        },
+
         uploadAvatar(event){
-            console.log("here")
             const file = event.target.files[0]; // Get the selected file
             const formData = new FormData(); // Create a FormData object
             formData.append('avatar', file); // Add the file to the form data with the key 'avatar'
@@ -1870,61 +1953,10 @@ export default {
         // Model installation
 
         onInstall(model_object) {
-            if (model_object.linkNotValid) {
-                model_object.installing = false
-                this.$refs.toast.showToast("Link is not valid, file does not exist", 4, false)
-                return
-            }
-            let path = model_object.path;
-            this.showProgress = true;
-            this.progress = 0;
-            this.addModel = { model_name: model_object.model.title, binding_folder: this.configFile.binding_name, model_url: model_object.path }
-            console.log("installing...", this.addModel);
-
-            // Use an arrow function for progressListener
-            const progressListener = (response) => {
-                console.log("received something");
-                if (response.status && response.progress <= 100) {
-                    this.addModel = response
-                    console.log(`Progress`, response);
-                    model_object.progress = response.progress
-                    model_object.speed = response.speed
-                    model_object.total_size = response.total_size
-                    model_object.downloaded_size = response.downloaded_size
-                    model_object.start_time = response.start_time
-                    model_object.installing = true
-                    if (model_object.progress == 100) {
-                        const index = this.models.findIndex((model) => model.path === path);
-                        this.models[index].isInstalled = true;
-                        this.showProgress = false;
-                        model_object.installing = false
-
-                        console.log("Received succeeded")
-                        socket.off('install_progress', progressListener);
-                        console.log("Installed successfully")
-                        // Update the isInstalled property of the corresponding model
-
-                        this.$refs.toast.showToast("Model:\n" + model_object.title + "\ninstalled!", 4, true)
-                        this.$store.dispatch('refreshDiskUsage');
-                    }
-                } else {
-                    socket.off('install_progress', progressListener);
-                    console.log("Install failed")
-                    // Installation failed or encountered an error
-                    model_object.installing = false;
-
-                    this.showProgress = false;
-                    console.error('Installation failed:', response.error);
-                    this.$refs.toast.showToast("Model:\n" + model_object.title + "\nfailed to install!", 4, false)
-                    this.$store.dispatch('refreshDiskUsage');
-                }
-            };
-
-            socket.on('install_progress', progressListener);
-
-
-            socket.emit('install_model', { path: path });
-            console.log("Started installation, please wait");
+            this.variant_choices = model_object.model.variants;
+            this.currenModelToInstall = model_object;
+            console.log(this.variant_choices)
+            this.variantSelectionDialogVisible=true;
         },
         onInstallAddModel() {
 
@@ -2371,7 +2403,6 @@ export default {
 
         },
         async update_model(value) {
-            console.log("hjsdfhksdjufkdshf")
             if (!value) this.isModelSelected = false
             // eslint-disable-next-line no-unused-vars
             this.isLoading = true
