@@ -2502,7 +2502,7 @@ export default {
             this.isLoading = true
             this.personalities = []
             const dictionary = await this.api_get_req("get_all_personalities")
-            const config = this.$store.config
+            const config = this.$store.state.config
             //console.log('asdas',config)
             // console.log("all_personalities")
             // console.log(dictionary)

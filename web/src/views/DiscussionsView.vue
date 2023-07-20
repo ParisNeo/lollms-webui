@@ -896,7 +896,7 @@ export default {
                             message: msg,
                             id: lastmsgid,
                             rank: 0,
-                            user: this.$store.config.user_name,
+                            user: this.$store.state.config.user_name,
                             created_at: new Date().toLocaleString(),
 
                         };
