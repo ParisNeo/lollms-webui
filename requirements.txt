@@ -12,3 +12,4 @@ langchain
 requests
 eventlet
 websocket-client
+GitPython
