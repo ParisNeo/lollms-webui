@@ -200,3 +200,6 @@ src/taming-transformers
 
 # Remove nogpu
 .no_gpu
+
+# Temporary arguments to restart file
+temp_args.txt

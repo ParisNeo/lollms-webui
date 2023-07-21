@@ -14,7 +14,10 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
+main_repo = "https://github.com/ParisNeo/lollms-webui.git"
+
 import os
+import git
 import logging
 import argparse
 import json
@@ -92,8 +95,71 @@ def get_ip_address():
         # Close the socket
         sock.close()
 
+
+def check_update(branch_name="main"):
+    try:
+        # Open the repository
+        repo = git.Repo(".")
+        
+        # Fetch updates from the remote for the specified branch
+        repo.remotes.origin.fetch(refspec=f"refs/heads/{branch_name}:refs/remotes/origin/{branch_name}")
+        
+        # Compare the local and remote commit IDs for the specified branch
+        local_commit = repo.head.commit
+        remote_commit = repo.remotes.origin.refs[branch_name].commit
+        
+        # Return True if there are updates, False otherwise
+        return local_commit != remote_commit
+    except Exception as e:
+        # Handle any errors that may occur during the fetch process
+        trace_exception(e)
+        return False
+
+
+def run_restart_script(args):
+    restart_script = "restart_script.py"
+
+    # Save the arguments to a temporary file
+    temp_file = "temp_args.txt"
+    with open(temp_file, "w") as file:
+        file.write(" ".join(args))
+
+    os.system(f"python {restart_script} {temp_file}")
+    sys.exit()
+
+def run_update_script(args):
+    update_script = "update_script.py"
+
+    # Convert Namespace object to a dictionary
+    args_dict = vars(args)
+
+    # Filter out any key-value pairs where the value is None
+    valid_args = {key: value for key, value in args_dict.items() if value is not None}
+
+    # Save the arguments to a temporary file
+    temp_file = "temp_args.txt"
+    with open(temp_file, "w") as file:
+        # Convert the valid_args dictionary to a string in the format "key1 value1 key2 value2 ..."
+        arg_string = " ".join([f"--{key} {value}" for key, value in valid_args.items()])
+        file.write(arg_string)
+
+    os.system(f"python {update_script} {temp_file}")
+
+    # Reload the main script with the original arguments
+    if os.path.exists(temp_file):
+        with open(temp_file, "r") as file:
+            args = file.read().split()
+        main_script = "app.py"  # Replace with the actual name of your main script
+        os.system(f"python {main_script} {' '.join(args)}")
+        os.remove(temp_file)
+    else:
+        print("Error: Temporary arguments file not found.")
+        sys.exit(1)
+
+
 class LoLLMsWebUI(LoLLMsAPPI):
-    def __init__(self, _app, _socketio, config:LOLLMSConfig, config_file_path:Path|str, lollms_paths:LollmsPaths) -> None:
+    def __init__(self, args, _app, _socketio, config:LOLLMSConfig, config_file_path:Path|str, lollms_paths:LollmsPaths) -> None:
+        self.args = args
         if len(config.personalities)==0:
             config.personalities.append("english/generic/lollms")
             config["active_personality_id"] = 0
@@ -127,6 +193,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint("/selectdb", "selectdb", self.selectdb, methods=["GET"])
 
         self.add_endpoint("/restart_program", "restart_program", self.restart_program, methods=["GET"])
+        
+        self.add_endpoint("/check_update", "check_update", self.check_update, methods=["GET"])
         
 
 
@@ -1046,6 +1114,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
         # Show file selection dialog
         file_path = filedialog.askopenfilename()
 
+    def check_update(self):
+        res = check_update()
+        return jsonify({'update_availability':res})
 
     def restart_program(self):
         ASCIIColors.info("")
@@ -1057,8 +1128,22 @@ class LoLLMsWebUI(LoLLMsAPPI):
         ASCIIColors.info("")
         ASCIIColors.info("")
         ASCIIColors.info("")
-        python = sys.executable
-        os.execl(python, python, *sys.argv)
+        run_restart_script(self.args)
+        
+
+
+    def update_software(self):
+        ASCIIColors.info("")
+        ASCIIColors.info("")
+        ASCIIColors.info("")
+        ASCIIColors.info(" ╔══════════════════════════════════════════════════╗")
+        ASCIIColors.info(" ║                Updating backend                  ║")
+        ASCIIColors.info(" ╚══════════════════════════════════════════════════╝")
+        ASCIIColors.info("")
+        ASCIIColors.info("")
+        ASCIIColors.info("")
+        run_update_script(self.args)
+
 
     def reload_binding(self):
         try:
@@ -1681,7 +1766,7 @@ if __name__ == "__main__":
         # Remove the .no_gpu file
         no_gpu_file.unlink()
     
-    bot = LoLLMsWebUI(app, socketio, config, config.file_path, lollms_paths)
+    bot = LoLLMsWebUI(args, app, socketio, config, config.file_path, lollms_paths)
 
     # chong Define custom WebSocketHandler with error handling 
     class CustomWebSocketHandler(WebSocketHandler):

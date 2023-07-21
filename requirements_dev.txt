@@ -10,3 +10,4 @@ gpt4all-j
 gpt4all
 transformers
 pyaipersonality>=0.0.11
+git

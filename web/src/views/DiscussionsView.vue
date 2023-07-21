@@ -846,7 +846,7 @@ export default {
 
                 let responseMessage = {
                     //content:msgObj.data, 
-                    content: msgObj.message,// "✍ please stand by ...",//msgObj.message,
+                    content: "✍ please stand by ...",
                     created_at:msgObj.created_at,
                     binding:msgObj.binding,
                     model:msgObj.model,

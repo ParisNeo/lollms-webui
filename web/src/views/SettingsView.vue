@@ -688,12 +688,13 @@
                         </button>
                     </div>
                     <!-- Row 0 -->
-                    <div class="w-full">
+                    <div v-if="has_updates" class="w-full">
                         <button
                         class="hover:text-secondary w-full bg-red-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                         @click="api_get_req('update_software').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast('Success!', 4, true)}})"
                         >
-                        Upgrade program
+                        Upgrade program 
+                        <i data-feather="alert-circle"></i>
                         </button>
                     </div>  
 
@@ -2871,6 +2872,12 @@ export default {
         }
     },
     computed: {
+        has_updates:{
+            async get(){
+                res = await this.api_get_req("check_update")
+                return res["update_availability"]
+            }
+        },
         configFile: {
             get() {
                 return this.$store.state.config;
