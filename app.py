@@ -961,7 +961,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return jsonify({"status": True})         
 
     def list_mounted_personalities(self):
-        print("- Listing mounted personalities")
+        ASCIIColors.yellow("- Listing mounted personalities")
         return jsonify({"status": True,
                         "personalities":self.config["personalities"],
                         "active_personality_id":self.config["active_personality_id"]

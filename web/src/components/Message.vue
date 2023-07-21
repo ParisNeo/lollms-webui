@@ -236,7 +236,6 @@ export default {
         },
         getImgUrl() {
             if (this.avatar) {
-                console.log("Avatar",this.avatar)
                 return bUrl + this.avatar
             }
             return botImgPlaceholder;

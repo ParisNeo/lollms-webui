@@ -405,7 +405,7 @@ export default {
                 .then((res) => {
                     if (res) {
                         if (res.status) {
-                            // this.$refs.messageBox.showMessage("Settings saved!")
+                            this.$refs.toast.showToast("Settings saved!",4,true)
                         }
                         else
                             this.$refs.messageBox.showMessage("Error: Couldn't save settings!")

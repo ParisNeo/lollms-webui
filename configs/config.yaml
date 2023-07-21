@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 11
+version: 13
 binding_name: null
 model_name: null
 
@@ -39,3 +39,8 @@ db_path: database.db
 
 # Automatic update
 auto_update: false
+
+
+# Audio
+audio_language: 'en-US'
+silenceTimer: 5000

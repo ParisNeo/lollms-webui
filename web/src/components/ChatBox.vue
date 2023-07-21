@@ -17,14 +17,22 @@
 
                 <div class="flex flex-col gap-2">
                     <!-- EXPAND / COLLAPSE BUTTON -->
+                    <div class="flex">
+                        <button v-if="fileList.length > 0"
+                            class="mx-1 w-full text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
+                            :title="showFileList ? 'Hide file list' : 'Show file list'" type="button"
+                            @click.stop=" showFileList = !showFileList">
 
-                    <button v-if="fileList.length > 0"
-                        class="mx-1 w-full text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
-                        :title="showFileList ? 'Hide file list' : 'Show file list'" type="button"
-                        @click.stop=" showFileList = !showFileList">
+                            <i data-feather="list"></i>
+                        </button>
+                        <button v-if="fileList.length > 0"
+                            class="mx-1 w-full text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
+                            :title="showFileList ? 'Hide file list' : 'Show file list'" type="button"
+                            @click.stop="send_files">
 
-                        <i data-feather="list"></i>
-                    </button>
+                            <i data-feather="send"></i>
+                        </button>
+                    </div>                 
                     <!-- FILES     -->
                     <div v-if="fileList.length > 0 && showFileList ==true">
 
@@ -139,6 +147,14 @@
                         </div>
                         <!-- BUTTONS -->
                         <div class="inline-flex justify-center  rounded-full ">
+                            <button
+                                type="button"
+                                @click="startSpeechRecognition"
+                                :class="{ 'text-red-500': isVoiceActive }"
+                                class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer"
+                            >
+                            <i data-feather="mic"></i>
+                            </button>                          
                             <button v-if="!loading" type="button" @click="submit"
                                 class=" w-6 hover:text-secondary duration-75 active:scale-90">
 
@@ -229,6 +245,7 @@ export default {
     data() {
         return {
             message: "",
+            isVoiceActive:false,
             fileList: [],
             totalSize: 0,
             showFileList: true,
@@ -261,6 +278,49 @@ export default {
         }
     },
     methods: {
+        startSpeechRecognition() {
+            if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+                this.recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                this.recognition.lang = this.$store.state.config.audio_language; // Set the language, adjust as needed
+                this.recognition.interimResults = true; // Enable interim results to get real-time updates
+
+                this.recognition.onstart = () => {
+                this.isVoiceActive = true;
+                this.silenceTimer = setTimeout(() => {
+                    this.recognition.stop();
+                }, this.silenceTimeout); // Set the silence timeout to stop recognition
+                };
+
+                this.recognition.onresult = (event) => {
+                let result = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    result += event.results[i][0].transcript;
+                }
+                this.message = result; // Update the textarea with the real-time recognized words
+                clearTimeout(this.silenceTimer); // Clear the silence timeout on every recognized result
+                this.silenceTimer = setTimeout(() => {
+                    this.recognition.stop();
+                }, this.silenceTimeout); // Set a new silence timeout after every recognized result
+                };
+
+                this.recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                this.isVoiceActive = false;
+                clearTimeout(this.silenceTimer); // Clear the silence timeout on error
+                };
+
+                this.recognition.onend = () => {
+                console.log('Speech recognition ended.');
+                this.isVoiceActive = false;
+                clearTimeout(this.silenceTimer); // Clear the silence timeout when recognition ends normally
+                this.submit(); // Call the function to handle form submission or action once speech recognition ends
+                };
+
+                this.recognition.start();
+            } else {
+                console.error('Speech recognition is not supported in this browser.');
+            }
+            },
 
         onPersonalitiesReadyFun(){
             this.personalities_ready = true;

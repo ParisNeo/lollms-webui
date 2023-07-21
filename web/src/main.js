@@ -186,8 +186,14 @@ export const store = createStore({
                   mountedPersArr.push(this.state.personalities[this.state.personalities.findIndex(item => item.full_path == "english/generic/lollms")])
               }
           }
+          console.log("Personalities list",this.state.personalities)
           commit('setMountedPersArr', mountedPersArr);
+          
+          console.log("active_personality_id",this.state.config.active_personality_id)
+          console.log("selected pers",this.state.config.personalities[this.state.config.active_personality_id])
           this.state.mountedPers = this.state.personalities[this.state.personalities.findIndex(item => item.full_path == this.state.config.personalities[this.state.config.active_personality_id])]
+          console.log("selected pers",this.state.mountedPers)
+
       },
       async refreshBindings({ commit }) {
           let bindingsArr = await api_get_req("list_bindings")
