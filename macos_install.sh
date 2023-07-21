@@ -1,25 +1,21 @@
 #!/bin/bash
 
-# This script will install miniconda and git with all dependencies for this project
-# This enables a user to install this project without manually installing conda and git.
-
+# This script will install Miniconda and git with all dependencies for this project.
+# This enables a user to install this project without manually installing Conda and git.
 
 cd "$(dirname "$0")"
 
 if [[ "$PWD" == *" "* ]]; then
-  echo "This script relies on Miniconda which cannot be silently installed under a path with spaces."
+  echo "This script relies on Miniconda, which cannot be silently installed under a path with spaces."
   exit 1
 fi
 
-echo "WARNING: This script relies on Miniconda which will fail to install if the path is too long."
+echo "WARNING: This script relies on Miniconda, which will fail to install if the path is too long."
 
 if [[ "$PWD" =~ [^#\$\%\&\(\)\*\+\] ]]; then
   echo "WARNING: Special characters were detected in the installation path!"
   echo "         This can cause the installation to fail!"
 fi
-
-
-
 
 read -rp "Press Enter to continue..."
 
@@ -38,7 +34,7 @@ echo "    \:\__\    \::/  /       \:\__\    \:\__\     /:/  /       \::/  /    "
 echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
 echo " By ParisNeo"
 
-echo "Please specify if you want to use a GPU or CPU. Note thaty only NVidea GPUs are supported?"
+echo "Please specify if you want to use a GPU or CPU. Note that only Nvidia GPUs are supported?"
 echo "A) Enable GPU"
 echo "B) Run CPU mode"
 echo
@@ -47,7 +43,7 @@ gpuchoice="${gpuchoice:0:1}"
 
 if [[ "${gpuchoice^^}" == "A" ]]; then
   PACKAGES_TO_INSTALL="python=3.10 cuda-toolkit ninja git gcc"
-  CHANNEL="-c nvidia/label/cuda-11.7.0 -c nvidia -c conda-forge"
+  CHANNEL="-c pytorch -c conda-forge"
 elif [[ "${gpuchoice^^}" == "B" ]]; then
   PACKAGES_TO_INSTALL="python=3.10 ninja git gcc"
   CHANNEL="-c conda-forge"
@@ -66,27 +62,27 @@ export TMP="$PWD/installer_files/temp"
 
 MINICONDA_DIR="$PWD/installer_files/miniconda3"
 INSTALL_ENV_DIR="$PWD/installer_files/lollms_env"
-MINICONDA_DOWNLOAD_URL="https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"
+MINICONDA_DOWNLOAD_URL="https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
 REPO_URL="https://github.com/ParisNeo/lollms-webui.git"
 
 if [ ! -f "$MINICONDA_DIR/Scripts/conda" ]; then
-  # Download miniconda
+  # Download Miniconda
   echo "Downloading Miniconda installer from $MINICONDA_DOWNLOAD_URL"
   curl -LOk "$MINICONDA_DOWNLOAD_URL"
 
-  # Install miniconda
+  # Install Miniconda
   echo
   echo "Installing Miniconda to $MINICONDA_DIR"
   echo "Please wait..."
   echo
-  bash "Miniconda3-latest-Linux-x86_64.sh" -b -p "$MINICONDA_DIR" || ( echo && echo "Miniconda installer not found." && exit 1 )
-  rm -f "Miniconda3-latest-Linux-x86_64.sh"
+  bash "Miniconda3-latest-MacOSX-x86_64.sh" -b -p "$MINICONDA_DIR" || ( echo && echo "Miniconda installer not found." && exit 1 )
+  rm -f "Miniconda3-latest-MacOSX-x86_64.sh"
   if [ ! -f "$MINICONDA_DIR/bin/activate" ]; then
     echo && echo "Miniconda install failed." && exit 1
   fi
 fi
 
-# Activate miniconda
+# Activate Miniconda
 source "$MINICONDA_DIR/bin/activate" || ( echo "Miniconda hook not found." && exit 1 )
 
 # Create the installer environment
@@ -94,9 +90,9 @@ if [ ! -d "$INSTALL_ENV_DIR" ]; then
   echo "Packages to install: $PACKAGES_TO_INSTALL"
   conda create -y -k -p "$INSTALL_ENV_DIR" $CHANNEL $PACKAGES_TO_INSTALL || ( echo && echo "Conda environment creation failed." && exit 1 )
   if [[ "${gpuchoice^^}" == "A" ]]; then
-    conda run --live-stream -p "$INSTALL_ENV_DIR" python -m pip install torch==2.0.1+cu117 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117 || ( echo && echo "Pytorch installation failed." && exit 1 )
+    conda run --live-stream -p "$INSTALL_ENV_DIR" python -m pip install torch torchvision torchaudio --channel pytorch --channel conda-forge || ( echo && echo "Pytorch installation failed." && exit 1 )
   elif [[ "${gpuchoice^^}" == "B" ]]; then
-    conda run --live-stream -p "$INSTALL_ENV_DIR" python -m pip install torch torchvision torchaudio || ( echo && echo "Pytorch installation failed." && exit 1 )
+    conda run --live-stream -p "$INSTALL_ENV_DIR" python -m pip install torch torchvision torchaudio --channel pytorch --channel conda-forge || ( echo && echo "Pytorch installation failed." && exit 1 )
   fi
 fi
 
@@ -108,7 +104,7 @@ fi
 # Activate installer environment
 source activate "$INSTALL_ENV_DIR" || ( echo && echo "Conda environment activation failed." && exit 1 )
 
-# Set default cuda toolkit to the one in the environment
+# Set default CUDA toolkit to the one in the environment
 export CUDA_PATH="$INSTALL_ENV_DIR"
 
 # Clone the repository
@@ -131,16 +127,17 @@ done < requirements.txt
 # Install the pip requirements
 python -m pip install -r requirements.txt --upgrade
 
-if [[ -e "../linux_run.sh" ]]; then
-    echo "Linux run found"
+
+if [[ -e "../macos_run.sh" ]]; then
+    echo "Macos run found"
 else
-    cp linux_run.sh ../
+    cp macos_run.sh ../
 fi
 
-if [[ -e "../linux_update.sh" ]]; then
-    echo "Linux update found"
+if [[ -e "../macos_update.sh" ]]; then
+    echo "Macos update found"
 else
-    cp linux_update.sh ../
+    cp macos_update.sh ../
 fi
 
 if [[ "${gpuchoice^^}" == "B" ]]; then
