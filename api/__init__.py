@@ -759,36 +759,10 @@ class LoLLMsAPPI(LollmsApplication):
             ASCIIColors.green(f"Received {self.nb_received_tokens} tokens",end="\r")
             sys.stdout = sys.__stdout__
             sys.stdout.flush()
-            detected_anti_prompt = False
-            anti_prompt_to_remove=""
-            for anti_prompt in self.personality.anti_prompts:
-                if anti_prompt.lower() in self.connections[client_id]["generated_text"].lower():
-                    detected_anti_prompt=True
-                    anti_prompt_to_remove = anti_prompt.lower()
-                    
-            if not detected_anti_prompt:
-                    self.socketio.emit('message', {
-                                                    'data': chunk,# self.connections[client_id]["generated_text"], 
-                                                    'user_message_id':self.current_user_message_id, 
-                                                    'ai_message_id':self.current_ai_message_id, 
-                                                    'discussion_id':self.current_discussion.discussion_id,
-                                                    'message_type': MSG_TYPE.MSG_TYPE_CHUNK.value if self.nb_received_tokens>1 else MSG_TYPE.MSG_TYPE_FULL.value,
-                                                    "user_message_id": self.current_user_message_id,
-                                                    "ai_message_id": self.current_ai_message_id,
-                                                    'finished_generating_at': self.current_discussion.current_message_finished_generating_at,
-                                                }, room=client_id
-                                        )
-                    self.socketio.sleep(0.01)
-                    self.current_discussion.update_message(self.current_ai_message_id, self.connections[client_id]["generated_text"])
-                    # if stop generation is detected then stop
-                    if not self.cancel_gen:
-                        return True
-                    else:
-                        self.cancel_gen = False
-                        ASCIIColors.warning("Generation canceled")
-                        return False
-            else:
-                self.connections[client_id]["generated_text"] = self.remove_text_from_string(self.connections[client_id]["generated_text"], anti_prompt_to_remove)
+            antiprompt = self.personality.detect_antiprompt(self.connections[client_id]["generated_text"])
+            if antiprompt:
+                ASCIIColors.warning(f"Detected hallucination with antiprompt: {antiprompt}")
+                self.connections[client_id]["generated_text"] = self.remove_text_from_string(self.connections[client_id]["generated_text"],antiprompt)
                 self.socketio.emit('message', {
                                                 'data': self.connections[client_id]["generated_text"], 
                                                 'user_message_id':self.current_user_message_id, 
@@ -799,10 +773,30 @@ class LoLLMsAPPI(LollmsApplication):
                                                 "ai_message_id": self.current_ai_message_id,
                                                 'finished_generating_at': self.current_discussion.current_message_finished_generating_at,
                                             }, room=client_id
-                                    )                
-                ASCIIColors.warning("The model is halucinating")
+                                    )
                 return False
-
+            else:
+                self.socketio.emit('message', {
+                                                'data': chunk,# self.connections[client_id]["generated_text"], 
+                                                'user_message_id':self.current_user_message_id, 
+                                                'ai_message_id':self.current_ai_message_id, 
+                                                'discussion_id':self.current_discussion.discussion_id,
+                                                'message_type': MSG_TYPE.MSG_TYPE_CHUNK.value if self.nb_received_tokens>1 else MSG_TYPE.MSG_TYPE_FULL.value,
+                                                "user_message_id": self.current_user_message_id,
+                                                "ai_message_id": self.current_ai_message_id,
+                                                'finished_generating_at': self.current_discussion.current_message_finished_generating_at,
+                                            }, room=client_id
+                                    )
+                self.socketio.sleep(0.01)
+                self.current_discussion.update_message(self.current_ai_message_id, self.connections[client_id]["generated_text"])
+                # if stop generation is detected then stop
+                if not self.cancel_gen:
+                    return True
+                else:
+                    self.cancel_gen = False
+                    ASCIIColors.warning("Generation canceled")
+                    return False
+ 
         # Stream the generated text to the main process
         elif message_type == MSG_TYPE.MSG_TYPE_FULL:
             self.connections[client_id]["generated_text"] = chunk

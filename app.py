@@ -119,13 +119,31 @@ def check_update(branch_name="main"):
 def run_restart_script(args):
     restart_script = "restart_script.py"
 
+    # Convert Namespace object to a dictionary
+    args_dict = vars(args)
+
+    # Filter out any key-value pairs where the value is None
+    valid_args = {key: value for key, value in args_dict.items() if value is not None}
+
     # Save the arguments to a temporary file
     temp_file = "temp_args.txt"
     with open(temp_file, "w") as file:
-        file.write(" ".join(args))
+        # Convert the valid_args dictionary to a string in the format "key1 value1 key2 value2 ..."
+        arg_string = " ".join([f"--{key} {value}" for key, value in valid_args.items()])
+        file.write(arg_string)
 
     os.system(f"python {restart_script} {temp_file}")
-    sys.exit()
+
+    # Reload the main script with the original arguments
+    if os.path.exists(temp_file):
+        with open(temp_file, "r") as file:
+            args = file.read().split()
+        main_script = "app.py"  # Replace with the actual name of your main script
+        os.system(f"python {main_script} {' '.join(args)}")
+        os.remove(temp_file)
+    else:
+        print("Error: Temporary arguments file not found.")
+        sys.exit(1)
 
 def run_update_script(args):
     update_script = "update_script.py"

@@ -1526,6 +1526,7 @@ export default {
     data() {
 
         return {
+            has_updates:false,
             // Variant selection
             variant_choices:[],
             variantSelectionDialogVisible:false,
@@ -1585,11 +1586,16 @@ export default {
     },
     async created() {
         socket.on('loading_text',this.on_loading_text);
+        this.updateHasUpdates();
         //await socket.on('install_progress', this.progressListener);
 
     }, 
     methods: {
-
+        async updateHasUpdates() {
+            let res = await this.api_get_req("check_update");
+            this.has_updates = res["update_availability"];
+            console.log("has_updates", this.has_updates);
+        },
         onVariantChoiceSelected(choice){
             this.selected_variant = choice     
         },
@@ -2872,12 +2878,6 @@ export default {
         }
     },
     computed: {
-        has_updates:{
-            async get(){
-                res = await this.api_get_req("check_update")
-                return res["update_availability"]
-            }
-        },
         configFile: {
             get() {
                 return this.$store.state.config;
