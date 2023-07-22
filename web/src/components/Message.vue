@@ -115,6 +115,14 @@
                                         message.rank }}
                                 </div>
                             </div>
+                            <div class="flex flex-row items-center">
+                                <div class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2" 
+                                    title="speak"
+                                    @click.stop="speak()"
+                                    :class="{ 'text-red-500': isTalking }">
+                                    <i data-feather="volume-2"></i>
+                                </div>
+                            </div>                            
                         </div>
                     </div>
                 </div>
@@ -133,7 +141,7 @@
                     <textarea v-if="editMsgMode" ref="mdTextarea" :rows="4"
                         class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         :style="{ minHeight: mdRenderHeight + `px` }" placeholder="Enter message here..."
-                        v-model="new_message_content"></textarea>
+                        v-model="this.message.content"></textarea>
                 </div>
                 <!-- FOOTER -->
                 <div class="text-sm text-gray-400 mt-2">
@@ -189,8 +197,10 @@ export default {
     },
     data() {
         return {
+            isVoiceActive:false,
+            speechSynthesis: null,
+            voices: [],            
             expanded: false,
-            new_message_content: '',
             showConfirmation: false,
             editMsgMode: false,
             deleteMsgMode: false,
@@ -198,13 +208,57 @@ export default {
 
         }
     }, mounted() {
-        this.new_message_content = this.message.content
+        // Check if speech synthesis is supported by the browser
+        if ('speechSynthesis' in window) {
+        this.speechSynthesis = window.speechSynthesis;
+
+        // Load the available voices
+        this.voices = this.speechSynthesis.getVoices();
+
+        // Make sure the voices are loaded before starting speech synthesis
+        if (this.voices.length === 0) {
+            this.speechSynthesis.addEventListener('voiceschanged', this.onVoicesChanged);
+        } else {
+        }
+        } else {
+        console.error('Speech synthesis is not supported in this browser.');
+        }
+
         nextTick(() => {
             feather.replace()
             this.mdRenderHeight = this.$refs.mdRender.$el.offsetHeight
         })
 
     }, methods: {
+        onVoicesChanged() {
+        // This event will be triggered when the voices are loaded
+        this.voices = this.speechSynthesis.getVoices();
+        },
+        speak() {
+        // Assuming you have received the text from your backend and stored it in a variable called "streamedText"
+        const textToSpeak = this.message.content;
+
+        // Create a new SpeechSynthesisUtterance instance
+        const msg = new SpeechSynthesisUtterance();
+        msg.text = textToSpeak;
+
+        // Optionally, you can set the voice and other parameters
+        // For example, to set the voice, assuming you want the first voice available:
+        if (this.voices.length > 0) {
+            msg.voice = this.voices[0];
+        }
+
+        // Set isVoiceActive to true before starting synthesis
+        this.isVoiceActive = true;
+
+        // Listen for the end event to set isVoiceActive to false after synthesis completes
+        msg.addEventListener('end', () => {
+            this.isVoiceActive = false;
+        });
+
+        // Speak the text
+        this.speechSynthesis.speak(msg);
+        },        
         toggleModel() {
             this.expanded = !this.expanded;
         },
@@ -225,14 +279,14 @@ export default {
 
         },
         updateMessage() {
-            this.$emit('updateMessage', this.message.id, this.new_message_content)
+            this.$emit('updateMessage', this.message.id, this.message.content)
             this.editMsgMode = false
         },
         resendMessage() {
-            this.$emit('resendMessage', this.message.id, this.new_message_content)
+            this.$emit('resendMessage', this.message.id, this.message.content)
         },
         continueMessage() {
-            this.$emit('continueMessage', this.message.id, this.new_message_content)
+            this.$emit('continueMessage', this.message.id, this.message.content)
         },
         getImgUrl() {
             if (this.avatar) {
@@ -314,10 +368,6 @@ export default {
 
         editMsgMode(val) {
 
-            if (!val) {
-                this.new_message_content = this.message.content
-            }
-
             nextTick(() => {
                 feather.replace()
 
@@ -332,6 +382,11 @@ export default {
 
     },
     computed: {
+        isTalking :{
+            get(){
+                return this.isVoiceActive
+            }
+        },
         created_at() {
             return this.prettyDate(this.message.created_at)
 

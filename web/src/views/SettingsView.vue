@@ -667,7 +667,61 @@
                             <i data-feather="check"></i>
                             </button>
                         </td>
-                        </tr>     
+                        </tr>  
+                        <tr>
+                            <td style="min-width: 200px;">
+                            <label for="audio_in_language" class="text-sm font-bold" style="margin-right: 1rem;">Input Audio Language:</label>
+                            </td>
+                            <td>
+                            <!-- Select element for choosing the input audio language -->
+                            <select
+                                id="audio_in_language"
+                                v-model="audio_in_language"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded"
+                            >
+                                <!-- Options with language codes and corresponding language names -->
+                                <option v-for="language in audioLanguages" :key="language.code" :value="language.code">
+                                {{ language.name }}
+                                </option>
+                            </select>
+                            </td>
+                            <td>
+                            <button
+                                class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                @click="update_setting('audio_in_language', audio_in_language)"
+                            >
+                                <i data-feather="check"></i>
+                            </button>
+                            </td>
+                        </tr> 
+                        <tr>
+                        <td style="min-width: 200px;">
+                        <label for="audio_out_voice" class="text-sm font-bold" style="margin-right: 1rem;">Output Audio Voice:</label>
+                        </td>
+                        <td>
+                        <!-- Select element for choosing the output audio voice -->
+                        <select
+                            id="audio_out_voice"
+                            v-model="audio_out_voice"
+                            class="mt-1 px-2 py-1 border border-gray-300 rounded"
+                        >
+                            <!-- Options with available voices in the browser -->
+                            <option v-for="voice in audioVoices" :key="voice.name" :value="voice.name">
+                            {{ voice.name }}
+                            </option>
+                        </select>
+                        </td>
+                        <td>
+                        <button
+                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                            @click="update_setting('audio_out_voice', audio_out_voice)"
+                        >
+                            <i data-feather="check"></i>
+                        </button>
+                        </td>
+                    </tr>                        
+                        
+
                     </table>
 
                     <!-- Row 0 -->
@@ -1525,7 +1579,9 @@ export default {
     },
     data() {
 
-        return {
+        return {    
+            audioVoices:[],      
+            // update
             has_updates:false,
             // Variant selection
             variant_choices:[],
@@ -1591,6 +1647,18 @@ export default {
 
     }, 
     methods: {
+        getVoices() {
+        // Fetch available voices from the SpeechSynthesis API
+        if ('speechSynthesis' in window) {
+            speechSynthesis.onvoiceschanged = () => {
+            this.audioVoices = speechSynthesis.getVoices();
+            // Set a default voice if needed
+            if (!this.audio_out_voice && this.audioVoices.length > 0) {
+                this.audio_out_voice = this.audioVoices[0].name;
+            }
+            };
+        }
+        },
         async updateHasUpdates() {
             let res = await this.api_get_req("check_update");
             this.has_updates = res["update_availability"];
@@ -2870,14 +2938,81 @@ export default {
 
     }, async mounted() {
         this.constructor()
-
+        console.log("Getting voices")
+        this.getVoices();
     },
     activated() {
         if (this.isMounted) {
             this.constructor()
         }
     },
-    computed: {
+    computed: { 
+        audio_out_voice:{
+            get() {
+                return this.$store.state.config.audio_out_voice;
+            },
+            set(value) {
+                this.$store.state.config.audio_out_voice = value;
+            },
+        },
+
+        audioLanguages() {
+        // Replace this with your own list of language codes and names
+        // Example data structure: [{ code: 'en-US', name: 'English (US)' }, ...]
+        return [
+            { code: 'en-US', name: 'English (US)' },
+            { code: 'en-GB', name: 'English (UK)' },
+            { code: 'es-ES', name: 'Spanish (Spain)' },
+            { code: 'es-MX', name: 'Spanish (Mexico)' },
+            { code: 'fr-FR', name: 'French (France)' },
+            { code: 'fr-CA', name: 'French (Canada)' },
+            { code: 'de-DE', name: 'German (Germany)' },
+            { code: 'it-IT', name: 'Italian (Italy)' },
+            { code: 'pt-BR', name: 'Portuguese (Brazil)' },
+            { code: 'pt-PT', name: 'Portuguese (Portugal)' },
+            { code: 'ru-RU', name: 'Russian (Russia)' },
+            { code: 'zh-CN', name: 'Chinese (China)' },
+            { code: 'ja-JP', name: 'Japanese (Japan)' },
+            { code: 'ar-SA', name: 'Arabic (Saudi Arabia)' },
+            { code: 'tr-TR', name: 'Turkish (Turkey)' },
+            { code: 'ms-MY', name: 'Malay (Malaysia)' },
+            { code: 'ko-KR', name: 'Korean (South Korea)' },
+            { code: 'nl-NL', name: 'Dutch (Netherlands)' },
+            { code: 'sv-SE', name: 'Swedish (Sweden)' },
+            { code: 'da-DK', name: 'Danish (Denmark)' },
+            { code: 'fi-FI', name: 'Finnish (Finland)' },
+            { code: 'no-NO', name: 'Norwegian (Norway)' },
+            { code: 'pl-PL', name: 'Polish (Poland)' },
+            { code: 'el-GR', name: 'Greek (Greece)' },
+            { code: 'hu-HU', name: 'Hungarian (Hungary)' },
+            { code: 'cs-CZ', name: 'Czech (Czech Republic)' },
+            { code: 'th-TH', name: 'Thai (Thailand)' },
+            { code: 'hi-IN', name: 'Hindi (India)' },
+            { code: 'he-IL', name: 'Hebrew (Israel)' },
+            { code: 'id-ID', name: 'Indonesian (Indonesia)' },
+            { code: 'vi-VN', name: 'Vietnamese (Vietnam)' },
+            { code: 'uk-UA', name: 'Ukrainian (Ukraine)' },
+            { code: 'ro-RO', name: 'Romanian (Romania)' },
+            { code: 'bg-BG', name: 'Bulgarian (Bulgaria)' },
+            { code: 'hr-HR', name: 'Croatian (Croatia)' },
+            { code: 'sr-RS', name: 'Serbian (Serbia)' },
+            { code: 'sk-SK', name: 'Slovak (Slovakia)' },
+            { code: 'sl-SI', name: 'Slovenian (Slovenia)' },
+            { code: 'et-EE', name: 'Estonian (Estonia)' },
+            { code: 'lv-LV', name: 'Latvian (Latvia)' },
+            { code: 'lt-LT', name: 'Lithuanian (Lithuania)' },
+            { code: 'ka-GE', name: 'Georgian (Georgia)' },
+            { code: 'hy-AM', name: 'Armenian (Armenia)' },
+            { code: 'az-AZ', name: 'Azerbaijani (Azerbaijan)' },
+            { code: 'kk-KZ', name: 'Kazakh (Kazakhstan)' },
+            { code: 'uz-UZ', name: 'Uzbek (Uzbekistan)' },
+            { code: 'kkj-CM', name: 'Kako (Cameroon)' },
+            { code: 'my-MM', name: 'Burmese (Myanmar)' },
+            { code: 'ne-NP', name: 'Nepali (Nepal)' },
+            { code: 'si-LK', name: 'Sinhala (Sri Lanka)' },
+            // Add more language entries as needed
+        ];
+        },        
         configFile: {
             get() {
                 return this.$store.state.config;
@@ -2924,6 +3059,15 @@ export default {
                 this.$store.state.config.auto_update = value
             },
 
+        },
+        audio_in_language:{
+            get() {
+                return this.$store.state.config.audio_in_language;
+            },
+            set(value) {
+                // You should not set the value directly here; use the updateSetting method instead
+                this.$store.state.config.audio_in_language = value
+            },
         },
         
         use_user_name_in_discussions: {

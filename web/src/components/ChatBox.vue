@@ -281,7 +281,7 @@ export default {
         startSpeechRecognition() {
             if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
                 this.recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-                this.recognition.lang = this.$store.state.config.audio_language; // Set the language, adjust as needed
+                this.recognition.lang = this.$store.state.config.audio_in_language; // Set the language, adjust as needed
                 this.recognition.interimResults = true; // Enable interim results to get real-time updates
 
                 this.recognition.onstart = () => {

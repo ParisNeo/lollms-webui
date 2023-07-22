@@ -27,7 +27,14 @@
           </button>
           <button
             @click="validateChoice"
-            class="py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition duration-300"
+            :class="{
+              'bg-gray-400 cursor-not-allowed': !selectedChoice,
+              'bg-blue-500 hover:bg-blue-600': selectedChoice,
+              'text-white': selectedChoice,
+              'text-gray-500': !selectedChoice,
+            }"
+            :disabled="!selectedChoice"
+            class="py-2 px-4 rounded-lg transition duration-300"
           >
             Validate
           </button>
