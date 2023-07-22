@@ -197,6 +197,7 @@ export default {
     },
     data() {
         return {
+            msg:null,
             isVoiceActive:false,
             speechSynthesis: null,
             voices: [],            
@@ -235,32 +236,52 @@ export default {
         this.voices = this.speechSynthesis.getVoices();
         },
         speak() {
-        // Assuming you have received the text from your backend and stored it in a variable called "streamedText"
-        const textToSpeak = this.message.content;
+            if(this.msg)
+            {
+                this.isVoiceActive = false;
+                this.speechSynthesis.cancel();
+                this.msg = null;
+                return
+            }
+            const textToSpeak = this.message.content;
+            const chunkSize = 200; // You can adjust the chunk size as needed
 
-        // Create a new SpeechSynthesisUtterance instance
-        const msg = new SpeechSynthesisUtterance();
-        msg.text = textToSpeak;
+            // Create a new SpeechSynthesisUtterance instance
+            this.msg = new SpeechSynthesisUtterance();
 
-        // Optionally, you can set the voice and other parameters
-        // For example, to set the voice, assuming you want the first voice available:
-        if (this.voices.length > 0) {
-            let v = this.voices.filter(voice => voice.name === this.$store.state.config.audio_out_voice);
-            console.log(v)
-            msg.voice =  v[0];
-        }
+            // Optionally, set the voice and other parameters as before
+            if (this.voices.length > 0) {
+                this.msg.voice = this.voices.filter(voice => voice.name === this.$store.state.config.audio_out_voice)[0];
+            }
 
-        // Set isVoiceActive to true before starting synthesis
-        this.isVoiceActive = true;
+            // Set isVoiceActive to true before starting synthesis
+            this.isVoiceActive = true;
 
-        // Listen for the end event to set isVoiceActive to false after synthesis completes
-        msg.addEventListener('end', () => {
-            this.isVoiceActive = false;
-        });
+            // Function to speak a chunk of text
+            const speakChunk = (startIdx) => {
+                const chunk = textToSpeak.substr(startIdx, chunkSize);
+                this.msg.text = chunk;
+                this.speechSynthesis.speak(this.msg);
+            };
 
-        // Speak the text
-        this.speechSynthesis.speak(msg);
-        },        
+            // Listen for the end event to set isVoiceActive to false after synthesis completes
+            this.msg.addEventListener('end', () => {
+                const startIdx = msg.text.length;
+                if (startIdx < textToSpeak.length) {
+                    // Use setTimeout to add a brief delay before speaking the next chunk
+                    setTimeout(() => {
+                        speakChunk(startIdx);
+                    }, 200); // Adjust the delay as needed
+                } else {
+                    this.isVoiceActive = false;
+                }
+            });
+
+            // Speak the first chunk
+            speakChunk(0);
+        },
+
+   
         toggleModel() {
             this.expanded = !this.expanded;
         },

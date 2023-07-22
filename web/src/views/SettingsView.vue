@@ -1650,9 +1650,7 @@ export default {
         getVoices() {
         // Fetch available voices from the SpeechSynthesis API
         if ('speechSynthesis' in window) {
-            console.log("here");
             this.audioVoices = speechSynthesis.getVoices();
-            console.log(this.audioVoices)
             if (!this.audio_out_voice && this.audioVoices.length > 0) {
                 this.audio_out_voice = this.audioVoices[0].name;
             }
