@@ -1650,13 +1650,16 @@ export default {
         getVoices() {
         // Fetch available voices from the SpeechSynthesis API
         if ('speechSynthesis' in window) {
-            speechSynthesis.onvoiceschanged = () => {
+            console.log("here");
             this.audioVoices = speechSynthesis.getVoices();
-            // Set a default voice if needed
+            console.log(this.audioVoices)
             if (!this.audio_out_voice && this.audioVoices.length > 0) {
                 this.audio_out_voice = this.audioVoices[0].name;
             }
+            speechSynthesis.onvoiceschanged = () => {
+            // Set a default voice if needed
             };
+
         }
         },
         async updateHasUpdates() {

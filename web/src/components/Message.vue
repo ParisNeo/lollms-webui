@@ -245,7 +245,9 @@ export default {
         // Optionally, you can set the voice and other parameters
         // For example, to set the voice, assuming you want the first voice available:
         if (this.voices.length > 0) {
-            msg.voice = this.voices[0];
+            let v = this.voices.filter(voice => voice.name === this.$store.state.config.audio_out_voice);
+            console.log(v)
+            msg.voice =  v[0];
         }
 
         // Set isVoiceActive to true before starting synthesis
