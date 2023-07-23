@@ -976,7 +976,7 @@ export default {
                         matchingStep.done = true;
                     }
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_EXCEPTION) {
-                    this.$refs.toast.showToast(msgObj.data, 4, true)
+                    this.$refs.toast.showToast(msgObj.data, 5, false)
                 }
                 // // Disables as per request
                 // nextTick(() => {
