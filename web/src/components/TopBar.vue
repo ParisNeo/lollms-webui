@@ -23,6 +23,19 @@
                         <i data-feather="github"></i>
                     </div>
                 </a>
+                <a href="https://www.youtube.com/channel/UCJzrg0cyQV2Z30SQ1v2FdSQ" target="_blank">
+
+                    <div class="text-2xl  hover:text-primary duration-150" title="Visit repository page">
+                        <i data-feather="youtube"></i>
+                    </div>
+                </a>
+
+                <a href="https://twitter.com/SpaceNerduino" target="_blank">
+
+                    <div class="text-2xl  hover:text-primary duration-150" title="Follow me on my twitter acount">
+                        <i data-feather="twitter"></i>
+                    </div>
+                </a>
                 <div class="sun text-2xl w-6  hover:text-primary duration-150" title="Swith to Light theme"
                     @click="themeSwitch()">
                     <i data-feather="sun"></i>

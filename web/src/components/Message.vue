@@ -236,15 +236,19 @@ export default {
         this.voices = this.speechSynthesis.getVoices();
         },
         speak() {
-            if(this.msg)
-            {
-                this.isVoiceActive = false;
+            if (this.msg) {
                 this.speechSynthesis.cancel();
                 this.msg = null;
-                return
+                this.isVoiceActive = false;
+                return;
             }
-            const textToSpeak = this.message.content;
+            let startIndex =0;
+            // Set isVoiceActive to true before starting synthesis
+            console.log("voice on")
+            this.isVoiceActive = true;
+
             const chunkSize = 200; // You can adjust the chunk size as needed
+            this.message.content;
 
             // Create a new SpeechSynthesisUtterance instance
             this.msg = new SpeechSynthesisUtterance();
@@ -254,33 +258,49 @@ export default {
                 this.msg.voice = this.voices.filter(voice => voice.name === this.$store.state.config.audio_out_voice)[0];
             }
 
-            // Set isVoiceActive to true before starting synthesis
-            this.isVoiceActive = true;
+
+            // Function to find the index of the last sentence that fits within the chunk size
+            const findLastSentenceIndex = (startIndex) => {
+                let txt = this.message.content.substring(startIndex, startIndex+chunkSize)
+                // Define an array of characters that represent end of sentence markers.
+                const endOfSentenceMarkers = ['.', '!', '?'];
+
+                // Initialize a variable to store the index of the last end of sentence marker.
+                let lastIndex = -1;
+
+                // Iterate through the end of sentence markers and find the last occurrence in the txt string.
+                endOfSentenceMarkers.forEach(marker => {
+                const markerIndex = txt.lastIndexOf(marker);
+                if (markerIndex > lastIndex) {
+                    lastIndex = markerIndex;
+                }
+                });
+                return lastIndex+startIndex;
+            };
 
             // Function to speak a chunk of text
-            const speakChunk = (startIdx) => {
-                const chunk = textToSpeak.substr(startIdx, chunkSize);
+            const speakChunk = () => {
+                const endIndex = findLastSentenceIndex(startIndex);
+                const chunk = this.message.content.substring(startIndex, endIndex);
                 this.msg.text = chunk;
+                startIndex = endIndex + 1;
+                this.msg.onend = (event) => {
+                    if (startIndex < this.message.content.length-2) {
+                        // Use setTimeout to add a brief delay before speaking the next chunk
+                        setTimeout(() => {
+                            speakChunk();
+                        }, 1); // Adjust the delay as needed
+                    } else {
+                        this.isVoiceActive = false;
+                        console.log("voice off :",this.message.content.length,"  ",endIndex)
+                    }
+                };
                 this.speechSynthesis.speak(this.msg);
             };
 
-            // Listen for the end event to set isVoiceActive to false after synthesis completes
-            this.msg.addEventListener('end', () => {
-                const startIdx = msg.text.length;
-                if (startIdx < textToSpeak.length) {
-                    // Use setTimeout to add a brief delay before speaking the next chunk
-                    setTimeout(() => {
-                        speakChunk(startIdx);
-                    }, 200); // Adjust the delay as needed
-                } else {
-                    this.isVoiceActive = false;
-                }
-            });
-
             // Speak the first chunk
-            speakChunk(0);
+            speakChunk();
         },
-
    
         toggleModel() {
             this.expanded = !this.expanded;
@@ -378,10 +398,24 @@ export default {
                 day_diff == 1 && "Yesterday" ||
                 day_diff < 7 && day_diff + " days ago" ||
                 day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago";
-        }
-
+        },
+        checkForFullSentence() {
+            if(this.message.content.trim().split(" ").length>3){
+                // If the sentence contains at least 3 words, call the speak() method
+                this.speak();
+                return; // Exit the loop after the first full sentence is found
+            }
+        },
 
     }, watch: {
+        'message.content': function (newContent) {
+            if(this.$store.state.config.auto_speak){
+                if(!this.isVoiceActive){
+                    // Watch for changes to this.message.content and call the checkForFullSentence method
+                    this.checkForFullSentence();
+                }
+            }
+        },
         showConfirmation() {
             nextTick(() => {
                 feather.replace()
@@ -402,6 +436,7 @@ export default {
 
             })
         },
+
 
     },
     computed: {

@@ -761,7 +761,7 @@ class LoLLMsAPPI(LollmsApplication):
             sys.stdout.flush()
             antiprompt = self.personality.detect_antiprompt(self.connections[client_id]["generated_text"])
             if antiprompt:
-                ASCIIColors.warning(f"Detected hallucination with antiprompt: {antiprompt}")
+                ASCIIColors.warning(f"\nDetected hallucination with antiprompt: {antiprompt}")
                 self.connections[client_id]["generated_text"] = self.remove_text_from_string(self.connections[client_id]["generated_text"],antiprompt)
                 self.socketio.emit('message', {
                                                 'data': self.connections[client_id]["generated_text"], 

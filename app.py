@@ -54,8 +54,9 @@ import psutil
 from lollms.main_config import LOLLMSConfig
 from typing import Optional
 import gc
+import pkg_resources
 
-import gc
+
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -132,18 +133,8 @@ def run_restart_script(args):
         arg_string = " ".join([f"--{key} {value}" for key, value in valid_args.items()])
         file.write(arg_string)
 
-    os.system(f"python {restart_script} {temp_file}")
-
-    # Reload the main script with the original arguments
-    if os.path.exists(temp_file):
-        with open(temp_file, "r") as file:
-            args = file.read().split()
-        main_script = "app.py"  # Replace with the actual name of your main script
-        os.system(f"python {main_script} {' '.join(args)}")
-        os.remove(temp_file)
-    else:
-        print("Error: Temporary arguments file not found.")
-        sys.exit(1)
+    os.system(f"python {restart_script}")
+    sys.exit(0)
 
 def run_update_script(args):
     update_script = "update_script.py"
@@ -161,18 +152,8 @@ def run_update_script(args):
         arg_string = " ".join([f"--{key} {value}" for key, value in valid_args.items()])
         file.write(arg_string)
 
-    os.system(f"python {update_script} {temp_file}")
-
-    # Reload the main script with the original arguments
-    if os.path.exists(temp_file):
-        with open(temp_file, "r") as file:
-            args = file.read().split()
-        main_script = "app.py"  # Replace with the actual name of your main script
-        os.system(f"python {main_script} {' '.join(args)}")
-        os.remove(temp_file)
-    else:
-        print("Error: Temporary arguments file not found.")
-        sys.exit(1)
+    os.system(f"python {update_script}")
+    sys.exit(0)
 
 
 class LoLLMsWebUI(LoLLMsAPPI):
@@ -204,6 +185,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
         # =========================================================================================
         # Endpoints
         # =========================================================================================
+
+        self.add_endpoint("/get_lollms_version", "get_lollms_version", self.get_lollms_version, methods=["POST"])
+        
 
         self.add_endpoint("/reload_binding", "reload_binding", self.reload_binding, methods=["POST"])
         self.add_endpoint("/update_software", "update_software", self.update_software, methods=["GET"])
@@ -1162,6 +1146,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
         ASCIIColors.info("")
         run_update_script(self.args)
 
+    def get_lollms_version(self):
+        version = pkg_resources.get_distribution('lollms').version
+        ASCIIColors.yellow("Lollms version : "+ version)
+        return jsonify({"version":version})
 
     def reload_binding(self):
         try:

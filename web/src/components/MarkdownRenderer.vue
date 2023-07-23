@@ -159,8 +159,6 @@ export default {
     const script = document.createElement('script');
     script.textContent = `
       // Your inline script code here
-      console.log('Inline script executed!');
-
       function copyContentToClipboard(id) {
         console.log("copied");
         const codeElement = document.getElementById('code_' + id);

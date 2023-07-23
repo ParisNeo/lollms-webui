@@ -5,9 +5,9 @@ import git
 import subprocess
 import argparse
 
-def run_git_pull(repo_path):
+def run_git_pull():
     try:
-        repo = git.Repo(repo_path)
+        repo = git.Repo(".")
         origin = repo.remotes.origin
         origin.pull()
     except git.GitCommandError as e:
@@ -27,7 +27,7 @@ def main():
     repo_path = args.repo
 
     # Perform git pull to update the repository
-    run_git_pull(repo_path)
+    run_git_pull()
 
     # Install the new requirements
     install_requirements()

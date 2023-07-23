@@ -530,199 +530,234 @@
                     </button>
                 </div>
                 <div :class="{ 'hidden': minconf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                    <div class="flex flex-col mb-2 px-3 pb-2">
+                                <div class="pb-2">
+                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <th>Generic</th>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="db_path" class="text-sm font-bold" style="margin-right: 1rem;">Database path:</label>
+                                        </td>
+                                        <td style="width: 100%;">
+                                            <input
+                                            type="text"
+                                            id="db_path"
+                                            required
+                                            v-model="db_path"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded"
+                                            >
+                                        </td>
+                                        <td>
+                                            <button
+                                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                            @click="update_setting('db_path', db_path)"
+                                            >
+                                            <i data-feather="check"></i>
+                                            </button>
+                                        </td>
+                                        </tr>                                        
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="enable_gpu" class="text-sm font-bold" style="margin-right: 1rem;">Enable GPU:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="checkbox"
+                                            id="enable_gpu"
+                                            required
+                                            v-model="enable_gpu"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded"
+                                            >
+                                        </td>
+                                        <td>
+                                            <button
+                                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                            @click="update_setting('enable_gpu', enable_gpu)"
+                                            >
+                                            <i data-feather="check"></i>
+                                            </button>
+                                        </td>
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="auto_update" class="text-sm font-bold" style="margin-right: 1rem;">Auto update:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="checkbox"
+                                            id="auto_update"
+                                            required
+                                            v-model="auto_update"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded"
+                                            >
+                                        </td>
+                                        <td>
+                                            <button
+                                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                            @click="update_setting('auto_update', auto_update)"
+                                            >
+                                            <i data-feather="check"></i>
+                                            </button>
+                                        </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="pb-2">
+                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <th>User</th>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="user_name" class="text-sm font-bold" style="margin-right: 1rem;">User name:</label>
+                                        </td>
+                                        <td style="width: 100%;">
+                                            <input
+                                            type="text"
+                                            id="user_name"
+                                            required
+                                            v-model="userName"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded"
+                                            >
+                                        </td>
+                                        <td>
+                                            <button
+                                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                            @click="update_setting('user_name', userName)"
+                                            >
+                                            <i data-feather="check"></i>
+                                            </button>
+                                        </td>
+                                        </tr>
+                                        <!-- Row 3 -->
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="user_name" class="text-sm font-bold" style="margin-right: 1rem;">User avatar:</label>
+                                        </td>
+                                        <td style="width: 100%;">
+                                            <label for="avatar-upload">
+                                                <img :src="user_avatar" class="w-50 h-50 rounded-full" style="max-width: 50px; max-height: 50px; cursor: pointer;">
+                                            </label>
+                                            <input type="file" id="avatar-upload" style="display: none" @change="uploadAvatar">
+                                        </td>
+                                        <td>
+                                            <button
+                                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                            @click="update_setting('user_name', userName)"
+                                            >
+                                            <i data-feather="check"></i>
+                                            </button>
+                                        </td>
+                                        </tr>
+                                        <!-- Row 4 -->
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="use_user_name_in_discussions" class="text-sm font-bold" style="margin-right: 1rem;">Use User Name in discussions:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="checkbox"
+                                            id="use_user_name_in_discussions"
+                                            required
+                                            v-model="use_user_name_in_discussions"
+                                            class=" mt-1 px-2 py-1 border border-gray-300 rounded"
+                                            >
+                                        </td>
+                                        <td>
+                                            <button
+                                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                            @click="update_setting('use_user_name_in_discussions', use_user_name_in_discussions)"
+                                            >
+                                            <i data-feather="check"></i>
+                                            </button>
+                                        </td>
+                                        </tr>  
+                                    </table>
+                                </div>
+                                <div class="pb-2">
+                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <th>Audio</th>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="auto_speak" class="text-sm font-bold" style="margin-right: 1rem;">Enable auto speak:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="checkbox"
+                                            id="auto_speak"
+                                            required
+                                            v-model="auto_speak"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded"
+                                            >
+                                        </td>
+                                        <td>
+                                            <button
+                                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                            @click="update_setting('auto_speak', auto_speak)"
+                                            >
+                                            <i data-feather="check"></i>
+                                            </button>
+                                        </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td style="min-width: 200px;">
+                                            <label for="audio_in_language" class="text-sm font-bold" style="margin-right: 1rem;">Input Audio Language:</label>
+                                            </td>
+                                            <td>
+                                            <!-- Select element for choosing the input audio language -->
+                                            <select
+                                                id="audio_in_language"
+                                                v-model="audio_in_language"
+                                                class="mt-1 px-2 py-1 border border-gray-300 rounded"
+                                            >
+                                                <!-- Options with language codes and corresponding language names -->
+                                                <option v-for="language in audioLanguages" :key="language.code" :value="language.code">
+                                                {{ language.name }}
+                                                </option>
+                                            </select>
+                                            </td>
+                                            <td>
+                                            <button
+                                                class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                                @click="update_setting('audio_in_language', audio_in_language)"
+                                            >
+                                                <i data-feather="check"></i>
+                                            </button>
+                                            </td>
+                                        </tr> 
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                        <label for="audio_out_voice" class="text-sm font-bold" style="margin-right: 1rem;">Output Audio Voice:</label>
+                                        </td>
+                                        <td>
+                                        <!-- Select element for choosing the output audio voice -->
+                                        <select
+                                            id="audio_out_voice"
+                                            v-model="audio_out_voice"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded"
+                                        >
+                                            <!-- Options with available voices in the browser -->
+                                            <option v-for="voice in audioVoices" :key="voice.name" :value="voice.name">
+                                            {{ voice.name }}
+                                            </option>
+                                        </select>
+                                        </td>
+                                        <td>
+                                        <button
+                                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                            @click="update_setting('audio_out_voice', audio_out_voice)"
+                                        >
+                                            <i data-feather="check"></i>
+                                        </button>
+                                        </td>
+                                    </tr>                        
+                                        
+
+                                    </table>
+
+                                </div>
+                    </div>
 
 
-                    <table style="width: 100%;">
-                        <tr>
-                        <td style="min-width: 200px;">
-                            <label for="enable_gpu" class="text-sm font-bold" style="margin-right: 1rem;">Enable GPU:</label>
-                        </td>
-                        <td>
-                            <input
-                            type="checkbox"
-                            id="enable_gpu"
-                            required
-                            v-model="enable_gpu"
-                            class="mt-1 px-2 py-1 border border-gray-300 rounded"
-                            >
-                        </td>
-                        <td>
-                            <button
-                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                            @click="update_setting('enable_gpu', enable_gpu)"
-                            >
-                            <i data-feather="check"></i>
-                            </button>
-                        </td>
-                        </tr>
-                        <tr>
-                        <td style="min-width: 200px;">
-                            <label for="auto_update" class="text-sm font-bold" style="margin-right: 1rem;">Auto update:</label>
-                        </td>
-                        <td>
-                            <input
-                            type="checkbox"
-                            id="auto_update"
-                            required
-                            v-model="auto_update"
-                            class="mt-1 px-2 py-1 border border-gray-300 rounded"
-                            >
-                        </td>
-                        <td>
-                            <button
-                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                            @click="update_setting('auto_update', auto_update)"
-                            >
-                            <i data-feather="check"></i>
-                            </button>
-                        </td>
-                        </tr>
-
-                        <!-- Row 2 -->
-                        <tr>
-                        <td style="min-width: 200px;">
-                            <label for="db_path" class="text-sm font-bold" style="margin-right: 1rem;">Database path:</label>
-                        </td>
-                        <td style="width: 100%;">
-                            <input
-                            type="text"
-                            id="db_path"
-                            required
-                            v-model="db_path"
-                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded"
-                            >
-                        </td>
-                        <td>
-                            <button
-                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                            @click="update_setting('db_path', db_path)"
-                            >
-                            <i data-feather="check"></i>
-                            </button>
-                        </td>
-                        </tr>
-
-                        <!-- Row 3 -->
-                        <tr>
-                        <td style="min-width: 200px;">
-                            <label for="user_name" class="text-sm font-bold" style="margin-right: 1rem;">User name:</label>
-                        </td>
-                        <td style="width: 100%;">
-                            <input
-                            type="text"
-                            id="user_name"
-                            required
-                            v-model="userName"
-                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded"
-                            >
-                        </td>
-                        <td>
-                            <button
-                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                            @click="update_setting('user_name', userName)"
-                            >
-                            <i data-feather="check"></i>
-                            </button>
-                        </td>
-                        </tr>
-                        <!-- Row 3 -->
-                        <tr>
-                        <td style="min-width: 200px;">
-                            <label for="user_name" class="text-sm font-bold" style="margin-right: 1rem;">User avatar:</label>
-                        </td>
-                        <td style="width: 100%;">
-                            <label for="avatar-upload">
-                                <img :src="user_avatar" class="w-50 h-50 rounded-full" style="max-width: 50px; max-height: 50px; cursor: pointer;">
-                            </label>
-                            <input type="file" id="avatar-upload" style="display: none" @change="uploadAvatar">
-                        </td>
-                        <td>
-                            <button
-                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                            @click="update_setting('user_name', userName)"
-                            >
-                            <i data-feather="check"></i>
-                            </button>
-                        </td>
-                        </tr>
-                        <!-- Row 4 -->
-                        <tr>
-                        <td style="min-width: 200px;">
-                            <label for="use_user_name_in_discussions" class="text-sm font-bold" style="margin-right: 1rem;">Use User Name in discussions:</label>
-                        </td>
-                        <td>
-                            <input
-                            type="checkbox"
-                            id="use_user_name_in_discussions"
-                            required
-                            v-model="use_user_name_in_discussions"
-                            class=" mt-1 px-2 py-1 border border-gray-300 rounded"
-                            >
-                        </td>
-                        <td>
-                            <button
-                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                            @click="update_setting('use_user_name_in_discussions', use_user_name_in_discussions)"
-                            >
-                            <i data-feather="check"></i>
-                            </button>
-                        </td>
-                        </tr>  
-                        <tr>
-                            <td style="min-width: 200px;">
-                            <label for="audio_in_language" class="text-sm font-bold" style="margin-right: 1rem;">Input Audio Language:</label>
-                            </td>
-                            <td>
-                            <!-- Select element for choosing the input audio language -->
-                            <select
-                                id="audio_in_language"
-                                v-model="audio_in_language"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded"
-                            >
-                                <!-- Options with language codes and corresponding language names -->
-                                <option v-for="language in audioLanguages" :key="language.code" :value="language.code">
-                                {{ language.name }}
-                                </option>
-                            </select>
-                            </td>
-                            <td>
-                            <button
-                                class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                                @click="update_setting('audio_in_language', audio_in_language)"
-                            >
-                                <i data-feather="check"></i>
-                            </button>
-                            </td>
-                        </tr> 
-                        <tr>
-                        <td style="min-width: 200px;">
-                        <label for="audio_out_voice" class="text-sm font-bold" style="margin-right: 1rem;">Output Audio Voice:</label>
-                        </td>
-                        <td>
-                        <!-- Select element for choosing the output audio voice -->
-                        <select
-                            id="audio_out_voice"
-                            v-model="audio_out_voice"
-                            class="mt-1 px-2 py-1 border border-gray-300 rounded"
-                        >
-                            <!-- Options with available voices in the browser -->
-                            <option v-for="voice in audioVoices" :key="voice.name" :value="voice.name">
-                            {{ voice.name }}
-                            </option>
-                        </select>
-                        </td>
-                        <td>
-                        <button
-                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                            @click="update_setting('audio_out_voice', audio_out_voice)"
-                        >
-                            <i data-feather="check"></i>
-                        </button>
-                        </td>
-                    </tr>                        
-                        
-
-                    </table>
 
                     <!-- Row 0 -->
                     <div class="w-full">
@@ -742,13 +777,15 @@
                         </button>
                     </div>
                     <!-- Row 0 -->
-                    <div v-if="has_updates" class="w-full">
+                    <div class="w-full">
                         <button
                         class="hover:text-secondary w-full bg-red-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                         @click="api_get_req('update_software').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast('Success!', 4, true)}})"
                         >
                         Upgrade program 
-                        <i data-feather="alert-circle"></i>
+                        <div  v-if="has_updates" >
+                            <i data-feather="alert-circle"></i>
+                        </div>
                         </button>
                     </div>  
 
@@ -3063,6 +3100,15 @@ export default {
                 this.$store.state.config.auto_update = value
             },
 
+        },
+        auto_speak:{
+            get() {
+                return this.$store.state.config.auto_speak;
+            },
+            set(value) {
+                // You should not set the value directly here; use the updateSetting method instead
+                this.$store.state.config.auto_speak = value
+            },
         },
         audio_in_language:{
             get() {
