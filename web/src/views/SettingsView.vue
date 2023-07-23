@@ -2419,15 +2419,18 @@ export default {
         // Refresh stuff
         refresh() {
             console.log("Refreshing")
-            this.persCatgArr = this.api_get_req("list_personalities_categories?language="+this.configFile.personality_language).then(()=>{
-                this.$store.dispatch('refreshConfig').then(() => {
+            this.$store.dispatch('refreshConfig').then(() => {
                 console.log(this.personality_language)
                 console.log(this.personality_category)
 
-                this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.personality_category && item.language === this.personality_language)
-                this.personalitiesFiltered.sort()
-            });
-            })
+                this.api_get_req("list_personalities_categories?language="+this.personality_language).then((cats)=>{
+                    console.log("cats",cats)
+                    this.persCatgArr = cats
+                    this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.personality_category && item.language === this.personality_language)
+                    this.personalitiesFiltered.sort()
+                })
+
+            });            
 
             
             //this.fetchMainConfig();
