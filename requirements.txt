@@ -13,3 +13,5 @@ requests
 eventlet
 websocket-client
 GitPython
+setuptools
+numpy

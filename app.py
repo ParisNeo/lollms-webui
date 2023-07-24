@@ -985,10 +985,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
         except Exception as e:
             print(f"Error occurred while parsing JSON: {e}")
             return jsonify({"status":False, 'error':str(e)})
-        
-        personality_path = lollms_paths.personalities_zoo_path / data['name']
-        ASCIIColors.info(f"- Reinstalling personality {data['name']}...")
+        if not 'name' in data:
+            data['name']=self.config.personalities[self.config["active_personality_id"]]
         try:
+            personality_path = lollms_paths.personalities_zoo_path / data['name']
+            ASCIIColors.info(f"- Reinstalling personality {data['name']}...")
             ASCIIColors.info("Unmounting personality")
             idx = self.config.personalities.index(data['name'])
             print(f"index = {idx}")
