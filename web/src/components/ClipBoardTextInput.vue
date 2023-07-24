@@ -1,12 +1,22 @@
 <template>
   <div class="flex items-center space-x-2">
+    <!-- Render the slider if useSlider is true -->
     <input
-      :value="value" 
+      v-if="!useSlider"
+      :value="inputValue"
       :type="inputType"
       :placeholder="placeholderText"
       @input="handleInput"
       @paste="handlePaste"
-      
+      class="flex-1 px-4 py-2 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
+    />
+    <input
+      v-else
+      type="range"
+      :value="parseInt(inputValue)"
+      :min="minSliderValue"
+      :max="maxSliderValue"
+      @input="handleSliderInput"
       class="flex-1 px-4 py-2 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
     />
     <button
@@ -33,6 +43,7 @@
       :accept="fileAccept"
       @change="handleFileInputChange"
     />
+    
   </div>
 </template>
 
@@ -74,6 +85,10 @@ export default {
     this.inputValue = this.value;
   },
   methods: {
+    handleSliderInput(event) {
+      this.inputValue = event.target.value;
+      this.$emit("input", event.target.value);
+    },
     getPlaceholderText() {
       switch (this.inputType) {
         case "text":
