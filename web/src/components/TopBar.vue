@@ -1,7 +1,7 @@
 <template>
     <!-- <link v-if="codeBlockStylesheet" rel="stylesheet" :href="codeBlockStylesheet"> -->
     <header class=" top-0 shadow-lg">
-        <nav class="container flex flex-col lg:flex-row  item-center gap-2 py-2 ">
+        <nav class="container flex flex-col lg:flex-row  item-center gap-2 py-0 ">
             <!-- LOGO -->
             <RouterLink :to="{ name: 'discussions' }">
                 <div class="flex items-center gap-3 flex-1">
