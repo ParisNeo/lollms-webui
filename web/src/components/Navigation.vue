@@ -76,6 +76,7 @@
   .link-item:hover {
     background-color: #3dabff; /* Use your theme's 'primary-light' color for the hover effect */
     animation-timing-function: ease-in-out;    
+    
   }
   
   /* Optional: Change the color when the link is active */
