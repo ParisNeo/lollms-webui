@@ -47,7 +47,7 @@
         <!-- LEFT SIDE PANEL -->
         <div id="leftPanel" class="flex flex-col flex-grow overflow-y-scroll no-scrollbar "
             @dragover.stop.prevent="setDropZoneDiscussion()">
-            <div class=" sticky z-10 top-0  bg-bg-light-tone dark:bg-bg-dark-tone shadow-md">
+            <div class=" sticky z-10 top-0  bg-bg-light-tone dark:bg-bg-dark-tone shadow-md ">
 
 
 
@@ -194,7 +194,7 @@
             <div class="relative flex flex-row flex-grow mb-10 ">
 
                 <!-- DISCUSSION LIST -->
-                <div class="mx-4 flex flex-col flex-grow  " :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
+                <div class="mx-4 flex flex-col flex-grow " :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
 
 
                     <div id="dis-list" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''"

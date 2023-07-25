@@ -1,5 +1,5 @@
 <template>
-    <div :class="selected ? 'bg-bg-light-discussion dark:bg-bg-dark-discussion shadow-md' : ''"
+    <div :class="selected ? 'bg-bg-light-discussion dark:bg-bg-dark-discussion shadow-md  min-w-[23rem] max-w-[23rem]' : ' min-w-[23rem] max-w-[23rem]'"
         class=" flex flex-row sm:flex-row  flex-wrap flex-shrink: 0 item-center shadow-sm gap-2 py-2 my-2 hover:shadow-md hover:bg-primary-light dark:hover:bg-primary rounded-md p-2 duration-75 group cursor-pointer"
         :id="'dis-' + id" @click.stop="selectEvent()">
 
