@@ -1,16 +1,19 @@
 <template>
     <div class="menu-container">
-      <button @click="toggleMenu" class="menu-button">Menu</button>
-      <transition name="slide">
-        <div v-if="isMenuOpen" class="menu-list" :style="menuPosition">
-          <ul>
-            <li v-for="(command, index) in commands" :key="index" @click="executeCommand(command)">
-              <img v-if="command.icon && !command.is_file" :src="command.icon" :alt="command.name" class="menu-icon">
-              <span v-else>{{ command.name }}</span>
+        <button @click.prevent="toggleMenu" class="menu-button bg-blue-500 text-white dark:bg-blue-200 dark:text-gray-800 rounded-full flex items-center justify-center w-6 h-6 border-none cursor-pointer hover:bg-blue-400 w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:z-20 hover:-translate-y-2 duration-150  border-gray-300 border-secondary cursor-pointer" ref="menuButton">
+            <i data-feather="command" class="w-5 h-5"></i>
+        </button>
+        <transition name="slide">
+        <div v-if="isMenuOpen" class="menu-list" :style="menuPosition" ref="menu">
+            <ul>
+            <li v-for="(command, index) in commands" :key="index" @click="executeCommand(command)" class="menu-command hover:bg-blue-400 ">
+                <img v-if="command.icon && !command.is_file" :src="command.icon" :alt="command.name" class="menu-icon">
+                <span v-else class="menu-icon"></span>
+                <span>{{ command.name }}</span>
             </li>
-          </ul>
+            </ul>
         </div>
-      </transition>
+        </transition>
     </div>
   </template>
   
@@ -20,6 +23,10 @@
       commands: {
         type: Array,
         required: true
+      },
+      execute_cmd: {
+        type: Function, // The execute_cmd property should be a function
+        required: false
       }
     },
     data() {
@@ -33,6 +40,7 @@
     },
     methods: {
       toggleMenu() {
+        this.positionMenu();
         this.isMenuOpen = !this.isMenuOpen;
       },
       executeCommand(command) {
@@ -40,11 +48,27 @@
           this[command.value]();
         }
         this.isMenuOpen = false;
+        if (this.execute_cmd) {
+          this.execute_cmd(command); // Call the execute_cmd property with the current command
+        }
+      },
+      positionMenu() {
+        if (this.$refs.menuButton!=undefined){
+            const buttonRect = this.$refs.menuButton.getBoundingClientRect();
+            //const menuRect = this.$refs.menu.getBoundingClientRect();
+    
+            const windowHeight = window.innerHeight;
+            const isMenuAboveButton = buttonRect.bottom > windowHeight / 2;
+    
+            this.menuPosition.top = isMenuAboveButton ? 'auto' : 'calc(100% + 10px)';
+            this.menuPosition.bottom = isMenuAboveButton ? '100%' : 'auto';
+        }
       }
     },
     mounted() {
       // Listen to window resize to reposition the menu if needed
       window.addEventListener('resize', this.positionMenu);
+      this.positionMenu(); // Initial positioning
     },
     beforeDestroy() {
       // Cleanup the event listener
@@ -52,19 +76,6 @@
     },
     watch: {
       isMenuOpen: 'positionMenu'
-    },
-    methods: {
-      positionMenu() {
-        const menu = this.$el.querySelector('.menu-list');
-        if (!menu) return;
-  
-        const rect = menu.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-        const isMenuAboveButton = rect.bottom > windowHeight;
-  
-        this.menuPosition.top = isMenuAboveButton ? 'auto' : 'calc(100% + 10px)';
-        this.menuPosition.bottom = isMenuAboveButton ? '100%' : 'auto';
-      }
     }
   };
   </script>

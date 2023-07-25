@@ -49,7 +49,7 @@
         </Card>
         <Card  :disableHoverAnimation="true" :disableFocus="true">
           <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Train LLM</button>
-          <ProgressBar v-if="loading" :progress="progressValue" />
+          <!-- <ProgressBar v-if="loading" :progress="progressValue" /> -->
         </Card>
   
       </form>
@@ -59,13 +59,13 @@
   <script>
   import ClipBoardTextInput from "@/components/ClipBoardTextInput.vue";
   import Card from "@/components/Card.vue"
-  import ProgressBar from '@/components/ProgressBar.vue';
+  //import ProgressBar from '@/components/ProgressBar.vue';
 import axios from "axios";
   export default {
     components: {
       ClipBoardTextInput,
       Card,
-      ProgressBar
+      //ProgressBar
     },    
     data() {
         return {

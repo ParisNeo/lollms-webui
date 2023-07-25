@@ -1398,6 +1398,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             file.save( file_path )
             if self.personality.processor:
                 self.personality.processor.add_file(file_path)
+                
             return jsonify({"status": True})   
         except Exception as ex:
             ASCIIColors.error(ex)
