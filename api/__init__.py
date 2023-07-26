@@ -357,14 +357,20 @@ class LoLLMsAPPI(LollmsApplication):
                                                 }, room=request.sid)
             try:
                 installation_path.unlink()
+                socketio.emit('install_progress',{
+                                                    'status': True, 
+                                                    'error': '',
+                                                    'model_name' : model_name,
+                                                    'binding_folder' : binding_folder
+                                                }, room=request.sid)
             except Exception as ex:
                 ASCIIColors.error(f"Couldn't delete {installation_path}, please delete it manually and restart the app")
-            socketio.emit('install_progress',{
-                                                'status': True, 
-                                                'error': '',
-                                                'model_name' : model_name,
-                                                'binding_folder' : binding_folder
-                                            }, room=request.sid)
+                socketio.emit('install_progress',{
+                                                    'status': False, 
+                                                    'error': f"Couldn't delete {installation_path}, please delete it manually and restart the app",
+                                                    'model_name' : model_name,
+                                                    'binding_folder' : binding_folder
+                                                }, room=request.sid)
 
 
         @socketio.on('upload_file')

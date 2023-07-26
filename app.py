@@ -15,48 +15,72 @@ __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
-
 import os
-import git
-import logging
-import argparse
-import json
-import re
-import traceback
 import sys
-from tqdm import tqdm
-import subprocess
-import signal
-from lollms.config import InstallOption
-from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding
-from lollms.personality import AIPersonality, MSG_TYPE
-from lollms.config import BaseConfig
-from lollms.helpers import ASCIIColors, trace_exception
-from lollms.paths import LollmsPaths
-from api.db import DiscussionsDB, Discussion
-from api.helpers import compare_lists
-from flask import (
-    Flask,
-    Response,
-    jsonify,
-    render_template,
-    request,
-    stream_with_context,
-    send_from_directory
-)
 
-from flask_socketio import SocketIO, emit
-from pathlib import Path
-import yaml
-from geventwebsocket.handler import WebSocketHandler
-import logging
-import psutil
-from lollms.main_config import LOLLMSConfig
-from typing import Optional
-import gc
-import pkg_resources
+def run_update_script(args=None):
+    update_script = "update_script.py"
 
+    # Convert Namespace object to a dictionary
+    if args:
+        args_dict = vars(args)
+    else:
+        args_dict = {}
+    # Filter out any key-value pairs where the value is None
+    valid_args = {key: value for key, value in args_dict.items() if value is not None}
 
+    # Save the arguments to a temporary file
+    temp_file = "temp_args.txt"
+    with open(temp_file, "w") as file:
+        # Convert the valid_args dictionary to a string in the format "key1 value1 key2 value2 ..."
+        arg_string = " ".join([f"--{key} {value}" for key, value in valid_args.items()])
+        file.write(arg_string)
+
+    os.system(f"python {update_script}")
+    sys.exit(0)
+    
+try:
+    import git
+    import logging
+    import argparse
+    import json
+    import traceback
+    import subprocess
+    import signal
+    from lollms.config import InstallOption
+    from lollms.binding import LOLLMSConfig, BindingBuilder
+    from lollms.personality import AIPersonality
+    from lollms.config import BaseConfig
+    from lollms.helpers import ASCIIColors, trace_exception
+    from lollms.paths import LollmsPaths
+    from api.db import Discussion
+    from flask import (
+        Flask,
+        jsonify,
+        render_template,
+        request,
+        send_from_directory
+    )
+
+    from flask_socketio import SocketIO
+    from pathlib import Path
+    import yaml
+    from geventwebsocket.handler import WebSocketHandler
+    import logging
+    import psutil
+    from lollms.main_config import LOLLMSConfig
+    from typing import Optional
+    import gc
+    import pkg_resources
+    
+    from api.config import load_config
+    from api import LoLLMsAPPI
+    import shutil
+    import socket
+
+except:
+    print("Error importing some libraries. Updating lollms...")
+    run_update_script()
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -72,12 +96,7 @@ logging.getLogger('engineio').setLevel(logging.WARNING)
 logging.getLogger('werkzeug').setLevel(logging.ERROR)
 logging.basicConfig(level=logging.WARNING)
 
-import time
-from api.config import load_config, save_config
-from api import LoLLMsAPPI
-import shutil
-import markdown
-import socket
+
 
 def get_ip_address():
     # Create a socket object
@@ -136,24 +155,7 @@ def run_restart_script(args):
     os.system(f"python {restart_script}")
     sys.exit(0)
 
-def run_update_script(args):
-    update_script = "update_script.py"
 
-    # Convert Namespace object to a dictionary
-    args_dict = vars(args)
-
-    # Filter out any key-value pairs where the value is None
-    valid_args = {key: value for key, value in args_dict.items() if value is not None}
-
-    # Save the arguments to a temporary file
-    temp_file = "temp_args.txt"
-    with open(temp_file, "w") as file:
-        # Convert the valid_args dictionary to a string in the format "key1 value1 key2 value2 ..."
-        arg_string = " ".join([f"--{key} {value}" for key, value in valid_args.items()])
-        file.write(arg_string)
-
-    os.system(f"python {update_script}")
-    sys.exit(0)
 
 
 class LoLLMsWebUI(LoLLMsAPPI):
@@ -1146,12 +1148,12 @@ class LoLLMsWebUI(LoLLMsAPPI):
         ASCIIColors.info("")
         ASCIIColors.info("")
         run_update_script(self.args)
-
+        
     def get_lollms_version(self):
         version = pkg_resources.get_distribution('lollms').version
         ASCIIColors.yellow("Lollms version : "+ version)
         return jsonify({"version":version})
-
+    
     def reload_binding(self):
         try:
             data = request.get_json()
@@ -1792,9 +1794,7 @@ if __name__ == "__main__":
         ASCIIColors.info("debug mode:true")    
     else:
         ASCIIColors.info("debug mode:false")
-    
-
-        
+       
     
     url = f'http://{config["host"]}:{config["port"]}'
     if config["host"]!="localhost":
