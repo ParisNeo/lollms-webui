@@ -4,9 +4,9 @@
             <i data-feather="command" class="w-5 h-5"></i>
         </button>
         <transition name="slide">
-        <div v-if="isMenuOpen" class="menu-list" :style="menuPosition" ref="menu">
-            <ul>
-            <li v-for="(command, index) in commands" :key="index" @click="executeCommand(command)" class="menu-command hover:bg-blue-400 ">
+        <div v-if="isMenuOpen" class="menu-list flex-grow" :style="menuPosition" ref="menu">
+            <ul class="flex-grow">
+            <li v-for="(command, index) in commands" :key="index" @click="executeCommand(command)" class="menu-command flex-grow hover:bg-blue-400 ">
                 <img v-if="command.icon && !command.is_file" :src="command.icon" :alt="command.name" class="menu-icon">
                 <span v-else class="menu-icon"></span>
                 <span>{{ command.name }}</span>
@@ -39,9 +39,25 @@
       };
     },
     methods: {
+handleClickOutside(event) {
+      // Close the menu if the click occurs outside the menu container
+      const menuContainer = this.$refs.menu;
+      const menuButton = this.$refs.menuButton;
+      if (menuContainer && !menuContainer.contains(event.target) && !menuButton.contains(event.target)) {
+        this.isMenuOpen = false;
+        window.removeEventListener('click', this.handleClickOutside);
+      }
+    },
       toggleMenu() {
         this.positionMenu();
         this.isMenuOpen = !this.isMenuOpen;
+        if (this.isMenuOpen) {
+          // Attach the click event listener when the menu opens
+          window.addEventListener('click', this.handleClickOutside);
+        } else {
+          // Remove the click event listener when the menu closes
+          window.removeEventListener('click', this.handleClickOutside);
+        }        
       },
       executeCommand(command) {
         if (typeof this[command.value] === 'function') {
@@ -98,11 +114,12 @@
   .menu-list {
     position: absolute;
     background-color: white;
+    color: black;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     padding: 10px;
-    min-width: 150px;
+    max-width: 500px;
     z-index: 1000;
   }
   
@@ -133,6 +150,11 @@
     width: 20px;
     height: 20px;
     margin-right: 8px;
+  }
+
+  .menu-command{
+    min-width: 200px;
+    text-align: left;
   }
   </style>
   

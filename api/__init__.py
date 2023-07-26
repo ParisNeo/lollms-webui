@@ -156,14 +156,21 @@ class LoLLMsAPPI(LollmsApplication):
                 "cancel_generation": False,          
                 "generation_thread": None,
                 "current_discussion":None,
-                "current_message_id":0
+                "current_message_id":0,
+                "current_ai_message_id":0,
+                "current_user_message_id":0,
+                "processing":False,
+                "schedule_for_deletion":False
             }     
             ASCIIColors.success(f'Client {request.sid} connected')
 
         @socketio.on('disconnect')
         def disconnect():
             try:
-                del self.connections[request.sid]
+                if self.connections[request.sid]["processing"]:
+                    self.connections[request.sid]["schedule_for_deletion"]=True
+                else:
+                    del self.connections[request.sid]
             except Exception as ex:
                 pass
             
@@ -938,6 +945,7 @@ class LoLLMsAPPI(LollmsApplication):
             self.discussion_messages, self.current_message, tokens = self.prepare_query(message_id, is_continue)
             self.prepare_reception(client_id)
             self.generating = True
+            self.connections[client_id]["processing"]=True
             self.generate(
                             self.discussion_messages, 
                             self.current_message, 
@@ -948,7 +956,6 @@ class LoLLMsAPPI(LollmsApplication):
             print()
             print("## Done Generation ##")
             print()
-
             self.current_discussion.update_message(self.current_ai_message_id, self.connections[client_id]["generated_text"].strip())
             self.full_message_list.append(self.connections[client_id]["generated_text"])
             self.cancel_gen = False
@@ -977,6 +984,9 @@ class LoLLMsAPPI(LollmsApplication):
                                 )
 
             self.socketio.sleep(0.01)
+            self.connections[client_id]["processing"]=False
+            if self.connections[client_id]["schedule_for_deletion"]:
+                del self.connections[client_id]
 
             ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
             ASCIIColors.success(f" ║                        Done                      ║ ")
