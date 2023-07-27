@@ -697,6 +697,28 @@
                                             </button>
                                         </td>
                                         </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="audio_pitch" class="text-sm font-bold" style="margin-right: 1rem;">audio pitch:</label>
+                                        </td>
+                                        <td>
+                                            <input id="audio_pitch" v-model="audio_pitch"
+                                            type="range" min="0" max="10" step="0.1"
+                                            class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                                            <p
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded"
+                                            >{{ audio_pitch }}</p>
+                                        </td>
+                                        <td>
+                                            <button
+                                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                            @click="update_setting('audio_pitch', audio_pitch)"
+                                            >
+                                            <i data-feather="check"></i>
+                                            </button>
+                                        </td>
+                                        </tr>
 
                                         <tr>
                                             <td style="min-width: 200px;">
@@ -3108,6 +3130,15 @@ export default {
             set(value) {
                 // You should not set the value directly here; use the updateSetting method instead
                 this.$store.state.config.auto_speak = value
+            },
+        },
+        audio_pitch:{
+            get() {
+                return this.$store.state.config.audio_pitch;
+            },
+            set(value) {
+                // You should not set the value directly here; use the updateSetting method instead
+                this.$store.state.config.audio_pitch = value
             },
         },
         audio_in_language:{

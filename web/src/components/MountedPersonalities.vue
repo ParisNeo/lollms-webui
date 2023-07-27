@@ -7,7 +7,7 @@
         <div class="flex -space-x-4 " v-if="mountedPersArr.length > 1">
             <img :src="bUrl + mountedPers.avatar" @error="personalityImgPlacehodler"
                 class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:z-20 hover:-translate-y-2 duration-150  border-secondary cursor-pointer"
-                :title="'Active personality: '+mountedPers.name" >
+                :title="'Active personality: '+mountedPers.name" @click="onSettingsPersonality(mountedPers)">
 
             <div class="flex items-center justify-center w-8 h-8 cursor-pointer text-xs font-medium bg-bg-light dark:bg-bg-dark border-2 hover:border-secondary  rounded-full hover:bg-bg-light-tone dark:hover:bg-bg-dark-tone dark:border-gray-800 hover:z-20 hover:-translate-y-2 duration-150 active:scale-90"
                 @click.stop="toggleShowPersList" title="Click to show more">+{{ mountedPersArr.length - 1 }}</div>
@@ -34,11 +34,14 @@
         </div>
 
     </div>
+    <UniversalForm ref="universalForm" class="z-20" />
 </template>
 
 <script>
 import axios from "axios";
 import defaultPersonalityImgPlaceholder from "../assets/logo.svg"
+import UniversalForm from '@/components/UniversalForm.vue';
+
 import { nextTick } from "vue";
 import { useStore } from 'vuex'; // Import the useStore function
 import { computed } from 'vue'; // Import the computed function
@@ -55,6 +58,9 @@ export default {
     props: {
         onShowPersList: Function,
         onReady:Function,
+    },
+    components: {
+        UniversalForm
     },
     data() {
         return {
@@ -112,6 +118,54 @@ export default {
 
     },
     methods: {
+        onSettingsPersonality(persEntry) {
+            try {
+
+                axios.get('/get_active_personality_settings').then(res => {
+
+                    if (res) {
+
+                        console.log('pers sett', res)
+                        if (res.data && Object.keys(res.data).length > 0) {
+
+                            this.$refs.universalForm.showForm(res.data, "Personality settings - " + persEntry.name, "Save changes", "Cancel").then(res => {
+
+                                // send new data
+                                try {
+                                    axios.post('/set_active_personality_settings',
+                                        res).then(response => {
+
+                                            if (response && response.data) {
+                                                console.log('personality set with new settings', response.data)
+                                                this.$refs.toast.showToast("Personality settings updated successfully!", 4, true)
+
+                                            } else {
+                                                this.$refs.toast.showToast("Did not get Personality settings responses.\n" + response, 4, false)
+
+                                            }
+
+
+                                        })
+                                } catch (error) {
+                                    this.$refs.toast.showToast("Did not get Personality settings responses.\n Endpoint error: " + error.message, 4, false)
+
+                                }
+
+                            })
+                        } else {
+                            this.$refs.toast.showToast("Personality has no settings", 4, false)
+
+                        }
+
+                    }
+                })
+
+            } catch (error) {
+
+                this.$refs.toast.showToast("Could not open personality settings. Endpoint error: " + error.message, 4, false)
+            }
+
+        },        
         toggleShowPersList() {
             //this.show = !this.show
             this.onShowPersList()

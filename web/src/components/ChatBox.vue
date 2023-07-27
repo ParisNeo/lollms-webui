@@ -217,9 +217,9 @@ import MountedPersonalitiesComponent from './MountedPersonalitiesComponent.vue'
 import { nextTick, ref, TransitionGroup } from 'vue'
 import feather from 'feather-icons'
 import filesize from '../plugins/filesize'
-import MountedPersonalities from './MountedPersonalities.vue'
-import MountedPersonalitiesList from './MountedPersonalitiesList.vue'
-import PersonalitiesCommands from './PersonalitiesCommands.vue';
+import MountedPersonalities from '@/components/MountedPersonalities.vue'
+import MountedPersonalitiesList from '@/components/MountedPersonalitiesList.vue'
+import PersonalitiesCommands from '@/components/PersonalitiesCommands.vue';
 import { useStore } from 'vuex'; // Import the useStore function
 import { inject } from 'vue';
 export default {

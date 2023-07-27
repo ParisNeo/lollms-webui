@@ -2,8 +2,8 @@ import os
 import sys
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python restart_script.py <repo_path>")
+    if len(sys.argv) != 1:
+        print("Usage: python restart_script.py")
         sys.exit(1)
 
     # Reload the main script with the original arguments

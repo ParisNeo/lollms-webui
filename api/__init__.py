@@ -684,9 +684,9 @@ class LoLLMsAPPI(LollmsApplication):
             else:
                 break
 
-        link_text = self.personality.link_text
+        link_text = "\n" #self.personality.link_text
         if not is_continue:
-            self.full_message_list.append("\n"+self.config.discussion_prompt_separator +message["sender"].replace(":","")+": "+message["content"].strip()+self.personality.link_text+self.personality.ai_message_prefix)
+            self.full_message_list.append("\n"+self.config.discussion_prompt_separator +message["sender"].replace(":","")+": "+message["content"].strip()+link_text+self.personality.ai_message_prefix)
         else:
             self.full_message_list.append("\n"+self.config.discussion_prompt_separator +message["sender"].replace(":","")+": "+message["content"].strip())
 
@@ -706,6 +706,7 @@ class LoLLMsAPPI(LollmsApplication):
         
         if self.config["debug"]:
             ASCIIColors.yellow(discussion_messages)
+            ASCIIColors.yellow(f"prompt size:{len(tokens)} tokens")
 
         return discussion_messages, message["content"], tokens
 
@@ -722,7 +723,7 @@ class LoLLMsAPPI(LollmsApplication):
                     else:
                         self.full_message_list.append(ump + message["content"])
 
-        link_text = self.personality.link_text
+        link_text = "\n"# self.personality.link_text
 
         if len(self.full_message_list) > self.config["nb_messages_to_remember"]:
             discussion_messages = self.personality.personality_conditioning+ link_text.join(self.full_message_list[-self.config["nb_messages_to_remember"]:])
@@ -785,6 +786,7 @@ class LoLLMsAPPI(LollmsApplication):
                                                 "user_message_id": self.current_user_message_id,
                                                 "ai_message_id": self.current_ai_message_id,
                                                 'finished_generating_at': self.current_discussion.current_message_finished_generating_at,
+                                                'metadata':metadata
                                             }, room=client_id
                                     )
                 return False
@@ -798,6 +800,7 @@ class LoLLMsAPPI(LollmsApplication):
                                                 "user_message_id": self.current_user_message_id,
                                                 "ai_message_id": self.current_ai_message_id,
                                                 'finished_generating_at': self.current_discussion.current_message_finished_generating_at,
+                                                'metadata':metadata
                                             }, room=client_id
                                     )
                 self.socketio.sleep(0.01)
@@ -822,6 +825,7 @@ class LoLLMsAPPI(LollmsApplication):
                                             'discussion_id':self.current_discussion.discussion_id,
                                             'message_type': message_type.value,
                                             'finished_generating_at': self.current_discussion.current_message_finished_generating_at,
+                                            'metadata':metadata
                                         }, room=client_id
                                 )
             self.socketio.sleep(0.01)
@@ -835,6 +839,7 @@ class LoLLMsAPPI(LollmsApplication):
                                             'discussion_id':self.current_discussion.discussion_id,
                                             'message_type': message_type.value,
                                             'finished_generating_at': self.current_discussion.current_message_finished_generating_at,
+                                            'metadata':metadata
                                         }, room=client_id
                                 )
             self.socketio.sleep(0.01)

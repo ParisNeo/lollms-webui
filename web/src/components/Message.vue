@@ -131,7 +131,7 @@
                     <!-- MESSAGE CONTENT -->
                     <div class="flex flex-col items-start w-full">
                         <div v-for="(step, index) in message.steps" :key="'step-' + message.id + '-' + index" class="step font-bold" :style="{ backgroundColor: step.done ? 'transparent' : 'inherit' }">
-                            <Step :done="step.done" :message="step.message" />
+                            <Step :done="step.done" :message="step.message" :status="step.status" />
                         </div>
                     </div>
 
@@ -252,6 +252,7 @@ export default {
 
             // Create a new SpeechSynthesisUtterance instance
             this.msg = new SpeechSynthesisUtterance();
+            this.msg.pitch = this.$store.state.config.audio_pitch;
 
             // Optionally, set the voice and other parameters as before
             if (this.voices.length > 0) {
@@ -275,7 +276,9 @@ export default {
                     lastIndex = markerIndex;
                 }
                 });
-                return lastIndex+startIndex;
+                if(lastIndex==-1){lastIndex=txt.length}
+                console.log(lastIndex)
+                return lastIndex+startIndex+1;
             };
 
             // Function to speak a chunk of text

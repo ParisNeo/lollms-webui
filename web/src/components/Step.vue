@@ -7,10 +7,16 @@
         class="text-gray-400 w-4 h-4"
       ></i>
       </div>
-      <div v-if="done">
+      <div v-if="done && status">
         <i
         data-feather="check-square"
         class="text-green-500 w-4 h-4"
+      ></i>
+      </div>
+      <div v-if="done && !status">
+        <i
+        data-feather="x-square"
+        class="text-red-500 w-4 h-4"
       ></i>
       </div>
     </div>
@@ -43,7 +49,12 @@
       message: {
         type: String,
         required: true
-      }
+      },
+      status: {
+        type: Boolean,
+        required: true
+      },
+      
     }
   };
   </script>

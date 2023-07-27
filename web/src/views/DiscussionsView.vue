@@ -47,7 +47,7 @@
         <!-- LEFT SIDE PANEL -->
         <div id="leftPanel" class="flex flex-col flex-grow overflow-y-scroll no-scrollbar "
             @dragover.stop.prevent="setDropZoneDiscussion()">
-            <div class=" sticky z-10 top-0  bg-bg-light-tone dark:bg-bg-dark-tone shadow-md ">
+            <div class=" sticky z-5 top-0  bg-bg-light-tone dark:bg-bg-dark-tone shadow-md ">
 
 
 
@@ -187,11 +187,11 @@
                 </div>
 
             </div>
-            <div class="z-20">
+            <div class="z-5">
                 <DragDrop ref="dragdropDiscussion" @panelDrop="setFileListDiscussion">Drop your discussion file here
                 </DragDrop>
             </div>
-            <div class="relative flex flex-row flex-grow mb-10 ">
+            <div class="relative flex flex-row flex-grow mb-10 z-0">
 
                 <!-- DISCUSSION LIST -->
                 <div class="mx-4 flex flex-col flex-grow " :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
@@ -967,13 +967,15 @@ export default {
                 else if(messageItem && msgObj.message_type==this.msgTypes.MSG_TYPE_CHUNK){
                     messageItem.content += msgObj.data
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_START){
-                    messageItem.steps.push({"message":msgObj.data,"done":false})
+                    console.log(msgObj.metadata)
+                    messageItem.steps.push({"message":msgObj.data,"done":false, "status":true })
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_END) {
                     // Find the step with the matching message and update its 'done' property to true
                     const matchingStep = messageItem.steps.find(step => step.message === msgObj.data);
 
                     if (matchingStep) {
                         matchingStep.done = true;
+                        matchingStep.status=msgObj.metadata.status
                     }
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_EXCEPTION) {
                     this.$refs.toast.showToast(msgObj.data, 5, false)
