@@ -78,7 +78,8 @@ try:
     import shutil
     import socket
 
-except:
+except Exception as ex:
+    print(ex)
     print("Error importing some libraries. Updating lollms...")
     run_update_script()
 

@@ -749,7 +749,7 @@ class LoLLMsAPPI(LollmsApplication):
 
         return string
     
-    def process_chunk(self, chunk, message_type:MSG_TYPE, client_id):
+    def process_chunk(self, chunk, message_type:MSG_TYPE, metadata:dict={}, client_id:int=0):
         """
         0 : a regular message
         1 : a notification message
