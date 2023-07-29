@@ -1030,19 +1030,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
             gc.collect()
             ASCIIColors.info("Reinstalling binding")
             self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL)
-            ASCIIColors.info("Binding reinstalled successfully")
+            ASCIIColors.success("Binding reinstalled successfully")
 
-            try:
-                ASCIIColors.info("Reloading model")
-                self.model = self.binding.build_model()
-                ASCIIColors.info("Model reloaded successfully")
-            except Exception as ex:
-                print(f"Couldn't build model: [{ex}]")
-                trace_exception(ex)
-            try:
-                self.rebuild_personalities(reload_all=True)
-            except Exception as ex:
-                print(f"Couldn't reload personalities: [{ex}]")
+            ASCIIColors.info("Please select a model")
             return jsonify({"status": True}) 
         except Exception as ex:
             print(f"Couldn't build binding: [{ex}]")

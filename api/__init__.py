@@ -511,6 +511,9 @@ class LoLLMsAPPI(LollmsApplication):
 
 
     def rebuild_personalities(self, reload_all=False):
+        if reload_all:
+            self.mounted_personalities=[]
+
         loaded = self.mounted_personalities
         loaded_names = [f"{p.language}/{p.category}/{p.personality_folder_name}" for p in loaded]
         mounted_personalities=[]
@@ -524,7 +527,7 @@ class LoLLMsAPPI(LollmsApplication):
                 ASCIIColors.green(f" {personality}")
             else:
                 ASCIIColors.yellow(f" {personality}")
-            if personality in loaded_names and not reload_all:
+            if personality in loaded_names:
                 mounted_personalities.append(loaded[loaded_names.index(personality)])
             else:
                 personality_path = self.lollms_paths.personalities_zoo_path/f"{personality}"
@@ -762,12 +765,43 @@ class LoLLMsAPPI(LollmsApplication):
         if message_type == MSG_TYPE.MSG_TYPE_STEP_START:
             ASCIIColors.info("--> Step started:"+chunk)
         if message_type == MSG_TYPE.MSG_TYPE_STEP_END:
-            ASCIIColors.success("--> Step ended:"+chunk)
+            if metadata['status']:
+                ASCIIColors.success("--> Step ended:"+chunk)
+            else:
+                ASCIIColors.error("--> Step ended:"+chunk)
         if message_type == MSG_TYPE.MSG_TYPE_EXCEPTION:
             ASCIIColors.error("--> Exception from personality:"+chunk)
         
+        if message_type == MSG_TYPE.MSG_TYPE_NEW_MESSAGE:
+                self.connections[client_id]["generated_text"] = ""
+                self.current_ai_message_id = self.current_discussion.add_message(
+                    self.personality.name,
+                    "", 
+                    message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
+                    parent          = self.current_user_message_id,
+                    binding         = self.config["binding_name"],
+                    model           = self.config["model_name"], 
+                    personality     = self.config["personalities"][self.config["active_personality_id"]]
+                )  # first the content is empty, but we'll fill it at the end                
+                self.socketio.emit('infos',
+                        {
+                            "status":'generation_started',
+                            "type": "input_message_infos",
+                            "bot": self.personality.name,
+                            "user": self.personality.user_name,
+                            "message":chunk,
+                            "user_message_id": self.current_user_message_id,
+                            "ai_message_id": self.current_ai_message_id,
+                            "content":chunk,
 
-        if message_type == MSG_TYPE.MSG_TYPE_CHUNK:
+                            'binding': self.current_discussion.current_message_binding,
+                            'model': self.current_discussion.current_message_model,
+                            'personality': self.current_discussion.current_message_personality,
+                            'created_at': self.current_discussion.current_message_created_at,
+                            'finished_generating_at': self.current_discussion.current_message_finished_generating_at,                        
+                        }, room=client_id
+                )
+        elif message_type == MSG_TYPE.MSG_TYPE_CHUNK:
             self.connections[client_id]["generated_text"] += chunk
             self.nb_received_tokens += 1
             ASCIIColors.green(f"Received {self.nb_received_tokens} tokens",end="\r")
@@ -906,10 +940,47 @@ class LoLLMsAPPI(LollmsApplication):
         return output
                      
     def start_message_generation(self, message, message_id, client_id, is_continue=False):
+
+
         ASCIIColors.info(f"Text generation requested by client: {client_id}")
         # send the message to the bot
         print(f"Received message : {message}")
         if self.current_discussion:
+            if not self.model:
+                self.socketio.emit('message', {
+                                    'data': "No model selected. Please make sure you select a model before starting generation", 
+                                    'user_message_id':self.current_user_message_id, 
+                                    'ai_message_id':self.current_ai_message_id, 
+                                    'discussion_id':self.current_discussion.discussion_id,
+                                    'message_type': MSG_TYPE.MSG_TYPE_EXCEPTION.value,
+                                    'finished_generating_at': self.current_discussion.current_message_finished_generating_at,
+                                    'metadata':{}
+                                }, room=client_id
+                        ) 
+
+                # Send final message
+                self.socketio.emit('final', {
+                                                'data': self.connections[client_id]["generated_text"], 
+                                                'ai_message_id':self.current_ai_message_id, 
+                                                'parent':self.current_user_message_id, 'discussion_id':self.current_discussion.discussion_id,
+                                                "status":'model_not_ready',
+                                                "type": "input_message_infos",
+                                                'logo': "",
+                                                "bot": self.personality.name,
+                                                "user": self.personality.user_name,
+                                                "message":self.connections[client_id]["generated_text"],
+                                                "user_message_id": self.current_user_message_id,
+                                                "ai_message_id": self.current_ai_message_id,
+
+                                                'binding': self.current_discussion.current_message_binding,
+                                                'model': self.current_discussion.current_message_model,
+                                                'personality': self.current_discussion.current_message_personality,
+                                                'created_at': self.current_discussion.current_message_created_at,
+                                                'finished_generating_at': self.current_discussion.current_message_finished_generating_at,
+
+                                            }, room=client_id
+                                    )
+                return          
             # First we need to send the new message ID to the client
             if is_continue:
                 self.current_ai_message_id = message_id
@@ -1009,7 +1080,29 @@ class LoLLMsAPPI(LollmsApplication):
                                             'discussion_id':0,
                                             'message_type': MSG_TYPE.MSG_TYPE_EXCEPTION.value
                                         }, room=client_id
-                                )            
+                                )
+            self.socketio.emit('final', {
+                                            'data': "No discussion selected", 
+                                            'ai_message_id':self.current_ai_message_id, 
+                                            'parent':self.current_user_message_id, 
+                                            'discussion_id':0,
+                                            "status":'model_not_ready',
+                                            "type": "input_message_infos",
+                                            'logo': "",
+                                            "bot": self.personality.name,
+                                            "user": self.personality.user_name,
+                                            "message":self.connections[client_id]["generated_text"],
+                                            "user_message_id": self.current_user_message_id,
+                                            "ai_message_id": self.current_ai_message_id,
+
+                                            'binding': "",
+                                            'model': "",
+                                            'personality': "",
+                                            'created_at': "",
+                                            'finished_generating_at': "",
+
+                                        }, room=client_id
+                                )                
             print()
             return ""
     
