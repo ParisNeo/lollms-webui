@@ -544,12 +544,12 @@
                                             id="db_path"
                                             required
                                             v-model="db_path"
-                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
                                             >
                                         </td>
                                         <td>
                                             <button
-                                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                            class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                                             @click="update_setting('db_path', db_path)"
                                             >
                                             <i data-feather="check"></i>
@@ -566,12 +566,12 @@
                                             id="enable_gpu"
                                             required
                                             v-model="enable_gpu"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
                                         </td>
                                         <td>
                                             <button
-                                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                            class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                                             @click="update_setting('enable_gpu', enable_gpu)"
                                             >
                                             <i data-feather="check"></i>
@@ -588,12 +588,12 @@
                                             id="auto_update"
                                             required
                                             v-model="auto_update"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
                                         </td>
                                         <td>
                                             <button
-                                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                            class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                                             @click="update_setting('auto_update', auto_update)"
                                             >
                                             <i data-feather="check"></i>
@@ -615,12 +615,12 @@
                                             id="user_name"
                                             required
                                             v-model="userName"
-                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
                                         </td>
                                         <td>
                                             <button
-                                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                            class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                                             @click="update_setting('user_name', userName)"
                                             >
                                             <i data-feather="check"></i>
@@ -640,7 +640,7 @@
                                         </td>
                                         <td>
                                             <button
-                                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                            class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                                             @click="update_setting('user_name', userName)"
                                             >
                                             <i data-feather="check"></i>
@@ -658,12 +658,12 @@
                                             id="use_user_name_in_discussions"
                                             required
                                             v-model="use_user_name_in_discussions"
-                                            class=" mt-1 px-2 py-1 border border-gray-300 rounded"
+                                            class=" w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
                                         </td>
                                         <td>
                                             <button
-                                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                            class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                                             @click="update_setting('use_user_name_in_discussions', use_user_name_in_discussions)"
                                             >
                                             <i data-feather="check"></i>
@@ -685,12 +685,12 @@
                                             id="auto_speak"
                                             required
                                             v-model="auto_speak"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
                                         </td>
                                         <td>
                                             <button
-                                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                            class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                                             @click="update_setting('auto_speak', auto_speak)"
                                             >
                                             <i data-feather="check"></i>
@@ -707,12 +707,12 @@
                                             class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                                             <p
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >{{ audio_pitch }}</p>
                                         </td>
                                         <td>
                                             <button
-                                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                            class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                                             @click="update_setting('audio_pitch', audio_pitch)"
                                             >
                                             <i data-feather="check"></i>
@@ -729,7 +729,7 @@
                                             <select
                                                 id="audio_in_language"
                                                 v-model="audio_in_language"
-                                                class="mt-1 px-2 py-1 border border-gray-300 rounded"
+                                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
                                                 <!-- Options with language codes and corresponding language names -->
                                                 <option v-for="language in audioLanguages" :key="language.code" :value="language.code">
@@ -739,7 +739,7 @@
                                             </td>
                                             <td>
                                             <button
-                                                class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                                class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                                                 @click="update_setting('audio_in_language', audio_in_language)"
                                             >
                                                 <i data-feather="check"></i>
@@ -755,7 +755,7 @@
                                         <select
                                             id="audio_out_voice"
                                             v-model="audio_out_voice"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                         >
                                             <!-- Options with available voices in the browser -->
                                             <option v-for="voice in audioVoices" :key="voice.name" :value="voice.name">
@@ -765,7 +765,7 @@
                                         </td>
                                         <td>
                                         <button
-                                            class="hover:text-secondary bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                                            class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                                             @click="update_setting('audio_out_voice', audio_out_voice)"
                                         >
                                             <i data-feather="check"></i>
@@ -784,7 +784,7 @@
                     <!-- Row 0 -->
                     <div class="w-full">
                         <button
-                        class="hover:text-secondary w-full bg-red-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                        class="hover:text-secondary dark:bg-gray-600 w-full bg-red-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                         @click="api_get_req('clear_uploads').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast(['failed!'], 4, false)}})"
                         >
                         Clear uploads
@@ -792,7 +792,7 @@
                     </div>
                     <div class="w-full">
                         <button
-                        class="hover:text-secondary w-full bg-red-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                        class="hover:text-secondary dark:bg-gray-600 w-full bg-red-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                         @click="api_get_req('restart_program').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast(['failed!'], 4, false)}})"
                         >
                         Restart program
@@ -801,7 +801,7 @@
                     <!-- Row 0 -->
                     <div class="w-full">
                         <button
-                        class="hover:text-secondary w-full bg-red-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                        class="hover:text-secondary dark:bg-gray-600 w-full bg-red-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
                         @click="api_get_req('update_software').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast('Success!', 4, true)}})"
                         >
                         Upgrade program 
