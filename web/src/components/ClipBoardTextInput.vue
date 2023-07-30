@@ -8,7 +8,7 @@
       :placeholder="placeholderText"
       @input="handleInput"
       @paste="handlePaste"
-      class="flex-1 px-4 py-2 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
+      class="flex-1 px-4 py-2 text-lg dark:bg-gray-600 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
     />
     <input
       v-else
@@ -17,11 +17,11 @@
       :min="minSliderValue"
       :max="maxSliderValue"
       @input="handleSliderInput"
-      class="flex-1 px-4 py-2 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
+      class="flex-1 px-4 py-2 text-lg border dark:bg-gray-600 border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
     />
     <button
       @click="pasteFromClipboard"
-      class="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
+      class="p-2 bg-blue-500 dark:bg-gray-600 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
     >
       <i data-feather="clipboard"></i>
     </button>

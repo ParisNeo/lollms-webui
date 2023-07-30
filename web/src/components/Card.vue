@@ -2,7 +2,7 @@
   <div v-if="isActive" class="overlay" @click="toggleCard"></div>
   <div
     :class="[
-      'bg-white rounded-lg shadow-lg p-6',
+      'bg-white  dark:bg-gray-700 border-blue-300 rounded-lg shadow-lg p-6',
       cardWidthClass,
       'm-2',
       { hovered: !disableHoverAnimation && isHovered, active: isActive }
