@@ -4,11 +4,15 @@
     @click.stop="toggleSelected" :class="selected ? ' border-primary bg-primary' : 'border-transparent'" :title="title">
     <!-- CUSTOM MODEL VIEW -->
     <div class="flex flex-row" v-if="model.isCustomModel">
-      <div class="flex gap-3 items-center grow">
-        <img :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-lg object-fill">
-        <h3 class="font-bold font-large text-lg truncate ">
-          {{ title }}
-        </h3>
+      <div class="max-w-[300px] overflow-x-auto">
+        <div class="flex gap-3 items-center grow">
+          <img :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-lg object-fill">
+          <div class="flex-1 overflow-hidden">
+            <h3 class="font-bold font-large text-lg truncate">
+              {{ title }}
+            </h3>
+          </div>
+        </div>
       </div>
 
 

@@ -20,6 +20,7 @@ from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding, ModelBuilde
 from lollms.paths import LollmsPaths
 from lollms.helpers import ASCIIColors, trace_exception
 from lollms.app import LollmsApplication
+from lollms.utilities import Image64BitsManager
 import multiprocessing as mp
 import threading
 import time
@@ -422,6 +423,38 @@ class LoLLMsAPPI(LollmsApplication):
             ASCIIColors.error(f'Client {request.sid} canceled generation')
             self.cancel_gen = False
 
+        @socketio.on('send_file')
+        def send_file(data):
+            client_id = request.sid
+            self.connections[client_id]["generated_text"]       = ""
+            self.connections[client_id]["cancel_generation"]    = False
+            
+            try:
+                self.personality.setCallback(partial(self.process_chunk,client_id = client_id))
+                ASCIIColors.info("Recovering file from front end")
+                file = Image64BitsManager.b642img(data["fileData"])
+
+                path:Path = self.lollms_paths.personal_uploads_path / self.personality.personality_folder_name
+                path.mkdir(parents=True, exist_ok=True)
+                file_path = path / data["filename"]
+                file.save( file_path )
+                if self.personality.processor:
+                    self.personality.processor.add_file(file_path, self.process_chunk)
+                    
+                self.socketio.emit('file_received',
+                        {
+                            "status":True,
+                        }, room=client_id
+                )    
+            except Exception as ex:
+                ASCIIColors.error(ex)
+                trace_exception(ex)
+                self.socketio.emit('file_received',
+                        {
+                            "status":False,
+                            "error":"Couldn't receive file: "+str(ex)
+                        }, room=client_id
+                )    
         
         @socketio.on('generate_msg')
         def generate_msg(data):

@@ -213,7 +213,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         self.add_endpoint("/add_reference_to_local_model", "add_reference_to_local_model", self.add_reference_to_local_model, methods=["POST"])
         
-        self.add_endpoint("/send_file", "send_file", self.send_file, methods=["POST"])
+        
+        self.add_endpoint("/add_model_reference", "add_model_reference", self.add_model_reference, methods=["POST"])
+        
         self.add_endpoint("/upload_model", "upload_model", self.upload_model, methods=["POST"])
         self.add_endpoint("/upload_avatar", "upload_avatar", self.upload_avatar, methods=["POST"])
         
@@ -940,12 +942,12 @@ class LoLLMsWebUI(LoLLMsAPPI):
     
     def add_reference_to_local_model(self):     
         data = request.get_json()
-        path = data["path"]
+        path = Path(data["path"])
         if path.exists():
-            self.conversation.config.reference_model(path)
+            self.config.reference_model(path)
             return jsonify({"status": True})         
         else:        
-            return jsonify({"status": True})         
+            return jsonify({"status": True, "error":"Model not found"})         
 
     def list_mounted_personalities(self):
         ASCIIColors.yellow("- Listing mounted personalities")
@@ -1381,17 +1383,14 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return jsonify({"status": False, "error":"Invalid ID"})         
                     
 
-    def send_file(self):
+    def add_model_reference(self):
         try:
-            ASCIIColors.info("Recovering file from front end")
-            file = request.files['file']
-            path:Path = self.lollms_paths.personal_uploads_path / self.personality.personality_folder_name
-            path.mkdir(parents=True, exist_ok=True)
-            file_path = path / file.filename
-            file.save( file_path )
-            if self.personality.processor:
-                self.personality.processor.add_file(file_path, self.process_chunk)
-                
+            ASCIIColors.info("Creating a model reference")
+            path = Path(request.path)
+            ref_path=self.lollms_paths.personal_models_path/self.config.binding_name/(path.name+".reference")
+            with open(ref_path,"w") as f:
+                f.write(str(path))
+
             return jsonify({"status": True})   
         except Exception as ex:
             ASCIIColors.error(ex)

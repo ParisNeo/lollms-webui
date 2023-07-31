@@ -63,6 +63,7 @@
 import feather from 'feather-icons'
 import axios from "axios";
 import InteractiveMenu from "@/components/InteractiveMenu.vue"
+import socket from '@/services/websocket.js'
 
 export default {
   components:{
@@ -115,7 +116,27 @@ methods: {
       formData.append('file', this.selectedFile);
       console.log("Uploading file")
       this.loading=true;
-
+      // Read the file as a data URL and emit it to the server
+      const reader = new FileReader();
+      reader.onload = () => {
+        const data = {
+          filename: this.selectedFile.name,
+          fileData: reader.result,
+        };
+        socket.on('file_received',(resp)=>{
+          if(resp.status){
+            this.onShowToastMessage("File uploaded successfully",4,true)
+          }
+          else{
+            this.onShowToastMessage("Couldn't upload file\n"+resp.error,4,false)
+          }
+          this.loading = false;
+          socket.off('file_received')
+        }) 
+        socket.emit('send_file', data);
+      };
+      reader.readAsDataURL(this.selectedFile);
+      /*
       axios.post('/send_file', formData)
         .then(response => {
           this.loading = false;
@@ -127,6 +148,7 @@ methods: {
           // Handle any errors that occur during the upload
           console.error(error);
         });
+        */
     }, 
     async constructor() {
       nextTick(() => {

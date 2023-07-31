@@ -419,9 +419,9 @@ export default {
                 });
 
         },        
-        showToastMessage(text){
+        showToastMessage(text, duration, isok){
             console.log("sending",text)
-            this.$refs.toast.showToast(text, 4, true)
+            this.$refs.toast.showToast(text, duration, isok)
         },        
         togglePanel() {
             this.panelCollapsed = !this.panelCollapsed;
@@ -906,6 +906,7 @@ export default {
                 console.log("Error: Could not get generation status", error);
             });
         },
+
         sendMsg(msg) {
             // Sends message to binding
             if (!msg) {
