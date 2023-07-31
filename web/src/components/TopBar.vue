@@ -32,8 +32,14 @@
 
                 <a href="https://twitter.com/SpaceNerduino" target="_blank">
 
-                    <div class="text-2xl  hover:text-primary duration-150" title="Follow me on my twitter acount">
-                        <i data-feather="twitter"></i>
+                    <div class="text-2xl hover:fill-primary dark:fill-white  hover:text-primary duration-150" title="Follow me on my twitter acount">
+                        <svg class="w-10 h-10 rounded-lg object-fill dark:text-white" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 1668.56 1221.19" style="enable-background:new 0 0 1668.56 1221.19;" xml:space="preserve">
+                            <g id="layer1" transform="translate(52.390088,-25.058597)">
+                                <path id="path1009" d="M283.94,167.31l386.39,516.64L281.5,1104h87.51l340.42-367.76L984.48,1104h297.8L874.15,558.3l361.92-390.99
+                                h-87.51l-313.51,338.7l-253.31-338.7H283.94z M412.63,231.77h136.81l604.13,807.76h-136.81L412.63,231.77z"/>
+                            </g>
+                        </svg>
                     </div>
                 </a>
                 <div class="sun text-2xl w-6  hover:text-primary duration-150" title="Swith to Light theme"
