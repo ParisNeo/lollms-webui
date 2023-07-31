@@ -775,12 +775,16 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
     def list_personalities_categories(self):
         language = request.args.get('language')
+        if language is None:
+            language = 'english'
         personalities_categories_dir = self.lollms_paths.personalities_zoo_path/f'{language}'  # replace with the actual path to the models folder
         personalities_categories = [f.stem for f in personalities_categories_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]
         return jsonify(personalities_categories)
     
     def list_personalities(self):
         language = request.args.get('language')
+        if language is None:
+            language = 'english'
         category = request.args.get('category')
         if not category:
             return jsonify([])
