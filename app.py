@@ -1390,7 +1390,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             file_path = path / file.filename
             file.save( file_path )
             if self.personality.processor:
-                self.personality.processor.add_file(file_path)
+                self.personality.processor.add_file(file_path, self.process_chunk)
                 
             return jsonify({"status": True})   
         except Exception as ex:

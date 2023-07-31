@@ -110,7 +110,7 @@ def parse_requirements_file(requirements_path):
 class LoLLMsAPPI(LollmsApplication):
     def __init__(self, config:LOLLMSConfig, socketio, config_file_path:str, lollms_paths: LollmsPaths) -> None:
 
-        super().__init__("Lollms_webui",config, lollms_paths)
+        super().__init__("Lollms_webui",config, lollms_paths, callback=self.process_chunk)
         self.is_ready = True
         
         
@@ -142,7 +142,19 @@ class LoLLMsAPPI(LollmsApplication):
         self.full_message_list = []
         self.download_infos={}
         
-        self.connections = {}
+        self.connections = {0:{
+                "current_discussion":None,
+                "generated_text":"",
+                "cancel_generation": False,          
+                "generation_thread": None,
+                "current_discussion":None,
+                "current_message_id":0,
+                "current_ai_message_id":0,
+                "current_user_message_id":0,
+                "processing":False,
+                "schedule_for_deletion":False
+            }
+        }
         
         # =========================================================================================
         # Socket IO stuff    
@@ -388,7 +400,7 @@ class LoLLMsAPPI(LollmsApplication):
 
             try:
                 if not self.personality.processor is None:
-                    self.personality.processor.add_file(save_path)
+                    self.personality.processor.add_file(save_path, partial(self.process_chunk, client_id = request.sid))
                     file.save(save_path)
                     # File saved successfully
                     socketio.emit('progress', {'status':True, 'progress': 100})
@@ -771,36 +783,87 @@ class LoLLMsAPPI(LollmsApplication):
                 ASCIIColors.error("--> Step ended:"+chunk)
         if message_type == MSG_TYPE.MSG_TYPE_EXCEPTION:
             ASCIIColors.error("--> Exception from personality:"+chunk)
-        
-        if message_type == MSG_TYPE.MSG_TYPE_NEW_MESSAGE:
-                self.connections[client_id]["generated_text"] = ""
-                self.current_ai_message_id = self.current_discussion.add_message(
-                    self.personality.name,
-                    "", 
-                    message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
-                    parent          = self.current_user_message_id,
-                    binding         = self.config["binding_name"],
-                    model           = self.config["model_name"], 
-                    personality     = self.config["personalities"][self.config["active_personality_id"]]
-                )  # first the content is empty, but we'll fill it at the end                
-                self.socketio.emit('infos',
-                        {
-                            "status":'generation_started',
-                            "type": "input_message_infos",
-                            "bot": self.personality.name,
-                            "user": self.personality.user_name,
-                            "message":chunk,
-                            "user_message_id": self.current_user_message_id,
-                            "ai_message_id": self.current_ai_message_id,
-                            "content":chunk,
 
-                            'binding': self.current_discussion.current_message_binding,
-                            'model': self.current_discussion.current_message_model,
-                            'personality': self.current_discussion.current_message_personality,
-                            'created_at': self.current_discussion.current_message_created_at,
-                            'finished_generating_at': self.current_discussion.current_message_finished_generating_at,                        
-                        }, room=client_id
-                )
+        if message_type == MSG_TYPE.MSG_TYPE_NEW_MESSAGE:
+                if client_id==0:
+                    self.nb_received_tokens = 0
+                    self.current_ai_message_id = self.current_discussion.add_message(
+                        self.personality.name,
+                        "", 
+                        message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
+                        parent          = self.current_user_message_id,
+                        binding         = self.config["binding_name"],
+                        model           = self.config["model_name"], 
+                        personality     = self.config["personalities"][self.config["active_personality_id"]]
+                    )  # first the content is empty, but we'll fill it at the end                
+                    self.socketio.emit('infos',
+                            {
+                                "status":'generation_started',
+                                "type": "input_message_infos",
+                                "bot": self.personality.name,
+                                "user": self.personality.user_name,
+                                "message":chunk,
+                                "user_message_id": self.current_user_message_id,
+                                "ai_message_id": self.current_ai_message_id,
+                                "content":chunk,
+
+                                'binding': self.current_discussion.current_message_binding,
+                                'model': self.current_discussion.current_message_model,
+                                'personality': self.current_discussion.current_message_personality,
+                                'created_at': self.current_discussion.current_message_created_at,
+                                'finished_generating_at': self.current_discussion.current_message_finished_generating_at,                        
+                            }, room=client_id
+                    )                    
+                else:
+                    self.current_ai_message_id = self.current_discussion.add_message(
+                        self.personality.name,
+                        "", 
+                        message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
+                        parent          = self.current_user_message_id,
+                        binding         = self.config["binding_name"],
+                        model           = self.config["model_name"], 
+                        personality     = self.config["personalities"][self.config["active_personality_id"]]
+                    )  # first the content is empty, but we'll fill it at the end                
+                    self.socketio.emit('infos',
+                            {
+                                "status":'generation_started',
+                                "type": "input_message_infos",
+                                "bot": self.personality.name,
+                                "user": self.personality.user_name,
+                                "message":chunk,
+                                "user_message_id": self.current_user_message_id,
+                                "ai_message_id": self.current_ai_message_id,
+                                "content":chunk,
+
+                                'binding': self.current_discussion.current_message_binding,
+                                'model': self.current_discussion.current_message_model,
+                                'personality': self.current_discussion.current_message_personality,
+                                'created_at': self.current_discussion.current_message_created_at,
+                                'finished_generating_at': self.current_discussion.current_message_finished_generating_at,                        
+                            }, room=client_id
+                    )
+        elif message_type == MSG_TYPE.MSG_TYPE_FINISHED_MESSAGE:
+            self.socketio.emit('final', {
+                                            'data': self.connections[client_id]["generated_text"], 
+                                            'ai_message_id':self.current_ai_message_id, 
+                                            'parent':self.current_user_message_id, 'discussion_id':self.current_discussion.discussion_id,
+                                            "status":'model_not_ready',
+                                            "type": "input_message_infos",
+                                            'logo': "",
+                                            "bot": self.personality.name,
+                                            "user": self.personality.user_name,
+                                            "message":self.connections[client_id]["generated_text"],
+                                            "user_message_id": self.current_user_message_id,
+                                            "ai_message_id": self.current_ai_message_id,
+
+                                            'binding': self.current_discussion.current_message_binding,
+                                            'model': self.current_discussion.current_message_model,
+                                            'personality': self.current_discussion.current_message_personality,
+                                            'created_at': self.current_discussion.current_message_created_at,
+                                            'finished_generating_at': self.current_discussion.current_message_finished_generating_at,
+
+                                        }, room=client_id
+                                )                    
         elif message_type == MSG_TYPE.MSG_TYPE_CHUNK:
             self.connections[client_id]["generated_text"] += chunk
             self.nb_received_tokens += 1
@@ -940,7 +1003,6 @@ class LoLLMsAPPI(LollmsApplication):
         return output
                      
     def start_message_generation(self, message, message_id, client_id, is_continue=False):
-
 
         ASCIIColors.info(f"Text generation requested by client: {client_id}")
         # send the message to the bot
