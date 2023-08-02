@@ -55,6 +55,11 @@ try:
     from lollms.config import BaseConfig
     from lollms.helpers import ASCIIColors, trace_exception
     from lollms.paths import LollmsPaths
+
+    import mimetypes
+    mimetypes.add_type('application/javascript', '.js')
+    mimetypes.add_type('text/css', '.css')    
+    
     from api.db import Discussion
     from flask import (
         Flask,
