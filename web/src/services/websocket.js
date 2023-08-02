@@ -10,13 +10,6 @@ import io from 'socket.io-client';
 const URL = process.env.NODE_ENV === "production" ? undefined : (import.meta.env.VITE_LOLLMS_API);
 const socket = new io(URL);
 
-socket.onopen = () => {
-  console.log('WebSocket connection established.');
-};
-
-socket.onclose = (event) => {
-  console.log('WebSocket connection closed:', event.code, event.reason);
-};
 
 socket.onerror = (error) => {
   console.error('WebSocket error:', error);

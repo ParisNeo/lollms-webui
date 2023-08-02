@@ -32,7 +32,7 @@
 
                 <a href="https://twitter.com/SpaceNerduino" target="_blank">
 
-                    <div class="text-2xl hover:fill-primary dark:fill-white  hover:text-primary duration-150" title="Follow me on my twitter acount">
+                    <div class="text-2xl hover:fill-primary dark:fill-white dark:hover:fill-primary duration-150" title="Follow me on my twitter acount">
                         <svg class="w-10 h-10 rounded-lg object-fill dark:text-white" xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 1668.56 1221.19" style="enable-background:new 0 0 1668.56 1221.19;" xml:space="preserve">
                             <g id="layer1" transform="translate(52.390088,-25.058597)">
@@ -77,9 +77,9 @@ import { mapState } from 'vuex';
 export default {
     name: 'TopBar',
     computed:{
-        ...mapState(['isConnected']),
-        // Add a watcher to log the changes
-
+        isConnected(){
+            return this.$store.state.isConnected;
+        }
     },
     data() {
         return {

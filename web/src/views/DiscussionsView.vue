@@ -1513,9 +1513,6 @@ export default {
             this.$refs.dragdropDiscussion.show = true
 
         },
-        // socketConnected(val){
-        //     console.log('connected',val)
-        // }
 
 
 
@@ -1551,6 +1548,16 @@ export default {
         socket.on('update_message', this.streamMessageContent)
         socket.on('close_message', this.finalMsgEvent)
 
+
+        socket.onopen = () => {
+            console.log('WebSocket connection established.');
+            this.socketIOConnected();
+        };
+
+        socket.onclose = (event) => {
+            console.log('WebSocket connection closed:', event.code, event.reason);
+            this.socketIODisconnected();
+        };
         socket.on('connected',this.socketIOConnected)
         socket.on('disconnected',this.socketIODisconnected)
         console.log("Added events")
