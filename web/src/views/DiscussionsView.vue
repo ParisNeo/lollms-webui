@@ -10,7 +10,7 @@
                 
                     <img class="w-24 animate-bounce" title="LoLLMS WebUI" src="@/assets/logo.png" alt="Logo">
                         <div class="flex flex-col items-start">
-                        <p class="text-2xl ">Lord of Large Language Models</p>
+                        <p class="text-2xl ">Lord of Large Language Models v {{ version }} </p>
                         <p class="text-gray-400 text-base">One tool to rule them all</p>
 
                         </div>
@@ -371,13 +371,24 @@ export default {
                 MSG_TYPE_JSON_INFOS             : 11,// A JSON output that is useful for summarizing the process of generation used by personalities like chain of thoughts and tree of thooughts
                 MSG_TYPE_REF                    : 12,// References (in form of  [text](path))
                 MSG_TYPE_CODE                   : 13,// A javascript code to execute
-                MSG_TYPE_UI                     : 14 // A vue.js component to show (we need to build some and parse the text to show it)
+                MSG_TYPE_UI                     : 14,// A vue.js component to show (we need to build some and parse the text to show it)
+
+
+                MSG_TYPE_NEW_MESSAGE            : 15,// A new message
+                MSG_TYPE_FINISHED_MESSAGE       : 17 // End of current message
 
             },
-            list: [], // Discussion list
-            tempList: [], // Copy of Discussion list (used for keeping the original list during filtering discussions/searching action)
-            currentDiscussion: {}, // Current/selected discussion id
-            discussionArr: [],
+            // Sender types
+            senderTypes: {
+                SENDER_TYPES_USER               : 0, // Sent by user
+                SENDER_TYPES_AI                 : 1, // Sent by ai
+                SENDER_TYPES_SYSTEM             : 2, // Sent by athe system
+            },
+            version                             : "4.0",
+            list                                : [], // Discussion list
+            tempList                            : [], // Copy of Discussion list (used for keeping the original list during filtering discussions/searching action)
+            currentDiscussion                   : {}, // Current/selected discussion id
+            discussionArr                       : [],
             loading: false,
             filterTitle: '',
             filterInProgress: false,
@@ -460,42 +471,64 @@ export default {
                 return []
             }
         },
-        async load_discussion(id) {
-            try {
-                if (id) {
-                    console.log("Loading discussion", id)
-                    this.loading = true
-                    this.discussionArr=[]
-                    this.setDiscussionLoading(id, this.loading)
-                    const res = await axios.post('/load_discussion', {
-                        id: id
-                    })
+        load_discussion(id, next) {
+            if (id) {
+                console.log("Loading discussion", id)
+                this.loading = true
+                this.discussionArr=[]
+                this.setDiscussionLoading(id, this.loading)
+
+
+                socket.on('discussion', (data)=>{
                     this.loading = false
                     this.setDiscussionLoading(id, this.loading)
-                    if (res) {
+                    if (data) {
+                        console.log("received discussion")
+                        console.log(data)
                         // Filter out the user and bot entries
-                        this.discussionArr = res.data.filter((item) => 
-                                                                item.type == this.msgTypes.MSG_TYPE_FULL ||
-                                                                item.type == this.msgTypes.MSG_TYPE_FULL_INVISIBLE_TO_AI
+                        this.discussionArr = data.filter((item) => 
+                                                                item.message_type == this.msgTypes.MSG_TYPE_CHUNK ||
+                                                                item.message_type == this.msgTypes.MSG_TYPE_FULL ||
+                                                                item.message_type == this.msgTypes.MSG_TYPE_FULL_INVISIBLE_TO_AI ||
+                                                                item.message_type == this.msgTypes.MSG_TYPE_CODE ||
+                                                                item.message_type == this.msgTypes.MSG_TYPE_JSON_INFOS ||
+                                                                item.message_type == this.msgTypes.MSG_TYPE_UI
                                                             )
                         console.log("this.discussionArr")
                         console.log(this.discussionArr)
+                        if(next){
+                            next()
+                        }
                     }
+                    
+                    socket.off('discussion')
+                })
 
-                }
-            } catch (error) {
-                console.log(error.message, 'load_discussion')
-                this.loading = false
-                this.setDiscussionLoading(id, this.loading)
+                socket.emit('load_discussion',{"id":id});
+
             }
         },
-        async new_discussion(title) {
+        new_discussion(title) {
             try {
-                const res = await axios.get('/new_discussion', { params: { title: title } })
-
-                if (res) {
-                    return res.data
-                }
+                this.loading = true
+                socket.on('discussion_created',(data)=>{
+                    socket.off('discussion_created')
+                    this.list_discussions().then(()=>{
+                        const index = this.list.findIndex((x) => x.id == data.id)
+                        const discussionItem = this.list[index]
+                        this.selectDiscussion(discussionItem)
+                        this.load_discussion(data.id,()=>{
+                            this.loading = false
+                            nextTick(() => {
+                                const selectedDisElement = document.getElementById('dis-' + data.id)
+                                this.scrollToElement(selectedDisElement)
+                                console.log("Scrolling tp "+selectedDisElement)
+                            })
+                        })
+                    });
+                });
+                console.log("new_discussion ", title)
+                socket.emit('new_discussion', {title:title});
             } catch (error) {
                 console.log("Error: Could not create new discussion", error.message)
                 return {}
@@ -507,6 +540,7 @@ export default {
                     this.loading = true
                     this.setDiscussionLoading(id, this.loading)
                     await axios.post('/delete_discussion', {
+                        client_id: this.client_id,
                         id: id
                     })
                     this.loading = false
@@ -524,6 +558,7 @@ export default {
                     this.loading = true
                     this.setDiscussionLoading(id, this.loading)
                     const res = await axios.post('/edit_title', {
+                        client_id: this.client_id,
                         id: id,
                         title: new_title
                     })
@@ -544,7 +579,7 @@ export default {
         },
         async delete_message(id) {
             try {
-                const res = await axios.get('/delete_message', { params: { id: id } })
+                const res = await axios.get('/delete_message', { params: { client_id: this.client_id, id: id } })
 
                 if (res) {
                     return res.data
@@ -571,7 +606,7 @@ export default {
         },
         async message_rank_up(id) {
             try {
-                const res = await axios.get('/message_rank_up', { params: { id: id } })
+                const res = await axios.get('/message_rank_up', { params: { client_id: this.client_id, id: id } })
 
                 if (res) {
                     return res.data
@@ -583,7 +618,7 @@ export default {
         },
         async message_rank_down(id) {
             try {
-                const res = await axios.get('/message_rank_down', { params: { id: id } })
+                const res = await axios.get('/message_rank_down', { params: { client_id: this.client_id, id: id } })
 
                 if (res) {
                     return res.data
@@ -593,9 +628,9 @@ export default {
                 return {}
             }
         },
-        async update_message(id, message) {
+        async edit_message(id, message) {
             try {
-                const res = await axios.get('/update_message', { params: { id: id, message: message } })
+                const res = await axios.get('/edit_message', { params: { client_id: this.client_id, id: id, message: message } })
 
                 if (res) {
                     return res.data
@@ -668,13 +703,13 @@ export default {
 
                     localStorage.setItem('selected_discussion', this.currentDiscussion.id)
 
-                    await this.load_discussion(item.id)
-
-                    if (this.discussionArr.length > 1) {
+                    this.load_discussion(item.id, ()=>{
+                        if (this.discussionArr.length > 1) {
                         if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
                             this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
                         }
                     }
+                    })
 
                 }
                 else{
@@ -686,13 +721,14 @@ export default {
 
                         localStorage.setItem('selected_discussion', this.currentDiscussion.id)
 
-                        await this.load_discussion(item.id)
-
-                        if (this.discussionArr.length > 1) {
-                            if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
-                                this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
+                        this.load_discussion(item.id, ()=>{
+                            if (this.discussionArr.length > 1) {
+                                if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
+                                    this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
+                                }
                             }
-                        }
+                        });
+
                     }
                 }
 
@@ -774,12 +810,11 @@ export default {
             let usrMessage = {
                 content: msgObj.message,
                 id: msgObj.id,
-                //parent: 10,
                 rank: 0,
                 sender: msgObj.user,
                 created_at: msgObj.created_at,
                 steps: []
-                //type: 0
+
             }
             this.discussionArr.push(usrMessage)
             nextTick(() => {
@@ -793,19 +828,19 @@ export default {
 
             // const lastMsg = this.discussionArr[this.discussionArr.length - 1]
             // lastMsg.content = msgObj.message
-            // lastMsg.id = msgObj.user_message_id
+            // lastMsg.id = msgObj.user_id
             // // lastMsg.parent=msgObj.parent
             // lastMsg.rank = msgObj.rank
             // lastMsg.sender = msgObj.user
             // // lastMsg.type=msgObj.type
-            const index = this.discussionArr.indexOf(item => item.id = msgObj.user_message_id)
+            const index = this.discussionArr.indexOf(item => item.id = msgObj.user_id)
             const newMessage ={
                 binding: msgObj.binding,
                 content: msgObj.message,
                 created_at: msgObj.created_at,
                 type: msgObj.type,
                 finished_generating_at: msgObj.finished_generating_at,
-                id: msgObj.user_message_id,
+                id: msgObj.user_id,
                 model: msgObj.model,
                 personality: msgObj.personality,
                 sender: msgObj.user,
@@ -823,88 +858,57 @@ export default {
             this.$store.dispatch('setIsConnected',true);
             return true
         },
-        socketIODisonnected() {
+        socketIODisconnected() {
             console.log("socketIOConnected")
             this.$store.dispatch('setIsConnected',false);
             return true
         },
-        createBotMsg(msgObj) {
-            // Update previous message with reponse user data
-            //
-            // msgObj
-            // "status": "if the model is not ready this will inform the user that he can't promt the model"
-            // "type": "input_message_infos",
-            // "bot": self.personality.name,
-            // "user": self.personality.user_name,
-            // "message":message,#markdown.markdown(message),
-            // "user_message_id": self.current_user_message_id,
-            // "ai_message_id": self.current_ai_message_id,
+        new_message(msgObj) {
             console.log('create bot', msgObj);
-            if (msgObj["status"] == "generation_started") {
-                this.updateLastUserMsg(msgObj)
-                // Create response message
 
-                let responseMessage = {
-                    //content:msgObj.data, 
-                    content: "✍ please stand by ...",
-                    created_at:msgObj.created_at,
-                    binding:msgObj.binding,
-                    model:msgObj.model,
-                    id: msgObj.ai_message_id,
-                    parent: msgObj.user_message_id,
-                    personality:msgObj.personality,
-                    rank: 0,
-                    sender: msgObj.bot,
-                    type:msgObj.type,
-                    steps: []
+            let responseMessage = {
+                sender:                 msgObj.sender,
+                message_type:           msgObj.message_type,
+                sender_type:            msgObj.sender_type,
+                content:                msgObj.content,//"✍ please stand by ...",
+                id:                     msgObj.id,
+                parent_id:              msgObj.parent_id,
 
-                }
-                this.discussionArr.push(responseMessage)
-                // nextTick(() => {
-                //     const msgList = document.getElementById('messages-list')
+                binding:                msgObj.binding,
+                model:                  msgObj.model,
+                personality:            msgObj.personality,
 
-                //     this.scrollBottom(msgList)
+                created_at:             msgObj.created_at,
+                finished_generating_at: msgObj.finished_generating_at,
+                rank:                   0,
 
-                // })
+                steps                   : [],
+                metadata                : msgObj.metadata
+            }
+            console.log(responseMessage)
+            this.discussionArr.push(responseMessage)
+            // nextTick(() => {
+            //     const msgList = document.getElementById('messages-list')
 
-                if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
-                    if (msgObj.type == "input_message_infos") {
-                        // This is a user input
-                        this.changeTitleUsingUserMSG(this.currentDiscussion.id, msgObj.message)
-                    }
-                }
-                console.log("infos", msgObj)
+            //     this.scrollBottom(msgList)
+
+            // })
+
+            if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
+                this.changeTitleUsingUserMSG(this.currentDiscussion.id, msgObj.message)
+            }
+            console.log("infos", msgObj)
+            /*
             }
             else {
                 this.$refs.toast.showToast("It seems that no model has been loaded. Please download and install a model first, then try again.", 4, false)
                 this.isGenerating = false
                 this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
                 this.chime.play()
-            }
+            }*/
         },
         talk(pers){
-            this.isGenerating = true;
-            this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
-            axios.get('/get_generation_status', {}).then((res) => {
-                if (res) {
-                    //console.log(res.data.status);
-                    if (!res.data.status) {
-                        console.log('Generating message from ',res.data.status);
-                        socket.emit('generate_msg_from', { id: -1 });
-                        // Temp data
-                        let lastmsgid =0
-                        if(this.discussionArr.length>0){
-                            lastmsgid= Number(this.discussionArr[this.discussionArr.length - 1].id) + 1
-                        }
-                        
-                    }
-                    else {
-                        console.log("Already generating");
-                    }
-                }
-            }).catch((error) => {
-                console.log("Error: Could not get generation status", error);
-            });
+            
         },
 
         sendMsg(msg) {
@@ -936,6 +940,25 @@ export default {
                             user: this.$store.state.config.user_name,
                             created_at: new Date().toLocaleString(),
 
+
+                            sender:                 this.$store.state.config.user_name,
+                            message_type:           this.msgTypes.MSG_TYPE_FULL,
+                            sender_type:            this.senderTypes.SENDER_TYPES_USER,
+                            content:                msg,
+                            id:             lastmsgid,
+                            parent_id:      lastmsgid,
+
+                            binding:                "",
+                            model:                  "",
+                            personality:            "",
+
+                            created_at:             new Date().toLocaleString(),
+                            finished_generating_at:  new Date().toLocaleString(),
+                            rank:                   0,
+
+                            steps:                  [],
+                            metadata:               {}
+
                         };
                         this.createUserMsg(usrMessage);
 
@@ -948,38 +971,55 @@ export default {
                 console.log("Error: Could not get generation status", error);
             });
         },
+        notify(notif){
+            self.isGenerating = false
+            this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
+            nextTick(() => {
+                const msgList = document.getElementById('messages-list')
+                this.scrollBottom(msgList)
+            })            
+            this.$refs.toast.showToast(notif.content, 5, notif.status)
+            this.chime.play()
+        },
         streamMessageContent(msgObj) {
             // Streams response message content from binding
             //console.log("Received message",msgObj)
-            const parent = msgObj.user_message_id
             const discussion_id = msgObj.discussion_id
             this.setDiscussionLoading(discussion_id, true);
             if (this.currentDiscussion.id == discussion_id) {
                 this.isGenerating = true;
-                const index = this.discussionArr.findIndex((x) => x.parent == parent && x.id == msgObj.ai_message_id)
+                const index = this.discussionArr.findIndex((x) => x.id == msgObj.id)
                 const messageItem = this.discussionArr[index]
                 if (
-                    messageItem && msgObj.message_type==this.msgTypes.MSG_TYPE_FULL ||
-                    messageItem && msgObj.message_type==this.msgTypes.MSG_TYPE_FULL_INVISIBLE_TO_AI
+                    messageItem && (msgObj.message_type==this.msgTypes.MSG_TYPE_FULL ||
+                    msgObj.message_type==this.msgTypes.MSG_TYPE_FULL_INVISIBLE_TO_AI)
                 ) {
-                    messageItem.content = msgObj.data
+                    messageItem.content = msgObj.content
                     messageItem.finished_generating_at = msgObj.finished_generating_at
                 }
                 else if(messageItem && msgObj.message_type==this.msgTypes.MSG_TYPE_CHUNK){
-                    messageItem.content += msgObj.data
+                    messageItem.content += msgObj.content
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_START){
-                    console.log(msgObj.metadata)
-                    messageItem.steps.push({"message":msgObj.data,"done":false, "status":true })
+                    messageItem.steps.push({"message":msgObj.content,"done":false, "status":true })
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_END) {
                     // Find the step with the matching message and update its 'done' property to true
-                    const matchingStep = messageItem.steps.find(step => step.message === msgObj.data);
+                    const matchingStep = messageItem.steps.find(step => step.message === msgObj.content);
 
                     if (matchingStep) {
                         matchingStep.done = true;
-                        matchingStep.status=msgObj.metadata.status
+                        try {
+                            const metadata = JSON.parse(msgObj.metadata);
+                            matchingStep.status=metadata.status
+                            console.log(metadata);
+                        } catch (error) {
+                            console.error('Error parsing JSON:', error.message);
+                        }
                     }
+                } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_JSON_INFOS) {
+                    console.log("JSON message")
+                    messageItem.metadata = msgObj.metadata
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_EXCEPTION) {
-                    this.$refs.toast.showToast(msgObj.data, 5, false)
+                    this.$refs.toast.showToast(msgObj.content, 5, false)
                 }
                 // // Disables as per request
                 // nextTick(() => {
@@ -1011,17 +1051,7 @@ export default {
             // gets new discussion list, selects
             // newly created discussion,
             // scrolls to the discussion
-            this.loading = true
-            const res = await this.new_discussion()
-            this.loading = false
-            await this.list_discussions()
-            const index = this.list.findIndex((x) => x.id == res.id)
-            const discussionItem = this.list[index]
-            this.selectDiscussion(discussionItem)
-            nextTick(() => {
-                const selectedDisElement = document.getElementById('dis-' + res.id)
-                this.scrollToElement(selectedDisElement)
-            })
+            this.new_discussion(null)
         },
         loadLastUsedDiscussion() {
             // Checks local storage for last selected discussion
@@ -1180,7 +1210,7 @@ export default {
 
         },
         async updateMessage(msgId, msg) {
-            await this.update_message(msgId, msg).then(() => {
+            await this.edit_message(msgId, msg).then(() => {
 
                 const message = this.discussionArr[this.discussionArr.findIndex(item => item.id == msgId)]
                 message.content = msg
@@ -1202,7 +1232,8 @@ export default {
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
             axios.get('/get_generation_status', {}).then((res) => {
                 if (res) {
-                    console.log(res);
+                    console.log("--------------------")
+                    console.log(msgId);
                     if (!res.data.status) {
                         socket.emit('generate_msg_from', { prompt: msg, id: msgId });
                     }
@@ -1252,29 +1283,16 @@ export default {
             console.log("final", msgObj)
 
             // Last message contains halucination suppression so we need to update the message content too
-            const parent = msgObj.parent
+            const parent_id = msgObj.parent_id
             const discussion_id = msgObj.discussion_id
             if (this.currentDiscussion.id == discussion_id) {
-                const index = this.discussionArr.findIndex((x) => x.parent == parent && x.id == msgObj.ai_message_id)
-                const finalMessage = {
-                    binding:msgObj.binding,
-                    content:msgObj.data,
-                    created_at:msgObj.created_at,
-                    finished_generating_at:msgObj.finished_generating_at,
-                    id: msgObj.ai_message_id,
-                    model:msgObj.model,
-                    parent: msgObj.user_message_id,
-                    personality:msgObj.personality,
-                    rank:0,
-                    steps:msgObj.steps,
-                    sender:msgObj.bot,
-                    type:msgObj.type
-                }
-                this.discussionArr[index]=finalMessage
+                const index = this.discussionArr.findIndex((x) => x.id == msgObj.id)
+                this.discussionArr[index].content = msgObj.content
+                this.discussionArr[index].finished_generating_at = msgObj.finished_generating_at
 
                 // const messageItem = this.discussionArr[index]
                 // if (messageItem) {
-                //     messageItem.content = msgObj.data
+                //     messageItem.content = msgObj.content
                 // }
             }
             nextTick(() => {
@@ -1503,6 +1521,13 @@ export default {
 
     },
     async created() {
+        axios.get('/get_lollms_webui_version', {}).then((res) => {
+            if (res) {
+                this.version = res.data.version
+            }
+        }).catch((error) => {
+            console.log("Error: Could not get generation status", error);
+        });
         this.$nextTick(() => {
             feather.replace();
         });           
@@ -1521,9 +1546,11 @@ export default {
 
 
         // socket responses
-        socket.on('infos', this.createBotMsg)
-        socket.on('message', this.streamMessageContent)
-        socket.on('final', this.finalMsgEvent)
+        socket.on('notification', this.notify)
+        socket.on('new_message', this.new_message)
+        socket.on('update_message', this.streamMessageContent)
+        socket.on('close_message', this.finalMsgEvent)
+
         socket.on('connected',this.socketIOConnected)
         socket.on('disconnected',this.socketIODisconnected)
         console.log("Added events")
@@ -1593,6 +1620,9 @@ export default {
         
     },
     computed: {
+        client_id() {
+            return socket.id
+        },
         isReady(){
             console.log("verify ready", this.isCreated)
             return this.isCreated

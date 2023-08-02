@@ -14,6 +14,8 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
+__version__ ="4.0"
+
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
 import sys
@@ -189,7 +191,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
         # Endpoints
         # =========================================================================================
 
-        self.add_endpoint("/get_lollms_version", "get_lollms_version", self.get_lollms_version, methods=["POST"])
+        self.add_endpoint("/get_lollms_version", "get_lollms_version", self.get_lollms_version, methods=["GET"])
+        self.add_endpoint("/get_lollms_webui_version", "get_lollms_webui_version", self.get_lollms_webui_version, methods=["GET"])
         
 
         self.add_endpoint("/reload_binding", "reload_binding", self.reload_binding, methods=["POST"])
@@ -293,16 +296,12 @@ class LoLLMsWebUI(LoLLMsAPPI):
         
         self.add_endpoint("/export_discussion", "export_discussion", self.export_discussion, methods=["GET"])
         self.add_endpoint("/export", "export", self.export, methods=["GET"])
-        self.add_endpoint(
-            "/new_discussion", "new_discussion", self.new_discussion, methods=["GET"]
-        )
+
         self.add_endpoint("/stop_gen", "stop_gen", self.stop_gen, methods=["GET"])
 
         self.add_endpoint("/rename", "rename", self.rename, methods=["POST"])
         self.add_endpoint("/edit_title", "edit_title", self.edit_title, methods=["POST"])
-        self.add_endpoint(
-            "/load_discussion", "load_discussion", self.load_discussion, methods=["POST"]
-        )
+
         self.add_endpoint(
             "/delete_discussion",
             "delete_discussion",
@@ -311,7 +310,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         )
 
         self.add_endpoint(
-            "/update_message", "update_message", self.update_message, methods=["GET"]
+            "/edit_message", "edit_message", self.edit_message, methods=["GET"]
         )
         self.add_endpoint(
             "/message_rank_up", "message_rank_up", self.message_rank_up, methods=["GET"]
@@ -1146,6 +1145,12 @@ class LoLLMsWebUI(LoLLMsAPPI):
         version = pkg_resources.get_distribution('lollms').version
         ASCIIColors.yellow("Lollms version : "+ version)
         return jsonify({"version":version})
+
+    def get_lollms_webui_version(self):
+        version = __version__
+        ASCIIColors.yellow("Lollms webui version : "+ version)
+        return jsonify({"version":version})
+    
     
     def reload_binding(self):
         try:
@@ -1411,84 +1416,69 @@ class LoLLMsWebUI(LoLLMsAPPI):
         
     def rename(self):
         data = request.get_json()
+        client_id = data["client_id"]
         title = data["title"]
-        self.current_discussion.rename(title)
+        self.connections[client_id]["current_discussion"].rename(title)
         return "renamed successfully"
     
     def edit_title(self):
-        data = request.get_json()
-        title = data["title"]
-        discussion_id = data["id"]
-        self.current_discussion = Discussion(discussion_id, self.db)
-        self.current_discussion.rename(title)
-        return "title renamed successfully"
+        data                = request.get_json()
+        client_id           = data["client_id"]
+        title               = data["title"]
+        discussion_id       = data["id"]
+        self.connections[client_id]["current_discussion"] = Discussion(discussion_id, self.db)
+        self.connections[client_id]["current_discussion"].rename(title)
+        return jsonify({'status':True})
     
-    def load_discussion(self):
-        data = request.get_json()
-        if "id" in data:
-            discussion_id = data["id"]
-            self.current_discussion = Discussion(discussion_id, self.db)
-        else:
-            if self.current_discussion is not None:
-                discussion_id = self.current_discussion.discussion_id
-                self.current_discussion = Discussion(discussion_id, self.db)
-            else:
-                self.current_discussion = self.db.create_discussion()
-        messages = self.current_discussion.get_messages()
-
-        
-        return jsonify(messages), {'Content-Type': 'application/json; charset=utf-8'}
-
     def delete_discussion(self):
-        data = request.get_json()
-        discussion_id = data["id"]
-        self.current_discussion = Discussion(discussion_id, self.db)
-        self.current_discussion.delete_discussion()
-        self.current_discussion = None
-        return jsonify({})
+        data            = request.get_json()
+        client_id       = data["client_id"]
+        discussion_id   = data["id"]
+        self.connections[client_id]["current_discussion"] = Discussion(discussion_id, self.db)
+        self.connections[client_id]["current_discussion"].delete_discussion()
+        self.connections[client_id]["current_discussion"] = None
+        return jsonify({'status':True})
 
-    def update_message(self):
-        discussion_id = request.args.get("id")
-        new_message = request.args.get("message")
+    def edit_message(self):
+        client_id       = request.args.get("client_id")
+        discussion_id   = request.args.get("id")
+        new_message     = request.args.get("message")
         try:
-            self.current_discussion.update_message(discussion_id, new_message)
+            self.connections[client_id]["current_discussion"].edit_message(discussion_id, new_message)
             return jsonify({"status": True})
         except Exception as ex:
             return jsonify({"status": False, "error":str(ex)})
 
 
     def message_rank_up(self):
-        discussion_id = request.args.get("id")
+        client_id       = request.args.get("client_id")
+        discussion_id   = request.args.get("id")
         try:
-            new_rank = self.current_discussion.message_rank_up(discussion_id)
+            new_rank = self.connections[client_id]["current_discussion"].message_rank_up(discussion_id)
             return jsonify({"status": True, "new_rank": new_rank})
         except Exception as ex:
             return jsonify({"status": False, "error":str(ex)})
 
     def message_rank_down(self):
+        client_id = request.args.get("client_id")
         discussion_id = request.args.get("id")
         try:
-            new_rank = self.current_discussion.message_rank_down(discussion_id)
+            new_rank = self.connections[client_id]["current_discussion"].message_rank_down(discussion_id)
             return jsonify({"status": True, "new_rank": new_rank})
         except Exception as ex:
             return jsonify({"status": False, "error":str(ex)})
 
     def delete_message(self):
+        client_id = request.args.get("client_id")
         discussion_id = request.args.get("id")
-        if self.current_discussion is None:
+        if self.connections[client_id]["current_discussion"] is None:
             return jsonify({"status": False,"message":"No discussion is selected"})
         else:
-            new_rank = self.current_discussion.delete_message(discussion_id)
+            new_rank = self.connections[client_id]["current_discussion"].delete_message(discussion_id)
             ASCIIColors.yellow("Message deleted")
             return jsonify({"status":True,"new_rank": new_rank})
 
 
-    def new_discussion(self):
-        title = request.args.get("title")
-        timestamp = self.create_new_discussion(title)
-        
-        # Return a success response
-        return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp, "welcome_message":self.personality.welcome_message, "sender":self.personality.name})
 
     def set_binding(self):
         data = request.get_json()
