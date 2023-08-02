@@ -25,7 +25,7 @@
                 </a>
                 <a href="https://www.youtube.com/channel/UCJzrg0cyQV2Z30SQ1v2FdSQ" target="_blank">
 
-                    <div class="text-2xl  hover:text-primary duration-150" title="Visit repository page">
+                    <div class="text-2xl  hover:text-primary duration-150" title="Visit my youtube channel">
                         <i data-feather="youtube"></i>
                     </div>
                 </a>
