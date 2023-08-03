@@ -646,7 +646,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     self.model = None
                     self.config.save_config()
                 except Exception as ex:
-                    print(f"Couldn't build binding: [{ex}]")
+                    ASCIIColors.error(f"Couldn't build binding: [{ex}]")
+                    trace_exception(ex)
                     return jsonify({"status":False, 'error':str(ex)})
             else:
                 if self.config["debug"]:
@@ -955,12 +956,16 @@ class LoLLMsWebUI(LoLLMsAPPI):
     
     def add_reference_to_local_model(self):     
         data = request.get_json()
-        path = Path(data["path"])
-        if path.exists():
-            self.config.reference_model(path)
-            return jsonify({"status": True})         
+        pth = data["path"]
+        if pth!="":
+            path = Path(pth)
+            if path.exists():
+                self.config.reference_model(path)
+                return jsonify({"status": True})         
+            else:        
+                return jsonify({"status": False, "error":"Model not found"})         
         else:        
-            return jsonify({"status": True, "error":"Model not found"})         
+            return jsonify({"status": False, "error":"Empty model file"})         
 
     def list_mounted_personalities(self):
         ASCIIColors.yellow("- Listing mounted personalities")
@@ -1050,7 +1055,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
             ASCIIColors.info("Please select a model")
             return jsonify({"status": True}) 
         except Exception as ex:
-            print(f"Couldn't build binding: [{ex}]")
+            ASCIIColors.error(f"Couldn't build binding: [{ex}]")
+            trace_exception(ex)
             return jsonify({"status":False, 'error':str(ex)})
         
 
@@ -1198,7 +1204,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 print(f"Couldn't reload personalities: [{ex}]")
             return jsonify({"status": True}) 
         except Exception as ex:
-            print(f"Couldn't build binding: [{ex}]")
+            ASCIIColors.error(f"Couldn't build binding: [{ex}]")
+            trace_exception(ex)
             return jsonify({"status":False, 'error':str(ex)})
                 
 
