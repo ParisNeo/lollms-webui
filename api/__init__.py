@@ -898,6 +898,9 @@ class LoLLMsAPPI(LollmsApplication):
         if message_type == MSG_TYPE.MSG_TYPE_WARNING:
             self.notify(chunk,True, client_id)
             ASCIIColors.error("--> Exception from personality:"+chunk)
+        if message_type == MSG_TYPE.MSG_TYPE_INFO:
+            self.notify(chunk,True, client_id)
+            ASCIIColors.info("--> Info:"+chunk)
 
         if message_type == MSG_TYPE.MSG_TYPE_NEW_MESSAGE:
             self.nb_received_tokens = 0
