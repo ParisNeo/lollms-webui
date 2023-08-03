@@ -56,10 +56,6 @@ try:
     from lollms.helpers import ASCIIColors, trace_exception
     from lollms.paths import LollmsPaths
 
-    import mimetypes
-    mimetypes.add_type('application/javascript', '.js')
-    mimetypes.add_type('text/css', '.css')    
-    
     from api.db import Discussion
     from flask import (
         Flask,
@@ -89,6 +85,15 @@ except Exception as ex:
     print(ex)
     print("Error importing some libraries. Updating lollms...")
     run_update_script()
+
+
+try:
+    import mimetypes
+    mimetypes.add_type('application/javascript', '.js')
+    mimetypes.add_type('text/css', '.css')    
+except:
+    ASCIIColors.yellow("Couldn't set mimetype")    
+    
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)

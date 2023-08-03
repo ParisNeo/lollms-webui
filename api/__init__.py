@@ -165,12 +165,14 @@ class LoLLMsAPPI(LollmsApplication):
                 "generation_thread": None,
                 "processing":False,
                 "schedule_for_deletion":False
-            }     
+            }
+            self.socketio.emit('connected', room=request.sid) 
             ASCIIColors.success(f'Client {request.sid} connected')
 
         @socketio.on('disconnect')
         def disconnect():
             try:
+                self.socketio.emit('disconnected', room=request.sid) 
                 if self.connections[request.sid]["processing"]:
                     self.connections[request.sid]["schedule_for_deletion"]=True
                 else:
@@ -892,6 +894,9 @@ class LoLLMsAPPI(LollmsApplication):
                 ASCIIColors.error("--> Step ended:"+chunk)
         if message_type == MSG_TYPE.MSG_TYPE_EXCEPTION:
             self.notify(chunk,False, client_id)
+            ASCIIColors.error("--> Exception from personality:"+chunk)
+        if message_type == MSG_TYPE.MSG_TYPE_WARNING:
+            self.notify(chunk,True, client_id)
             ASCIIColors.error("--> Exception from personality:"+chunk)
 
         if message_type == MSG_TYPE.MSG_TYPE_NEW_MESSAGE:
