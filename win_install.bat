@@ -42,7 +42,7 @@ if /I "%gpuchoice%" == "A" (
   set "PACKAGES_TO_INSTALL=python=3.10 cuda-toolkit ninja git"
   set "CHANNEL=-c nvidia/label/cuda-11.7.0 -c nvidia -c conda-forge"
 ) else if /I "%gpuchoice%" == "B" (
-  set "PACKAGES_TO_INSTALL=python=3.10 ninja git"
+  set "PACKAGES_TO_INSTALL=python=3.10 m2w64-toolchain ninja git"
   set "CHANNEL=-c conda-forge"
 ) else (
   echo Invalid choice. Exiting...
