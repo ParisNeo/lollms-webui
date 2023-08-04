@@ -426,6 +426,7 @@ class LoLLMsAPPI(LollmsApplication):
         @socketio.on('load_discussion')
         def load_discussion(data):
             client_id = request.sid
+            ASCIIColors.yellow(f"Loading discussion for client {client_id}")
             if "id" in data:
                 discussion_id = data["id"]
                 self.connections[client_id]["current_discussion"] = Discussion(discussion_id, self.db)
@@ -533,7 +534,7 @@ class LoLLMsAPPI(LollmsApplication):
                     parent_message_id=self.message_id
                 )
 
-                ASCIIColors.green("Starting message generation by"+self.personality.name)
+                ASCIIColors.green("Starting message generation by "+self.personality.name)
                 self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message.id, client_id))
                 self.connections[client_id]['generation_thread'].start()
                 
@@ -548,10 +549,14 @@ class LoLLMsAPPI(LollmsApplication):
         def generate_msg_from(data):
             client_id = request.sid
             if self.connections[client_id]["current_discussion"] is None:
-                self.notify("Please select a discussion", False, client_id)
+                ASCIIColors.warning("Please select a discussion")
+                self.notify("Please select a discussion first", False, client_id)
                 return
             id_ = data['id']
-            message = self.connections[client_id]["current_discussion"].select_message(id_)
+            if id_==-1:
+                message = self.connections[client_id]["current_discussion"].current_message
+            else:
+                message = self.connections[client_id]["current_discussion"].select_message(id_)
             if message is None:
                 return            
             self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message.id, client_id))
@@ -567,10 +572,14 @@ class LoLLMsAPPI(LollmsApplication):
         def handle_connection(data):
             client_id = request.sid
             if self.connections[client_id]["current_discussion"] is None:
+                ASCIIColors.yellow("Please select a discussion")
                 self.notify("Please select a discussion", False, client_id)
                 return
             id_ = data['id']
-            message = self.connections[client_id]["current_discussion"].select_message(id_)
+            if id_==-1:
+                message = self.connections[client_id]["current_discussion"].current_message
+            else:
+                message = self.connections[client_id]["current_discussion"].select_message(id_)
 
             self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message.id, client_id, True))
             self.connections[client_id]['generation_thread'].start()
@@ -1014,7 +1023,7 @@ class LoLLMsAPPI(LollmsApplication):
             # First we need to send the new message ID to the client
             if is_continue:
                 self.connections[client_id]["current_discussion"].load_message(message_id)
-                self.connections[client_id]["generated_text"] = self.connections[client_id]["current_discussion"].current_message.content
+                self.connections[client_id]["generated_text"] = message.content
             else:
                 self.new_message(client_id, self.personality.name, "✍ please stand by ...")
             self.socketio.sleep(0.01)

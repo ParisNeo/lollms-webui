@@ -855,12 +855,12 @@ export default {
         },
         socketIOConnected() {
             console.log("socketIOConnected")
-            this.$store.dispatch('setIsConnected',true);
+            this.$store.state.isConnected=true;
             return true
         },
         socketIODisconnected() {
             console.log("socketIOConnected")
-            this.$store.dispatch('setIsConnected',false);
+            this.$store.state.isConnected=false;
             return true
         },
         new_message(msgObj) {
@@ -908,7 +908,28 @@ export default {
             }*/
         },
         talk(pers){
-            
+            this.isGenerating = true;
+            this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
+            axios.get('/get_generation_status', {}).then((res) => {
+                if (res) {
+                    //console.log(res.data.status);
+                    if (!res.data.status) {
+                        console.log('Generating message from ',res.data.status);
+                        socket.emit('generate_msg_from', { id: -1 });
+                        // Temp data
+                        let lastmsgid =0
+                        if(this.discussionArr.length>0){
+                            lastmsgid= Number(this.discussionArr[this.discussionArr.length - 1].id) + 1
+                        }
+                        
+                    }
+                    else {
+                        console.log("Already generating");
+                    }
+                }
+            }).catch((error) => {
+                console.log("Error: Could not get generation status", error);
+            });
         },
 
         sendMsg(msg) {
@@ -1518,6 +1539,7 @@ export default {
 
     },
     async created() {
+        this.$store.state.isConnected=false;
         axios.get('/get_lollms_webui_version', {}).then((res) => {
             if (res) {
                 this.version = res.data.version
@@ -1528,6 +1550,21 @@ export default {
         this.$nextTick(() => {
             feather.replace();
         });           
+
+        socket.onclose = (event) => {
+            console.log('WebSocket connection closed:', event.code, event.reason);
+            this.socketIODisconnected();
+        };
+        socket.onerror = (event) => {
+            console.log('WebSocket connection error:', event.code, event.reason);
+            this.socketIODisconnected();
+            socket.disconnect();
+        };
+        socket.on('connected',this.socketIOConnected)
+        socket.on('disconnected',this.socketIODisconnected)
+        console.log("Added events")
+        
+        
         console.log("Waiting to be ready")
         while (this.$store.state.ready === false) {
                 await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for 100ms
@@ -1548,19 +1585,23 @@ export default {
         socket.on('update_message', this.streamMessageContent)
         socket.on('close_message', this.finalMsgEvent)
 
-
+        console.log("Setting events")
         socket.onopen = () => {
             console.log('WebSocket connection established.');
-            this.socketIOConnected();
+            if (this.currentDiscussion!=null){
+                this.setPageTitle(item)
+                localStorage.setItem('selected_discussion', this.currentDiscussion.id)
+                this.load_discussion(item.id, ()=>{
+                    if (this.discussionArr.length > 1) {
+                        if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
+                            this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
+                        }
+                    }
+                });
+            }
         };
 
-        socket.onclose = (event) => {
-            console.log('WebSocket connection closed:', event.code, event.reason);
-            this.socketIODisconnected();
-        };
-        socket.on('connected',this.socketIOConnected)
-        socket.on('disconnected',this.socketIODisconnected)
-        console.log("Added events")
+
 
         this.isCreated = true
     },

@@ -10,12 +10,6 @@ import io from 'socket.io-client';
 const URL = process.env.NODE_ENV === "production" ? undefined : (import.meta.env.VITE_LOLLMS_API);
 const socket = new io(URL);
 
-
-socket.onerror = (error) => {
-  console.error('WebSocket error:', error);
-  socket.disconnect()
-};
-
 // const app = createApp(/* your root component */);
 
 // app.config.globalProperties.$socket = socket;
