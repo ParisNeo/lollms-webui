@@ -385,7 +385,7 @@ class Message:
     def from_db(discussions_db, message_id):
         columns = Message.get_fields()
         rows = discussions_db.select(
-            f"SELECT {','.join(columns)} WHERE id=?", (id,)
+            f"SELECT {','.join(columns)} FROM message WHERE id=?", (message_id,)
         )
         data_dict={
             col:rows[i]
