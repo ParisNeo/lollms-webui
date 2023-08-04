@@ -388,7 +388,7 @@ class Message:
             f"SELECT {','.join(columns)} FROM message WHERE id=?", (message_id,)
         )
         data_dict={
-            col:rows[i]
+            col:rows[0][i]
             for i,col in enumerate(columns)
         }
         data_dict["discussions_db"]=discussions_db
