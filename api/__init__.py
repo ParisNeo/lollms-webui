@@ -488,7 +488,7 @@ class LoLLMsAPPI(LollmsApplication):
                 file_path = path / data["filename"]
                 File64BitsManager.b642file(data["fileData"],file_path)
                 if self.personality.processor:
-                    self.personality.processor.add_file(file_path, self.process_chunk)
+                    self.personality.processor.add_file(file_path, partial(self.process_chunk, client_id=client_id))
                     
                 self.socketio.emit('file_received',
                         {

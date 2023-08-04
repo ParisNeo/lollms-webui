@@ -126,7 +126,7 @@ setlocal enabledelayedexpansion
 
 
 if /I "%gpuchoice%"=="B" (
-    echo This is a .no_gpu file. > ..\.no_gpu
+    echo This is a .no_gpu file. > .no_gpu
 ) else (
     echo GPU is enabled, no .no_gpu file will be created.
 )
