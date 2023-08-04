@@ -955,12 +955,15 @@ class LoLLMsWebUI(LoLLMsAPPI):
     
     def add_reference_to_local_model(self):     
         data = request.get_json()
+        if data["path"]=="":
+            return jsonify({"status": False, "error":"Empty model path"})         
+            
         path = Path(data["path"])
         if path.exists():
             self.config.reference_model(path)
             return jsonify({"status": True})         
         else:        
-            return jsonify({"status": True, "error":"Model not found"})         
+            return jsonify({"status": False, "error":"Model not found"})         
 
     def list_mounted_personalities(self):
         ASCIIColors.yellow("- Listing mounted personalities")
@@ -1051,6 +1054,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return jsonify({"status": True}) 
         except Exception as ex:
             print(f"Couldn't build binding: [{ex}]")
+            trace_exception(ex)
             return jsonify({"status":False, 'error':str(ex)})
         
 
