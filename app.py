@@ -646,7 +646,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     self.model = None
                     self.config.save_config()
                 except Exception as ex:
-                    print(f"Couldn't build binding: [{ex}]")
+                    ASCIIColors.error(f"Couldn't build binding: [{ex}]")
+                    trace_exception(ex)
                     return jsonify({"status":False, 'error':str(ex)})
             else:
                 if self.config["debug"]:
@@ -1053,7 +1054,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             ASCIIColors.info("Please select a model")
             return jsonify({"status": True}) 
         except Exception as ex:
-            print(f"Couldn't build binding: [{ex}]")
+            ASCIIColors.error(f"Couldn't build binding: [{ex}]")
             trace_exception(ex)
             return jsonify({"status":False, 'error':str(ex)})
         
@@ -1202,7 +1203,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 print(f"Couldn't reload personalities: [{ex}]")
             return jsonify({"status": True}) 
         except Exception as ex:
-            print(f"Couldn't build binding: [{ex}]")
+            ASCIIColors.error(f"Couldn't build binding: [{ex}]")
+            trace_exception(ex)
             return jsonify({"status":False, 'error':str(ex)})
                 
 
