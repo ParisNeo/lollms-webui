@@ -1014,7 +1014,7 @@ class LoLLMsAPPI(LollmsApplication):
             # First we need to send the new message ID to the client
             if is_continue:
                 self.connections[client_id]["current_discussion"].load_message(message_id)
-                self.connections[client_id]["generated_text"] = self.connections[client_id]["current_discussion"].content
+                self.connections[client_id]["generated_text"] = self.connections[client_id]["current_discussion"].current_message.content
             else:
                 self.new_message(client_id, self.personality.name, "✍ please stand by ...")
             self.socketio.sleep(0.01)
