@@ -932,7 +932,6 @@
                     <!-- SEARCH BAR -->
                     <div class="mx-2 mb-4">
 
-                        <form>
 
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -973,7 +972,6 @@
                                 <!-- @input="filterPersonalities()" -->
 
                             </div>
-                        </form>
 
                     </div>
                     <div v-if="searchModel">
@@ -1250,8 +1248,6 @@
                 <div :class="{ 'hidden': pzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
                     <!-- SEARCH BAR -->
                     <div class="mx-2 mb-4">
-
-                        <form>
                             <label for="personality-search"
                                 class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                             <div class="relative">
@@ -1293,7 +1289,6 @@
                                 <!-- @input="filterPersonalities()" -->
 
                             </div>
-                        </form>
 
                     </div>
                     <div class="mx-2 mb-4" v-if="!searchPersonality">
@@ -3010,6 +3005,7 @@ export default {
             event.target.src = defaultPersonalityImgPlaceholder
         },
         searchPersonality_func() {
+            
             clearTimeout(this.searchPersonalityTimer)
             if (this.searchPersonality) {
                 this.searchPersonalityInProgress = true
@@ -3030,6 +3026,7 @@ export default {
         console.log("Getting voices")
         this.getVoices();
     },
+    
     activated() {
         if (this.isMounted) {
             this.constructor()

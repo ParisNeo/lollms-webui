@@ -111,6 +111,7 @@
                         <MountedPersonalitiesList ref="mountedPersList" 
                             :onShowPersList="onShowPersListFun"
                             :on-mount-unmount="onMountUnmountFun" 
+                            :on-remount="onRemount"
                             :on-talk="handleOnTalk"
                             :discussionPersonalities="allDiscussionPersonalities" />
                     </div>
@@ -336,6 +337,10 @@ export default {
                             
         onMountUnmountFun(comp) {
             console.log('Mounting/unmounting chat')
+            this.$refs.mountedPers.constructor()
+        },
+        onRemount(comp){
+            console.log('Remounting chat')
             this.$refs.mountedPers.constructor()
         },
         computedFileSize(size) {

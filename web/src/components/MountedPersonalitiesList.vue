@@ -38,7 +38,7 @@
                         <personality-entry ref="personalitiesZoo" v-for="(pers, index) in this.$store.state.mountedPersArr"
                             :key="'index-' + index + '-' + pers.name" :personality="pers" :full_path="pers.full_path"
                             :selected="configFile.personalities[configFile.active_personality_id] === pers.full_path"
-                            :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted"
+                            :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted" :on-remount="onPersonalityRemount"
                             :on-settings="onSettingsPersonality"  :on-reinstall="onPersonalityReinstall"
                             :on-talk="handleOnTalk"
                            />
@@ -91,6 +91,7 @@ export default {
     props: {
         onTalk:Function,
         onMountUnmount: Function,
+        onRemount: Function,
         discussionPersonalities: Array,
         onShowPersList: Function,
 
@@ -222,6 +223,9 @@ export default {
 
 
         },
+        onPersonalityRemount(persItem){
+            this.reMountPersonality(persItem)
+        },
         async handleOnTalk(pers){
             // eslint-disable-next-line no-unused-vars
             feather.replace()
@@ -346,6 +350,28 @@ export default {
             }
 
         },
+        async remount_personality(pers) {
+            if (!pers) { return { 'status': false, 'error': 'no personality - mount_personality' } }
+
+            try {
+                const obj = {
+                    language: pers.language,
+                    category: pers.category,
+                    folder: pers.folder
+                }
+                const res = await axios.post('/remount_personality', obj);
+
+                if (res) {
+
+                    return res.data
+
+                }
+            } catch (error) {
+                console.log(error.message, 'remount_personality - settings')
+                return
+            }
+
+        },        
         async unmount_personality(pers) {
             if (!pers) { return { 'status': false, 'error': 'no personality - unmount_personality' } }
 
@@ -418,6 +444,37 @@ export default {
             if (res.status) {
                 this.configFile.personalities = res.personalities
                 this.$refs.toast.showToast("Personality mounted", 4, true)
+                pers.isMounted = true
+                this.toggleMountUnmount()
+                const res2 = await this.select_personality(pers.personality)
+                if (res2.status) {
+                    this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
+
+                }
+                this.getMountedPersonalities()
+            } else {
+                pers.isMounted = false
+                this.$refs.toast.showToast("Could not mount personality\nError: " + res.error, 4, false)
+            }
+
+
+        },
+        async reMountPersonality(pers) {
+
+            console.log('remount pers', pers)
+            if (!pers) { return }
+
+            if (!this.configFile.personalities.includes(pers.personality.full_path)) {
+                this.$refs.toast.showToast("Personality not mounted", 4, false)
+                return
+            }
+
+            const res = await this.remount_personality(pers.personality)
+            console.log('remount_personality res', res)
+
+            if (res.status) {
+                this.configFile.personalities = res.personalities
+                this.$refs.toast.showToast("Personality remounted", 4, true)
                 pers.isMounted = true
                 this.toggleMountUnmount()
                 const res2 = await this.select_personality(pers.personality)

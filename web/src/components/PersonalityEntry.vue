@@ -48,7 +48,12 @@
 
           <span class="sr-only">Remove</span>
         </button>
+        <button v-if="isMounted" title="Remount personality (useful if you have changed it)" type="button" @click.stop="reMount"
+          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900">
+          <i data-feather="refresh-ccw" class="w-5"></i>
 
+          <span class="sr-only">Remount</span>
+        </button>
       </div>
       <div class="">
         <div class="">
@@ -99,6 +104,7 @@ export default {
     onTalk:Function,
     onSelected: Function,
     onMounted: Function,
+    onRemount: Function,
     onReinstall: Function,
     onSettings: Function
   },
@@ -135,6 +141,9 @@ selected_computed(){
     },
     toggleSelected() {
       this.onSelected(this)
+    },
+    reMount(){
+      this.onRemount(this)
     },
     toggleMounted() {
       this.onMounted(this)

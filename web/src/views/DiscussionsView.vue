@@ -1256,6 +1256,7 @@ export default {
                     console.log("--------------------")
                     console.log(msgId);
                     if (!res.data.status) {
+                        console.log('generate_msg_from');
                         socket.emit('generate_msg_from', { prompt: msg, id: msgId });
                     }
                     else {

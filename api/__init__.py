@@ -113,7 +113,7 @@ class LoLLMsAPPI(LollmsApplication):
     def __init__(self, config:LOLLMSConfig, socketio, config_file_path:str, lollms_paths: LollmsPaths) -> None:
 
         super().__init__("Lollms_webui",config, lollms_paths, callback=self.process_chunk)
-        self.is_ready = True
+        self.buzy = False
         
         
         self.socketio = socketio
@@ -516,7 +516,7 @@ class LoLLMsAPPI(LollmsApplication):
                 self.notify("Model not selected. Please select a model", False, client_id)
                 return
  
-            if self.is_ready:
+            if not self.buzy:
                 if self.connections[client_id]["current_discussion"] is None:
                     if self.db.does_last_discussion_have_messages():
                         self.connections[client_id]["current_discussion"] = self.db.create_discussion()
@@ -540,6 +540,7 @@ class LoLLMsAPPI(LollmsApplication):
                 
                 self.socketio.sleep(0.01)
                 ASCIIColors.info("Started generation task")
+                self.buzy=True
                 #tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id, client_id))
                 #tpe.start()
             else:
@@ -761,7 +762,7 @@ class LoLLMsAPPI(LollmsApplication):
         
         if self.config["debug"]:
             ASCIIColors.yellow(discussion_messages)
-            ASCIIColors.yellow(f"prompt size:{len(tokens)} tokens")
+            ASCIIColors.info(f"prompt size:{tokens.shape} tokens")
 
         return discussion_messages, message.content, tokens
 
@@ -887,9 +888,7 @@ class LoLLMsAPPI(LollmsApplication):
                             )
     def process_chunk(self, chunk, message_type:MSG_TYPE, metadata:dict={}, client_id:int=0):
         """
-        0 : a regular message
-        1 : a notification message
-        2 : A hidden message
+        Processes a chunk of generated text
         """
 
         if message_type == MSG_TYPE.MSG_TYPE_STEP:
@@ -945,7 +944,7 @@ class LoLLMsAPPI(LollmsApplication):
             self.connections[client_id]["generated_text"] = chunk
             self.nb_received_tokens += 1
             ASCIIColors.green(f"Received {self.nb_received_tokens} tokens",end="\r",flush=True)
-            self.update_message(client_id, chunk, metadata)
+            self.update_message(client_id, chunk, metadata, msg_type=message_type)
             return True
         # Stream the generated text to the frontend
         else:
@@ -1055,6 +1054,8 @@ class LoLLMsAPPI(LollmsApplication):
             ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
             ASCIIColors.success(f" ║                        Done                      ║ ")
             ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
+            self.buzy=False
+
         else:
             ump = self.config.discussion_prompt_separator +self.config.user_name+": " if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
             
@@ -1065,5 +1066,6 @@ class LoLLMsAPPI(LollmsApplication):
             self.notify("No discussion selected!!!",False, client_id)
             
             print()
+            self.buzy=False
             return ""
     

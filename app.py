@@ -99,6 +99,7 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 app = Flask("Lollms-WebUI", static_url_path="/static", static_folder="static")
+
 #  async_mode='gevent', ping_timeout=1200, ping_interval=120, 
 socketio = SocketIO(app,  cors_allowed_origins="*", async_mode='threading',engineio_options={'websocket_compression': False, 'websocket_ping_interval': 20, 'websocket_ping_timeout': 120, 'websocket_max_queue': 100})
 
@@ -236,6 +237,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint("/list_mounted_personalities", "list_mounted_personalities", self.list_mounted_personalities, methods=["POST"])
 
         self.add_endpoint("/mount_personality", "mount_personality", self.p_mount_personality, methods=["POST"])
+        self.add_endpoint("/remount_personality", "remount_personality", self.p_remount_personality, methods=["POST"])
+        
         self.add_endpoint("/unmount_personality", "unmount_personality", self.p_unmount_personality, methods=["POST"])        
         self.add_endpoint("/select_personality", "select_personality", self.p_select_personality, methods=["POST"])
 
@@ -288,9 +291,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
         )
         
         self.add_endpoint("/delete_personality", "delete_personality", self.delete_personality, methods=["GET"])
-        
-        
+                
         self.add_endpoint("/", "", self.index, methods=["GET"])
+        self.add_endpoint("/settings/", "", self.index, methods=["GET"])
+        
         self.add_endpoint("/<path:filename>", "serve_static", self.serve_static, methods=["GET"])
         self.add_endpoint("/user_infos/<path:filename>", "serve_user_infos", self.serve_user_infos, methods=["GET"])
         
@@ -932,7 +936,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
             
     def get_generation_status(self):
-        return jsonify({"status":not self.is_ready}) 
+        return jsonify({"status":self.buzy}) 
     
     def stop_gen(self):
         self.cancel_gen = True
@@ -1224,6 +1228,60 @@ class LoLLMsWebUI(LoLLMsAPPI):
         package_full_path = self.lollms_paths.personalities_zoo_path/package_path
         config_file = package_full_path / "config.yaml"
         if config_file.exists():
+            self.config["personalities"].append(package_path)
+            self.mounted_personalities = self.rebuild_personalities()
+            self.personality = self.mounted_personalities[self.config["active_personality_id"]]
+            self.apply_settings()
+            ASCIIColors.success("ok")
+            if self.config["active_personality_id"]<0:
+                return jsonify({"status": False,
+                                "personalities":self.config["personalities"],
+                                "active_personality_id":self.config["active_personality_id"]
+                                })         
+            else:
+                return jsonify({"status": True,
+                                "personalities":self.config["personalities"],
+                                "active_personality_id":self.config["active_personality_id"]
+                                })         
+        else:
+            pth = str(config_file).replace('\\','/')
+            ASCIIColors.error(f"nok : Personality not found @ {pth}")
+            return jsonify({"status": False, "error":f"Personality not found @ {pth}"})         
+
+    def p_remount_personality(self):
+        print("- Remounting personality")
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
+        language = data['language']
+        category = data['category']
+        name = data['folder']
+
+
+
+
+        package_path = f"{language}/{category}/{name}"
+        package_full_path = self.lollms_paths.personalities_zoo_path/package_path
+        config_file = package_full_path / "config.yaml"
+        if config_file.exists():
+            ASCIIColors.info(f"Unmounting personality {package_path}")
+            index = self.config["personalities"].index(f"{language}/{category}/{name}")
+            self.config["personalities"].remove(f"{language}/{category}/{name}")
+            if self.config["active_personality_id"]>=index:
+                self.config["active_personality_id"]=0
+            if len(self.config["personalities"])>0:
+                self.mounted_personalities = self.rebuild_personalities()
+                self.personality = self.mounted_personalities[self.config["active_personality_id"]]
+            else:
+                self.personalities = ["english/generic/lollms"]
+                self.mounted_personalities = self.rebuild_personalities()
+                self.personality = self.mounted_personalities[self.config["active_personality_id"]]
+
+
+            ASCIIColors.info(f"Mounting personality {package_path}")
             self.config["personalities"].append(package_path)
             self.mounted_personalities = self.rebuild_personalities()
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
