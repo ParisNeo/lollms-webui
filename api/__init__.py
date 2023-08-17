@@ -437,9 +437,9 @@ class LoLLMsAPPI(LollmsApplication):
                 else:
                     self.connections[client_id]["current_discussion"] = self.db.create_discussion()
             messages = self.connections[client_id]["current_discussion"].get_messages()
-
+            jsons = [m.to_json() for m in messages]
             self.socketio.emit('discussion',
-                        [m.to_json() for m in messages],
+                        jsons,
                         room=client_id
             )
 
@@ -473,6 +473,7 @@ class LoLLMsAPPI(LollmsApplication):
             terminate_thread(self.connections[client_id]['generation_thread'])
             ASCIIColors.error(f'Client {request.sid} canceled generation')
             self.cancel_gen = False
+            self.buzy=False
 
         @socketio.on('send_file')
         def send_file(data):
@@ -596,7 +597,7 @@ class LoLLMsAPPI(LollmsApplication):
             self.mounted_personalities=[]
 
         loaded = self.mounted_personalities
-        loaded_names = [f"{p.language}/{p.category}/{p.personality_folder_name}" for p in loaded]
+        loaded_names = [f"{p.category}/{p.personality_folder_name}" for p in loaded]
         mounted_personalities=[]
         ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
         ASCIIColors.success(f" ║           Building mounted Personalities         ║ ")
@@ -816,8 +817,9 @@ class LoLLMsAPPI(LollmsApplication):
     def new_message(self, 
                             client_id, 
                             sender, 
-                            content, 
-                            metadata=None, 
+                            content,
+                            parameters=None,
+                            metadata=[],
                             message_type:MSG_TYPE=MSG_TYPE.MSG_TYPE_FULL, 
                             sender_type:SENDER_TYPES=SENDER_TYPES.SENDER_TYPES_AI
                         ):
@@ -827,7 +829,7 @@ class LoLLMsAPPI(LollmsApplication):
             sender_type         = sender_type.value,
             sender              = sender,
             content             = content,
-            metadata            = json.dumps(metadata, indent=4) if metadata is not None and type(metadata)== dict else metadata,
+            metadata            = json.dumps(metadata, indent=4) if metadata is not None and type(metadata) == list else metadata,
             rank                = 0,
             parent_message_id   = self.connections[client_id]["current_discussion"].current_message.id,
             binding             = self.config["binding_name"],
@@ -841,7 +843,8 @@ class LoLLMsAPPI(LollmsApplication):
                     "message_type":             message_type.value,
                     "sender_type":              SENDER_TYPES.SENDER_TYPES_AI.value,
                     "content":                  content,
-                    "metadata":                 json.dumps(metadata, indent=4) if metadata is not None and type(metadata)== dict else metadata,
+                    "parameters":               parameters,
+                    "metadata":                 json.dumps(metadata, indent=4) if metadata is not None and type(metadata)== list else metadata,
                     "id":                       msg.id,
                     "parent_message_id":        msg.parent_message_id,
 
@@ -854,8 +857,13 @@ class LoLLMsAPPI(LollmsApplication):
                 }, room=client_id
         )
 
-    def update_message(self, client_id, chunk, metadata, msg_type:MSG_TYPE=None):
+    def update_message(self, client_id, chunk,                             
+                            parameters=None,
+                            metadata=[], 
+                            msg_type:MSG_TYPE=None
+                        ):
         self.connections[client_id]["current_discussion"].current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        mtdt = json.dumps(metadata, indent=4) if metadata is not None and type(metadata)== list else metadata
         self.socketio.emit('update_message', {
                                         "sender": self.personality.name,
                                         'id':self.connections[client_id]["current_discussion"].current_message.id, 
@@ -863,11 +871,12 @@ class LoLLMsAPPI(LollmsApplication):
                                         'discussion_id':self.connections[client_id]["current_discussion"].discussion_id,
                                         'message_type': msg_type.value if msg_type is not None else MSG_TYPE.MSG_TYPE_CHUNK.value if self.nb_received_tokens>1 else MSG_TYPE.MSG_TYPE_FULL.value,
                                         'finished_generating_at': self.connections[client_id]["current_discussion"].current_message.finished_generating_at,
-                                        'metadata':json.dumps(metadata, indent=4) if metadata is not None and type(metadata)== dict else metadata
+                                        'parameters':parameters,
+                                        'metadata':mtdt
                                     }, room=client_id
                             )
         self.socketio.sleep(0.01)
-        self.connections[client_id]["current_discussion"].update_message(self.connections[client_id]["generated_text"])
+        self.connections[client_id]["current_discussion"].update_message(self.connections[client_id]["generated_text"], new_metadata=mtdt)
 
     def close_message(self, client_id):
         # Send final message
@@ -886,7 +895,15 @@ class LoLLMsAPPI(LollmsApplication):
 
                                     }, room=client_id
                             )
-    def process_chunk(self, chunk, message_type:MSG_TYPE, metadata:dict={}, client_id:int=0):
+    def process_chunk(
+                        self, 
+                        chunk, 
+                        message_type:MSG_TYPE,
+
+                        parameters=None, 
+                        metadata:list=[], 
+                        client_id:int=0
+                    ):
         """
         Processes a chunk of generated text
         """
@@ -896,7 +913,7 @@ class LoLLMsAPPI(LollmsApplication):
         if message_type == MSG_TYPE.MSG_TYPE_STEP_START:
             ASCIIColors.info("--> Step started:"+chunk)
         if message_type == MSG_TYPE.MSG_TYPE_STEP_END:
-            if metadata['status']:
+            if parameters['status']:
                 ASCIIColors.success("--> Step ended:"+chunk)
             else:
                 ASCIIColors.error("--> Step ended:"+chunk)
@@ -912,7 +929,12 @@ class LoLLMsAPPI(LollmsApplication):
 
         if message_type == MSG_TYPE.MSG_TYPE_NEW_MESSAGE:
             self.nb_received_tokens = 0
-            self.new_message(client_id, self.personality.name, chunk, metadata = metadata["metadata"], message_type= MSG_TYPE(metadata["type"]))
+            self.new_message(
+                                client_id, 
+                                self.personality.name, 
+                                chunk, 
+                                metadata = parameters["metadata"], 
+                                message_type= MSG_TYPE(parameters["type"]))
 
         elif message_type == MSG_TYPE.MSG_TYPE_FINISHED_MESSAGE:
             self.close_message(client_id)
@@ -927,7 +949,7 @@ class LoLLMsAPPI(LollmsApplication):
             if antiprompt:
                 ASCIIColors.warning(f"\nDetected hallucination with antiprompt: {antiprompt}")
                 self.connections[client_id]["generated_text"] = self.remove_text_from_string(self.connections[client_id]["generated_text"],antiprompt)
-                self.update_message(client_id, self.connections[client_id]["generated_text"], metadata,MSG_TYPE.MSG_TYPE_FULL)
+                self.update_message(client_id, self.connections[client_id]["generated_text"], parameters, metadata,MSG_TYPE.MSG_TYPE_FULL)
                 return False
             else:
                 self.update_message(client_id, chunk, metadata)
@@ -944,11 +966,11 @@ class LoLLMsAPPI(LollmsApplication):
             self.connections[client_id]["generated_text"] = chunk
             self.nb_received_tokens += 1
             ASCIIColors.green(f"Received {self.nb_received_tokens} tokens",end="\r",flush=True)
-            self.update_message(client_id, chunk, metadata, msg_type=message_type)
+            self.update_message(client_id, chunk,  parameters, metadata, msg_type=message_type)
             return True
         # Stream the generated text to the frontend
         else:
-            self.update_message(client_id, chunk, metadata, message_type)
+            self.update_message(client_id, chunk, parameters, metadata, message_type)
         return True
 
 

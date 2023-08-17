@@ -1,7 +1,7 @@
-# GPT4ALL WebUI Tutorial
+# LOLLMS WebUI Tutorial
 
 ## Introduction
-Welcome to the GPT4ALL WebUI tutorial! In this tutorial, we will walk you through the steps to effectively use this powerful tool. GPT4ALL WebUI is designed to provide access to a variety of language models (LLMs) and offers a range of functionalities to enhance your tasks.
+Welcome to the LOLLMS WebUI tutorial! In this tutorial, we will walk you through the steps to effectively use this powerful tool. LOLLMS WebUI is designed to provide access to a variety of language models (LLMs) and offers a range of functionalities to enhance your tasks.
 
 ## Installation
 1. Ensure that you have Python 3.10 or a higher version, as well as Git, installed on your system. Confirm that the Python installation is in your system's path and can be accessed via the terminal. You can check your Python version by typing `python --version` in the terminal. If the version is lower than 3.10 or you encounter an error, please install a newer version.
@@ -50,6 +50,6 @@ Welcome to the GPT4ALL WebUI tutorial! In this tutorial, we will walk you throug
 6. Note: In the release version, it will be possible to change the database path directly from the UI.
 
 ## Conclusion
-Congratulations! You have learned how to install and use GPT4ALL WebUI effectively. Experiment with different bindings, models, and personalities to find the best fit for your needs. Remember to report any bugs or issues you encounter, as this project is developed by volunteers in their free time. Please support the project by liking, subscribing, and sharing this video to help it reach more people.
+Congratulations! You have learned how to install and use LOLLMS WebUI effectively. Experiment with different bindings, models, and personalities to find the best fit for your needs. Remember to report any bugs or issues you encounter, as this project is developed by volunteers in their free time. Please support the project by liking, subscribing, and sharing this video to help it reach more people.
 
 See you in the next tutorial!

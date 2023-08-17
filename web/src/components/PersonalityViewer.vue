@@ -6,7 +6,6 @@
       </div>
       <p><strong>Author:</strong> {{ personalityAuthor }}</p>
       <p><strong>Description:</strong> {{ personalityDescription }}</p>
-      <p><strong>Language:</strong> {{ personalityLanguage }}</p>
       <p><strong>Category:</strong> {{ personalityCategory }}</p>
       <p v-if="disclaimer"><strong>Disclaimer:</strong> {{ disclaimer }}</p>
       <p><strong>Conditioning Text:</strong> {{ conditioningText }}</p>
@@ -39,7 +38,6 @@
         personalityName: 'Personality Name',
         personalityAuthor: 'Author Name',
         personalityDescription: 'Personality Description',
-        personalityLanguage: 'English',
         personalityCategory: 'Category',
         disclaimer: 'Disclaimer text',
         conditioningText: 'Conditioning Text',

@@ -16,8 +16,8 @@ requirements = read_requirements("requirements.txt")
 requirements_dev = read_requirements("requirements_dev.txt")
 
 setuptools.setup(
-    name="GPT4Allui",
-    version="0.0.5",
+    name="Lollms-webui",
+    version="5.0.0",
     author="Saifeddine ALOUI",
     author_email="aloui.saifeddine@gmail.com",
     description="A web ui for running chat models with different bindings. Supports multiple personalities and extensions.",

@@ -1292,21 +1292,6 @@
 
                     </div>
                     <div class="mx-2 mb-4" v-if="!searchPersonality">
-                        <label for="persLang" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Personalities Languages: ({{ persLangArr.length }})
-                        </label>
-                        <select id="persLang" @change="update_personality_language($event.target.value, refresh)"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                            <option v-for="item in persLangArr" :selected="item === this.configFile.personality_language">{{
-                                item
-                            }}
-
-                            </option>
-
-                        </select>
-                    </div>
-                    <div class="mx-2 mb-4" v-if="!searchPersonality">
                         <label for="persCat" class="block  mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Personalities Category: ({{ persCatgArr.length }})
                         </label>
@@ -1656,8 +1641,6 @@ export default {
             currenModelToInstall:null,
             // Loading text
             loading_text:"",
-            // Current personality language
-            personality_language:null,
             // Current personality category
             personality_category:null,
             // install custom model
@@ -1683,10 +1666,8 @@ export default {
             pzl_collapsed: false,
             bzl_collapsed: false,
             // Settings stuff
-            persLangArr: [],
             persCatgArr: [],
             persArr: [],
-            langArr: [],
             showConfirmation: false,
             showToast: false,
             isLoading: false,
@@ -1851,23 +1832,18 @@ export default {
             if (this.configFile.model_name) {
                 this.isModelSelected = true
             }
-            this.persLangArr = await this.api_get_req("list_personalities_languages")
-            this.persCatgArr = await this.api_get_req("list_personalities_categories?language="+this.configFile.personality_language)
-            this.persArr = await this.api_get_req("list_personalities?language="+this.configFile.personality_language+"&category"+this.configFile.personality_category)
-            this.langArr = await this.api_get_req("list_languages")
+            this.persCatgArr = await this.api_get_req("list_personalities_categories")
+            this.persArr = await this.api_get_req("list_personalities?category="+this.configFile.personality_category)
 
             this.bindingsArr.sort((a, b) => a.name.localeCompare(b.name))
             this.modelsArr.sort()
-            this.persLangArr.sort()
             this.persCatgArr.sort()
             this.persArr.sort()
-            this.langArr.sort()
 
 
             //await this.getPersonalitiesArr()
-            this.personality_language = this.configFile.personality_language
             this.personality_category = this.configFile.personality_category
-            this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
+            this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category)
             this.personalitiesFiltered.sort()
             //mountedPersArr
             this.modelsFiltered = this.models
@@ -2485,10 +2461,6 @@ export default {
         onMessageBoxOk() {
             console.log("OK button clicked");
         },
-        update_personality_language(lang, next){
-            this.personality_language = lang
-            next()
-        },
 
         update_personality_category(cat, next){
             this.personality_category = cat
@@ -2498,13 +2470,12 @@ export default {
         refresh() {
             console.log("Refreshing")
             this.$store.dispatch('refreshConfig').then(() => {
-                console.log(this.personality_language)
                 console.log(this.personality_category)
 
-                this.api_get_req("list_personalities_categories?language="+this.personality_language).then((cats)=>{
+                this.api_get_req("list_personalities_categories").then((cats)=>{
                     console.log("cats",cats)
                     this.persCatgArr = cats
-                    this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.personality_category && item.language === this.personality_language)
+                    this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.personality_category)
                     this.personalitiesFiltered.sort()
                 })
 
@@ -2728,7 +2699,7 @@ export default {
             }
 
             this.personalities.sort((a, b) => a.name.localeCompare(b.name))
-            this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
+            this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category)
             this.personalitiesFiltered.sort()
             console.log('per filtered', this.personalitiesFiltered)
             this.isLoading = false
@@ -2736,7 +2707,7 @@ export default {
         },
         async filterPersonalities() {
             if (!this.searchPersonality) {
-                this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
+                this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category )
                 this.personalitiesFiltered.sort()
                 this.searchPersonalityInProgress = false
                 return
@@ -2756,7 +2727,7 @@ export default {
 
                 this.personalitiesFiltered = seachedPersonalities.sort()
             } else {
-                this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category && item.language === this.configFile.personality_language)
+                this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category)
                 this.personalitiesFiltered.sort()
             }
             this.searchPersonalityInProgress = false

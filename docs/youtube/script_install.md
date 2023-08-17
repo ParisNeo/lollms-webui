@@ -1,4 +1,4 @@
-Hi there. Today I finally make a presentation of the new alpha version of GPT4ALL webui.
+Hi there. Today I finally make a presentation of the new alpha version of LOLLMS webui.
 Join us as we dive into the features and functionalities of this new version.
 
 First, I want to thank all of you for your support. We have reached 2.1k stars on github And I hope you continue spreading the word about this tool to give it more visibility.

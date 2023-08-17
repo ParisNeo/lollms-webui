@@ -24,7 +24,7 @@ repeat_penalty: 1.2
 n_threads: 8
 
 #Personality parameters
-personalities: ["english/generic/lollms"]
+personalities: ["generic/lollms"]
 active_personality_id: 0
 override_personality_model_parameters: false #if true the personality parameters are overriden by those of the configuration (may affect personality behaviour) 
 
@@ -38,7 +38,7 @@ debug: False
 db_path: database.db
 
 # Automatic update
-auto_update: false
+auto_update: true
 
 
 # Audio

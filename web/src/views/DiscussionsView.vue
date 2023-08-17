@@ -384,7 +384,7 @@ export default {
                 SENDER_TYPES_AI                 : 1, // Sent by ai
                 SENDER_TYPES_SYSTEM             : 2, // Sent by athe system
             },
-            version                             : "4.0",
+            version                             : "5.0",
             list                                : [], // Discussion list
             tempList                            : [], // Copy of Discussion list (used for keeping the original list during filtering discussions/searching action)
             currentDiscussion                   : {}, // Current/selected discussion id
@@ -884,6 +884,7 @@ export default {
                 rank:                   0,
 
                 steps                   : [],
+                parameters              : msgObj.parameters,
                 metadata                : msgObj.metadata
             }
             console.log(responseMessage)
@@ -979,7 +980,8 @@ export default {
                             rank:                   0,
 
                             steps:                  [],
-                            metadata:               {}
+                            parameters:             null,
+                            metadata:               []
 
                         };
                         this.createUserMsg(usrMessage);
@@ -1030,15 +1032,18 @@ export default {
                     if (matchingStep) {
                         matchingStep.done = true;
                         try {
-                            const metadata = JSON.parse(msgObj.metadata);
-                            matchingStep.status=metadata.status
-                            console.log(metadata);
+                            console.log(msgObj.parameters)
+                            const parameters = msgObj.parameters;
+                            matchingStep.status=parameters.status
+                            console.log(parameters);
+                            
                         } catch (error) {
                             console.error('Error parsing JSON:', error.message);
                         }
                     }
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_JSON_INFOS) {
                     console.log("JSON message")
+                    console.log(msgObj.metadata)
                     messageItem.metadata = msgObj.metadata
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_EXCEPTION) {
                     this.$refs.toast.showToast(msgObj.content, 5, false)

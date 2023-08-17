@@ -414,20 +414,30 @@ class Message:
             "INSERT INTO message (sender, content, type, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at, discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
             (self.sender, self.content, self.message_type, self.rank, self.parent_message_id, self.binding, self.model, self.personality, self.created_at, self.finished_generating_at, self.discussion_id)
         )
-    def update(self, new_content, commit=True):
+    def update(self, new_content, new_metadata=None, commit=True):
         self.finished_generating_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
         # print(f"{current_date_time}")
-        self.discussions_db.update(
-            f"UPDATE message SET content = ?, finished_generating_at = ? WHERE id = ?",(new_content, self.finished_generating_at,self.id)
-        )
-
+        if new_metadata is None:
+            self.discussions_db.update(
+                f"UPDATE message SET content = ?, finished_generating_at = ? WHERE id = ?",(new_content, self.finished_generating_at,self.id)
+            )
+        else:
+            self.discussions_db.update(
+                f"UPDATE message SET content = ?, metadata = ?, finished_generating_at = ? WHERE id = ?",(new_content, new_metadata, self.finished_generating_at,self.id)
+            )
     def to_json(self):
         attributes = Message.get_fields()
         msgJson = {}
         for attribute_name in attributes:
             attribute_value = getattr(self, attribute_name, None)
-            msgJson[attribute_name] = attribute_value
+            if attribute_name=="metadata":
+                if type(attribute_value) == str:
+                    msgJson[attribute_name] = json.loads(attribute_value)
+                else:
+                    msgJson[attribute_name] = attribute_value
+            else:
+                msgJson[attribute_name] = attribute_value
         return msgJson
 
 class Discussion:
@@ -545,14 +555,14 @@ class Discussion:
                 return message
         return None
 
-    def update_message(self, new_content):
+    def update_message(self, new_content, new_metadata=None):
         """Updates the content of a message
 
         Args:
             message_id (int): The id of the message to be changed
             new_content (str): The nex message content
         """
-        self.current_message.update(new_content)
+        self.current_message.update(new_content, new_metadata)
     
     def message_rank_up(self, message_id):
         """Increments the rank of the message

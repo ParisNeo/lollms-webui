@@ -65,12 +65,6 @@
             {{ personality.author }}
           </div>
           <div class="flex items-center">
-            <i data-feather="globe" class="w-5 m-1"></i>
-            <b>Language:&nbsp;</b>
-
-            {{ personality.language }}
-          </div>
-          <div class="flex items-center">
             <i data-feather="bookmark" class="w-5 m-1"></i>
             <b>Category:&nbsp;</b>
 

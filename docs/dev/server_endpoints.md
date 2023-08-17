@@ -180,7 +180,6 @@ This Flask server provides various endpoints to manage and interact with the cha
   "override_personality_model_parameters": false,
   "personality": "Computing advisor",
   "personality_category": "Helpers",
-  "personality_language": "english",
   "port": 9600,
   "repeat_last_n": 40,
   "repeat_penalty": 1.2,

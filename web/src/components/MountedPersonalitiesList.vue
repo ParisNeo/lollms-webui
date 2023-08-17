@@ -333,7 +333,6 @@ export default {
 
             try {
                 const obj = {
-                    language: pers.language,
                     category: pers.category,
                     folder: pers.folder
                 }
@@ -355,7 +354,6 @@ export default {
 
             try {
                 const obj = {
-                    language: pers.language,
                     category: pers.category,
                     folder: pers.folder
                 }
@@ -376,7 +374,6 @@ export default {
             if (!pers) { return { 'status': false, 'error': 'no personality - unmount_personality' } }
 
             const obj = {
-                language: pers.language,
                 category: pers.category,
                 folder: pers.folder
             }

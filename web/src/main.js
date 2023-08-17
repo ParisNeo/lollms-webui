@@ -118,9 +118,8 @@ export const store = createStore({
           const configFile = await api_get_req('get_config')
           let personality_path_infos = configFile.personalities[configFile.active_personality_id].split("/")
           //let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
-          configFile.personality_language = personality_path_infos[0]
-          configFile.personality_category = personality_path_infos[1]
-          configFile.personality_folder = personality_path_infos[2]
+          configFile.personality_category = personality_path_infos[0]
+          configFile.personality_folder = personality_path_infos[1]
 
           commit('setConfig', configFile);
         } catch (error) {
@@ -130,39 +129,32 @@ export const store = createStore({
       },
       async refreshPersonalitiesArr({ commit }) {
           let personalities = []
-          const dictionary = await api_get_req("get_all_personalities")
-          const langkeys = Object.keys(dictionary); // returns languages folder names
-          for (let i = 0; i < langkeys.length; i++) {
-              const langkey = langkeys[i];
-              const catdictionary = dictionary[langkey];
-              const catkeys = Object.keys(catdictionary); // returns categories
+          const catdictionary = await api_get_req("get_all_personalities")
+          const catkeys = Object.keys(catdictionary); // returns categories
 
-              for (let j = 0; j < catkeys.length; j++) {
-                  const catkey = catkeys[j];
-                  const personalitiesArray = catdictionary[catkey];
-                  const modPersArr = personalitiesArray.map((item) => {
+          for (let j = 0; j < catkeys.length; j++) {
+              const catkey = catkeys[j];
+              const personalitiesArray = catdictionary[catkey];
+              const modPersArr = personalitiesArray.map((item) => {
 
-                      const isMounted = this.state.config.personalities.includes(langkey + '/' + catkey + '/' + item.folder)
-                      // if (isMounted) {
-                      //     console.log(item)
-                      // }
-                      let newItem = {}
-                      newItem = item
-                      newItem.category = catkey // add new props to items
-                      newItem.language = langkey // add new props to items
-                      newItem.full_path = langkey + '/' + catkey + '/' + item.folder // add new props to items
-                      newItem.isMounted = isMounted // add new props to items
-                      return newItem
-                  })
+                  const isMounted = this.state.config.personalities.includes(catkey + '/' + item.folder)
+                  // if (isMounted) {
+                  //     console.log(item)
+                  // }
+                  let newItem = {}
+                  newItem = item
+                  newItem.category = catkey // add new props to items
+                  newItem.full_path = catkey + '/' + item.folder // add new props to items
+                  newItem.isMounted = isMounted // add new props to items
+                  return newItem
+              })
 
 
-                  if (personalities.length == 0) {
-                      personalities = modPersArr
-                  } else {
-                      personalities = personalities.concat(modPersArr)
-                  }
+              if (personalities.length == 0) {
+                  personalities = modPersArr
+              } else {
+                  personalities = personalities.concat(modPersArr)
               }
-
           }
 
           personalities.sort((a, b) => a.name.localeCompare(b.name))

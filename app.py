@@ -14,7 +14,7 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-__version__ ="4.1"
+__version__ ="5.0"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
@@ -176,7 +176,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
     def __init__(self, args, _app, _socketio, config:LOLLMSConfig, config_file_path:Path|str, lollms_paths:LollmsPaths) -> None:
         self.args = args
         if len(config.personalities)==0:
-            config.personalities.append("english/generic/lollms")
+            config.personalities.append("generic/lollms")
             config["active_personality_id"] = 0
             config.save_config()
 
@@ -190,11 +190,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
         app.template_folder = "web/dist"
 
         if len(config["personalities"])>0:
-            self.personality_language= config["personalities"][config["active_personality_id"]].split("/")[0]
-            self.personality_category= config["personalities"][config["active_personality_id"]].split("/")[1]
-            self.personality_name= config["personalities"][config["active_personality_id"]].split("/")[2]
+            self.personality_category= config["personalities"][config["active_personality_id"]].split("/")[0]
+            self.personality_name= config["personalities"][config["active_personality_id"]].split("/")[1]
         else:
-            self.personality_language = "english"
             self.personality_category = "generic"
             self.personality_name = "lollms"
 
@@ -273,17 +271,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
             "/list_models", "list_models", self.list_models, methods=["GET"]
         )
         self.add_endpoint(
-            "/list_personalities_languages", "list_personalities_languages", self.list_personalities_languages, methods=["GET"]
-        )        
-        self.add_endpoint(
             "/list_personalities_categories", "list_personalities_categories", self.list_personalities_categories, methods=["GET"]
         )
         self.add_endpoint(
             "/list_personalities", "list_personalities", self.list_personalities, methods=["GET"]
-        )
-
-        self.add_endpoint(
-            "/list_languages", "list_languages", self.list_languages, methods=["GET"]
         )
         
         self.add_endpoint(
@@ -452,85 +443,78 @@ class LoLLMsWebUI(LoLLMsAPPI):
     def get_all_personalities(self):
         personalities_folder = self.lollms_paths.personalities_zoo_path
         personalities = {}
-        for language_folder in personalities_folder.iterdir():
-            lang = language_folder.stem
-            if language_folder.is_dir() and not language_folder.stem.startswith('.'):
-                personalities[language_folder.name] = {}
-                for category_folder in  language_folder.iterdir():
-                    cat = category_folder.stem
-                    if category_folder.is_dir() and not category_folder.stem.startswith('.'):
-                        personalities[language_folder.name][category_folder.name] = []
-                        for personality_folder in category_folder.iterdir():
-                            pers = personality_folder.stem
-                            if personality_folder.is_dir() and not personality_folder.stem.startswith('.'):
-                                personality_info = {"folder":personality_folder.stem}
-                                config_path = personality_folder / 'config.yaml'
-                                if not config_path.exists():
-                                    """
-                                    try:
-                                        shutil.rmtree(str(config_path.parent))
-                                        ASCIIColors.warning(f"Deleted useless personality: {config_path.parent}")
-                                    except Exception as ex:
-                                        ASCIIColors.warning(f"Couldn't delete personality ({ex})")
-                                    """
-                                    continue                                    
-                                try:
-                                    scripts_path = personality_folder / 'scripts'
-                                    personality_info['has_scripts'] = scripts_path.is_dir()
-                                    with open(config_path) as config_file:
-                                        config_data = yaml.load(config_file, Loader=yaml.FullLoader)
-                                        personality_info['name'] = config_data.get('name',"No Name")
-                                        personality_info['description'] = config_data.get('personality_description',"")
-                                        personality_info['author'] = config_data.get('author', 'ParisNeo')
-                                        personality_info['version'] = config_data.get('version', '1.0.0')
-                                        personality_info['installed'] = (self.lollms_paths.personal_configuration_path/f"personality_{personality_folder.stem}.yaml").exists() or personality_info['has_scripts']
-                                        personality_info['help'] = config_data.get('help', '')
-                                        personality_info['commands'] = config_data.get('commands', '')
-                                    real_assets_path = personality_folder/ 'assets'
-                                    assets_path = Path("personalities") / lang / cat / pers / 'assets'
-                                    gif_logo_path = assets_path / 'logo.gif'
-                                    webp_logo_path = assets_path / 'logo.webp'
-                                    png_logo_path = assets_path / 'logo.png'
-                                    jpg_logo_path = assets_path / 'logo.jpg'
-                                    jpeg_logo_path = assets_path / 'logo.jpeg'
-                                    bmp_logo_path = assets_path / 'logo.bmp'
 
-                                    gif_logo_path_ = real_assets_path / 'logo.gif'
-                                    webp_logo_path_ = real_assets_path / 'logo.webp'
-                                    png_logo_path_ = real_assets_path / 'logo.png'
-                                    jpg_logo_path_ = real_assets_path / 'logo.jpg'
-                                    jpeg_logo_path_ = real_assets_path / 'logo.jpeg'
-                                    bmp_logo_path_ = real_assets_path / 'logo.bmp'
+        for category_folder in  personalities_folder.iterdir():
+            cat = category_folder.stem
+            if category_folder.is_dir() and not category_folder.stem.startswith('.'):
+                personalities[category_folder.name] = []
+                for personality_folder in category_folder.iterdir():
+                    pers = personality_folder.stem
+                    if personality_folder.is_dir() and not personality_folder.stem.startswith('.'):
+                        personality_info = {"folder":personality_folder.stem}
+                        config_path = personality_folder / 'config.yaml'
+                        if not config_path.exists():
+                            """
+                            try:
+                                shutil.rmtree(str(config_path.parent))
+                                ASCIIColors.warning(f"Deleted useless personality: {config_path.parent}")
+                            except Exception as ex:
+                                ASCIIColors.warning(f"Couldn't delete personality ({ex})")
+                            """
+                            continue                                    
+                        try:
+                            scripts_path = personality_folder / 'scripts'
+                            personality_info['has_scripts'] = scripts_path.is_dir()
+                            with open(config_path) as config_file:
+                                config_data = yaml.load(config_file, Loader=yaml.FullLoader)
+                                personality_info['name'] = config_data.get('name',"No Name")
+                                personality_info['description'] = config_data.get('personality_description',"")
+                                personality_info['author'] = config_data.get('author', 'ParisNeo')
+                                personality_info['version'] = config_data.get('version', '1.0.0')
+                                personality_info['installed'] = (self.lollms_paths.personal_configuration_path/f"personality_{personality_folder.stem}.yaml").exists() or personality_info['has_scripts']
+                                personality_info['help'] = config_data.get('help', '')
+                                personality_info['commands'] = config_data.get('commands', '')
+                            real_assets_path = personality_folder/ 'assets'
+                            assets_path = Path("personalities") / cat / pers / 'assets'
+                            gif_logo_path = assets_path / 'logo.gif'
+                            webp_logo_path = assets_path / 'logo.webp'
+                            png_logo_path = assets_path / 'logo.png'
+                            jpg_logo_path = assets_path / 'logo.jpg'
+                            jpeg_logo_path = assets_path / 'logo.jpeg'
+                            bmp_logo_path = assets_path / 'logo.bmp'
 
-                                    personality_info['has_logo'] = png_logo_path.is_file() or gif_logo_path.is_file()
-                                    
-                                    if gif_logo_path_.exists():
-                                        personality_info['avatar'] = str(gif_logo_path).replace("\\","/")
-                                    elif webp_logo_path_.exists():
-                                        personality_info['avatar'] = str(webp_logo_path).replace("\\","/")
-                                    elif png_logo_path_.exists():
-                                        personality_info['avatar'] = str(png_logo_path).replace("\\","/")
-                                    elif jpg_logo_path_.exists():
-                                        personality_info['avatar'] = str(jpg_logo_path).replace("\\","/")
-                                    elif jpeg_logo_path_.exists():
-                                        personality_info['avatar'] = str(jpeg_logo_path).replace("\\","/")
-                                    elif bmp_logo_path_.exists():
-                                        personality_info['avatar'] = str(bmp_logo_path).replace("\\","/")
-                                    else:
-                                        personality_info['avatar'] = ""
-                                    personalities[language_folder.name][category_folder.name].append(personality_info)
-                                except Exception as ex:
-                                    print(f"Couldn't load personality from {personality_folder} [{ex}]")
+                            gif_logo_path_ = real_assets_path / 'logo.gif'
+                            webp_logo_path_ = real_assets_path / 'logo.webp'
+                            png_logo_path_ = real_assets_path / 'logo.png'
+                            jpg_logo_path_ = real_assets_path / 'logo.jpg'
+                            jpeg_logo_path_ = real_assets_path / 'logo.jpeg'
+                            bmp_logo_path_ = real_assets_path / 'logo.bmp'
+
+                            personality_info['has_logo'] = png_logo_path.is_file() or gif_logo_path.is_file()
+                            
+                            if gif_logo_path_.exists():
+                                personality_info['avatar'] = str(gif_logo_path).replace("\\","/")
+                            elif webp_logo_path_.exists():
+                                personality_info['avatar'] = str(webp_logo_path).replace("\\","/")
+                            elif png_logo_path_.exists():
+                                personality_info['avatar'] = str(png_logo_path).replace("\\","/")
+                            elif jpg_logo_path_.exists():
+                                personality_info['avatar'] = str(jpg_logo_path).replace("\\","/")
+                            elif jpeg_logo_path_.exists():
+                                personality_info['avatar'] = str(jpeg_logo_path).replace("\\","/")
+                            elif bmp_logo_path_.exists():
+                                personality_info['avatar'] = str(bmp_logo_path).replace("\\","/")
+                            else:
+                                personality_info['avatar'] = ""
+                            personalities[category_folder.name].append(personality_info)
+                        except Exception as ex:
+                            print(f"Couldn't load personality from {personality_folder} [{ex}]")
         return json.dumps(personalities)
     
     def get_personality(self):
-        lang = request.args.get('language')
         category = request.args.get('category')
         name = request.args.get('name')
-        if category!="personal":
-            personality_folder = self.lollms_paths.personalities_zoo_path/f"{lang}"/f"{category}"/f"{name}"
-        else:
-            personality_folder = self.lollms_paths.personal_personalities_path/f"{lang}"/f"{category}"/f"{name}"
+        personality_folder = self.lollms_paths.personalities_zoo_path/f"{category}"/f"{name}"
         personality_path = personality_folder/f"config.yaml"
         personality_info = {}
         with open(personality_path) as config_file:
@@ -591,18 +575,14 @@ class LoLLMsWebUI(LoLLMsAPPI):
         elif setting_name== "ctx_size":
             self.config["ctx_size"]=int(data['setting_value'])
 
-
-        elif setting_name== "language":
-            self.config["language"]=data['setting_value']
-
         elif setting_name== "personality_folder":
             self.personality_name=data['setting_value']
             if len(self.config["personalities"])>0:
                 if self.config["active_personality_id"]<len(self.config["personalities"]):
-                    self.config["personalities"][self.config["active_personality_id"]] = f"{self.personality_language}/{self.personality_category}/{self.personality_name}"
+                    self.config["personalities"][self.config["active_personality_id"]] = f"{self.personality_category}/{self.personality_name}"
                 else:
                     self.config["active_personality_id"] = 0
-                    self.config["personalities"][self.config["active_personality_id"]] = f"{self.personality_language}/{self.personality_category}/{self.personality_name}"
+                    self.config["personalities"][self.config["active_personality_id"]] = f"{self.personality_category}/{self.personality_name}"
                 
                 if self.personality_category!="Custom":
                     personality_fn = self.lollms_paths.personalities_zoo_path/self.config["personalities"][self.config["active_personality_id"]]
@@ -610,7 +590,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     personality_fn = self.lollms_paths.personal_personalities_path/self.config["personalities"][self.config["active_personality_id"]].split("/")[-1]
                 self.personality.load_personality(personality_fn)
             else:
-                self.config["personalities"].append(f"{self.personality_language}/{self.personality_category}/{self.personality_name}")
+                self.config["personalities"].append(f"{self.personality_category}/{self.personality_name}")
         elif setting_name== "override_personality_model_parameters":
             self.config["override_personality_model_parameters"]=bool(data['setting_value'])
 
@@ -784,46 +764,24 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return jsonify([])
     
 
-    def list_personalities_languages(self):
-        personalities_languages_dir = self.lollms_paths.personalities_zoo_path  # replace with the actual path to the models folder
-        personalities_languages = [f.stem for f in personalities_languages_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]
-        return jsonify(personalities_languages)
-
     def list_personalities_categories(self):
-        language = request.args.get('language')
-        if language is None:
-            language = 'english'
-        personalities_categories_dir = self.lollms_paths.personalities_zoo_path/f'{language}'  # replace with the actual path to the models folder
+        personalities_categories_dir = self.lollms_paths.personalities_zoo_path  # replace with the actual path to the models folder
         personalities_categories = [f.stem for f in personalities_categories_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]
         return jsonify(personalities_categories)
     
     def list_personalities(self):
-        language = request.args.get('language')
-        if language is None:
-            language = 'english'
         category = request.args.get('category')
         if not category:
             return jsonify([])
             
         try:
-            personalities_dir = self.lollms_paths.personalities_zoo_path/f'{language}/{category}'  # replace with the actual path to the models folder
+            personalities_dir = self.lollms_paths.personalities_zoo_path/f'{category}'  # replace with the actual path to the models folder
             personalities = [f.stem for f in personalities_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]
         except Exception as ex:
             personalities=[]
             ASCIIColors.error(f"No personalities found. Using default one {ex}")
         return jsonify(personalities)
 
-    def list_languages(self):
-        lanuguages= [
-        { "value": "en-US", "label": "English" },
-        { "value": "fr-FR", "label": "Français" },
-        { "value": "ar-AR", "label": "العربية" },
-        { "value": "it-IT", "label": "Italiano" },
-        { "value": "de-DE", "label": "Deutsch" },
-        { "value": "nl-XX", "label": "Dutch" },
-        { "value": "zh-CN", "label": "中國人" }
-        ]
-        return jsonify(lanuguages)
 
 
     def list_discussions(self):
@@ -832,10 +790,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
 
     def delete_personality(self):
-        lang = request.args.get('language')
         category = request.args.get('category')
         name = request.args.get('name')
-        path = Path("personalities")/lang/category/name
+        path = Path("personalities")/category/name
         try:
             shutil.rmtree(path)
             return jsonify({'status':True})
@@ -1220,11 +1177,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
         except Exception as e:
             print(f"Error occurred while parsing JSON: {e}")
             return
-        language = data['language']
         category = data['category']
         name = data['folder']
 
-        package_path = f"{language}/{category}/{name}"
+        package_path = f"{category}/{name}"
         package_full_path = self.lollms_paths.personalities_zoo_path/package_path
         config_file = package_full_path / "config.yaml"
         if config_file.exists():
@@ -1256,27 +1212,26 @@ class LoLLMsWebUI(LoLLMsAPPI):
         except Exception as e:
             print(f"Error occurred while parsing JSON: {e}")
             return
-        language = data['language']
         category = data['category']
         name = data['folder']
 
 
 
 
-        package_path = f"{language}/{category}/{name}"
+        package_path = f"{category}/{name}"
         package_full_path = self.lollms_paths.personalities_zoo_path/package_path
         config_file = package_full_path / "config.yaml"
         if config_file.exists():
             ASCIIColors.info(f"Unmounting personality {package_path}")
-            index = self.config["personalities"].index(f"{language}/{category}/{name}")
-            self.config["personalities"].remove(f"{language}/{category}/{name}")
+            index = self.config["personalities"].index(f"{category}/{name}")
+            self.config["personalities"].remove(f"{category}/{name}")
             if self.config["active_personality_id"]>=index:
                 self.config["active_personality_id"]=0
             if len(self.config["personalities"])>0:
                 self.mounted_personalities = self.rebuild_personalities()
                 self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             else:
-                self.personalities = ["english/generic/lollms"]
+                self.personalities = ["generic/lollms"]
                 self.mounted_personalities = self.rebuild_personalities()
                 self.personality = self.mounted_personalities[self.config["active_personality_id"]]
 
@@ -1310,19 +1265,18 @@ class LoLLMsWebUI(LoLLMsAPPI):
         except Exception as e:
             print(f"Error occurred while parsing JSON: {e}")
             return
-        language    = data['language']
         category    = data['category']
         name        = data['folder']
         try:
-            index = self.config["personalities"].index(f"{language}/{category}/{name}")
-            self.config["personalities"].remove(f"{language}/{category}/{name}")
+            index = self.config["personalities"].index(f"{category}/{name}")
+            self.config["personalities"].remove(f"{category}/{name}")
             if self.config["active_personality_id"]>=index:
                 self.config["active_personality_id"]=0
             if len(self.config["personalities"])>0:
                 self.mounted_personalities = self.rebuild_personalities()
                 self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             else:
-                self.personalities = ["english/generic/lollms"]
+                self.personalities = ["generic/lollms"]
                 self.mounted_personalities = self.rebuild_personalities()
                 self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             self.apply_settings()
@@ -1333,7 +1287,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                         "active_personality_id":self.config["active_personality_id"]
                         })         
         except:
-            ASCIIColors.error(f"nok : Personality not found @ {language}/{category}/{name}")
+            ASCIIColors.error(f"nok : Personality not found @ {category}/{name}")
             return jsonify({"status": False, "error":"Couldn't unmount personality"})         
          
     def get_active_personality_settings(self):
@@ -1422,14 +1376,13 @@ class LoLLMsWebUI(LoLLMsAPPI):
         except Exception as e:
             print(f"Error occurred while parsing JSON: {e}")
             return
-        language = data['language']
         category = data['category']
         name = data['folder']
 
         if category.startswith("personal"):
-            personality_folder = self.lollms_paths.personal_personalities_path/f"{language}"/f"{category}"/f"{name}"
+            personality_folder = self.lollms_paths.personal_personalities_path/f"{category}"/f"{name}"
         else:
-            personality_folder = self.lollms_paths.personalities_zoo_path/f"{language}"/f"{category}"/f"{name}"
+            personality_folder = self.lollms_paths.personalities_zoo_path/f"{category}"/f"{name}"
 
         personality = AIPersonality(personality_folder,
                                     self.lollms_paths, 
@@ -1675,13 +1628,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
     def get_current_personality_path_infos(self):
         if self.personality is None:
             return jsonify({
-                "personality_language":"",
                 "personality_category":"", 
                 "personality_name":""
             })
         else:
             return jsonify({
-                "personality_language":self.personality_language,
                 "personality_category":self.personality_category, 
                 "personality_name":self.personality_name
             })
