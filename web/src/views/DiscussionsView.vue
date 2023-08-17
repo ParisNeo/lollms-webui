@@ -813,7 +813,8 @@ export default {
                 rank: 0,
                 sender: msgObj.user,
                 created_at: msgObj.created_at,
-                steps: []
+                steps: [],
+                html_js_s: []
 
             }
             this.discussionArr.push(usrMessage)

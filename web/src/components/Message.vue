@@ -134,7 +134,12 @@
                             <Step :done="step.done" :message="step.message" :status="step.status" />
                         </div>
                     </div>
-
+                    <div class="flex flex-col items-start w-full">
+                        <div v-for="(html_js, index) in message.html_js_s" :key="'htmljs-' + message.id + '-' + index" class="htmljs font-bold" :style="{ backgroundColor: step.done ? 'transparent' : 'inherit' }">
+                            <RenderHTMLJS :htmlContent="html_js" />
+                        </div>
+                    </div>
+                    
                     <MarkdownRenderer ref="mdRender" v-if="!editMsgMode && !message.metadata" :markdown-text="message.content">
                     </MarkdownRenderer>
                     <textarea v-if="editMsgMode && !message.metadata" ref="mdTextarea" :rows="4"
@@ -176,6 +181,9 @@
     padding: 0;
     cursor: pointer;
 }
+.htmljs{
+    background: none;
+}
 </style>
 <script>
 import botImgPlaceholder from "../assets/logo.svg"
@@ -184,8 +192,9 @@ const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 import { nextTick } from 'vue'
 import feather from 'feather-icons'
 import MarkdownRenderer from './MarkdownRenderer.vue';
+import RenderHTMLJS from './RenderHTMLJS.vue';
+import JsonViewer from "./JsonViewer.vue";
 import Step from './Step.vue';
-import JsonViewer from "./JsonViewer.vue"
 
 export default {
     // eslint-disable-next-line vue/multi-word-component-names
@@ -194,6 +203,7 @@ export default {
     components: {
         MarkdownRenderer,
         Step,
+        RenderHTMLJS,
         JsonViewer,
     },
     props: {
