@@ -54,6 +54,15 @@ Content-Type: application/json
     "setting_value": "english"
 }
 ############################################
+### execute code
+############################################
+POST http://localhost:9600/execute_python_code
+Content-Type: application/json
+
+{
+    "code": "print('hello world')"
+}
+############################################
 ### Get all personalities
 ############################################
 GET http://localhost:9600/get_all_personalities

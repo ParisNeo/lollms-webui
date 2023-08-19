@@ -53,12 +53,27 @@ const markdownIt = new MarkdownIt('commonmark', {
           id +
           ')">Copied!</span>' +
           '</button>' +
+
+          '<button class="px-2 py-1 ml-10 mb-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">' +
+          '<span class="mr-1" id="exec-btn_' +
+          id +
+          '" onclick="executeCode(' +
+          id +
+          ')">Execute</span>'+
+          '</button>' +
+
+
           '<pre class="hljs p-1 rounded-md break-all grid grid-cols-1">' +
           '<code id="code_' +
           id +
           '" class="overflow-x-auto break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">' +
           highlightedCode +
           '</code>' +
+          '<code id="code_exec_' +
+          id +
+          '" class="overflow-x-auto hidden break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">' +
+          '</code>' +
+
           '</pre>' +
           '</div>'
         );
@@ -66,6 +81,14 @@ const markdownIt = new MarkdownIt('commonmark', {
         console.error(`Syntax highlighting failed for language '${lang}':`, error);
       }
     }
+    let btn_exec_txt = lang=='python'?'<button class="px-2 py-1 ml-10 mb-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">' +
+      '<span class="mr-1" id="exec-btn_' +
+      id +
+      '" onclick="executeCode(' +
+      id +
+      ')">Execute</span>'+
+      '</button>':''
+
     let codeString =
       '<div class="bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel p-2 rounded-lg shadow-sm">' +
       lang +
@@ -81,11 +104,19 @@ const markdownIt = new MarkdownIt('commonmark', {
       id +
       ')">Copied!</span>' +
       '</button>' +
+
+
+      btn_exec_txt +
+
       '<pre class="hljs p-1 rounded-md break-all grid grid-cols-1">' +
       '<code id="code_' +
       id +
       '" class="overflow-x-auto break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">' +
       hljs.highlightAuto(str).value +
+      '</code>' +
+      '<code id="code_exec_' +
+      id +
+      '" class="overflow-x-auto hidden break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">' +
       '</code>' +
       '</pre>' +
       '</div>';
@@ -158,6 +189,7 @@ export default {
   mounted() {
     const script = document.createElement('script');
     script.textContent = `
+
       // Your inline script code here
       function copyContentToClipboard(id) {
         console.log("copied");
@@ -172,6 +204,32 @@ export default {
         window.getSelection().addRange(range);
         document.execCommand('copy');
         window.getSelection().removeAllRanges();
+      }
+      function executeCode(id) {
+        const codeElement = document.getElementById('code_' + id);
+        const codeExecElement = document.getElementById('code_exec_' + id);
+        codeExecElement.classList.remove('hidden');
+        const code = codeElement.innerText
+        const json = JSON.stringify({ 'code': code })   
+        console.log(json)     
+        fetch('http://localhost:9600/execute_python_code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: json
+        }).then(response=>{
+          // Parse the JSON data from the response body
+          return response.json();
+        })
+        .then(jsonData => {
+          // Now you can work with the JSON data
+          console.log(jsonData);
+          codeExecElement.innerText=jsonData.output
+        })
+        .catch(error => {
+          // Handle any errors that occurred during the fetch process
+          console.error('Fetch error:', error);
+        });
+
       }
       `;
     script.async = true; // Set to true if the script should be loaded asynchronously

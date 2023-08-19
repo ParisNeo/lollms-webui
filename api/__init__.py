@@ -517,6 +517,28 @@ class LoLLMsAPPI(LollmsApplication):
             self.socketio.sleep(0)
             self.busy = False
 
+        @self.socketio.on('execute_python_code')
+        def execute_python_code(data):
+            """Executes Python code and returns the output."""
+            client_id = request.sid
+            code = data["code"]
+            # Import the necessary modules.
+            import io
+            import sys
+            import time
+
+            # Create a Python interpreter.
+            interpreter = io.StringIO()
+            sys.stdout = interpreter
+
+            # Execute the code.
+            start_time = time.time()
+            exec(code)
+            end_time = time.time()
+
+            # Get the output.
+            output = interpreter.getvalue()
+            self.socketio.emit("execution_output", {"output":output,"execution_time":end_time - start_time}, room=client_id)
 
         # A copy of the original lollms-server generation code needed for playground
         @self.socketio.on('generate_text')
@@ -935,7 +957,7 @@ class LoLLMsAPPI(LollmsApplication):
         
         if self.config["debug"]:
             ASCIIColors.yellow(discussion_messages)
-            ASCIIColors.info(f"prompt size:{tokens.shape} tokens")
+            ASCIIColors.info(f"prompt size:{len(tokens)} tokens")
 
         return discussion_messages, message.content, tokens
 

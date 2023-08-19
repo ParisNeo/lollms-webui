@@ -285,6 +285,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 
         self.add_endpoint("/", "", self.index, methods=["GET"])
         self.add_endpoint("/settings/", "", self.index, methods=["GET"])
+        self.add_endpoint("/playground/", "", self.index, methods=["GET"])
         
         self.add_endpoint("/<path:filename>", "serve_static", self.serve_static, methods=["GET"])
         self.add_endpoint("/user_infos/<path:filename>", "serve_user_infos", self.serve_user_infos, methods=["GET"])
@@ -415,7 +416,37 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         self.add_endpoint(
             "/save_presets", "save_presets", self.save_presets, methods=["POST"]
-        )      
+        )
+
+        self.add_endpoint(
+            "/execute_python_code", "execute_python_code", self.execute_python_code, methods=["POST"]
+        )
+        
+
+    def execute_python_code(self):
+        """Executes Python code and returns the output."""
+        data = request.get_json()
+        code = data["code"]
+        # Import the necessary modules.
+        import io
+        import sys
+        import time
+
+        # Create a Python interpreter.
+        interpreter = io.StringIO()
+        sys.stdout = interpreter
+
+        # Execute the code.
+        start_time = time.time()
+        try:
+            exec(code)
+            # Get the output.
+            output = interpreter.getvalue()
+        except Exception as ex:
+            output = str(ex)
+        end_time = time.time()
+
+        return jsonify({"output":output,"execution_time":end_time - start_time})
 
     def get_presets(self):
         presets_file = self.lollms_paths.personal_databases_path/"presets.json"

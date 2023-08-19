@@ -1,9 +1,15 @@
 {
-    "Writing a Book in Latex": "<Add some context information to give the AI some context about the book or leave blank if you have no specific idea>\n```latex\n\\documentclass[12pt]{book}\n\\usepackage{url}\n\\begin{document}\n\\title{<Put the title of the book here>}\n\\author{<Put the author name here>} % Author\n\\date{\\today} % Date\n\\maketitle\n\\tableofcontents\n\\chapter{Introduction}\n<Add any required text then press generate to push the AI to build your book>\n",
-    "Simple Book writing":"Once apon a time",
-    "Simple Question Answer":"User:<Put your question here>\nAssistant:",
-    "Question Answer with conditionning":"Assistant is a highly developed AI capable of answering any question about any subject.\nUser:<Put your question here>\nAssistant:",
-    "Instruct mode": "Instructions:\n<Put your instructions here>\nAnswer:",
-    "Make a python function": "Here is a python function that <describe the function you want lollms to build>:\n```python\ndef",
-    "Make a c++ function": "Here is a python function that <describe the function you want lollms to build>:\n```c++\n/*"
+    "Build a Latex Book": "@<Add some context information to give the AI some context about the book or leave blank if you have no specific idea>@\n```latex\n\\documentclass[12pt]{book}\n\\usepackage{url}\n\\begin{document}\n\\title{@<Put the title of the book here>@}\n\\author{@<Put the author name here>@} % Author\n\\date{\\today} % Date\n\\maketitle\n\\tableofcontents\n\\chapter{Introduction}\n@<Add any required text then press generate to push the AI to build your book>@\n\\end{document}\n```",    "Simple Book writing":"Once apon a time",
+    "Simple Question Answer":"User:@<Put your question here>@\nAssistant:",
+    "Question Answer with conditionning":"Assistant is a highly developed AI capable of answering any question about any subject.\nUser:@<Put your question here>\nAssistant:",
+    "Instruct mode": "Instructions:\n@<Put your instructions here>@\nAnswer:",
+    "Make a python function": "Here is a python function that @<describe the function you want lollms to build>@:\n```python\ndef",
+    "Make a c++ function": "Here is a c++ function that @<describe the function you want lollms to build>@:\n```c++\n/*",
+    "Make a c# function": "Here is a c# function that @<describe the function you want lollms to build>@:\n```c#\n/*",
+    "Make a objective-c function": "Here is a objective-c function that @<describe the function you want lollms to build>@:\n```objective-c\n/*",
+    "Make a java function": "Here is a java function that @<describe the function you want lollms to build>@:\n```java\n/*",
+    "Make a visual basic.net function": "Here is a visual basic function that <describe the function you want lollms to build>@:\n```vb.net\n/*",
+    "Make a vue.js ui": "Here is a vue.js template that @<describe the user interface you want to make with this>@:\n```vue.js\n<template>",
+    "Make a HTML5 ui": "Here is a HTML5 ui that @<describe the user interface you want to make with this>@:\n```html",
+    "Explain code": "```@<the name of the programming language>\n@<put your code here>@\n```\nHere is an explanation of the previous method:"
 }

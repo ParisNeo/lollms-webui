@@ -1,10 +1,10 @@
 <template>
   <div class="container bg-bg-light dark:bg-bg-dark shadow-lg overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
-    <div class="container flex flex-row m-2 border-2">
+    <div class="container flex flex-row m-2">
       <div class="flex-grow m-2">
-        <div class="mt-4 d-flex justify-content-space-between flex-row">
+        <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
           <label class="mt-2">Presets</label>
-          <select v-model="selectedPreset" class="w-25 m-2 border-2 rounded-md shadow-sm">
+          <select v-model="selectedPreset" class="m-2 border-2 rounded-md shadow-sm w-full">
             <option v-for="preset in Object.keys(presets)" :key="preset" :value="preset">
               {{ preset }}
             </option>
@@ -17,7 +17,8 @@
           
         </div>
         <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
-          <textarea v-model="text" id="text_element" class="mt-4 h-64 overflow-y-scroll w-full dark:bg-bg-dark" type="text"></textarea>
+          <textarea v-model="text" id="text_element" class="mt-4 h-64 overflow-y-scroll w-full dark:bg-bg-dark  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" type="text"></textarea>
+          <span>Cursor position {{ cursorPosition }}</span>
         </div>
         <div class="flex justify-between">
           <div class="m-0">
@@ -31,7 +32,7 @@
           </MarkdownRenderer>          
         </div>
       </div>
-      <div id="settings" class="border border-blue-300 bg-blue-200 mt-4 w-25 mr-2 h-full mb-10" style="align-items: center; height: fit-content; margin: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 4px;">
+      <div id="settings" class="border border-blue-300 bg-blue-200 mt-4 w-25 mr-2 h-full mb-10 min-w-500" style="align-items: center; height: fit-content; margin: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 4px;">
         <div id="title" class="border border-blue-600 bg-blue-300 m-0 flex justify-center items-center box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) border-radius: 4px;">
           <h3 class="text-gray-600 mb-4 text-center m-0">Settings</h3>
         </div>
@@ -94,8 +95,11 @@ export default {
     return {
       generating:false,
       presets:{},
-      selectedPreset: '',      
+      selectedPreset: '',    
+      cursorPosition:0,  
       text:"",
+      pre_text:"",
+      post_text:"",
       temperature: 0.1,
       top_k: 50,
       top_p: 0.9,
@@ -111,13 +115,14 @@ export default {
     MarkdownRenderer
   },
   mounted() {
-      //console.log('chatbox mnt',this.$refs)
-      this.$nextTick(() => {
-          feather.replace();
-      });        
-  },
-  created(){
-        axios.get('./presets.json').then(response => {
+    const text_element = document.getElementById('text_element');
+    text_element.addEventListener('keypress', () => {
+      this.cursorPosition = text_element.selectionStart;
+    });    
+    text_element.addEventListener('click', () => {
+      this.cursorPosition = text_element.selectionStart;
+    });        
+    axios.get('./presets.json').then(response => {
           console.log(response.data)
           this.presets=response.data
         }).catch(ex=>{
@@ -126,6 +131,8 @@ export default {
         // Event handler for receiving generated text chunks
         socket.on('text_chunk', data => {
             this.appendToOutput(data.chunk);
+            const text_element = document.getElementById('text_element');
+            text_element.scrollTo(0, text_element.scrollHeight);
         });
 
         // Event handler for receiving generated text chunks
@@ -154,7 +161,6 @@ export default {
         socket.on('buzzy', error => {
             console.error('Server is busy. Wait for your turn', error);
             this.$refs.toast.showToast(`Error: ${error.message}`,4,false)
-            this.$refs.text_element.scrollTop = this.$refs.text_element.scrollHeight;
             // Toggle button visibility
             this.generating=false
         });
@@ -166,15 +172,28 @@ export default {
             console.log("Generation canceled OK")
         });
 
+      //console.log('chatbox mnt',this.$refs)
+      this.$nextTick(() => {
+          feather.replace();
+      });        
+  },
+  created(){
+
         
   },
   methods:{
+    getCursorPosition() {
+      return this.cursorPosition;
+    },    
     appendToOutput(chunk){
-      this.text += chunk
+      this.pre_text += chunk
+      this.text = this.pre_text + this.post_text
     },
     generate(){
-      
-      var prompt = this.text
+      console.log("Finding cursor position")
+      this.pre_text = this.text.substring(0,this.getCursorPosition())
+      this.post_text = this.text.substring(this.getCursorPosition(), this.text.length)
+      var prompt = this.text.substring(0,this.getCursorPosition())
       console.log(prompt)
       // Trigger the 'generate_text' event with the prompt
       socket.emit('generate_text', { prompt: prompt, personality: -1, n_predicts: this.n_predicts , n_crop: this.n_crop,
