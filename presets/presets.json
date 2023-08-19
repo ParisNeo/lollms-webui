@@ -3,5 +3,7 @@
     "Simple Book writing":"Once apon a time",
     "Simple Question Answer":"User:<Put your question here>\nAssistant:",
     "Question Answer with conditionning":"Assistant is a highly developed AI capable of answering any question about any subject.\nUser:<Put your question here>\nAssistant:",
-    "Instruct mode": "Instructions:\n<Put your instructions here>\nAnswer:"
+    "Instruct mode": "Instructions:\n<Put your instructions here>\nAnswer:",
+    "Make a python function": "Here is a python function that <describe the function you want lollms to build>:\n```python\ndef",
+    "Make a c++ function": "Here is a python function that <describe the function you want lollms to build>:\n```c++\n/*"
 }

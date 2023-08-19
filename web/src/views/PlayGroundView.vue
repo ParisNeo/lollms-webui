@@ -1,7 +1,7 @@
 <template>
-  <div class="container mx-auto p-4 bg-gray-100 shadow-lg">
-    <div class="flex flex-row h-full">
-      <div class="flex-grow ml-2">
+  <div class="container bg-bg-light dark:bg-bg-dark shadow-lg overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+    <div class="container flex flex-row m-2 border-2">
+      <div class="flex-grow m-2">
         <div class="mt-4 d-flex justify-content-space-between flex-row">
           <label class="mt-2">Presets</label>
           <select v-model="selectedPreset" class="w-25 m-2 border-2 rounded-md shadow-sm">
@@ -16,8 +16,8 @@
           <button class="bg-green-500 hover:bg-green-600 active:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2" @click="reloadPresets"  title="Reload presets list"><i data-feather="refresh-ccw"></i></button>
           
         </div>
-        <div class="flex-grow">
-          <textarea v-model="text" id="text_element" class="mt-4 p-2 border border-gray-300 rounded-md h-64 overflow-y-scroll w-full" type="text"></textarea>
+        <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
+          <textarea v-model="text" id="text_element" class="mt-4 h-64 overflow-y-scroll w-full dark:bg-bg-dark" type="text"></textarea>
         </div>
         <div class="flex justify-between">
           <div class="m-0">
@@ -26,12 +26,15 @@
             <button v-show="!generating" id="export-button" @click="exportText" class="bg-green-500 hover:bg-green-600 active:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2">Export Text</button>
           </div>
         </div>
-
+        <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
+          <MarkdownRenderer ref="mdRender" :markdown-text="text" class="dark:bg-bg-dark">
+          </MarkdownRenderer>          
+        </div>
       </div>
       <div id="settings" class="border border-blue-300 bg-blue-200 mt-4 w-25 mr-2 h-full mb-10" style="align-items: center; height: fit-content; margin: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 4px;">
-          <div id="title" class="border border-blue-600 bg-blue-300 m-0" style="align-items: center; height: fit-content; margin: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 4px;">
+        <div id="title" class="border border-blue-600 bg-blue-300 m-0 flex justify-center items-center box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) border-radius: 4px;">
           <h3 class="text-gray-600 mb-4 text-center m-0">Settings</h3>
-          </div>
+        </div>
           <div class="slider-container ml-2 mr-2">
             <h3 class="text-gray-600">Temperature</h3>
             <input type="range" v-model="temperature" min="0" max="5" step="0.1" class="w-full">
@@ -72,9 +75,7 @@
             <input type="number" v-model="seed" class="w-full">
             <span class="slider-value text-gray-500">Current value: {{ seed }}</span>
           </div>
-        </div>
-
-
+      </div>
     </div>
   </div>
   <Toast ref="toast"/>
@@ -86,6 +87,7 @@ import feather from 'feather-icons'
 import axios from "axios";
 import socket from '@/services/websocket.js'
 import Toast from '../components/Toast.vue'
+import MarkdownRenderer from '../components/MarkdownRenderer.vue';
 export default {
   name: 'PlayGroundView',
   data() {
@@ -106,6 +108,7 @@ export default {
   },
   components:{    
     Toast,
+    MarkdownRenderer
   },
   mounted() {
       //console.log('chatbox mnt',this.$refs)
