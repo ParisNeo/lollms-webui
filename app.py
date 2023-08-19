@@ -53,7 +53,7 @@ try:
     from lollms.binding import LOLLMSConfig, BindingBuilder
     from lollms.personality import AIPersonality
     from lollms.config import BaseConfig
-    from lollms.helpers import ASCIIColors, trace_exception
+    from lollms.helpers import ASCIIColors, get_trace_exception, trace_exception
     from lollms.paths import LollmsPaths
 
     from api.db import Discussion
@@ -443,7 +443,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             # Get the output.
             output = interpreter.getvalue()
         except Exception as ex:
-            output = str(ex)
+            output = str(ex)+"\n"+get_trace_exception(ex)
         end_time = time.time()
 
         return jsonify({"output":output,"execution_time":end_time - start_time})

@@ -69,12 +69,16 @@ const markdownIt = new MarkdownIt('commonmark', {
           '" class="overflow-x-auto break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">' +
           highlightedCode +
           '</code>' +
+          '</pre>' +
+          '<pre id="pre_exec_' +
+          id + '" class="hljs p-1  hidden rounded-md break-all grid grid-cols-1  mt-2">' +
+          'Execution output:<br>' +
           '<code id="code_exec_' +
           id +
-          '" class="overflow-x-auto hidden break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">' +
+          '" class="overflow-x-auto break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">' +
           '</code>' +
-
           '</pre>' +
+
           '</div>'
         );
       } catch (error) {
@@ -116,13 +120,13 @@ const markdownIt = new MarkdownIt('commonmark', {
       '</code>' +
       '<code id="code_exec_' +
       id +
-      '" class="overflow-x-auto hidden break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">' +
+      '" class="overflow-x-auto mt-2 hidden break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">' +
       '</code>' +
       '</pre>' +
       '</div>';
     return codeString;
   },
-  bulletListMarker: '•',
+  bulletListMarker: '-',
 }).use(attrs).use(anchor).use(implicitFigures).use(emoji); // Add attrs plugin for adding attributes to elements
 
 
@@ -208,7 +212,8 @@ export default {
       function executeCode(id) {
         const codeElement = document.getElementById('code_' + id);
         const codeExecElement = document.getElementById('code_exec_' + id);
-        codeExecElement.classList.remove('hidden');
+        const preExecElement = document.getElementById('pre_exec_' + id);
+        
         const code = codeElement.innerText
         const json = JSON.stringify({ 'code': code })   
         console.log(json)     
@@ -223,6 +228,7 @@ export default {
         .then(jsonData => {
           // Now you can work with the JSON data
           console.log(jsonData);
+          preExecElement.classList.remove('hidden');
           codeExecElement.innerText=jsonData.output
         })
         .catch(error => {
