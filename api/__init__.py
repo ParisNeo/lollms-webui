@@ -511,7 +511,7 @@ class LoLLMsAPPI(LollmsApplication):
         @self.socketio.on('cancel_text_generation')
         def cancel_text_generation(data):
             client_id = request.sid
-            self.clients[client_id]["requested_stop"]=True
+            self.connections[client_id]["requested_stop"]=True
             print(f"Client {client_id} requested canceling generation")
             self.socketio.emit("generation_canceled", {"message":"Generation is canceled."}, room=client_id)
             self.socketio.sleep(0)
