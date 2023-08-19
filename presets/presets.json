@@ -1,0 +1,7 @@
+{
+    "Writing a Book in Latex": "<Add some context information to give the AI some context about the book or leave blank if you have no specific idea>\n```latex\n\\documentclass[12pt]{book}\n\\usepackage{url}\n\\begin{document}\n\\title{<Put the title of the book here>}\n\\author{<Put the author name here>} % Author\n\\date{\\today} % Date\n\\maketitle\n\\tableofcontents\n\\chapter{Introduction}\n<Add any required text then press generate to push the AI to build your book>\n",
+    "Simple Book writing":"Once apon a time",
+    "Simple Question Answer":"User:<Put your question here>\nAssistant:",
+    "Question Answer with conditionning":"Assistant is a highly developed AI capable of answering any question about any subject.\nUser:<Put your question here>\nAssistant:",
+    "Instruct mode": "Instructions:\n<Put your instructions here>\nAnswer:"
+}

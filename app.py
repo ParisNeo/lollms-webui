@@ -409,7 +409,41 @@ class LoLLMsWebUI(LoLLMsAPPI):
             "/import_multiple_discussions", "import_multiple_discussions", self.import_multiple_discussions, methods=["POST"]
         )      
 
-        
+        self.add_endpoint(
+            "/presets.json", "presets.json", self.get_presets, methods=["GET"]
+        )      
+
+        self.add_endpoint(
+            "/save_presets", "save_presets", self.save_presets, methods=["POST"]
+        )      
+
+    def get_presets(self):
+        presets_file = self.lollms_paths.personal_databases_path/"presets.json"
+        if not presets_file.exists():
+            shutil.copy("presets/presets.json",presets_file)
+        with open(presets_file) as f:
+            data = json.loads(f.read())
+        return jsonify(data)
+
+    def save_presets(self):
+        """Saves a preset to a file.
+
+        Args:
+            None.
+
+        Returns:
+            None.
+        """
+
+        # Get the JSON data from the POST request.
+        preset_data = request.get_json()
+
+        presets_file = self.lollms_paths.personal_databases_path/"presets.json"
+        # Save the JSON data to a file.
+        with open(presets_file, "w") as f:
+            json.dump(preset_data, f, indent=4)
+
+        return "Preset saved successfully!"
         
     def export_multiple_discussions(self):
         data = request.get_json()

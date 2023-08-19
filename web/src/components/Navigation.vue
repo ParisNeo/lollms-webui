@@ -8,6 +8,11 @@
             </RouterLink>
           </li>
           <li>
+            <RouterLink :to="{ name: 'playground' }" class="link-item dark:link-item-dark">
+              Playground
+            </RouterLink>
+          </li>
+          <li>
             <RouterLink :to="{ name: 'settings' }" class="link-item dark:link-item-dark">
               Settings
             </RouterLink>

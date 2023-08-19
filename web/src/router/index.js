@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import PlayGroundView from '../views/PlayGroundView.vue'
 import ExtensionsView from '../views/ExtensionsView.vue'
 import HelpView from '../views/HelpView.vue'
 import SettingsView from '../views/SettingsView.vue'
@@ -10,6 +11,11 @@ import DiscussionsView from '../views/DiscussionsView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/playground/',
+      name: 'playground',
+      component: PlayGroundView
+    },
     {
       path: '/extensions/',
       name: 'extensions',
