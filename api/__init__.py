@@ -113,7 +113,7 @@ class LoLLMsAPPI(LollmsApplication):
     def __init__(self, config:LOLLMSConfig, socketio, config_file_path:str, lollms_paths: LollmsPaths) -> None:
 
         super().__init__("Lollms_webui",config, lollms_paths, callback=self.process_chunk)
-        self.buzy = False
+        self.busy = False
         
         
         self.socketio = socketio
@@ -473,7 +473,7 @@ class LoLLMsAPPI(LollmsApplication):
             terminate_thread(self.connections[client_id]['generation_thread'])
             ASCIIColors.error(f'Client {request.sid} canceled generation')
             self.cancel_gen = False
-            self.buzy=False
+            self.busy=False
 
         @socketio.on('send_file')
         def send_file(data):
@@ -508,6 +508,14 @@ class LoLLMsAPPI(LollmsApplication):
                 )    
         
 
+        @self.socketio.on('cancel_text_generation')
+        def cancel_text_generation(data):
+            client_id = request.sid
+            self.clients[client_id]["requested_stop"]=True
+            print(f"Client {client_id} requested canceling generation")
+            self.socketio.emit("generation_canceled", {"message":"Generation is canceled."}, room=client_id)
+            self.socketio.sleep(0)
+            self.busy = False
 
 
         # A copy of the original lollms-server generation code needed for playground
@@ -515,19 +523,25 @@ class LoLLMsAPPI(LollmsApplication):
         def handle_generate_text(data):
             client_id = request.sid
             ASCIIColors.info(f"Text generation requested by client: {client_id}")
-            if self.buzy:
-                emit("buzzy", {"message":"I am buzzy. Come back later."}, room=client_id)
+            if self.busy:
+                self.socketio.emit("busy", {"message":"I am busy. Come back later."}, room=client_id)
                 self.socketio.sleep(0)
-                ASCIIColors.warning(f"OOps request {client_id}  refused!! Server buzy")
+                ASCIIColors.warning(f"OOps request {client_id}  refused!! Server busy")
                 return
             def generate_text():
-                self.buzy = True
+                self.busy = True
                 try:
                     model = self.model
                     self.connections[client_id]["is_generating"]=True
                     self.connections[client_id]["requested_stop"]=False
                     prompt          = data['prompt']
-                    personality_id  = data['personality']
+                    tokenized = model.tokenize(prompt)
+                    personality_id  = data.get('personality', -1)
+
+                    n_crop          = data.get('n_crop', len(tokenized))
+                    if n_crop!=-1:
+                        prompt          = model.detokenize(tokenized[-n_crop:])
+
                     n_predicts      = data["n_predicts"]
                     parameters      = data.get("parameters",{
                         "temperature":self.config["temperature"],
@@ -580,7 +594,7 @@ class LoLLMsAPPI(LollmsApplication):
                         except Exception as ex:
                             self.socketio.emit('generation_error', {'error': str(ex)}, room=client_id)
                             ASCIIColors.error(f"\ndone")
-                        self.buzy = False
+                        self.busy = False
                     else:
                         try:
                             personality: AIPersonality = self.personalities[personality_id]
@@ -653,11 +667,11 @@ class LoLLMsAPPI(LollmsApplication):
                         except Exception as ex:
                             self.socketio.emit('generation_error', {'error': str(ex)}, room=client_id)
                             ASCIIColors.error(f"\ndone")
-                        self.buzy = False
+                        self.busy = False
                 except Exception as ex:
                         trace_exception(ex)
                         self.socketio.emit('generation_error', {'error': str(ex)}, room=client_id)
-                        self.buzy = False
+                        self.busy = False
 
             # Start the text generation task in a separate thread
             task = self.socketio.start_background_task(target=generate_text)
@@ -675,7 +689,7 @@ class LoLLMsAPPI(LollmsApplication):
                 self.notify("Model not selected. Please select a model", False, client_id)
                 return
  
-            if not self.buzy:
+            if not self.busy:
                 if self.connections[client_id]["current_discussion"] is None:
                     if self.db.does_last_discussion_have_messages():
                         self.connections[client_id]["current_discussion"] = self.db.create_discussion()
@@ -699,11 +713,11 @@ class LoLLMsAPPI(LollmsApplication):
                 
                 self.socketio.sleep(0.01)
                 ASCIIColors.info("Started generation task")
-                self.buzy=True
+                self.busy=True
                 #tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id, client_id))
                 #tpe.start()
             else:
-                self.notify("I am buzzy. Come back later.", False, client_id)
+                self.notify("I am busy. Come back later.", False, client_id)
 
         @socketio.on('generate_msg_from')
         def generate_msg_from(data):
@@ -1234,7 +1248,7 @@ class LoLLMsAPPI(LollmsApplication):
             ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
             ASCIIColors.success(f" ║                        Done                      ║ ")
             ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
-            self.buzy=False
+            self.busy=False
 
         else:
             ump = self.config.discussion_prompt_separator +self.config.user_name+": " if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
@@ -1246,6 +1260,6 @@ class LoLLMsAPPI(LollmsApplication):
             self.notify("No discussion selected!!!",False, client_id)
             
             print()
-            self.buzy=False
+            self.busy=False
             return ""
     

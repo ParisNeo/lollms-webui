@@ -927,7 +927,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
             
     def get_generation_status(self):
-        return jsonify({"status":self.buzy}) 
+        return jsonify({"status":self.busy}) 
     
     def stop_gen(self):
         self.cancel_gen = True

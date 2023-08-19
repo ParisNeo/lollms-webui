@@ -57,7 +57,11 @@
             <input type="range" v-model="repeat_last_n" min="0" max="100" step="1" class="w-full">
             <span class="slider-value text-gray-500">Current value: {{ repeat_last_n }}</span>
           </div>
-          
+          <div class="slider-container ml-2 mr-2">
+            <h3 class="text-gray-600">Number of tokens to crop the text to</h3>
+            <input type="number" v-model="n_crop" class="w-full">
+            <span class="slider-value text-gray-500">Current value: {{ n_crop }}</span>
+          </div>          
           <div class="slider-container ml-2 mr-2">
             <h3 class="text-gray-600">Number of tokens to generate</h3>
             <input type="number" v-model="n_predicts" class="w-full">
@@ -95,6 +99,7 @@ export default {
       top_p: 0.9,
       repeat_penalty: 1.3,
       repeat_last_n: 50,
+      n_crop: -1,
       n_predicts: 2000,
       seed: -1,
     };
@@ -169,7 +174,7 @@ export default {
       var prompt = this.text
       console.log(prompt)
       // Trigger the 'generate_text' event with the prompt
-      socket.emit('generate_text', { prompt: prompt, personality: -1, n_predicts: this.n_predicts ,
+      socket.emit('generate_text', { prompt: prompt, personality: -1, n_predicts: this.n_predicts , n_crop: this.n_crop,
       parameters: {
           temperature: this.temperature,
           top_k: this.top_k,
@@ -184,7 +189,7 @@ export default {
     },
     stopGeneration(){
       // Trigger the 'cancel_generation' event
-      socket.emit('cancel_generation',{});
+      socket.emit('cancel_text_generation',{});
     },
     exportText(){
       const textToExport = this.text;
