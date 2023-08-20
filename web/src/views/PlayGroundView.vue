@@ -24,7 +24,9 @@
           <div class="m-0">
             <button v-show="!generating" id="generate-button" @click="generate" class="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2">Generate Text</button>
             <button v-show="generating" id="stop-button" @click="stopGeneration" class="bg-red-500 hover:bg-red-600 active:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2 ">Stop Generation</button>
-            <button v-show="!generating" id="export-button" @click="exportText" class="bg-green-500 hover:bg-green-600 active:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2">Export Text</button>
+            <button v-show="!generating" id="export-button" @click="exportText" class="bg-green-500 hover:bg-green-600 active:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2"><i data-feather="upload"></i></button>
+            <button v-show="!generating" id="import-button" @click="importText" class="bg-green-500 hover:bg-green-600 active:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2"><i data-feather="download"></i></button>
+            <input type="file" id="import-input" class="hidden">
           </div>
         </div>
         <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
@@ -222,6 +224,22 @@ export default {
       document.body.appendChild(element);
       element.click();
       document.body.removeChild(element);      
+    },
+    importText() {
+      const inputFile = document.getElementById("import-input");
+      if (!inputFile) return; // If the element doesn't exist, do nothing
+      inputFile.addEventListener("change", event => {
+        if (event.target.files && event.target.files[0]) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            this.text = reader.result;
+          };
+          reader.readAsText(event.target.files[0]);
+        } else {
+          alert("Please select a file.");
+        }
+      });
+      inputFile.click();
     },
     setPreset() {
       this.text = this.presets[this.selectedPreset];

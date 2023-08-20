@@ -27,7 +27,7 @@
                         </button>
                         <button v-if="fileList.length > 0"
                             class="mx-1 w-full text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
-                            :title="showFileList ? 'Hide file list' : 'Show file list'" type="button"
+                            :title="showFileList ? 'Send files' : 'Show file list'" type="button"
                             @click.stop="send_files">
 
                             <i data-feather="send"></i>
@@ -223,6 +223,8 @@ import MountedPersonalitiesList from '@/components/MountedPersonalitiesList.vue'
 import PersonalitiesCommands from '@/components/PersonalitiesCommands.vue';
 import { useStore } from 'vuex'; // Import the useStore function
 import { inject } from 'vue';
+import socket from '@/services/websocket.js'
+
 export default {
     name: 'ChatBox',
     emits: ["messageSentEvent", "stopGenerating"],
@@ -279,6 +281,41 @@ export default {
         }
     },
     methods: {
+        send_file(file){
+            const formData = new FormData();
+            formData.append('file', file);
+            console.log("Uploading file")
+            //this.loading=true;
+            // Read the file as a data URL and emit it to the server
+            const reader = new FileReader();
+            reader.onload = () => {
+                const data = {
+                filename: file.name,
+                fileData: reader.result,
+                };
+                socket.on('file_received',(resp)=>{
+                if(resp.status){
+                    this.onShowToastMessage("File uploaded successfully",4,true)
+                }
+                else{
+                    this.onShowToastMessage("Couldn't upload file\n"+resp.error,4,false)
+                }
+                //this.loading = false;
+                socket.off('file_received')
+                }) 
+                socket.emit('send_file', data);
+            };
+            reader.readAsDataURL(file);        
+        },
+        // vue.js method. The list of files are in this.fileList
+        // This function will call this.send_file on each file from this.fileList
+        send_files(){
+            for(let i = 0; i < this.fileList.length; i++){
+                let file = this.fileList[i];
+                this.send_file(file);
+            }
+            this.fileList = [];
+        },
         startSpeechRecognition() {
             if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
                 this.recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
