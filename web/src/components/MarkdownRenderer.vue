@@ -229,7 +229,7 @@ export default {
           // Now you can work with the JSON data
           console.log(jsonData);
           preExecElement.classList.remove('hidden');
-          codeExecElement.innerText=jsonData.output
+          codeExecElement.innerHTML = jsonData.output
         })
         .catch(error => {
           // Handle any errors that occurred during the fetch process

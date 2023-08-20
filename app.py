@@ -19,6 +19,11 @@ __version__ ="5.0"
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
 import sys
+from flask import request, jsonify
+import io
+import sys
+import time
+import traceback
 
 def run_update_script(args=None):
     update_script = "update_script.py"
@@ -423,30 +428,50 @@ class LoLLMsWebUI(LoLLMsAPPI):
         )
         
 
+
+
     def execute_python_code(self):
         """Executes Python code and returns the output."""
         data = request.get_json()
         code = data["code"]
-        # Import the necessary modules.
-        import io
-        import sys
-        import time
 
-        # Create a Python interpreter.
-        interpreter = io.StringIO()
-        sys.stdout = interpreter
+        def execute_code_internal():
+            # Create a Python interpreter.
+            interpreter = io.StringIO()
+            sys.stdout = interpreter
+            globals_dict = {'__name__': '__main__', '__file__': 'ai_code.py'}
 
-        # Execute the code.
+            try:
+                exec(code, globals_dict)
+                # Get the output.
+                output = interpreter.getvalue()
+            except Exception as ex:
+                # Get the traceback information
+                tb_str = traceback.format_exc().replace("<string>","ai_code.py")
+
+                substring = 'File "ai_code.py"'
+                try:
+                    position = tb_str.index(substring)
+                    tb_str = tb_str[position:]
+                except ValueError:
+                    pass
+                output = (
+                    f"<div class='text-red-500'>{ex}\n"
+                    f"Traceback:\n{tb_str}</div>"
+                )
+
+            finally:
+                sys.stdout = sys.__stdout__  # Restore the standard output
+
+            return output
+
+        # Execute the code and capture the output
         start_time = time.time()
-        try:
-            exec(code)
-            # Get the output.
-            output = interpreter.getvalue()
-        except Exception as ex:
-            output = str(ex)+"\n"+get_trace_exception(ex)
+        output = execute_code_internal()
         end_time = time.time()
 
-        return jsonify({"output":output,"execution_time":end_time - start_time})
+        return jsonify({"output": output, "execution_time": end_time - start_time})
+
 
     def get_presets(self):
         presets_file = self.lollms_paths.personal_databases_path/"presets.json"
