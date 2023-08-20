@@ -571,6 +571,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
                                 personality_info['installed'] = (self.lollms_paths.personal_configuration_path/f"personality_{personality_folder.stem}.yaml").exists() or personality_info['has_scripts']
                                 personality_info['help'] = config_data.get('help', '')
                                 personality_info['commands'] = config_data.get('commands', '')
+
+                            languages_path = personality_folder/ 'languages'
+
                             real_assets_path = personality_folder/ 'assets'
                             assets_path = Path("personalities") / cat / pers / 'assets'
                             gif_logo_path = assets_path / 'logo.gif'
@@ -587,6 +590,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
                             jpeg_logo_path_ = real_assets_path / 'logo.jpeg'
                             bmp_logo_path_ = real_assets_path / 'logo.bmp'
 
+                            if languages_path.exists():
+                                personality_info['languages']=[f.stem for f in languages_path.iterdir() if f.suffix==".yaml"]
+                            else:
+                                personality_info['languages']=None
+                                
                             personality_info['has_logo'] = png_logo_path.is_file() or gif_logo_path.is_file()
                             
                             if gif_logo_path_.exists():
@@ -603,6 +611,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                                 personality_info['avatar'] = str(bmp_logo_path).replace("\\","/")
                             else:
                                 personality_info['avatar'] = ""
+                            
                             personalities[category_folder.name].append(personality_info)
                         except Exception as ex:
                             print(f"Couldn't load personality from {personality_folder} [{ex}]")
