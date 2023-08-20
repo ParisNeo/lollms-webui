@@ -475,7 +475,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 return json.dumps(error_json)
 
             # The child process was successful.
-            output_json = {"output": output, "execution_time": execution_time}
+            output_json = {"output": output.decode("utf8"), "execution_time": execution_time}
             return json.dumps(output_json)
         return spawn_process(code)
 
