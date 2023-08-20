@@ -116,7 +116,7 @@ export default {
   },
   mounted() {
     const text_element = document.getElementById('text_element');
-    text_element.addEventListener('keypress', () => {
+    text_element.addEventListener('input', () => {
       this.cursorPosition = text_element.selectionStart;
     });    
     text_element.addEventListener('click', () => {

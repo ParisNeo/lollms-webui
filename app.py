@@ -432,45 +432,52 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
     def execute_python_code(self):
         """Executes Python code and returns the output."""
+        
         data = request.get_json()
         code = data["code"]
 
-        def execute_code_internal():
-            # Create a Python interpreter.
-            interpreter = io.StringIO()
-            sys.stdout = interpreter
-            globals_dict = {'__name__': '__main__', '__file__': 'ai_code.py'}
+        def spawn_process(code):
+            """Executes Python code and returns the output as JSON."""
+
+            # Start the timer.
+            start_time = time.time()
+
+            # Create a temporary file.
+            tmp_file = self.lollms_paths.personal_data_path/"ai_code.py"
+            with open(tmp_file,"w") as f:
+                f.write(code)
 
             try:
-                exec(code, globals_dict)
-                # Get the output.
-                output = interpreter.getvalue()
-            except Exception as ex:
-                # Get the traceback information
-                tb_str = traceback.format_exc().replace("<string>","ai_code.py")
-
-                substring = 'File "ai_code.py"'
-                try:
-                    position = tb_str.index(substring)
-                    tb_str = tb_str[position:]
-                except ValueError:
-                    pass
-                output = (
-                    f"<div class='text-red-500'>{ex}\n"
-                    f"Traceback:\n{tb_str}</div>"
+                # Execute the Python code in a temporary file.
+                process = subprocess.Popen(
+                    ["python", str(tmp_file)],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
                 )
 
-            finally:
-                sys.stdout = sys.__stdout__  # Restore the standard output
+                # Get the output and error from the process.
+                output, error = process.communicate()
+            except Exception as ex:
+                # Stop the timer.
+                execution_time = time.time() - start_time
+                error_message = f"Error executing Python code: {ex}"
+                error_json = {"output": "<div class='text-red-500'>"+ex+"\n"+get_trace_exception(ex)+"</div>", "execution_time": execution_time}
+                return json.dumps(error_json)
 
-            return output
+            # Stop the timer.
+            execution_time = time.time() - start_time
 
-        # Execute the code and capture the output
-        start_time = time.time()
-        output = execute_code_internal()
-        end_time = time.time()
+            # Check if the process was successful.
+            if process.returncode != 0:
+                # The child process threw an exception.
+                error_message = f"Error executing Python code: {error.decode('utf8')}"
+                error_json = {"output": "<div class='text-red-500'>"+error_message+"</div>", "execution_time": execution_time}
+                return json.dumps(error_json)
 
-        return jsonify({"output": output, "execution_time": end_time - start_time})
+            # The child process was successful.
+            output_json = {"output": output, "execution_time": execution_time}
+            return json.dumps(output_json)
+        return spawn_process(code)
 
 
     def get_presets(self):
