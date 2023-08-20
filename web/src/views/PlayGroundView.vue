@@ -117,7 +117,7 @@ export default {
   mounted() {
     const text_element = document.getElementById('text_element');
     text_element.addEventListener('input', () => {
-      this.cursorPosition = text_element.selectionStart;
+      this.cursorPosition = text_element.selectionStart+1;
     });    
     text_element.addEventListener('click', () => {
       this.cursorPosition = text_element.selectionStart;
