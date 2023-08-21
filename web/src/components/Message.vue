@@ -217,7 +217,7 @@ export default {
     data() {
         return {
             msg:null,
-            isVoiceActive:false,
+            isSpeaking:false,
             speechSynthesis: null,
             voices: [],            
             expanded: false,
@@ -258,13 +258,13 @@ export default {
             if (this.msg) {
                 this.speechSynthesis.cancel();
                 this.msg = null;
-                this.isVoiceActive = false;
+                this.isSpeaking = false;
                 return;
             }
             let startIndex =0;
-            // Set isVoiceActive to true before starting synthesis
+            // Set isSpeaking to true before starting synthesis
             console.log("voice on")
-            this.isVoiceActive = true;
+            this.isSpeaking = true;
 
             const chunkSize = 200; // You can adjust the chunk size as needed
             this.message.content;
@@ -313,7 +313,7 @@ export default {
                             speakChunk();
                         }, 1); // Adjust the delay as needed
                     } else {
-                        this.isVoiceActive = false;
+                        this.isSpeaking = false;
                         console.log("voice off :",this.message.content.length,"  ",endIndex)
                     }
                 };
@@ -432,7 +432,7 @@ export default {
     }, watch: {
         'message.content': function (newContent) {
             if(this.$store.state.config.auto_speak){
-                if(!this.isVoiceActive){
+                if(!this.isSpeaking){
                     // Watch for changes to this.message.content and call the checkForFullSentence method
                     this.checkForFullSentence();
                 }
@@ -464,7 +464,7 @@ export default {
     computed: {
         isTalking :{
             get(){
-                return this.isVoiceActive
+                return this.isSpeaking
             }
         },
         created_at() {

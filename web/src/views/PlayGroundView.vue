@@ -9,25 +9,40 @@
               {{ preset }}
             </option>
           </select>
-          <button class="bg-green-500 hover:bg-green-600 active:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2 " @click="setPreset"  title="Use preset"><i data-feather="check"></i></button>
-          <button class="bg-green-500 hover:bg-green-600 active:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2 " @click="addPreset"  title="Add this text as a preset"><i data-feather="plus"></i></button>
-          <button class="bg-red-500 hover:bg-red-600 active:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2" @click="removePreset"  title="Remove preset"><i data-feather="x"></i></button>
-          <button class="bg-green-500 hover:bg-green-600 active:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2" @click="savePreset"  title="Save presets list"><i data-feather="save"></i></button>
-          <button class="bg-green-500 hover:bg-green-600 active:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2" @click="reloadPresets"  title="Reload presets list"><i data-feather="refresh-ccw"></i></button>
+          <button class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer" @click="setPreset"  title="Use preset"><i data-feather="check"></i></button>
+          <button class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer" @click="addPreset"  title="Add this text as a preset"><i data-feather="plus"></i></button>
+          <button class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer" @click="removePreset"  title="Remove preset"><i data-feather="x"></i></button>
+          <button class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer" @click="savePreset"  title="Save presets list"><i data-feather="save"></i></button>
+          <button class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer" @click="reloadPresets"  title="Reload presets list"><i data-feather="refresh-ccw"></i></button>
           
         </div>
         <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
+          <div class="m-0">
+            <button v-show="!generating" id="generate-button" @click="generate" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="pen-tool"></i></button>
+            <button v-show="generating" id="stop-button" @click="stopGeneration" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="x"></i></button>
+            <button
+                type="button"
+                @click="startSpeechRecognition"
+                :class="{ 'text-red-500': isLesteningToVoice }"
+                class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer"
+            >   
+            <i data-feather="mic"></i>
+            </button>
+            <button
+                    title="speak"
+                    @click.stop="speak()"
+                    :class="{ 'text-red-500': isTalking }"
+                    class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer">
+              <i data-feather="volume-2"></i>
+            </button>
+            <button v-show="!generating" id="export-button" @click="exportText" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="upload"></i></button>
+            <button v-show="!generating" id="import-button" @click="importText" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="download"></i></button>
+          
+            <input type="file" id="import-input" class="hidden">
+          </div>          
           <textarea v-model="text" id="text_element" class="mt-4 h-64 overflow-y-scroll w-full dark:bg-bg-dark  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" type="text"></textarea>
           <span>Cursor position {{ cursorPosition }}</span>
-        </div>
-        <div class="flex justify-between">
-          <div class="m-0">
-            <button v-show="!generating" id="generate-button" @click="generate" class="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2">Generate Text</button>
-            <button v-show="generating" id="stop-button" @click="stopGeneration" class="bg-red-500 hover:bg-red-600 active:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2 ">Stop Generation</button>
-            <button v-show="!generating" id="export-button" @click="exportText" class="bg-green-500 hover:bg-green-600 active:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2"><i data-feather="upload"></i></button>
-            <button v-show="!generating" id="import-button" @click="importText" class="bg-green-500 hover:bg-green-600 active:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2"><i data-feather="download"></i></button>
-            <input type="file" id="import-input" class="hidden">
-          </div>
+                    
         </div>
         <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
           <MarkdownRenderer ref="mdRender" :markdown-text="text" class="dark:bg-bg-dark">
@@ -96,6 +111,9 @@ export default {
   data() {
     return {
       generating:false,
+      isSpeaking:false,
+      voices: [],    
+      isLesteningToVoice:false,
       presets:{},
       selectedPreset: '',    
       cursorPosition:0,  
@@ -177,13 +195,111 @@ export default {
       //console.log('chatbox mnt',this.$refs)
       this.$nextTick(() => {
           feather.replace();
-      });        
+      });  
+      
+    // Speach synthesis
+    // Check if speech synthesis is supported by the browser
+    if ('speechSynthesis' in window) {
+    this.speechSynthesis = window.speechSynthesis;
+
+    // Load the available voices
+    this.voices = this.speechSynthesis.getVoices();
+
+    // Make sure the voices are loaded before starting speech synthesis
+    if (this.voices.length === 0) {
+        this.speechSynthesis.addEventListener('voiceschanged', this.onVoicesChanged);
+    } else {
+    }
+    } else {
+    console.error('Speech synthesis is not supported in this browser.');
+    }
+
+
   },
   created(){
 
         
   },
+  computed: {
+    isTalking :{
+        get(){
+            return this.isSpeaking
+        }
+    },
+  },
   methods:{
+    onVoicesChanged() {
+      // This event will be triggered when the voices are loaded
+      this.voices = this.speechSynthesis.getVoices();
+      },
+      speak() {
+          if (this.msg) {
+              this.speechSynthesis.cancel();
+              this.msg = null;
+              this.isSpeaking = false;
+              return;
+          }
+          let startIndex =0;
+          // Set isSpeaking to true before starting synthesis
+          console.log("voice on")
+          this.isSpeaking = true;
+
+          const chunkSize = 200; // You can adjust the chunk size as needed
+
+          // Create a new SpeechSynthesisUtterance instance
+          this.msg = new SpeechSynthesisUtterance();
+          this.msg.pitch = this.$store.state.config.audio_pitch;
+
+          // Optionally, set the voice and other parameters as before
+          if (this.voices.length > 0) {
+              this.msg.voice = this.voices.filter(voice => voice.name === this.$store.state.config.audio_out_voice)[0];
+          }
+
+
+          // Function to find the index of the last sentence that fits within the chunk size
+          const findLastSentenceIndex = (startIndex) => {
+              let txt = this.text.substring(startIndex, startIndex+chunkSize)
+              // Define an array of characters that represent end of sentence markers.
+              const endOfSentenceMarkers = ['.', '!', '?'];
+
+              // Initialize a variable to store the index of the last end of sentence marker.
+              let lastIndex = -1;
+
+              // Iterate through the end of sentence markers and find the last occurrence in the txt string.
+              endOfSentenceMarkers.forEach(marker => {
+              const markerIndex = txt.lastIndexOf(marker);
+              if (markerIndex > lastIndex) {
+                  lastIndex = markerIndex;
+              }
+              });
+              if(lastIndex==-1){lastIndex=txt.length}
+              console.log(lastIndex)
+              return lastIndex+startIndex+1;
+          };
+
+          // Function to speak a chunk of text
+          const speakChunk = () => {
+              const endIndex = findLastSentenceIndex(startIndex);
+              const chunk = this.text.substring(startIndex, endIndex);
+              this.msg.text = chunk;
+              startIndex = endIndex + 1;
+              this.msg.onend = (event) => {
+                  if (startIndex < this.text.length-2) {
+                      // Use setTimeout to add a brief delay before speaking the next chunk
+                      setTimeout(() => {
+                          speakChunk();
+                      }, 1); // Adjust the delay as needed
+                  } else {
+                      this.isSpeaking = false;
+                      console.log("voice off :",this.text.length,"  ",endIndex)
+                  }
+              };
+              this.speechSynthesis.speak(this.msg);
+          };
+
+          // Speak the first chunk
+          speakChunk();
+      },    
     getCursorPosition() {
       return this.cursorPosition;
     },    
@@ -267,6 +383,55 @@ export default {
           this.$refs.toast.showToast(`Error: ${ex}`,4,false)
         });
     },
+    startSpeechRecognition() {
+        if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+            this.recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            this.recognition.lang = this.$store.state.config.audio_in_language; // Set the language, adjust as needed
+            this.recognition.interimResults = true; // Enable interim results to get real-time updates
+
+            this.recognition.onstart = () => {
+              this.isLesteningToVoice = true;
+              this.silenceTimer = setTimeout(() => {
+                  this.recognition.stop();
+              }, this.silenceTimeout); // Set the silence timeout to stop recognition
+            };
+
+            this.pre_text = this.text.substring(0,this.getCursorPosition())
+            this.post_text = this.text.substring(this.getCursorPosition(), this.text.length)
+
+            this.recognition.onresult = (event) => {
+              this.generated = '';
+
+              for (let i = event.resultIndex; i < event.results.length; i++) {
+                this.generated += event.results[i][0].transcript;
+              }
+              this.text = this.pre_text + this.generated + this.post_text; // Update the textarea with the real-time recognized words
+              this.cursorPosition = this.pre_text.length + this.generated.length;
+              clearTimeout(this.silenceTimer); // Clear the silence timeout on every recognized result
+              this.silenceTimer = setTimeout(() => {
+                  this.recognition.stop();
+              }, this.silenceTimeout); // Set a new silence timeout after every recognized result
+            };
+
+            this.recognition.onerror = (event) => {
+            console.error('Speech recognition error:', event.error);
+            this.isLesteningToVoice = false;
+            clearTimeout(this.silenceTimer); // Clear the silence timeout on error
+            };
+
+            this.recognition.onend = () => {
+              console.log('Speech recognition ended.');
+              this.isLesteningToVoice = false;
+              this.pre_text = this.pre_text + this.generated;
+              this.cursorPosition = this.pre_text.length;
+              clearTimeout(this.silenceTimer); // Clear the silence timeout when recognition ends normally
+            };
+
+            this.recognition.start();
+        } else {
+            console.error('Speech recognition is not supported in this browser.');
+        }
+        },
   }
 };
 </script>

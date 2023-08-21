@@ -151,7 +151,7 @@
                             <button
                                 type="button"
                                 @click="startSpeechRecognition"
-                                :class="{ 'text-red-500': isVoiceActive }"
+                                :class="{ 'text-red-500': isLesteningToVoice }"
                                 class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer"
                             >
                             <i data-feather="mic"></i>
@@ -248,7 +248,7 @@ export default {
     data() {
         return {
             message: "",
-            isVoiceActive:false,
+            isLesteningToVoice:false,
             fileList: [],
             totalSize: 0,
             showFileList: true,
@@ -324,7 +324,7 @@ export default {
                 this.recognition.interimResults = true; // Enable interim results to get real-time updates
 
                 this.recognition.onstart = () => {
-                this.isVoiceActive = true;
+                this.isLesteningToVoice = true;
                 this.silenceTimer = setTimeout(() => {
                     this.recognition.stop();
                 }, this.silenceTimeout); // Set the silence timeout to stop recognition
@@ -344,13 +344,13 @@ export default {
 
                 this.recognition.onerror = (event) => {
                 console.error('Speech recognition error:', event.error);
-                this.isVoiceActive = false;
+                this.isLesteningToVoice = false;
                 clearTimeout(this.silenceTimer); // Clear the silence timeout on error
                 };
 
                 this.recognition.onend = () => {
                 console.log('Speech recognition ended.');
-                this.isVoiceActive = false;
+                this.isLesteningToVoice = false;
                 clearTimeout(this.silenceTimer); // Clear the silence timeout when recognition ends normally
                 this.submit(); // Call the function to handle form submission or action once speech recognition ends
                 };
