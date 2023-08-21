@@ -309,7 +309,7 @@ export default {
         },
         // vue.js method. The list of files are in this.fileList
         // This function will call this.send_file on each file from this.fileList
-        send_files(){
+        send_files(event){
             event.preventDefault(); // Add this line to prevent form validation
             for(let i = 0; i < this.fileList.length; i++){
                 let file = this.fileList[i];
