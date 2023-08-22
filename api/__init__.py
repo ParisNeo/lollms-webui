@@ -20,7 +20,7 @@ from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding, ModelBuilde
 from lollms.paths import LollmsPaths
 from lollms.helpers import ASCIIColors, trace_exception
 from lollms.app import LollmsApplication
-from lollms.utilities import File64BitsManager
+from lollms.utilities import File64BitsManager, PromptReshaper
 import multiprocessing as mp
 import threading
 import time
@@ -452,14 +452,16 @@ class LoLLMsAPPI(LollmsApplication):
 
             try:
                 if not self.personality.processor is None:
-                    self.personality.processor.add_file(save_path, partial(self.process_chunk, client_id = request.sid))
                     file.save(save_path)
+                    self.personality.processor.add_file(save_path, partial(self.process_chunk, client_id = request.sid))
                     # File saved successfully
                     socketio.emit('progress', {'status':True, 'progress': 100})
 
                 else:
-                    # Personality doesn't support file sending
-                    socketio.emit('progress', {'status':False, 'error': "Personality doesn't support file sending"})
+                    file.save(save_path)
+                    self.personality.add_file(save_path, partial(self.process_chunk, client_id = request.sid))
+                    # File saved successfully
+                    socketio.emit('progress', {'status':True, 'progress': 100})
             except Exception as e:
                 # Error occurred while saving the file
                 socketio.emit('progress', {'status':False, 'error': str(e)})
@@ -1184,6 +1186,9 @@ class LoLLMsAPPI(LollmsApplication):
                     callback(f"Workflow run failed\nError:{ex}", MSG_TYPE.MSG_TYPE_EXCEPTION)                   
             print("Finished executing the workflow")
             return
+
+        if len(self.personality.files)>0:
+            PromptReshaper("Documentation:{{doc}}\n{{Content}}")
 
         self._generate(full_prompt, n_predict, client_id, callback)
         ASCIIColors.success("\nFinished executing the generation")

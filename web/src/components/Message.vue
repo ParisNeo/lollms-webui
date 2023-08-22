@@ -302,22 +302,30 @@ export default {
 
             // Function to speak a chunk of text
             const speakChunk = () => {
-                const endIndex = findLastSentenceIndex(startIndex);
-                const chunk = this.message.content.substring(startIndex, endIndex);
-                this.msg.text = chunk;
-                startIndex = endIndex + 1;
-                this.msg.onend = (event) => {
-                    if (startIndex < this.message.content.length-2) {
-                        // Use setTimeout to add a brief delay before speaking the next chunk
-                        setTimeout(() => {
+                if (this.message.content.includes('.')){
+                    const endIndex = findLastSentenceIndex(startIndex);
+                    const chunk = this.message.content.substring(startIndex, endIndex);
+                    this.msg.text = chunk;
+                    startIndex = endIndex + 1;
+                    this.msg.onend = (event) => {
+                        if (startIndex < this.message.content.length-2) {
+                            // Use setTimeout to add a brief delay before speaking the next chunk
+                            setTimeout(() => {
+                                speakChunk();
+                            }, 1); // Adjust the delay as needed
+                        } else {
+                            this.isSpeaking = false;
+                            console.log("voice off :",this.message.content.length,"  ",endIndex)
+                        }
+                    };
+                    this.speechSynthesis.speak(this.msg);
+
+                }
+                else{
+                    setTimeout(() => {
                             speakChunk();
                         }, 1); // Adjust the delay as needed
-                    } else {
-                        this.isSpeaking = false;
-                        console.log("voice off :",this.message.content.length,"  ",endIndex)
-                    }
-                };
-                this.speechSynthesis.speak(this.msg);
+                }
             };
 
             // Speak the first chunk

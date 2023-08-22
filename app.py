@@ -1509,7 +1509,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         data = request.get_json()
         id = data['id']
         print(f"- Selecting active personality {id} ...",end="")
-        if id<len(self.config["personalities"]):
+        if id<len(self.config["personalities"]) and id<len(self.mounted_personalities):
             self.config["active_personality_id"]=id
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             self.apply_settings()
