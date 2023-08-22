@@ -3438,7 +3438,7 @@ export default {
         // console.log('did settings?',this.settingsChanged)
         await this.$router.isReady()
         if (this.settingsChanged) {
-            const res = await this.$refs.yesNoDialog.askQuestion("Did You forgot to apply changes?\nYou need to apply changes before you leave, or else.", 'Apply configuration', 'Cancel')
+            const res = await this.$refs.yesNoDialog.askQuestion("Did You forget to apply changes?\nYou need to apply changes before you leave, or else.", 'Apply configuration', 'Cancel')
             if (res) {
                 this.applyConfiguration()
 

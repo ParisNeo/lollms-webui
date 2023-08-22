@@ -45,6 +45,8 @@ def run_update_script(args=None):
 
     os.system(f"python {update_script}")
     sys.exit(0)
+
+from lollms.helpers import ASCIIColors, get_trace_exception, trace_exception
     
 try:
     import git
@@ -58,7 +60,6 @@ try:
     from lollms.binding import LOLLMSConfig, BindingBuilder
     from lollms.personality import AIPersonality
     from lollms.config import BaseConfig
-    from lollms.helpers import ASCIIColors, get_trace_exception, trace_exception
     from lollms.paths import LollmsPaths
 
     from api.db import Discussion
@@ -87,8 +88,7 @@ try:
     import socket
 
 except Exception as ex:
-    print(ex)
-    print("Error importing some libraries. Updating lollms...")
+    trace_exception(ex)
     run_update_script()
 
 
@@ -331,14 +331,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
         )
         self.add_endpoint(
             "/delete_message", "delete_message", self.delete_message, methods=["GET"]
-        )
-        
-        self.add_endpoint(
-            "/set_binding", "set_binding", self.set_binding, methods=["POST"]
-        )
-        
-        self.add_endpoint(
-            "/set_model", "set_model", self.set_model, methods=["POST"]
         )
         
 
@@ -704,6 +696,15 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.config["model_name"]=data['setting_value']
             if self.config["model_name"] is not None:
                 try:
+                    if self.binding:
+                        self.binding.destroy_model()
+
+                    self.binding = None
+                    self.model = None
+                    for per in self.mounted_personalities:
+                        per.model = None
+                    gc.collect()
+                    self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
                     self.model = self.binding.build_model()
                     self.rebuild_personalities(reload_all=True)
                 except Exception as ex:
@@ -1615,42 +1616,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             ASCIIColors.yellow("Message deleted")
             return jsonify({"status":True,"new_rank": new_rank})
 
-
-
-    def set_binding(self):
-        data = request.get_json()
-        binding =  str(data["binding"])
-        if self.config['binding_name']!= binding:
-            print("New binding selected")
-            
-            self.config['binding_name'] = binding
-            try:
-                binding_ =self.process.load_binding(config["binding_name"],True)
-                models = binding_.list_models(self.config)
-                if len(models)>0:      
-                    self.binding = binding_
-                    self.config['model_name'] = models[0]
-                    # Build chatbot
-                    return jsonify(self.process.set_config(self.config))
-                else:
-                    return jsonify({"status": "no_models_found"})
-            except :
-                return jsonify({"status": "failed"})
-                
-        return jsonify({"status": "error"})
-
-    def set_model(self):
-        data = request.get_json()
-        model =  str(data["model_name"])
-        if self.config['model_name']!= model:
-            print("set_model: New model selected")            
-            self.config['model_name'] = model
-            # Build chatbot            
-            return jsonify(self.process.set_config(self.config))
-
-        return jsonify({"status": "succeeded"})    
-    
-    
+   
     def get_available_models(self):
         """Get the available models
 

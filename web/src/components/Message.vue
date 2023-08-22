@@ -283,7 +283,7 @@ export default {
             const findLastSentenceIndex = (startIndex) => {
                 let txt = this.message.content.substring(startIndex, startIndex+chunkSize)
                 // Define an array of characters that represent end of sentence markers.
-                const endOfSentenceMarkers = ['.', '!', '?'];
+                const endOfSentenceMarkers = ['.', '!', '?', '\n'];
 
                 // Initialize a variable to store the index of the last end of sentence marker.
                 let lastIndex = -1;

@@ -100,12 +100,145 @@
 </template>
 
 <script>
-
 import feather from 'feather-icons'
 import axios from "axios";
 import socket from '@/services/websocket.js'
 import Toast from '../components/Toast.vue'
 import MarkdownRenderer from '../components/MarkdownRenderer.vue';
+
+
+
+async function showInputPanel(name, default_value="", options=[]) {
+    return new Promise((resolve, reject) => {
+        const panel = document.createElement("div");
+        panel.className = "fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50";
+        if(options.length===0){
+          panel.innerHTML = `
+            <div class="bg-white p-6 rounded-md shadow-md w-80">
+                <h2 class="text-lg font-semibold mb-3">"${name}"</h2>
+                <textarea id="replacementInput" class="w-full h-32 border rounded p-2 mb-3">${default_value}</textarea>
+                <div class="flex justify-end">
+                    <button id="cancelButton" class="mr-2 px-4 py-2 border rounded">Cancel</button>
+                    <button id="okButton" class="px-4 py-2 bg-blue-500 text-white rounded">OK</button>
+                </div>
+            </div>
+        `;
+        }
+        else{
+          panel.innerHTML = `
+            <div class="bg-white p-6 rounded-md shadow-md w-80">
+                <h2 class="text-lg font-semibold mb-3">"${name}"</h2>
+                <select id="options_selector" class="form-control w-full h-25 border rounded p-2 mb-3">
+                  ${options.map(option => `<option value="${option}">${option}</option>`)}
+                </select>
+                <div class="flex justify-end">
+                    <button id="cancelButton" class="mr-2 px-4 py-2 border rounded">Cancel</button>
+                    <button id="okButton" class="px-4 py-2 bg-blue-500 text-white rounded">OK</button>
+                </div>
+            </div>
+        `;          
+        }
+
+
+        document.body.appendChild(panel);
+
+        const cancelButton = panel.querySelector("#cancelButton");
+        const okButton = panel.querySelector("#okButton");
+
+        cancelButton.addEventListener("click", () => {
+            document.body.removeChild(panel);
+            resolve(null);
+        });
+
+        okButton.addEventListener("click", () => {
+            if(options.length===0){
+              const input = panel.querySelector("#replacementInput");
+              const value = input.value.trim();
+              document.body.removeChild(panel);
+              resolve(value);
+            }
+            else{
+              const input = panel.querySelector("#options_selector");
+              const value = input.value.trim();
+              document.body.removeChild(panel);
+              resolve(value);
+            }
+        });
+    });
+}
+
+function replaceInText(text, callback) {
+  console.log(text)
+    let replacementDict = {};
+    let delimiterRegex = /@<([^>]+)>@/g;
+    let matches = [];
+    let match;
+
+    while ((match = delimiterRegex.exec(text)) !== null) {
+      matches.push("@<"+match[1]+">@"); // The captured group is at index 1
+    }
+    console.log("matches")
+    console.log(matches)
+    matches =  [...new Set(matches)]
+
+    async function handleReplacement(match) {
+        console.log(match)
+        let placeholder = match.toLowerCase().substring(2,match.length-2);
+        if (placeholder !== "generation_placeholder") {
+          if (placeholder.includes(":")) {
+            let splitResult = placeholder.split(":");
+            let name = splitResult[0];
+            let defaultValue = splitResult[1] || "";
+            let options = [];
+            if (splitResult.length>2) {
+              options = splitResult.slice(1);
+            }
+            let replacement = await showInputPanel(name, defaultValue, options);
+            if (replacement !== null) {
+                replacementDict[match] = replacement;
+            }
+          }
+          else{
+            let replacement = await showInputPanel(placeholder);
+            if (replacement !== null) {
+                replacementDict[match] = replacement;
+            }
+          }
+        }else{
+          //var result = confirm("generation placeholder found. Do you want to generate?\nIf you skip generation, you still can generate manually after wards");
+        }
+    }
+    let promiseChain = Promise.resolve();
+
+    matches.forEach(match => {
+      promiseChain = promiseChain.then(() => {
+        return handleReplacement(match);
+      }).then(result => {
+        console.log(result);
+      });
+    });
+    promiseChain.then(() => {
+      Object.entries(replacementDict).forEach(([key, value]) => {
+        console.log(`Key: ${key}, Value: ${value}`);
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special characters
+        }
+
+        const escapedKey = escapeRegExp(key);
+        const regex = new RegExp(escapedKey, 'g');
+        text = text.replace(regex, value);
+        //text = text.replace(new RegExp(key, 'g'), value);
+      });
+      callback(text); // Call the callback after all matches are processed
+    });
+}
+
+// Get input value function
+function getInputValue() {
+    const inputField = document.getElementById('input-field');
+    return inputField ? inputField.value : '';
+}
+
 export default {
   name: 'PlayGroundView',
   data() {
@@ -137,10 +270,20 @@ export default {
   mounted() {
     const text_element = document.getElementById('text_element');
     text_element.addEventListener('input', () => {
-      this.cursorPosition = text_element.selectionStart;
+      try{
+        this.cursorPosition = text_element.selectionStart;
+      }
+      catch{
+
+      }
     });    
     text_element.addEventListener('click', () => {
-      this.cursorPosition = text_element.selectionStart;
+      try{
+        this.cursorPosition = text_element.selectionStart;
+      }
+      catch{
+        
+      }
     });        
     axios.get('./presets.json').then(response => {
           console.log(response.data)
@@ -260,7 +403,7 @@ export default {
           const findLastSentenceIndex = (startIndex) => {
               let txt = this.text.substring(startIndex, startIndex+chunkSize)
               // Define an array of characters that represent end of sentence markers.
-              const endOfSentenceMarkers = ['.', '!', '?'];
+              const endOfSentenceMarkers = ['.', '!', '?', '\n'];
 
               // Initialize a variable to store the index of the last end of sentence marker.
               let lastIndex = -1;
@@ -358,8 +501,13 @@ export default {
       inputFile.click();
     },
     setPreset() {
-      this.text = this.presets[this.selectedPreset];
+      this.text = replaceInText(this.presets[this.selectedPreset], (text)=>{
+        console.log("Done")
+        console.log(text);
+        this.text= text
+      });
     },
+    
     addPreset() {
       let title = prompt('Enter the title of the preset:');
       this.presets[title] =  this.text
