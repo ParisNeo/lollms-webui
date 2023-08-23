@@ -847,7 +847,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     bnd = load_config(card)
                     bnd["folder"]=f.stem
                     icon_path = Path(f"bindings/{f.name}/logo.png")
-                    installed = (self.lollms_paths.personal_configuration_path/f"binding_{f.stem}.yaml").exists()
+                    installed = (self.lollms_paths.personal_configuration_path/"bindings"/f.stem/f"config.yaml").exists()
                     bnd["installed"]=installed
                     if Path(self.lollms_paths.bindings_zoo_path/f"{f.name}/logo.png").exists():
                         bnd["icon"]=str(icon_path)
