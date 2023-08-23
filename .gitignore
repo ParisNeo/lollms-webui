@@ -203,3 +203,6 @@ src/taming-transformers
 
 # Temporary arguments to restart file
 temp_args.txt
+
+# Hugging face offloading folder
+offload

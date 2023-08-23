@@ -1646,6 +1646,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     path = f'{server}{filename}'
                 else:
                     path = f'{server}/{filename}'
+                blocs = filename.split("/")
+
+                # Special case, if hugging face model format
+                if len(blocs)==2:
+                    filename = blocs[1]
                 local_path = lollms_paths.personal_models_path/f'{self.config["binding_name"]}/{filename}'
                 is_installed = local_path.exists() or model_type.lower()=="api"
                 models.append({

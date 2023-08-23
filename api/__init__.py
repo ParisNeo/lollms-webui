@@ -223,131 +223,148 @@ class LoLLMsAPPI(LollmsApplication):
                 binding_folder = self.config["binding_name"]
                 model_url = model_path
                 signature = f"{model_name}_{binding_folder}_{model_url}"
-                self.download_infos[signature]={
-                    "start_time":datetime.now(),
-                    "total_size":self.binding.get_file_size(model_path),
-                    "downloaded_size":0,
-                    "progress":0,
-                    "speed":0,
-                    "cancel":False
-                }
-                
-                if installation_path.exists():
-                    print("Error: Model already exists")
+                try:
+                    self.download_infos[signature]={
+                        "start_time":datetime.now(),
+                        "total_size":self.binding.get_file_size(model_path),
+                        "downloaded_size":0,
+                        "progress":0,
+                        "speed":0,
+                        "cancel":False
+                    }
+                    
+                    if installation_path.exists():
+                        print("Error: Model already exists. please remove it first")
+                        socketio.emit('install_progress',{
+                                                            'status': False,
+                                                            'error': f'model already exists. Please remove it first.\nThe model can be found here:{installation_path}',
+                                                            'model_name' : model_name,
+                                                            'binding_folder' : binding_folder,
+                                                            'model_url' : model_url,
+                                                            'start_time': self.download_infos[signature]['start_time'].strftime("%Y-%m-%d %H:%M:%S"),
+                                                            'total_size': self.download_infos[signature]['total_size'],
+                                                            'downloaded_size': self.download_infos[signature]['downloaded_size'],
+                                                            'progress': self.download_infos[signature]['progress'],
+                                                            'speed': self.download_infos[signature]['speed'],
+                                                        }, room=room_id
+                                    )
+                    
                     socketio.emit('install_progress',{
-                                                        'status': False,
-                                                        'error': 'model already exists',
-                                                        'model_name' : model_name,
-                                                        'binding_folder' : binding_folder,
-                                                        'model_url' : model_url,
-                                                        'start_time': self.download_infos[signature]['start_time'].strftime("%Y-%m-%d %H:%M:%S"),
-                                                        'total_size': self.download_infos[signature]['total_size'],
-                                                        'downloaded_size': self.download_infos[signature]['downloaded_size'],
-                                                        'progress': self.download_infos[signature]['progress'],
-                                                        'speed': self.download_infos[signature]['speed'],
-                                                    }, room=room_id
-                                )
-                
-                socketio.emit('install_progress',{
-                                                'status': True,
-                                                'progress': progress,
-                                                'model_name' : model_name,
-                                                'binding_folder' : binding_folder,
-                                                'model_url' : model_url,
-                                                'start_time': self.download_infos[signature]['start_time'].strftime("%Y-%m-%d %H:%M:%S"),
-                                                'total_size': self.download_infos[signature]['total_size'],
-                                                'downloaded_size': self.download_infos[signature]['downloaded_size'],
-                                                'progress': self.download_infos[signature]['progress'],
-                                                'speed': self.download_infos[signature]['speed'],
+                                                    'status': True,
+                                                    'progress': progress,
+                                                    'model_name' : model_name,
+                                                    'binding_folder' : binding_folder,
+                                                    'model_url' : model_url,
+                                                    'start_time': self.download_infos[signature]['start_time'].strftime("%Y-%m-%d %H:%M:%S"),
+                                                    'total_size': self.download_infos[signature]['total_size'],
+                                                    'downloaded_size': self.download_infos[signature]['downloaded_size'],
+                                                    'progress': self.download_infos[signature]['progress'],
+                                                    'speed': self.download_infos[signature]['speed'],
 
-                                                }, room=room_id)
-                
-                def callback(downloaded_size, total_size):
-                    progress = (downloaded_size / total_size) * 100
-                    now = datetime.now()
-                    dt = (now - self.download_infos[signature]['start_time']).total_seconds()
-                    speed = downloaded_size/dt
-                    self.download_infos[signature]['downloaded_size'] = downloaded_size
-                    self.download_infos[signature]['speed'] = speed
-
-                    if progress - self.download_infos[signature]['progress']>2:
-                        self.download_infos[signature]['progress'] = progress
-                        socketio.emit('install_progress',{
-                                                        'status': True,
-                                                        'model_name' : model_name,
-                                                        'binding_folder' : binding_folder,
-                                                        'model_url' : model_url,
-                                                        'start_time': self.download_infos[signature]['start_time'].strftime("%Y-%m-%d %H:%M:%S"),
-                                                        'total_size': self.download_infos[signature]['total_size'],
-                                                        'downloaded_size': self.download_infos[signature]['downloaded_size'],
-                                                        'progress': self.download_infos[signature]['progress'],
-                                                        'speed': self.download_infos[signature]['speed'],
-                                                        }, room=room_id)
+                                                    }, room=room_id)
                     
-                    if self.download_infos[signature]["cancel"]:
-                        raise Exception("canceled")
+                    def callback(downloaded_size, total_size):
+                        progress = (downloaded_size / total_size) * 100
+                        now = datetime.now()
+                        dt = (now - self.download_infos[signature]['start_time']).total_seconds()
+                        speed = downloaded_size/dt
+                        self.download_infos[signature]['downloaded_size'] = downloaded_size
+                        self.download_infos[signature]['speed'] = speed
+
+                        if progress - self.download_infos[signature]['progress']>2:
+                            self.download_infos[signature]['progress'] = progress
+                            socketio.emit('install_progress',{
+                                                            'status': True,
+                                                            'model_name' : model_name,
+                                                            'binding_folder' : binding_folder,
+                                                            'model_url' : model_url,
+                                                            'start_time': self.download_infos[signature]['start_time'].strftime("%Y-%m-%d %H:%M:%S"),
+                                                            'total_size': self.download_infos[signature]['total_size'],
+                                                            'downloaded_size': self.download_infos[signature]['downloaded_size'],
+                                                            'progress': self.download_infos[signature]['progress'],
+                                                            'speed': self.download_infos[signature]['speed'],
+                                                            }, room=room_id)
                         
-                    
-                if hasattr(self.binding, "download_model"):
-                    try:
-                        self.binding.download_model(model_path, installation_path, callback)
-                    except Exception as ex:
-                        ASCIIColors.warning(str(ex))
-                        socketio.emit('install_progress',{
-                                    'status': False,
-                                    'error': 'canceled',
-                                    'model_name' : model_name,
-                                    'binding_folder' : binding_folder,
-                                    'model_url' : model_url,
-                                    'start_time': self.download_infos[signature]['start_time'].strftime("%Y-%m-%d %H:%M:%S"),
-                                    'total_size': self.download_infos[signature]['total_size'],
-                                    'downloaded_size': self.download_infos[signature]['downloaded_size'],
-                                    'progress': self.download_infos[signature]['progress'],
-                                    'speed': self.download_infos[signature]['speed'],
-                                }, room=room_id
-                        )
-                        del self.download_infos[signature]
+                        if self.download_infos[signature]["cancel"]:
+                            raise Exception("canceled")
+                            
+                        
+                    if hasattr(self.binding, "download_model"):
                         try:
-                            installation_path.unlink()
+                            self.binding.download_model(model_path, installation_path, callback)
                         except Exception as ex:
-                            ASCIIColors.error(f"Couldn't delete file. Please try to remove it manually.\n{installation_path}")
-                        return
+                            ASCIIColors.warning(str(ex))
+                            trace_exception(ex)
+                            socketio.emit('install_progress',{
+                                        'status': False,
+                                        'error': 'canceled',
+                                        'model_name' : model_name,
+                                        'binding_folder' : binding_folder,
+                                        'model_url' : model_url,
+                                        'start_time': self.download_infos[signature]['start_time'].strftime("%Y-%m-%d %H:%M:%S"),
+                                        'total_size': self.download_infos[signature]['total_size'],
+                                        'downloaded_size': self.download_infos[signature]['downloaded_size'],
+                                        'progress': self.download_infos[signature]['progress'],
+                                        'speed': self.download_infos[signature]['speed'],
+                                    }, room=room_id
+                            )
+                            del self.download_infos[signature]
+                            try:
+                                installation_path.unlink()
+                            except Exception as ex:
+                                ASCIIColors.error(f"Couldn't delete file. Please try to remove it manually.\n{installation_path}")
+                            return
 
-                else:
-                    try:
-                        self.download_file(model_path, installation_path, callback)
-                    except Exception as ex:
-                        ASCIIColors.warning(str(ex))
-                        socketio.emit('install_progress',{
-                                    'status': False,
-                                    'error': 'canceled',
-                                    'model_name' : model_name,
-                                    'binding_folder' : binding_folder,
-                                    'model_url' : model_url,
-                                    'start_time': self.download_infos[signature]['start_time'].strftime("%Y-%m-%d %H:%M:%S"),
-                                    'total_size': self.download_infos[signature]['total_size'],
-                                    'downloaded_size': self.download_infos[signature]['downloaded_size'],
-                                    'progress': self.download_infos[signature]['progress'],
-                                    'speed': self.download_infos[signature]['speed'],
-                                }, room=room_id
-                        )
-                        del self.download_infos[signature]
-                        installation_path.unlink()
-                        return                        
-                socketio.emit('install_progress',{
-                                                'status': True, 
-                                                'error': '',
-                                                'model_name' : model_name,
-                                                'binding_folder' : binding_folder,
-                                                'model_url' : model_url,
-                                                'start_time': self.download_infos[signature]['start_time'].strftime("%Y-%m-%d %H:%M:%S"),
-                                                'total_size': self.download_infos[signature]['total_size'],
-                                                'downloaded_size': self.download_infos[signature]['downloaded_size'],
-                                                'progress': 100,
-                                                'speed': self.download_infos[signature]['speed'],
-                                                }, room=room_id)
-                del self.download_infos[signature]
-                
+                    else:
+                        try:
+                            self.download_file(model_path, installation_path, callback)
+                        except Exception as ex:
+                            ASCIIColors.warning(str(ex))
+                            trace_exception(ex)
+                            socketio.emit('install_progress',{
+                                        'status': False,
+                                        'error': 'canceled',
+                                        'model_name' : model_name,
+                                        'binding_folder' : binding_folder,
+                                        'model_url' : model_url,
+                                        'start_time': self.download_infos[signature]['start_time'].strftime("%Y-%m-%d %H:%M:%S"),
+                                        'total_size': self.download_infos[signature]['total_size'],
+                                        'downloaded_size': self.download_infos[signature]['downloaded_size'],
+                                        'progress': self.download_infos[signature]['progress'],
+                                        'speed': self.download_infos[signature]['speed'],
+                                    }, room=room_id
+                            )
+                            del self.download_infos[signature]
+                            installation_path.unlink()
+                            return                        
+                    socketio.emit('install_progress',{
+                                                    'status': True, 
+                                                    'error': '',
+                                                    'model_name' : model_name,
+                                                    'binding_folder' : binding_folder,
+                                                    'model_url' : model_url,
+                                                    'start_time': self.download_infos[signature]['start_time'].strftime("%Y-%m-%d %H:%M:%S"),
+                                                    'total_size': self.download_infos[signature]['total_size'],
+                                                    'downloaded_size': self.download_infos[signature]['downloaded_size'],
+                                                    'progress': 100,
+                                                    'speed': self.download_infos[signature]['speed'],
+                                                    }, room=room_id)
+                    del self.download_infos[signature]
+                except Exception as ex:
+                    trace_exception(ex)
+                    socketio.emit('install_progress',{
+                                'status': False,
+                                'error': str(ex),
+                                'model_name' : model_name,
+                                'binding_folder' : binding_folder,
+                                'model_url' : model_url,
+                                'start_time': '',
+                                'total_size': 0,
+                                'downloaded_size': 0,
+                                'progress': 0,
+                                'speed': 0,
+                            }, room=room_id
+                    )                    
             tpe = threading.Thread(target=install_model_, args=())
             tpe.start()
 
