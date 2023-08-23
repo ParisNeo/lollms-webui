@@ -956,9 +956,9 @@ class LoLLMsAPPI(LollmsApplication):
 
         link_text = "\n" #self.personality.link_text
         if not is_continue:
-            full_message_list.append("\n"+self.config.discussion_prompt_separator +message.sender.replace(":","")+": "+message.content.strip()+link_text+self.personality.ai_message_prefix)
+            full_message_list.append(self.config.discussion_prompt_separator +message.sender.replace(":","")+": "+message.content.strip()+link_text+self.personality.ai_message_prefix)
         else:
-            full_message_list.append("\n"+self.config.discussion_prompt_separator +message.sender.replace(":","")+": "+message.content.strip())
+            full_message_list.append(self.config.discussion_prompt_separator +message.sender.replace(":","")+": "+message.content.strip())
 
 
         composed_messages = link_text.join(full_message_list)
@@ -1208,7 +1208,7 @@ class LoLLMsAPPI(LollmsApplication):
 
     def generate(self, full_prompt, prompt, n_predict, client_id, callback=None):
         if self.personality.processor is not None:
-            ASCIIColors.success("Running workflow")
+            ASCIIColors.info("Running workflow")
             try:
                 self.personality.processor.run_workflow( prompt, full_prompt, callback)
             except Exception as ex:
