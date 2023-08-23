@@ -966,7 +966,7 @@ class LoLLMsAPPI(LollmsApplication):
             pr = PromptReshaper("!@>Documentation:{{doc}}\n{{conditionning}}{{content}}")
             emb = self.personality.vectorizer.embed_query(message.content)
             doc = self.personality.vectorizer.recover_text(emb, top_k=self.config.data_vectorization_nb_chunks)     
-            // TODO, fix       
+            # TODO, fix       
             discussion_messages = pr.build({
                                     "doc":doc,
                                     "conditionning":self.personality.personality_conditioning,
