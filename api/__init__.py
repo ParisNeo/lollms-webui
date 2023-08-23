@@ -507,6 +507,7 @@ class LoLLMsAPPI(LollmsApplication):
                 path:Path = self.lollms_paths.personal_uploads_path / self.personality.personality_folder_name
                 path.mkdir(parents=True, exist_ok=True)
                 file_path = path / data["filename"]
+                File64BitsManager.b642file(data["fileData"],file_path)
                 if self.personality.processor:
                     self.personality.processor.add_file(file_path, partial(self.process_chunk, client_id=client_id))
                 else:
@@ -972,20 +973,16 @@ class LoLLMsAPPI(LollmsApplication):
             composed_messages = self.model.detokenize(t[-nb_tk:])
             ASCIIColors.warning(f"Cropping discussion to fit context [using {nb_tk} tokens/{self.config.ctx_size}]")
         discussion_messages = composed_messages
-        tokens = self.model.tokenize(discussion_messages)
         
-        if self.config["debug"]:
-            ASCIIColors.yellow(discussion_messages)
-            ASCIIColors.info(f"prompt size:{len(tokens)} tokens")
+        
 
 
         if len(self.personality.files)>0 and self.personality.vectorizer:
-            pr = PromptReshaper("!@>Documentation:{{doc}}\n{{conditionning}}{{content}}")
+            pr = PromptReshaper("!@>Document chunks:\n{{doc}}\n{{conditionning}}\n{{content}}")
             emb = self.personality.vectorizer.embed_query(message.content)
-            doc = self.personality.vectorizer.recover_text(emb, top_k=self.config.data_vectorization_nb_chunks)     
-            # TODO, fix       
+            docs, sorted_similarities = self.personality.vectorizer.recover_text(emb, top_k=self.config.data_vectorization_nb_chunks)     
             discussion_messages = pr.build({
-                                    "doc":doc,
+                                    "doc":"\n".join(docs),
                                     "conditionning":self.personality.personality_conditioning,
                                     "content":discussion_messages
                                     }, self.model.tokenize, self.model.detokenize, self.config.ctx_size, place_holders_to_sacrifice=["content"])
@@ -996,6 +993,10 @@ class LoLLMsAPPI(LollmsApplication):
                                     "content":discussion_messages
                                     }, self.model.tokenize, self.model.detokenize, self.config.ctx_size, place_holders_to_sacrifice=["content"])
 
+        if self.config["debug"]:
+            tokens = self.model.tokenize(discussion_messages)
+            ASCIIColors.yellow(discussion_messages)
+            ASCIIColors.info(f"prompt size:{len(tokens)} tokens")
 
         return discussion_messages, message.content, tokens
 
