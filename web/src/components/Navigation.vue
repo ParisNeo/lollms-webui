@@ -1,38 +1,38 @@
 <template>
     <div v-if="$store.state.ready" class="container flex flex-col sm:flex-row items-center">
       <div class="w-full">
-        <ul class="flex flex-row font-medium">
-          <li>
+        <ul class="flex flex-row font-medium nav-ul">
+          <li class="nav-li">
             <RouterLink :to="{ name: 'discussions' }" class="link-item dark:link-item-dark">
               Discussions
             </RouterLink>
           </li>
-          <li>
+          <li class="nav-li">
             <RouterLink :to="{ name: 'playground' }" class="link-item dark:link-item-dark">
               Playground
             </RouterLink>
           </li>
-          <li>
+          <li class="nav-li">
             <RouterLink :to="{ name: 'settings' }" class="link-item dark:link-item-dark">
               Settings
             </RouterLink>
           </li>
-          <li>
+          <li class="nav-li">
             <RouterLink :to="{ name: 'extensions' }" class="link-item dark:link-item-dark">
               Extensions
             </RouterLink>
           </li>
-          <li>
+          <li class="nav-li">
             <RouterLink :to="{ name: 'training' }" class="link-item dark:link-item-dark">
               Training
             </RouterLink>
           </li>
-          <li>
+          <li class="nav-li">
             <RouterLink :to="{ name: 'quantizing' }" class="link-item dark:link-item-dark">
               Quantizing
             </RouterLink>
           </li>
-          <li>
+          <li class="nav-li">
             <RouterLink :to="{ name: 'help' }" class="link-item dark:link-item-dark">
               Help
             </RouterLink>
@@ -126,10 +126,21 @@
 
 
   /* Ensure each li extends to the bottom of its container */
-  ul {
+
+  .nav-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
     display: flex;
     flex-direction: column;
     height: 100%;
+  }
+  
+  .nav-li {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 5px;
   }
   </style>
   

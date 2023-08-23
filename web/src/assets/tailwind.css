@@ -31,3 +31,36 @@
 .display-none {
   @apply hidden;
 }
+
+
+h1 {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+
+
+h2 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+h4 {
+  font-size: 18px;
+  font-style: italic;
+}
+
+/* Include any additional styles you need */
+ul {
+  list-style-type: disc;
+  margin-left: 5px;
+}
+
+ol {
+  list-style-type: decimal;
+}

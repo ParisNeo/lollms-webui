@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 16
+version: 19
 binding_name: null
 model_name: null
 
@@ -47,3 +47,11 @@ audio_out_voice: null
 auto_speak: false
 audio_pitch: 1
 silenceTimer: 5000
+
+# Data vectorization
+data_vectorization_method: "ftidf_vectorizer" #"model_embedding" or "ftidf_vectorizer"
+data_visualization_method: "PCA" #"PCA" or "TSNE"
+data_vectorization_save_db: False # For each new session, new files
+data_vectorization_chunk_size: 512 # chunk size
+data_vectorization_overlap_size: 128 # overlap between chunks size
+data_vectorization_nb_chunks: 2 # number of chunks to use

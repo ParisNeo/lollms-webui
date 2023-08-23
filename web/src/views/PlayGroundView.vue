@@ -115,7 +115,7 @@ async function showInputPanel(name, default_value="", options=[]) {
         if(options.length===0){
           panel.innerHTML = `
             <div class="bg-white p-6 rounded-md shadow-md w-80">
-                <h2 class="text-lg font-semibold mb-3">"${name}"</h2>
+                <h2 class="text-lg font-semibold mb-3">${name}</h2>
                 <textarea id="replacementInput" class="w-full h-32 border rounded p-2 mb-3">${default_value}</textarea>
                 <div class="flex justify-end">
                     <button id="cancelButton" class="mr-2 px-4 py-2 border rounded">Cancel</button>
@@ -127,7 +127,7 @@ async function showInputPanel(name, default_value="", options=[]) {
         else{
           panel.innerHTML = `
             <div class="bg-white p-6 rounded-md shadow-md w-80">
-                <h2 class="text-lg font-semibold mb-3">"${name}"</h2>
+                <h2 class="text-lg font-semibold mb-3">${name}</h2>
                 <select id="options_selector" class="form-control w-full h-25 border rounded p-2 mb-3">
                   ${options.map(option => `<option value="${option}">${option}</option>`)}
                 </select>
@@ -186,6 +186,23 @@ function replaceInText(text, callback) {
         let placeholder = match.toLowerCase().substring(2,match.length-2);
         if (placeholder !== "generation_placeholder") {
           if (placeholder.includes(":")) {
+            // Special key words
+            let key_words_dict={
+              "all_language_options":"english:french:german:chinese:japanese:spanish:italian:russian:portuguese:swedish:danish:dutch:norwegian:slovak:czech:hungarian:polish:ukrainian:bulgarian:latvian:lithuanian:estonian:maltese:irish:galician:basque:welsh:breton:georgian:turkmen:kazakh:uzbek:tajik:afghan:sri-lankan:filipino:vietnamese:lao:cambodian:thai:burmese:kenyan:botswanan:zimbabwean:malawian:mozambican:angolan:namibian:south-african:madagascan:seychellois:mauritian:haitian:peruvian:ecuadorian:bolivian:paraguayan:chilean:argentinean:uruguayan:brazilian:colombian:venezuelan:puerto-rican:cuban:dominican:honduran:nicaraguan:salvadorean:guatemalan:el-salvadoran:belizean:panamanian:costa-rican:antiguan:barbudan:dominica's:grenada's:st-lucia's:st-vincent's:gibraltarian:faroe-islander:greenlandic:icelandic:jamaican:trinidadian:tobagonian:barbadian:anguillan:british-virgin-islander:us-virgin-islander:turkish:israeli:palestinian:lebanese:egyptian:libyan:tunisian:algerian:moroccan:bahraini:kuwaiti:saudi-arabian:yemeni:omani:irani:iraqi:afghanistan's:pakistani:indian:nepalese:sri-lankan:maldivan:burmese:thai:lao:vietnamese:kampuchean:malaysian:bruneian:indonesian:australian:new-zealanders:fijians:tongans:samoans:vanuatuans:wallisians:kiribatians:tuvaluans:solomon-islanders:marshallese:micronesians:hawaiians",
+              "all_programming_language_options":"python:c:c++:java:javascript:php:ruby:go:swift:kotlin:rust:haskell:erlang:lisp:scheme:prolog:cobol:fortran:pascal:delphi:d:eiffel:h:basic:visual_basic:smalltalk:objective-c:html5:node.js:vue.js:svelte:react:angular:ember:clipper:stex:arduino:brainfuck:r:assembly:mason:lepton:seacat:bbc_microbit:raspberry_pi_gpio:raspberry_pi_spi:raspberry_pi_i2c:raspberry_pi_uart:raspberry_pi_adc:raspberry_pi_ddio"
+            }
+            Object.entries(key_words_dict).forEach(([key, value]) => {
+              console.log(`Key: ${key}, Value: ${value}`);
+              function escapeRegExp(string) {
+                  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special characters
+              }
+
+              const escapedKey = escapeRegExp(key);
+              const regex = new RegExp(escapedKey, 'g');
+              placeholder = placeholder.replace(regex, value);
+              //text = text.replace(new RegExp(key, 'g'), value);
+            });
+
             let splitResult = placeholder.split(":");
             let name = splitResult[0];
             let defaultValue = splitResult[1] || "";

@@ -5,8 +5,8 @@
         </button>
         <transition name="slide">
         <div v-if="isMenuOpen" class="menu-list flex-grow" :style="menuPosition" ref="menu">
-            <ul class="flex-grow">
-            <li v-for="(command, index) in commands" :key="index" @click="executeCommand(command)" class="menu-command flex-grow hover:bg-blue-400 ">
+            <ul class="flex-grow menu-ul">
+            <li v-for="(command, index) in commands" :key="index" @click="executeCommand(command)" class="menu-command menu-li flex-grow hover:bg-blue-400 ">
                 <img v-if="command.icon && !command.is_file" :src="command.icon" :alt="command.name" class="menu-icon">
                 <span v-else class="menu-icon"></span>
                 <span>{{ command.name }}</span>
@@ -133,13 +133,13 @@ handleClickOutside(event) {
     transform: translateY(-10px);
   }
   
-  ul {
+  .menu-ul {
     list-style: none;
     padding: 0;
     margin: 0;
   }
   
-  li {
+  .menu-li {
     cursor: pointer;
     display: flex;
     align-items: center;

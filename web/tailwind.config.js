@@ -5,6 +5,7 @@ module.exports = {
     './src/**/*.{vue,js,ts,jsx,tsx}',
     'node_modules/flowbite-vue/**/*.{js,jsx,ts,tsx}'
   ],
+
   darkMode: 'class',
   theme: {
     extend: {
@@ -35,5 +36,10 @@ module.exports = {
       }
     }
   },
-  plugins: [require('flowbite/plugin'), require('tailwind-scrollbar')]
+  plugins: [require('flowbite/plugin'), require('tailwind-scrollbar')],
+  variants: {
+    h1: {
+      fontWeight: 'bold'
+    }
+  }
 }

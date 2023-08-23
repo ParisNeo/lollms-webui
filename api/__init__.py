@@ -490,10 +490,10 @@ class LoLLMsAPPI(LollmsApplication):
                 path:Path = self.lollms_paths.personal_uploads_path / self.personality.personality_folder_name
                 path.mkdir(parents=True, exist_ok=True)
                 file_path = path / data["filename"]
-                File64BitsManager.b642file(data["fileData"],file_path)
                 if self.personality.processor:
                     self.personality.processor.add_file(file_path, partial(self.process_chunk, client_id=client_id))
-                    
+                else:
+                    self.personality.add_file(file_path, partial(self.process_chunk, client_id=client_id))
                 self.socketio.emit('file_received',
                         {
                             "status":True,
@@ -754,7 +754,7 @@ class LoLLMsAPPI(LollmsApplication):
             if id_==-1:
                 message = self.connections[client_id]["current_discussion"].current_message
             else:
-                message = self.connections[client_id]["current_discussion"].select_message(id_)
+                message = self.connections[client_id]["current_discussion"].get_message(id_)
             if message is None:
                 return            
             self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message.id, client_id))
@@ -777,7 +777,7 @@ class LoLLMsAPPI(LollmsApplication):
             if id_==-1:
                 message = self.connections[client_id]["current_discussion"].current_message
             else:
-                message = self.connections[client_id]["current_discussion"].select_message(id_)
+                message = self.connections[client_id]["current_discussion"].get_message(id_)
 
             self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message.id, client_id, True))
             self.connections[client_id]['generation_thread'].start()
@@ -954,12 +954,31 @@ class LoLLMsAPPI(LollmsApplication):
             nb_tk = max_prompt_stx_size-n_cond_tk
             composed_messages = self.model.detokenize(t[-nb_tk:])
             ASCIIColors.warning(f"Cropping discussion to fit context [using {nb_tk} tokens/{self.config.ctx_size}]")
-        discussion_messages = self.personality.personality_conditioning+ composed_messages
+        discussion_messages = composed_messages
         tokens = self.model.tokenize(discussion_messages)
         
         if self.config["debug"]:
             ASCIIColors.yellow(discussion_messages)
             ASCIIColors.info(f"prompt size:{len(tokens)} tokens")
+
+
+        if len(self.personality.files)>0 and self.personality.vectorizer:
+            pr = PromptReshaper("!@>Documentation:{{doc}}\n{{conditionning}}{{content}}")
+            emb = self.personality.vectorizer.embed_query(message.content)
+            doc = self.personality.vectorizer.recover_text(emb, top_k=self.config.data_vectorization_nb_chunks)     
+            // TODO, fix       
+            discussion_messages = pr.build({
+                                    "doc":doc,
+                                    "conditionning":self.personality.personality_conditioning,
+                                    "content":discussion_messages
+                                    }, self.model.tokenize, self.model.detokenize, self.config.ctx_size, place_holders_to_sacrifice=["content"])
+        else:
+            pr = PromptReshaper("{{conditionning}}\n{{content}}")
+            discussion_messages = pr.build({
+                                    "conditionning":self.personality.personality_conditioning,
+                                    "content":discussion_messages
+                                    }, self.model.tokenize, self.model.detokenize, self.config.ctx_size, place_holders_to_sacrifice=["content"])
+
 
         return discussion_messages, message.content, tokens
 
@@ -1187,8 +1206,6 @@ class LoLLMsAPPI(LollmsApplication):
             print("Finished executing the workflow")
             return
 
-        if len(self.personality.files)>0:
-            PromptReshaper("Documentation:{{doc}}\n{{Content}}")
 
         self._generate(full_prompt, n_predict, client_id, callback)
         ASCIIColors.success("\nFinished executing the generation")

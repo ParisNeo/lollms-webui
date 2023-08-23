@@ -148,32 +148,6 @@ markdownIt.renderer.rules.link_open = (tokens, idx, options, env, self) => {
 };
 
 
-// Define a custom rendering function for lists
-const renderList = (tokens, idx, options, env, self) => {
-  const token = tokens[idx];
-  const listType = token.attrGet('type') || 'ul'; // Default to unordered list
-
-  // Custom handling for unordered lists
-  if (listType === 'ul') {
-    // Add Tailwind CSS classes for unordered lists
-    return '<ul class="list-disc ml-4">' + self.renderToken(tokens, idx, options) + '</ul>';
-  }
-
-  // Custom handling for ordered lists
-  if (listType === 'ol') {
-    // Add Tailwind CSS classes for ordered lists
-    return '<ol class="list-decimal ml-4">' + self.renderToken(tokens, idx, options) + '</ol>';
-  }
-
-  // Fallback to the default renderer for other list types
-  return self.renderToken(tokens, idx, options);
-};
-
-// Override the default list renderer with the custom function
-markdownIt.renderer.rules.bullet_list_open = renderList;
-markdownIt.renderer.rules.ordered_list_open = renderList;
-
-
 
 export default {
   name: 'MarkdownRenderer',
@@ -256,14 +230,3 @@ export default {
   },
 };
 </script>
-
-<style>
-/* Include any additional styles you need */
-ul {
-  list-style-type: disc;
-}
-
-ol {
-  list-style-type: decimal;
-}
-</style>

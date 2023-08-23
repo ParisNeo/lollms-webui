@@ -548,12 +548,20 @@ class Discussion:
 
         return self.messages
 
-    def select_message(self, message_id):
+    def get_message(self, message_id):
         for message in self.messages:
-            if message.id == message_id:
+            if message.id == int(message_id):
                 self.current_message = message
                 return message
         return None
+
+    def select_message(self, message_id):
+        msg = self.get_message(message_id)
+        if msg is not None:
+            self.current_message = msg
+            return True
+        else:
+            return False 
 
     def update_message(self, new_content, new_metadata=None):
         """Updates the content of a message
@@ -563,7 +571,22 @@ class Discussion:
             new_content (str): The nex message content
         """
         self.current_message.update(new_content, new_metadata)
-    
+
+    def edit_message(self, message_id, new_content, new_metadata=None):
+        """Edits the content of a message
+
+        Args:
+            message_id (int): The id of the message to be changed
+            new_content (str): The nex message content
+        """
+        msg = self.get_message(message_id)
+        if msg:
+            msg.update(new_content, new_metadata)
+            return True
+        else:
+            return False
+
+
     def message_rank_up(self, message_id):
         """Increments the rank of the message
 
