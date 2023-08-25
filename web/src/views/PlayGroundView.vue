@@ -29,22 +29,27 @@
           </div>
           <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
             <div class="flex flex-row m-2 p-0">
-              <div class="border-2 text-blue-600 border-blue-300 p-2 rounded shadow-lg hover:border-gray-600 dark:link-item-dark cursor-pointer"  @click="tab_id='source'" :class="{'bg-blue-200':tab_id=='source'}">
+              <div 
+              class="border-2 dark:bg-blue-700 text-blue-600 dark:text-white border-blue-300 p-2 rounded shadow-lg hover:border-gray-600 dark:link-item-dark cursor-pointer"
+              @click="tab_id='source'" :class="{'bg-blue-200 dark:bg-blue-500':tab_id=='source'}">
                 Source
               </div>
-              <div class="border-2 text-blue-600 border-blue-300  p-2 rounded shadow-lg hover:border-gray-600 dark:link-item-dark cursor-pointer"  @click="tab_id='render'" :class="{'bg-blue-200':tab_id=='render'}">
+              <div 
+              class="border-2 dark:bg-blue-700 text-blue-600 dark:text-white border-blue-300 p-2 rounded shadow-lg hover:border-gray-600 dark:link-item-dark cursor-pointer"
+              @click="tab_id='render'" :class="{'bg-blue-200 dark:bg-blue-500':tab_id=='render'}">
                 Render
               </div>
             </div>
-            <div v-if="tab_id === 'source'">
+            <div  v-if="tab_id === 'source'">
               <textarea 
-                @click="text_element_clicked" 
+                @click="text_element_clicked"
+                @keyup="text_element_changed"
                 v-model="text" 
-                id="text_element" 
-                class="mt-4 h-64 p-2 rounded shadow-lg  overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" type="text"></textarea>
+                ref="text_element" 
+                class="bg-white dark:bg-black m-0 border-2 rounded-md shadow-sm w-full mt-4 h-64 p-2 rounded shadow-lg  overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" type="text"></textarea>
               <span>Cursor position {{ cursorPosition }}</span>
             </div>
-            <div v-else>
+            <div  v-if="tab_id === 'render'">
               <MarkdownRenderer ref="mdRender" :markdown-text="text" class="mt-4 p-2 rounded shadow-lg dark:bg-bg-dark">
               </MarkdownRenderer>          
             </div>
@@ -52,7 +57,7 @@
       </div>
       <Card title="settings"  class="slider-container ml-0 mr-0 max-width"  :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
         <Card  title="Model" class="slider-container ml-0 mr-0" :is_subcard="true" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
-          <select v-model="selectedModel" @change="setModel" class="m-0 border-2 rounded-md shadow-sm w-full">
+          <select v-model="selectedModel" @change="setModel" class="bg-white dark:bg-black m-0 border-2 rounded-md shadow-sm w-full">
             <option v-for="model in models" :key="model" :value="model">
               {{ model }}
             </option>
@@ -75,7 +80,7 @@
 
         </Card>
         <Card  title="Presets" class="slider-container ml-0 mr-0" :is_subcard="true" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
-          <select v-model="selectedPreset" class="mb-2 border-2 rounded-md shadow-sm w-full">
+          <select v-model="selectedPreset" class="bg-white dark:bg-black mb-2 border-2 rounded-md shadow-sm w-full">
             <option v-for="preset in presets" :key="preset" :value="preset">
               {{ preset.name }}
             </option>
@@ -106,27 +111,27 @@
             </div>
             <div class="slider-container ml-2 mr-2">
               <h3 class="text-gray-600">Repeat Penalty</h3>
-              <input type="range" v-model="repeat_penalty" min="0" max="5" step="0.1" class="w-full">
+              <input type="range" v-model="repeat_penalty" min="0" max="5" step="0.1" class="bg-white dark:bg-black m-0 border-2 rounded-md shadow-sm w-full">
               <span class="slider-value text-gray-500">Current value: {{ repeat_penalty }}</span>
             </div>
             <div class="slider-container ml-2 mr-2">
               <h3 class="text-gray-600">Repeat Last N</h3>
-              <input type="range" v-model="repeat_last_n" min="0" max="100" step="1" class="w-full">
+              <input type="range" v-model="repeat_last_n" min="0" max="100" step="1" class="bg-white dark:bg-black m-0 border-2 rounded-md shadow-sm w-full">
               <span class="slider-value text-gray-500">Current value: {{ repeat_last_n }}</span>
             </div>
             <div class="slider-container ml-2 mr-2">
               <h3 class="text-gray-600">Number of tokens to crop the text to</h3>
-              <input type="number" v-model="n_crop" class="w-full">
+              <input type="number" v-model="n_crop" class="bg-white dark:bg-black m-0 border-2 rounded-md shadow-sm w-full">
               <span class="slider-value text-gray-500">Current value: {{ n_crop }}</span>
             </div>          
             <div class="slider-container ml-2 mr-2">
               <h3 class="text-gray-600">Number of tokens to generate</h3>
-              <input type="number" v-model="n_predicts" class="w-full">
+              <input type="number" v-model="n_predicts" class="bg-white dark:bg-black m-0 border-2 rounded-md shadow-sm w-full">
               <span class="slider-value text-gray-500">Current value: {{ n_predicts }}</span>
             </div>
             <div class="slider-container ml-2 mr-2">
               <h3 class="text-gray-600">Seed</h3>
-              <input type="number" v-model="seed" class="w-full">
+              <input type="number" v-model="seed" class="bg-white dark:bg-black m-0 border-2 rounded-md shadow-sm w-full">
               <span class="slider-value text-gray-500">Current value: {{ seed }}</span>
             </div>
           </Card>
@@ -430,24 +435,11 @@ export default {
   methods:{
     text_element_changed(){
       console.log("text_element_changed")
-      try{
-        this.cursorPosition = this.$refs.text_element.selectionStart;
-      }
-      catch (e) {
-        // The "error" event is fired when an exception occurs
-        console.log("Error occurred:", e);
-      }
+      this.cursorPosition = this.$refs.text_element.selectionStart;
     },      
     text_element_clicked(){
       console.log("text_element_clicked")
-      try{
-        this.cursorPosition = this.$refs.text_element.selectionStart;
-        console.log(this.cursorPosition)
-      }
-      catch (e) {
-        // The "error" event is fired when an exception occurs
-        console.log("Error occurred:", e);
-      }
+      this.cursorPosition = this.$refs.text_element.selectionStart;
     },    
     setModel(){
       this.selecting_model=true

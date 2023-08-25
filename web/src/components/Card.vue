@@ -2,9 +2,11 @@
   <div v-if="isActive" class="overlay" @click="toggleCard"></div>
   <div v-show="shrink===false"
     :class="[
-      'bg-white  dark:bg-gray-700 border-blue-300 rounded-lg shadow-lg p-2',
+      'border-blue-300 rounded-lg shadow-lg p-2',
       cardWidthClass,
       'm-2',
+      {'bg-white dark:bg-gray-800': is_subcard},
+      {'bg-white dark:bg-gray-900': !is_subcard},
       { hovered: !disableHoverAnimation && isHovered, active: isActive }
     ]"
     @mouseenter="isHovered = true"
@@ -13,7 +15,7 @@
     :style="{ cursor:!this.disableFocus  ?  'pointer' : ''}"
   >
     <!-- Title -->
-    <div v-if="title" @click="shrink=true" :class="{'text-center p-2 m-2 bg-gray-200':!is_subcard}" class="bg-gray-100 rounded-lg pl-2 pr-2 mb-2  font-bold cursor-pointer">{{ title }}</div>
+    <div v-if="title" @click="shrink=true" :class="{'text-center p-2 m-2 bg-gray-200':!is_subcard}" class="bg-gray-100 dark:bg-gray-500 rounded-lg pl-2 pr-2 mb-2  font-bold cursor-pointer">{{ title }}</div>
 
     <div v-if="isHorizontal" class="flex flex-wrap">
       <!-- Card Content -->
@@ -25,7 +27,10 @@
       <slot></slot>
     </div>
   </div>
-  <div v-show="shrink===true"  @click="shrink=false" class="bg-white text-center text-2xl dark:bg-gray-700 border-blue-300 rounded-lg shadow-lg p-2 h-10 cursor-pointer">
+  <div v-if="is_subcard" v-show="shrink===true"  @click="shrink=false" class="bg-white text-center text-xl bold dark:bg-gray-500 border-blue-300 rounded-lg shadow-lg p-2 h-10 cursor-pointer m-2">
+    {{ title }}    
+  </div>
+  <div v-else v-show="shrink===true"  @click="shrink=false" class="bg-white text-center text-2xl dark:bg-gray-500 border-2 border-blue-300 rounded-lg shadow-lg p-0 h-7 cursor-pointer hover:h-8 hover:bg-blue-300">
     +    
   </div>
 </template>
@@ -83,7 +88,7 @@ export default {
 
         "w-full",
         "p-2.5",
-        "dark:bg-gray-700",
+        "dark:bg-gray-500",
         "dark:border-gray-600",
         "dark:placeholder-gray-400",
         "dark:text-white",
