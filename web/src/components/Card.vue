@@ -13,7 +13,7 @@
     :style="{ cursor:!this.disableFocus  ?  'pointer' : ''}"
   >
     <!-- Title -->
-    <div v-if="title" @click="shrink=true" class="font-bold mb-2 cursor-pointer">{{ title }}</div>
+    <div v-if="title" @click="shrink=true" :class="{'text-center p-2 m-2 bg-gray-200':!is_subcard}" class="bg-gray-100 rounded-lg pl-2 pr-2 mb-2  font-bold cursor-pointer">{{ title }}</div>
 
     <div v-if="isHorizontal" class="flex flex-wrap">
       <!-- Card Content -->
@@ -25,7 +25,7 @@
       <slot></slot>
     </div>
   </div>
-  <div v-show="shrink===true"  @click="shrink=false" class="bg-white  dark:bg-gray-700 border-blue-300 rounded-lg shadow-lg p-2 h-10 cursor-pointer">
+  <div v-show="shrink===true"  @click="shrink=false" class="bg-white text-center text-2xl dark:bg-gray-700 border-blue-300 rounded-lg shadow-lg p-2 h-10 cursor-pointer">
     +    
   </div>
 </template>
@@ -33,6 +33,10 @@
 <script>
 export default {
   props: {
+    is_subcard:{
+      type:Boolean,
+      default:false
+    },
     is_shrunk: {
       type:Boolean,
       default:false

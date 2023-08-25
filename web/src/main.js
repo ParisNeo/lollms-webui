@@ -120,7 +120,8 @@ export const store = createStore({
           //let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
           configFile.personality_category = personality_path_infos[0]
           configFile.personality_folder = personality_path_infos[1]
-
+          console.log("Recovered config")
+          console.log(configFile)
           commit('setConfig', configFile);
         } catch (error) {
           console.log(error.message, 'refreshConfig');
@@ -131,12 +132,12 @@ export const store = createStore({
           let personalities = []
           const catdictionary = await api_get_req("get_all_personalities")
           const catkeys = Object.keys(catdictionary); // returns categories
+          console.log("Personalities recovered:"+this.state.config.personalities)
 
           for (let j = 0; j < catkeys.length; j++) {
               const catkey = catkeys[j];
               const personalitiesArray = catdictionary[catkey];
               const modPersArr = personalitiesArray.map((item) => {
-
                   const isMounted = this.state.config.personalities.includes(catkey + '/' + item.folder)
                   // if (isMounted) {
                   //     console.log(item)
@@ -175,7 +176,7 @@ export const store = createStore({
                   mountedPersArr.push(pers)
               }
               else {
-                  mountedPersArr.push(this.state.personalities[this.state.personalities.findIndex(item => item.full_path == "english/generic/lollms")])
+                  mountedPersArr.push(this.state.personalities[this.state.personalities.findIndex(item => item.full_path == "generic/lollms")])
               }
           }
           console.log("Personalities list",this.state.personalities)

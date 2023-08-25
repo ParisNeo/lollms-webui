@@ -1,7 +1,7 @@
 <template>
   <div
     class=" min-w-96 items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer  active:scale-95 duration-75 select-none"
-    @click.stop="toggleSelected" :class="selected_computed ? 'border-primary-light' : 'border-transparent'"
+    @click.stop="toggleSelected"  tabindex="-1" :class="selected_computed ? 'border-primary-light' : 'border-transparent'"
     :title="!personality.installed ? 'Not installed' : ''">
 
     <div :class="!personality.installed ? 'opacity-50' : ''">
@@ -19,41 +19,10 @@
             <i data-feather="send" class="w-5"></i>
             <span class="sr-only">Talk</span>
         </button>        
+        <InteractiveMenu  :commands="commandsList">
+        
+        </InteractiveMenu>
   
-      </div>
-      <div class="flex items-center flex-row-reverse gap-2 my-1">
-        <!-- CONTROLS -->
-        <button v-if="selected_computed" type="button" title="Settings" @click.stop="toggleSettings"
-          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-          Settings
-
-          <span class="sr-only">Settings</span>
-        </button>
-        <button v-if="selected_computed" title="Click to Reinstall personality" type="button"  @click.stop="toggleReinstall"
-          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-          Reinstall personality
-
-          <span class="sr-only">Reinstall personality</span>
-        </button>
-        <button v-if="!isMounted" title="Mount personality" type="button"
-          @click.stop="toggleMounted"
-          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-          Mount
-
-          <span class="sr-only">Click to install</span>
-        </button>
-        <button v-if="isMounted" title="Unmount personality" type="button" @click.stop="toggleMounted"
-          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-          Unmount
-
-          <span class="sr-only">Remove</span>
-        </button>
-        <button v-if="isMounted" title="Remount personality (useful if you have changed it)" type="button" @click.stop="reMount"
-          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900">
-          <i data-feather="refresh-ccw" class="w-5"></i>
-
-          <span class="sr-only">Remount</span>
-        </button>
       </div>
       <div class="">
         <div class="">
@@ -64,6 +33,21 @@
 
             {{ personality.author }}
           </div>
+          <div v-if="personality.languages" class="flex items-center">
+            <i data-feather="globe" class="w-5 m-1"></i>
+            <b>Languages:&nbsp;</b>
+            <select id="languages" v-model ="personality.lang"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                <option v-for="(item, index) in personality.languages" :key="index"
+                    :selected="item == personality.languages[0]">{{
+                        item
+                    }}
+
+                </option>
+
+            </select>
+          </div>          
           <div class="flex items-center">
             <i data-feather="bookmark" class="w-5 m-1"></i>
             <b>Category:&nbsp;</b>
@@ -89,6 +73,8 @@ import { nextTick } from 'vue'
 import feather from 'feather-icons'
 import botImgPlaceholder from "../assets/logo.svg"
 import userImgPlaceholder from "../assets/default_user.svg"
+import InteractiveMenu from "@/components/InteractiveMenu.vue"
+
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
   props: {
@@ -102,11 +88,29 @@ export default {
     onReinstall: Function,
     onSettings: Function
   },
+  components:{
+    InteractiveMenu
+  },
   data() {
     return {
       isMounted: false,
-      name: this.personality.name
+      name: this.personality.name,
     };
+  },
+  computed:{
+    commandsList(){
+      let main_menu = [
+                {name:this.isMounted?"unmount":"mount", icon: "feather:settings", is_file:false, value:this.toggleMounted},
+                {name:"reinstall", icon: "feather:terminal", is_file:false, value:this.toggleReinstall},
+              ];
+        if(this.selected){
+          main_menu.push({name:"settings", icon: "feather:settings", is_file:false, value:this.toggleSettings})
+        }
+        return main_menu
+      },  
+      selected_computed(){
+        return this.selected
+    }
   },
   mounted() {
 
@@ -117,11 +121,6 @@ export default {
 
 
     })
-  },
-  computed: {
-selected_computed(){
-  return this.selected
-}
   },
   methods: {
     getImgUrl() {
@@ -134,7 +133,9 @@ selected_computed(){
       this.onTalk(this)
     },
     toggleSelected() {
-      this.onSelected(this)
+      if(this.isMounted){
+        this.onSelected(this)
+      }
     },
     reMount(){
       this.onRemount(this)

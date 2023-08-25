@@ -833,7 +833,7 @@ class LoLLMsAPPI(LollmsApplication):
             self.mounted_personalities=[]
 
         loaded = self.mounted_personalities
-        loaded_names = [f"{p.category}/{p.personality_folder_name}" for p in loaded]
+        loaded_names = [f"{p.category}/{p.personality_folder_name}:{p.selected_language}" if p.selected_language else f"{p.category}/{p.personality_folder_name}" for p in loaded]
         mounted_personalities=[]
         ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
         ASCIIColors.success(f" ║           Building mounted Personalities         ║ ")
@@ -848,12 +848,13 @@ class LoLLMsAPPI(LollmsApplication):
             if personality in loaded_names:
                 mounted_personalities.append(loaded[loaded_names.index(personality)])
             else:
-                personality_path = self.lollms_paths.personalities_zoo_path/f"{personality}"
+                personality_path = self.lollms_paths.personalities_zoo_path/f"{personality}" if not ":" in personality else self.lollms_paths.personalities_zoo_path/f"{personality.split(':')[0]}"
                 try:
                     personality = AIPersonality(personality_path,
                                                 self.lollms_paths, 
                                                 self.config,
                                                 model=self.model,
+                                                selected_language=personality.split(":")[1] if ":" in personality else None,
                                                 run_scripts=True)
                     mounted_personalities.append(personality)
                 except Exception as ex:
@@ -868,6 +869,7 @@ class LoLLMsAPPI(LollmsApplication):
                                                     self.config, 
                                                     self.model, 
                                                     run_scripts=True,
+                                                    selected_language=personality.split(":")[1] if ":" in personality else None,
                                                     installation_option=InstallOption.FORCE_INSTALL)
                         mounted_personalities.append(personality)
                     except Exception as ex:
@@ -875,7 +877,8 @@ class LoLLMsAPPI(LollmsApplication):
                         trace_exception(ex)
                         ASCIIColors.info(f"Unmounting personality")
                         to_remove.append(i)
-                        personality = AIPersonality(None,                                                    self.lollms_paths, 
+                        personality = AIPersonality(None,                                                    
+                                                    self.lollms_paths, 
                                                     self.config, 
                                                     self.model, 
                                                     run_scripts=True,

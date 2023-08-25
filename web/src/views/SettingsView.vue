@@ -29,9 +29,33 @@
                     <i data-feather="list"></i>
                 </button>
             </div>
-
+            
             <div class="flex gap-3 flex-1 items-center justify-end">
-
+                <button
+                    title="Clear uploads"
+                    class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                    @click="api_get_req('clear_uploads').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast(['failed!'], 4, false)}})"
+                    >
+                    <i data-feather="trash-2"></i>
+                    </button>
+                    <button
+                    title="Restart program"
+                    class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                    @click="api_get_req('restart_program').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast(['failed!'], 4, false)}})"
+                    >
+                    <i data-feather="refresh-ccw"></i>
+                    </button>
+                    <button
+                    title="Upgrade program "
+                    class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                    @click="api_get_req('update_software').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast('Success!', 4, true)}})"
+                    >
+                    <i data-feather="arrow-up-circle"></i>
+                    
+                    <div  v-if="has_updates" >
+                        <i data-feather="alert-circle"></i>
+                    </div>
+                    </button>
                 <div class="flex gap-3 items-center">
                     <div v-if="settingsChanged" class="flex gap-3 items-center">
                         Apply changes:
@@ -543,17 +567,10 @@
                                             type="text"
                                             id="db_path"
                                             required
-                                            v-model="db_path"
+                                            v-model="configFile.db_path"
+                                            @change="settingsChanged=true"
                                             class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
                                             >
-                                        </td>
-                                        <td>
-                                            <button
-                                            class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                                            @click="update_setting('db_path', db_path)"
-                                            >
-                                            <i data-feather="check"></i>
-                                            </button>
                                         </td>
                                         </tr>                                        
                                         <tr>
@@ -565,17 +582,10 @@
                                             type="checkbox"
                                             id="enable_gpu"
                                             required
-                                            v-model="enable_gpu"
+                                            v-model="configFile.enable_gpu"
+                                            @change="settingsChanged=true"
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
-                                        </td>
-                                        <td>
-                                            <button
-                                            class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                                            @click="update_setting('enable_gpu', enable_gpu)"
-                                            >
-                                            <i data-feather="check"></i>
-                                            </button>
                                         </td>
                                         </tr>
                                         <tr>
@@ -587,17 +597,10 @@
                                             type="checkbox"
                                             id="auto_update"
                                             required
-                                            v-model="auto_update"
+                                            v-model="configFile.auto_update"
+                                            @change="settingsChanged=true"
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
-                                        </td>
-                                        <td>
-                                            <button
-                                            class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                                            @click="update_setting('auto_update', auto_update)"
-                                            >
-                                            <i data-feather="check"></i>
-                                            </button>
                                         </td>
                                         </tr>
                                     </table>
@@ -614,17 +617,10 @@
                                             type="text"
                                             id="user_name"
                                             required
-                                            v-model="userName"
+                                            v-model="configFile.userName"
+                                            @change="settingsChanged=true"
                                             class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
-                                        </td>
-                                        <td>
-                                            <button
-                                            class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                                            @click="update_setting('user_name', userName)"
-                                            >
-                                            <i data-feather="check"></i>
-                                            </button>
                                         </td>
                                         </tr>
                                         <!-- Row 3 -->
@@ -634,17 +630,9 @@
                                         </td>
                                         <td style="width: 100%;">
                                             <label for="avatar-upload">
-                                                <img :src="user_avatar" class="w-50 h-50 rounded-full" style="max-width: 50px; max-height: 50px; cursor: pointer;">
+                                                <img :src="configFile.user_avatar" class="w-50 h-50 rounded-full" style="max-width: 50px; max-height: 50px; cursor: pointer;">
                                             </label>
                                             <input type="file" id="avatar-upload" style="display: none" @change="uploadAvatar">
-                                        </td>
-                                        <td>
-                                            <button
-                                            class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                                            @click="update_setting('user_name', userName)"
-                                            >
-                                            <i data-feather="check"></i>
-                                            </button>
                                         </td>
                                         </tr>
                                         <!-- Row 4 -->
@@ -657,17 +645,10 @@
                                             type="checkbox"
                                             id="use_user_name_in_discussions"
                                             required
-                                            v-model="use_user_name_in_discussions"
+                                            v-model="configFile.use_user_name_in_discussions"
+                                            @change="settingsChanged=true"
                                             class=" w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
-                                        </td>
-                                        <td>
-                                            <button
-                                            class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                                            @click="update_setting('use_user_name_in_discussions', use_user_name_in_discussions)"
-                                            >
-                                            <i data-feather="check"></i>
-                                            </button>
                                         </td>
                                         </tr>  
                                     </table>
@@ -684,17 +665,10 @@
                                             type="checkbox"
                                             id="auto_speak"
                                             required
-                                            v-model="auto_speak"
+                                            v-model="configFile.auto_speak"
+                                            @change="settingsChanged=true"
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
-                                        </td>
-                                        <td>
-                                            <button
-                                            class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                                            @click="update_setting('auto_speak', auto_speak)"
-                                            >
-                                            <i data-feather="check"></i>
-                                            </button>
                                         </td>
                                         </tr>
                                         <tr>
@@ -702,21 +676,14 @@
                                             <label for="audio_pitch" class="text-sm font-bold" style="margin-right: 1rem;">audio pitch:</label>
                                         </td>
                                         <td>
-                                            <input id="audio_pitch" v-model="audio_pitch"
+                                            <input id="audio_pitch" v-model="configFile.audio_pitch"
+                                            @change="settingsChanged=true"
                                             type="range" min="0" max="10" step="0.1"
                                             class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                                             <p
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >{{ audio_pitch }}</p>
-                                        </td>
-                                        <td>
-                                            <button
-                                            class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                                            @click="update_setting('audio_pitch', audio_pitch)"
-                                            >
-                                            <i data-feather="check"></i>
-                                            </button>
                                         </td>
                                         </tr>
 
@@ -728,7 +695,8 @@
                                             <!-- Select element for choosing the input audio language -->
                                             <select
                                                 id="audio_in_language"
-                                                v-model="audio_in_language"
+                                                v-model="configFile.audio_in_language"
+                                                @change="settingsChanged=true"
                                                 class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
                                                 <!-- Options with language codes and corresponding language names -->
@@ -736,14 +704,6 @@
                                                 {{ language.name }}
                                                 </option>
                                             </select>
-                                            </td>
-                                            <td>
-                                            <button
-                                                class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                                                @click="update_setting('audio_in_language', audio_in_language)"
-                                            >
-                                                <i data-feather="check"></i>
-                                            </button>
                                             </td>
                                         </tr> 
                                         <tr>
@@ -754,7 +714,8 @@
                                         <!-- Select element for choosing the output audio voice -->
                                         <select
                                             id="audio_out_voice"
-                                            v-model="audio_out_voice"
+                                            v-model="configFile.audio_out_voice"
+                                            @change="settingsChanged=true"
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                         >
                                             <!-- Options with available voices in the browser -->
@@ -762,14 +723,6 @@
                                             {{ voice.name }}
                                             </option>
                                         </select>
-                                        </td>
-                                        <td>
-                                        <button
-                                            class="hover:text-secondary dark:bg-gray-600 bg-blue-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
-                                            @click="update_setting('audio_out_voice', audio_out_voice)"
-                                        >
-                                            <i data-feather="check"></i>
-                                        </button>
                                         </td>
                                     </tr>                        
                                         
@@ -781,31 +734,6 @@
 
 
 
-                    <!-- Row 0 -->
-                    <div class="flex flex-row">
-                        <button
-                        class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                        @click="api_get_req('clear_uploads').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast(['failed!'], 4, false)}})"
-                        >
-                        <i data-feather="trash-2">Clear uploads</i>
-                        </button>
-                        <button
-                        title="Restart program"
-                        class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                        @click="api_get_req('restart_program').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast(['failed!'], 4, false)}})"
-                        >
-                        <i data-feather="arrow-down-circle">Res tart program</i>
-                        </button>
-                        <button
-                        class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                        @click="api_get_req('update_software').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast('Success!', 4, true)}})"
-                        >
-                        Upgrade program 
-                        <div  v-if="has_updates" >
-                            <i data-feather="alert-circle"></i>
-                        </div>
-                        </button>
-                    </div>  
 
 
 
@@ -1316,6 +1244,7 @@
                                     <personality-entry ref="personalitiesZoo" v-for="(pers, index) in personalitiesFiltered"
                                         :key="'index-' + index + '-' + pers.name" :personality="pers"
                                         :full_path="pers.full_path"
+                                        :on-remount="onRemount"
                                         :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === pers.full_path)"
                                         :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted" :on-reinstall="onPersonalityReinstall"
                                         :on-settings="onSettingsPersonality" />
@@ -1815,6 +1744,7 @@ export default {
 
         },
         async constructor() {
+            console.log("Constructing")
             this.isLoading = true
             nextTick(() => {
                 feather.replace()
@@ -1981,6 +1911,26 @@ export default {
         fetchHardwareInfos(){
             this.$store.dispatch('refreshDiskUsage');
             this.$store.dispatch('refreshRamUsage');
+        },
+        async onRemount(pers) {
+            if (!pers) { return { 'status': false, 'error': 'no personality - unmount_personality' } }
+
+            const obj = {
+                language: pers.language,
+                category: pers.category,
+                folder: pers.folder,
+                language: pers.lang
+            }
+
+
+            try {
+                const res = await axios.post('/unmount_personality', obj);
+            } catch (error) {
+                console.log(error.message, 'unmount_personality - settings')
+                return
+            }
+
+            const res = await axios.post('/mount_personality', obj);
         },
         async onPersonalitySelected(pers) {
             console.log('on pers', pers)
@@ -2567,7 +2517,7 @@ export default {
         applyConfiguration() {
 
             this.isLoading = true;
-            axios.post('/apply_settings').then((res) => {
+            axios.post('/apply_settings', {"config":this.configFile}).then((res) => {
                 this.isLoading = false;
                 //console.log('apply-res',res)
                 if (res.data.status) {
@@ -2660,38 +2610,31 @@ export default {
             //console.log('asdas',config)
             // console.log("all_personalities")
             // console.log(dictionary)
-            const langkeys = Object.keys(dictionary); // returns languages folder names
-            for (let i = 0; i < langkeys.length; i++) {
-                const langkey = langkeys[i];
-                const catdictionary = dictionary[langkey];
-                const catkeys = Object.keys(catdictionary); // returns categories
+            const catkeys = Object.keys(dictionary); // returns categories folder names
+            for (let j = 0; j < catkeys.length; j++) {
+                const catkey = catkeys[j];
+                const personalitiesArray = catdictionary[catkey];
+                const modPersArr = personalitiesArray.map((item) => {
 
-                for (let j = 0; j < catkeys.length; j++) {
-                    const catkey = catkeys[j];
-                    const personalitiesArray = catdictionary[catkey];
-                    const modPersArr = personalitiesArray.map((item) => {
-
-                        const isMounted = config.personalities.includes(langkey + '/' + catkey + '/' + item.folder)
-                        // if (isMounted) {
-                        //     console.log(item)
-                        // }
-                        let newItem = {}
-                        newItem = item
-                        newItem.category = catkey // add new props to items
-                        newItem.language = langkey // add new props to items
-                        newItem.full_path = langkey + '/' + catkey + '/' + item.folder // add new props to items
-                        newItem.isMounted = isMounted // add new props to items
-                        return newItem
-                    })
+                    const isMounted = config.personalities.includes(catkey + '/' + item.folder)
+                    // if (isMounted) {
+                    //     console.log(item)
+                    // }
+                    let newItem = {}
+                    newItem = item
+                    newItem.category = catkey // add new props to items
+                    newItem.language = langkey // add new props to items
+                    newItem.full_path = catkey + '/' + item.folder // add new props to items
+                    newItem.isMounted = isMounted // add new props to items
+                    return newItem
+                })
 
 
-                    if (this.personalities.length == 0) {
-                        this.personalities = modPersArr
-                    } else {
-                        this.personalities = this.personalities.concat(modPersArr)
-                    }
+                if (this.personalities.length == 0) {
+                    this.personalities = modPersArr
+                } else {
+                    this.personalities = this.personalities.concat(modPersArr)
                 }
-
             }
 
             this.personalities.sort((a, b) => a.name.localeCompare(b.name))
@@ -2768,7 +2711,8 @@ export default {
                 const obj = {
                     language: pers.language,
                     category: pers.category,
-                    folder: pers.folder
+                    folder: pers.folder,
+                    language: pers.lang
                 }
                 const res = await axios.post('/mount_personality', obj);
 

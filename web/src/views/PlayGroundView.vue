@@ -35,11 +35,13 @@
               <div class="border-2 text-blue-600 border-blue-300  p-2 rounded shadow-lg hover:border-gray-600 dark:link-item-dark cursor-pointer"  @click="tab_id='render'" :class="{'bg-blue-200':tab_id=='render'}">
                 Render
               </div>
-
-
             </div>
             <div v-if="tab_id === 'source'">
-              <textarea v-model="text" id="text_element" class="mt-4 h-64 p-2 rounded shadow-lg  overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" type="text"></textarea>
+              <textarea 
+                @click="text_element_clicked" 
+                v-model="text" 
+                id="text_element" 
+                class="mt-4 h-64 p-2 rounded shadow-lg  overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" type="text"></textarea>
               <span>Cursor position {{ cursorPosition }}</span>
             </div>
             <div v-else>
@@ -48,8 +50,8 @@
             </div>
           </div>
       </div>
-      <Card title="settings"  class="slider-container ml-0 mr-0"  :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
-        <Card  title="Model" class="slider-container ml-0 mr-0" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
+      <Card title="settings"  class="slider-container ml-0 mr-0 max-width"  :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
+        <Card  title="Model" class="slider-container ml-0 mr-0" :is_subcard="true" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
           <select v-model="selectedModel" @change="setModel" class="m-0 border-2 rounded-md shadow-sm w-full">
             <option v-for="model in models" :key="model" :value="model">
               {{ model }}
@@ -72,8 +74,8 @@
           </div>
 
         </Card>
-        <Card  title="Presets" class="slider-container ml-0 mr-0" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
-          <select v-model="selectedPreset" class="m-0 border-2 rounded-md shadow-sm w-full">
+        <Card  title="Presets" class="slider-container ml-0 mr-0" :is_subcard="true" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
+          <select v-model="selectedPreset" class="mb-2 border-2 rounded-md shadow-sm w-full">
             <option v-for="preset in presets" :key="preset" :value="preset">
               {{ preset.name }}
             </option>
@@ -85,7 +87,7 @@
           <button class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer" @click="reloadPresets"  title="Reload presets list"><i data-feather="refresh-ccw"></i></button>
           
           </Card>
-          <Card  title="Generation params" class="slider-container ml-0 mr-0" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
+          <Card  title="Generation params" class="slider-container ml-0 mr-0" :is_subcard="true" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
 
             <div class="slider-container ml-2 mr-2">
               <h3 class="text-gray-600">Temperature</h3>
@@ -322,24 +324,6 @@ export default {
     Card
   },
   mounted() {
-    const text_element = document.getElementById('text_element');
-    text_element.addEventListener('input', () => {
-      try{
-        this.cursorPosition = text_element.selectionStart;
-      }
-      catch{
-
-      }
-    });    
-    text_element.addEventListener('click', () => {
-      try{
-        this.cursorPosition = text_element.selectionStart;
-      }
-      catch{
-        
-      }
-    });
-
     axios.get('list_models').then(response => {
           console.log("List models "+response.data)
           this.models=response.data
@@ -444,6 +428,27 @@ export default {
     },
   },
   methods:{
+    text_element_changed(){
+      console.log("text_element_changed")
+      try{
+        this.cursorPosition = this.$refs.text_element.selectionStart;
+      }
+      catch (e) {
+        // The "error" event is fired when an exception occurs
+        console.log("Error occurred:", e);
+      }
+    },      
+    text_element_clicked(){
+      console.log("text_element_clicked")
+      try{
+        this.cursorPosition = this.$refs.text_element.selectionStart;
+        console.log(this.cursorPosition)
+      }
+      catch (e) {
+        // The "error" event is fired when an exception occurs
+        console.log("Error occurred:", e);
+      }
+    },    
     setModel(){
       this.selecting_model=true
       axios.post("/update_setting", {                
@@ -452,8 +457,10 @@ export default {
               }).then((response) => {
           console.log(response);
           this.$refs.toast.showToast(`Model changed to this.selectedModel`,4,true)
+          this.selecting_model=false
         }).catch(err=>{
           this.$refs.toast.showToast(`Error ${err}`,4,true)
+          this.selecting_model=false
         });
       
     },

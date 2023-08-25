@@ -1,0 +1,30 @@
+name: Translate code file strings
+content: |
+  Instruction: Translate the comments and values of the @<File type:yaml:json:all_programming_language_options>@ file from @<Source language:all_language_options>@ to @<Destination language:all_language_options>@.
+  Session 1:
+  ```@<File type:yaml:json:all_programming_language_options>@ language=english
+  # This is a comment
+  parameter_1: this is parameter 1
+  parameter_2: this is parameter 2
+  parameter_3: 25
+  parameter_4: |
+      This is a multi
+      line parameter
+  ```
+  Translation:
+  ```@<File type:yaml:json:all_programming_language_options>@ language=french
+  # Ceci est un commentaire
+  parameter_1: ceci est le paramètre 1
+  parameter_2: ceci est le paramètre 2
+  parameter_3: 25
+  parameter_4: |
+      Ceci est un paramètre
+      multiligne
+  ```
+  Session 2:
+  ```@<File type:yaml:json:all_programming_language_options>@ language=@<Source language:all_language_options>@
+  @<Put your yaml data here>@
+  ```
+  Translation:
+  ```@<File type:yaml:json:all_programming_language_options>@ language=@<Destination language:all_language_options>@@<generation_placeholder>@
+  ```

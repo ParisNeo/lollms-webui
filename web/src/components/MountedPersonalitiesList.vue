@@ -334,7 +334,8 @@ export default {
             try {
                 const obj = {
                     category: pers.category,
-                    folder: pers.folder
+                    folder: pers.folder,
+                    language: pers.lang
                 }
                 const res = await axios.post('/mount_personality', obj);
 
@@ -355,7 +356,8 @@ export default {
             try {
                 const obj = {
                     category: pers.category,
-                    folder: pers.folder
+                    folder: pers.folder,
+                    language: pers.lang
                 }
                 const res = await axios.post('/remount_personality', obj);
 

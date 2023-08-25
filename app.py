@@ -495,7 +495,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         presets = []
         for filename in presets_folder.glob('*.yaml'):
             print(filename)
-            with open(filename, 'r') as file:
+            with open(filename, 'r', encoding='utf-8') as file:
                 preset = yaml.safe_load(file)
                 if preset is not None:
                     presets.append(preset)
@@ -510,7 +510,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.copy_files("presets",presets_folder)
         fn = preset_data.name.lower().replace(" ","_")
         filename = presets_folder/f"{fn}.yaml"
-        with open(filename, 'r') as file:
+        with open(filename, 'w', encoding='utf-8') as file:
             yaml.dump(preset_data)
         return jsonify({"status": True})
 
@@ -813,10 +813,15 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
 
     def apply_settings(self):
-        ASCIIColors.success("OK")
-        self.rebuild_personalities()
-        return jsonify({"status":True})
-    
+        data = request.get_json()
+        try:
+            for key in self.config.config.keys():
+                self.config.config[key] = data["config"].get(key, self.config.config[key])
+            ASCIIColors.success("OK")
+            self.rebuild_personalities()
+            return jsonify({"status":True})
+        except Exception as ex:    
+            return jsonify({"status":False,"error":str(ex)})
 
     
     def ram_usage(self):
@@ -1106,7 +1111,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         ASCIIColors.info(f"- Selecting model ...")
         # Define the file types
         filetypes = [
-            ("Model file", self.binding.file_extension),
+            ("Model file", self.binding.supported_file_extensions),
         ]
         # Create the Tkinter root window
         root = Tk()
@@ -1345,14 +1350,17 @@ class LoLLMsWebUI(LoLLMsAPPI):
         category = data['category']
         name = data['folder']
 
+        language = data.get('language', None)
+
         package_path = f"{category}/{name}"
         package_full_path = self.lollms_paths.personalities_zoo_path/package_path
         config_file = package_full_path / "config.yaml"
         if config_file.exists():
+            if language:
+                package_path += ":" + language
             self.config["personalities"].append(package_path)
             self.mounted_personalities = self.rebuild_personalities()
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
-            self.apply_settings()
             ASCIIColors.success("ok")
             if self.config["active_personality_id"]<0:
                 return jsonify({"status": False,
@@ -1405,7 +1413,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.config["personalities"].append(package_path)
             self.mounted_personalities = self.rebuild_personalities()
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
-            self.apply_settings()
             ASCIIColors.success("ok")
             if self.config["active_personality_id"]<0:
                 return jsonify({"status": False,
@@ -1444,7 +1451,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 self.personalities = ["generic/lollms"]
                 self.mounted_personalities = self.rebuild_personalities()
                 self.personality = self.mounted_personalities[self.config["active_personality_id"]]
-            self.apply_settings()
             ASCIIColors.success("ok")
             return jsonify({
                         "status": True,
@@ -1571,7 +1577,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
         if id<len(self.mounted_personalities):
             self.config["active_personality_id"]=id
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
-            self.apply_settings()
             ASCIIColors.success("ok")
             print(f"Mounted {self.personality.name}")
             return jsonify({
