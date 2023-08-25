@@ -25,13 +25,6 @@
 
                             <i data-feather="list"></i>
                         </button>
-                        <button v-if="fileList.length > 0"
-                            class="mx-1 w-full text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
-                            :title="showFileList ? 'Send files' : 'Show file list'" type="button"
-                            @click.stop="send_files">
-
-                            <i data-feather="send"></i>
-                        </button>
                     </div>                 
                     <!-- FILES     -->
                     <div v-if="fileList.length > 0 && showFileList ==true">
@@ -45,6 +38,18 @@
 
                                         <div
                                             class="flex flex-row items-center gap-1 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary">
+                                            <div v-if="!isFileSentList[index]" fileList role="status">
+                                                <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary"
+                                                    viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                                        fill="currentColor" />
+                                                    <path
+                                                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                                        fill="currentFill" />
+                                                </svg>
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
                                             <div>
                                                 <i data-feather="file" class="w-5 h-5"></i>
 
@@ -96,15 +101,15 @@
 
                             ({{ fileList.length }})
 
+
                         </div>
                         <div class="grow">
 
                         </div>
                         <button type="button" title="Clear all"
                             class="flex items-center p-0.5 text-sm rounded-sm hover:text-red-600 active:scale-75"
-                            @click="fileList = []">
+                            @click="clear_files">
                             <i data-feather="trash" class="w-5 h-5 "></i>
-
                         </button>
                     </div>
                     <div v-if="showPersonalities" class="mx-1">
@@ -250,6 +255,7 @@ export default {
             message: "",
             isLesteningToVoice:false,
             fileList: [],
+            isFileSentList: [],
             totalSize: 0,
             showFileList: true,
             showPersonalities: false,
@@ -281,11 +287,14 @@ export default {
         }
     },
     methods: {
+        clear_files(){
+            fileList = []
+            isFileSentList = []
+        },
         send_file(file){
             const formData = new FormData();
             formData.append('file', file);
             console.log("Uploading file")
-            //this.loading=true;
             // Read the file as a data URL and emit it to the server
             const reader = new FileReader();
             reader.onload = () => {
@@ -294,28 +303,27 @@ export default {
                 fileData: reader.result,
                 };
                 socket.on('file_received',(resp)=>{
-                if(resp.status){
-                    this.onShowToastMessage("File uploaded successfully",4,true)
-                }
-                else{
-                    this.onShowToastMessage("Couldn't upload file\n"+resp.error,4,false)
-                }
-                //this.loading = false;
-                socket.off('file_received')
+                    if(resp.status){
+                        console.log(resp.filename)
+
+                        let index = this.fileList.findIndex((file) => file.name === resp.filename);
+                        if(index>=0){
+                            this.isFileSentList[index]=true;
+                            console.log(this.isFileSentList)
+                        }
+                        else{
+                            console.log("Not found")
+                        }
+                        this.onShowToastMessage("File uploaded successfully",4,true);
+                    }
+                    else{
+                        this.onShowToastMessage("Couldn't upload file\n"+resp.error,4,false);
+                    }
+                    socket.off('file_received')
                 }) 
                 socket.emit('send_file', data);
             };
             reader.readAsDataURL(file);        
-        },
-        // vue.js method. The list of files are in this.fileList
-        // This function will call this.send_file on each file from this.fileList
-        send_files(event){
-            event.preventDefault(); // Add this line to prevent form validation
-            for(let i = 0; i < this.fileList.length; i++){
-                let file = this.fileList[i];
-                this.send_file(file);
-            }
-            this.fileList = [];
         },
         startSpeechRecognition() {
             if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
@@ -420,8 +428,9 @@ export default {
             this.$emit('stopGenerating')
         },
         addFiles(event) {
-
             this.fileList = this.fileList.concat([...event.target.files])
+            this.isFileSentList = this.isFileSentList.concat([false] * this.fileList.length)
+            this.send_file(this.fileList[this.fileList.length-1])
         }
     },
     watch: {

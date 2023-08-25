@@ -1,0 +1,16 @@
+name: Build a Latex Book
+content: |
+    @<Add some context information to give the AI some context about the book or leave blank if you have no specific idea>@
+    ```latex
+    \documentclass[12pt]{book}
+    \usepackage{url}
+    \begin{document}
+    \title{@<Title of the book>@}
+    \author{@<Author name>@} % Author
+    \date{\today} % Date
+    \maketitle
+    \tableofcontents
+    \chapter{Introduction}
+    @<generation_placeholder>@
+    \end{document}
+    ```

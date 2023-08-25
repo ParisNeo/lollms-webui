@@ -1,0 +1,5 @@
+name: Instruct mode
+content: |
+  Instructions:
+  @<Give instructions to the AI>@
+  Answer:@<generation_placeholder>@

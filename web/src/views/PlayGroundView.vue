@@ -3,22 +3,9 @@
     <div class="container flex flex-row m-2">
       <div class="flex-grow m-2">
         <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
-          <label class="mt-2">Presets</label>
-          <select v-model="selectedPreset" class="m-2 border-2 rounded-md shadow-sm w-full">
-            <option v-for="preset in Object.keys(presets)" :key="preset" :value="preset">
-              {{ preset }}
-            </option>
-          </select>
-          <button class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer" @click="setPreset"  title="Use preset"><i data-feather="check"></i></button>
-          <button class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer" @click="addPreset"  title="Add this text as a preset"><i data-feather="plus"></i></button>
-          <button class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer" @click="removePreset"  title="Remove preset"><i data-feather="x"></i></button>
-          <button class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer" @click="savePreset"  title="Save presets list"><i data-feather="save"></i></button>
-          <button class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer" @click="reloadPresets"  title="Reload presets list"><i data-feather="refresh-ccw"></i></button>
-          
-        </div>
-        <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
-          <div class="m-0">
             <button v-show="!generating" id="generate-button" @click="generate" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="pen-tool"></i></button>
+            <button v-show="!generating" id="generate-next-button" @click="generate_in_placeholder" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="archive"></i></button>
+            <span class="w-80"></span>
             <button v-show="generating" id="stop-button" @click="stopGeneration" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="x"></i></button>
             <button
                 type="button"
@@ -39,61 +26,109 @@
             <button v-show="!generating" id="import-button" @click="importText" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="download"></i></button>
           
             <input type="file" id="import-input" class="hidden">
-          </div>          
-          <textarea v-model="text" id="text_element" class="mt-4 h-64 overflow-y-scroll w-full dark:bg-bg-dark  scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" type="text"></textarea>
-          <span>Cursor position {{ cursorPosition }}</span>
-                    
-        </div>
-        <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
-          <MarkdownRenderer ref="mdRender" :markdown-text="text" class="dark:bg-bg-dark">
-          </MarkdownRenderer>          
-        </div>
-      </div>
-      <div id="settings" class="border border-blue-300 bg-blue-200 mt-4 w-25 mr-2 h-full mb-10 min-w-500" style="align-items: center; height: fit-content; margin: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 4px;">
-        <div id="title" class="border border-blue-600 bg-blue-300 m-0 flex justify-center items-center box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) border-radius: 4px;">
-          <h3 class="text-gray-600 mb-4 text-center m-0">Settings</h3>
-        </div>
-          <div class="slider-container ml-2 mr-2">
-            <h3 class="text-gray-600">Temperature</h3>
-            <input type="range" v-model="temperature" min="0" max="5" step="0.1" class="w-full">
-            <span class="slider-value text-gray-500">Current value: {{ temperature }}</span>
           </div>
-          <div class="slider-container ml-2 mr-2">
-            <h3 class="text-gray-600">Top K</h3>
-            <input type="range" v-model="top_k" min="1" max="100" step="1" class="w-full">
-            <span class="slider-value text-gray-500">Current value: {{ top_k }}</span>
-          </div>
-          <div class="slider-container ml-2 mr-2">
-            <h3 class="text-gray-600">Top P</h3>
-            <input type="range" v-model="top_p" min="0" max="1" step="0.1" class="w-full">
-            <span class="slider-value text-gray-500">Current value: {{ top_p }}</span>
-          </div>
-          <div class="slider-container ml-2 mr-2">
-            <h3 class="text-gray-600">Repeat Penalty</h3>
-            <input type="range" v-model="repeat_penalty" min="0" max="5" step="0.1" class="w-full">
-            <span class="slider-value text-gray-500">Current value: {{ repeat_penalty }}</span>
-          </div>
-          <div class="slider-container ml-2 mr-2">
-            <h3 class="text-gray-600">Repeat Last N</h3>
-            <input type="range" v-model="repeat_last_n" min="0" max="100" step="1" class="w-full">
-            <span class="slider-value text-gray-500">Current value: {{ repeat_last_n }}</span>
-          </div>
-          <div class="slider-container ml-2 mr-2">
-            <h3 class="text-gray-600">Number of tokens to crop the text to</h3>
-            <input type="number" v-model="n_crop" class="w-full">
-            <span class="slider-value text-gray-500">Current value: {{ n_crop }}</span>
-          </div>          
-          <div class="slider-container ml-2 mr-2">
-            <h3 class="text-gray-600">Number of tokens to generate</h3>
-            <input type="number" v-model="n_predicts" class="w-full">
-            <span class="slider-value text-gray-500">Current value: {{ n_predicts }}</span>
-          </div>
-          <div class="slider-container ml-2 mr-2">
-            <h3 class="text-gray-600">Seed</h3>
-            <input type="number" v-model="seed" class="w-full">
-            <span class="slider-value text-gray-500">Current value: {{ seed }}</span>
+          <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
+            <div class="flex flex-row m-2 p-0">
+              <div class="border-2 text-blue-600 border-blue-300 p-2 rounded shadow-lg hover:border-gray-600 dark:link-item-dark cursor-pointer"  @click="tab_id='source'" :class="{'bg-blue-200':tab_id=='source'}">
+                Source
+              </div>
+              <div class="border-2 text-blue-600 border-blue-300  p-2 rounded shadow-lg hover:border-gray-600 dark:link-item-dark cursor-pointer"  @click="tab_id='render'" :class="{'bg-blue-200':tab_id=='render'}">
+                Render
+              </div>
+
+
+            </div>
+            <div v-if="tab_id === 'source'">
+              <textarea v-model="text" id="text_element" class="mt-4 h-64 p-2 rounded shadow-lg  overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" type="text"></textarea>
+              <span>Cursor position {{ cursorPosition }}</span>
+            </div>
+            <div v-else>
+              <MarkdownRenderer ref="mdRender" :markdown-text="text" class="mt-4 p-2 rounded shadow-lg dark:bg-bg-dark">
+              </MarkdownRenderer>          
+            </div>
           </div>
       </div>
+      <Card title="settings"  class="slider-container ml-0 mr-0"  :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
+        <Card  title="Model" class="slider-container ml-0 mr-0" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
+          <select v-model="selectedModel" @change="setModel" class="m-0 border-2 rounded-md shadow-sm w-full">
+            <option v-for="model in models" :key="model" :value="model">
+              {{ model }}
+            </option>
+          </select>
+          <div v-if="selecting_model" title="Selecting model" class="flex flex-row flex-grow justify-end">
+              <!-- SPINNER -->
+              <div role="status">
+                  <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101"
+                      fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                          fill="currentColor" />
+                      <path
+                          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                          fill="currentFill" />
+                  </svg>
+                  <span class="sr-only">Selecting model...</span>
+              </div>
+          </div>
+
+        </Card>
+        <Card  title="Presets" class="slider-container ml-0 mr-0" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
+          <select v-model="selectedPreset" class="m-0 border-2 rounded-md shadow-sm w-full">
+            <option v-for="preset in presets" :key="preset" :value="preset">
+              {{ preset.name }}
+            </option>
+          </select>
+          <br>
+          <button class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer" @click="setPreset"  title="Use preset"><i data-feather="check"></i></button>
+          <button class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer" @click="addPreset"  title="Add this text as a preset"><i data-feather="plus"></i></button>
+          <button class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer" @click="removePreset"  title="Remove preset"><i data-feather="x"></i></button>
+          <button class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer" @click="reloadPresets"  title="Reload presets list"><i data-feather="refresh-ccw"></i></button>
+          
+          </Card>
+          <Card  title="Generation params" class="slider-container ml-0 mr-0" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
+
+            <div class="slider-container ml-2 mr-2">
+              <h3 class="text-gray-600">Temperature</h3>
+              <input type="range" v-model="temperature" min="0" max="5" step="0.1" class="w-full">
+              <span class="slider-value text-gray-500">Current value: {{ temperature }}</span>
+            </div>
+            <div class="slider-container ml-2 mr-2">
+              <h3 class="text-gray-600">Top K</h3>
+              <input type="range" v-model="top_k" min="1" max="100" step="1" class="w-full">
+              <span class="slider-value text-gray-500">Current value: {{ top_k }}</span>
+            </div>
+            <div class="slider-container ml-2 mr-2">
+              <h3 class="text-gray-600">Top P</h3>
+              <input type="range" v-model="top_p" min="0" max="1" step="0.1" class="w-full">
+              <span class="slider-value text-gray-500">Current value: {{ top_p }}</span>
+            </div>
+            <div class="slider-container ml-2 mr-2">
+              <h3 class="text-gray-600">Repeat Penalty</h3>
+              <input type="range" v-model="repeat_penalty" min="0" max="5" step="0.1" class="w-full">
+              <span class="slider-value text-gray-500">Current value: {{ repeat_penalty }}</span>
+            </div>
+            <div class="slider-container ml-2 mr-2">
+              <h3 class="text-gray-600">Repeat Last N</h3>
+              <input type="range" v-model="repeat_last_n" min="0" max="100" step="1" class="w-full">
+              <span class="slider-value text-gray-500">Current value: {{ repeat_last_n }}</span>
+            </div>
+            <div class="slider-container ml-2 mr-2">
+              <h3 class="text-gray-600">Number of tokens to crop the text to</h3>
+              <input type="number" v-model="n_crop" class="w-full">
+              <span class="slider-value text-gray-500">Current value: {{ n_crop }}</span>
+            </div>          
+            <div class="slider-container ml-2 mr-2">
+              <h3 class="text-gray-600">Number of tokens to generate</h3>
+              <input type="number" v-model="n_predicts" class="w-full">
+              <span class="slider-value text-gray-500">Current value: {{ n_predicts }}</span>
+            </div>
+            <div class="slider-container ml-2 mr-2">
+              <h3 class="text-gray-600">Seed</h3>
+              <input type="number" v-model="seed" class="w-full">
+              <span class="slider-value text-gray-500">Current value: {{ seed }}</span>
+            </div>
+          </Card>
+        </Card>
     </div>
   </div>
   <Toast ref="toast"/>
@@ -105,7 +140,8 @@ import axios from "axios";
 import socket from '@/services/websocket.js'
 import Toast from '../components/Toast.vue'
 import MarkdownRenderer from '../components/MarkdownRenderer.vue';
-
+import ClipBoardTextInput from "@/components/ClipBoardTextInput.vue";
+import Card from "@/components/Card.vue"
 
 
 async function showInputPanel(name, default_value="", options=[]) {
@@ -250,22 +286,21 @@ function replaceInText(text, callback) {
     });
 }
 
-// Get input value function
-function getInputValue() {
-    const inputField = document.getElementById('input-field');
-    return inputField ? inputField.value : '';
-}
 
 export default {
   name: 'PlayGroundView',
   data() {
     return {
+      selecting_model:false,
+      tab_id:"source",
       generating:false,
       isSpeaking:false,
       voices: [],    
       isLesteningToVoice:false,
-      presets:{},
-      selectedPreset: '',    
+      presets:[],
+      selectedPreset: '',
+      models:{},
+      selectedModel: '',
       cursorPosition:0,  
       text:"",
       pre_text:"",
@@ -282,7 +317,9 @@ export default {
   },
   components:{    
     Toast,
-    MarkdownRenderer
+    MarkdownRenderer,
+    ClipBoardTextInput,
+    Card
   },
   mounted() {
     const text_element = document.getElementById('text_element');
@@ -301,18 +338,37 @@ export default {
       catch{
         
       }
-    });        
-    axios.get('./presets.json').then(response => {
+    });
+
+    axios.get('list_models').then(response => {
+          console.log("List models "+response.data)
+          this.models=response.data
+          axios.get('get_active_model').then(response => {
+            console.log("Active model " + JSON.stringify(response.data))
+            if(response.data!=undefined){
+              this.selectedModel = response.data["model"]
+            }
+            
+          }).catch(ex=>{
+            this.$refs.toast.showToast(`Error: ${ex}`,4,false)
+          });    
+
+        }).catch(ex=>{
+          this.$refs.toast.showToast(`Error: ${ex}`,4,false)
+        });    
+
+    axios.get('./get_presets').then(response => {
           console.log(response.data)
           this.presets=response.data
+          this.selectedPreset = this.presets[0]
         }).catch(ex=>{
           this.$refs.toast.showToast(`Error: ${ex}`,4,false)
         });
         // Event handler for receiving generated text chunks
         socket.on('text_chunk', data => {
             this.appendToOutput(data.chunk);
-            const text_element = document.getElementById('text_element');
-            text_element.scrollTo(0, text_element.scrollHeight);
+            // const text_element = document.getElementById('text_element');
+            // text_element.scrollTo(0, text_element.scrollHeight);
         });
 
         // Event handler for receiving generated text chunks
@@ -388,6 +444,19 @@ export default {
     },
   },
   methods:{
+    setModel(){
+      this.selecting_model=true
+      axios.post("/update_setting", {                
+                setting_name: "model_name",
+                setting_value: this.selectedModel
+              }).then((response) => {
+          console.log(response);
+          this.$refs.toast.showToast(`Model changed to this.selectedModel`,4,true)
+        }).catch(err=>{
+          this.$refs.toast.showToast(`Error ${err}`,4,true)
+        });
+      
+    },
     onVoicesChanged() {
       // This event will be triggered when the voices are loaded
       this.voices = this.speechSynthesis.getVoices();
@@ -467,6 +536,33 @@ export default {
       this.pre_text += chunk
       this.text = this.pre_text + this.post_text
     },
+    generate_in_placeholder(){
+      console.log("Finding cursor position")
+      // Find next placeholder @<generation_placeholder>@
+      let index =  this.text.indexOf("@<generation_placeholder>@")
+      if(index<0){
+        this.$refs.toast.showToast(`No generation placeholder found`,4,false)
+        return
+      }
+      this.text = this.text.substring(0,index) + this.text.substring(index+"@<generation_placeholder>@".length,this.text.length)
+      this.pre_text = this.text.substring(0,index)
+      this.post_text = this.text.substring(index, this.text.length)
+      var prompt = this.text.substring(0, index)
+      console.log(prompt)
+      // Trigger the 'generate_text' event with the prompt
+      socket.emit('generate_text', { prompt: prompt, personality: -1, n_predicts: this.n_predicts , n_crop: this.n_crop,
+      parameters: {
+          temperature: this.temperature,
+          top_k: this.top_k,
+          top_p: this.top_p,
+          repeat_penalty: this.repeat_penalty, // Update with desired repeat penalty value
+          repeat_last_n: this.repeat_last_n, // Update with desired repeat_last_n value
+          seed: parseInt(this.seed)
+      }});
+
+      // Toggle button visibility
+      this.generating=true
+    },
     generate(){
       console.log("Finding cursor position")
       this.pre_text = this.text.substring(0,this.getCursorPosition())
@@ -518,7 +614,9 @@ export default {
       inputFile.click();
     },
     setPreset() {
-      this.text = replaceInText(this.presets[this.selectedPreset], (text)=>{
+      console.log("Setting preset")
+      console.log(this.selectedPreset)
+      this.text = replaceInText(this.selectedPreset.content, (text)=>{
         console.log("Done")
         console.log(text);
         this.text= text
@@ -527,23 +625,26 @@ export default {
     
     addPreset() {
       let title = prompt('Enter the title of the preset:');
-      this.presets[title] =  this.text
+      this.presets[title] =  {
+                                name:title,
+                                content:this.text
+                             }
+      axios.post("./add_preset",this.presets[title]).then(response => {
+          console.log(response.data)
+        }).catch(ex=>{
+          this.$refs.toast.showToast(`Error: ${ex}`,4,false)
+        });
     },
     removePreset() {
       if (this.selectedPreset) {
-        delete this.presets[this.selectedPreset];
+        delete this.presets[this.selectedPreset.name];
       }
     },
-    savePreset() {
-      axios.post("/save_presets", this.presets).then((response) => {
-          console.log(response);
-          this.$refs.toast.showToast(`Presets saved`,4,true)
-        });
-    },
     reloadPresets() {
-      axios.get('./presets.json').then(response => {
+      axios.get('./get_presets').then(response => {
           console.log(response.data)
           this.presets=response.data
+          this.selectedPreset = this.presets[0]
         }).catch(ex=>{
           this.$refs.toast.showToast(`Error: ${ex}`,4,false)
         });

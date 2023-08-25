@@ -1,0 +1,6 @@
+name: Explain code
+content: |
+  ```@<Language:all_programming_language_options>@
+  @<put your code here>@
+  ```
+  Here is an explanation of the previous method:@<generation_placeholder>@

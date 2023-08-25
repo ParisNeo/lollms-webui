@@ -1,0 +1,5 @@
+name: Q&A with conditionning
+content: |
+  Assistant is a highly developed AI capable of answering any question about any subject.
+  User:@<What's your question?>@
+  Assistant:@<generation_placeholder>@

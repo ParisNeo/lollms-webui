@@ -1,8 +1,8 @@
 <template>
   <div v-if="isActive" class="overlay" @click="toggleCard"></div>
-  <div
+  <div v-show="shrink===false"
     :class="[
-      'bg-white  dark:bg-gray-700 border-blue-300 rounded-lg shadow-lg p-6',
+      'bg-white  dark:bg-gray-700 border-blue-300 rounded-lg shadow-lg p-2',
       cardWidthClass,
       'm-2',
       { hovered: !disableHoverAnimation && isHovered, active: isActive }
@@ -13,7 +13,7 @@
     :style="{ cursor:!this.disableFocus  ?  'pointer' : ''}"
   >
     <!-- Title -->
-    <div v-if="title" class="font-bold mb-2">{{ title }}</div>
+    <div v-if="title" @click="shrink=true" class="font-bold mb-2 cursor-pointer">{{ title }}</div>
 
     <div v-if="isHorizontal" class="flex flex-wrap">
       <!-- Card Content -->
@@ -25,11 +25,18 @@
       <slot></slot>
     </div>
   </div>
+  <div v-show="shrink===true"  @click="shrink=false" class="bg-white  dark:bg-gray-700 border-blue-300 rounded-lg shadow-lg p-2 h-10 cursor-pointer">
+    +    
+  </div>
 </template>
 
 <script>
 export default {
   props: {
+    is_shrunk: {
+      type:Boolean,
+      default:false
+    },
     title: {
       type: String,
       default: "",
@@ -44,7 +51,7 @@ export default {
     },
     disableHoverAnimation: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     disableFocus: {
       type: Boolean,
@@ -53,6 +60,7 @@ export default {
   },
   data() {
     return {
+      shrink: this.is_shrunk,
       isHovered: false,
       isActive: false,
     };

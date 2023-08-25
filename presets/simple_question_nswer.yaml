@@ -1,0 +1,4 @@
+name: Simple Question Answer
+content: |
+  User:@<What is your question:Why is the earth blue?>@
+  Assistant:@<generation_placeholder>@

@@ -80,7 +80,7 @@
                             <div class="flex gap-2 items-center ">
                                 <div>
 
-                                    <div v-if="vramUsage.gpus && vramUsage.gpus.length == 1">
+                                    <div v-if="vramUsage&&vramUsage.gpus && vramUsage.gpus.length == 1">
 
 
                                         <div class="flex gap-2 items-center " v-for="item in vramUsage.gpus">
@@ -221,7 +221,7 @@
                                             </h3>
                                         </div>
                                     </div>
-                                    <div v-if="vramUsage.gpus && vramUsage.gpus.length >1">
+                                    <div v-if="vramUsage&& vramUsage.gpus && vramUsage.gpus.length >1">
                                         <div class="flex gap-2 items-center ">
 
                                             <!-- GPU IMAGE  -->
@@ -530,8 +530,8 @@
                     </button>
                 </div>
                 <div :class="{ 'hidden': minconf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
-                    <div class="flex flex-col mb-2 px-3 pb-2">
-                                <div class="pb-2">
+                    <div class="flex flex-row mb-2 px-3 pb-2">
+                                <div class="pb-2 m-2 expand-to-fit">
                                     <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <th>Generic</th>
                                         <tr>
@@ -602,7 +602,7 @@
                                         </tr>
                                     </table>
                                 </div>
-                                <div class="pb-2">
+                                <div class="pb-2  m-2">
                                     <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <th>User</th>
                                         <tr>
@@ -672,7 +672,7 @@
                                         </tr>  
                                     </table>
                                 </div>
-                                <div class="pb-2">
+                                <div class="pb-2  m-2">
                                     <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <th>Audio</th>
                                         <tr>
@@ -782,26 +782,22 @@
 
 
                     <!-- Row 0 -->
-                    <div class="w-full">
+                    <div class="flex flex-row">
                         <button
-                        class="hover:text-secondary dark:bg-gray-600 w-full bg-red-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                        class="text-2xl hover:text-secondary duration-75 active:scale-90"
                         @click="api_get_req('clear_uploads').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast(['failed!'], 4, false)}})"
                         >
-                        Clear uploads
+                        <i data-feather="trash-2">Clear uploads</i>
                         </button>
-                    </div>
-                    <div class="w-full">
                         <button
-                        class="hover:text-secondary dark:bg-gray-600 w-full bg-red-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                        title="Restart program"
+                        class="text-2xl hover:text-secondary duration-75 active:scale-90"
                         @click="api_get_req('restart_program').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast(['failed!'], 4, false)}})"
                         >
-                        Restart program
+                        <i data-feather="arrow-down-circle">Res tart program</i>
                         </button>
-                    </div>
-                    <!-- Row 0 -->
-                    <div class="w-full">
                         <button
-                        class="hover:text-secondary dark:bg-gray-600 w-full bg-red-100 m-2 p-2 duration-75 flex justify-center w-full hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                        class="text-2xl hover:text-secondary duration-75 active:scale-90"
                         @click="api_get_req('update_software').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast('Success!', 4, true)}})"
                         >
                         Upgrade program 
@@ -853,7 +849,7 @@
                 </div>
                 <div :class="{ 'hidden': bzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
 
-                    <div v-if="bindingsArr.length > 0" class="mb-2">
+                    <div v-if="bindingsArr&&bindingsArr.length > 0" class="mb-2">
                         <label for="binding" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Bindings: ({{ bindingsArr.length }})
                         </label>

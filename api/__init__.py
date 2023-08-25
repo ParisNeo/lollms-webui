@@ -459,8 +459,7 @@ class LoLLMsAPPI(LollmsApplication):
                         jsons,
                         room=client_id
             )
-
-
+                
         @socketio.on('upload_file')
         def upload_file(data):
             file = data['file']
@@ -493,6 +492,16 @@ class LoLLMsAPPI(LollmsApplication):
             ASCIIColors.error(f'Client {request.sid} canceled generation')
             self.cancel_gen = False
             self.busy=False
+        @socketio.on('get_personality_files')
+        def get_personality_files(data):
+            client_id = request.sid
+            self.connections[client_id]["generated_text"]       = ""
+            self.connections[client_id]["cancel_generation"]    = False
+            
+            try:
+                self.personality.setCallback(partial(self.process_chunk,client_id = client_id))
+            except Exception as ex:
+                trace_exception(ex)        
 
         @socketio.on('send_file')
         def send_file(data):
@@ -509,23 +518,36 @@ class LoLLMsAPPI(LollmsApplication):
                 file_path = path / data["filename"]
                 File64BitsManager.b642file(data["fileData"],file_path)
                 if self.personality.processor:
-                    self.personality.processor.add_file(file_path, partial(self.process_chunk, client_id=client_id))
+                    result = self.personality.processor.add_file(file_path, partial(self.process_chunk, client_id=client_id))
                 else:
-                    self.personality.add_file(file_path, partial(self.process_chunk, client_id=client_id))
-                self.socketio.emit('file_received',
-                        {
-                            "status":True,
-                        }, room=client_id
-                )    
+                    result = self.personality.add_file(file_path, partial(self.process_chunk, client_id=client_id))
+                if result:
+                    self.socketio.emit('file_received',
+                            {
+                                "status":True,
+                                "filename":data["filename"],
+                            }, room=client_id
+                    )    
+                else:
+                    self.socketio.emit('file_received',
+                            {
+                                "status":False,
+                                "filename":data["filename"],
+                                "error":"Couldn't receive file: Verify that file type is compatible with the personality"
+                            }, room=client_id
+                    )    
+
             except Exception as ex:
                 ASCIIColors.error(ex)
                 trace_exception(ex)
                 self.socketio.emit('file_received',
                         {
                             "status":False,
+                            "filename":data["filename"],
                             "error":"Couldn't receive file: "+str(ex)
                         }, room=client_id
-                )    
+                )
+            self.close_message(client_id)
         
 
         @self.socketio.on('cancel_text_generation')
@@ -978,11 +1000,14 @@ class LoLLMsAPPI(LollmsApplication):
 
 
         if len(self.personality.files)>0 and self.personality.vectorizer:
-            pr = PromptReshaper("!@>Document chunks:\n{{doc}}\n{{conditionning}}\n{{content}}")
+            pr = PromptReshaper("!@>document chunks:\n{{doc}}\n{{conditionning}}\n{{content}}")
             emb = self.personality.vectorizer.embed_query(message.content)
             docs, sorted_similarities = self.personality.vectorizer.recover_text(emb, top_k=self.config.data_vectorization_nb_chunks)     
+            str_docs = ""
+            for doc, infos in zip(docs, sorted_similarities):
+                str_docs+=f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
             discussion_messages = pr.build({
-                                    "doc":"\n".join(docs),
+                                    "doc":str_docs,
                                     "conditionning":self.personality.personality_conditioning,
                                     "content":discussion_messages
                                     }, self.model.tokenize, self.model.detokenize, self.config.ctx_size, place_holders_to_sacrifice=["content"])

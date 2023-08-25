@@ -276,6 +276,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
             "/list_models", "list_models", self.list_models, methods=["GET"]
         )
         self.add_endpoint(
+            "/get_active_model", "get_active_model", self.get_active_model, methods=["GET"]
+        )
+        
+        self.add_endpoint(
             "/list_personalities_categories", "list_personalities_categories", self.list_personalities_categories, methods=["GET"]
         )
         self.add_endpoint(
@@ -408,8 +412,12 @@ class LoLLMsWebUI(LoLLMsAPPI):
         )      
 
         self.add_endpoint(
-            "/presets.json", "presets.json", self.get_presets, methods=["GET"]
+            "/get_presets", "get_presets", self.get_presets, methods=["GET"]
         )      
+
+        self.add_endpoint(
+            "/add_preset", "add_preset", self.add_preset, methods=["POST"]
+        )
 
         self.add_endpoint(
             "/save_presets", "save_presets", self.save_presets, methods=["POST"]
@@ -471,14 +479,55 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return json.dumps(output_json)
         return spawn_process(code)
 
-
+    def copy_files(self, src, dest):
+        for item in os.listdir(src):
+            src_file = os.path.join(src, item)
+            dest_file = os.path.join(dest, item)
+            
+            if os.path.isfile(src_file):
+                shutil.copy2(src_file, dest_file)
+                
     def get_presets(self):
-        presets_file = self.lollms_paths.personal_databases_path/"presets.json"
-        if not presets_file.exists():
-            shutil.copy("presets/presets.json",presets_file)
-        with open(presets_file) as f:
-            data = json.loads(f.read())
-        return jsonify(data)
+        presets_folder = self.lollms_paths.personal_databases_path/"lollms_playground_presets"
+        if not presets_folder.exists():
+            presets_folder.mkdir(exist_ok=True, parents=True)
+            self.copy_files("presets",presets_folder)
+        presets = []
+        for filename in presets_folder.glob('*.yaml'):
+            print(filename)
+            with open(filename, 'r') as file:
+                preset = yaml.safe_load(file)
+                if preset is not None:
+                    presets.append(preset)
+        return jsonify(presets)
+
+    def add_preset(self):
+        # Get the JSON data from the POST request.
+        preset_data = request.get_json()
+        presets_folder = self.lollms_paths.personal_databases_path/"lollms_playground_presets"
+        if not presets_folder.exists():
+            presets_folder.mkdir(exist_ok=True, parents=True)
+            self.copy_files("presets",presets_folder)
+        fn = preset_data.name.lower().replace(" ","_")
+        filename = presets_folder/f"{fn}.yaml"
+        with open(filename, 'r') as file:
+            yaml.dump(preset_data)
+        return jsonify({"status": True})
+
+    def del_preset(self):
+        presets_folder = self.lollms_paths.personal_databases_path/"lollms_playground_presets"
+        if not presets_folder.exists():
+            presets_folder.mkdir(exist_ok=True, parents=True)
+            self.copy_files("presets",presets_folder)
+        presets = []
+        for filename in presets_folder.glob('*.yaml'):
+            print(filename)
+            with open(filename, 'r') as file:
+                preset = yaml.safe_load(file)
+                if preset is not None:
+                    presets.append(preset)
+        return jsonify(presets)
+
 
     def save_presets(self):
         """Saves a preset to a file.
@@ -498,7 +547,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         with open(presets_file, "w") as f:
             json.dump(preset_data, f, indent=4)
 
-        return "Preset saved successfully!"
+        return jsonify({"status":True,"message":"Preset saved successfully!"})
         
     def export_multiple_discussions(self):
         data = request.get_json()
@@ -696,17 +745,18 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.config["model_name"]=data['setting_value']
             if self.config["model_name"] is not None:
                 try:
+                    self.model = None
                     if self.binding:
-                        self.binding.destroy_model()
+                        del self.binding
 
                     self.binding = None
-                    self.model = None
                     for per in self.mounted_personalities:
                         per.model = None
                     gc.collect()
                     self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
                     self.model = self.binding.build_model()
-                    self.rebuild_personalities(reload_all=True)
+                    for per in self.mounted_personalities:
+                        per.model = self.model
                 except Exception as ex:
                     # Catch the exception and get the traceback as a list of strings
                     traceback_lines = traceback.format_exception(type(ex), ex, ex.__traceback__)
@@ -870,6 +920,14 @@ class LoLLMsWebUI(LoLLMsAPPI):
         else:
             return jsonify([])
     
+    def get_active_model(self):
+        if self.binding is not None:
+            models = self.binding.list_models(self.config)
+            index = models.index(self.config.model_name)
+            ASCIIColors.yellow("Listing models")
+            return jsonify({"model":models[index],"index":index})
+        else:
+            return jsonify(None)
 
     def list_personalities_categories(self):
         personalities_categories_dir = self.lollms_paths.personalities_zoo_path  # replace with the actual path to the models folder

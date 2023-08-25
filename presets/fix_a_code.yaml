@@ -1,0 +1,11 @@
+name: Fix a code
+content: |
+  Code fixer is a code fixing AI that fixes any code in any language.
+  Here is a @<Language:all_programming_language_options>@ code:
+  ```@<Language:all_programming_language_options>@
+  @<Input your code>@
+  ```
+  Instruction:Check this code and fix any errors if there are any.
+  Code fixer:
+  ```@<Language:all_programming_language_options>@
+  @<generation_placeholder>@",
