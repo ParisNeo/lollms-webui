@@ -1,43 +1,29 @@
 <template>
     <div v-if="$store.state.ready" class="container flex flex-col sm:flex-row items-center">
       <div class="w-full">
-        <ul class="flex flex-row font-medium nav-ul">
-          <li class="nav-li">
+        <div class="flex flex-row font-medium nav-ul">
             <RouterLink :to="{ name: 'discussions' }" class="link-item dark:link-item-dark">
               Discussions
             </RouterLink>
-          </li>
-          <li class="nav-li">
             <RouterLink :to="{ name: 'playground' }" class="link-item dark:link-item-dark">
               Playground
             </RouterLink>
-          </li>
-          <li class="nav-li">
             <RouterLink :to="{ name: 'settings' }" class="link-item dark:link-item-dark">
               Settings
             </RouterLink>
-          </li>
-          <li class="nav-li">
             <RouterLink :to="{ name: 'extensions' }" class="link-item dark:link-item-dark">
               Extensions
             </RouterLink>
-          </li>
-          <li class="nav-li">
             <RouterLink :to="{ name: 'training' }" class="link-item dark:link-item-dark">
               Training
             </RouterLink>
-          </li>
-          <li class="nav-li">
             <RouterLink :to="{ name: 'quantizing' }" class="link-item dark:link-item-dark">
               Quantizing
             </RouterLink>
-          </li>
-          <li class="nav-li">
             <RouterLink :to="{ name: 'help' }" class="link-item dark:link-item-dark">
               Help
             </RouterLink>
-          </li>
-        </ul>
+          </div>
       </div>
     </div>
   </template>
@@ -57,6 +43,8 @@
   }
   
   .link-item {
+    height: 25px;
+    margin-top: 5px;
     /* Thin out the links */
     padding: 0px 20px;
     margin-bottom: -5px; /* Removes the gap between li elements */
@@ -86,14 +74,17 @@
   
   /* Optional: Change the color when the link is active */
   .link-item.router-link-active {
+    height: 30px;
+    margin-top: 0px;
     background-color:  #b9d2f7; /* Use your theme's 'bg-dark-tone' color for active link in dark mode */
   }
-  
+
 
 
   .link-item-dark {
     /* Thin out the links */
     padding: 0px 20px;
+    color: aliceblue;
     margin-bottom: -5px; /* Removes the gap between li elements */
     display: flex;
     align-items: center;
@@ -103,8 +94,7 @@
     font-weight: bold; /* Optional: Add font-weight for emphasis */
   
     /* Use different colors for dark and light modes */
-    background-color: #132e59; /* Use your theme's 'bg-light-tone' color for light mode */
-    color: #000; /* Use your theme's 'primary' color for light mode */
+    background-color: #000000; /* Use your theme's 'bg-light-tone' color for light mode */
   
  
     /* Animate the links when hovered */
@@ -119,11 +109,11 @@
     
   }
   
-  /* Optional: Change the color when the link is active */
   .link-item-dark.router-link-active {
-    background-color:  #25477d; /* Use your theme's 'bg-dark-tone' color for active link in dark mode */
+    height: 30px;
+    margin-top: 0px;
+    background-color:  #2b74e2; /* Use your theme's 'bg-dark-tone' color for active link in dark mode */
   }
-
 
   /* Ensure each li extends to the bottom of its container */
 
