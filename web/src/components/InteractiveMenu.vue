@@ -77,20 +77,23 @@ handleClickOutside(event) {
             })       
     },
     executeCommand(command) {
-      if (typeof this[command.value] === 'function') {
-        this[command.value]();
-      }
       this.isMenuOpen = false;
+      console.log("Selected")
+      console.log(command.value)
+      
+      if (typeof command.value === 'function') {
+        console.log("Command detected")
+        command.value();
+      }
       if (this.execute_cmd) {
+        console.log("executing generic command")
         this.execute_cmd(command); // Call the execute_cmd property with the current command
       }
     },
     positionMenu() {
       var isMenuAboveButton;
       if (this.$refs.menuButton!=undefined){
-        console.log(this.force_position)
         if(this.force_position==0 || this.force_position==undefined){
-          console.log("auto position")
           const buttonRect = this.$refs.menuButton.getBoundingClientRect();
           //const menuRect = this.$refs.menu.getBoundingClientRect();
   
@@ -99,11 +102,9 @@ handleClickOutside(event) {
   
         }
         else if (this.force_position==1){
-          console.log("Menu above button")
           isMenuAboveButton=true;
         }
         else{
-          console.log("Menu below button")
           isMenuAboveButton=false;
         }
         this.menuPosition.top = isMenuAboveButton ? 'auto' : 'calc(100% + 10px)';

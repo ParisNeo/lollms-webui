@@ -19,6 +19,8 @@ set SPCHARMESSAGE=
 pause
 cls
 
+md 
+
 echo "      ___       ___           ___       ___       ___           ___      "
 echo "     /\__\     /\  \         /\__\     /\__\     /\__\         /\  \     "
 echo "    /:/  /    /::\  \       /:/  /    /:/  /    /::|  |       /::\  \    "
@@ -30,11 +32,14 @@ echo "  \:\  \    \:\  /:/  /   \:\  \    \:\  \         /:/  /   \:\ \:\__\   "
 echo "   \:\  \    \:\/:/  /     \:\  \    \:\  \       /:/  /     \:\/:/  /   "
 echo "    \:\__\    \::/  /       \:\__\    \:\__\     /:/  /       \::/  /    "
 echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
-echo " By ParisNeo"
+echo 
+echo By ParisNeo
 
+:retry
 echo Please specify if you want to use a GPU or CPU. Note thaty only NVidea GPUs are supported?
-echo A) Enable GPU
-echo B) Run CPU mode
+echo A) Enable cuda GPU
+echo B) Enable ROCm compatible GPU (AMD and other GPUs)
+echo C) Run CPU mode
 set /p "gpuchoice=Input> "
 set gpuchoice=%gpuchoice:~0,1%
 
@@ -42,11 +47,14 @@ if /I "%gpuchoice%" == "A" (
   set "PACKAGES_TO_INSTALL=python=3.10 cuda-toolkit ninja git"
   set "CHANNEL=-c nvidia/label/cuda-11.7.0 -c nvidia -c conda-forge"
 ) else if /I "%gpuchoice%" == "B" (
+  set "PACKAGES_TO_INSTALL=python=3.10 rocm-comgr rocm-smi ninja git"
+  set "CHANNEL=-c conda-forge"
+) else if /I "%gpuchoice%" == "C" (
   set "PACKAGES_TO_INSTALL=python=3.10 m2w64-toolchain ninja git"
   set "CHANNEL=-c conda-forge"
 ) else (
-  echo Invalid choice. Exiting...
-  exit
+  echo Invalid choice. Retry 
+  goto retry
 )
 
 @rem better isolation for virtual environment
@@ -82,7 +90,8 @@ if not exist "%INSTALL_ENV_DIR%" (
   echo Packages to install: %PACKAGES_TO_INSTALL%
   call conda create --no-shortcuts -y -k -p "%INSTALL_ENV_DIR%" %CHANNEL% %PACKAGES_TO_INSTALL% || ( echo. && echo Conda environment creation failed. && goto end )
   if /I "%gpuchoice%" == "A" call conda run --live-stream -p "%INSTALL_ENV_DIR%" python -m pip install torch==2.0.1+cu117 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117|| ( echo. && echo Pytorch installation failed.&& goto end )
-  if /I "%gpuchoice%" == "B" call conda run --live-stream -p "%INSTALL_ENV_DIR%" python -m pip install torch torchvision torchaudio|| ( echo. && echo Pytorch installation failed.&& goto end )
+  if /I "%gpuchoice%" == "B" call conda run --live-stream -p "%INSTALL_ENV_DIR%" python -m pip install torch torchvision torchaudio   --index-url https://download.pytorch.org/whl/rocm5.4.2|| ( echo. && echo Pytorch installation failed.&& goto end )
+  if /I "%gpuchoice%" == "C" call conda run --live-stream -p "%INSTALL_ENV_DIR%" python -m pip install torch torchvision torchaudio|| ( echo. && echo Pytorch installation failed.&& goto end )
 )
 
 @rem check if conda environment was actually created
@@ -125,7 +134,7 @@ if exist ..\win_update.bat (
 setlocal enabledelayedexpansion
 
 
-if /I "%gpuchoice%"=="B" (
+if /I "%gpuchoice%"=="C" (
     echo This is a .no_gpu file. > .no_gpu
 ) else (
     echo GPU is enabled, no .no_gpu file will be created.
@@ -144,4 +153,12 @@ echo. && echo.
 exit /b
 
 :end
+
+echo Creating bin folder (needed for ctransformers)
+IF EXIST "installer_files\lollms_env\bin" (
+    echo Folder already existing
+) ELSE (
+    MKDIR "installer_files\lollms_env\bin"
+    echo Folder created successfully!
+)
 pause

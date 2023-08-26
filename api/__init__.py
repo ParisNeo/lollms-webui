@@ -1021,8 +1021,8 @@ class LoLLMsAPPI(LollmsApplication):
                                     "content":discussion_messages
                                     }, self.model.tokenize, self.model.detokenize, self.config.ctx_size, place_holders_to_sacrifice=["content"])
 
+        tokens = self.model.tokenize(discussion_messages)
         if self.config["debug"]:
-            tokens = self.model.tokenize(discussion_messages)
             ASCIIColors.yellow(discussion_messages)
             ASCIIColors.info(f"prompt size:{len(tokens)} tokens")
 

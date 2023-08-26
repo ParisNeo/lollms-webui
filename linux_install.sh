@@ -39,8 +39,9 @@ echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
 echo " By ParisNeo"
 
 echo "Please specify if you want to use a GPU or CPU. Note thaty only NVidea GPUs are supported?"
-echo "A) Enable GPU"
-echo "B) Run CPU mode"
+echo "A) Enable Cuda (for nvidia GPUS)"
+echo "B) Enable ROCm (for AMD GPUs)"
+echo "C) Run CPU mode"
 echo
 read -rp "Input> " gpuchoice
 gpuchoice="${gpuchoice:0:1}"
@@ -49,6 +50,9 @@ if [[ "${gpuchoice^^}" == "A" ]]; then
   PACKAGES_TO_INSTALL="python=3.10 cuda-toolkit ninja git gcc"
   CHANNEL="-c nvidia/label/cuda-11.7.0 -c nvidia -c conda-forge"
 elif [[ "${gpuchoice^^}" == "B" ]]; then
+  PACKAGES_TO_INSTALL="python=3.10  rocm-comgr rocm-smi ninja git gcc"
+  CHANNEL=" -c conda-forge"
+elif [[ "${gpuchoice^^}" == "C" ]]; then
   PACKAGES_TO_INSTALL="python=3.10 ninja git gcc"
   CHANNEL="-c conda-forge"
 else
@@ -96,6 +100,8 @@ if [ ! -d "$INSTALL_ENV_DIR" ]; then
   if [[ "${gpuchoice^^}" == "A" ]]; then
     conda run --live-stream -p "$INSTALL_ENV_DIR" python -m pip install torch==2.0.1+cu117 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117 || ( echo && echo "Pytorch installation failed." && exit 1 )
   elif [[ "${gpuchoice^^}" == "B" ]]; then
+    conda run --live-stream -p "$INSTALL_ENV_DIR" python -m pip install torch torchvision torchaudio  --index-url https://download.pytorch.org/whl/rocm5.4.2 || ( echo && echo "Pytorch installation failed." && exit 1 )
+  elif [[ "${gpuchoice^^}" == "C" ]]; then
     conda run --live-stream -p "$INSTALL_ENV_DIR" python -m pip install torch torchvision torchaudio || ( echo && echo "Pytorch installation failed." && exit 1 )
   fi
 fi
@@ -143,10 +149,11 @@ else
     cp linux_update.sh ../
 fi
 
-if [[ "${gpuchoice^^}" == "B" ]]; then
+if [[ "${gpuchoice^^}" == "C" ]]; then
     echo "This is a .no_gpu file." > .no_gpu
+    echo "You have chosen to use only CPU on this system."
 else
-    echo "GPU is enabled, no .no_gpu file will be created."
+    echo "You have chosen to use GPU on this system."
 fi
 
 PrintBigMessage() {
