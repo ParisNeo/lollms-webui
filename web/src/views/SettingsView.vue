@@ -555,9 +555,39 @@
                 </div>
                 <div :class="{ 'hidden': minconf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
                     <div class="flex flex-row mb-2 px-3 pb-2">
-                                <div class="pb-2 m-2 expand-to-fit">
-                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <th>Generic</th>
+                                <Card title="General" is_subcard="True" class="pb-2 m-2 expand-to-fit">
+                                    <table class="expand-to-fit bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="db_path" class="text-sm font-bold" style="margin-right: 1rem;">Host:</label>
+                                        </td>
+                                        <td style="width: 100%;">
+                                            <input
+                                            type="text"
+                                            id="host"
+                                            required
+                                            v-model="configFile.host"
+                                            @change="settingsChanged=true"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>                                        
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="db_path" class="text-sm font-bold" style="margin-right: 1rem;">Port:</label>
+                                        </td>
+                                        <td style="width: 100%;">
+                                            <input
+                                            type="number"
+                                            step="1"
+                                            id="port"
+                                            required
+                                            v-model="configFile.port"
+                                            @change="settingsChanged=true"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>
                                         <tr>
                                         <td style="min-width: 200px;">
                                             <label for="db_path" class="text-sm font-bold" style="margin-right: 1rem;">Database path:</label>
@@ -572,7 +602,7 @@
                                             class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
                                             >
                                         </td>
-                                        </tr>                                        
+                                        </tr>                                   
                                         <tr>
                                         <td style="min-width: 200px;">
                                             <label for="enable_gpu" class="text-sm font-bold" style="margin-right: 1rem;">Enable GPU:</label>
@@ -583,6 +613,22 @@
                                             id="enable_gpu"
                                             required
                                             v-model="configFile.enable_gpu"
+                                            @change="settingsChanged=true"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>
+                                        <tr>
+                                            
+                                        <td style="min-width: 200px;">
+                                            <label for="auto_save" class="text-sm font-bold" style="margin-right: 1rem;">Auto save:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="checkbox"
+                                            id="auto_save"
+                                            required
+                                            v-model="configFile.auto_save"
                                             @change="settingsChanged=true"
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
@@ -604,10 +650,9 @@
                                         </td>
                                         </tr>
                                     </table>
-                                </div>
-                                <div class="pb-2  m-2">
+                                </Card>
+                                <Card  title="User" is_subcard="True" class="pb-2  m-2">
                                     <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <th>User</th>
                                         <tr>
                                         <td style="min-width: 200px;">
                                             <label for="user_name" class="text-sm font-bold" style="margin-right: 1rem;">User name:</label>
@@ -652,10 +697,9 @@
                                         </td>
                                         </tr>  
                                     </table>
-                                </div>
-                                <div class="pb-2  m-2">
+                                </Card>
+                                <Card title="Audio" is_subcard="True" class="pb-2  m-2">
                                     <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <th>Audio</th>
                                         <tr>
                                         <td style="min-width: 200px;">
                                             <label for="auto_speak" class="text-sm font-bold" style="margin-right: 1rem;">Enable auto speak:</label>
@@ -729,7 +773,7 @@
 
                                     </table>
 
-                                </div>
+                                </Card>
                     </div>
 
 
@@ -1535,6 +1579,7 @@ import AddModelDialog from "@/components/AddModelDialog.vue";
 import UniversalForm from '../components/UniversalForm.vue';
 
 import ChoiceDialog from "@/components/ChoiceDialog.vue";
+import Card from "@/components/Card.vue"
 
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_LOLLMS_API_BASEURL
@@ -1550,7 +1595,8 @@ export default {
         PersonalityEntry,
         BindingEntry,
         UniversalForm,
-        ChoiceDialog
+        ChoiceDialog,
+        Card
     },
     data() {
 

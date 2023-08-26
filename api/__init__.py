@@ -800,12 +800,6 @@ class LoLLMsAPPI(LollmsApplication):
             self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message.id, client_id))
             self.connections[client_id]['generation_thread'].start()
 
-        # generation status
-        self.generating=False
-        ASCIIColors.blue(f"Your personal data is stored here :",end="")
-        ASCIIColors.green(f"{self.lollms_paths.personal_path}")
-
-
         @socketio.on('continue_generate_msg_from')
         def handle_connection(data):
             client_id = request.sid
@@ -827,7 +821,7 @@ class LoLLMsAPPI(LollmsApplication):
         ASCIIColors.blue(f"Your personal data is stored here :",end="")
         ASCIIColors.green(f"{self.lollms_paths.personal_path}")
 
-
+        
     def rebuild_personalities(self, reload_all=False):
         if reload_all:
             self.mounted_personalities=[]

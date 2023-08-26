@@ -138,7 +138,9 @@ def get_ip_address():
 def check_update(branch_name="main"):
     try:
         # Open the repository
-        repo = git.Repo(".")
+        repo_path = str(Path(__file__).parent)
+        ASCIIColors.yellow(f"Checking for updates from {repo_path}")
+        repo = git.Repo(repo_path)
         
         # Fetch updates from the remote for the specified branch
         repo.remotes.origin.fetch(refspec=f"refs/heads/{branch_name}:refs/remotes/origin/{branch_name}")
@@ -810,6 +812,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
             print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
             
         ASCIIColors.success(f"Configuration {data['setting_name']} updated")
+        if self.config.auto_save:
+            self.config.save_config()
         # Tell that the setting was changed
         return jsonify({'setting_name': data['setting_name'], "status":True})
 
@@ -822,6 +826,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 self.config.config[key] = data["config"].get(key, self.config.config[key])
             ASCIIColors.success("OK")
             self.rebuild_personalities()
+            if self.config.auto_save:
+                self.config.save_config()
             return jsonify({"status":True})
         except Exception as ex:    
             return jsonify({"status":False,"error":str(ex)})

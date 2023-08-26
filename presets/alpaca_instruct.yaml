@@ -1,0 +1,14 @@
+name: Alpaca Instruct
+content: |
+  Below is an instruction that describes a task. Write a response that appropriately completes the request.
+
+  ### Instruction:
+  @<Give instructions to the AI>@
+
+  ### Response:@<generation_placeholder>@
+
+help: |
+  This is the default Alpaca fine tuning format for instruct mode with input.
+  There are two parameters:
+  - The first is the input, which is the subject of your injstruction. For example, if the instruction is summerize this text, then the input is the text.
+  - The second parameter is the instruction itself. For example, summerize this text.

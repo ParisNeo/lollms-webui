@@ -1,10 +1,9 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 19
+version: 20
 binding_name: null
 model_name: null
 
-# Enables gpu usage
-enable_gpu: true
+
 
 # Host information
 host: localhost
@@ -34,19 +33,22 @@ use_user_name_in_discussions: false
 user_avatar: default_user.svg
 
 # UI parameters
-debug: False
 db_path: database.db
 
-# Automatic update
+# Automatic updates
+debug: False
 auto_update: true
-
+auto_save: true
+# Enables gpu usage
+enable_gpu: true
 
 # Audio
 audio_in_language: 'en-US'
 audio_out_voice: null
 auto_speak: false
 audio_pitch: 1
-silenceTimer: 5000
+audio_auto_send_input: true
+audio_silenceTimer: 5000
 
 # Data vectorization
 data_vectorization_method: "ftidf_vectorizer" #"model_embedding" or "ftidf_vectorizer"
@@ -55,3 +57,4 @@ data_vectorization_save_db: False # For each new session, new files
 data_vectorization_chunk_size: 512 # chunk size
 data_vectorization_overlap_size: 128 # overlap between chunks size
 data_vectorization_nb_chunks: 2 # number of chunks to use
+data_vectorization_build_keys_words: false # If true, when querrying the database, we use keywords generated from the user prompt instead of the prompt itself.

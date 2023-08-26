@@ -320,6 +320,7 @@ export default {
       n_crop: -1,
       n_predicts: 2000,
       seed: -1,
+      silenceTimeout:5000
     };
   },
   components:{    
@@ -448,7 +449,9 @@ export default {
                 setting_value: this.selectedModel
               }).then((response) => {
           console.log(response);
-          this.$refs.toast.showToast(`Model changed to ${this.selectedModel}`,4,true)
+          if(response.status){
+            this.$refs.toast.showToast(`Model changed to ${this.selectedModel}`,4,true)
+          }
           this.selecting_model=false
         }).catch(err=>{
           this.$refs.toast.showToast(`Error ${err}`,4,true)

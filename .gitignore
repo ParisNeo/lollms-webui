@@ -206,3 +206,6 @@ temp_args.txt
 
 # Hugging face offloading folder
 offload
+
+# Removing personal data
+personal_data
