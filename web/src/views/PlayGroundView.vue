@@ -448,7 +448,7 @@ export default {
                 setting_value: this.selectedModel
               }).then((response) => {
           console.log(response);
-          this.$refs.toast.showToast(`Model changed to this.selectedModel`,4,true)
+          this.$refs.toast.showToast(`Model changed to ${this.selectedModel}`,4,true)
           this.selecting_model=false
         }).catch(err=>{
           this.$refs.toast.showToast(`Error ${err}`,4,true)
