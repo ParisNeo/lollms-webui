@@ -9,4 +9,4 @@ cd tmp\llama.cpp
 git checkout 6c248707f51c8a50f7792e7f7787ec481881db88
 cd ../..
 echo Converting ...
-python tmp\llama.cpp\convert-gpt4all-to-ggml.py "%filename%" "%tokenizer%"
+python tmp\llama.cpp\convert-lollms-to-ggml.py "%filename%" "%tokenizer%"

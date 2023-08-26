@@ -6,19 +6,19 @@ Extensions are little projects built by the community that can be plugged to the
 There are many types of extensions:
 1 - pipeline extensions
 These extensions have no UI, they only intercept the communication between the user and the AI, perform some modifications or operations, then submit them to the discussion to enritch it. For example:
-- Net enabled GPT4All (under construction at https://github.com/ParisNeo/Net_enabled-GPT4All-Extension) : An extension that offers a special personality that indicates to the chatbot that whenever the user is asking a question it has no answer to, it should invoke a search function. The extension intercepts this keyword, do the research on the net then mirror it back to the AI. The AI can then use those inputs to formulate an answer.
-- Image enabled GPT4All : An extension that uses Blip to convert an image into text that can be interpreted by the AI and used in the discussion.
+- Net enabled LoLLMs (under construction at https://github.com/ParisNeo/Net_enabled-LoLLMs-Extension) : An extension that offers a special personality that indicates to the chatbot that whenever the user is asking a question it has no answer to, it should invoke a search function. The extension intercepts this keyword, do the research on the net then mirror it back to the AI. The AI can then use those inputs to formulate an answer.
+- Image enabled LoLLMs : An extension that uses Blip to convert an image into text that can be interpreted by the AI and used in the discussion.
 
 The extension should offer a yaml file that describes it to allow the system to integrate it.
 
 ```yaml
-# This is a gpt4all extension project
+# This is a lollms extension project
 # Project name : Models tester
 # Author : ParisNeo
 # Description :
 # This extension allows applying the model on a bunch of questions at once and recover answers in a text file
 
-name: GPT4All-Models-Tester-Extension
+name: LoLLMs-Models-Tester-Extension
 author: ParisNeo
 description: |
         This extension allows applying the model on a bunch of questions at once and recover answers in a text file

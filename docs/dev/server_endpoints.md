@@ -21,9 +21,9 @@ This Flask server provides various endpoints to manage and interact with the cha
   "ggml-vicuna-13b-4bit-rev1.bin",
   "ggml-vicuna-7b-4bit-rev1.bin",
   "ggml-vicuna-7b-4bit.bin",
-  "gpt4all-lora-quantized-ggml.bin",
-  "gpt4all-lora-quantized.bin",
-  "gpt4all-lora-unfiltered-quantized.bin"
+  "lollms-lora-quantized-ggml.bin",
+  "lollms-lora-quantized.bin",
+  "lollms-lora-unfiltered-quantized.bin"
 ]
 ```
 - "/list_personalities_languages": GET request endpoint to list all the available personality languages.
@@ -120,7 +120,7 @@ This Flask server provides various endpoints to manage and interact with the cha
 ```
 [
   {
-    "content": "##Instructions:\\nGPT4All is a smart and helpful Assistant built by Nomic-AI. It can discuss with humans and assist them.\n",
+    "content": "##Instructions:\\nLoLLMs is a smart and helpful Assistant built by Nomic-AI. It can discuss with humans and assist them.\n",
     "id": 23,
     "parent": 0,
     "rank": 0,
@@ -128,11 +128,11 @@ This Flask server provides various endpoints to manage and interact with the cha
     "type": 1
   },
   {
-    "content": "Welcome! I am GPT4All A free and open assistant. What can I do for you today?",
+    "content": "Welcome! I am LoLLMs A free and open assistant. What can I do for you today?",
     "id": 24,
     "parent": 23,
     "rank": 0,
-    "sender": "gpt4all",
+    "sender": "lollms",
     "type": 0
   },
   {
@@ -148,7 +148,7 @@ This Flask server provides various endpoints to manage and interact with the cha
     "id": 26,
     "parent": 25,
     "rank": 0,
-    "sender": "gpt4all",
+    "sender": "lollms",
     "type": 0
   }
 ]
@@ -173,7 +173,7 @@ This Flask server provides various endpoints to manage and interact with the cha
   "debug": false,
   "host": "localhost",
   "language": "en-US",
-  "model": "gpt4all-lora-quantized-ggml.bin",
+  "model": "lollms-lora-quantized-ggml.bin",
   "n_predict": 1024,
   "n_threads": 8,
   "nb_messages_to_remember": 5,
@@ -199,15 +199,15 @@ This Flask server provides various endpoints to manage and interact with the cha
 ```
 {
   "personality": {
-    "ai_message_prefix": "###gpt4all:\n",
+    "ai_message_prefix": "###lollms:\n",
     "anti_prompts": [
       "###user",
       "### user",
-      "###gpt4all",
-      "### gpt4all"
+      "###lollms",
+      "### lollms"
     ],
     "assets_list": [
-      "personalities\\english\\generic\\gpt4all\\assets\\logo.png"
+      "personalities\\english\\generic\\lollms\\assets\\logo.png"
     ],
     "author": "ParisNeo",
     "category": "General",
@@ -221,13 +221,13 @@ This Flask server provides various endpoints to manage and interact with the cha
     "model_temperature": 0.6,
     "model_top_k": 50,
     "model_top_p": 0.9,
-    "name": "gpt4all",
-    "personality_conditioning": "## Information:\nAssistant's name is gpt4all\nToday's date is {{date}}\n## Instructions:\nYour mission is to assist user to perform various tasks and answer his questions\n",
+    "name": "lollms",
+    "personality_conditioning": "## Information:\nAssistant's name is lollms\nToday's date is {{date}}\n## Instructions:\nYour mission is to assist user to perform various tasks and answer his questions\n",
     "personality_description": "This personality is a helpful and Kind AI ready to help you solve your problems \n",
     "user_message_prefix": "###user:\n",
     "user_name": "user",
     "version": "1.0.0",
-    "welcome_message": "Welcome! My name is gpt4all.\nHow can I help you today?\n"
+    "welcome_message": "Welcome! My name is lollms.\nHow can I help you today?\n"
   }
 }
 ```

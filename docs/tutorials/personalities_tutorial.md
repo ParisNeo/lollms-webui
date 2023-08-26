@@ -1,10 +1,10 @@
 # Personalities and What You Can Do with Them
 
-In this tutorial, we will explore the concept of personalities and their capabilities within the GPT4All webui.
+In this tutorial, we will explore the concept of personalities and their capabilities within the LoLLMs webui.
 
 ## Introduction
 
-The GPT4All webui utilizes the PyAIPersonality library, which provides a standardized way to define AI simulations and integrate AI personalities with other tools, applications, and data. Before diving into the details, let's familiarize ourselves with some key concepts that will help us understand the inner workings of these tools.
+The LoLLMs webui utilizes the PyAIPersonality library, which provides a standardized way to define AI simulations and integrate AI personalities with other tools, applications, and data. Before diving into the details, let's familiarize ourselves with some key concepts that will help us understand the inner workings of these tools.
 
 ## Large Language Models (LLMs)
 
@@ -53,13 +53,13 @@ Personality settings are defined in a YAML file, which contains parameters and c
 
 Let's take a closer look at the GPT for Art personality, which specializes in generating descriptions of artwork and even transforming descriptions into actual images using the stable diffusion generator.
 
-To use the GPT for Art personality, you need to follow the custom installation steps outlined in the documentation. Once installed, you can leverage its capabilities through the GPT4All webui.
+To use the GPT for Art personality, you need to follow the custom installation steps outlined in the documentation. Once installed, you can leverage its capabilities through the LoLLMs webui.
 
-## Using the GPT4All Webui with the GPT for Art Personality
+## Using the LoLLMs Webui with the GPT for Art Personality
 
-To select and apply a personality in the GPT4All webui, follow these steps:
+To select and apply a personality in the LoLLMs webui, follow these steps:
 
-1. Open the GPT4All webui and navigate to the "Personality" section.
+1. Open the LoLLMs webui and navigate to the "Personality" section.
 2. Select the GPT for Art personality from the available options.
 3. Start a conversation with the AI agent.
 
@@ -77,9 +77,9 @@ By interacting with the AI agent, users can request specific changes or addition
 
 ## Conclusion
 
-In this tutorial, we explored the concept of personalities and their integration within the GPT4All webui. We discussed the hardware and software layers, text processing and tokenization, sampling techniques, iterative text generation, and the customization of personality settings.
+In this tutorial, we explored the concept of personalities and their integration within the LoLLMs webui. We discussed the hardware and software layers, text processing and tokenization, sampling techniques, iterative text generation, and the customization of personality settings.
 
-We also delved into the GPT for Art personality, its installation steps, and how to apply it in the GPT4All webui. Through an example discussion with the artbot, we witnessed the collaborative creative process between users and AI.
+We also delved into the GPT for Art personality, its installation steps, and how to apply it in the LoLLMs webui. Through an example discussion with the artbot, we witnessed the collaborative creative process between users and AI.
 
-The GPT4All webui, coupled with AI personalities, opens up a world of possibilities for generating personalized and contextually relevant text. With further enhancements and customization, these tools have the potential to revolutionize various industries and creative endeavors.
+The LoLLMs webui, coupled with AI personalities, opens up a world of possibilities for generating personalized and contextually relevant text. With further enhancements and customization, these tools have the potential to revolutionize various industries and creative endeavors.
 

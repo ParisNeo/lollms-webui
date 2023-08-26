@@ -1,6 +1,6 @@
 Hi there. In this video, we are going to talk about the personalities and what you can do with them.
 
-The GPT4All webui uses my PyAIPersonality library under the hood. I have buit this library to create a standard way to define AI simulations and integrate the AI personality with other tools, applications and data. Before starting, I want to explain some concepts to make it easy for you to understand the inner workings of these tools. Let's dive right in.
+The LoLLMs webui uses my PyAIPersonality library under the hood. I have buit this library to create a standard way to define AI simulations and integrate the AI personality with other tools, applications and data. Before starting, I want to explain some concepts to make it easy for you to understand the inner workings of these tools. Let's dive right in.
 
 Large Language Models (LLMs) are powerful text processing models based on machine learning techniques. As their name suggests, these models are characterized by their substantial size and versatility in handling various text-based tasks. In the context of this work, we focus specifically on text generation models.
 
@@ -124,7 +124,7 @@ As we can see, the model did the requested changes.
 
 Keep in mind that this tool is still in its early stages of development, and there's plenty of room for improvement. One way to enhance its performance is by adjusting the default sampler to an Euler sampler, which can potentially yield even better results. Additionally, you have the flexibility to explore a wide range of models available on Hugging Face repositories. With thousands of models at your disposal, you can experiment and choose the one that aligns best with your specific needs and preferences. By making these adjustments, you can take this tool to new heights and unlock its full potential.
 
-Please note that all the generated images bear a watermark with the GPT4All signature, serving as a clear indication that they were created by AI using the stable diffusion WatermarkEncoder. This step is crucial to promote responsible AI usage and ensure that each generated work is properly identified as an AI creation.
+Please note that all the generated images bear a watermark with the LoLLMs signature, serving as a clear indication that they were created by AI using the stable diffusion WatermarkEncoder. This step is crucial to promote responsible AI usage and ensure that each generated work is properly identified as an AI creation.
 
 It's important to emphasize that this tool is intended for appreciating art, fostering creative exploration, and sparking new ideas. It is not meant for malicious purposes or spreading misinformation. We firmly stand against such misuse.
 
@@ -161,7 +161,7 @@ Let's put GPT 4 Internet to the test with a current affairs question: Who is the
 
 As you can observe, the personality performed its intended function flawlessly. It intelligently crafted a well-tailored query, conducted the search seamlessly behind the scenes, and swiftly presented the desired information along with proper source attribution. This showcases the power of leveraging the internet to enhance the AI's capabilities and provide you with accurate and reliable answers.
 
-Finally, to install the personalities, go to the root of your gpt4all webui application and open a terminal. Then type installation/add_personality.bat or add_personality.sh depending on your operating system. you'll be prompted to choose a language, then a category, and finally the personality you want to install. Once installed, your personality will apear in the zoo.
+Finally, to install the personalities, go to the root of your lollms webui application and open a terminal. Then type installation/add_personality.bat or add_personality.sh depending on your operating system. you'll be prompted to choose a language, then a category, and finally the personality you want to install. Once installed, your personality will apear in the zoo.
 
 Alright, let's wrap up here to keep the video concise. With over 250 personalities to explore, we've only scratched the surface of what GPT 4 All has to offer. While not all personalities have been fully adapted to the new format, a majority of them are already functional and ready for testing.
 

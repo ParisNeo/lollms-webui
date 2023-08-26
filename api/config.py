@@ -6,7 +6,7 @@
 # license       : Apache 2.0
 # Description   : 
 # A front end Flask application for llamacpp models.
-# The official GPT4All Web ui
+# The official LOLLMS Web ui
 # Made by the community for the community
 ######
 import yaml

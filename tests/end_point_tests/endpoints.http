@@ -83,7 +83,7 @@ Content-Type: application/json
 {
     "language": "english",
     "category": "generic",
-    "folder": "gpt4all"
+    "folder": "lollms"
 }
 ############################################
 ### Unmount personality

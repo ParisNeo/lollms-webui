@@ -1,2 +1,4 @@
 name: Simple Book writing
-content: Once apon a time
+content: |
+    # @<Title of the book:The advantures of Gandalf and Darth Vador>@
+    @<Start the story:Once apon a time in middle earth>@@<generation_placeholder>@

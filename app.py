@@ -5,7 +5,7 @@
 # license       : Apache 2.0
 # Description   : 
 # A front end Flask application for llamacpp models.
-# The official GPT4All Web ui
+# The official LOLLMS Web ui
 # Made by the community for the community
 ######
 
@@ -435,6 +435,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
         
         data = request.get_json()
         code = data["code"]
+
+        ASCIIColors.info("Executing python code:")
+        ASCIIColors.yellow(code)
 
         def spawn_process(code):
             """Executes Python code and returns the output as JSON."""

@@ -1,7 +1,7 @@
 <template>
   <div
-    class=" min-w-96 items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer  active:scale-95 duration-75 select-none"
-    @click.stop="toggleSelected"  tabindex="-1" :class="selected_computed ? 'border-primary-light' : 'border-transparent'"
+    class=" min-w-96 items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer  select-none"
+    tabindex="-1" :class="selected_computed ? 'border-primary-light' : 'border-transparent'"
     :title="!personality.installed ? 'Not installed' : ''">
 
     <div :class="!personality.installed ? 'opacity-50' : ''">
@@ -14,12 +14,18 @@
           {{ personality.name }}
         </h3>
         <button type="button" title="Talk"
+            @click="toggleSelected"
+            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
+            <i data-feather="check" class="w-5"></i>
+            <span class="sr-only">Select</span>
+        </button>        
+        <button type="button" title="Talk"
             @click="toggleTalk"
             class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
             <i data-feather="send" class="w-5"></i>
             <span class="sr-only">Talk</span>
         </button>        
-        <InteractiveMenu  :commands="commandsList">
+        <InteractiveMenu  :commands="commandsList" :force_position=2>
         
         </InteractiveMenu>
   

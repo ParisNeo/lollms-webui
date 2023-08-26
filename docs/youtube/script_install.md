@@ -10,7 +10,7 @@ Before starting, let me tell you what this project is made for. This project is 
 
 This project is under Apache 2.0 licence which is an open source licence that can be used commercially, so people can built things from this and use it in their business. 
 
-Also, please don't confuse the GPT4All application built by Nomic AI which is an interesting more professional application that you can find on their website gpt4all.io. It has a great community and I encourage you to check it up. 
+Also, please don't confuse the LoLLMs application built by Nomic AI which is an interesting more professional application that you can find on their website lollms.io. It has a great community and I encourage you to check it up. 
 
 I have built this ui to explore new things and build on top of it. I am not building a company out of this, this is a side project. I just want to give back to the open source community and help make this technology available for all (hence the name).
 
@@ -23,7 +23,7 @@ Before installing this tool you need to install python 3.10 or higher as well as
 Now let's cut to the chace. Let's start by installing the tool.
 First, go to the github repository page at github.com/ParisNeo/lollms-webui then press the latest release button. Depending on your platform download webui.bat for windows or webui.sh for linux.
 
-We call this file, the application launcher. Make sure you install the launcher in a folder you choose. For example I'll put it in my ai folder at gpt4all-webui.
+We call this file, the application launcher. Make sure you install the launcher in a folder you choose. For example I'll put it in my ai folder at lollms-webui.
 
 Now let's run the script.
 You may encounter a warning from some antivirus or windows defender warining you about the script. It is a false positive caused by the reputation condition in some antiviruses. This means if a program is not used by enough users, some antiviruses consider it dangerous. This is true for this tool as it is new and not enough people as using it as of now so I have to wait for it to become more accepted.
@@ -47,7 +47,7 @@ Notice that applying modifications does not save the configuration, so You need 
 
 Now your model is selected and you are ready to start your first discussion.
 
-Let's go back to discussions view. To create a new discussion, press the + button. You should see the personality welcome message. This is a predefined welcome message that you can find in the personality configuration file. by default, we use the GPT4All personality which is conditioned to be a helpful personality. Let's ask it something. For example, who is Abraham Lincoln?
+Let's go back to discussions view. To create a new discussion, press the + button. You should see the personality welcome message. This is a predefined welcome message that you can find in the personality configuration file. by default, we use the LoLLMs personality which is conditioned to be a helpful personality. Let's ask it something. For example, who is Abraham Lincoln?
 
 You can stop the generation at any time by pressing the Stop Generating button.
 

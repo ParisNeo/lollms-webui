@@ -1,7 +1,9 @@
 <template>
   <div class="menu-container">
       <button @click.prevent="toggleMenu" class="menu-button bg-blue-500 text-white dark:bg-blue-200 dark:text-gray-800 rounded-full flex items-center justify-center w-6 h-6 border-none cursor-pointer hover:bg-blue-400 w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:z-20 hover:-translate-y-2 duration-150  border-gray-300 border-secondary cursor-pointer" ref="menuButton">
-          <i data-feather="command" class="w-5 h-5"></i>
+          <img v-if="icon && !icon.includes('feather')" :src="command.icon" :alt="command.name" class="w-5 h-5">
+          <i v-if="icon && icon.includes('feather')" :data-feather="command.icon.split(':')[1]" class="w-5 h-5"></i>             
+        <i data-feather="command" ></i>
       </button>
       <transition name="slide">
       <div v-if="isMenuOpen" class="menu-list flex-grow" :style="menuPosition" ref="menu">
@@ -23,9 +25,18 @@ import { nextTick } from 'vue'
 import feather from 'feather-icons'
 export default {
   props: {
+    icon: {
+      type:String,
+      required:false,
+      value:"feather:command"
+    },
     commands: {
       type: Array,
       required: true
+    },
+    force_position:{
+      required: false,
+      value:0
     },
     execute_cmd: {
       type: Function, // The execute_cmd property should be a function
@@ -75,15 +86,28 @@ handleClickOutside(event) {
       }
     },
     positionMenu() {
+      var isMenuAboveButton;
       if (this.$refs.menuButton!=undefined){
+        console.log(this.force_position)
+        if(this.force_position==0 || this.force_position==undefined){
+          console.log("auto position")
           const buttonRect = this.$refs.menuButton.getBoundingClientRect();
           //const menuRect = this.$refs.menu.getBoundingClientRect();
   
           const windowHeight = window.innerHeight;
-          const isMenuAboveButton = buttonRect.bottom > windowHeight / 2;
+          isMenuAboveButton = buttonRect.bottom > windowHeight / 2;
   
-          this.menuPosition.top = isMenuAboveButton ? 'auto' : 'calc(100% + 10px)';
-          this.menuPosition.bottom = isMenuAboveButton ? '100%' : 'auto';
+        }
+        else if (this.force_position==1){
+          console.log("Menu above button")
+          isMenuAboveButton=true;
+        }
+        else{
+          console.log("Menu below button")
+          isMenuAboveButton=false;
+        }
+        this.menuPosition.top = isMenuAboveButton ? 'auto' : 'calc(100% + 10px)';
+        this.menuPosition.bottom = isMenuAboveButton ? '100%' : 'auto';
       }
     }
   },

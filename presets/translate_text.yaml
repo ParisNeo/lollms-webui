@@ -1,0 +1,8 @@
+name: Translate text
+content: |
+  ```@<Source language:all_language_options>@
+  @<Text to translate>@
+  ```
+  ```@<Destination language:all_language_options>@
+  @<generation_placeholder>@
+  ```

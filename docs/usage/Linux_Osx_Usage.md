@@ -1,4 +1,4 @@
-# Using GPT4All-Webui on Linux or macOS:
+# Using lollms-webui on Linux or macOS:
 
 To run the Flask server, execute the following command:
 

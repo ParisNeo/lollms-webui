@@ -11,7 +11,7 @@ Welcome to the LOLLMS WebUI tutorial! In this tutorial, we will walk you through
 1. Visit the GitHub repository page at [github.com/ParisNeo/lollms-webui](https://github.com/ParisNeo/lollms-webui).
 2. Click on the "Latest Release" button.
 3. Depending on your platform, download either `webui.bat` for Windows or `webui.sh` for Linux.
-4. Choose a folder on your system to install the application launcher. For example, you can create a folder named `gpt4all-webui` in your `ai` directory.
+4. Choose a folder on your system to install the application launcher. For example, you can create a folder named `lollms-webui` in your `ai` directory.
 5. Run the downloaded script (application launcher). Note: Some antivirus programs or Windows Defender might display a warning due to the tool's reputation. This warning is a false positive caused by the tool being relatively new. You can ignore the warning and proceed with the installation.
 6. The installer will no longer prompt you to install the default model. This step will be performed in the UI, making it easier for you.
 
@@ -31,7 +31,7 @@ Welcome to the LOLLMS WebUI tutorial! In this tutorial, we will walk you through
 ## Starting a Discussion
 1. Return to the discussions view.
 2. Click the "+" button to create a new discussion.
-3. You will see a predefined welcome message based on the selected personality configuration. By default, the GPT4All personality is used, which aims to be helpful.
+3. You will see a predefined welcome message based on the selected personality configuration. By default, the LoLLMs personality is used, which aims to be helpful.
 4. Enter your query or prompt. For example, you can ask, "Who is Abraham Lincoln?"
 5. You can stop the generation at any time by clicking the "Stop Generating" button.
 

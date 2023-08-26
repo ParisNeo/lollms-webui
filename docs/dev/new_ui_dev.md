@@ -17,7 +17,7 @@ npm run dev
 ```
 
 > Note
-> To run the developmen environment you need to create copy of the `.env` file and name it either `.env.development` or if that dont work then `.env.dev`. Set `VITE_GPT4ALL_API_BASEURL = /api/ ` in the `.env.development`. 
+> To run the developmen environment you need to create copy of the `.env` file and name it either `.env.development` or if that dont work then `.env.dev`. Set `VITE_LoLLMs_API_BASEURL = /api/ ` in the `.env.development`. 
 > Run your gpt binding by launching `webui.bat` or bash `webui.sh`.
 
 ## Building frontend - UI

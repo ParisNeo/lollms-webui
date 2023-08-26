@@ -1,0 +1,27 @@
+name: Make programming project
+content: |
+  ```@<Language:all_programming_language_options>@
+  # project: @<Project name>@
+  # author: @<Author name>@
+  # description: @<The description of the code>@@<generation_placeholder>@
+  ```
+  ---------
+  Extra information:
+  Licence: apache 2.0
+  Program type: Stand alone.
+  Documentation:
+  Make README.md with the following table of contents:
+  ## Description
+  ## Installation
+  ## Usage
+  ## Licence
+  ## Contribute
+  ## Ethical guidelines
+  Instructions:
+  Write a user side README.md
+  Stick to the provided code content and do not invent extra information.
+  Make sure all sections of the table of contents are present in the file.
+  ----
+  README.md:
+  ```markdown@<generation_placeholder>@
+  ```",

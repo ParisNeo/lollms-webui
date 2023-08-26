@@ -1,4 +1,4 @@
-# Installing GPT4All-Webui on Linux or macOS:
+# Installing lollms-webui on Linux or macOS:
 
 \- Make sure you have all the dependencies for requirements
 `python3.11 -m pip install cmake`
