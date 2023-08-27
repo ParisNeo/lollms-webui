@@ -2153,10 +2153,10 @@ export default {
             this.$store.dispatch('refreshRamUsage');
         },
         async onRemount(pers) {
+            pers = pers.personality
             if (!pers) { return { 'status': false, 'error': 'no personality - unmount_personality' } }
-
+            console.log(`Remounting ${pers.category}/${pers.folder}`)
             const obj = {
-                language: pers.language,
                 category: pers.category,
                 folder: pers.folder,
                 language: pers.lang
