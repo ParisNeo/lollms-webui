@@ -939,10 +939,13 @@ class LoLLMsWebUI(LoLLMsAPPI):
     
     def get_active_model(self):
         if self.binding is not None:
-            models = self.binding.list_models(self.config)
-            index = models.index(self.config.model_name)
-            ASCIIColors.yellow("Listing models")
-            return jsonify({"model":models[index],"index":index})
+            try:
+                models = self.binding.list_models(self.config)
+                index = models.index(self.config.model_name)
+                ASCIIColors.yellow("Listing models")
+                return jsonify({"model":models[index],"index":index})
+            except Exception as ex:
+                return jsonify(None)
         else:
             return jsonify(None)
 
