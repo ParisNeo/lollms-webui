@@ -663,7 +663,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
                             
                             personalities[category_folder.name].append(personality_info)
                         except Exception as ex:
-                            print(f"Couldn't load personality from {personality_folder} [{ex}]")
+                            ASCIIColors.warning(f"Couldn't load personality from {personality_folder} [{ex}]")
+                            trace_exception(ex)
         return json.dumps(personalities)
     
     def get_personality(self):
