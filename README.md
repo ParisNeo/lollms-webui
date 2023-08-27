@@ -126,11 +126,22 @@ cd lollms-webui
 ```
 Now create a new conda environment, activate it and install requirements
 
+With cuda support (GPU mode):
 ```bash
-conda create --prefix ./env python=3.10
+conda create --prefix ./env python=3.10 cuda-toolkit ninja git
 conda activate ./env
 pip install -r requirements.txt
 ```
+
+Without cuda support (CPU mode):
+```bash
+conda create --prefix ./env python=3.10 ninja git
+conda activate ./env
+pip install -r requirements.txt
+```
+You should create an empty file called `.no_gpu` in the folder in order to prevent lollms from trying to use GPU.
+
+
 #### Using Docker
 Alternatively, you can use Docker to set up the LoLLMS WebUI. Please refer to the Docker documentation for installation instructions specific to your operating system.
 
