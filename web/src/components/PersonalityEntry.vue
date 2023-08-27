@@ -109,7 +109,10 @@ export default {
                 {name:this.isMounted?"unmount":"mount", icon: "feather:settings", is_file:false, value:this.toggleMounted},
                 {name:"reinstall", icon: "feather:terminal", is_file:false, value:this.toggleReinstall},
               ];
-        if(this.selected){
+        if(this.isMounted){
+          main_menu.push({name:"remount", icon: "feather:refresh-ccw", is_file:false, value:this.reMount})
+        }
+        if(this.selected && this.has_scripts){
           main_menu.push({name:"settings", icon: "feather:settings", is_file:false, value:this.toggleSettings})
         }
         return main_menu
