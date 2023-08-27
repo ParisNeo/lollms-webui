@@ -2,7 +2,8 @@ name: Airoboros Instruct
 content: |
   A chat between a curious user and an assistant.
   The assistant gives helpful, detailed, accurate responses to the user's input.
-  USER: @<Give instructions to the AI>@ ASSISTANT: @<generation_placeholder>@
+  ### USER: @<Give instructions to the AI>@
+  ### ASSISTANT: @<generation_placeholder>@
 
 help: |
   This is the default Airoboros fine tuning format for chat mode with input.
