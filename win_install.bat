@@ -153,7 +153,7 @@ echo. && echo.
 exit /b
 
 :end
-
+cd ..
 echo Creating bin folder (needed for ctransformers)
 IF EXIST "installer_files\lollms_env\bin" (
     echo Folder already existing
