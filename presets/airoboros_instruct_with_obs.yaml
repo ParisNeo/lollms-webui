@@ -2,7 +2,8 @@ name: Airoboros Instruct with obs
 content: |
   A chat between a curious user and an assistant.
   The assistant gives helpful, detailed, accurate responses to the user's input.
-  USER: BEGININPUT
+  ### USER:
+  BEGININPUT
   BEGINCONTEXT
   @<Add context information if form of key,value pairs separated by line breaks>@
   ENDCONTEXT
@@ -10,7 +11,8 @@ content: |
   ENDINPUT
   BEGININSTRUCTION
   @<insert your instruction(s).  The model was tuned with single questions, paragraph format, lists, etc.>@
-  ENDINSTRUCTION ASSISTANT: @<generation_placeholder>@
+  ENDINSTRUCTION
+  ### ASSISTANT: @<generation_placeholder>@
 
 help: |
   This is the default Airoboros fine tuning format for chat mode with context obedient question answering
