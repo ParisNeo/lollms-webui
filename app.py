@@ -493,11 +493,15 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 shutil.copy2(src_file, dest_file)
                 
     def get_presets(self):
-        presets_folder = self.lollms_paths.personal_databases_path/"lollms_playground_presets"
-        if not presets_folder.exists():
-            presets_folder.mkdir(exist_ok=True, parents=True)
-            self.copy_files("presets",presets_folder)
         presets = []
+        presets_folder = Path("__file__").parent/"presets"
+        for filename in presets_folder.glob('*.yaml'):
+            with open(filename, 'r', encoding='utf-8') as file:
+                preset = yaml.safe_load(file)
+                if preset is not None:
+                    presets.append(preset)
+        presets_folder = self.lollms_paths.personal_databases_path/"lollms_playground_presets"
+        presets_folder.mkdir(exist_ok=True, parents=True)
         for filename in presets_folder.glob('*.yaml'):
             with open(filename, 'r', encoding='utf-8') as file:
                 preset = yaml.safe_load(file)
