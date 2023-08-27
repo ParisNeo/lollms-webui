@@ -554,8 +554,8 @@
                     </button>
                 </div>
                 <div :class="{ 'hidden': minconf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
-                    <div class="flex flex-row mb-2 px-3 pb-2">
-                                <Card title="General" is_subcard="True" class="pb-2 m-2 expand-to-fit">
+                    <div class="flex flex-col mb-2 px-3 pb-2">
+                                <Card title="General" is_subcard="True" class="pb-2 m-2">
                                     <table class="expand-to-fit bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <tr>
                                         <td style="min-width: 200px;">
@@ -675,7 +675,7 @@
                                         </td>
                                         <td style="width: 100%;">
                                             <label for="avatar-upload">
-                                                <img :src="configFile.user_avatar" class="w-50 h-50 rounded-full" style="max-width: 50px; max-height: 50px; cursor: pointer;">
+                                                <img :src="'/user_infos/'+configFile.user_avatar" class="w-50 h-50 rounded-full" style="max-width: 50px; max-height: 50px; cursor: pointer;">
                                             </label>
                                             <input type="file" id="avatar-upload" style="display: none" @change="uploadAvatar">
                                         </td>
@@ -698,8 +698,169 @@
                                         </tr>  
                                     </table>
                                 </Card>
+                                <Card title="Files Vectorization" is_subcard="True" class="pb-2  m-2">
+                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="use_files" class="text-sm font-bold" style="margin-right: 1rem;">Activate files support:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="checkbox"
+                                            id="use_files"
+                                            required
+                                            v-model="configFile.use_files"
+                                            @change="settingsChanged=true"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>                                        
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="data_vectorization_activate" class="text-sm font-bold" style="margin-right: 1rem;">Activate files vectorization:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="checkbox"
+                                            id="data_vectorization_activate"
+                                            required
+                                            v-model="configFile.data_vectorization_activate"
+                                            @change="settingsChanged=true"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="data_vectorization_build_keys_words" class="text-sm font-bold" style="margin-right: 1rem;">Build keywords when querying the vectorized database:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="checkbox"
+                                            id="data_vectorization_build_keys_words"
+                                            required
+                                            v-model="configFile.data_vectorization_build_keys_words"
+                                            @change="settingsChanged=true"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>
+                                                                                
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="data_vectorization_method" class="text-sm font-bold" style="margin-right: 1rem;">Data vectorization method:</label>
+                                        </td>
+                                        <td>
+                                            <select
+                                            id="data_vectorization_method"
+                                            required
+                                            v-model="configFile.data_vectorization_method"
+                                            @change="settingsChanged=true"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                                <option value="ftidf_vectorizer">ftidf Vectorizer</option>
+                                                <option value="model_embedding">Model Embedding</option>
+                                            </select>
+                                        </td>
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="data_visualization_method" class="text-sm font-bold" style="margin-right: 1rem;">Data visualization method:</label>
+                                        </td>
+                                        <td>
+                                            <select
+                                            id="data_visualization_method"
+                                            required
+                                            v-model="configFile.data_visualization_method"
+                                            @change="settingsChanged=true"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                                <option value="PCA">PCA</option>
+                                                <option value="TSNE">TSNE</option>
+                                            </select>
+                                        </td>
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="data_vectorization_save_db" class="text-sm font-bold" style="margin-right: 1rem;">Save the new files to the database (The database wil always grow and continue to be the same over many sessions):</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="checkbox"
+                                            id="data_vectorization_save_db"
+                                            required
+                                            v-model="configFile.data_vectorization_save_db"
+                                            @change="settingsChanged=true"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="data_vectorization_chunk_size" class="text-sm font-bold" style="margin-right: 1rem;">Data vectorization chunk size(tokens):</label>
+                                        </td>
+                                        <td>
+                                            <input id="data_vectorization_chunk_size" v-model="configFile.data_vectorization_chunk_size"
+                                            @change="settingsChanged=true"
+                                            type="range" min="0" max="64000" step="1"
+                                            class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                                            <input v-model="configFile.data_vectorization_chunk_size"
+                                            @change="settingsChanged=true"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>                                          
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="data_vectorization_overlap_size" class="text-sm font-bold" style="margin-right: 1rem;">Data vectorization overlap size(tokens):</label>
+                                        </td>
+                                        <td>
+                                            <input id="data_vectorization_overlap_size" v-model="configFile.data_vectorization_overlap_size"
+                                            @change="settingsChanged=true"
+                                            type="range" min="0" max="64000" step="1"
+                                            class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                            <input v-model="configFile.data_vectorization_overlap_size"
+                                            @change="settingsChanged=true"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>                                          
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="data_vectorization_overlap_size" class="text-sm font-bold" style="margin-right: 1rem;">Number of chunks to use for each message:</label>
+                                        </td>
+                                        <td>
+                                            <input id="data_vectorization_nb_chunks" v-model="configFile.data_vectorization_nb_chunks"
+                                            @change="settingsChanged=true"
+                                            type="range" min="0" max="1000" step="1"
+                                            class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                            <input v-model="configFile.data_vectorization_nb_chunks"
+                                            @change="settingsChanged=true"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>                                           
+                                                                                      
+                                    </table>
+                                </Card>
                                 <Card title="Audio" is_subcard="True" class="pb-2  m-2">
                                     <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="audio_auto_send_input" class="text-sm font-bold" style="margin-right: 1rem;">Send audio input automatically:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="checkbox"
+                                            id="audio_auto_send_input"
+                                            required
+                                            v-model="configFile.audio_auto_send_input"
+                                            @change="settingsChanged=true"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>
                                         <tr>
                                         <td style="min-width: 200px;">
                                             <label for="auto_speak" class="text-sm font-bold" style="margin-right: 1rem;">Enable auto speak:</label>
@@ -714,7 +875,7 @@
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
                                         </td>
-                                        </tr>
+                                        </tr>                                        
                                         <tr>
                                         <td style="min-width: 200px;">
                                             <label for="audio_pitch" class="text-sm font-bold" style="margin-right: 1rem;">audio pitch:</label>
@@ -724,13 +885,28 @@
                                             @change="settingsChanged=true"
                                             type="range" min="0" max="10" step="0.1"
                                             class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                                            <p
+                                            <input v-model="configFile.audio_pitch"
+                                            @change="settingsChanged=true"
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >{{ audio_pitch }}</p>
+                                            >
                                         </td>
                                         </tr>
-
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="audio_silenceTimer" class="text-sm font-bold" style="margin-right: 1rem;">audio in silence timer (ms):</label>
+                                        </td>
+                                        <td>
+                                            <input id="audio_silenceTimer" v-model="configFile.audio_silenceTimer"
+                                            @change="settingsChanged=true"
+                                            type="range" min="0" max="10000" step="1"
+                                            class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                            <input v-model="configFile.audio_silenceTimer"
+                                            @change="settingsChanged=true"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>                                        
+                                        
                                         <tr>
                                             <td style="min-width: 200px;">
                                             <label for="audio_in_language" class="text-sm font-bold" style="margin-right: 1rem;">Input Audio Language:</label>
@@ -1367,7 +1543,7 @@
 
                                 </div>
 
-                                <input id="temperature" @change="update_setting('temperature', $event.target.value)"
+                                <input id="temperature"
                                     type="range" v-model="configFile.temperature" min="0" max="5" step="0.1"
                                     class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             </div>
@@ -1388,7 +1564,8 @@
 
                                 </div>
 
-                                <input id="predict" @change="update_setting('n_predict', $event.target.value)" type="range"
+                                <input id="predict" 
+                                    type="range"
                                     v-model="configFile.n_predict" min="0" max="2048" step="32"
                                     class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             </div>
@@ -1409,7 +1586,8 @@
 
                                 </div>
 
-                                <input id="top_k" @change="update_setting('top_k', $event.target.value)" type="range"
+                                <input id="top_k"
+                                    type="range"
                                     v-model="configFile.top_k" min="0" max="100" step="1"
                                     class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             </div>
@@ -1430,7 +1608,8 @@
 
                                 </div>
 
-                                <input id="top_p" @change="update_setting('top_p', $event.target.value)" type="range"
+                                <input id="top_p" 
+                                    type="range"
                                     v-model="configFile.top_p" min="0" max="1" step="0.01"
                                     class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             </div>
@@ -1451,7 +1630,7 @@
 
                                 </div>
 
-                                <input id="repeat_penalty" @change="update_setting('repeat_penalty', $event.target.value)"
+                                <input id="repeat_penalty"
                                     type="range" v-model="configFile.repeat_penalty" min="0" max="2" step="0.01"
                                     class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             </div>
@@ -1472,7 +1651,7 @@
 
                                 </div>
 
-                                <input id="repeat_last_n" @change="update_setting('repeat_last_n', $event.target.value)"
+                                <input id="repeat_last_n"
                                     type="range" v-model="configFile.repeat_last_n" min="0" max="100" step="1"
                                     class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             </div>

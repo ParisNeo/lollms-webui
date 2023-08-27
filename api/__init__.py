@@ -508,7 +508,17 @@ class LoLLMsAPPI(LollmsApplication):
             client_id = request.sid
             self.connections[client_id]["generated_text"]       = ""
             self.connections[client_id]["cancel_generation"]    = False
-            
+
+            if not self.config.use_files:
+                self.socketio.emit('file_received',
+                        {
+                            "status":False,
+                            "filename":data["filename"],
+                            "error":"Couldn't receive file: Verify that file type is compatible with the personality"
+                        }, room=client_id
+                ) 
+                return   
+
             try:
                 self.personality.setCallback(partial(self.process_chunk,client_id = client_id))
                 ASCIIColors.info("Recovering file from front end")
@@ -821,7 +831,7 @@ class LoLLMsAPPI(LollmsApplication):
         ASCIIColors.blue(f"Your personal data is stored here :",end="")
         ASCIIColors.green(f"{self.lollms_paths.personal_path}")
 
-        
+
     def rebuild_personalities(self, reload_all=False):
         if reload_all:
             self.mounted_personalities=[]
