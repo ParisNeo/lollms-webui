@@ -662,12 +662,27 @@
                                             type="text"
                                             id="user_name"
                                             required
-                                            v-model="configFile.userName"
+                                            v-model="configFile.user_name"
                                             @change="settingsChanged=true"
                                             class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
                                         </td>
                                         </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="user_description" class="text-sm font-bold" style="margin-right: 1rem;">User description:</label>
+                                        </td>
+                                        <td style="width: 100%;">
+                                            <textarea
+                                            id="user_description"
+                                            required
+                                            v-model="configFile.user_description"
+                                            @change="settingsChanged=true"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            ></textarea>
+                                        </td>
+                                        </tr>
+                                        
                                         <!-- Row 3 -->
                                         <tr>
                                         <td style="min-width: 200px;">
