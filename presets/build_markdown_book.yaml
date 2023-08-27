@@ -1,0 +1,5 @@
+name: Build a Markdown Book
+content: |
+    @<Add some context information to give the AI some context about the book or leave blank if you have no specific idea>@
+    # @<book title>@
+    

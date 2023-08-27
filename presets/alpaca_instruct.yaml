@@ -9,6 +9,5 @@ content: |
 
 help: |
   This is the default Alpaca fine tuning format for instruct mode with input.
-  There are two parameters:
-  - The first is the input, which is the subject of your injstruction. For example, if the instruction is summerize this text, then the input is the text.
-  - The second parameter is the instruction itself. For example, summerize this text.
+  There is a single parameter:
+  - The instruction to the AI. For example, Who is Abraham Lincoln?

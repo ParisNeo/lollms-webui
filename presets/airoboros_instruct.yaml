@@ -1,0 +1,13 @@
+name: Airoboros Instruct
+content: |
+  A chat between a curious user and an assistant.
+  The assistant gives helpful, detailed, accurate responses to the user's input.
+  USER: @<Give instructions to the AI>@ ASSISTANT: @<generation_placeholder>@
+
+help: |
+  This is the default Airoboros fine tuning format for chat mode with input.
+  There are two parameters:
+  - The first is the input, which is the subject of your injstruction. For example, if the instruction is summerize this text, then the input is the text.
+  - The second parameter is the instruction itself. For example, summerize this text.
+
+author: ParisNeo (adapted from the original Airoboros documentation by Jon Durbin)

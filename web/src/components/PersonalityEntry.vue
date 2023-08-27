@@ -7,10 +7,10 @@
     <div :class="!personality.installed ? 'opacity-50' : ''">
 
       <div class="flex flex-row items-center  flex-shrink-0 gap-3">
-        <img ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)"
-          class="w-10 h-10 rounded-full object-fill text-red-700">
+        <img @click="toggleSelected" ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)"
+          class="w-10 h-10 rounded-full object-fill text-red-700 cursor-pointer">
         <!-- :class="personality.installed ? 'grayscale-0':'grayscale'" -->
-        <h3 class="font-bold font-large text-lg line-clamp-3">
+        <h3 @click="toggleSelected" class="font-bold font-large text-lg line-clamp-3 cursor-pointer">
           {{ personality.name }}
         </h3>
         <button v-if="isMounted" type="button" title="Select"

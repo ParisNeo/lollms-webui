@@ -2,7 +2,7 @@
   <div class="container bg-bg-light dark:bg-bg-dark shadow-lg overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
     <div class="container flex flex-row m-2">
       <div class="flex-grow m-2">
-        <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
+        <div class="flex gap-3 flex-1 items-center flex-grow flex-row m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
             <button v-show="!generating" id="generate-button" @click="generate" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="pen-tool"></i></button>
             <button v-show="!generating" id="generate-next-button" @click="generate_in_placeholder" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="archive"></i></button>
             <span class="w-80"></span>
@@ -24,22 +24,23 @@
             </button>
             <button v-show="!generating" id="export-button" @click="exportText" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="upload"></i></button>
             <button v-show="!generating" id="import-button" @click="importText" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="download"></i></button>
-          
+
+            <div class="flex gap-3 flex-1 items-center flex-grow  justify-end">   
+            <button 
+            class="border-2 text-blue-600 dark:text-white border-blue-300 p-2 rounded shadow-lg hover:border-gray-600 dark:link-item-dark cursor-pointer"
+            @click="tab_id='source'" :class="{'bg-blue-200 dark:bg-blue-500':tab_id=='source'}">
+              Source
+            </button>
+            <button 
+            class="border-2 text-blue-600 dark:text-white border-blue-300 p-2 rounded shadow-lg hover:border-gray-600 dark:link-item-dark cursor-pointer"
+            @click="tab_id='render'" :class="{'bg-blue-200 dark:bg-blue-500':tab_id=='render'}">
+              Render
+            </button>
+            </div>
             <input type="file" id="import-input" class="hidden">
+            
           </div>
           <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
-            <div class="flex flex-row m-2 p-0">
-              <div 
-              class="border-2 dark:bg-blue-700 text-blue-600 dark:text-white border-blue-300 p-2 rounded shadow-lg hover:border-gray-600 dark:link-item-dark cursor-pointer"
-              @click="tab_id='source'" :class="{'bg-blue-200 dark:bg-blue-500':tab_id=='source'}">
-                Source
-              </div>
-              <div 
-              class="border-2 dark:bg-blue-700 text-blue-600 dark:text-white border-blue-300 p-2 rounded shadow-lg hover:border-gray-600 dark:link-item-dark cursor-pointer"
-              @click="tab_id='render'" :class="{'bg-blue-200 dark:bg-blue-500':tab_id=='render'}">
-                Render
-              </div>
-            </div>
             <div  v-if="tab_id === 'source'">
               <textarea 
                 @click="text_element_clicked"
@@ -618,6 +619,7 @@ export default {
     setPreset() {
       console.log("Setting preset")
       console.log(this.selectedPreset)
+      this.tab_id='render'
       this.text = replaceInText(this.selectedPreset.content, (text)=>{
         console.log("Done")
         console.log(text);

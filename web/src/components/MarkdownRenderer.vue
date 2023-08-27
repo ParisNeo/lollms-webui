@@ -214,7 +214,12 @@ export default {
       `;
     script.async = true; // Set to true if the script should be loaded asynchronously
     document.body.appendChild(script);
-    this.renderedMarkdown = markdownIt.render(this.markdownText);
+    if(this.markdownText){
+      this.renderedMarkdown = markdownIt.render(this.markdownText);
+    }
+    else{
+      this.renderedMarkdown = "";
+    }
     nextTick(() => {
       feather.replace();
     });

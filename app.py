@@ -499,7 +499,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.copy_files("presets",presets_folder)
         presets = []
         for filename in presets_folder.glob('*.yaml'):
-            print(filename)
             with open(filename, 'r', encoding='utf-8') as file:
                 preset = yaml.safe_load(file)
                 if preset is not None:
@@ -1377,6 +1376,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
                                 "active_personality_id":self.config["active_personality_id"]
                                 })         
             else:
+                if self.config.auto_save:
+                    ASCIIColors.info("Saving configuration")
+                    self.config.save_config()
                 return jsonify({"status": True,
                                 "personalities":self.config["personalities"],
                                 "active_personality_id":self.config["active_personality_id"]
@@ -1461,6 +1463,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 self.mounted_personalities = self.rebuild_personalities()
                 self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             ASCIIColors.success("ok")
+            if self.config.auto_save:
+                ASCIIColors.info("Saving configuration")
+                self.config.save_config()
             return jsonify({
                         "status": True,
                         "personalities":self.config["personalities"],
@@ -1504,6 +1509,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
             if hasattr(self.personality.processor,"personality_config"):
                 self.personality.processor.personality_config.update_template(data)
                 self.personality.processor.personality_config.config.save_config()
+                if self.config.auto_save:
+                    ASCIIColors.info("Saving configuration")
+                    self.config.save_config()
                 return jsonify({'status':True})
             else:
                 return jsonify({'status':False})        
@@ -1541,6 +1549,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 gc.collect()
                 self.binding= BindingBuilder().build_binding(self.config, self.lollms_paths)
                 self.model = self.binding.build_model()
+                if self.config.auto_save:
+                    ASCIIColors.info("Saving configuration")
+                    self.config.save_config()
                 return jsonify({'status':True})
             else:
                 return jsonify({'status':False})        
@@ -1588,6 +1599,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             ASCIIColors.success("ok")
             print(f"Mounted {self.personality.name}")
+            if self.config.auto_save:
+                ASCIIColors.info("Saving configuration")
+                self.config.save_config()
             return jsonify({
                 "status": True,
                 "personalities":self.config["personalities"],

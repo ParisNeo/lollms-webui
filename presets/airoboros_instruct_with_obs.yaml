@@ -1,0 +1,22 @@
+name: Airoboros Instruct with obs
+content: |
+  A chat between a curious user and an assistant.
+  The assistant gives helpful, detailed, accurate responses to the user's input.
+  USER: BEGININPUT
+  BEGINCONTEXT
+  @<Add context information if form of key,value pairs separated by line breaks>@
+  ENDCONTEXT
+  @<Add some input information in form of text>@
+  ENDINPUT
+  BEGININSTRUCTION
+  @<insert your instruction(s).  The model was tuned with single questions, paragraph format, lists, etc.>@
+  ENDINSTRUCTION ASSISTANT: @<generation_placeholder>@
+
+help: |
+  This is the default Airoboros fine tuning format for chat mode with context obedient question answering
+  By obedient, JonDurbin means the model was trained to ignore what it thinks it knows, and uses the context to answer the question. 
+  This expects an input block + an instruction block.
+  The input block has two parameters, first a key:value pairs, then a text input.
+  The instructions block tells the AI what to do.
+
+author: ParisNeo (adapted from the original Airoboros documentation by Jon Durbin)

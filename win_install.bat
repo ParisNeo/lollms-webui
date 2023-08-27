@@ -161,4 +161,35 @@ IF EXIST "installer_files\lollms_env\bin" (
     MKDIR "installer_files\lollms_env\bin"
     echo Folder created successfully!
 )
+
+
+pause
+
+
+setlocal
+rem Ask the user if they want to install Visual Studio Build Tools
+set /p "installChoice=Do you want to install Visual Studio Build Tools? It is needed by the exllama binding. If you already have it or don't plan on using exllama, you can just say N. (Y/N): "
+if /i "%installChoice%"=="Y" (
+    goto :install
+) else (
+    echo Installation cancelled.
+    pause
+    exit
+)
+
+:install
+rem Set variables for the installer URL and output file
+set "installerUrl=https://aka.ms/vs/17/release/vs_BuildTools.exe"
+set "outputFile=vs_buildtools.exe"
+
+rem Download the installer using curl (make sure you have curl installed)
+curl -o "%outputFile%" "%installerUrl%"
+
+rem Install Visual Studio Build Tools
+"%outputFile%" --quiet --norestart --add Microsoft.VisualStudio.Workload.NativeDesktop --includeRecommended
+
+rem Clean up the downloaded installer
+del "%outputFile%"
+
+echo Installation complete.
 pause
