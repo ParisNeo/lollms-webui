@@ -858,6 +858,7 @@ class LoLLMsAPPI(LollmsApplication):
                                                 self.lollms_paths, 
                                                 self.config,
                                                 model=self.model,
+                                                app=self,
                                                 selected_language=personality.split(":")[1] if ":" in personality else None,
                                                 run_scripts=True)
                     mounted_personalities.append(personality)
@@ -872,7 +873,8 @@ class LoLLMsAPPI(LollmsApplication):
                                                     self.lollms_paths, 
                                                     self.config, 
                                                     self.model, 
-                                                    run_scripts=True,
+                                                    app = self,
+                                                    run_scripts=True,                                                    
                                                     selected_language=personality.split(":")[1] if ":" in personality else None,
                                                     installation_option=InstallOption.FORCE_INSTALL)
                         mounted_personalities.append(personality)

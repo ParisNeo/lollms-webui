@@ -221,6 +221,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint("/check_update", "check_update", self.check_update, methods=["GET"])
         
 
+    
+        self.add_endpoint("/post_to_personality", "post_to_personality", self.post_to_personality, methods=["POST"])
 
         
         self.add_endpoint("/install_model_from_path", "install_model_from_path", self.install_model_from_path, methods=["GET"])
@@ -1169,6 +1171,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                                             self.lollms_paths, 
                                             self.config,
                                             model=self.model,
+                                            app=self,
                                             run_scripts=True,installation_option=InstallOption.FORCE_INSTALL)
                 return jsonify({"status":True})
             except Exception as ex:
@@ -1178,6 +1181,14 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         except Exception as e:
             return jsonify({"status":False, 'error':str(e)})
+    
+    def post_to_personality(self):
+        data = request.get_json()
+        if hasattr(self.personality.processor,'handle_request'):
+            return self.personality.processor.handle_request(data)
+        else:
+            return jsonify({})
+
 
     def reinstall_binding(self):
         try:
@@ -1396,6 +1407,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
             ASCIIColors.error(f"nok : Personality not found @ {pth}")
             return jsonify({"status": False, "error":f"Personality not found @ {pth}"})         
 
+
+
     def p_remount_personality(self):
         print("- Remounting personality")
         try:
@@ -1587,6 +1600,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                                     self.lollms_paths, 
                                     self.config,
                                     model=self.model,
+                                    app=self,
                                     run_scripts=True)
         if personality.processor is not None:
             if hasattr(personality.processor,"personality_config"):
