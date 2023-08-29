@@ -3,16 +3,26 @@ FROM python:3.10
 WORKDIR /srv
 COPY ./requirements.txt .
 
-RUN python3 -m venv venv && . venv/bin/activate
-RUN python3 -m pip install --no-cache-dir -r requirements.txt --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./app.py /srv/app.py
 COPY ./api /srv/api
 COPY ./static /srv/static
 COPY ./templates /srv/templates
 COPY ./web /srv/web
-COPY ./configs /srv/configs
 COPY ./assets /srv/assets
 
-# COPY ./models /srv/models  # Mounting model is more efficient
-CMD ["python", "app.py", "--host", "0.0.0.0", "--port", "9600", "--db_path", "data/database.db"]
+# TODO: this is monkey-patch for check_update() function, should be disabled in Docker
+COPY ./.git /srv/.git
+
+VOLUME [ "/data" ]
+
+# Monkey-patch: send a "enter" keystroke to python to confirm the first launch process
+CMD ["/bin/bash", "-c", " \
+  echo -ne '\n' | \
+  python app.py \
+  --host 0.0.0.0 \
+  --port 9600 \
+  --db_path /data/Documents/databases/database.db \
+  --config /configs/config.yaml \
+  "]

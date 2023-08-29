@@ -1998,6 +1998,8 @@ if __name__ == "__main__":
     else:
         print(f"Please open your browser and go to {url} to view the ui")
     
-    socketio.run(app, host=config["host"], port=config["port"])
+    socketio.run(app, host=config["host"], port=config["port"],
+                 # prevent error: The Werkzeug web server is not designed to run in production
+                 allow_unsafe_werkzeug=True)
     # http_server = WSGIServer((config["host"], config["port"]), app, handler_class=WebSocketHandler)
     # http_server.serve_forever()
