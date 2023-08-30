@@ -34,6 +34,7 @@ import gc
 import ctypes
 from functools import partial
 import json
+import shutil
 
 def terminate_thread(thread):
     if thread:
@@ -310,8 +311,12 @@ class LoLLMsAPPI(LollmsApplication):
                             )
                             del self.download_infos[signature]
                             try:
-                                installation_path.unlink()
+                                if installation_path.is_dir():
+                                    shutil.rmtree(installation_path)
+                                else:
+                                    installation_path.unlink()
                             except Exception as ex:
+                                trace_exception(ex)
                                 ASCIIColors.error(f"Couldn't delete file. Please try to remove it manually.\n{installation_path}")
                             return
 
@@ -373,7 +378,7 @@ class LoLLMsAPPI(LollmsApplication):
             model_path = data['path']
             installation_dir = self.lollms_paths.personal_models_path/self.config["binding_name"]
             filename = Path(model_path).name
-            installation_path = installation_dir / filename
+            installation_path:Path = installation_dir / filename
             
             model_name = filename
             binding_folder = self.config["binding_name"]
@@ -386,7 +391,10 @@ class LoLLMsAPPI(LollmsApplication):
                                                     'binding_folder' : binding_folder
                                                 }, room=request.sid)
             try:
-                installation_path.unlink()
+                if installation_path.is_dir():
+                    shutil.rmtree(installation_path)
+                else:
+                    installation_path.unlink()
                 socketio.emit('install_progress',{
                                                     'status': True, 
                                                     'error': '',
@@ -394,6 +402,7 @@ class LoLLMsAPPI(LollmsApplication):
                                                     'binding_folder' : binding_folder
                                                 }, room=request.sid)
             except Exception as ex:
+                trace_exception(ex)
                 ASCIIColors.error(f"Couldn't delete {installation_path}, please delete it manually and restart the app")
                 socketio.emit('install_progress',{
                                                     'status': False, 
