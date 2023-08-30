@@ -150,7 +150,9 @@
                         <div v-for="(metadata, index) in message.metadata" :key="'json-' + message.id + '-' + index" class="json font-bold">
                             <JsonViewer :jsonFormText="metadata.title" :jsonData="metadata.content" />
                         </div>
-                    </div> 
+                    </div>
+
+                    <DynamicUIRenderer v-if="message.ui!=null" :code="message.ui"></DynamicUIRenderer>
                         
 
                 </div>
@@ -199,6 +201,7 @@ import MarkdownRenderer from './MarkdownRenderer.vue';
 import RenderHTMLJS from './RenderHTMLJS.vue';
 import JsonViewer from "./JsonViewer.vue";
 import Step from './Step.vue';
+import DynamicUIRenderer from "./DynamicUIRenderer.vue"
 
 export default {
     // eslint-disable-next-line vue/multi-word-component-names
@@ -209,6 +212,7 @@ export default {
         Step,
         RenderHTMLJS,
         JsonViewer,
+        DynamicUIRenderer
     },
     props: {
         message: Object,

@@ -20,7 +20,7 @@ class DiscussionsDB:
 
 
     def create_tables(self):
-        db_version = 8
+        db_version = 9
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
 
@@ -55,6 +55,7 @@ class DiscussionsDB:
                     finished_generating_at TIMESTAMP,
                     discussion_id INTEGER NOT NULL,
                     metadata TEXT,
+                    ui TEXT,
                     FOREIGN KEY (discussion_id) REFERENCES discussion(id),
                     FOREIGN KEY (parent_message_id) REFERENCES message(id)
                 )
@@ -93,6 +94,7 @@ class DiscussionsDB:
                     'parent_message_id',
                     'created_at',
                     'metadata',
+                    'ui',
                     'finished_generating_at',
                     'discussion_id'
                 ]
@@ -167,7 +169,7 @@ class DiscussionsDB:
         self.conn = None
         return rowid
 
-    def update(self, query, params=None):
+    def update(self, query, params:tuple=None):
         """
         Execute the specified Update SQL query on the database,
         with optional parameters.
@@ -326,6 +328,7 @@ class Message:
                     sender,
                     content,
                     metadata                = None,
+                    ui                      = None,
                     rank                    = 0,
                     parent_message_id       = 0,
                     binding                 = "",
@@ -349,6 +352,7 @@ class Message:
         self.binding = binding
         self.model = model
         self.metadata = json.dumps(metadata, indent=4) if metadata is not None and type(metadata)== dict else metadata
+        self.ui = ui
         self.personality = personality
         self.created_at = created_at
         self.finished_generating_at = finished_generating_at
@@ -371,6 +375,7 @@ class Message:
             "sender",
             "content",
             "metadata",
+            "ui",
             "rank",
             "parent_message_id",
             "binding",
@@ -405,27 +410,33 @@ class Message:
 
     def insert_into_db(self):
         self.message_id = self.discussions_db.insert(
-            "INSERT INTO message (sender, content, type, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at, discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-            (self.sender, self.content, self.message_type, self.rank, self.parent_message_id, self.binding, self.model, self.personality, self.created_at, self.finished_generating_at, self.discussion_id)
+            "INSERT INTO message (sender, content, metadata, ui, type, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at, discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+            (self.sender, self.content, self.metadata, self.ui, self.message_type, self.rank, self.parent_message_id, self.binding, self.model, self.personality, self.created_at, self.finished_generating_at, self.discussion_id)
         )
 
     def update_db(self):
         self.message_id = self.discussions_db.insert(
-            "INSERT INTO message (sender, content, type, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at, discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-            (self.sender, self.content, self.message_type, self.rank, self.parent_message_id, self.binding, self.model, self.personality, self.created_at, self.finished_generating_at, self.discussion_id)
+            "INSERT INTO message (sender, content, metadata, ui, type, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at, discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+            (self.sender, self.content, self.metadata, self.ui, self.message_type, self.rank, self.parent_message_id, self.binding, self.model, self.personality, self.created_at, self.finished_generating_at, self.discussion_id)
         )
-    def update(self, new_content, new_metadata=None, commit=True):
+    def update(self, new_content, new_metadata=None, new_ui=None, commit=True):
         self.finished_generating_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        
-        # print(f"{current_date_time}")
-        if new_metadata is None:
-            self.discussions_db.update(
-                f"UPDATE message SET content = ?, finished_generating_at = ? WHERE id = ?",(new_content, self.finished_generating_at,self.id)
-            )
-        else:
-            self.discussions_db.update(
-                f"UPDATE message SET content = ?, metadata = ?, finished_generating_at = ? WHERE id = ?",(new_content, new_metadata, self.finished_generating_at,self.id)
-            )
+        text = f"UPDATE message SET content = ?"
+        params = [new_content]
+        if new_metadata is not None:
+            text+=", metadata = ?"
+            params.append(new_metadata)
+        if new_ui is not None:
+            text+=", ui = ?"
+            params.append(new_ui)
+
+        text +=", finished_generating_at = ? WHERE id = ?"
+        params.append(self.finished_generating_at)
+        params.append(self.id)
+        self.discussions_db.update(
+            text, tuple(params)
+        )        
+
     def to_json(self):
         attributes = Message.get_fields()
         msgJson = {}
@@ -462,6 +473,7 @@ class Discussion:
                     sender,
                     content,
                     metadata=None,
+                    ui=None,
                     rank=0, 
                     parent_message_id=0, 
                     binding="", 
@@ -493,6 +505,7 @@ class Discussion:
             sender,
             content,
             metadata,
+            ui,
             rank,
             parent_message_id,
             binding,
@@ -563,16 +576,16 @@ class Discussion:
         else:
             return False 
 
-    def update_message(self, new_content, new_metadata=None):
+    def update_message(self, new_content, new_metadata=None, new_ui=None):
         """Updates the content of a message
 
         Args:
             message_id (int): The id of the message to be changed
             new_content (str): The nex message content
         """
-        self.current_message.update(new_content, new_metadata)
+        self.current_message.update(new_content, new_metadata, new_ui)
 
-    def edit_message(self, message_id, new_content, new_metadata=None):
+    def edit_message(self, message_id, new_content, new_metadata=None, new_ui=None):
         """Edits the content of a message
 
         Args:
@@ -581,7 +594,7 @@ class Discussion:
         """
         msg = self.get_message(message_id)
         if msg:
-            msg.update(new_content, new_metadata)
+            msg.update(new_content, new_metadata, new_ui)
             return True
         else:
             return False

@@ -12,6 +12,7 @@
                         <div class="flex flex-col items-start">
                         <p class="text-2xl ">Lord of Large Language Models v {{ version }} </p>
                         <p class="text-gray-400 text-base">One tool to rule them all</p>
+                        <p class="text-gray-400 text-base">by ParisNeo</p>
 
                         </div>
                 </div>

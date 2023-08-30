@@ -1086,7 +1086,8 @@ class LoLLMsAPPI(LollmsApplication):
                             sender, 
                             content,
                             parameters=None,
-                            metadata=[],
+                            metadata=None,
+                            ui=None,
                             message_type:MSG_TYPE=MSG_TYPE.MSG_TYPE_FULL, 
                             sender_type:SENDER_TYPES=SENDER_TYPES.SENDER_TYPES_AI
                         ):
@@ -1112,6 +1113,7 @@ class LoLLMsAPPI(LollmsApplication):
                     "content":                  content,
                     "parameters":               parameters,
                     "metadata":                 json.dumps(metadata, indent=4) if metadata is not None and type(metadata)== list else metadata,
+                    "ui":                       ui,
                     "id":                       msg.id,
                     "parent_message_id":        msg.parent_message_id,
 
@@ -1127,6 +1129,7 @@ class LoLLMsAPPI(LollmsApplication):
     def update_message(self, client_id, chunk,                             
                             parameters=None,
                             metadata=[], 
+                            ui=None,
                             msg_type:MSG_TYPE=None
                         ):
         self.connections[client_id]["current_discussion"].current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -1134,7 +1137,9 @@ class LoLLMsAPPI(LollmsApplication):
         self.socketio.emit('update_message', {
                                         "sender": self.personality.name,
                                         'id':self.connections[client_id]["current_discussion"].current_message.id, 
-                                        'content': chunk,# self.connections[client_id]["generated_text"], 
+                                        'content': chunk,# self.connections[client_id]["generated_text"],
+                                        'metadata': metadata,
+                                        'ui': ui,
                                         'discussion_id':self.connections[client_id]["current_discussion"].discussion_id,
                                         'message_type': msg_type.value if msg_type is not None else MSG_TYPE.MSG_TYPE_CHUNK.value if self.nb_received_tokens>1 else MSG_TYPE.MSG_TYPE_FULL.value,
                                         'finished_generating_at': self.connections[client_id]["current_discussion"].current_message.finished_generating_at,
@@ -1168,7 +1173,7 @@ class LoLLMsAPPI(LollmsApplication):
                         message_type:MSG_TYPE,
 
                         parameters=None, 
-                        metadata:list=[], 
+                        metadata:list=None, 
                         client_id:int=0
                     ):
         """
@@ -1193,6 +1198,8 @@ class LoLLMsAPPI(LollmsApplication):
         if message_type == MSG_TYPE.MSG_TYPE_INFO:
             self.notify(chunk,True, client_id)
             ASCIIColors.info("--> Info:"+chunk)
+        if message_type == MSG_TYPE.MSG_TYPE_UI:
+            self.update_message(client_id, '', parameters, metadata, chunk, MSG_TYPE.MSG_TYPE_FULL)
 
         if message_type == MSG_TYPE.MSG_TYPE_NEW_MESSAGE:
             self.nb_received_tokens = 0
@@ -1237,7 +1244,7 @@ class LoLLMsAPPI(LollmsApplication):
             return True
         # Stream the generated text to the frontend
         else:
-            self.update_message(client_id, chunk, parameters, metadata, message_type)
+            self.update_message(client_id, chunk, parameters, metadata, ui=None, msg_type=message_type)
         return True
 
 
@@ -1247,6 +1254,7 @@ class LoLLMsAPPI(LollmsApplication):
             try:
                 self.personality.processor.run_workflow( prompt, full_prompt, callback)
             except Exception as ex:
+                trace_exception(ex)
                 # Catch the exception and get the traceback as a list of strings
                 traceback_lines = traceback.format_exception(type(ex), ex, ex.__traceback__)
                 # Join the traceback lines into a single string
