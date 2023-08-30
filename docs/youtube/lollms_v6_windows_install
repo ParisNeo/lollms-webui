@@ -1,0 +1,14 @@
+Hi there. Today I'll show you how to install and use lollms v6 on windows using the executable installer.
+First go to the github page shown below and download lollms_v6_cpu.exe.
+Then, run the downloaded file.
+Sometimes, windows may warn you as the executable is not signed and not yet massively used. You can simply ignore the warning and procede with the installation.
+You will be presented with a classic installer, accept the licence and read the code of conduct, then the installer will install the tool on your PC.
+Optionally, you can add a shortcut to your desktop for fast and easy access.
+The install may take a while, so let's fast forward.
+After the install, you may get this error if you did run the installer as regular user. It is windows trying to forbid the installer from creating the start menu element. Don't bother, you can just press ok and finish the installation.
+Now you can run the application.
+With this install procedure, you get a complete fully functional and self-contained version of the tool in cpu mode. This version is fixed so when I release a new version, you can do the same install and it will update the entire tool with the new version of the code.
+You won't have access to realtime updates I do regularly on the gitbub, But I'll show you how to do that manually.
+Press the link to load the ui on the browser.
+This tool is delivered with all bindings code, but without models as they are heavy and can make the installer very big. So the first thing to do is to install a model. By default, you are using cpu mode and the selected binding is c_transformers.
+Go to settings page, then to the models zoo and download a model.

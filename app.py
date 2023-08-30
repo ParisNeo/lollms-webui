@@ -1297,8 +1297,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
         file_path = filedialog.askopenfilename()
 
     def check_update(self):
-        res = check_update()
-        return jsonify({'update_availability':res})
+        if self.config.auto_update:
+            res = check_update()
+            return jsonify({'update_availability':res})
+        else:
+            return jsonify({'update_availability':False})
 
     def restart_program(self):
         ASCIIColors.info("")
