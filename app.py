@@ -907,6 +907,13 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 "binding_models_percent_usage": None,
                 })
 
+    def find_extension(self, path:Path, filename:str, exts:list)->Path:
+        for ext in exts:
+            full_path = path/(filename+ext)
+            if full_path.exists():
+                return full_path
+        return None
+
     def list_bindings(self):
         bindings_dir = self.lollms_paths.bindings_zoo_path  # replace with the actual path to the models folder
         bindings=[]
@@ -916,10 +923,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 try:
                     bnd = load_config(card)
                     bnd["folder"]=f.stem
-                    icon_path = Path(f"bindings/{f.name}/logo.png")
                     installed = (self.lollms_paths.personal_configuration_path/"bindings"/f.stem/f"config.yaml").exists()
                     bnd["installed"]=installed
-                    if Path(self.lollms_paths.bindings_zoo_path/f"{f.name}/logo.png").exists():
+                    icon_file = self.find_extension(self.lollms_paths.bindings_zoo_path/f"{f.name}", "logo", [".svg",".gif",".png"])
+                    if icon_file is not None:
+                        icon_path = Path(f"bindings/{f.name}/logo{icon_file.suffix}")
                         bnd["icon"]=str(icon_path)
 
                     bindings.append(bnd)

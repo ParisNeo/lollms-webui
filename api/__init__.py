@@ -1223,10 +1223,10 @@ class LoLLMsAPPI(LollmsApplication):
             if antiprompt:
                 ASCIIColors.warning(f"\nDetected hallucination with antiprompt: {antiprompt}")
                 self.connections[client_id]["generated_text"] = self.remove_text_from_string(self.connections[client_id]["generated_text"],antiprompt)
-                self.update_message(client_id, self.connections[client_id]["generated_text"], parameters, metadata,MSG_TYPE.MSG_TYPE_FULL)
+                self.update_message(client_id, self.connections[client_id]["generated_text"], parameters, metadata, None, MSG_TYPE.MSG_TYPE_FULL)
                 return False
             else:
-                self.update_message(client_id, chunk, metadata)
+                self.update_message(client_id, chunk, parameters, metadata)
                 # if stop generation is detected then stop
                 if not self.cancel_gen:
                     return True
@@ -1240,7 +1240,7 @@ class LoLLMsAPPI(LollmsApplication):
             self.connections[client_id]["generated_text"] = chunk
             self.nb_received_tokens += 1
             ASCIIColors.green(f"Received {self.nb_received_tokens} tokens",end="\r",flush=True)
-            self.update_message(client_id, chunk,  parameters, metadata, msg_type=message_type)
+            self.update_message(client_id, chunk,  parameters, metadata, ui=None, msg_type=message_type)
             return True
         # Stream the generated text to the frontend
         else:

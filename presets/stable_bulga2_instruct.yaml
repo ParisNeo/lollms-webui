@@ -1,0 +1,18 @@
+name: StableBulga2 Instruct
+content: |
+  ### System:
+  @<Put your system prompt here>@
+
+  ### User:
+  @<Put your user prompt here>@
+
+  ### Assistant:
+  @<generation_placeholder>@
+
+help: |
+  This is the default StableBulga2 format for instructions.
+  There are two parameters:
+  - The first is the system prompt, that conditions the AI.
+  - The second is the prompt itself.
+
+author: ParisNeo (adapted from the original StableBeluga2 documentation by Stability AI)
