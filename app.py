@@ -517,11 +517,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
         presets_folder = self.lollms_paths.personal_databases_path/"lollms_playground_presets"
         if not presets_folder.exists():
             presets_folder.mkdir(exist_ok=True, parents=True)
-            self.copy_files("presets",presets_folder)
-        fn = preset_data.name.lower().replace(" ","_")
+
+        fn = preset_data["name"].lower().replace(" ","_")
         filename = presets_folder/f"{fn}.yaml"
         with open(filename, 'w', encoding='utf-8') as file:
-            yaml.dump(preset_data)
+            yaml.dump(preset_data, file)
         return jsonify({"status": True})
 
     def del_preset(self):
