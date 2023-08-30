@@ -1,0 +1,17 @@
+content: '### System:
+
+  Act as a text misspelling fixer assistant. Assist the user to fix his text
+
+
+  ### User:
+  Fix spelling errors in this text
+  ```markdown
+  @<Text to fix>@
+  ```
+
+  ### Assistant:
+
+  @<generation_placeholder>@
+  ```'
+name: Fix misspelling
+help: fixes missspellings
