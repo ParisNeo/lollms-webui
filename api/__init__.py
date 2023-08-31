@@ -654,7 +654,7 @@ class LoLLMsAPPI(LollmsApplication):
 
                         tk = model.tokenize(prompt)
                         n_tokens = len(tk)
-                        fd = model.detokenize(tk[-min(self.config.ctx_size-n_predicts,n_tokens, len(tk)):])
+                        fd = model.detokenize(tk[-min(self.config.ctx_size-n_predicts,n_tokens):])
 
                         try:
                             ASCIIColors.print("warming up", ASCIIColors.color_bright_cyan)
@@ -666,7 +666,7 @@ class LoLLMsAPPI(LollmsApplication):
                                                             top_p = parameters["top_p"],
                                                             repeat_penalty = parameters["repeat_penalty"],
                                                             repeat_last_n = parameters["repeat_last_n"],
-                                                            seed = parameters["seed"]                                                
+                                                            seed = parameters["seed"],                                           
                                                             )
                             ASCIIColors.success(f"\ndone")
                             if client_id in self.connections:
