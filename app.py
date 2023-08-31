@@ -855,8 +855,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
             ASCIIColors.red("Couldn't install cuda toolkit")
             return jsonify({'status':False, "error": "Couldn't install cuda toolkit. Make sure you are running from conda environment"})
         ASCIIColors.green("Cuda toolkit installed successfully")
+        ASCIIColors.yellow("Removing pytorch")
+        res = subprocess.check_call(["pip","uninstall","torch", "torchvision", "torchaudio"])
+        ASCIIColors.green("PyTorch unstalled successfully")
         ASCIIColors.yellow("Installing pytorch with cuda support")
-        res = subprocess.check_call(["pip","install","--upgrade","torch==2.0.1+cu117", "torchvision", "torchaudio", "--index-url", "https://download.pytorch.org/whl/cu117"])
+        res = subprocess.check_call(["pip","install","--upgrade","torch==2.0.1+cu117", "torchvision", "torchaudio", "--index-url", "https://download.pytorch.org/whl/cu117","no-cache"])
         if res==0:
             ASCIIColors.green("PyTorch installed successfully")
             import torch
