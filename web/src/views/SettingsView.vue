@@ -608,7 +608,8 @@
                                             <label for="auto_show_browser" class="text-sm font-bold" style="margin-right: 1rem;">Auto show browser:</label>
                                         </td>
                                         <td>
-                                            <input
+                                            <div class="flex flex-row">
+                                                <input
                                             type="checkbox"
                                             id="auto_show_browser"
                                             required
@@ -616,6 +617,7 @@
                                             @change="settingsChanged=true"
                                             class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600 "
                                             >
+                                            </div>
                                         </td>
                                         </tr>
                                         
@@ -645,6 +647,7 @@
                                             <label for="auto_save" class="text-sm font-bold" style="margin-right: 1rem;">Auto save:</label>
                                         </td>
                                         <td>
+                                            <div class="flex flex-row">
                                             <input
                                             type="checkbox"
                                             id="auto_save"
@@ -653,6 +656,7 @@
                                             @change="settingsChanged=true"
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
+                                            </div>
                                         </td>
                                         </tr>
                                         <tr>
@@ -660,6 +664,7 @@
                                             <label for="auto_update" class="text-sm font-bold" style="margin-right: 1rem;">Auto update:</label>
                                         </td>
                                         <td>
+                                            <div class="flex flex-row">
                                             <input
                                             type="checkbox"
                                             id="auto_update"
@@ -668,6 +673,7 @@
                                             @change="settingsChanged=true"
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
+                                            </div>
                                         </td>
                                         </tr>
                                     </table>
@@ -722,6 +728,7 @@
                                             <label for="use_user_name_in_discussions" class="text-sm font-bold" style="margin-right: 1rem;">Use User Name in discussions:</label>
                                         </td>
                                         <td>
+                                            <div class="flex flex-row">
                                             <input
                                             type="checkbox"
                                             id="use_user_name_in_discussions"
@@ -730,6 +737,7 @@
                                             @change="settingsChanged=true"
                                             class=" w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
+                                            </div>
                                         </td>
                                         </tr>  
                                     </table>
@@ -741,6 +749,7 @@
                                             <label for="use_files" class="text-sm font-bold" style="margin-right: 1rem;">Activate files support:</label>
                                         </td>
                                         <td>
+                                            <div class="flex flex-row">
                                             <input
                                             type="checkbox"
                                             id="use_files"
@@ -749,6 +758,7 @@
                                             @change="settingsChanged=true"
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
+                                            </div>
                                         </td>
                                         </tr>                                        
                                         <tr>
@@ -756,6 +766,7 @@
                                             <label for="data_vectorization_activate" class="text-sm font-bold" style="margin-right: 1rem;">Activate files vectorization:</label>
                                         </td>
                                         <td>
+                                            <div class="flex flex-row">
                                             <input
                                             type="checkbox"
                                             id="data_vectorization_activate"
@@ -764,6 +775,7 @@
                                             @change="settingsChanged=true"
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
+                                            </div>
                                         </td>
                                         </tr>
                                         <tr>
@@ -771,6 +783,7 @@
                                             <label for="data_vectorization_build_keys_words" class="text-sm font-bold" style="margin-right: 1rem;">Build keywords when querying the vectorized database:</label>
                                         </td>
                                         <td>
+                                            <div class="flex flex-row">
                                             <input
                                             type="checkbox"
                                             id="data_vectorization_build_keys_words"
@@ -779,6 +792,7 @@
                                             @change="settingsChanged=true"
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
+                                            </div>
                                         </td>
                                         </tr>
                                                                                 
@@ -821,6 +835,7 @@
                                             <label for="data_vectorization_save_db" class="text-sm font-bold" style="margin-right: 1rem;">Save the new files to the database (The database wil always grow and continue to be the same over many sessions):</label>
                                         </td>
                                         <td>
+                                            <div class="flex flex-row">
                                             <input
                                             type="checkbox"
                                             id="data_vectorization_save_db"
@@ -829,6 +844,7 @@
                                             @change="settingsChanged=true"
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
+                                            </div>
                                         </td>
                                         </tr>
                                         <tr>
@@ -887,6 +903,7 @@
                                             <label for="audio_auto_send_input" class="text-sm font-bold" style="margin-right: 1rem;">Send audio input automatically:</label>
                                         </td>
                                         <td>
+                                            <div class="flex flex-row">
                                             <input
                                             type="checkbox"
                                             id="audio_auto_send_input"
@@ -895,6 +912,7 @@
                                             @change="settingsChanged=true"
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
+                                            </div>
                                         </td>
                                         </tr>
                                         <tr>
@@ -902,6 +920,7 @@
                                             <label for="auto_speak" class="text-sm font-bold" style="margin-right: 1rem;">Enable auto speak:</label>
                                         </td>
                                         <td>
+                                            <div class="flex flex-row">
                                             <input
                                             type="checkbox"
                                             id="auto_speak"
@@ -910,6 +929,7 @@
                                             @change="settingsChanged=true"
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
+                                            </div>
                                         </td>
                                         </tr>                                        
                                         <tr>
