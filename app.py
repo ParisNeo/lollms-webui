@@ -850,7 +850,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
     def upgrade_to_gpu(self):
         ASCIIColors.yellow("Received command to upgrade to GPU")
         ASCIIColors.info("Installing cuda toolkit")
-        res = subprocess.check_call(["conda", "install", "-c", "nvidia/label/cuda-11.7.0", "-c", "nvidia", "-c", "conda-forge",  "cuda-toolkit", "ninja", "git",  "--force-reinstall"])
+        res = subprocess.check_call(["conda", "install", "-c", "nvidia/label/cuda-11.7.0", "-c", "nvidia", "-c", "conda-forge",  "cuda-toolkit", "ninja", "git",  "--force-reinstall", "-y"])
         if res!=0:
             ASCIIColors.red("Couldn't install cuda toolkit")
             return jsonify({'status':False, "error": "Couldn't install cuda toolkit. Make sure you are running from conda environment"})
