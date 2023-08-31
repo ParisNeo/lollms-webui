@@ -607,15 +607,20 @@
                                         <td style="min-width: 200px;">
                                             <label for="enable_gpu" class="text-sm font-bold" style="margin-right: 1rem;">Enable GPU:</label>
                                         </td>
-                                        <td>
+                                        <td class="text-center items-center">
+                                            <div class="flex flex-row">
                                             <input
                                             type="checkbox"
                                             id="enable_gpu"
                                             required
                                             v-model="configFile.enable_gpu"
                                             @change="settingsChanged=true"
-                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600 "
                                             >
+                                            <button v-if="!configFile.enable_gpu" @click.prevent="upgrade2GPU" class="w-100 text-center rounded m-2 bg-blue-300 hover:bg-blue-200 text-l hover:text-primary p-2 m-2 text-left flex flex-row ">
+                                            Upgrade from CPU to GPU
+                                            </button>
+                                            </div>
                                         </td>
                                         </tr>
                                         <tr>
@@ -2521,8 +2526,28 @@ export default {
                     return { 'status': false }
                 });
         },
+        upgrade2GPU(){
+            this.isLoading = true
+            try{
+                axios.get('/upgrade_to_gpu').then(res => {
+                    this.isLoading = false
+                    if (res) {
+                            if(res.status){
+                                this.$refs.toast.showToast("Upgraded to GPU", 4, true)
+                                this.configFile.enable_gpu=True
+                            }
+                            else{
+                                this.$refs.toast.showToast("Could not upgrade to GPU. Endpoint error: " + res.error, 4, false)
+                            }
+                    }
+                })
+            }
+            catch (error) {
+            this.isLoading = false
+            this.$refs.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
+            }
+        },
         onSettingsBinding(bindingEntry) {
-
             try {
                 this.isLoading = true
                 axios.get('/get_active_binding_settings').then(res => {

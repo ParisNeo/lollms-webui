@@ -361,6 +361,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
         )
 
         self.add_endpoint(
+            "/upgrade_to_gpu", "upgrade_to_gpu", self.upgrade_to_gpu, methods=["GET"]
+        )
+
+        self.add_endpoint(
             "/training", "training", self.training, methods=["GET"]
         )
         self.add_endpoint(
@@ -715,6 +719,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         data = request.get_json()
         setting_name = data['setting_name']
 
+        ASCIIColors.info(f"Requested updating of setting {data['setting_name']} to {data['setting_value']}")
         if setting_name== "temperature":
             self.config["temperature"]=float(data['setting_value'])
         elif setting_name== "n_predict":
@@ -840,6 +845,14 @@ class LoLLMsWebUI(LoLLMsAPPI):
         except Exception as ex:    
             return jsonify({"status":False,"error":str(ex)})
 
+    
+    def upgrade_to_gpu(self):
+        res = subprocess.check_call(["conda", "install", "-c", "nvidia/label/cuda-11.7.0", "-c", "nvidia", "-c", "conda-forge",  "cuda-toolkit", "ninja", "git",  "--force-reinstall"])
+        if res!=0:
+            return jsonify({'status':False, "error": "Couldn't install cuda toolkit. Make sure you are running from conda environment"})
+        res = subprocess.check_call(["pip","install","--upgrade","torch==2.0.1+cu117", "torchvision", "torchaudio", "--index-url", "https://download.pytorch.org/whl/cu117"])
+        self.config.enable_gpu=True
+        return jsonify({'status':res==0})
     
     def ram_usage(self):
         """
