@@ -85,6 +85,24 @@ if not exist "%MINICONDA_DIR%\Scripts\conda.exe" (
 @rem activate miniconda
 call "%MINICONDA_DIR%\Scripts\activate.bat" || ( echo Miniconda hook not found. && goto end )
 
+if /I "%gpuchoice%" == "B" (
+  echo Installing ROCM AMD tools...
+  rem Set variables for the installer URL and output file
+  set "installerUrl=https://www.amd.com/en/developer/rocm-hub/eula/licenses.html?filename=AMD-Software-PRO-Edition-23.Q3-Win10-Win11-For-HIP.exe"
+  set "outputFile=AMD-Software-PRO-Edition-23.Q3-Win10-Win11-For-HIP.exe"
+
+  rem Download the installer using curl (make sure you have curl installed)
+  curl -o "%outputFile%" "%installerUrl%"
+
+  rem Install RocM tools
+  "%outputFile%" 
+
+  rem Clean up the downloaded installer
+  del "%outputFile%"
+
+  echo Installation complete.
+)
+
 @rem create the installer env
 if not exist "%INSTALL_ENV_DIR%" (
   echo Packages to install: %PACKAGES_TO_INSTALL%
@@ -122,26 +140,26 @@ call python -m pip install -r requirements.txt --upgrade
 if exist ..\win_run.bat (
     echo Win run found
 ) else (
-  copy scripts/win_run.bat ..\
+  copy scripts\win_run.bat ..\
 )
 
 if exist ..\win_update.bat (
     echo Win update found
 ) else (
-  copy scripts/win_update.bat ..\
+  copy scripts\win_update.bat ..\
 )
 
 
 if exist ..\win_conda_session.bat (
     echo win conda session script found
 ) else (
-  copy scripts/win_conda_session.bat ..\
+  copy scripts\win_conda_session.bat ..\
 )
 
 if exist ..\win_update_models.bat (
     echo Win update models found
 ) else (
-  copy scripts/win_update_models.bat ..\
+  copy scripts\win_update_models.bat ..\
 )
 
 setlocal enabledelayedexpansion
