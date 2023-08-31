@@ -122,13 +122,13 @@ call python -m pip install -r requirements.txt --upgrade
 if exist ..\win_run.bat (
     echo Win run found
 ) else (
-  copy win_run.bat ..\
+  copy scripts/win_run.bat ..\
 )
 
 if exist ..\win_update.bat (
     echo Win update found
 ) else (
-  copy win_update.bat ..\
+  copy scripts/win_update.bat ..\
 )
 
 setlocal enabledelayedexpansion
