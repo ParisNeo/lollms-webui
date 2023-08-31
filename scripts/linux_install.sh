@@ -140,13 +140,13 @@ python -m pip install -r requirements.txt --upgrade
 if [[ -e "../linux_run.sh" ]]; then
     echo "Linux run found"
 else
-    cp linux_run.sh ../
+    cp scripts/linux_run.sh ../
 fi
 
 if [[ -e "../linux_update.sh" ]]; then
     echo "Linux update found"
 else
-    cp linux_update.sh ../
+    cp scripts/linux_update.sh ../
 fi
 
 if [[ "${gpuchoice^^}" == "C" ]]; then
