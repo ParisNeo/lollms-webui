@@ -648,14 +648,14 @@
                                         </td>
                                         <td>
                                             <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="auto_save"
-                                            required
-                                            v-model="configFile.auto_save"
-                                            @change="settingsChanged=true"
-                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
+                                                <input
+                                                type="checkbox"
+                                                id="auto_save"
+                                                required
+                                                v-model="configFile.auto_save"
+                                                @change="settingsChanged=true"
+                                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                                >
                                             </div>
                                         </td>
                                         </tr>
@@ -671,7 +671,7 @@
                                             required
                                             v-model="configFile.auto_update"
                                             @change="settingsChanged=true"
-                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
                                             </div>
                                         </td>
@@ -735,7 +735,7 @@
                                             required
                                             v-model="configFile.use_user_name_in_discussions"
                                             @change="settingsChanged=true"
-                                            class=" w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
                                             </div>
                                         </td>
@@ -756,7 +756,7 @@
                                             required
                                             v-model="configFile.use_files"
                                             @change="settingsChanged=true"
-                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
                                             </div>
                                         </td>
@@ -773,7 +773,7 @@
                                             required
                                             v-model="configFile.data_vectorization_activate"
                                             @change="settingsChanged=true"
-                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
                                             </div>
                                         </td>
@@ -790,7 +790,7 @@
                                             required
                                             v-model="configFile.data_vectorization_build_keys_words"
                                             @change="settingsChanged=true"
-                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
                                             </div>
                                         </td>
@@ -842,7 +842,7 @@
                                             required
                                             v-model="configFile.data_vectorization_save_db"
                                             @change="settingsChanged=true"
-                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
                                             </div>
                                         </td>
@@ -910,7 +910,7 @@
                                             required
                                             v-model="configFile.audio_auto_send_input"
                                             @change="settingsChanged=true"
-                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
                                             </div>
                                         </td>
@@ -927,7 +927,7 @@
                                             required
                                             v-model="configFile.auto_speak"
                                             @change="settingsChanged=true"
-                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
                                             </div>
                                         </td>
