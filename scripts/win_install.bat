@@ -32,11 +32,11 @@ echo "  \:\  \    \:\  /:/  /   \:\  \    \:\  \         /:/  /   \:\ \:\__\   "
 echo "   \:\  \    \:\/:/  /     \:\  \    \:\  \       /:/  /     \:\/:/  /   "
 echo "    \:\__\    \::/  /       \:\__\    \:\__\     /:/  /       \::/  /    "
 echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
-echo 
 echo By ParisNeo
 
 :retry
-echo Please specify if you want to use a GPU or CPU. Note thaty only NVidea GPUs are supported?
+echo Please specify if you want to use a GPU or CPU.
+echo *Note* that only NVidea GPUs (cuda) or AMD GPUs (rocm) are supported.
 echo A) Enable cuda GPU
 echo B) Enable ROCm compatible GPU (AMD and other GPUs)
 echo C) Run CPU mode
@@ -129,6 +129,19 @@ if exist ..\win_update.bat (
     echo Win update found
 ) else (
   copy scripts/win_update.bat ..\
+)
+
+
+if exist ..\win_conda_session.bat (
+    echo win conda session script found
+) else (
+  copy scripts/win_conda_session.bat ..\
+)
+
+if exist ..\win_update_models.bat (
+    echo Win update models found
+) else (
+  copy scripts/win_update_models.bat ..\
 )
 
 setlocal enabledelayedexpansion

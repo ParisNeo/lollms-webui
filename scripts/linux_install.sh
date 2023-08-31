@@ -38,7 +38,8 @@ echo "    \:\__\    \::/  /       \:\__\    \:\__\     /:/  /       \::/  /    "
 echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
 echo " By ParisNeo"
 
-echo "Please specify if you want to use a GPU or CPU. Note thaty only NVidea GPUs are supported?"
+echo "Please specify if you want to use a GPU or CPU."
+echo "*Note* that only NVidea GPUs (cuda) or AMD GPUs (rocm) are supported."
 echo "A) Enable Cuda (for nvidia GPUS)"
 echo "B) Enable ROCm (for AMD GPUs)"
 echo "C) Run CPU mode"
@@ -147,6 +148,18 @@ if [[ -e "../linux_update.sh" ]]; then
     echo "Linux update found"
 else
     cp scripts/linux_update.sh ../
+fi
+
+if [[ -e "../linux_conda_session.sh" ]]; then
+    echo "Linux update found"
+else
+    cp scripts/linux_conda_session.sh ../
+fi
+
+if [[ -e "../linux_update_models.sh" ]]; then
+    echo "Linux update found"
+else
+    cp scripts/linux_update_models.sh ../
 fi
 
 if [[ "${gpuchoice^^}" == "C" ]]; then

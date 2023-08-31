@@ -34,7 +34,8 @@ echo "    \:\__\    \::/  /       \:\__\    \:\__\     /:/  /       \::/  /    "
 echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
 echo " By ParisNeo"
 
-echo "Please specify if you want to use a GPU or CPU. Note that only Nvidia GPUs are supported?"
+echo "Please specify if you want to use a GPU or CPU."
+echo "*Note* that only NVidea GPUs (cuda) or AMD GPUs (rocm) are supported."
 echo "A) Enable GPU"
 echo "B) Run CPU mode"
 echo
