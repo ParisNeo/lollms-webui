@@ -27,7 +27,7 @@ import traceback
 import webbrowser
 
 def run_update_script(args=None):
-    update_script = "update_script.py"
+    update_script = Path(__file__).parent/"update_script.py"
 
     # Convert Namespace object to a dictionary
     if args:
@@ -38,7 +38,7 @@ def run_update_script(args=None):
     valid_args = {key: value for key, value in args_dict.items() if value is not None}
 
     # Save the arguments to a temporary file
-    temp_file = "temp_args.txt"
+    temp_file = Path(__file__).parent/"temp_args.txt"
     with open(temp_file, "w") as file:
         # Convert the valid_args dictionary to a string in the format "key1 value1 key2 value2 ..."
         arg_string = " ".join([f"--{key} {value}" for key, value in valid_args.items()])
@@ -160,7 +160,7 @@ def check_update(branch_name="main"):
 
 
 def run_restart_script(args):
-    restart_script = "restart_script.py"
+    restart_script = Path(__file__).parent/"restart_script.py"
 
     # Convert Namespace object to a dictionary
     args_dict = vars(args)
@@ -169,7 +169,7 @@ def run_restart_script(args):
     valid_args = {key: value for key, value in args_dict.items() if value is not None}
 
     # Save the arguments to a temporary file
-    temp_file = "temp_args.txt"
+    temp_file = Path(__file__).parent/"temp_args.txt"
     with open(temp_file, "w") as file:
         # Convert the valid_args dictionary to a string in the format "key1 value1 key2 value2 ..."
         arg_string = " ".join([f"--{key} {value}" for key, value in valid_args.items()])
