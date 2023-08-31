@@ -855,9 +855,17 @@ class LoLLMsWebUI(LoLLMsAPPI):
             ASCIIColors.red("Couldn't install cuda toolkit")
             return jsonify({'status':False, "error": "Couldn't install cuda toolkit. Make sure you are running from conda environment"})
         ASCIIColors.green("Cuda toolkit installed successfully")
-        ASCIIColors.green("Installing pytorch with cuda support")
+        ASCIIColors.yellow("Installing pytorch with cuda support")
         res = subprocess.check_call(["pip","install","--upgrade","torch==2.0.1+cu117", "torchvision", "torchaudio", "--index-url", "https://download.pytorch.org/whl/cu117"])
-        ASCIIColors.green("PyTorch installed successfully")
+        if res==0:
+            ASCIIColors.green("PyTorch installed successfully")
+            import torch
+            if torch.cuda.is_available():
+                ASCIIColors.success("CUDA is supported.")
+            else:
+                ASCIIColors.warning("CUDA is not supported. This may mean that the upgrade didn't succeed. Try rebooting the application")
+        else:
+            ASCIIColors.green("An error hapened")
         self.config.enable_gpu=True
         return jsonify({'status':res==0})
     

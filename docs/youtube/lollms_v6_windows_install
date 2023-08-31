@@ -32,4 +32,15 @@ The next section will talk about installing GPU support
 You can view your configuration in the settings where you can see how much memory are you pulling as well as remaining diskk space.
 Start by going to the main settings and check enable gpu.
 Don't forget to apply changes.
-Now we are ready to install GPU. For this you should find the installation folder by right clicking on the lollms icon on your desktop and selecting properties, then you should find a button that links to its installation folder. In that folder, you will find a bat file called win_conda_session.bat. This file allows to activate the same conda session as the application so that you can install add ons or libraries. Here we are going to install cuda-toolkit v 11.7 then reinstall pytorch with cuda support. 
+Now we are ready to install GPU support.
+In the settings page, you can view your hardware status to verify how much disk or memory you still have. This is important if you want to use multimodal personalities that require extra memory when loaded.
+I have built an all in one procedure that allows you to automatically install cuda and pytorch by a single click of a button.
+Go to main configuration section and press the Update from CPU to GPU button.
+You will need to take a look at the console as it will ask you for confirmation when installing cuda toolkit.
+Press y to accept the install procedure and wait till install is finished.
+When all installs are done, the settings page clears up.
+Now we can either reinstall C transformers binding and it will automatically get into the GPU mode, or install the GPTQ binding or another binding. Here let's install autoGPTQ binding.
+Go to the bindings zoo and press install in the auto gptq binding card.
+You can view the install in the console.
+If ever it hangs for a long time, just press enter in the console window and wait.
+Now we are ready to install a model. Let's try the new WizardLM's Wizard-Coder-python-13B.
