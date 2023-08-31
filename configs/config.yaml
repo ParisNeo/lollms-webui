@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 21
+version: 22
 binding_name: null
 model_name: null
 
@@ -41,6 +41,8 @@ auto_update: true
 auto_save: true
 # Enables gpu usage
 enable_gpu: true
+# Automatically open the browser
+auto_show_browser: true
 
 # Audio
 audio_in_language: 'en-US'

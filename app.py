@@ -24,6 +24,7 @@ import io
 import sys
 import time
 import traceback
+import webbrowser
 
 def run_update_script(args=None):
     update_script = "update_script.py"
@@ -2030,6 +2031,9 @@ if __name__ == "__main__":
     else:
         print(f"Please open your browser and go to {url} to view the ui")
     
+    # if autoshow
+    if config.auto_show_browser:
+        webbrowser.open(f"http://{config['host']}:{config['port']}")
     socketio.run(app, host=config["host"], port=config["port"],
                  # prevent error: The Werkzeug web server is not designed to run in production
                  allow_unsafe_werkzeug=True)

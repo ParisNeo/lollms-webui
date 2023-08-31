@@ -605,6 +605,22 @@
                                         </tr>                                   
                                         <tr>
                                         <td style="min-width: 200px;">
+                                            <label for="auto_show_browser" class="text-sm font-bold" style="margin-right: 1rem;">Auto show browser:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="checkbox"
+                                            id="auto_show_browser"
+                                            required
+                                            v-model="configFile.auto_show_browser"
+                                            @change="settingsChanged=true"
+                                            class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600 "
+                                            >
+                                        </td>
+                                        </tr>
+                                        
+                                        <tr>
+                                        <td style="min-width: 200px;">
                                             <label for="enable_gpu" class="text-sm font-bold" style="margin-right: 1rem;">Enable GPU:</label>
                                         </td>
                                         <td class="text-center items-center">
