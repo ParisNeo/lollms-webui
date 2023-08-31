@@ -154,7 +154,7 @@ def check_update(branch_name="main"):
         return local_commit != remote_commit
     except Exception as e:
         # Handle any errors that may occur during the fetch process
-        trace_exception(e)
+        # trace_exception(e)
         return False
 
 
