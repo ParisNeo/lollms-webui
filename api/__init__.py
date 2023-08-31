@@ -654,7 +654,7 @@ class LoLLMsAPPI(LollmsApplication):
 
                         tk = model.tokenize(prompt)
                         n_tokens = len(tk)
-                        fd = model.detokenize(tk[-min(self.config.ctx_size-n_predicts,n_tokens):])
+                        fd = model.detokenize(tk[-min(self.config.ctx_size-n_predicts,n_tokens, len(tk)):])
 
                         try:
                             ASCIIColors.print("warming up", ASCIIColors.color_bright_cyan)

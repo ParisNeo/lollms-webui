@@ -122,11 +122,12 @@
                     </div>
                     <!-- CHAT BOX -->
                     <div class="flex flex-row flex-grow items-center gap-2 overflow-visible">
-                        <select v-model="selectedModel" @change="setModel" class="bg-white dark:bg-black m-0 border-2 rounded-md shadow-sm w-0">
-                            <option v-for="model in models" :key="model" :value="model">
-                            {{ model }}
-                            </option>
-                        </select>
+                        <InteractiveMenu 
+                                :title="selectedModel"
+                                :sendCommand="setModel"  
+                                :icon="models_menu_icon" 
+                                :commands="commandify(models)"
+                                :selected_entry="selectedModel"></InteractiveMenu>
                         <div v-if="selecting_model" title="Selecting model" class="flex flex-row flex-grow justify-end">
                             <!-- SPINNER -->
                             <div role="status">
@@ -249,6 +250,7 @@ import filesize from '../plugins/filesize'
 import MountedPersonalities from '@/components/MountedPersonalities.vue'
 import MountedPersonalitiesList from '@/components/MountedPersonalitiesList.vue'
 import PersonalitiesCommands from '@/components/PersonalitiesCommands.vue';
+import InteractiveMenu from '@/components/InteractiveMenu.vue';
 import { useStore } from 'vuex'; // Import the useStore function
 import { inject } from 'vue';
 import socket from '@/services/websocket.js'
@@ -268,7 +270,8 @@ export default {
         Toast,
         MountedPersonalities,
         MountedPersonalitiesList,
-        PersonalitiesCommands
+        PersonalitiesCommands,
+        InteractiveMenu
     },
     setup() {
 
@@ -288,6 +291,7 @@ export default {
             showFileList: true,
             showPersonalities: false,
             personalities_ready: false,
+            models_menu_icon:'#M'
         }
     },
     computed: {
@@ -314,15 +318,39 @@ export default {
 
         }
     },
-    methods: {    
-        setModel(){
+    methods: {   
+        showModels(event){
+            // Prevent the default button behavior
+            event.preventDefault();
+
+            // Programmatically trigger the click event on the select element
+            const selectElement = this.$refs.modelsSelectionList;
+            console.log(selectElement)
+
+            const event_ = new MouseEvent("click");
+
+            selectElement.dispatchEvent(event_);
+        }, 
+        commandify(list_of_strings){
+            let list_of_dicts=[]
+            for (var i = 0; i < list_of_strings.length; i++) {
+                let dict={}
+                dict["name"]=list_of_strings[i]
+                dict["value"]=list_of_strings[i]
+                list_of_dicts.push(dict)
+            }
+            return list_of_dicts
+
+        },
+        setModel(selectedModel){
         this.selecting_model=true
+        this.selectedModel = selectedModel
         axios.post("/update_setting", {                
                     setting_name: "model_name",
-                    setting_value: this.selectedModel
+                    setting_value: selectedModel
                 }).then((response) => {
             console.log(response);
-            this.$refs.toast.showToast(`Model changed to ${this.selectedModel}`,4,true)
+            this.$refs.toast.showToast(`Model changed to ${selectedModel}`,4,true)
             this.selecting_model=false
             }).catch(err=>{
             this.$refs.toast.showToast(`Error ${err}`,4,true)

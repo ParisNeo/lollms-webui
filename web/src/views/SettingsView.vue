@@ -1677,12 +1677,10 @@
             </div>
         </div>
     </div>
-
-
+    <Toast ref="toast" />
     <YesNoDialog ref="yesNoDialog" class="z-20" />
     <AddModelDialog ref="addmodeldialog" />
     <MessageBox ref="messageBox" />
-    <Toast ref="toast" />
     <UniversalForm ref="universalForm" class="z-20" />
     <ChoiceDialog  class="z-20"
       :show="variantSelectionDialogVisible"
@@ -2438,7 +2436,12 @@ export default {
                             const index = this.models.findIndex((model) => model.path === model_object.path);
                             this.models[index].isInstalled = false;
                             if (model_object.model.isCustomModel) {
-                                this.models = this.models.filter((model) => model.title !== model_object.title)
+                                try{
+                                    this.models = this.models.filter((model) => model.title !== model_object.title)
+                                }
+                                catch{
+                                    this.models = model
+                                }
                             }
                             this.$refs.toast.showToast("Model:\n" + model_object.title + "\nwas uninstalled!", 4, true)
                             this.$store.dispatch('refreshDiskUsage');
