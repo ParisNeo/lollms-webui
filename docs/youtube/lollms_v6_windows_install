@@ -12,3 +12,24 @@ You won't have access to realtime updates I do regularly on the gitbub, But I'll
 Press the link to load the ui on the browser.
 This tool is delivered with all bindings code, but without models as they are heavy and can make the installer very big. So the first thing to do is to install a model. By default, you are using cpu mode and the selected binding is c_transformers.
 Go to settings page, then to the models zoo and download a model.
+You can use the search bar to search for a model by name.
+Find the model you want, press install, select a quantization level and validate.
+Now wait for the model to be downloaded.
+Once downloaded, the model card change, and now you have an uninstall button instead of the install button. Click anywhere on the card to select the model.
+Now you can configure your user name and avatar.
+Don't forget to apply changes, otherwize they will not be committed to the backend. Also, by default apply change saves the settings permanently. You can change this behavior by unchecking auto save checkbox.
+You can also set up other settings like document vectorization options and audio settings.
+Now let's go to discussion tab and start a new discussion. Let's ask lollms to write a poem about himself.
+The first time you may have to waite a bit depending on your PC computing power, then the generation will happen token by token at a speed that depends on your CPU speed, the size of the model and the amount of memory you have.
+Here for example we get around 1 token per second which is slow compared to what you can get if you use GPU.
+Let's fast forward.
+You can find extra information at the bottom of the message, like the binding and model that were used as well as the time it took to generate the text.
+Now let's take a rapid look at the playground. Go to playground app.
+This app is basically a text completion app. You just put some text and press the stylus button to start generating. You can stop the generation at any time, make adjustments, then generate etc. You can control all generation parameters, select the model to test and you can also find presets that I have wrote to build new tasks like text translation, coding and other things. You can also create your own presets. I will cover this in a future video.
+
+Now using CPU is ok for small models like 7B or even 13B as we did here, but you get much faster output if you use GPU.
+The next section will talk about installing GPU support 
+You can view your configuration in the settings where you can see how much memory are you pulling as well as remaining diskk space.
+Start by going to the main settings and check enable gpu.
+Don't forget to apply changes.
+Now we are ready to install GPU. For this you should find the installation folder by right clicking on the lollms icon on your desktop and selecting properties, then you should find a button that links to its installation folder. In that folder, you will find a bat file called win_conda_session.bat. This file allows to activate the same conda session as the application so that you can install add ons or libraries. Here we are going to install cuda-toolkit v 11.7 then reinstall pytorch with cuda support. 

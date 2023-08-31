@@ -6,7 +6,8 @@
 #define MyAppPublisher "ParisNeo"
 #define MyAppURL "https://parisneo.github.io/lollms-webui/"
 #define MyAppExeName "win_run.bat"
-
+#define MyAppUpdateModelsName "win_update_models.bat"
+#define MyAppCondaSessionName "win_conda_session.bat"
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
@@ -44,6 +45,10 @@ Source: ".\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsu
 [Icons]
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; IconFilename: "{app}\logo.ico"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\logo.ico"
+Name: "{autodesktop}\{#MyAppUpdateModelsName}"; Filename: "{app}\{#MyAppUpdateModelsName}"; Tasks: desktopicon; IconFilename: "{app}\logo.ico"
+Name: "{commondesktop}\{#MyAppUpdateModelsName}"; Filename: "{app}\{#MyAppUpdateModelsName}"; IconFilename: "{app}\logo.ico"
+Name: "{autodesktop}\{#MyAppCondaSessionName}"; Filename: "{app}\{#MyAppCondaSessionName}"; Tasks: desktopicon; IconFilename: "{app}\logo.ico"
+Name: "{commondesktop}\{#MyAppCondaSessionName}"; Filename: "{app}\{#MyAppCondaSessionName}"; IconFilename: "{app}\logo.ico"
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: shellexec postinstall skipifsilent
