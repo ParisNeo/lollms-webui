@@ -149,6 +149,7 @@ def check_update(branch_name="main"):
         local_commit = repo.head.commit
         remote_commit = repo.remotes.origin.refs[branch_name].commit
         
+        ASCIIColors.yellow(f"update availability: {local_commit != remote_commit}")
         # Return True if there are updates, False otherwise
         return local_commit != remote_commit
     except Exception as e:
@@ -797,6 +798,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
                     self.model = None
                     self.config.save_config()
+                    ASCIIColors.green("Model loaded successfully")
                 except Exception as ex:
                     ASCIIColors.error(f"Couldn't build binding: [{ex}]")
                     trace_exception(ex)
