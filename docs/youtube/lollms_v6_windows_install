@@ -44,3 +44,10 @@ Go to the bindings zoo and press install in the auto gptq binding card.
 You can view the install in the console.
 If ever it hangs for a long time, just press enter in the console window and wait.
 Now we are ready to install a model. Let's try the new WizardLM's Wizard-Coder-python-13B.
+Once installed, select it.
+In the console, you can see the model being loaded.
+Once loaded, you can view many information about the model, its structure, and its parameters.
+Now let's head back to the UI
+Apply changes then go to the discussions view.
+Here, the autosave is activated, so there is no need for manually saving.
+Let's ask the same question and monitor the generation speed enhancement.
