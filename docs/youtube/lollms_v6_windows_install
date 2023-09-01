@@ -51,3 +51,11 @@ Now let's head back to the UI
 Apply changes then go to the discussions view.
 Here, the autosave is activated, so there is no need for manually saving.
 Let's ask the same question and monitor the generation speed enhancement.
+As you can see, the speed is higher with GPU than it was on CPU.
+The speed will depend on many things, including your hardware power, the model size, and weather or not you need to split it between CPU and GPU.
+Now it is your turn to play around with lollms. You have fast access to models and personalities. You can also send files to talk about, you can use audio in and audio out and many more.
+I hope you liked this tutorial.
+Don't forget to share, like and subscribe.
+
+See ya.
+
