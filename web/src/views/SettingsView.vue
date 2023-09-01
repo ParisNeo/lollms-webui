@@ -1175,7 +1175,7 @@
 
                     </div>
                     <div>
-                        <input v-bind="show_only_installed_models" class="m-2 p-2" type="checkbox" ref="only_installed">
+                        <input v-model="show_only_installed_models" class="m-2 p-2" type="checkbox" ref="only_installed">
                         <label for="only_installed">Show only installed models</label>
                     </div>
                     <div v-if="searchModel">
@@ -1187,7 +1187,7 @@
                             <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
                                 :class="mzl_collapsed ? '' : 'max-h-96'">
                                 <TransitionGroup name="list">
-                                    <model-entry ref="modelZoo" v-for="(model, index) in modelsFiltered"
+                                    <model-entry ref="modelZoo" v-for="(model, index) in show_only_installed_models?filter_installed(modelsFiltered):modelsFiltered"
                                         :key="'index-' + index + '-' + model.title" :title="model.title" :icon="model.icon"
                                         :path="model.path" :owner="model.owner" :owner_link="model.owner_link"
                                         :license="model.license" :description="model.description"
@@ -1212,7 +1212,7 @@
                             <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
                                 :class="mzl_collapsed ? '' : 'max-h-96'">
                                 <TransitionGroup name="list">
-                                    <model-entry  ref="modelZoo" v-for="(model, index) in show_only_installed_models?installed_models:models"
+                                    <model-entry  ref="modelZoo" v-for="(model, index) in show_only_installed_models?filter_installed(models):models"
                                         :key="'index-' + index + '-' + model.title" :title="model.title" :icon="model.icon"
                                         :path="model.path" :owner="model.owner" :owner_link="model.owner_link"
                                         :license="model.license" :description="model.description"
@@ -1906,6 +1906,10 @@ export default {
 
     }, 
     methods: {
+        filter_installed(models){
+            console.log("filtering")
+            return models.filter(element => element.isInstalled === true);
+        },
         getVoices() {
         // Fetch available voices from the SpeechSynthesis API
         if ('speechSynthesis' in window) {
