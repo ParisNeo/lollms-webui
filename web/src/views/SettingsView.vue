@@ -1174,6 +1174,10 @@
                             </div>
 
                     </div>
+                    <div>
+                        <input v-bind="show_only_installed_models" class="m-2 p-2" type="checkbox" ref="only_installed">
+                        <label for="only_installed">Show only installed models</label>
+                    </div>
                     <div v-if="searchModel">
                         <div v-if="modelsFiltered.length > 0" class="mb-2">
                             <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -1187,6 +1191,7 @@
                                         :key="'index-' + index + '-' + model.title" :title="model.title" :icon="model.icon"
                                         :path="model.path" :owner="model.owner" :owner_link="model.owner_link"
                                         :license="model.license" :description="model.description"
+                                        :patreon="model.patreon?model.patreon:''"
                                         :is-installed="model.isInstalled" :on-install="onInstall"
                                         :on-uninstall="onUninstall" :on-selected="onSelected"
                                         :selected="model.title === configFile.model_name" :model="model"
@@ -1207,10 +1212,11 @@
                             <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
                                 :class="mzl_collapsed ? '' : 'max-h-96'">
                                 <TransitionGroup name="list">
-                                    <model-entry ref="modelZoo" v-for="(model, index) in models"
+                                    <model-entry  ref="modelZoo" v-for="(model, index) in show_only_installed_models?installed_models:models"
                                         :key="'index-' + index + '-' + model.title" :title="model.title" :icon="model.icon"
                                         :path="model.path" :owner="model.owner" :owner_link="model.owner_link"
                                         :license="model.license" :description="model.description"
+                                        :patreon="model.patreon?model.patreon:''"
                                         :is-installed="model.isInstalled" :on-install="onInstall"
                                         :on-uninstall="onUninstall" :on-selected="onSelected"
                                         :selected="model.title === configFile.model_name" :model="model"
@@ -1834,6 +1840,7 @@ export default {
     data() {
 
         return {
+            show_only_installed_models:false,
             // Local model reference path
             reference_path:"",
             audioVoices:[],      
@@ -2257,7 +2264,7 @@ export default {
             }
 
         },
-        onSelected(model_object) {
+        onSelected(model_object, force=false) {
 
             // eslint-disable-next-line no-unused-vars
             if (this.isLoading) {
@@ -2266,7 +2273,7 @@ export default {
             if (model_object) {
                 if (model_object.isInstalled) {
 
-                    if (this.configFile.model_name != model_object.title) {
+                    if (this.configFile.model_name != model_object.title || force) {
                         this.update_model(model_object.title).then((res)=>{
                             console.log("update_model",res)
                             this.configFile.model_name = model_object.title
@@ -2314,7 +2321,7 @@ export default {
             this.modelDownlaodInProgress = false
             this.addModel = {}
             this.$refs.toast.showToast("Model installation aborted", 4, false)
-            socket.emit('cancel_install', { model_name: modelEntry.model_name, binding_folder: modelEntry.binding_folder, model_url: modelEntry.model_url });
+            socket.emit('cancel_install', { model_name: modelEntry.model_name, binding_folder: modelEntry.binding_folder, model_url: modelEntry.model_url, patreon: model.patreon?model.patreon:"None"});
         },
 
         // Model installation
@@ -3441,6 +3448,14 @@ export default {
             }
         },
         models: {
+            get() {
+                return this.$store.state.models_zoo;
+            },
+            set(value) {
+                this.$store.commit('setModelsZoo', value);
+            }
+        },
+        installed_models: {
             get() {
                 return this.$store.state.models_zoo;
             },

@@ -9,7 +9,7 @@
       <transition name="slide">
       <div v-if="isMenuOpen" class="menu-list flex-grow" :style="menuPosition" ref="menu">
           <ul class="flex-grow menu-ul">
-          <li v-for="(command, index) in commands" :key="index" @click="executeCommand(command)" class="menu-command menu-li flex-grow hover:bg-blue-400 ">
+          <li v-for="(command, index) in commands" :key="index" @click.prevent="executeCommand(command)" class="menu-command menu-li flex-grow hover:bg-blue-400 ">
               <i v-if="selected_entry==command.name" data-feather="check"></i>
               <img v-else-if="command.icon && !command.icon.includes('feather') && !command.is_file" :src="command.icon" :alt="command.name" class="menu-icon">
               <i v-if="command.icon && command.icon.includes('feather') && !command.is_file" :data-feather="command.icon.split(':')[1]" class="mr-2"></i>             

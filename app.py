@@ -1793,6 +1793,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 image_url = model.get("icon", '/images/default_model.png')
                 license = model.get("license", 'unknown')
                 owner = model.get("owner", 'unknown')
+                patreon = model.get("patreon", '')
+                model_type = self.config.binding_name
                 owner_link = model.get("owner_link", 'https://github.com/ParisNeo')
                 filesize = int(model.get('filesize',0))
                 description = model.get('description',"")
@@ -1814,6 +1816,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     'icon': image_url,  # Replace with the path to the model icon
                     'license': license,
                     'owner': owner,
+                    'patreon': patreon,
+                    'type': model_type,
                     'owner_link': owner_link,
                     'description': description,
                     'isInstalled': is_installed,

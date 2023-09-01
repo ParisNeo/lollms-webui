@@ -343,6 +343,7 @@ export default {
 
         },
         setModel(selectedModel){
+        console.log("Setting model to "+selectedModel);
         this.selecting_model=true
         this.selectedModel = selectedModel
         axios.post("/update_setting", {                

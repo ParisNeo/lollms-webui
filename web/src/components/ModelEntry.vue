@@ -1,7 +1,8 @@
 <template>
   <div
     class="relative items-start p-4 hover:bg-primary-light  hover:border-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer select-none"
-    @click.stop="toggleSelected" :class="selected ? ' border-primary bg-primary' : 'border-transparent'" :title="title">
+    :class="computed_classes" 
+    :title="title">
     <!-- CUSTOM MODEL VIEW -->
     <div class="flex flex-row" v-if="model.isCustomModel">
       <div class="max-w-[300px] overflow-x-auto">
@@ -17,6 +18,7 @@
 
 
     </div>
+
     <div v-if="model.isCustomModel" class="flex items-center flex-row gap-2 my-1">
       <!-- CONTROLS -->
       <div class="flex grow items-center">
@@ -27,6 +29,13 @@
         </button>
         Custom model
       </div>
+      <button v-if="model.isInstalled" type="button" title="Select"
+            @click="toggleSelected"
+            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
+            <i data-feather="check" class="w-5"></i>
+            <span class="sr-only">Select</span>
+      </button>        
+
       <div>
         <button v-if="model.isInstalled" title="Delete file from disk" type="button" @click.stop="toggleInstall"
           class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
@@ -97,7 +106,6 @@
 
     </div>
     <div v-if="!model.isCustomModel">
-
       <div class="flex flex-row items-center   gap-3 ">
         <img ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-lg object-fill"
           :class="linkNotValid ? 'grayscale' : ''">
@@ -145,16 +153,21 @@
             <span class="sr-only">Help</span>
           </button> -->
         </div>
+        <button v-if="model.isInstalled" type="button" title="Select"
+            @click="toggleSelected"
+            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
+            <i data-feather="check" class="w-5"></i>
+            <span class="sr-only">Select</span>
+        </button>        
+
+        <InteractiveMenu  :commands="commandsList" :force_position=2 title="Menu">
+        
+        </InteractiveMenu>
 
       </div>
       <div class="flex items-center flex-row-reverse gap-2 my-1">
         <!-- CONTROLS -->
-        <button type="button" title="Copy model info to clipboard" @click.stop="toggleCopy()"
-          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-          Copy info
 
-          <span class="sr-only">Copy info</span>
-        </button>
         <div class="flex flex-row  items-center ">
 
           <div v-if="linkNotValid" class="text-base text-red-600 flex  items-center mt-1 ">
@@ -162,19 +175,7 @@
             Link is not valid
           </div>
         </div>
-        <button v-if="!model.isInstalled && !linkNotValid" title="Click to install" type="button"
-          @click.stop="toggleInstall"
-          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-          Install
 
-          <span class="sr-only">Click to install</span>
-        </button>
-        <button v-if="model.isInstalled" title="Delete file from disk" type="button" @click.stop="toggleInstall"
-          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-          Uninstall
-
-          <span class="sr-only">Remove</span>
-        </button>
 
       </div>
       <div class="" :title="!model.isInstalled ? 'Not installed' : title">
@@ -236,12 +237,57 @@
           </div>
 
         </div>
+        
+        <div v-if="patreon!=''" class="flex items-center">
+          <i class="w-5 m-1 pr-2">
+            <svg
+              xmlns:dc="http://purl.org/dc/elements/1.1/"
+              xmlns:cc="http://creativecommons.org/ns#"
+              xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+              xmlns:svg="http://www.w3.org/2000/svg"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+              xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+              width="15"
+              height="15"
+              id="svg3168"
+              version="1.1"
+              inkscape:version="0.48.4 r9939"
+              viewBox="0 0 541.4375 541.43744"
+              sodipodi:docname="Patreon">
+              <g
+                inkscape:label="Layer 1"
+                inkscape:groupmode="layer"
+                id="layer1"
+                transform="translate(-78.58618,-210.44369)">
+                <path
+                  inkscape:connector-curvature="0"
+                  id="path3204"
+                  d="m 349.30488,210.44369 c -149.51545,0 -270.7187,121.20325 -270.7187,270.71875 l 0,270.4687 259.375,0 c 3.7608,0.155 7.5448,0.25 11.3437,0.25 149.5155,0 270.7188,-121.2032 270.7188,-270.7187 0,-149.5155 -121.2033,-270.71875 -270.7188,-270.71875 z"
+                  style="fill:#ff5900;fill-opacity:1;stroke:none" />
+                <path
+                  style="fill:#ffffff;fill-opacity:1;stroke:none"
+                  d="m 349.30493,273.28744 c -114.80003,0 -207.875,93.07494 -207.875,207.875 l 0,123.90625 0,83.75 0,62.8125 83.1875,0 0,-270.25 c 0,-68.64109 55.64016,-124.3125 124.28125,-124.3125 68.64109,0 124.28125,55.67141 124.28125,124.3125 0,68.64109 -55.64016,124.28125 -124.28125,124.28125 -25.09566,0 -48.463,-7.45836 -68,-20.25 l 0,89.34375 c 13.09042,8.05513 42.97659,13.74429 78.03125,14.03125 110.32856,-5.03362 198.25,-96.05383 198.25,-207.625 0,-114.80006 -93.07493,-207.875 -207.875,-207.875 z m -8.71875,415.53125 c 2.8876,0.1191 5.80191,0.21875 8.71875,0.21875 3.07049,0 6.11821,-0.087 9.15625,-0.21875 l -17.875,0 z"
+                  id="path3192"
+                  inkscape:connector-curvature="0" />
+              </g>
+            </svg>
+
+          </i>
+          <b>Patreon:&nbsp;</b>
+          <!-- <p class="mx-1 opacity-80 line-clamp-3" :title="description">{{ description }}</p> -->
+          <a :href="patreon" class="mx-1 opacity-80 line-clamp-3 overflow-y_auto" :title="description">{{ patreon }}</a>
+          <!-- <p class="mx-1 opacity-80 line-clamp-3" :title="description"><span v-html="description"></span></p> -->
+
+        </div>
+
+
         <div class="flex items-center">
           <i data-feather="info" class="w-5 m-1"></i>
           <b>Description:&nbsp;</b><br>
         </div>
         <!-- <p class="mx-1 opacity-80 line-clamp-3" :title="description">{{ description }}</p> -->
-        <p class="mx-1 opacity-80 line-clamp-3" :title="description">{{ description.replace(/<\/?[^>]+>/ig, " ") }}</p>
+        <p class="mx-1 opacity-80 line-clamp-3 overflow-y_auto" :title="description">{{ description.replace(/<\/?[^>]+>/ig, " ") }}</p>
         <!-- <p class="mx-1 opacity-80 line-clamp-3" :title="description"><span v-html="description"></span></p> -->
 
 
@@ -259,9 +305,12 @@ import axios from "axios";
 import { nextTick } from 'vue'
 import feather from 'feather-icons'
 import defaultImgPlaceholder from "../assets/default_model.png"
+import InteractiveMenu from "@/components/InteractiveMenu.vue"
+
 
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
+  components:{InteractiveMenu},
   props: {
     title: String,
     icon: String,
@@ -269,6 +318,7 @@ export default {
     owner: String,
     owner_link: String,
     license: String,
+    patreon: String,
     description: String,
     isInstalled: Boolean,
     onInstall: Function,
@@ -392,8 +442,8 @@ export default {
         this.onInstall(this);
       }
     },
-    toggleSelected() {
-      this.onSelected(this)
+    toggleSelected(force=false) {
+      this.onSelected(this,force)
     },
     toggleCopy() {
 
@@ -418,6 +468,29 @@ export default {
     },
   },
   computed: {
+    computed_classes(){
+      if(!this.model.isInstalled){
+        return 'border-transparent'
+      }
+      if(this.selected){
+        console.log("Selected")
+        return 'border-4 border-gray-200 bg-primary'
+      }      
+      return 'border-0 border-primary bg-primary'
+    },
+    commandsList(){
+      let main_menu = [
+                {name:this.model.isInstalled?"Uninstall":"Install", icon: "feather:settings", is_file:false, value:this.toggleInstall},
+                {name:"Copy model info to clipboard", icon: "feather:settings", is_file:false, value:this.toggleCopy},
+              ];
+        if(this.selected){
+          main_menu.push({name:"Reload", icon: "feather:refresh-ccw", is_file:false, value:this.toggleSelected})
+        }
+        return main_menu
+      },  
+      selected_computed(){
+        return this.selected
+    },    
     fileSize: {
         get() {
           // console.log(this.model)
