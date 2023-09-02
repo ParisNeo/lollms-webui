@@ -112,7 +112,7 @@ export default {
         if(this.isMounted){
           main_menu.push({name:"remount", icon: "feather:refresh-ccw", is_file:false, value:this.reMount})
         }
-        if(this.selected && this.has_scripts){
+        if(this.selected && this.personality.has_scripts){
           main_menu.push({name:"settings", icon: "feather:settings", is_file:false, value:this.toggleSettings})
         }
         return main_menu

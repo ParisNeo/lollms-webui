@@ -15,6 +15,8 @@ export const store = createStore({
       return {
         // count: 0,
         ready:false,
+        version : "unknown",
+        refreshingModelsList:false,
         settingsChanged:false,
         isConnected: false, // Add the isConnected property
         config:null,
@@ -111,7 +113,12 @@ export const store = createStore({
       },
     },
     actions: {
-
+      async getVersion(){
+        let res = await axios.get('/get_lollms_webui_version', {});
+        if (res) {
+            this.state.version = res.data.version
+        }
+      },
       async refreshConfig({ commit }) {
         console.log("Fetching configuration");
         try {
@@ -267,6 +274,7 @@ export const store = createStore({
       },
       async refreshModelsZoo({ commit }) {
         console.log("Refreshing models zoo")
+        this.state.refreshingModelsList=true;
         axios.get('/get_available_models')
         .then(response => {
             console.log("found models")
@@ -308,18 +316,16 @@ export const store = createStore({
             });            
             commit('setModelsZoo', models_zoo)
             console.log("Models zoo loaded successfully")
-
+            this.state.refreshingModelsList=false;
         })
         .catch(error => {
             console.log(error.message, 'fetchModels');
+            this.state.refreshingModelsList=false;
         });        
       },
       fetchCustomModels({ commit }) {
           axios.get('/list_models')
               .then(response => {
-
-
-
               })
               .catch(error => {
                   console.log(error.message, 'fetchCustomModels');
@@ -347,9 +353,12 @@ app.mixin({
     if (!actionsExecuted) {
       actionsExecuted = true;
       console.log("Calling")
-      this.$store.dispatch('refreshConfig').then(() => {
-          console.log("recovered config")
-          this.$store.dispatch('refreshPersonalitiesArr').then(() => {
+      this.$store.dispatch('refreshConfig').then(async () => {
+          console.log("recovered config");
+          await this.$store.dispatch('getVersion');
+          console.log("recovered version");          
+          await this.$store.dispatch('refreshPersonalitiesArr')
+
           this.$store.dispatch('refreshMountedPersonalities');
           this.$store.dispatch('refreshBindings');
           this.$store.dispatch('refreshModels');
@@ -363,8 +372,6 @@ app.mixin({
           
           this.$store.state.ready = true
           console.log("done loading data")
-  
-        });
       });
     }
 

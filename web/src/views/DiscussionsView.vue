@@ -10,7 +10,7 @@
                 
                     <img class="w-24 animate-bounce" title="LoLLMS WebUI" src="@/assets/logo.png" alt="Logo">
                         <div class="flex flex-col items-start">
-                        <p class="text-2xl ">Lord of Large Language Models v {{ version }} </p>
+                        <p class="text-2xl ">Lord of Large Language Models v {{ store.state.version }} </p>
                         <p class="text-gray-400 text-base">One tool to rule them all</p>
                         <p class="text-gray-400 text-base">by ParisNeo</p>
 
@@ -385,7 +385,6 @@ export default {
                 SENDER_TYPES_AI                 : 1, // Sent by ai
                 SENDER_TYPES_SYSTEM             : 2, // Sent by athe system
             },
-            version                             : "5.0",
             list                                : [], // Discussion list
             tempList                            : [], // Copy of Discussion list (used for keeping the original list during filtering discussions/searching action)
             currentDiscussion                   : {}, // Current/selected discussion id
@@ -1547,14 +1546,6 @@ export default {
 
     },
     async created() {
-        this.$store.state.isConnected=false;
-        axios.get('/get_lollms_webui_version', {}).then((res) => {
-            if (res) {
-                this.version = res.data.version
-            }
-        }).catch((error) => {
-            console.log("Error: Could not get generation status", error);
-        });
         this.$nextTick(() => {
             feather.replace();
         });           
@@ -1725,6 +1716,7 @@ import socket from '@/services/websocket.js'
 
 import { onMounted } from 'vue'
 import { initFlowbite } from 'flowbite'
+import { store } from '../main'
 
 // initialize components based on data attribute selectors
 onMounted(() => {

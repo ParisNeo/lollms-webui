@@ -14,7 +14,7 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-__version__ ="6.0"
+__version__ ="6.1"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
@@ -618,7 +618,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                             continue                                    
                         try:
                             scripts_path = personality_folder / 'scripts'
-                            personality_info['has_scripts'] = scripts_path.is_dir()
+                            personality_info['has_scripts'] = scripts_path.exists()
                             with open(config_path) as config_file:
                                 config_data = yaml.load(config_file, Loader=yaml.FullLoader)
                                 personality_info['name'] = config_data.get('name',"No Name")
@@ -638,6 +638,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                             png_logo_path = assets_path / 'logo.png'
                             jpg_logo_path = assets_path / 'logo.jpg'
                             jpeg_logo_path = assets_path / 'logo.jpeg'
+                            svg_logo_path = assets_path / 'logo.svg'
                             bmp_logo_path = assets_path / 'logo.bmp'
 
                             gif_logo_path_ = real_assets_path / 'logo.gif'
@@ -645,6 +646,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                             png_logo_path_ = real_assets_path / 'logo.png'
                             jpg_logo_path_ = real_assets_path / 'logo.jpg'
                             jpeg_logo_path_ = real_assets_path / 'logo.jpeg'
+                            svg_logo_path_ = real_assets_path / 'logo.svg'
                             bmp_logo_path_ = real_assets_path / 'logo.bmp'
 
                             if languages_path.exists():
@@ -664,6 +666,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
                                 personality_info['avatar'] = str(jpg_logo_path).replace("\\","/")
                             elif jpeg_logo_path_.exists():
                                 personality_info['avatar'] = str(jpeg_logo_path).replace("\\","/")
+                            elif svg_logo_path_.exists():
+                                personality_info['avatar'] = str(svg_logo_path).replace("\\","/")
                             elif bmp_logo_path_.exists():
                                 personality_info['avatar'] = str(bmp_logo_path).replace("\\","/")
                             else:
