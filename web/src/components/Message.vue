@@ -152,7 +152,7 @@
                         </div>
                     </div>
 
-                    <DynamicUIRenderer v-if="message.ui!=null" :code="message.ui"></DynamicUIRenderer>
+                    <DynamicUIRenderer v-if="message.ui!=null" class="w-full h-full" :code="message.ui"></DynamicUIRenderer>
                         
 
                 </div>
@@ -254,6 +254,7 @@ export default {
         })
 
     }, methods: {
+ 
         onVoicesChanged() {
         // This event will be triggered when the voices are loaded
         this.voices = this.speechSynthesis.getVoices();

@@ -1101,12 +1101,15 @@ class LoLLMsAPPI(LollmsApplication):
                             sender_type:SENDER_TYPES=SENDER_TYPES.SENDER_TYPES_AI
                         ):
         
+        mtdt = metadata if metadata is None or type(metadata) == str else json.dumps(metadata, indent=4)
+        
         msg = self.connections[client_id]["current_discussion"].add_message(
             message_type        = message_type.value,
             sender_type         = sender_type.value,
             sender              = sender,
             content             = content,
-            metadata            = json.dumps(metadata, indent=4) if metadata is not None and type(metadata) == list else metadata,
+            metadata            = mtdt,
+            ui                  = ui,
             rank                = 0,
             parent_message_id   = self.connections[client_id]["current_discussion"].current_message.id,
             binding             = self.config["binding_name"],
@@ -1121,7 +1124,7 @@ class LoLLMsAPPI(LollmsApplication):
                     "sender_type":              SENDER_TYPES.SENDER_TYPES_AI.value,
                     "content":                  content,
                     "parameters":               parameters,
-                    "metadata":                 json.dumps(metadata, indent=4) if metadata is not None and type(metadata)== list else metadata,
+                    "metadata":                 metadata,
                     "ui":                       ui,
                     "id":                       msg.id,
                     "parent_message_id":        msg.parent_message_id,
@@ -1147,13 +1150,12 @@ class LoLLMsAPPI(LollmsApplication):
                                         "sender": self.personality.name,
                                         'id':self.connections[client_id]["current_discussion"].current_message.id, 
                                         'content': chunk,# self.connections[client_id]["generated_text"],
-                                        'metadata': metadata,
                                         'ui': ui,
                                         'discussion_id':self.connections[client_id]["current_discussion"].discussion_id,
                                         'message_type': msg_type.value if msg_type is not None else MSG_TYPE.MSG_TYPE_CHUNK.value if self.nb_received_tokens>1 else MSG_TYPE.MSG_TYPE_FULL.value,
                                         'finished_generating_at': self.connections[client_id]["current_discussion"].current_message.finished_generating_at,
                                         'parameters':parameters,
-                                        'metadata':mtdt
+                                        'metadata':metadata
                                     }, room=client_id
                             )
         self.socketio.sleep(0.01)
@@ -1178,10 +1180,10 @@ class LoLLMsAPPI(LollmsApplication):
                             )
     def process_chunk(
                         self, 
-                        chunk, 
+                        chunk:str, 
                         message_type:MSG_TYPE,
 
-                        parameters=None, 
+                        parameters:dict=None, 
                         metadata:list=None, 
                         client_id:int=0
                     ):
@@ -1215,8 +1217,13 @@ class LoLLMsAPPI(LollmsApplication):
             self.new_message(
                                 client_id, 
                                 self.personality.name, 
-                                chunk, 
-                                metadata = parameters["metadata"], 
+                                chunk if parameters["type"]!=MSG_TYPE.MSG_TYPE_UI.value else '', 
+                                metadata = [{
+                                    "title":chunk,
+                                    "content":parameters["metadata"]
+                                    }
+                                ] if parameters["type"]==MSG_TYPE.MSG_TYPE_JSON_INFOS.value else None, 
+                                ui= chunk if parameters["type"]==MSG_TYPE.MSG_TYPE_UI.value else None, 
                                 message_type= MSG_TYPE(parameters["type"]))
 
         elif message_type == MSG_TYPE.MSG_TYPE_FINISHED_MESSAGE:

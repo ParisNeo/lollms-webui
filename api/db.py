@@ -359,8 +359,8 @@ class Message:
 
         if insert_into_db:
             self.id = self.discussions_db.insert(
-                "INSERT INTO message (sender,  message_type,  sender_type,  sender,  content,  metadata,  rank,  parent_message_id,  binding,  model,  personality,  created_at,  finished_generating_at,  discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-                (sender, message_type, sender_type, sender, content, metadata, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at, discussion_id)
+                "INSERT INTO message (sender,  message_type,  sender_type,  sender,  content,  metadata, ui,  rank,  parent_message_id,  binding,  model,  personality,  created_at,  finished_generating_at,  discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+                (sender, message_type, sender_type, sender, content, metadata, ui, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at, discussion_id)
             )
         else:
             self.id = id

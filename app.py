@@ -879,6 +879,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.config.enable_gpu=True
         return jsonify({'status':res==0})
     
+
+
     def ram_usage(self):
         """
         Returns the RAM usage in bytes.
@@ -931,7 +933,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 "percent_usage":drive_disk_usage.percent,
 
                 "binding_disk_total_space":models_folder_disk_usage.total,
-                "binding_disk_available_space":drive_disk_usage.free,
+                "binding_disk_available_space":models_folder_disk_usage.free,
                 "binding_models_usage": models_folder_disk_usage.used,
                 "binding_models_percent_usage": models_folder_disk_usage.percent,
                 })

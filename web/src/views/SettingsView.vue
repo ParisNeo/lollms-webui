@@ -1,5 +1,5 @@
 <template>
-    <div class="container overflow-y-scroll flex flex-col no-scrollbar shadow-lg p-10 pt-0 ">
+    <div class="container overflow-y-scroll flex flex-col shadow-lg p-10 pt-0 overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
         <!-- CONTROL PANEL -->
         <div
             class="sticky top-0 z-10 flex flex-row mb-2 p-3 gap-3 w-full rounded-b-lg bg-bg-light-tone dark:bg-bg-dark-tone  shadow-lg">
@@ -1199,7 +1199,7 @@
                                 Search results: ({{ modelsFiltered.length }})
                             </label>
 
-                            <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
+                            <div class="overflow-y-auto p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4 overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
                                 :class="mzl_collapsed ? '' : 'max-h-96'">
                                 <TransitionGroup name="list">
                                     <model-entry ref="modelZoo" v-for="(model, index) in show_only_installed_models?filter_installed(modelsFiltered):modelsFiltered"
@@ -1224,7 +1224,7 @@
                                 Models: ({{ models.length }})
                             </label>
 
-                            <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
+                            <div class="overflow-y-auto p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4 overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
                                 :class="mzl_collapsed ? '' : 'max-h-96'">
                                 <TransitionGroup name="list">
                                     <model-entry  ref="modelZoo" v-for="(model, index) in show_only_installed_models?filter_installed(models):models"

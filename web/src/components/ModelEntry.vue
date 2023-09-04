@@ -115,44 +115,6 @@
         <div class="grow">
           <!-- EMPTY SPACE FILLER -->
         </div>
-        <!-- ADVANCED OPTIONS -->
-        <div class="flex-none gap-1">
-          <!-- <button v-if="!model.isInstalled" type="button" title="Not installed"
-            class="hover:text-red-600 duration-75 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
-            @click.stop="">
-            <i data-feather="slash" class="w-5"></i>
-            <span class="sr-only">Not installed</span>
-          </button>
-          <button v-if="!model.isInstalled" type="button" title="Click to install model"
-            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
-            @click.stop="toggleInstall">
-            <i data-feather="plus-square" class="w-5"></i>
-            <span class="sr-only">Install</span>
-          </button>
-          <button v-if="model.isInstalled"
-            class=" hover:text-red-600 duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
-            title="Delete file from disk" type="button" @click.stop="toggleInstall">
-            <i data-feather="trash" class="w-5"></i>
-          </button>
-          <button
-            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
-            title="Copy model info to clipboard" @click.stop="toggleCopy()">
-            <i data-feather="clipboard" class="w-5"></i>
-          </button> -->
-          <!-- <button v-if="selected" type="button" title="Settings"
-            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
-            @click.stop="toggleSettings">
-            <i data-feather="sliders" class="w-5"></i>
-            <span class="sr-only">Settings</span>
-          </button> -->
-          <!-- - NOT IMPLEMENTED -->
-          <!-- 
-          <button type="button" title="Help - Not implemented"
-            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
-            <i data-feather="help-circle" class="w-5"></i>
-            <span class="sr-only">Help</span>
-          </button> -->
-        </div>
         <button v-if="model.isInstalled" type="button" title="Select"
             @click="toggleSelected"
             class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">

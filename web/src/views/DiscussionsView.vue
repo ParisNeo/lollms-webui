@@ -865,7 +865,8 @@ export default {
             return true
         },
         new_message(msgObj) {
-            console.log('create bot', msgObj);
+            console.log("Making a new message")
+            console.log('New message', msgObj);
 
             let responseMessage = {
                 sender:                 msgObj.sender,
@@ -882,6 +883,8 @@ export default {
                 created_at:             msgObj.created_at,
                 finished_generating_at: msgObj.finished_generating_at,
                 rank:                   0,
+
+                ui:                     msgObj.ui,
 
                 steps                   : [],
                 parameters              : msgObj.parameters,
@@ -1045,6 +1048,10 @@ export default {
                     console.log("JSON message")
                     console.log(msgObj.metadata)
                     messageItem.metadata = msgObj.metadata
+                } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_JSON_UI) {
+                    console.log("UI message")
+                    console.log(msgObj.ui)
+                    messageItem.ui = msgObj.ui                    
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_EXCEPTION) {
                     this.$refs.toast.showToast(msgObj.content, 5, false)
                 }
