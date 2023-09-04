@@ -27,3 +27,8 @@ Welcome to LoLLMS WebUI (Lord of Large Language Models: One tool to rule them al
 - Local database storage for your discussions
 - Search, export, and delete multiple discussions
 - Support for Docker, conda, and manual virtual environment setups
+
+
+## Installation
+### Automatic installation
+
