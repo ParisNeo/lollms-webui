@@ -61,7 +61,7 @@ try:
     from lollms.binding import LOLLMSConfig, BindingBuilder
     from lollms.personality import AIPersonality
     from lollms.config import BaseConfig
-    from lollms.paths import LollmsPaths
+    from lollms.paths import LollmsPaths, gptqlora_repo
 
     from api.db import Discussion
     from flask import (
@@ -1374,20 +1374,27 @@ class LoLLMsWebUI(LoLLMsAPPI):
         run_update_script(self.args)
 
     def start_training(self):
-        data = request.get_json()
-        ASCIIColors.info(f"--- Trainging of model {data['model_name']} requested ---")
-        ASCIIColors.info(f"Cleaning memory:")
-        fn = self.binding.binding_folder_name
-        del self.binding
-        self.binding = None
-        self.model = None
-        for per in self.mounted_personalities:
-            per.model = None
-        gc.collect()
-        ASCIIColors.info(f"issuing command : python gptqlora.py --model_path {self.lollms_paths.personal_models_path/fn/data['model_name']}")
-        subprocess.run(["python", "gptqlora.py", "--model_path", self.lollms_paths.personal_models_path/fn/data["model_name"]],cwd=self.lollms_paths.gptqlora_path)    
-        pass
-        
+        if self.config.enable_gpu:
+            if not self.lollms_paths.gptqlora_path.exists():
+                # Clone the repository to the target path
+                ASCIIColors.info("No gptqlora found in your personal space.\nCloning the gptqlora repo")
+                subprocess.run(["git", "clone", gptqlora_repo, self.lollms_paths.gptqlora_path])
+                subprocess.run(["pip", "install", "-r", "requirements.txt"], cwd=self.lollms_paths.gptqlora_path)
+                
+            data = request.get_json()
+            ASCIIColors.info(f"--- Trainging of model {data['model_name']} requested ---")
+            ASCIIColors.info(f"Cleaning memory:")
+            fn = self.binding.binding_folder_name
+            del self.binding
+            self.binding = None
+            self.model = None
+            for per in self.mounted_personalities:
+                per.model = None
+            gc.collect()
+            ASCIIColors.info(f"issuing command : python gptqlora.py --model_path {self.lollms_paths.personal_models_path/fn/data['model_name']}")
+            subprocess.run(["python", "gptqlora.py", "--model_path", self.lollms_paths.personal_models_path/fn/data["model_name"]],cwd=self.lollms_paths.gptqlora_path)    
+            return jsonify({'status':true})
+
     def get_lollms_version(self):
         version = pkg_resources.get_distribution('lollms').version
         ASCIIColors.yellow("Lollms version : "+ version)

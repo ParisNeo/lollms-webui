@@ -1,5 +1,5 @@
 <template>
-    <div v-if="selectedModel.toLowerCase().includes('gptq')" class="container overflow-y-scroll flex flex-col no-scrollbar shadow-lg p-10 pt-2 bg-bg-light-tone dark:bg-bg-dark-tone">
+    <div v-if="selectedModel!==null && selectedModel.toLowerCase().includes('gptq')" class="container overflow-y-scroll flex flex-col no-scrollbar shadow-lg p-10 pt-2 bg-bg-light-tone dark:bg-bg-dark-tone">
       <form @submit.prevent="submitForm" class="">
         <Card title="Training configuration" :isHorizontal="true" :disableHoverAnimation="true" :disableFocus="true">
           <Card title="Model" class="" :isHorizontal="false">
