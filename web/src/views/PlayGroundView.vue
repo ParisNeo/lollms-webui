@@ -307,8 +307,6 @@ export default {
       isLesteningToVoice:false,
       presets:[],
       selectedPreset: '',
-      models:{},
-      selectedModel: '',
       cursorPosition:0,  
       text:"",
       pre_text:"",
@@ -324,6 +322,7 @@ export default {
       silenceTimeout:5000
     };
   },
+
   components:{    
     Toast,
     MarkdownRenderer,
@@ -331,23 +330,6 @@ export default {
     Card
   },
   mounted() {
-    axios.get('list_models').then(response => {
-          console.log("List models "+response.data)
-          this.models=response.data
-          axios.get('get_active_model').then(response => {
-            console.log("Active model " + JSON.stringify(response.data))
-            if(response.data!=undefined){
-              this.selectedModel = response.data["model"]
-            }
-            
-          }).catch(ex=>{
-            this.$refs.toast.showToast(`Error: ${ex}`,4,false)
-          });    
-
-        }).catch(ex=>{
-          this.$refs.toast.showToast(`Error: ${ex}`,4,false)
-        });    
-
     axios.get('./get_presets').then(response => {
           console.log(response.data)
           this.presets=response.data
@@ -428,6 +410,16 @@ export default {
         
   },
   computed: {
+    selectedModel: {
+      get(){
+        return this.$store.state.selectedModel;
+      }
+    },
+    models: {
+      get(){
+        return this.$store.state.modelsArr;
+      }
+    },
     isTalking :{
         get(){
             return this.isSpeaking

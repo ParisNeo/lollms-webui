@@ -984,7 +984,8 @@ export default {
 
                             steps:                  [],
                             parameters:             null,
-                            metadata:               []
+                            metadata:               [],
+                            ui:                     null
 
                         };
                         this.createUserMsg(usrMessage);
@@ -1048,10 +1049,10 @@ export default {
                     console.log("JSON message")
                     console.log(msgObj.metadata)
                     messageItem.metadata = msgObj.metadata
-                } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_JSON_UI) {
+                } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_UI) {
                     console.log("UI message")
-                    console.log(msgObj.ui)
-                    messageItem.ui = msgObj.ui                    
+                    messageItem.ui = msgObj.ui      
+                    console.log(messageItem.ui)
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_EXCEPTION) {
                     this.$refs.toast.showToast(msgObj.content, 5, false)
                 }

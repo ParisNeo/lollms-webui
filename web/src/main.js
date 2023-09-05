@@ -25,6 +25,7 @@ export const store = createStore({
         bindingsArr:null,
         modelsArr:null,
         models_zoo:null,
+        selectedModel:null,
         personalities:null,
         diskUsage:null,
         ramUsage:null,
@@ -53,6 +54,9 @@ export const store = createStore({
       },
       setModelsArr(state, modelsArr) {
         state.modelsArr = modelsArr;
+      },
+      setselectedModel(state, selectedModel) {
+        state.selectedModel = selectedModel;
       },
       setDiskUsage(state, diskUsage) {
         state.diskUsage = diskUsage;
@@ -200,7 +204,13 @@ export const store = createStore({
           commit('setBindingsArr',bindingsArr)
       },
       async refreshModels({ commit }) {
-          let modelsArr = await api_get_req("list_models")
+          let modelsArr = await api_get_req("list_models");
+          let selectedModel = await api_get_req('get_active_model');
+          console.log("Active model " + JSON.stringify(selectedModel))
+          if(selectedModel!=undefined){
+            commit('setselectedModel',selectedModel["model"])
+          }
+            
           commit('setModelsArr',modelsArr)
       },
       async refreshExtensionsZoo({ commit }) {

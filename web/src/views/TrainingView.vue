@@ -1,16 +1,16 @@
 <template>
-    <div class="container overflow-y-scroll flex flex-col no-scrollbar shadow-lg p-10 pt-2 bg-bg-light-tone dark:bg-bg-dark-tone">
+    <div v-if="selectedModel.toLowerCase().includes('gptq')" class="container overflow-y-scroll flex flex-col no-scrollbar shadow-lg p-10 pt-2 bg-bg-light-tone dark:bg-bg-dark-tone">
       <form @submit.prevent="submitForm" class="">
         <Card title="Training configuration" :isHorizontal="true" :disableHoverAnimation="true" :disableFocus="true">
           <Card title="Model" class="" :isHorizontal="false">
             <!-- Model/Tokenizer -->
             <div class="mb-4">
               <label for="model_name" class="text-sm">Model Name:</label>
-              <ClipBoardTextInput id="model_path" inputType="text"  :value="model_name" />
-            </div>
-            <div class="mb-4">
-              <label for="tokenizer_name" class="text-sm">Tokenizer Name:</label>
-              <ClipBoardTextInput id="model_path" inputType="text"  :value="tokenizer_name" />
+              <select v-model="selectedModel" @change="setModel" class="bg-white dark:bg-black m-0 border-2 rounded-md shadow-sm w-full">
+                <option v-for="model in models" :key="model" :value="model">
+                  {{ model }}
+                </option>
+              </select>
             </div>
           </Card>
           <Card title="Data" :isHorizontal="false">
@@ -48,11 +48,16 @@
           </Card>
         </Card>
         <Card  :disableHoverAnimation="true" :disableFocus="true">
-          <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Train LLM</button>
+          <button class="bg-blue-500 text-white px-4 py-2 rounded">Start training</button>
           <!-- <ProgressBar v-if="loading" :progress="progressValue" /> -->
         </Card>
   
       </form>
+    </div>
+    <div v-else>
+      <Card title="Info" class="" :isHorizontal="false">
+        Only GPTQ models are supported for QLora fine tuning. Please select a GPTQ compatible binding.
+      </Card>
     </div>
   </template>
   
@@ -69,8 +74,6 @@ import axios from "axios";
     },    
     data() {
         return {
-            model_name: 'jondurbin/airoboros-7b-gpt4',
-            tokenizer_name: 'jondurbin/airoboros-7b-gpt4',
             dataset_path: '',
             max_length: 1024,
             batch_size: 4,
@@ -83,8 +86,7 @@ import axios from "axios";
     methods: {
       submitForm() {
         const formData = {
-          model_name: this.model_name,
-          tokenizer_name: this.tokenizer_name,
+          model_name: this.selectedModel,
           dataset_file: this.selectedDataset,
           max_length: this.max_length,
           batch_size: this.batch_size,
@@ -111,6 +113,18 @@ import axios from "axios";
         const files = event.target.files;
         if (files.length > 0) {
             this.selectedDataset = files[0];
+        }
+      },
+    },
+    computed:{
+      selectedModel: {
+        get(){
+          return this.$store.state.selectedModel;
+        }
+      },
+      models: {
+        get(){
+          return this.$store.state.modelsArr;
         }
       },
     },

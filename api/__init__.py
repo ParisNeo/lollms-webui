@@ -1159,7 +1159,7 @@ class LoLLMsAPPI(LollmsApplication):
                                     }, room=client_id
                             )
         self.socketio.sleep(0.01)
-        self.connections[client_id]["current_discussion"].update_message(self.connections[client_id]["generated_text"], new_metadata=mtdt)
+        self.connections[client_id]["current_discussion"].update_message(self.connections[client_id]["generated_text"], new_metadata=mtdt, new_ui=ui)
 
     def close_message(self, client_id):
         # Send final message
@@ -1210,7 +1210,7 @@ class LoLLMsAPPI(LollmsApplication):
             self.notify(chunk,True, client_id)
             ASCIIColors.info("--> Info:"+chunk)
         if message_type == MSG_TYPE.MSG_TYPE_UI:
-            self.update_message(client_id, '', parameters, metadata, chunk, MSG_TYPE.MSG_TYPE_FULL)
+            self.update_message(client_id, "", parameters, metadata, chunk, MSG_TYPE.MSG_TYPE_UI)
 
         if message_type == MSG_TYPE.MSG_TYPE_NEW_MESSAGE:
             self.nb_received_tokens = 0

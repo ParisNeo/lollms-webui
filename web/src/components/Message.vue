@@ -145,14 +145,14 @@
                     <textarea v-if="editMsgMode" ref="mdTextarea" :rows="4"
                         class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         :style="{ minHeight: mdRenderHeight + `px` }" placeholder="Enter message here..."
-                        v-model="this.message.content"></textarea>
+                        v-model="message.content"></textarea>
                     <div  v-if="message.metadata !== null">
                         <div v-for="(metadata, index) in message.metadata" :key="'json-' + message.id + '-' + index" class="json font-bold">
                             <JsonViewer :jsonFormText="metadata.title" :jsonData="metadata.content" />
                         </div>
                     </div>
 
-                    <DynamicUIRenderer v-if="message.ui!=null" class="w-full h-full" :code="message.ui"></DynamicUIRenderer>
+                    <DynamicUIRenderer v-if="message.ui !== null" class="w-full h-full" :code="message_ui"></DynamicUIRenderer>
                         
 
                 </div>
@@ -475,6 +475,11 @@ export default {
 
     },
     computed: {
+        message_ui:{
+            get(){
+                return this.message.ui
+            }
+        },
         isTalking :{
             get(){
                 return this.isSpeaking

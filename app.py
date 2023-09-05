@@ -14,7 +14,7 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-__version__ ="6.1"
+__version__ ="6.2"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
@@ -208,6 +208,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
         # =========================================================================================
         # Endpoints
         # =========================================================================================
+        
+        self.add_endpoint("/start_training", "start_training", self.start_training, methods=["POST"])
 
         self.add_endpoint("/get_lollms_version", "get_lollms_version", self.get_lollms_version, methods=["GET"])
         self.add_endpoint("/get_lollms_webui_version", "get_lollms_webui_version", self.get_lollms_webui_version, methods=["GET"])
@@ -1370,6 +1372,21 @@ class LoLLMsWebUI(LoLLMsAPPI):
         ASCIIColors.info("")
         ASCIIColors.info("")
         run_update_script(self.args)
+
+    def start_training(self):
+        data = request.get_json()
+        ASCIIColors.info(f"--- Trainging of model {data['model_name']} requested ---")
+        ASCIIColors.info(f"Cleaning memory:")
+        fn = self.binding.binding_folder_name
+        del self.binding
+        self.binding = None
+        self.model = None
+        for per in self.mounted_personalities:
+            per.model = None
+        gc.collect()
+        ASCIIColors.info(f"issuing command : python gptqlora.py --model_path {self.lollms_paths.personal_models_path/fn/data['model_name']}")
+        subprocess.run(["python", "gptqlora.py", "--model_path", self.lollms_paths.personal_models_path/fn/data["model_name"]],cwd=self.lollms_paths.gptqlora_path)    
+        pass
         
     def get_lollms_version(self):
         version = pkg_resources.get_distribution('lollms').version
