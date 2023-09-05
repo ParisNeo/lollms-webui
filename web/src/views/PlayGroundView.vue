@@ -40,7 +40,7 @@
             <input type="file" id="import-input" class="hidden">
             
           </div>
-          <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
+          <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4" :class="{ 'border-red-500': generating }">
             <div  v-if="tab_id === 'source'">
               <textarea 
                 @click="text_element_clicked"

@@ -1,6 +1,6 @@
 <template>
     <div>
-      <iframe ref="outputFrame" :srcdoc="code" @load="adjustDimensions" frameborder="0" scrolling="no"></iframe>
+      <iframe ref="outputFrame" v-bin :srcdoc="code" @load="adjustDimensions" frameborder="0" scrolling="no"></iframe>
     </div>
   </template>
   
