@@ -1393,7 +1393,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             gc.collect()
             ASCIIColors.info(f"issuing command : python gptqlora.py --model_path {self.lollms_paths.personal_models_path/fn/data['model_name']}")
             subprocess.run(["python", "gptqlora.py", "--model_path", self.lollms_paths.personal_models_path/fn/data["model_name"]],cwd=self.lollms_paths.gptqlora_path)    
-            return jsonify({'status':true})
+            return jsonify({'status':True})
 
     def get_lollms_version(self):
         version = pkg_resources.get_distribution('lollms').version
