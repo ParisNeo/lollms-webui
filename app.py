@@ -25,6 +25,7 @@ import sys
 import time
 import traceback
 import webbrowser
+from pathlib import Path
 
 def run_update_script(args=None):
     update_script = Path(__file__).parent/"update_script.py"
@@ -73,7 +74,6 @@ try:
     )
 
     from flask_socketio import SocketIO
-    from pathlib import Path
     import yaml
     from geventwebsocket.handler import WebSocketHandler
     import logging
