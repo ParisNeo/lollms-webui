@@ -47,6 +47,8 @@ def terminate_thread(thread):
         res = ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, exc)
         if res > 1:
             ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, None)
+            del thread
+            gc.collect()
             raise SystemError("Failed to terminate the thread.")
         else:
             ASCIIColors.yellow("Canceled successfully")
