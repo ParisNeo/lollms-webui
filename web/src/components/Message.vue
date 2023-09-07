@@ -152,7 +152,7 @@
                         </div>
                     </div>
 
-                    <DynamicUIRenderer v-if="message.ui !== null && message.ui !== ''" class="w-full h-full" :code="message_ui"></DynamicUIRenderer>
+                    <DynamicUIRenderer v-if="message.ui !== null && message.ui !== undefined && message.ui !== ''" class="w-full h-full" :code="message_ui"></DynamicUIRenderer>
                         
 
                 </div>
