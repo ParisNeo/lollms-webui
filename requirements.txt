@@ -14,4 +14,4 @@ eventlet
 websocket-client
 GitPython
 setuptools
-numpy=2.40.0
+numpy
