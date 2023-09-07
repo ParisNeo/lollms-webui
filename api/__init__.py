@@ -1162,6 +1162,8 @@ class LoLLMsAPPI(LollmsApplication):
         self.connections[client_id]["current_discussion"].update_message(self.connections[client_id]["generated_text"], new_metadata=mtdt, new_ui=ui)
 
     def close_message(self, client_id):
+        #fix halucination
+        self.connections[client_id]["generated_text"]=self.connections[client_id]["generated_text"].split("!@>")[0]
         # Send final message
         self.connections[client_id]["current_discussion"].current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.socketio.emit('close_message', {
@@ -1230,18 +1232,18 @@ class LoLLMsAPPI(LollmsApplication):
             self.close_message(client_id)
 
         elif message_type == MSG_TYPE.MSG_TYPE_CHUNK:
-            self.connections[client_id]["generated_text"] += chunk
-            self.nb_received_tokens += 1
             ASCIIColors.green(f"Received {self.nb_received_tokens} tokens",end="\r")
             sys.stdout = sys.__stdout__
             sys.stdout.flush()
-            antiprompt = self.personality.detect_antiprompt(self.connections[client_id]["generated_text"])
+            antiprompt = self.personality.detect_antiprompt(self.connections[client_id]["generated_text"]+chunk)
             if antiprompt:
                 ASCIIColors.warning(f"\nDetected hallucination with antiprompt: {antiprompt}")
                 self.connections[client_id]["generated_text"] = self.remove_text_from_string(self.connections[client_id]["generated_text"],antiprompt)
                 self.update_message(client_id, self.connections[client_id]["generated_text"], parameters, metadata, None, MSG_TYPE.MSG_TYPE_FULL)
                 return False
             else:
+                self.connections[client_id]["generated_text"] += chunk
+                self.nb_received_tokens += 1
                 self.update_message(client_id, chunk, parameters, metadata)
                 # if stop generation is detected then stop
                 if not self.cancel_gen:
