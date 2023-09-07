@@ -1,10 +1,10 @@
 <template>
   <div class="menu-container">
-      <button @click.prevent="toggleMenu" :title="title" class="menu-button m-0 p-0 bg-blue-500 text-white dark:bg-blue-200 dark:text-gray-800 rounded-full flex items-center justify-center w-6 h-6 border-none cursor-pointer hover:bg-blue-400 w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:z-20 hover:-translate-y-2 duration-150  border-gray-300 border-secondary cursor-pointer" ref="menuButton">
+      <button @click.prevent="toggleMenu" :title="title" class="menu-button m-0 p-0 bg-blue-500 text-white dark:bg-blue-200 dark:text-gray-800 rounded flex items-center justify-center w-6 h-6 border-none cursor-pointer hover:bg-blue-400 w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:z-20 hover:-translate-y-2 duration-150  border-gray-300 border-secondary cursor-pointer" ref="menuButton">
           <img v-if="icon && !icon.includes('#') && !icon.includes('feather')" :src="icon" class="w-5 h-5 p-0 m-0 shadow-lg bold">
           <i v-else-if="icon && icon.includes('feather')" :data-feather="icon.split(':')[1]" class="w-5 h-5"></i>             
           <p v-else-if="icon && icon.includes('#')" class="w-5 h-5">{{ icon.split('#')[1] }}</p>             
-          <i v-else data-feather="command" ></i>
+          <i v-else data-feather="menu" ></i>
       </button>
       <transition name="slide">
       <div v-if="isMenuOpen" class="menu-list flex-grow" :style="menuPosition" ref="menu">
