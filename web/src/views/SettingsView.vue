@@ -858,6 +858,7 @@
                                             class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                                             <input v-model="configFile.data_vectorization_chunk_size"
+                                            type="number"
                                             @change="settingsChanged=true"
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
@@ -873,6 +874,7 @@
                                             type="range" min="0" max="64000" step="1"
                                             class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                             <input v-model="configFile.data_vectorization_overlap_size"
+                                            type="number"
                                             @change="settingsChanged=true"
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
@@ -888,6 +890,7 @@
                                             type="range" min="0" max="1000" step="1"
                                             class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                             <input v-model="configFile.data_vectorization_nb_chunks"
+                                            type="number"
                                             @change="settingsChanged=true"
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
