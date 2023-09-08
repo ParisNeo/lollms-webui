@@ -1237,14 +1237,14 @@ class LoLLMsAPPI(LollmsApplication):
             ASCIIColors.green(f"Received {self.nb_received_tokens} tokens",end="\r")
             sys.stdout = sys.__stdout__
             sys.stdout.flush()
-            antiprompt = self.personality.detect_antiprompt(self.connections[client_id]["generated_text"]+chunk)
+            self.connections[client_id]["generated_text"] += chunk
+            antiprompt = self.personality.detect_antiprompt(self.connections[client_id]["generated_text"])
             if antiprompt:
                 ASCIIColors.warning(f"\nDetected hallucination with antiprompt: {antiprompt}")
                 self.connections[client_id]["generated_text"] = self.remove_text_from_string(self.connections[client_id]["generated_text"],antiprompt)
                 self.update_message(client_id, self.connections[client_id]["generated_text"], parameters, metadata, None, MSG_TYPE.MSG_TYPE_FULL)
                 return False
             else:
-                self.connections[client_id]["generated_text"] += chunk
                 self.nb_received_tokens += 1
                 self.update_message(client_id, chunk, parameters, metadata)
                 # if stop generation is detected then stop
