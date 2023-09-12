@@ -215,10 +215,15 @@ class LoLLMsAPPI(LollmsApplication):
             def install_model_():
                 print("Install model triggered")
                 model_path = data["path"]
+                model_type:str=data["type"]
                 progress = 0
                 installation_dir = self.lollms_paths.personal_models_path/self.config["binding_name"]
-                filename = Path(model_path).name
-                installation_path = installation_dir / filename
+                if model_type=="gptq":
+                    filename = model_path.split("/")[4]
+                    installation_path = installation_dir / filename
+                else:
+                    filename = Path(model_path).name
+                    installation_path = installation_dir / filename
                 print("Model install requested")
                 print(f"Model path : {model_path}")
 
@@ -378,15 +383,20 @@ class LoLLMsAPPI(LollmsApplication):
         @socketio.on('uninstall_model')
         def uninstall_model(data):
             model_path = data['path']
+            model_type:str=data["type"]
             installation_dir = self.lollms_paths.personal_models_path/self.config["binding_name"]
-            filename = Path(model_path).name
-            installation_path:Path = installation_dir / filename
             
-            model_name = filename
             binding_folder = self.config["binding_name"]
+            if model_type=="gptq":
+                filename = model_path.split("/")[4]
+                installation_path = installation_dir / filename
+            else:
+                filename = Path(model_path).name
+                installation_path = installation_dir / filename
+            model_name = filename
 
             if not installation_path.exists():
-                socketio.emit('install_progress',{
+                socketio.emit('uninstall_progress',{
                                                     'status': False,
                                                     'error': 'The model does not exist',
                                                     'model_name' : model_name,
@@ -397,7 +407,7 @@ class LoLLMsAPPI(LollmsApplication):
                     shutil.rmtree(installation_path)
                 else:
                     installation_path.unlink()
-                socketio.emit('install_progress',{
+                socketio.emit('uninstall_progress',{
                                                     'status': True, 
                                                     'error': '',
                                                     'model_name' : model_name,
@@ -406,7 +416,7 @@ class LoLLMsAPPI(LollmsApplication):
             except Exception as ex:
                 trace_exception(ex)
                 ASCIIColors.error(f"Couldn't delete {installation_path}, please delete it manually and restart the app")
-                socketio.emit('install_progress',{
+                socketio.emit('uninstall_progress',{
                                                     'status': False, 
                                                     'error': f"Couldn't delete {installation_path}, please delete it manually and restart the app",
                                                     'model_name' : model_name,

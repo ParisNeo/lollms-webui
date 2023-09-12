@@ -694,7 +694,6 @@ export default {
         },
         async selectDiscussion(item) {
             if (item) {
-                console.log("this.currentDiscussion",this.currentDiscussion)
                 // When discussion is selected it loads the discussion array
                 if (this.currentDiscussion===undefined) {
                     this.currentDiscussion = item
@@ -1177,7 +1176,6 @@ export default {
             this.isSelectAll = !this.isSelectAll
         },
         createDiscussionList(disList) {
-            console.log("Creating discussions list", disList)
             // This creates a discussion list for UI with additional properties
             if (disList) {
                 const newDisList = disList.map((item) => {
@@ -1197,7 +1195,6 @@ export default {
 
                 this.list = newDisList
                 this.tempList = newDisList
-                console.log("List created")
             }
         },
         setDiscussionLoading(id, loading) {
@@ -1267,10 +1264,7 @@ export default {
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
             axios.get('/get_generation_status', {}).then((res) => {
                 if (res) {
-                    console.log("--------------------")
-                    console.log(msgId);
                     if (!res.data.status) {
-                        console.log('generate_msg_from');
                         socket.emit('generate_msg_from', { prompt: msg, id: msgId });
                     }
                     else {
@@ -1291,7 +1285,6 @@ export default {
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
             axios.get('/get_generation_status', {}).then((res) => {
                 if (res) {
-                    console.log(res);
                     if (!res.data.status) {
                         socket.emit('continue_generate_msg_from', { prompt: msg, id: msgId });
 
@@ -1577,13 +1570,9 @@ export default {
                 await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for 100ms
             }          
         // Constructor
-        console.log("Setting title")
         this.setPageTitle()
-        console.log("listing discussions")
         await this.list_discussions()
-        console.log("loading last discussion")
         this.loadLastUsedDiscussion()
-        console.log("Discussions view is ready")
 
 
         // socket responses
@@ -1592,7 +1581,6 @@ export default {
         socket.on('update_message', this.streamMessageContent)
         socket.on('close_message', this.finalMsgEvent)
 
-        console.log("Setting events")
         socket.onopen = () => {
             console.log('WebSocket connection established.');
             if (this.currentDiscussion!=null){

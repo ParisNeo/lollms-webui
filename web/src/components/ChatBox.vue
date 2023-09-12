@@ -124,7 +124,7 @@
                     <div class="flex flex-row flex-grow items-center gap-2 overflow-visible">
                         <InteractiveMenu 
                                 :title="selectedModel"
-                                :sendCommand="setModel"  
+                                :execute_cmd="setModel"  
                                 :icon="models_menu_icon" 
                                 :commands="commandify(models)"
                                 :selected_entry="selectedModel"></InteractiveMenu>
@@ -343,20 +343,20 @@ export default {
 
         },
         setModel(selectedModel){
-        console.log("Setting model to "+selectedModel);
-        this.selecting_model=true
-        this.selectedModel = selectedModel
-        axios.post("/update_setting", {                
-                    setting_name: "model_name",
-                    setting_value: selectedModel
-                }).then((response) => {
-            console.log(response);
-            this.$refs.toast.showToast(`Model changed to ${selectedModel}`,4,true)
-            this.selecting_model=false
-            }).catch(err=>{
-            this.$refs.toast.showToast(`Error ${err}`,4,true)
-            this.selecting_model=false
-            });
+            console.log("Setting model to "+selectedModel);
+            this.selecting_model=true
+            this.selectedModel = selectedModel
+            axios.post("/update_setting", {                
+                        setting_name: "model_name",
+                        setting_value: selectedModel.value
+                    }).then((response) => {
+                console.log(response);
+                this.$refs.toast.showToast(`Model changed to ${selectedModel.value}`,4,true)
+                this.selecting_model=false
+                }).catch(err=>{
+                this.$refs.toast.showToast(`Error ${err}`,4,true)
+                this.selecting_model=false
+                });
         
         },
         clear_files(){

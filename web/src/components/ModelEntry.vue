@@ -1,16 +1,18 @@
 <template>
   <div
-    class="relative items-start p-4 hover:bg-primary-light  hover:border-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer select-none"
+    class="relative items-start p-4 hover:bg-primary-light  rounded-lg mb-2 shadow-lg border-2 cursor-pointer select-none"
     :class="computed_classes" 
-    :title="title">
+    :title="model.name">
     <!-- CUSTOM MODEL VIEW -->
     <div class="flex flex-row" v-if="model.isCustomModel">
       <div class="max-w-[300px] overflow-x-auto">
         <div class="flex gap-3 items-center grow">
-          <img :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-lg object-fill">
+          <a :href="model.model_creator_link" target="_blank">
+            <img :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-lg object-fill">
+          </a>
           <div class="flex-1 overflow-hidden">
             <h3 class="font-bold font-large text-lg truncate">
-              {{ title }}
+              {{ model.name }}
             </h3>
           </div>
         </div>
@@ -32,7 +34,7 @@
       <button v-if="model.isInstalled" type="button" title="Select"
             @click="toggleSelected"
             class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
-            <i data-feather="check" class="w-5"></i>
+            <i data-feather="check" :class="selected?'border-2 border-blue-300 w-5':'w-5'"></i>
             <span class="sr-only">Select</span>
       </button>        
 
@@ -110,7 +112,7 @@
         <img ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)" class="w-10 h-10 rounded-lg object-fill"
           :class="linkNotValid ? 'grayscale' : ''">
         <h3 class="font-bold font-large text-lg truncate">
-          {{ title }}
+          {{ model.name }}
         </h3>
         <div class="grow">
           <!-- EMPTY SPACE FILLER -->
@@ -118,7 +120,7 @@
         <button v-if="model.isInstalled" type="button" title="Select"
             @click="toggleSelected"
             class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
-            <i data-feather="check" class="w-5"></i>
+            <i data-feather="check" :class="selected?'border-2 border-blue-300 rounded bg-green-300 w-5':'border-2 border-blue-300 rounded bg-gray-100 w-5'"></i>
             <span class="sr-only">Select</span>
         </button>        
 
@@ -140,7 +142,7 @@
 
 
       </div>
-      <div class="" :title="!model.isInstalled ? 'Not installed' : title">
+      <div class="" :title="!model.isInstalled ? 'Not installed' : model.name">
         <div class="">
           <!-- <div class="flex flex-row  items-center ">
 
@@ -152,16 +154,13 @@
           <div class="flex flex-row  items-center ">
 
             <i data-feather="download" class="w-5 m-1 flex-shrink-0"></i>
-            <b>Manual download:&nbsp;</b>
+            <b>Card:&nbsp;</b>
 
-
-
-            <a :href="path" @click.stop
+            <a :href="'https://huggingface.co/'+model.quantizer+'/'+model.name" target="_blank" @click.stop
               class="m-1 flex items-center  hover:text-secondary duration-75 active:scale-90 truncate"
               :title="linkNotValid ? 'Link is not valid' : 'Download this manually (faster) and put it in the models/<current binding> folder then refresh'">
 
-
-              Click here to download
+              View full model card
 
             </a>
             <div class="grow"></div>
@@ -186,72 +185,51 @@
           <div class="flex items-center">
             <i data-feather="key" class="w-5 m-1"></i>
             <b>License:&nbsp;</b>
-            {{ license }}
+            {{ model.license }}
           </div>
           <div class="flex items-center">
             <i data-feather="user" class="w-5 m-1"></i>
-            <b>Owner:&nbsp;</b>
-            <a :href="owner_link" target="_blank" rel="noopener noreferrer" @click.stop
-              class="flex hover:text-secondary duration-75 active:scale-90" title="Owner's profile">
+            <b>quantizer:&nbsp;</b>
+            <a :href="'https://huggingface.co/'+model.quantizer" target="_blank" rel="noopener noreferrer" @click.stop
+              class="flex hover:text-secondary duration-75 active:scale-90" title="quantizer's profile">
 
-              {{ owner }}
+              {{ model.quantizer }}
             </a>
           </div>
+          <div class="flex items-center">
+            <i data-feather="user" class="w-5 m-1"></i>
+            <b>Model creator:&nbsp;</b>
+            <a :href="model.model_creator_link" target="_blank" rel="noopener noreferrer" @click.stop
+              class="flex hover:text-secondary duration-75 active:scale-90" title="quantizer's profile">
 
+              {{ model.model_creator }}
+            </a>
+          </div>
+          <div class="flex items-center">
+            <i data-feather="clock" class="w-5 m-1"></i>
+            <b>Release date:&nbsp;</b>
+              {{ model.last_commit_time }}
+          </div>
+          <div class="flex items-center">
+            <i data-feather="grid" class="w-5 m-1"></i>
+            <b>Category:&nbsp;</b>
+            <a :href="'https://huggingface.co/'+model.model_creator" target="_blank" rel="noopener noreferrer" @click.stop
+              class="flex hover:text-secondary duration-75 active:scale-90" title="quantizer's profile">
+
+              {{ model.category }}
+            </a>
+          </div>          
+          <div class="flex items-center">
+            <i data-feather="user" class="w-5 m-1"></i>
+            <b>Hugging face rank:&nbsp;</b>
+            <a href="https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard" target="_blank" rel="noopener noreferrer" @click.stop
+              class="flex hover:text-secondary duration-75 active:scale-90" title="quantizer's profile">
+
+              {{ model.rank }}
+            </a>
+          </div>          
         </div>
         
-        <div v-if="patreon!=''" class="flex items-center">
-          <i class="w-5 m-1 pr-2">
-            <svg
-              xmlns:dc="http://purl.org/dc/elements/1.1/"
-              xmlns:cc="http://creativecommons.org/ns#"
-              xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-              xmlns:svg="http://www.w3.org/2000/svg"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-              xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-              width="15"
-              height="15"
-              id="svg3168"
-              version="1.1"
-              inkscape:version="0.48.4 r9939"
-              viewBox="0 0 541.4375 541.43744"
-              sodipodi:docname="Patreon">
-              <g
-                inkscape:label="Layer 1"
-                inkscape:groupmode="layer"
-                id="layer1"
-                transform="translate(-78.58618,-210.44369)">
-                <path
-                  inkscape:connector-curvature="0"
-                  id="path3204"
-                  d="m 349.30488,210.44369 c -149.51545,0 -270.7187,121.20325 -270.7187,270.71875 l 0,270.4687 259.375,0 c 3.7608,0.155 7.5448,0.25 11.3437,0.25 149.5155,0 270.7188,-121.2032 270.7188,-270.7187 0,-149.5155 -121.2033,-270.71875 -270.7188,-270.71875 z"
-                  style="fill:#ff5900;fill-opacity:1;stroke:none" />
-                <path
-                  style="fill:#ffffff;fill-opacity:1;stroke:none"
-                  d="m 349.30493,273.28744 c -114.80003,0 -207.875,93.07494 -207.875,207.875 l 0,123.90625 0,83.75 0,62.8125 83.1875,0 0,-270.25 c 0,-68.64109 55.64016,-124.3125 124.28125,-124.3125 68.64109,0 124.28125,55.67141 124.28125,124.3125 0,68.64109 -55.64016,124.28125 -124.28125,124.28125 -25.09566,0 -48.463,-7.45836 -68,-20.25 l 0,89.34375 c 13.09042,8.05513 42.97659,13.74429 78.03125,14.03125 110.32856,-5.03362 198.25,-96.05383 198.25,-207.625 0,-114.80006 -93.07493,-207.875 -207.875,-207.875 z m -8.71875,415.53125 c 2.8876,0.1191 5.80191,0.21875 8.71875,0.21875 3.07049,0 6.11821,-0.087 9.15625,-0.21875 l -17.875,0 z"
-                  id="path3192"
-                  inkscape:connector-curvature="0" />
-              </g>
-            </svg>
-
-          </i>
-          <b>Patreon:&nbsp;</b>
-          <!-- <p class="mx-1 opacity-80 line-clamp-3" :title="description">{{ description }}</p> -->
-          <a :href="patreon" class="mx-1 opacity-80 line-clamp-3 overflow-y_auto" :title="description">{{ patreon }}</a>
-          <!-- <p class="mx-1 opacity-80 line-clamp-3" :title="description"><span v-html="description"></span></p> -->
-
-        </div>
-
-
-        <div class="flex items-center">
-          <i data-feather="info" class="w-5 m-1"></i>
-          <b>Description:&nbsp;</b><br>
-        </div>
-        <!-- <p class="mx-1 opacity-80 line-clamp-3" :title="description">{{ description }}</p> -->
-        <p class="mx-1 opacity-80 line-clamp-3 overflow-y_auto" :title="description">{{ description.replace(/<\/?[^>]+>/ig, " ") }}</p>
-        <!-- <p class="mx-1 opacity-80 line-clamp-3" :title="description"><span v-html="description"></span></p> -->
-
 
       </div>
     </div>
@@ -274,14 +252,6 @@ const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
   components:{InteractiveMenu},
   props: {
-    title: String,
-    icon: String,
-    path: String,
-    owner: String,
-    owner_link: String,
-    license: String,
-    patreon: String,
-    description: String,
     isInstalled: Boolean,
     onInstall: Function,
     onCancelInstall: Function,
@@ -308,8 +278,6 @@ export default {
     };
   },
   async mounted() {
-    //this.fileSize = await this.getFileSize(this.model.path)
-    //console.log('model path', this.model.path)
     nextTick(() => {
       feather.replace()
 
@@ -331,64 +299,16 @@ export default {
     computedFileSize(size) {
       return filesize(size)
     },
-    async getFileSize(url) {
-      if (this.model_type != "api") {
-        try {
-          const res = await axios.head(url)
-          if (res) {
-
-            if (res.headers["content-length"]) {
-              return this.computedFileSize(res.headers["content-length"])
-            }
-            if (this.model.filesize) {
-              return this.computedFileSize(this.model.filesize)
-            }
-            return 'Could not be determined'
-
-          }
-          if (this.model.filesize) {
-
-            return this.computedFileSize(this.model.filesize)
-          }
-          return 'Could not be determined'
-
-          // Example response
-          // {
-          //   date: 'Tue, 03 Apr 2018 14:29:32 GMT',
-          //   'content-type': 'application/javascript; charset=utf-8',
-          //   'content-length': '9068',
-          //   connection: 'close',
-          //   'last-modified': 'Wed, 28 Feb 2018 04:16:30 GMT',
-          //   etag: '"5a962d1e-236c"',
-          //   expires: 'Sun, 24 Mar 2019 14:29:32 GMT',
-          //   'cache-control': 'public, max-age=30672000',
-          //   'access-control-allow-origin': '*',
-          //   'cf-cache-status': 'HIT',
-          //   'accept-ranges': 'bytes',
-          //   'strict-transport-security': 'max-age=15780000; includeSubDomains',
-          //   'expect-ct': 'max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"',
-          //   server: 'cloudflare',
-          //   'cf-ray': '405c3a5cba7a68ba-CDG'
-          // }
-
-
-        } catch (error) {
-          console.log(error.message, 'getFileSize')
-          //this.linkNotValid = true
-          return 'Could not be determined'
-
-        }
-      }
-
-
-    },
     getImgUrl() {
 
-      if (this.icon === '/images/default_model.png') {
+      if(this.model.icon==undefined){
+        return defaultImgPlaceholder
+      }
+      if (this.model.icon === '/images/default_model.png') {
         return defaultImgPlaceholder
       }
 
-      return this.icon
+      return this.model.icon
     },
     defaultImg(event) {
       event.target.src = defaultImgPlaceholder
@@ -435,7 +355,6 @@ export default {
         return 'border-transparent'
       }
       if(this.selected){
-        console.log("Selected")
         return 'border-4 border-gray-200 bg-primary'
       }      
       return 'border-0 border-primary bg-primary'

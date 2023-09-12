@@ -14,7 +14,7 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-__version__ ="6.3"
+__version__ ="6.5"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
@@ -765,7 +765,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         elif setting_name== "override_personality_model_parameters":
             self.config["override_personality_model_parameters"]=bool(data['setting_value'])
 
-        elif setting_name== "model_name":
+        elif setting_name == "model_name":
             self.config["model_name"]=data['setting_value']
             if self.config["model_name"] is not None:
                 try:
@@ -1812,55 +1812,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         if self.binding is None:
             return jsonify([])
         model_list = self.binding.get_available_models()
-
-        models = []
-        ASCIIColors.yellow("Recovering available models")
-        for model in model_list:
-            try:
-                filename = model.get('filename',"")
-                server = model.get('server',"")
-                variants = model.get('variants',[])
-                image_url = model.get("icon", '/images/default_model.png')
-                license = model.get("license", 'unknown')
-                owner = model.get("owner", 'unknown')
-                patreon = model.get("patreon", '')
-                model_type = self.config.binding_name
-                owner_link = model.get("owner_link", 'https://github.com/ParisNeo')
-                filesize = int(model.get('filesize',0))
-                description = model.get('description',"")
-                model_type = model.get("model_type","")
-                if server.endswith("/"):
-                    path = f'{server}{filename}'
-                else:
-                    path = f'{server}/{filename}'
-                blocs = filename.split("/")
-
-                # Special case, if hugging face model format
-                if len(blocs)==2:
-                    filename = blocs[1]
-                local_path = lollms_paths.personal_models_path/f'{self.config["binding_name"]}/{filename}'
-                is_installed = local_path.exists() or model_type.lower()=="api"
-                models.append({
-                    'title': filename,
-                    'variants': variants,
-                    'icon': image_url,  # Replace with the path to the model icon
-                    'license': license,
-                    'owner': owner,
-                    'patreon': patreon,
-                    'type': model_type,
-                    'owner_link': owner_link,
-                    'description': description,
-                    'isInstalled': is_installed,
-                    'path': path,
-                    'filesize': filesize,
-                    'model_type': model_type
-                })
-            except Exception as ex:
-                print("#################################")
-                print(ex)
-                print("#################################")
-                print(f"Problem with model : {model}")
-        return jsonify(models)
+        return jsonify(model_list)
 
 
     def train(self):

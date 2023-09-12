@@ -1196,6 +1196,10 @@
                         <input v-model="show_only_installed_models" class="m-2 p-2" type="checkbox" ref="only_installed">
                         <label for="only_installed">Show only installed models</label>
                     </div>
+                    <div>
+                        <!-- Pass the radio options as a prop -->
+                        <RadioOptions :radioOptions="sortOptions" @radio-selected="handleRadioSelected" />
+                    </div>
                     <div v-if="searchModel">
                         <div v-if="modelsFiltered.length > 0" class="mb-2">
                             <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -1206,13 +1210,11 @@
                                 :class="mzl_collapsed ? '' : 'max-h-96'">
                                 <TransitionGroup name="list">
                                     <model-entry ref="modelZoo" v-for="(model, index) in show_only_installed_models?filter_installed(modelsFiltered):modelsFiltered"
-                                        :key="'index-' + index + '-' + model.title" :title="model.title" :icon="model.icon"
-                                        :path="model.path" :owner="model.owner" :owner_link="model.owner_link"
-                                        :license="model.license" :description="model.description"
-                                        :patreon="model.patreon?model.patreon:''"
+                                        :key="'index-' + index + '-' + model.name" 
+                                        :model="model"
                                         :is-installed="model.isInstalled" :on-install="onInstall"
                                         :on-uninstall="onUninstall" :on-selected="onSelected"
-                                        :selected="model.title === configFile.model_name" :model="model"
+                                        :selected="model.name === configFile.model_name"
                                         :model_type="model.model_type" :on-copy="onCopy" :on-copy-link="onCopyLink"
                                         :on-cancel-install="onCancelInstall" />
                                 </TransitionGroup>
@@ -1231,13 +1233,11 @@
                                 :class="mzl_collapsed ? '' : 'max-h-96'">
                                 <TransitionGroup name="list">
                                     <model-entry  ref="modelZoo" v-for="(model, index) in show_only_installed_models?filter_installed(models):models"
-                                        :key="'index-' + index + '-' + model.title" :title="model.title" :icon="model.icon"
-                                        :path="model.path" :owner="model.owner" :owner_link="model.owner_link"
-                                        :license="model.license" :description="model.description"
-                                        :patreon="model.patreon?model.patreon:''"
+                                        :key="'index-' + index + '-' + model.name" 
+                                        :model="model"
                                         :is-installed="model.isInstalled" :on-install="onInstall"
                                         :on-uninstall="onUninstall" :on-selected="onSelected"
-                                        :selected="model.title === configFile.model_name" :model="model"
+                                        :selected="model.name === configFile.model_name"
                                         :model_type="model.model_type" :on-copy="onCopy" :on-copy-link="onCopyLink"
                                         :on-cancel-install="onCancelInstall" />
                                 </TransitionGroup>
@@ -1837,6 +1837,7 @@ import UniversalForm from '../components/UniversalForm.vue';
 
 import ChoiceDialog from "@/components/ChoiceDialog.vue";
 import Card from "@/components/Card.vue"
+import RadioOptions from '../components/RadioOptions.vue';
 
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_LOLLMS_API_BASEURL
@@ -1853,11 +1854,20 @@ export default {
         BindingEntry,
         UniversalForm,
         ChoiceDialog,
-        Card
+        Card,
+        RadioOptions
     },
     data() {
 
         return {
+            // Sort options
+            sortOptions: [
+                { label: 'Sort by Date', value: 0 },
+                { label: 'Sort by Rank', value: 1 },
+                { label: 'Sort by Name', value: 2 },
+                { label: 'Sort by Maker', value: 3 },
+                { label: 'Sort by Quantizer', value: 4 },
+            ],
             show_only_installed_models:false,
             // Local model reference path
             reference_path:"",
@@ -1924,6 +1934,19 @@ export default {
 
     }, 
     methods: {
+        async selectSortOption(index){
+            this.$store.state.sort_type=index
+            this.$store.dispatch('refreshModelsZoo');
+            this.modelsFiltered = this.models
+            console.log(`Selected sorting:${index}`)
+        },
+        handleRadioSelected(index){
+            this.isLoading = true;
+            this.selectSortOption(index).then(()=>{
+                this.isLoading = false;
+            })
+
+        },
         filter_installed(models){
             console.log("filtering")
             return models.filter(element => element.isInstalled === true);
@@ -1961,10 +1984,14 @@ export default {
                 this.$refs.toast.showToast("Link is not valid, file does not exist", 4, false)
                 return
             }
-            let path = model_object.path;
+            let path = 'https://huggingface.co/'+model_object.model.quantizer+'/'+model_object.model.name+'/resolve/main/'+this.selected_variant.name;
             this.showProgress = true;
             this.progress = 0;
-            this.addModel = { model_name: this.selected_variant.name, binding_folder: this.configFile.binding_name, model_url: model_object.path }
+            this.addModel = { 
+                model_name: this.selected_variant.name, 
+                binding_folder: this.configFile.binding_name, 
+                model_url: path 
+            }
             console.log("installing...", this.addModel);
 
             // Use an arrow function for progressListener
@@ -1980,7 +2007,7 @@ export default {
                     model_object.start_time = response.start_time
                     model_object.installing = true
                     if (model_object.progress == 100) {
-                        const index = this.models.findIndex((model) => model.path === path);
+                        const index = this.models.findIndex((model) => model.name === model_object.model.name);
                         this.models[index].isInstalled = true;
                         this.showProgress = false;
                         model_object.installing = false
@@ -1990,7 +2017,7 @@ export default {
                         console.log("Installed successfully")
                         // Update the isInstalled property of the corresponding model
 
-                        this.$refs.toast.showToast("Model:\n" + model_object.title + "\ninstalled!", 4, true)
+                        this.$refs.toast.showToast("Model:\n" + model_object.model.name + "\ninstalled!", 4, true)
                         this.$store.dispatch('refreshDiskUsage');
                     }
                 } else {
@@ -2001,15 +2028,16 @@ export default {
 
                     this.showProgress = false;
                     console.error('Installation failed:', response.error);
-                    this.$refs.toast.showToast("Model:\n" + model_object.title + "\nfailed to install!", 4, false)
+                    this.$refs.toast.showToast("Model:\n" + model_object.model.name + "\nfailed to install!", 4, false)
                     this.$store.dispatch('refreshDiskUsage');
                 }
+                console.log("Here")
             };
 
             socket.on('install_progress', progressListener);
 
 
-            socket.emit('install_model', { path: path });
+            socket.emit('install_model', { path: path, type:model_object.model.type });
             console.log("Started installation, please wait");               
         },
 
@@ -2114,7 +2142,7 @@ export default {
 
                 // FInd model
                 if (this.$refs.modelZoo) {
-                    const index = this.$refs.modelZoo.findIndex(item => item.model.path == response.model_url && item.model.title == response.model_name && this.configFile.binding_name == response.binding_folder)
+                    const index = this.$refs.modelZoo.findIndex(item => item.model.name == response.model_name && this.configFile.binding_name == response.binding_folder)
                     const modelEntry = this.models[index]
 
                     if (modelEntry) {
@@ -2135,7 +2163,7 @@ export default {
                 console.log("Installed successfully")
 
                 if (this.$refs.modelZoo) {
-                    const index = this.$refs.modelZoo.findIndex(item => item.model.path == response.model_url && item.model.title == response.model_name && this.configFile.binding_name == response.binding_folder)
+                    const index = this.$refs.modelZoo.findIndex(item => item.model.name == response.model_name && this.configFile.binding_name == response.binding_folder)
                     const modelEntry = this.models[index]
 
                     if (modelEntry) {
@@ -2148,14 +2176,14 @@ export default {
                 }
 
 
-                this.$refs.toast.showToast("Model:\n" + model_object.title + "\ninstalled!", 4, true)
+                this.$refs.toast.showToast("Model:\n" + model_object.name + "\ninstalled!", 4, true)
                 this.$store.dispatch('refreshDiskUsage');
             } else if (response.status === 'failed') {
 
                 console.log("Install failed")
                 // Installation failed or encountered an error
                 if (this.$refs.modelZoo) {
-                    const index = this.$refs.modelZoo.findIndex(item => item.model.path == response.model_url && item.model.title == response.model_name && this.configFile.binding_name == response.binding_folder)
+                    const index = this.$refs.modelZoo.findIndex(item => item.model.name == response.model_name && this.configFile.binding_name == response.binding_folder)
                     const modelEntry = this.models[index]
 
                     if (modelEntry) {
@@ -2166,7 +2194,7 @@ export default {
 
                     }
                     console.error('Installation failed:', response.error);
-                    this.$refs.toast.showToast("Model:\n" + model_object.title + "\nfailed to install!", 4, false)
+                    this.$refs.toast.showToast("Model:\n" + model_object.name + "\nfailed to install!", 4, false)
                     this.$store.dispatch('refreshDiskUsage');
                 }
             }
@@ -2292,19 +2320,18 @@ export default {
             }
             if (model_object) {
                 if (model_object.isInstalled) {
-
-                    if (this.configFile.model_name != model_object.title || force) {
-                        this.update_model(model_object.title).then((res)=>{
+                    if (this.configFile.model_name != model_object.model.name || force) {
+                        this.update_model(model_object.model.name).then((res)=>{
                             console.log("update_model",res)
-                            this.configFile.model_name = model_object.title
-                            this.$refs.toast.showToast("Selected model:\n" + model_object.title, 4, true)
+                            this.configFile.model_name = model_object.model.name
+                            this.$refs.toast.showToast("Selected model:\n" + model_object.name, 4, true)
                             this.settingsChanged = true
                             this.isModelSelected = true
                         });
                     }
 
                 } else {
-                    this.$refs.toast.showToast("Model:\n" + model_object.title + "\nis not installed", 4, false)
+                    this.$refs.toast.showToast("Model:\n" + model_object.model.name + "\nis not installed", 4, false)
                 }
 
                 nextTick(() => {
@@ -2317,9 +2344,9 @@ export default {
         onCopy(modelEntry) {
             let content
             if (!modelEntry.model.isCustomModel) {
-                content = `Model name: ${modelEntry.title}\nFile size: ${modelEntry.fileSize}\nDownload: ${modelEntry.path}\nLicense: ${modelEntry.license}\nOwner: ${modelEntry.owner}\nWebsite: ${modelEntry.owner_link}\nDescription: ${modelEntry.description}`
+                content = `Model name: ${modelEntry.name}\nFile size: ${modelEntry.fileSize}\nDownload: ${'https://huggingface.co/'+modelEntry.quantizer+'/'+modelEntry.name}\nLicense: ${modelEntry.license}\nOwner: ${modelEntry.quantizer}\nWebsite: ${'https://huggingface.co/'+modelEntry.quantizer}\nDescription: ${modelEntry.description}`
             } else {
-                content = `Model name: ${modelEntry.title}\nFile size: ${modelEntry.fileSize}\nManually downloaded model `
+                content = `Model name: ${modelEntry.name}\nFile size: ${modelEntry.fileSize}\nManually downloaded model `
             }
 
             this.$refs.toast.showToast("Copied model info to clipboard!", 4, true)
@@ -2328,7 +2355,7 @@ export default {
         onCopyLink(modelEntry) {
 
             this.$refs.toast.showToast("Copied link to clipboard!", 4, true)
-            navigator.clipboard.writeText(modelEntry.path);
+            navigator.clipboard.writeText('https://huggingface.co/'+modelEntry.model.quantizer+'/'+modelEntry.model.name);
         },
         onCancelInstall() {
 
@@ -2349,7 +2376,9 @@ export default {
         onInstall(model_object) {
             this.variant_choices = model_object.model.variants;
             this.currenModelToInstall = model_object;
+            console.log("variant_choices")
             console.log(this.variant_choices)
+            console.log(model_object)
             this.variantSelectionDialogVisible=true;
         },
         onCreateReference() {
@@ -2385,12 +2414,6 @@ export default {
                     console.log(`Progress`, response);
                     this.addModel = response
                     this.addModel.url = path
-                    // this.addModel.progress = response.progress
-                    // this.addModel.speed = response.speed
-                    // this.addModel.total_size = response.total_size
-                    // this.addModel.downloaded_size = response.downloaded_size
-                    // this.addModel.start_time = response.start_time
-                    this.modelDownlaodInProgress = true
                     if (this.addModel.progress == 100) {
 
                         this.modelDownlaodInProgress = false
@@ -2408,8 +2431,6 @@ export default {
                     console.log("Install failed")
                     // Installation failed or encountered an error
                     this.modelDownlaodInProgress = false;
-
-
                     console.error('Installation failed:', response.error);
                     this.$refs.toast.showToast("Model:\n" + this.addModel.model_name + "\nfailed to install!", 4, false)
                     this.$store.dispatch('refreshDiskUsage');
@@ -2417,7 +2438,6 @@ export default {
             };
 
             socket.on('install_progress', progressListener);
-
 
             socket.emit('install_model', { path: path });
             console.log("Started installation, please wait");
@@ -2448,7 +2468,6 @@ export default {
                     // this.addModel.total_size = response.total_size
                     // this.addModel.downloaded_size = response.downloaded_size
                     // this.addModel.start_time = response.start_time
-                    this.modelDownlaodInProgress = true
                     if (this.addModel.progress == 100) {
 
                         this.modelDownlaodInProgress = false
@@ -2489,7 +2508,7 @@ export default {
         },
         onUninstall(model_object) {
 
-            this.$refs.yesNoDialog.askQuestion("Are you sure you want to delete this model?\n [" + model_object.title + "]", 'Yes', 'Cancel').then(yesRes => {
+            this.$refs.yesNoDialog.askQuestion("Are you sure you want to delete this model?\n [" + model_object.name + "]", 'Yes', 'Cancel').then(yesRes => {
                 if (yesRes) {
                     console.log("uninstalling model...")
                     const progressListener = (response) => {
@@ -2501,34 +2520,38 @@ export default {
                             model_object.uninstalling = false;
                             socket.off('install_progress', progressListener);
                             this.showProgress = false;
-                            const index = this.models.findIndex((model) => model.path === model_object.path);
+                            const index = this.models.findIndex((model) => model.name === model_object.name);
                             this.models[index].isInstalled = false;
                             if (model_object.model.isCustomModel) {
                                 try{
-                                    this.models = this.models.filter((model) => model.title !== model_object.title)
+                                    this.models = this.models.filter((model) => model.name !== model_object.name)
                                 }
                                 catch{
-                                    this.models = model
+                                    this.models = this.models
                                 }
                             }
-                            this.$refs.toast.showToast("Model:\n" + model_object.title + "\nwas uninstalled!", 4, true)
+                            this.$refs.toast.showToast("Model:\n" + model_object.name + "\nwas uninstalled!", 4, true)
                             this.$store.dispatch('refreshDiskUsage');
                         } else {
                             console.log("uninstalling failed", response)
                             // Installation failed or encountered an error
                             model_object.uninstalling = false;
                             this.showProgress = false;
-                            socket.off('install_progress', progressListener);
+                            socket.off('uninstall_progress', progressListener);
                             // eslint-disable-next-line no-undef
                             console.error('Uninstallation failed:', message.error);
-                            this.$refs.toast.showToast("Model:\n" + model_object.title + "\nfailed to uninstall!", 4, false)
+                            this.$refs.toast.showToast("Model:\n" + model_object.name + "\nfailed to uninstall!", 4, false)
                             this.$store.dispatch('refreshDiskUsage');
                         }
                     };
 
-                    socket.on('install_progress', progressListener);
-
-                    socket.emit('uninstall_model', { path: model_object.path });
+                    socket.on('uninstall_progress', progressListener);
+                    if(self.selected_variant!=undefined){
+                        socket.emit('uninstall_model', { path: 'https://huggingface.co/'+model_object.model.quantizer+'/'+model_object.model.name+'/resolve/main/'+this.selected_variant.name, type: model_object.model.type });
+                    }
+                    else{
+                        socket.emit('uninstall_model', { path: 'https://huggingface.co/'+model_object.model.quantizer+'/'+model_object.model.name, type: model_object.model.type });
+                    }
 
                 }
 
@@ -2994,7 +3017,6 @@ export default {
 
 
             if (seachedPersonalities.length > 0) {
-
                 this.personalitiesFiltered = seachedPersonalities.sort()
             } else {
                 this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category)
@@ -3007,7 +3029,6 @@ export default {
             if (!this.searchModel) {
                 console.log("Searching model")
                 this.modelsFiltered = this.models
-                this.modelsFiltered.sort()
                 this.searchModelInProgress = false
                 return
             }
@@ -3016,7 +3037,7 @@ export default {
             console.log("filtering models")
             const seachedModels = this.models.filter((item) => {
 
-                if (item.title && item.title.toLowerCase().includes(searchTerm) || item.description && item.description.toLowerCase().includes(searchTerm) || item.path && item.path.toLowerCase().includes(searchTerm)) {
+                if (item.name && item.name.toLowerCase().includes(searchTerm) || item.description && item.description.toLowerCase().includes(searchTerm) || item.category && item.category.toLowerCase().includes(searchTerm)) {
                     return item
                 }
 
@@ -3027,10 +3048,9 @@ export default {
 
             if (seachedModels.length > 0) {
 
-                this.modelsFiltered = seachedModels.sort()
+                this.modelsFiltered = seachedModels
             } else {
                 this.modelsFiltered = this.models
-                this.modelsFiltered.sort()
             }
             this.searchModelInProgress = false
 
@@ -3578,7 +3598,21 @@ export default {
             // console.log("Config file")
             // console.log(this.configFile)
             try {
-                return this.$refs.modelZoo[this.$refs.modelZoo.findIndex(item => item.title == this.configFile.model_name)].$refs.imgElement.src
+                let index = this.$refs.modelZoo.findIndex(item => item.model.name == this.configFile.model_name);
+                if(index==-1){
+                    for (let model of this.$refs.modelZoo){
+                        let v = model.model.variants;
+                        console.log(model.model)
+                        if(v!=undefined){
+                            index = v.findIndex(item => item.name == this.configFile.model_name)
+                            if(index!=-1){
+                                break;
+                            }
+                        }
+                    }
+                    
+                }
+                return this.$refs.modelZoo[index].$refs.imgElement.src
             }
             catch (error) {
                 return defaultModelImgPlaceholder
