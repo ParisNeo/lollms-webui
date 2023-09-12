@@ -708,7 +708,25 @@
                                             class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             ></textarea>
                                         </td>
+
+
                                         </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="user_description" class="text-sm font-bold" style="margin-right: 1rem;">Use user description in discussion:</label>
+                                        </td>
+                                        <td style="width: 100%;">
+                                            <input
+                                            type="checkbox"
+                                            id="override_personality_model_parameters"
+                                            required
+                                            v-model="configFile.override_personality_model_parameters"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>
+                                        
                                         
                                         <!-- Row 3 -->
                                         <tr>
@@ -2324,7 +2342,11 @@ export default {
                         this.update_model(model_object.model.name).then((res)=>{
                             console.log("update_model",res)
                             this.configFile.model_name = model_object.model.name
-                            this.$refs.toast.showToast("Selected model:\n" + model_object.name, 4, true)
+                            if(res.status){
+                                this.$refs.toast.showToast("Selected model:\n" + model_object.name, 4, true)
+                            }else{
+                                this.$refs.toast.showToast("Couldn't select model:\n" + model_object.name, 4, false)
+                            }
                             this.settingsChanged = true
                             this.isModelSelected = true
                         });
@@ -2520,17 +2542,9 @@ export default {
                             model_object.uninstalling = false;
                             socket.off('install_progress', progressListener);
                             this.showProgress = false;
-                            const index = this.models.findIndex((model) => model.name === model_object.name);
-                            this.models[index].isInstalled = false;
-                            if (model_object.model.isCustomModel) {
-                                try{
-                                    this.models = this.models.filter((model) => model.name !== model_object.name)
-                                }
-                                catch{
-                                    this.models = this.models
-                                }
-                            }
-                            this.$refs.toast.showToast("Model:\n" + model_object.name + "\nwas uninstalled!", 4, true)
+                            this.$store.dispatch('refreshModelsZoo');
+                            this.modelsFiltered = this.models
+                            this.$refs.toast.showToast("Model:\n" + model_object.model.name + "\nwas uninstalled!", 4, true)
                             this.$store.dispatch('refreshDiskUsage');
                         } else {
                             console.log("uninstalling failed", response)
@@ -2539,8 +2553,8 @@ export default {
                             this.showProgress = false;
                             socket.off('uninstall_progress', progressListener);
                             // eslint-disable-next-line no-undef
-                            console.error('Uninstallation failed:', message.error);
-                            this.$refs.toast.showToast("Model:\n" + model_object.name + "\nfailed to uninstall!", 4, false)
+                            console.error('Uninstallation failed:', response.error);
+                            this.$refs.toast.showToast("Model:\n" + model_object.model.name + "\nfailed to uninstall!", 4, false)
                             this.$store.dispatch('refreshDiskUsage');
                         }
                     };

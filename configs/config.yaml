@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 22
+version: 23
 binding_name: null
 model_name: null
 
@@ -31,6 +31,7 @@ user_name: user
 user_description: ""
 use_user_name_in_discussions: false
 user_avatar: default_user.svg
+use_user_informations_in_discussion: false
 
 # UI parameters
 db_path: database.db

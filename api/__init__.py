@@ -1027,7 +1027,9 @@ class LoLLMsAPPI(LollmsApplication):
         discussion_messages = composed_messages
         
         
-
+        conditionning = self.personality.personality_conditioning
+        if self.config["override_personality_model_parameters"]:
+            conditionning = conditionning+ "!@>user description:\n"+self.config["user_description"]+"\n"
 
         if len(self.personality.files)>0 and self.personality.vectorizer:
             pr = PromptReshaper("!@>document chunks:\n{{doc}}\n{{conditionning}}\n{{content}}")
@@ -1038,13 +1040,13 @@ class LoLLMsAPPI(LollmsApplication):
                 str_docs+=f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
             discussion_messages = pr.build({
                                     "doc":str_docs,
-                                    "conditionning":self.personality.personality_conditioning,
+                                    "conditionning":conditionning,
                                     "content":discussion_messages
                                     }, self.model.tokenize, self.model.detokenize, self.config.ctx_size, place_holders_to_sacrifice=["content"])
         else:
             pr = PromptReshaper("{{conditionning}}\n{{content}}")
             discussion_messages = pr.build({
-                                    "conditionning":self.personality.personality_conditioning,
+                                    "conditionning":conditionning,
                                     "content":discussion_messages
                                     }, self.model.tokenize, self.model.detokenize, self.config.ctx_size, place_holders_to_sacrifice=["content"])
 
@@ -1052,6 +1054,9 @@ class LoLLMsAPPI(LollmsApplication):
         if self.config["debug"]:
             ASCIIColors.yellow(discussion_messages)
             ASCIIColors.info(f"prompt size:{len(tokens)} tokens")
+
+
+            
 
         return discussion_messages, message.content, tokens
 
