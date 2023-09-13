@@ -34,7 +34,7 @@
       <button v-if="model.isInstalled" type="button" title="Select"
             @click="toggleSelected"
             class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
-            <i data-feather="check" :class="selected?'border-2 border-blue-300 w-5':'w-5'"></i>
+            <i data-feather="check" :class="selected?'border-2 border-blue-300 rounded bg-green-300 w-5':'border-2 border-blue-300 rounded bg-gray-100 w-5'"></i>
             <span class="sr-only">Select</span>
       </button>        
 
