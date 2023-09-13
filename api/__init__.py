@@ -1006,7 +1006,7 @@ class LoLLMsAPPI(LollmsApplication):
         full_message_list = []
         for i, message in enumerate(messages):
             if message.id< message_id or (message_id==-1 and i<len(messages)-1): 
-                if message.message_type<=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER.value and message.message_type!=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value:
+                if message.content!='' and (message.message_type<=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER.value and message.message_type!=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value):
                     full_message_list.append("\n"+self.config.discussion_prompt_separator+message.sender+": "+message.content.strip())
             else:
                 break
@@ -1183,6 +1183,8 @@ class LoLLMsAPPI(LollmsApplication):
         self.connections[client_id]["current_discussion"].update_message(self.connections[client_id]["generated_text"], new_metadata=mtdt, new_ui=ui)
 
     def close_message(self, client_id):
+        if not self.connections[client_id]["current_discussion"]:
+            return
         #fix halucination
         self.connections[client_id]["generated_text"]=self.connections[client_id]["generated_text"].split("!@>")[0]
         # Send final message

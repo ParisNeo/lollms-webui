@@ -390,6 +390,13 @@ export default {
                     }
                     else{
                         this.onShowToastMessage("Couldn't upload file\n"+resp.error,4,false);
+                        try{
+                            this.fileList.removeItem(file)
+                        }
+                        catch{
+
+                        }
+                        
                     }
                     socket.off('file_received')
                 }) 
