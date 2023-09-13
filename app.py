@@ -14,7 +14,7 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-__version__ ="6.5"
+__version__ ="6.5(beta)"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os

@@ -2225,7 +2225,7 @@ export default {
                 const path = this.$refs.addmodeldialog.model_path;
 
                 // Emit an event to the Socket.IO server
-                socket.emit("install_model", { path: path }, (response) => {
+                socket.emit("install_model", { path: path, type: this.$store.state.models_zoo[0].type }, (response) => {
                     // Handle the response from the server
                     console.log("Model installation successful:", response);
                 });
@@ -2461,7 +2461,7 @@ export default {
 
             socket.on('install_progress', progressListener);
 
-            socket.emit('install_model', { path: path });
+            socket.emit('install_model', { path: path, type: this.$store.state.models_zoo[0].type });
             console.log("Started installation, please wait");
         },
         uploadLocalModel() {

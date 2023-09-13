@@ -219,7 +219,11 @@ class LoLLMsAPPI(LollmsApplication):
                 progress = 0
                 installation_dir = self.lollms_paths.personal_models_path/self.config["binding_name"]
                 if model_type=="gptq":
-                    filename = model_path.split("/")[4]
+                    parts = model_path.split("/")
+                    if len(parts)==2:
+                        filename = parts[2]
+                    else:
+                        filename = parts[4]
                     installation_path = installation_dir / filename
                 else:
                     filename = Path(model_path).name
@@ -1029,7 +1033,7 @@ class LoLLMsAPPI(LollmsApplication):
         
         conditionning = self.personality.personality_conditioning
         if self.config["override_personality_model_parameters"]:
-            conditionning = conditionning+ "!@>user description:\n"+self.config["user_description"]+"\n"
+            conditionning = conditionning+ "!@>user description:\nName:"+self.config["user_name"]+"\n"+self.config["user_description"]+"\n"
 
         if len(self.personality.files)>0 and self.personality.vectorizer:
             pr = PromptReshaper("!@>document chunks:\n{{doc}}\n{{conditionning}}\n{{content}}")
