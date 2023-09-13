@@ -860,6 +860,8 @@ export default {
         },
         socketIODisconnected() {
             console.log("socketIOConnected")
+            this.currentDiscussion=null
+            this.$store.dispatch('refreshModels');
             this.$store.state.isConnected=false;
             return true
         },
@@ -1595,13 +1597,6 @@ export default {
                 });
             }
         };
-
-        this.socket.onclose = () => {
-            console.log('WebSocket connection lost.');
-            this.currentDiscussion=null
-        };
-
-
 
         this.isCreated = true
     },
