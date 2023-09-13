@@ -221,7 +221,7 @@ class LoLLMsAPPI(LollmsApplication):
                 if model_type=="gptq":
                     parts = model_path.split("/")
                     if len(parts)==2:
-                        filename = parts[2]
+                        filename = parts[1]
                     else:
                         filename = parts[4]
                     installation_path = installation_dir / filename

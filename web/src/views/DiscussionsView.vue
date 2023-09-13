@@ -1596,6 +1596,11 @@ export default {
             }
         };
 
+        this.socket.onclose = () => {
+            console.log('WebSocket connection lost.');
+            this.currentDiscussion=null
+        };
+
 
 
         this.isCreated = true

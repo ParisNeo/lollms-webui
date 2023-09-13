@@ -507,6 +507,7 @@ export default {
             this.$emit('stopGenerating')
         },
         addFiles(event) {
+            console.log("Adding file")
             this.fileList = this.fileList.concat([...event.target.files])
             this.isFileSentList = this.isFileSentList.concat([false] * this.fileList.length)
             this.send_file(this.fileList[this.fileList.length-1])
