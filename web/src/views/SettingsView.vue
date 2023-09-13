@@ -2407,7 +2407,7 @@ export default {
             axios.post("/add_reference_to_local_model",{"path": this.reference_path}).then((resp)=>{
                 if(resp.status){
                     this.$refs.toast.showToast("Reference created", 4, true)
-                    this.fetchModels();
+                    this.$store.dispatch('refreshModels');
                 }
                 else{
                     this.$refs.toast.showToast("Couldn't create reference", 4, false)
