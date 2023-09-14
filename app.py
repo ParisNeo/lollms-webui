@@ -195,7 +195,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         if config.auto_update:
             if check_update_():
-                ASCIIColors.info("New version present")
+                ASCIIColors.info("New version found. Updating!")
                 self.update_software()
 
         self.app = _app
