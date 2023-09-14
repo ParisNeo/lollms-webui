@@ -30,6 +30,7 @@ import json
 import shutil
 import re
 import string
+import requests
 
 def terminate_thread(thread):
     if thread:
