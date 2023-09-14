@@ -217,6 +217,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint(
             "/get_current_personality_files_list", "get_current_personality_files_list", self.get_current_personality_files_list, methods=["GET"]
         )
+        self.add_endpoint(
+            "/clear_personality_files_list", "clear_personality_files_list", self.clear_personality_files_list, methods=["GET"]
+        )
         
         self.add_endpoint("/start_training", "start_training", self.start_training, methods=["POST"])
 
