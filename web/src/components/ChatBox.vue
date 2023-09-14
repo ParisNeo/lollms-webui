@@ -18,27 +18,25 @@
                 <div class="flex flex-col gap-2">
                     <!-- EXPAND / COLLAPSE BUTTON -->
                     <div class="flex">
-                        <button v-if="fileList.length > 0"
+                        <button v-if="filesList.length > 0"
                             class="mx-1 w-full text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
-                            :title="showFileList ? 'Hide file list' : 'Show file list'" type="button"
-                            @click.stop=" showFileList = !showFileList">
+                            :title="showfilesList ? 'Hide file list' : 'Show file list'" type="button"
+                            @click.stop=" showfilesList = !showfilesList">
 
                             <i data-feather="list"></i>
                         </button>
                     </div>                 
                     <!-- FILES     -->
-                    <div v-if="fileList.length > 0 && showFileList ==true">
-
-
-                        <div v-if="fileList.length > 0" class="flex flex-col max-h-64  ">
+                    <div v-if="filesList.length > 0 && showfilesList ==true">
+                        <div class="flex flex-col max-h-64  ">
                             <TransitionGroup name="list" tag="div"
                                 class="flex flex-col flex-grow overflow-y-auto scrollbar-thin scrollbar-track-bg-light scrollbar-thumb-bg-light-tone hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark dark:scrollbar-thumb-bg-dark-tone dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
-                                <div v-for="(file, index) in fileList" :key="index + '-' + file.name">
+                                <div v-for="(file, index) in filesList" :key="index + '-' + file.name">
                                     <div class="  m-1" :title="file.name">
 
                                         <div
                                             class="flex flex-row items-center gap-1 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary">
-                                            <div v-if="!isFileSentList[index]" fileList role="status">
+                                            <div v-if="!isFileSentList[index]" filesList role="status">
                                                 <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary"
                                                     viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path
@@ -56,7 +54,7 @@
                                             </div>
 
 
-                                            <div class="line-clamp-1 w-3/5">
+                                            <div class="line-clamp-1 w-3/5" :class="isFileSentList[index]?'text-green-200':'text-red-200'">
                                                 {{ file.name }}
 
                                             </div>
@@ -88,7 +86,7 @@
 
                         </div>
                     </div>
-                    <div v-if="fileList.length > 0" class="flex items-center mx-1">
+                    <div v-if="filesList.length > 0" class="flex items-center mx-1">
 
                         <!-- ADDITIONAL INFO PANEL -->
 
@@ -99,7 +97,7 @@
 
                             {{ totalSize }}
 
-                            ({{ fileList.length }})
+                            ({{ filesList.length }})
 
 
                         </div>
@@ -258,7 +256,7 @@ import Toast from '../components/Toast.vue'
 
 export default {
     name: 'ChatBox',
-    emits: ["messageSentEvent", "stopGenerating"],
+    emits: ["messageSentEvent", "stopGenerating", "loaded"],
     props: {
         onTalk: Function,
         discussionList: Array,
@@ -285,10 +283,10 @@ export default {
             selectedModel:'',
             models:{},
             isLesteningToVoice:false,
-            fileList: [],
+            filesList: [],
             isFileSentList: [],
             totalSize: 0,
-            showFileList: true,
+            showfilesList: true,
             showPersonalities: false,
             personalities_ready: false,
             models_menu_icon:'#M'
@@ -319,6 +317,9 @@ export default {
         }
     },
     methods: {   
+        emitloaded(){
+            this.$emit('loaded')
+        },
         showModels(event){
             // Prevent the default button behavior
             event.preventDefault();
@@ -360,8 +361,17 @@ export default {
         
         },
         clear_files(){
-            fileList = []
-            isFileSentList = []
+            axios.get('/clear_personality_files_list').then(res=>{
+                if(res.data.status){
+                    console.log(`Files removed`)
+                }
+                else{
+                    console.log(`Files couldn't be removed`)
+                }
+            })
+
+            this.filesList = []
+            this.isFileSentList = []
         },
         send_file(file){
             const formData = new FormData();
@@ -378,7 +388,7 @@ export default {
                     if(resp.status){
                         console.log(resp.filename)
 
-                        let index = this.fileList.findIndex((file) => file.name === resp.filename);
+                        let index = this.filesList.findIndex((file) => file.name === resp.filename);
                         if(index>=0){
                             this.isFileSentList[index]=true;
                             console.log(this.isFileSentList)
@@ -391,7 +401,7 @@ export default {
                     else{
                         this.onShowToastMessage("Couldn't upload file\n"+resp.error,4,false);
                         try{
-                            this.fileList.removeItem(file)
+                            this.filesList.removeItem(file)
                         }
                         catch{
 
@@ -476,11 +486,11 @@ export default {
         },
 
         removeItem(file) {
-            this.fileList = this.fileList.filter((item) => item != file)
-            // console.log(this.fileList)
+            this.filesList = this.filesList.filter((item) => item != file)
+            // console.log(this.filesList)
         },
         sendMessageEvent(msg) {
-            this.fileList = []
+            this.filesList = []
             this.$emit('messageSentEvent', msg)
 
         },
@@ -508,13 +518,14 @@ export default {
         },
         addFiles(event) {
             console.log("Adding file")
-            this.fileList = this.fileList.concat([...event.target.files])
-            this.isFileSentList = this.isFileSentList.concat([false] * this.fileList.length)
-            this.send_file(this.fileList[this.fileList.length-1])
+            this.filesList = this.filesList.concat([...event.target.files])
+            console.log(`Files_list : ${this.filesList}`)
+            this.isFileSentList = this.isFileSentList.concat([false] * this.filesList.length)
+            this.send_file(this.filesList[this.filesList.length-1])
         }
     },
     watch: {
-        showFileList() {
+        showfilesList() {
             nextTick(() => {
                 feather.replace()
             })
@@ -524,17 +535,17 @@ export default {
                 feather.replace()
             })
         },
-        fileList: {
+        filesList: {
             // Calculate total size
             handler(val, oldVal) {
                 let total = 0
                 if (val.length > 0) {
                     for (let i = 0; i < val.length; i++) {
                         total = total + parseInt(val[i].size)
-
                     }
                 }
                 this.totalSize = filesize(total, true)
+                console.log("filesList changed")
 
             },
             deep: true
@@ -562,7 +573,7 @@ export default {
         }).catch(ex=>{
           this.$refs.toast.showToast(`Error: ${ex}`,4,false)
         });    
-
+        this.emitloaded();
         nextTick(() => {
             feather.replace()
         })

@@ -14,7 +14,7 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-__version__ ="6.5(beta)"
+__version__ ="6.5(RC1)"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
@@ -136,7 +136,7 @@ def get_ip_address():
         sock.close()
 
 
-def check_update(branch_name="main"):
+def check_update_(branch_name="main"):
     try:
         # Open the repository
         repo_path = str(Path(__file__).parent)
@@ -192,6 +192,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
         if config["active_personality_id"]>=len(config["personalities"]) or config["active_personality_id"]<0:
             config["active_personality_id"] = 0
         super().__init__(config, _socketio, config_file_path, lollms_paths)
+
+        if config.auto_update:
+            if self.check_update_():
+                ASCIIColors.info("New version present")
+                self.update_software()
 
         self.app = _app
         self.cancel_gen = False
@@ -1346,7 +1351,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
     def check_update(self):
         if self.config.auto_update:
-            res = check_update()
+            res = check_update_()
             return jsonify({'update_availability':res})
         else:
             return jsonify({'update_availability':False})
@@ -1380,8 +1385,14 @@ class LoLLMsWebUI(LoLLMsAPPI):
     def get_current_personality_files_list(self):
         if self.personality is None:
             return jsonify({"state":False, "error":"No personality selected"})
-        return jsonify({"state":True, "files":[Path(f).name for f in self.personality.files]})
-    
+        return jsonify({"state":True, "files":[{"name":Path(f).name, "size":Path(f).stat().st_size} for f in self.personality.files]})
+
+    def clear_personality_files_list(self):
+        if self.personality is None:
+            return jsonify({"state":False, "error":"No personality selected"})
+        self.personality.remove_all_files()
+        return jsonify({"state":True})
+
     def start_training(self):
         if self.config.enable_gpu:
             if not self.lollms_paths.gptqlora_path.exists():

@@ -259,6 +259,7 @@
                     @stopGenerating="stopGenerating" 
                     :on-show-toast-message="showToastMessage"
                     :on-talk="talk"
+                    @loaded="recoverFiles"
                     >
                 </ChatBox>
             </div>
@@ -508,6 +509,16 @@ export default {
 
             }
         },
+        recoverFiles(){
+            console.log("Recovering files")
+            axios.get('/get_current_personality_files_list').then(res=>{
+                this.$refs.chatBox.filesList = res.data.files;
+                this.$refs.chatBox.isFileSentList= res.data.files.map(file => {
+                    return true;
+                });
+                console.log(`Files recovered: ${this.$refs.chatBox.filesList}`)
+            })
+        },
         new_discussion(title) {
             try {
                 this.loading = true
@@ -519,6 +530,10 @@ export default {
                         this.selectDiscussion(discussionItem)
                         this.load_discussion(data.id,()=>{
                             this.loading = false
+                            axios.post('/get_current_personality_files_list').then(res=>{
+                                console.log("Files recovered")
+                                this.fileList = res.files
+                            });
                             nextTick(() => {
                                 const selectedDisElement = document.getElementById('dis-' + data.id)
                                 this.scrollToElement(selectedDisElement)
@@ -1600,7 +1615,7 @@ export default {
 
         this.isCreated = true
     },
-    mounted() {
+    async mounted() {
         //console.log('chatbox mnt',this.$refs)
         this.$nextTick(() => {
             feather.replace();
