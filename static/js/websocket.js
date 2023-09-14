@@ -19,6 +19,18 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 socket.on('connect', function() {
     console.log("Disconnected")
 });
+// Handle reconnection attempt failure
+socket.on('reconnect_failed', () => {
+    console.log('All reconnection attempts failed');
+    // You can perform any custom actions or error handling here
+  });
+
+// Handle reconnection attempt
+socket.on('reconnect_attempt', () => {
+    reconnectionAttempt++;
+    console.log(`Reconnection attempt ${reconnectionAttempt}...`);
+    // You can perform custom actions or error handling for each attempt here
+  });
 socket.on('disconnect', function() {
     console.log("Disconnected")
 });

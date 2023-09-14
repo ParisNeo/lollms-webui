@@ -455,7 +455,8 @@ class Discussion:
     def __init__(self, discussion_id, discussions_db:DiscussionsDB):
         self.discussion_id = discussion_id
         self.discussions_db = discussions_db
-        self.messages = []
+        self.messages = self.get_messages()
+        self.current_message = self.messages[-1]
 
     def load_message(self, id):
         """Gets a list of messages information

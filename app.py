@@ -209,6 +209,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
         # Endpoints
         # =========================================================================================
         
+        self.add_endpoint(
+            "/get_current_personality_files_list", "get_current_personality_files_list", self.get_current_personality_files_list, methods=["GET"]
+        )
+        
         self.add_endpoint("/start_training", "start_training", self.start_training, methods=["POST"])
 
         self.add_endpoint("/get_lollms_version", "get_lollms_version", self.get_lollms_version, methods=["GET"])
@@ -1372,7 +1376,12 @@ class LoLLMsWebUI(LoLLMsAPPI):
         ASCIIColors.info("")
         ASCIIColors.info("")
         run_update_script(self.args)
-
+        
+    def get_current_personality_files_list(self):
+        if self.personality is None:
+            return jsonify({"state":False, "error":"No personality selected"})
+        return jsonify({"state":True, "files":[Path(f).name for f in self.personality.files]})
+    
     def start_training(self):
         if self.config.enable_gpu:
             if not self.lollms_paths.gptqlora_path.exists():

@@ -8,7 +8,11 @@ import io from 'socket.io-client';
 
 // fixes issues when people not hosting this site on local network
 const URL = process.env.NODE_ENV === "production" ? undefined : (import.meta.env.VITE_LOLLMS_API);
-const socket = new io(URL);
+const socket = new io(URL,{
+    reconnection: true,           // Enable reconnection
+    reconnectionAttempts: 3,      // Maximum reconnection attempts
+    reconnectionDelay: 1000,      // Delay between reconnection attempts (in milliseconds)
+  });
 
 // const app = createApp(/* your root component */);
 
