@@ -194,7 +194,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         super().__init__(config, _socketio, config_file_path, lollms_paths)
 
         if config.auto_update:
-            if self.check_update_():
+            if check_update_():
                 ASCIIColors.info("New version present")
                 self.update_software()
 
