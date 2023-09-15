@@ -693,7 +693,7 @@ class LoLLMsAPPI(LollmsApplication):
                     else:
                         try:
                             personality: AIPersonality = self.personalities[personality_id]
-                            ump = self.config.discussion_prompt_separator +self.config.user_name+": " if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
+                            ump = self.config.discussion_prompt_separator +self.config.user_name.strip() if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
                             personality.model = model
                             cond_tk = personality.model.tokenize(personality.personality_conditioning)
                             n_cond_tk = len(cond_tk)
@@ -792,7 +792,7 @@ class LoLLMsAPPI(LollmsApplication):
                         self.connections[client_id]["current_discussion"] = self.db.load_last_discussion()
 
                 prompt = data["prompt"]
-                ump = self.config.discussion_prompt_separator +self.config.user_name+": " if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
+                ump = self.config.discussion_prompt_separator +self.config.user_name.strip() if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
                 message = self.connections[client_id]["current_discussion"].add_message(
                     message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
                     sender_type     = SENDER_TYPES.SENDER_TYPES_USER.value,
@@ -844,6 +844,7 @@ class LoLLMsAPPI(LollmsApplication):
             else:
                 message = self.connections[client_id]["current_discussion"].get_message(id_)
 
+            self.connections[client_id]["generated_text"]=message.content
             self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message.id, client_id, True))
             self.connections[client_id]['generation_thread'].start()
 
@@ -1023,9 +1024,9 @@ class LoLLMsAPPI(LollmsApplication):
 
         link_text = "\n" #self.personality.link_text
         if not is_continue:
-            full_message_list.append(self.config.discussion_prompt_separator +message.sender.replace(":","")+": "+message.content.strip()+link_text+self.personality.ai_message_prefix)
+            full_message_list.append(self.config.discussion_prompt_separator +message.sender.strip().replace(":","")+": "+message.content.strip()+link_text+self.personality.ai_message_prefix.strip())
         else:
-            full_message_list.append(self.config.discussion_prompt_separator +message.sender.replace(":","")+": "+message.content.strip())
+            full_message_list.append(self.config.discussion_prompt_separator +message.sender.strip().replace(":","")+": "+message.content.strip())
 
 
         composed_messages = link_text.join(full_message_list)
@@ -1075,7 +1076,7 @@ class LoLLMsAPPI(LollmsApplication):
     def get_discussion_to(self, client_id,  message_id=-1):
         messages = self.connections[client_id]["current_discussion"].get_messages()
         full_message_list = []
-        ump = self.config.discussion_prompt_separator +self.config.user_name+": " if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
+        ump = self.config.discussion_prompt_separator +self.config.user_name.strip() if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
 
         for message in messages:
             if message["id"]<= message_id or message_id==-1: 
@@ -1404,7 +1405,7 @@ class LoLLMsAPPI(LollmsApplication):
             self.busy=False
 
         else:
-            ump = self.config.discussion_prompt_separator +self.config.user_name+": " if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
+            ump = self.config.discussion_prompt_separator +self.config.user_name.strip() if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
             
             self.cancel_gen = False
             #No discussion available
