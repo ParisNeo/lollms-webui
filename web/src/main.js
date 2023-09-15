@@ -316,7 +316,8 @@ export const store = createStore({
                   if(v!=undefined){
                     index = v.findIndex(x => x.name == customModel);
                     if(index!=-1){
-                      console.log("Found")
+                      index=j
+                      console.log(`Found ${customModel} at index ${index}`)
                       break;
                     }  
                   }

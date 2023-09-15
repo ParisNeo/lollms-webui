@@ -2335,6 +2335,7 @@ export default {
             // eslint-disable-next-line no-unused-vars
             if (this.isLoading) {
                 this.$refs.toast.showToast("Loading... please wait", 4, false)
+                return
             }
             if (model_object) {
                 if (model_object.isInstalled) {

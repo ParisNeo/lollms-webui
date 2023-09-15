@@ -16,7 +16,12 @@
             </RouterLink>
             <!-- GITHUB AND THEME BUTTONS -->
             <div class="flex gap-3 flex-1 items-center justify-end">
-                <div title="Connection status" :class="['dot', { 'dot-green': isConnected, 'dot-red': !isConnected }]"></div>
+                <div v-if="isConnected" title="Connection status" class="text-green-500">
+                    <i data-feather="zap"></i>
+                </div>
+                <div v-if="!isConnected" title="Connection status" class="text-red-500">
+                    <i data-feather="zap-off"></i>
+                </div>
                 <a href="https://github.com/ParisNeo/lollms-webui" target="_blank">
 
                     <div class="text-2xl  hover:text-primary duration-150" title="Visit repository page">
