@@ -403,6 +403,14 @@ class LoLLMsAPPI(LollmsApplication):
                                                     'binding_folder' : binding_folder
                                                 }, room=request.sid)
             try:
+                if not installation_path.exists():
+                    # Try to find a version
+                    model_path = installation_path.name.lower().replace("-ggml","").replace("-gguf","")
+                    candidates = [m for m in (self.lollms_paths.personal_models_path/self.binding.binding_folder_name).iterdir() if model_path in m.name]
+                    if len(candidates)>0:
+                        model_path = candidates[0]
+                        installation_path = model_path
+                        
                 if installation_path.is_dir():
                     shutil.rmtree(installation_path)
                 else:
