@@ -1218,6 +1218,7 @@
                         <!-- Pass the radio options as a prop -->
                         <RadioOptions :radioOptions="sortOptions" @radio-selected="handleRadioSelected" />
                     </div>
+                    <a href="https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard" target="_blank" class="mb-4 font-bold underline text-blue-500 pb-4">Hugging face Leaderboard</a>
                     <div v-if="searchModel">
                         <div v-if="modelsFiltered.length > 0" class="mb-2">
                             <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
