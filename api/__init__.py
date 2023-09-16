@@ -1337,7 +1337,7 @@ class LoLLMsAPPI(LollmsApplication):
                     prompt,
                     callback=callback,
                     n_predict=n_predict,
-                    temperature=self.config['temperature'],
+                    temperature=self.config['temp'],
                     top_k=self.config['top_k'],
                     top_p=self.config['top_p'],
                     repeat_penalty=self.config['repeat_penalty'],
