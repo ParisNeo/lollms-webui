@@ -1459,7 +1459,6 @@
                                     ref="mountedPersonalities">
                                     <div class="group items-center flex flex-row">
                                         <button @click.stop="onPersonalitySelected(item)">
-
                                             <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
                                                 class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary "
                                                 :class="configFile.active_personality_id == configFile.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
