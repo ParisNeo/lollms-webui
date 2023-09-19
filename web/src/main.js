@@ -128,12 +128,18 @@ export const store = createStore({
         console.log("Fetching configuration");
         try {
           const configFile = await api_get_req('get_config')
+          if(configFile.active_personality_id<0){
+            configFile.active_personality_id=0;
+          }
           let personality_path_infos = configFile.personalities[configFile.active_personality_id].split("/")
           //let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
           configFile.personality_category = personality_path_infos[0]
           configFile.personality_folder = personality_path_infos[1]
           console.log("Recovered config")
           console.log(configFile)
+          console.log("Committing config");
+          console.log(configFile)
+          console.log(this.state.config)
           commit('setConfig', configFile);
         } catch (error) {
           console.log(error.message, 'refreshConfig');
@@ -150,7 +156,17 @@ export const store = createStore({
               const catkey = catkeys[j];
               const personalitiesArray = catdictionary[catkey];
               const modPersArr = personalitiesArray.map((item) => {
-                  const isMounted = this.state.config.personalities.includes(catkey + '/' + item.folder)
+                  let isMounted = false;
+
+                  for(const personality of this.state.config.personalities){
+                    if(personality.includes(catkey + '/' + item.folder)){
+                      isMounted = true;
+                      if(personality.includes(":")){
+                        const parts = personality.split(':');
+                        item.language = parts[1];
+                      }
+                    }
+                  }
                   // if (isMounted) {
                   //     console.log(item)
                   // }
@@ -177,13 +193,17 @@ export const store = createStore({
           console.log("Done loading personalities")
       },
       refreshMountedPersonalities({ commit }) {
+        if(this.state.config.active_personality_id<0){
+          this.state.config.active_personality_id=0;
+        }
           let mountedPersArr = []
           // console.log('perrs listo',this.state.personalities)
           for (let i = 0; i < this.state.config.personalities.length; i++) {
               const full_path_item = this.state.config.personalities[i]
-              const index = this.state.personalities.findIndex(item => item.full_path == full_path_item)
+              const index = this.state.personalities.findIndex(item => item.full_path == full_path_item || item.full_path+':'+item.language == full_path_item)
 
               const pers = this.state.personalities[index]
+              // console.log(`Personality : ${JSON.stringify(pers)}`)
               if (pers) {
                   mountedPersArr.push(pers)
               }
@@ -193,8 +213,9 @@ export const store = createStore({
           }
           commit('setMountedPersArr', mountedPersArr);
           
-          this.state.mountedPers = this.state.personalities[this.state.personalities.findIndex(item => item.full_path == this.state.config.personalities[this.state.config.active_personality_id])]
-
+          this.state.mountedPers = this.state.personalities[this.state.personalities.findIndex(item => item.full_path == this.state.config.personalities[this.state.config.active_personality_id] || item.full_path+':'+item.language ==this.state.config.personalities[this.state.config.active_personality_id])]
+          // console.log(`${this.state.config.personalities[this.state.config.active_personality_id]}`)
+          // console.log(`Mounted personality: ${this.state.mountedPers}`)
       },
       async refreshBindings({ commit }) {
           let bindingsArr = await api_get_req("list_bindings")
@@ -398,7 +419,7 @@ app.mixin({
       actionsExecuted = true;
       console.log("Calling")
       this.$store.dispatch('refreshConfig').then(async () => {
-          console.log("recovered config");
+          console.log("recovered config : ${}");
           await this.$store.dispatch('getVersion');
           console.log("recovered version");          
           await this.$store.dispatch('refreshPersonalitiesArr')

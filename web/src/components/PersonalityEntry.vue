@@ -1,7 +1,8 @@
 <template>
   <div
     class=" min-w-96 items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer  select-none"
-    tabindex="-1" :class="selected_computed ? 'border-2 border-primary-light' : 'border-transparent', isMounted ? 'bg-blue-200 dark:bg-blue-700':''"
+    tabindex="-1" 
+    :class="selected_computed ? 'border-2 border-primary-light' : 'border-transparent', isMounted ? 'bg-blue-200 dark:bg-blue-700':''"
     :title="!personality.installed ? 'Not installed' : ''">
 
     <div :class="!personality.installed ? 'opacity-50' : ''">
@@ -13,22 +14,6 @@
         <h3 @click="toggleSelected" class="font-bold font-large text-lg line-clamp-3 cursor-pointer">
           {{ personality.name }}
         </h3>
-        <button v-if="isMounted" type="button" title="Select"
-            @click="toggleSelected"
-            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
-            <i data-feather="check"  :class="selected?'border-2 border-blue-300 rounded bg-green-300 w-5':'border-2 border-blue-300 rounded bg-gray-100 w-5'"></i>
-            <span class="sr-only">Select</span>
-        </button>        
-        <button v-if="isMounted" type="button" title="Talk"
-            @click="toggleTalk"
-            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
-            <i data-feather="send" class="w-5"></i>
-            <span class="sr-only">Talk</span>
-        </button>        
-        <InteractiveMenu  :commands="commandsList" :force_position=2 title="Menu">
-        
-        </InteractiveMenu>
-  
       </div>
       <div class="">
         <div class="">
@@ -39,10 +24,10 @@
 
             {{ personality.author }}
           </div>
-          <div v-if="personality.languages" class="flex items-center">
+          <div v-if="personality.languages && select_language" class="flex items-center">
             <i data-feather="globe" class="w-5 m-1"></i>
             <b>Languages:&nbsp;</b>
-            <select id="languages" v-model ="personality.lang"
+            <select id="languages" v-model ="personality.language"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                 <option v-for="(item, index) in personality.languages" :key="index"
@@ -53,7 +38,12 @@
                 </option>
 
             </select>
-          </div>          
+          </div>
+          <div v-if="personality.language" class="flex items-center">
+            <i data-feather="globe" class="w-5 m-1"></i>
+            <b>Languages:&nbsp;</b>
+            {{ personality.language }}
+          </div>
           <div class="flex items-center">
             <i data-feather="bookmark" class="w-5 m-1"></i>
             <b>Category:&nbsp;</b>
@@ -66,10 +56,29 @@
           <i data-feather="info" class="w-5 m-1"></i>
           <b>Description:&nbsp;</b><br>
         </div>
-        <p class="mx-1 opacity-80 line-clamp-3" :title="personality.description">{{ personality.description }}</p>
-
-
+        <p class="mx-1 opacity-80 h-20  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" :title="personality.description">{{ personality.description }}</p>
       </div>
+      <div class="rounded bg-blue-300">
+          <button v-if="isMounted" type="button" title="Select"
+            @click="toggleSelected"
+            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
+            <i 
+            data-feather="check"  
+            ></i>
+            <span class="sr-only">Select</span>
+        </button>        
+        <button v-if="isMounted" type="button" title="Talk"
+            @click="toggleTalk"
+            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
+            <i data-feather="send" class="w-5"></i>
+            <span class="sr-only">Talk</span>
+        </button>        
+        <InteractiveMenu  :commands="commandsList" :force_position=2 title="Menu">
+        
+        </InteractiveMenu>
+
+        </div>
+
     </div>
   </div>
 </template>
@@ -85,6 +94,7 @@ const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
   props: {
     personality: {},
+    select_language: Boolean,
     selected: Boolean,
     full_path: String,
     onTalk:Function,

@@ -1561,9 +1561,10 @@
                                 <TransitionGroup name="bounce">
                                     <personality-entry ref="personalitiesZoo" v-for="(pers, index) in personalitiesFiltered"
                                         :key="'index-' + index + '-' + pers.name" :personality="pers"
+                                        :select_language="true"
                                         :full_path="pers.full_path"
                                         :on-remount="onRemount"
-                                        :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === pers.full_path)"
+                                        :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === pers.full_path || item === pers.full_path+':'+pers.language)"
                                         :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted" :on-reinstall="onPersonalityReinstall"
                                         :on-settings="onSettingsPersonality" />
                                 </TransitionGroup>
@@ -1636,12 +1637,14 @@
                                     <p class="absolute right-0">
 
                                         <input type="text" id="temp-val" v-model="configFile.temperature"
+                                            @change="settingsChanged=true"
                                             class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                     </p>
 
                                 </div>
 
                                 <input id="temperature"
+                                    @change="settingsChanged=true"
                                     type="range" v-model="configFile.temperature" min="0" max="5" step="0.1"
                                     class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             </div>
@@ -1657,6 +1660,7 @@
                                     <p class="absolute right-0">
 
                                         <input type="text" id="predict-val" v-model="configFile.n_predict"
+                                            @change="settingsChanged=true"
                                             class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                     </p>
 
@@ -1664,6 +1668,7 @@
 
                                 <input id="predict" 
                                     type="range"
+                                    @change="settingsChanged=true"
                                     v-model="configFile.n_predict" min="0" max="2048" step="32"
                                     class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             </div>
@@ -1679,6 +1684,7 @@
                                     <p class="absolute right-0">
 
                                         <input type="text" id="top_k-val" v-model="configFile.top_k"
+                                            @change="settingsChanged=true"
                                             class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                     </p>
 
@@ -1686,6 +1692,7 @@
 
                                 <input id="top_k"
                                     type="range"
+                                    @change="settingsChanged=true"
                                     v-model="configFile.top_k" min="0" max="100" step="1"
                                     class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             </div>
@@ -1701,6 +1708,7 @@
                                     <p class="absolute right-0">
 
                                         <input type="text" id="top_p-val" v-model="configFile.top_p"
+                                            @change="settingsChanged=true"
                                             class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                     </p>
 
@@ -1709,6 +1717,7 @@
                                 <input id="top_p" 
                                     type="range"
                                     v-model="configFile.top_p" min="0" max="1" step="0.01"
+                                    @change="settingsChanged=true"
                                     class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             </div>
                         </div>
@@ -1723,12 +1732,14 @@
                                     <p class="absolute right-0">
 
                                         <input type="text" id="repeat_penalty-val" v-model="configFile.repeat_penalty"
+                                            @change="settingsChanged=true"                                        
                                             class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                     </p>
 
                                 </div>
 
                                 <input id="repeat_penalty"
+                                    @change="settingsChanged=true"                                
                                     type="range" v-model="configFile.repeat_penalty" min="0" max="2" step="0.01"
                                     class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             </div>
@@ -1744,6 +1755,7 @@
                                     <p class="absolute right-0">
 
                                         <input type="text" id="repeat_last_n-val" v-model="configFile.repeat_last_n"
+                                            @change="settingsChanged=true"                                        
                                             class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                     </p>
 
@@ -1751,6 +1763,7 @@
 
                                 <input id="repeat_last_n"
                                     type="range" v-model="configFile.repeat_last_n" min="0" max="100" step="1"
+                                    @change="settingsChanged=true"                                    
                                     class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             </div>
                         </div>
@@ -2271,7 +2284,7 @@ export default {
             const obj = {
                 category: pers.category,
                 folder: pers.folder,
-                language: pers.lang
+                language: pers.language
             }
 
 
@@ -3081,7 +3094,6 @@ export default {
                     language: pers.language,
                     category: pers.category,
                     folder: pers.folder,
-                    language: pers.lang
                 }
                 const res = await axios.post('/mount_personality', obj);
 
@@ -3261,25 +3273,31 @@ export default {
         },
         onPersonalityMounted(persItem) {
             //this.isLoading = true
-            console.log('on sel ', persItem)
+            console.log('on mount ', persItem)
+            this.$store.dispatch('refreshConfig').then(
+                ()=>{
+                    console.log(`Config refreshed ${this.configFile.personalities}`)
+                    if (this.configFile.personalities.includes(persItem.full_path)) {
+                        //this.$refs.toast.showToast("Personality already mounted", 4, false)
+                        //return
+                        //persItem.ismounted = false
+                        if (this.configFile.personalities.length == 1) {
+                            this.$refs.toast.showToast("Can't unmount last personality", 4, false)
 
-            if (this.configFile.personalities.includes(persItem.full_path)) {
-                //this.$refs.toast.showToast("Personality already mounted", 4, false)
-                //return
-                //persItem.ismounted = false
-                if (this.configFile.personalities.length == 1) {
-                    this.$refs.toast.showToast("Can't unmount last personality", 4, false)
+                        } else {
+                            this.unmountPersonality(persItem)
 
-                } else {
-                    this.unmountPersonality(persItem)
+                        }
+                    } else {
+                        //persItem.ismounted = true
+                        this.mountPersonality(persItem)
+                    }
+
+                    //this.isLoading = false
 
                 }
-            } else {
-                //persItem.ismounted = true
-                this.mountPersonality(persItem)
-            }
+            )
 
-            //this.isLoading = false
         },
         personalityImgPlacehodler(event) {
             event.target.src = defaultPersonalityImgPlaceholder

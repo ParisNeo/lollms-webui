@@ -37,7 +37,8 @@
                     <TransitionGroup name="bounce">
                         <personality-entry ref="personalitiesZoo" v-for="(pers, index) in this.$store.state.mountedPersArr"
                             :key="'index-' + index + '-' + pers.name" :personality="pers" :full_path="pers.full_path"
-                            :selected="configFile.personalities[configFile.active_personality_id] === pers.full_path"
+                            :select_language="false"
+                            :selected="configFile.personalities[configFile.active_personality_id] === pers.full_path  || configFile.personalities[configFile.active_personality_id] === pers.full_path+':'+pers.language"
                             :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted" :on-remount="onPersonalityRemount"
                             :on-settings="onSettingsPersonality"  :on-reinstall="onPersonalityReinstall"
                             :on-talk="handleOnTalk"
@@ -84,6 +85,7 @@ import UniversalForm from './UniversalForm.vue';
 import feather from 'feather-icons'
 
 import axios from "axios";
+import { nextTick } from "vue";
 
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_LOLLMS_API_BASEURL
@@ -335,7 +337,7 @@ export default {
                 const obj = {
                     category: pers.category,
                     folder: pers.folder,
-                    language: pers.lang
+                    language: pers.language
                 }
                 const res = await axios.post('/mount_personality', obj);
 
@@ -357,7 +359,7 @@ export default {
                 const obj = {
                     category: pers.category,
                     folder: pers.folder,
-                    language: pers.lang
+                    language: pers.language
                 }
                 const res = await axios.post('/remount_personality', obj);
 
@@ -398,9 +400,10 @@ export default {
         },
         async select_personality(pers) {
             if (!pers) { return { 'status': false, 'error': 'no personality - select_personality' } }
-            console.log('select pers', pers)
-            const id = this.configFile.personalities.findIndex(item => item === pers.full_path)
+            console.log('select pers', JSON.stringify(pers))
+            const id = this.configFile.personalities.findIndex(item => item === pers.full_path || item === pers.full_path+':'+pers.language)
 
+            console.log('id', JSON.stringify(id))
             const obj = {
                 id: id
             }
@@ -412,7 +415,7 @@ export default {
                 if (res) {
                     this.toggleMountUnmount()
                     this.$store.dispatch('refreshConfig').then(() => {
-                        console.log("recovered config")
+                        console.log("recovered config", this.configFile.active_personality_id);
                         this.$store.dispatch('refreshPersonalitiesArr').then(() => {
                         this.$store.dispatch('refreshMountedPersonalities');
                         });
@@ -501,21 +504,18 @@ export default {
                 console.log('unmount response', res)
                 this.configFile.active_personality_id = res.active_personality_id
                 this.configFile.personalities = res.personalities
-                this.$refs.toast.showToast("Personality unmounted", 4, true)
 
                 const activePersPath = this.configFile.personalities[this.configFile.active_personality_id]
 
-                console.log()
                 const persId = this.personalities.findIndex(item => item.full_path == activePersPath)
                 //const persFilteredId = this.personalitiesFiltered.findIndex(item => item.full_path == pers.full_path)
                 const persIdZoo = this.$refs.personalitiesZoo.findIndex(item => item.full_path == pers.full_path)
-                console.log('ppp', this.personalities[persId])
                 const activePers = this.personalities[persId]
                 activePers.isMounted = false
                 activePers.selected = true
                 this.$refs.personalitiesZoo[persIdZoo].isMounted = false
 
-
+                
 
                 //pers.isMounted = false
                 this.getMountedPersonalities()
@@ -526,9 +526,9 @@ export default {
                 // const res2 = await this.select_personality(lastPers.personality)
                 const res2 = await this.select_personality(activePers)
                 if (res2.status) {
-                    this.$refs.toast.showToast("Selected personality:\n" + activePers.name, 4, true)
-
+                    feather.replace()
                 }
+                this.$refs.toast.showToast("Personality unmounted", 4, true)
 
 
             } else {
