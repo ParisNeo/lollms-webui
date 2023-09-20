@@ -32,3 +32,12 @@ Welcome to LoLLMS WebUI (Lord of Large Language Models: One tool to rule them al
 ## Installation
 ### Automatic installation
 
+## Star History
+
+<a href="https://star-history.com/#parisneo/lollms-webui&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=parisneo/lollms-webui&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=parisneo/lollms-webui&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=parisneo/lollms-webui&type=Date" />
+  </picture>
+</a>
