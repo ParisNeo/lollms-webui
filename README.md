@@ -30,8 +30,88 @@ Welcome to LoLLMS WebUI (Lord of Large Language Models: One tool to rule them al
 
 
 ## Installation
-### Automatic installation
+### Automatic installation (UI)
+If you are using Windows, just visit the release page, download the windows installer and install it.
 
+### Automatic installation (Console)
+Download the installation script from scripts folder and run it.
+The installation scripts are:
+- `win_install.bat` for Windows.
+- `linux_install.sh`for Linux.
+- `mac_install.sh`for Mac.
+
+### Manual install with Anaconda/Miniconda:
+If you don't have anaconda or miniconda installed, please install it:
+[Install miniconda](https://docs.conda.io/projects/miniconda/en/latest/miniconda-install.html)
+Make sure to add it to your path so that you can run it easily from a terminal.
+If you don't have git installed, please install it:
+[Install git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+Make sure to add it to your path so that you can run it easily from a terminal.
+- Run a terminal and create a new environment called `lollms` with python 3.10:
+```bash
+conda create --name lollms python=3.10
+```
+- Activate the environment
+```bash
+conda activate lollms
+```
+- Clone the project
+```bash
+git clone https://github.com/ParisNeo/lollms-webui.git
+```
+- enter the lollms-webui folder
+```bash
+cd lollms-webui
+```
+- install dependancies
+```bash
+pip install --upgrade -r requirements.txt
+```
+- run the application
+```bash
+python app.py
+```
+### Manual install with virtual env:
+Make sure you install python 3.10, and git:
+[Install python](https://www.python.org/downloads/release/python-31013/)
+Make sure to add it to your path so that you can run it easily from a terminal.
+If you don't have git installed, please install it:
+[Install git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+Make sure to add it to your path so that you can run it easily from a terminal.
+- Run a terminal and install pip:
+```bash
+python -m ensurepip --upgrade
+```
+- Install virtual environment:
+```bash
+pip install venv
+```
+- Clone the project
+```bash
+git clone https://github.com/ParisNeo/lollms-webui.git
+```
+- enter the lollms-webui folder
+```bash
+cd lollms-webui
+```
+- Create a virtual environment
+```bash
+python -m venv ./env
+```
+- Activate the virtual environment:
+- On windows: `./env/Scripts/activate`
+- On linux: `./env/bin/activate`
+- On macos: `./env/bin/activate`
+- install dependancies
+```bash
+pip install --upgrade -r requirements.txt
+```
+- run the application
+```bash
+python app.py
+```
+
+Once installed, you need to activate the environment then run the app.
 ## Star History
 
 <a href="https://star-history.com/#parisneo/lollms-webui&Date">
