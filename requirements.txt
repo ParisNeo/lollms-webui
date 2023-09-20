@@ -15,4 +15,3 @@ websocket-client
 GitPython
 setuptools
 numpy
-git
