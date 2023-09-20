@@ -39,8 +39,12 @@
                             :key="'index-' + index + '-' + pers.name" :personality="pers" :full_path="pers.full_path"
                             :select_language="false"
                             :selected="configFile.personalities[configFile.active_personality_id] === pers.full_path  || configFile.personalities[configFile.active_personality_id] === pers.full_path+':'+pers.language"
-                            :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted" :on-remount="onPersonalityRemount"
-                            :on-settings="onSettingsPersonality"  :on-reinstall="onPersonalityReinstall"
+                            :on-selected="onPersonalitySelected" 
+                            :on-mount="onPersonalityMounted" 
+                            :on-un-mount="onPersonalityUnMounted"  
+                            :on-remount="onPersonalityRemount"
+                            :on-settings="onSettingsPersonality"  
+                            :on-reinstall="onPersonalityReinstall"
                             :on-talk="handleOnTalk"
                            />
                     </TransitionGroup>
@@ -92,8 +96,9 @@ axios.defaults.baseURL = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
     props: {
         onTalk:Function,
-        onMountUnmount: Function,
-        onRemount: Function,
+        onMounted: Function,
+        onUnmounted: Function,
+        onRemounted: Function,
         discussionPersonalities: Array,
         onShowPersList: Function,
 
@@ -155,9 +160,6 @@ export default {
             //this.show = !this.show
             this.onShowPersList()
         },
-        toggleMountUnmount() {
-            this.onMountUnmount(this)
-        },
         async constructor() {
         },
         async api_get_req(endpoint) {
@@ -205,25 +207,11 @@ export default {
                 });
         },
         onPersonalityMounted(persItem) {
-
-            if (this.configFile.personalities.includes(persItem.full_path)) {
-                //this.$refs.toast.showToast("Personality already mounted", 4, false)
-                //return
-                //persItem.ismounted = false
-                if (this.configFile.personalities.length == 1) {
-                    this.$refs.toast.showToast("Can't unmount last personality", 4, false)
-
-                } else {
-                    this.unmountPersonality(persItem)
-
-                }
-            } else {
-                //persItem.ismounted = true
-                this.mountPersonality(persItem)
-
-            }
-
-
+            //persItem.ismounted = true
+            this.mountPersonality(persItem)
+        },
+        onPersonalityUnMounted(persItem) {
+            this.unmountPersonality(persItem)
         },
         onPersonalityRemount(persItem){
             this.reMountPersonality(persItem)
@@ -379,7 +367,8 @@ export default {
 
             const obj = {
                 category: pers.category,
-                folder: pers.folder
+                folder: pers.folder,
+                language: pers.language
             }
 
 
@@ -400,7 +389,6 @@ export default {
         },
         async select_personality(pers) {
             if (!pers) { return { 'status': false, 'error': 'no personality - select_personality' } }
-            console.log('select pers', JSON.stringify(pers))
             const id = this.configFile.personalities.findIndex(item => item === pers.full_path || item === pers.full_path+':'+pers.language)
 
             console.log('id', JSON.stringify(id))
@@ -413,7 +401,6 @@ export default {
                 const res = await axios.post('/select_personality', obj);
 
                 if (res) {
-                    this.toggleMountUnmount()
                     this.$store.dispatch('refreshConfig').then(() => {
                         console.log("recovered config", this.configFile.active_personality_id);
                         this.$store.dispatch('refreshPersonalitiesArr').then(() => {
@@ -447,7 +434,7 @@ export default {
                 this.configFile.personalities = res.personalities
                 this.$refs.toast.showToast("Personality mounted", 4, true)
                 pers.isMounted = true
-                this.toggleMountUnmount()
+                this.onMounted(this);
                 const res2 = await this.select_personality(pers.personality)
                 if (res2.status) {
                     this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
@@ -478,7 +465,7 @@ export default {
                 this.configFile.personalities = res.personalities
                 this.$refs.toast.showToast("Personality remounted", 4, true)
                 pers.isMounted = true
-                this.toggleMountUnmount()
+                this.onMounted(this);
                 const res2 = await this.select_personality(pers.personality)
                 if (res2.status) {
                     this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
@@ -495,12 +482,12 @@ export default {
         async unmountPersonality(pers) {
 
             if (!pers) { return }
-
-            const res = await this.unmount_personality(pers.personality || pers)
+            console.log(`Unmounting ${JSON.stringify(pers.personality)}`)
+            const res = await this.unmount_personality(pers.personality)
 
 
             if (res.status) {
-                this.toggleMountUnmount()
+                
                 console.log('unmount response', res)
                 this.configFile.active_personality_id = res.active_personality_id
                 this.configFile.personalities = res.personalities
@@ -529,7 +516,7 @@ export default {
                     feather.replace()
                 }
                 this.$refs.toast.showToast("Personality unmounted", 4, true)
-
+                this.onUnMounted(this);
 
             } else {
                 this.$refs.toast.showToast("Could not unmount personality\nError: " + res.error, 4, false)

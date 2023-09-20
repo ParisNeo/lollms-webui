@@ -1485,12 +1485,20 @@ class LoLLMsWebUI(LoLLMsAPPI):
         if config_file.exists():
             if language:
                 package_path += ":" + language
+            if package_path in self.config["personalities"]:
+                return jsonify({"status": False,
+                                "error":"Can't mount exact same personality twice",
+                                "personalities":self.config["personalities"],
+                                "active_personality_id":self.config["active_personality_id"]
+                                })    
             self.config["personalities"].append(package_path)
             self.mounted_personalities = self.rebuild_personalities()
+            self.config["active_personality_id"]= len(self.config["personalities"])-1
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             ASCIIColors.success("ok")
             if self.config["active_personality_id"]<0:
                 return jsonify({"status": False,
+                                "error":"active_personality_id<0",
                                 "personalities":self.config["personalities"],
                                 "active_personality_id":self.config["active_personality_id"]
                                 })         
@@ -1571,9 +1579,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return
         category    = data['category']
         name        = data['folder']
+        language    = data.get('language',None)
         try:
-            index = self.config["personalities"].index(f"{category}/{name}")
-            self.config["personalities"].remove(f"{category}/{name}")
+            personality_id = f"{category}/{name}" if language is None else f"{category}/{name}:{language}"
+            index = self.config["personalities"].index(personality_id)
+            self.config["personalities"].remove(personality_id)
             if self.config["active_personality_id"]>=index:
                 self.config["active_personality_id"]=0
             if len(self.config["personalities"])>0:

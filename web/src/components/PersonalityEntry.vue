@@ -99,7 +99,8 @@ export default {
     full_path: String,
     onTalk:Function,
     onSelected: Function,
-    onMounted: Function,
+    onMount: Function,
+    onUnMount: Function,
     onRemount: Function,
     onReinstall: Function,
     onSettings: Function
@@ -116,7 +117,7 @@ export default {
   computed:{
     commandsList(){
       let main_menu = [
-                {name:this.isMounted?"unmount":"mount", icon: "feather:settings", is_file:false, value:this.toggleMounted},
+                {name:this.isMounted?"unmount":"mount", icon: "feather:settings", is_file:false, value:this.isMounted?this.unmount:this.mount},
                 {name:"reinstall", icon: "feather:terminal", is_file:false, value:this.toggleReinstall},
               ];
         if(this.isMounted){
@@ -159,9 +160,14 @@ export default {
     reMount(){
       this.onRemount(this)
     },
-    toggleMounted() {
-      console.log("Mounting/unmounting")
-      this.onMounted(this)
+    mount() {
+      console.log("Mounting")
+      this.onMount(this)
+    },
+    unmount() {
+      console.log("Unmounting")
+      console.log(this.onUnMount)
+      this.onUnMount(this)
     },
     toggleSettings() {
       this.onSettings(this)

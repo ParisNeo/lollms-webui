@@ -113,8 +113,9 @@
                     <div v-if="showPersonalities" class="mx-1">
                         <MountedPersonalitiesList ref="mountedPersList" 
                             :onShowPersList="onShowPersListFun"
-                            :on-mount-unmount="onMountUnmountFun" 
-                            :on-remount="onRemount"
+                            :on-mounted="onMountFun"
+                            :on-un-mounted="onUnmountFun"
+                            :on-remounted="onRemountFun"
                             :on-talk="handleOnTalk"
                             :discussionPersonalities="allDiscussionPersonalities" />
                     </div>
@@ -470,8 +471,12 @@ export default {
             this.onTalk(pers)
         },
                             
-        onMountUnmountFun(comp) {
-            console.log('Mounting/unmounting chat')
+        onMountFun(comp) {
+            console.log('Mounting personality')
+            this.$refs.mountedPers.constructor()
+        },
+        onUnmountFun(comp) {
+            console.log('Unmounting personality')
             this.$refs.mountedPers.constructor()
         },
         onRemount(comp){

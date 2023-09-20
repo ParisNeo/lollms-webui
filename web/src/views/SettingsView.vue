@@ -1464,7 +1464,7 @@
                                                 :class="configFile.active_personality_id == configFile.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
                                                 :title="item.name">
                                         </button>
-                                        <button @click.stop="onPersonalityMounted(item)">
+                                        <button @click.stop="onPersonalityMount(item)">
 
                                             <span
                                                 class="hidden group-hover:block top-0 left-7 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
@@ -1563,9 +1563,12 @@
                                         :key="'index-' + index + '-' + pers.name" :personality="pers"
                                         :select_language="true"
                                         :full_path="pers.full_path"
-                                        :on-remount="onRemount"
                                         :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === pers.full_path || item === pers.full_path+':'+pers.language)"
-                                        :on-selected="onPersonalitySelected" :on-mounted="onPersonalityMounted" :on-reinstall="onPersonalityReinstall"
+                                        :on-selected="onPersonalitySelected" 
+                                        :on-mount="mountPersonality" 
+                                        :on-un-mount="unmountPersonality"  
+                                        :on-remount="remountPersonality"
+                                        :on-reinstall="onPersonalityReinstall"
                                         :on-settings="onSettingsPersonality" />
                                 </TransitionGroup>
                             </div>
@@ -2277,26 +2280,6 @@ export default {
             this.$store.dispatch('refreshDiskUsage');
             this.$store.dispatch('refreshRamUsage');
         },
-        async onRemount(pers) {
-            pers = pers.personality
-            if (!pers) { return { 'status': false, 'error': 'no personality - unmount_personality' } }
-            console.log(`Remounting ${pers.category}/${pers.folder}`)
-            const obj = {
-                category: pers.category,
-                folder: pers.folder,
-                language: pers.language
-            }
-
-
-            try {
-                const res = await axios.post('/unmount_personality', obj);
-            } catch (error) {
-                console.log(error.message, 'unmount_personality - settings')
-                return
-            }
-
-            const res = await axios.post('/mount_personality', obj);
-        },
         async onPersonalitySelected(pers) {
             console.log('on pers', pers)
             // eslint-disable-next-line no-unused-vars
@@ -2330,7 +2313,7 @@ export default {
 
                 } else {
                     console.log('mounting pers')
-                    this.onPersonalityMounted(pers)
+                    this.mountPersonality(pers)
 
                 }
 
@@ -3126,7 +3109,6 @@ export default {
                 const res = await axios.post('/unmount_personality', obj);
 
                 if (res) {
-
                     return res.data
 
                 }
@@ -3138,7 +3120,6 @@ export default {
         },
         async select_personality(pers) {
             if (!pers) { return { 'status': false, 'error': 'no personality - select_personality' } }
-            console.log('select pers', pers)
             const id = this.configFile.personalities.findIndex(item => item === pers.full_path)
 
             const obj = {
@@ -3246,6 +3227,10 @@ export default {
 
             this.isLoading = false
         },
+        async remountPersonality(pers){
+            await this.unmountPersonality(pers);
+            await this.mountPersonality(pers);
+        },
         onPersonalityReinstall(persItem){
             console.log('on reinstall ', persItem)
             this.isLoading = true
@@ -3270,34 +3255,6 @@ export default {
                     this.$refs.toast.showToast("Could not reinstall personality\n" + error.message, 4, false)
                     return { 'status': false }
                 });
-        },
-        onPersonalityMounted(persItem) {
-            //this.isLoading = true
-            console.log('on mount ', persItem)
-            this.$store.dispatch('refreshConfig').then(
-                ()=>{
-                    console.log(`Config refreshed ${this.configFile.personalities}`)
-                    if (this.configFile.personalities.includes(persItem.full_path)) {
-                        //this.$refs.toast.showToast("Personality already mounted", 4, false)
-                        //return
-                        //persItem.ismounted = false
-                        if (this.configFile.personalities.length == 1) {
-                            this.$refs.toast.showToast("Can't unmount last personality", 4, false)
-
-                        } else {
-                            this.unmountPersonality(persItem)
-
-                        }
-                    } else {
-                        //persItem.ismounted = true
-                        this.mountPersonality(persItem)
-                    }
-
-                    //this.isLoading = false
-
-                }
-            )
-
         },
         personalityImgPlacehodler(event) {
             event.target.src = defaultPersonalityImgPlaceholder
