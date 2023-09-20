@@ -114,10 +114,4 @@ python app.py
 Once installed, you need to activate the environment then run the app.
 ## Star History
 
-<a href="https://star-history.com/#parisneo/lollms-webui&Date">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=parisneo/lollms-webui&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=parisneo/lollms-webui&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=parisneo/lollms-webui&type=Date" />
-  </picture>
-</a>
+[![Star History Chart](https://api.star-history.com/svg?repos=ParisNeo/lollms,ParisNeo/lollms-webui,ParisNeo/lollms_cpp_client,ParisNeo/lollms_bindings_zoo,ParisNeo/lollms_personalities_zoo&type=Date)](https://star-history.com/#ParisNeo/lollms&ParisNeo/lollms-webui&ParisNeo/lollms_cpp_client&ParisNeo/lollms_bindings_zoo&ParisNeo/lollms_personalities_zoo&Date)
