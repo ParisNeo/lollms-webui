@@ -26,7 +26,7 @@ ChangesAssociations=yes
 DisableProgramGroupPage=yes
 LicenseFile=../../LICENSE
 InfoBeforeFile=../../CODE_OF_CONDUCT.md
-InfoAfterFile=../../README.md
+InfoAfterFile=./README.md
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
 OutputBaseFilename=lollms-with-petals

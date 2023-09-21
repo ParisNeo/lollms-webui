@@ -16,4 +16,3 @@ if %errorlevel% neq 0 (
 wsl.exe -d Ubuntu-20.04 ./install_script.sh
 
 echo Installation and script execution complete!
-pause
