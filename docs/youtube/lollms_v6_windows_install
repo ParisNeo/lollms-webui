@@ -2,7 +2,7 @@ Hi there. Today I'll show you how to install and use lollms v6 on windows using 
 First go to the github page shown below and download lollms_v6_cpu.exe.
 Then, run the downloaded file.
 Sometimes, windows may warn you as the executable is not signed and not yet massively used. You can simply ignore the warning and procede with the installation.
-You will be presented with a classic installer, accept the licence and read the code of conduct, then the installer will install the tool on your PC.
+You will be presented with a classic installer, accept the license and read the code of conduct, then the installer will install the tool on your PC.
 Optionally, you can add a shortcut to your desktop for fast and easy access.
 The install may take a while, so let's fast forward.
 After the install, you may get this error if you did run the installer as regular user. It is windows trying to forbid the installer from creating the start menu element. Don't bother, you can just press ok and finish the installation.

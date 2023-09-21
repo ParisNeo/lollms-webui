@@ -7,14 +7,14 @@ content: |
   ```
   ---------
   Extra information:
-  Licence: apache 2.0
+  license: apache 2.0
   Program type: Stand alone.
   Documentation:
   Make README.md with the following table of contents:
   ## Description
   ## Installation
   ## Usage
-  ## Licence
+  ## license
   ## Contribute
   ## Ethical guidelines
   Instructions:

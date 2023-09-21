@@ -8,7 +8,7 @@ If not done yet, and if you think this project is useful, please consider giftin
 Before starting, let me tell you what this project is made for. This project is aimed to be a hub to all LLM models that people can use. You will be able to choose your preferred binding, your preferred model, and your preferred or needed personality then have it do what you need. Help you enhance your mails, help you write an essai, help you debug a code, help you organize your thoughts, help you find answers to your questions, search for you, organize your data, generate images for you, discuss with you about things. And much more.
 
 
-This project is under Apache 2.0 licence which is an open source licence that can be used commercially, so people can built things from this and use it in their business. 
+This project is under Apache 2.0 license which is an open source license that can be used commercially, so people can built things from this and use it in their business. 
 
 Also, please don't confuse the LoLLMs application built by Nomic AI which is an interesting more professional application that you can find on their website lollms.io. It has a great community and I encourage you to check it up. 
 

@@ -134,7 +134,7 @@ Once installed, you need to activate the environment then run the app.
 By using this tool, users agree to follow these guidelines :
 - This tool is not meant to be used for building and spreading fakenews / misinformation.
 - You are responsible for what you generate by using this tool. The creators will take no responsibility for anything created via this lollms.
-- You can use lollms in your own project free of charge if you agree to respect the Apache 2.0 licenceterms. Please refer to https://www.apache.org/licenses/LICENSE-2.0 .
+- You can use lollms in your own project free of charge if you agree to respect the Apache 2.0 licenseterms. Please refer to https://www.apache.org/licenses/LICENSE-2.0 .
 - You are not allowed to use lollms to harm others directly or indirectly. This tool is meant for peacefull purposes and should be used for good never for bad.
 - Users must comply with local laws when accessing content provided by third parties like OpenAI API etc., including copyright restrictions where applicable.
 
@@ -143,8 +143,8 @@ Large Language Models are amazing tools that can be used for diverse purposes. L
 
 The performance of the system varies depending on the used model, its size and the dataset on whichit has been trained. The larger a language model's training set (the more examples), generally speaking - better results will follow when using such systems as opposed those with smaller ones. But there is still no garantee that the output generated from any given prompt would always be perfect and it may contain errors due various reasons. So please make sure you do not use it for serious matters like choosing medications or making financial decisions without consultating an expert first hand ! 
 
-# Licence
-This repository uses code under ApacheLicense Version 2.0 , see [LICENCE](https://github.com/ParisNeo/lollms-webui/blob/main/LICENSE) file for details about rights granted with respect to usage & distribution
+# license
+This repository uses code under ApacheLicense Version 2.0 , see [license](https://github.com/ParisNeo/lollms-webui/blob/main/LICENSE) file for details about rights granted with respect to usage & distribution
 
 # Copyright:
 ParisNeo 2023
