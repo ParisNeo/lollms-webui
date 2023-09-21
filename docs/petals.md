@@ -114,11 +114,11 @@ I will probably make a video explaining exactly how to install and use this tool
 I hope you like this. Tell me if you have questions or notice a bug or something.
 
 Here is my free discord channel: https://discord.gg/vHRwSxb5
-My twitter: https://twitter.com/SpaceNerduino
-My github: https://github.com/ParisNeo
-My youtube channel: https://www.youtube.com/@Parisneo
-Lollms community on twitter: https://twitter.com/i/communities/1695793673017966985
-lollms-webui github: https://github.com/ParisNeo/lollms-webui
+- My twitter: https://twitter.com/SpaceNerduino
+- My github: https://github.com/ParisNeo
+- My youtube channel: https://www.youtube.com/@Parisneo
+- Lollms community on twitter: https://twitter.com/i/communities/1695793673017966985
+- lollms-webui github: https://github.com/ParisNeo/lollms-webui
 
 
 Best regards 
