@@ -1,5 +1,6 @@
-Thank you very much. I actually managed only to make it run on linux.
-On windows, there is a dependency that is making this very very difficult: uvloop. This dependency explicitly rejects any attempt to install it on windows. There is active work to make it windows friendly, but the pull requests are not yet accepted and they don't seem to be fully working .
+Thank you very much. I actually managed only to make it run natively on linux.
+
+On windows, there is a dependency that is making this very very difficult: uvloop. This dependency explicitly rejects any attempt to install it on windows. There is active work to make it windows friendly, but the pull requests are not yet accepted and they don't seem to be fully working yet. So we may expect them to make a windows version in the upcoming months but not  sooner.
 
 This means that my best shot at doing this is to use WSL.
 
@@ -35,25 +36,32 @@ Now Install petals
 ![image](https://github.com/TheSCInitiative/bounties/assets/827993/a818eb40-387d-4fc5-8c88-5b8912648b20)
 
 It automatically installs cuda and stuff:
+
 ![image](https://github.com/TheSCInitiative/bounties/assets/827993/4e3c7f1a-a99a-4083-8df7-6ff0065f9cf5)
 
-Now it is using petals
+Now it is using petals:
+
 ![image](https://github.com/TheSCInitiative/bounties/assets/827993/6400deb6-255a-48b0-bfc3-1a26c01b15a2)
 
-To finish, I create an exe installer:
+To finish, I created an exe installer using innosetup:
+
 ![image](https://github.com/TheSCInitiative/bounties/assets/827993/873fa7d2-5688-4f6f-a5dd-a3743eb9df92)
 
-One installed you will have three new icons
-![image](https://github.com/TheSCInitiative/bounties/assets/827993/e10cc42a-b7af-4e1e-9750-aed1fd55880a)
-The lollms with petals launches lollms with petals support
-the petals server runs a petals-team/StableBeluga2 server
-the ubuntu is a terminal to interact with the wsl image that is running lollms.
+Once installed you will have three new icons:
+
+![image](https://github.com/TheSCInitiative/bounties/assets/827993/71932ff1-2c01-4155-96fd-e525c94b5a50)
+
+- The lollms with petals launches lollms with petals support
+- The petals server runs a petals-team/StableBeluga2 server
+- The ubuntu is a terminal to interact with the wsl image that is running lollms or code using petals or any of the lollms library tools.
 
 OK, now I finished making the installer. I'll make a video on how to do the install.
+
 You can find all the scripts to build the installer in the lollms repository:
+
 [https://github.com/ParisNeo/lollms-webui/tree/main/scripts/wsl](https://github.com/ParisNeo/lollms-webui/tree/main/scripts/wsl)
 
-The installer is built using innosetup tool (free to download from the internet)
+The installer is built using innosetup tool (free to download from the internet):
 
 Steps:
 - Download the installer (make sure your antivirus don't block the download because the installer is new and sometimes the antiviruses consider that its reputation is not high enough for it to be safe)
@@ -63,9 +71,9 @@ Steps:
 
 
 - After copying files, a console window wil appear. If you don't have wsl, it will install it and install an ubuntu distribution, It will ask you for a user name and password to be used for the ubuntu distribution. Otherwize, it may load a terminal. Just type exit to go on.
-- After that another script is executed, this script requires sudo privileges, so make sure you type the password you have created when installed the ubuntu wsl. This script will update all files, install cuda and add it to the path and setups the environment variables, configures the whole system, install miniconda, clone lollms-webui repository, install all required files. 
+- After that, another script is executed, this script requires sudo privileges, so make sure you type the password you have created when installed the ubuntu wsl. This script will update all files, install cuda, add it to the path and setup the environment variables, configure the whole system, install miniconda, clone lollms-webui repository, install all required files. 
 - Now you have finished the install, you will be asked if you want to run lollms, you can accept.
-- Notice that there will be three new shortcuts on the desktop:
+- Notice that there will be three new shortcuts on the desktop as stated before:
 
 ![image](https://github.com/TheSCInitiative/bounties/assets/827993/1250872c-a720-4656-a373-d4d43f125433)
 
@@ -81,6 +89,7 @@ Once ready, open the models zoo and select a model you want to use for petals. W
 ![image](https://github.com/TheSCInitiative/bounties/assets/827993/d1981e83-ea36-4df4-be99-ca21cb8ed168)
 
 You can run the petals server by double clicking the petals server icon on the desktop. This will use your machine as part of the hive mind:
+
 ![image](https://github.com/TheSCInitiative/bounties/assets/827993/1176c8f5-5e64-4df1-baf1-d8ada8d49b47)
 
 
@@ -92,25 +101,24 @@ Now this is all in my lollms hugging face repository.
 You can find the code for wsl install of everything in here:
 [https://github.com/ParisNeo/lollms-webui/tree/main/scripts/wsl](https://github.com/ParisNeo/lollms-webui/tree/main/scripts/wsl)
 
-You can modify the code to adapt any aspect to your needs then use innosetup to generate an installer.
+You can modify the code to adapt any aspect to your needs then use innosetup to generate an installer or even make an installer that is independant from lollms if you don't need it.
 
 I also provide an executable installer on my release page of lollms, just select the petals version:
 https://github.com/ParisNeo/lollms-webui/releases/tag/v6.5.0
 
 The one with wsl and petals support is [lollms-with-petals.exe](https://github.com/ParisNeo/lollms-webui/releases/download/v6.5.0/lollms-with-petals.exe)
 
-I will probably make a video explaining exactly how to install this tool.
+I will probably make a video explaining exactly how to install and use this tool.
 
 
 I hope you like this. Tell me if you have questions or notice a bug or something.
-Here is my free discord: https://discord.gg/vHRwSxb5
+
+Here is my free discord channel: https://discord.gg/vHRwSxb5
 My twitter: https://twitter.com/SpaceNerduino
+My github: https://github.com/ParisNeo
+My youtube channel: https://www.youtube.com/@Parisneo
+Lollms community on twitter: https://twitter.com/i/communities/1695793673017966985
+lollms-webui github: https://github.com/ParisNeo/lollms-webui
+
 
 Best regards 
-
-
-
-
-
-
-
