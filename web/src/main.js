@@ -304,9 +304,9 @@ export const store = createStore({
         .then(response => {
             console.log("HERE WE GO")
             let models_zoo = response.data
+            models_zoo = models_zoo.filter(model => model.variants &&  model.variants.length>0);
             console.log("models_zoo")
             console.log(models_zoo)
-            models_zoo = models_zoo.filter(model => model.variants &&  model.variants.length>0);
             if(this.state.sort_type==0){ //  Sort by date
               models_zoo.sort((a, b) => {
                 const dateA = new Date(a.last_commit_time);
@@ -384,6 +384,9 @@ export const store = createStore({
                   model.selected = false; 
                 }
             });            
+            console.log("models_zoo")
+            console.log(models_zoo)
+
             commit('setModelsZoo', models_zoo)
             this.state.refreshingModelsList=false;
         })
