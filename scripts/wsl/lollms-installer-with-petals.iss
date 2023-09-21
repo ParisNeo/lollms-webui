@@ -48,6 +48,7 @@ Source: "lollms_petals_installer.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "lollms_petals_runner.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "run_script.sh"; DestDir: "{app}"; Flags: ignoreversion
 Source: "ubuntu.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "../../assets\logo.ico"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
@@ -58,8 +59,9 @@ Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\shell\open\command"; Value
 Root: HKA; Subkey: "Software\Classes\Applications\{#MyAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".myp"; ValueData: ""
 
 [Icons]
-Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\logo.ico"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; IconFilename: "{app}\logo.ico"
+Name: "{autodesktop}\ubuntu.bat"; Filename: "{app}\ubuntu.bat"; Tasks: desktopicon; IconFilename: "{app}\logo.ico"
 
 [Run]
 Filename: "{app}\lollms_petals_installer.bat"; Flags: shellexec
