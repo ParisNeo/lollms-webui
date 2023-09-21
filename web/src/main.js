@@ -222,7 +222,9 @@ export const store = createStore({
           commit('setBindingsArr',bindingsArr)
       },
       async refreshModels({ commit }) {
+          console.log("Fetching models")
           let modelsArr = await api_get_req("list_models");
+          console.log(`Found ${modelsArr}`)
           let selectedModel = await api_get_req('get_active_model');
           if(selectedModel!=undefined){
             commit('setselectedModel',selectedModel["model"])
@@ -256,9 +258,6 @@ export const store = createStore({
             const keys = Object.keys(resp)
             // for each gpu
             for (let i = 0; i < resp.nb_gpus; i++) {
-
-
-
 
                 const total_vram = resp[`gpu_${i}_total_vram`];
                 const used_vram = resp[`gpu_${i}_used_vram`];
@@ -303,7 +302,10 @@ export const store = createStore({
         this.state.refreshingModelsList=true;
         axios.get('/get_available_models')
         .then(response => {
+            console.log("HERE WE GO")
             let models_zoo = response.data
+            console.log("models_zoo")
+            console.log(models_zoo)
             models_zoo = models_zoo.filter(model => model.variants &&  model.variants.length>0);
             if(this.state.sort_type==0){ //  Sort by date
               models_zoo.sort((a, b) => {
@@ -347,7 +349,9 @@ export const store = createStore({
                   }
                 }
 
-              }
+
+            }
+
 
               if (index == -1) {
                   let newModelEntry = {}

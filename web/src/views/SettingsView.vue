@@ -2133,8 +2133,10 @@ export default {
             // this.modelsArr.sort()
             // this.persCatgArr.sort()
             // this.persArr.sort()
+            console.log("models_zoo:")
+            console.log(this.models)
 
-
+            
             //await this.getPersonalitiesArr()
             this.personality_category = this.configFile.personality_category
             this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category)

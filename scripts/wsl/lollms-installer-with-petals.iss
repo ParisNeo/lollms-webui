@@ -48,7 +48,11 @@ Source: "lollms_petals_installer.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "lollms_petals_runner.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "run_script.sh"; DestDir: "{app}"; Flags: ignoreversion
 Source: "ubuntu.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "petals_server.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "petals_server.sh"; DestDir: "{app}"; Flags: ignoreversion
 Source: "../../assets\logo.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "../../assets\ubuntu.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "../../assets\petals.ico"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
@@ -61,7 +65,8 @@ Root: HKA; Subkey: "Software\Classes\Applications\{#MyAppExeName}\SupportedTypes
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\logo.ico"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; IconFilename: "{app}\logo.ico"
-Name: "{autodesktop}\ubuntu.bat"; Filename: "{app}\ubuntu.bat"; Tasks: desktopicon; IconFilename: "{app}\logo.ico"
+Name: "{autodesktop}\ubuntu.bat"; Filename: "{app}\ubuntu.bat"; Tasks: desktopicon; IconFilename: "{app}\ubuntu.ico"    
+Name: "{autodesktop}\petals_server.bat"; Filename: "{app}\petals_server.bat"; Tasks: desktopicon; IconFilename: "{app}\petals.ico"
 
 [Run]
 Filename: "{app}\lollms_petals_installer.bat"; Flags: shellexec
