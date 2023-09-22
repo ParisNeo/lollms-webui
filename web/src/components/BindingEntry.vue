@@ -49,7 +49,6 @@
       </div>
       <div class="flex items-center flex-row-reverse gap-2 my-1">
         <!-- CONTROLS -->
-        <DynamicUIRenderer v-if="binding.ui" class="w-full h-full" :code="binding.ui"></DynamicUIRenderer>
         <button v-if="!binding.installed" title="Click to install" type="button" @click.stop="toggleInstall"
           class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
           Install
@@ -69,6 +68,7 @@
           <span class="sr-only">Settings</span>
         </button>
       </div>
+      <DynamicUIRenderer v-if="binding.ui" class="w-full h-full" :code="binding.ui"></DynamicUIRenderer>
       <!-- <div class="  justify-end">
           <i data-feather="sliders" class="w-5 m-1"></i>
         </div>

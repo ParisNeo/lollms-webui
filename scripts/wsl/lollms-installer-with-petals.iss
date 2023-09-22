@@ -52,6 +52,8 @@ Source: "run_script.sh"; DestDir: "{app}"; Flags: ignoreversion
 Source: "ubuntu.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "petals_server.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "petals_server.sh"; DestDir: "{app}"; Flags: ignoreversion
+Source: "uninstall.bat"; DestDir: "{app}"; Flags: ignoreversion
+
 Source: "../../assets\logo.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "../../assets\ubuntu.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "../../assets\petals.ico"; DestDir: "{app}"; Flags: ignoreversion
@@ -63,6 +65,9 @@ Filename: "{app}\ubuntu_installer.bat"; Flags: shellexec  waituntilterminated
 Filename: "{app}\requirements_installer.bat"; Flags: shellexec  waituntilterminated
 
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: shellexec postinstall skipifsilent
+
+[UninstallRun]
+Filename: "{app}\uninstall.bat"; Flags: shellexec; RunOnceId: 1
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\logo.ico"

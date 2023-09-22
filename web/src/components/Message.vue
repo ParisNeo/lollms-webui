@@ -451,6 +451,10 @@ export default {
                 }
             }
         },
+        'message.ui': function (newContent) {
+            console.log("ui changed")
+            console.log(this.message_ui)
+        },
         showConfirmation() {
             nextTick(() => {
                 feather.replace()
