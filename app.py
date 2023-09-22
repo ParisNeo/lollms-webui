@@ -981,6 +981,13 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     bnd["folder"]=f.stem
                     installed = (self.lollms_paths.personal_configuration_path/"bindings"/f.stem/f"config.yaml").exists()
                     bnd["installed"]=installed
+                    ui_file_path = f/"ui.html"
+                    if ui_file_path.exists():
+                        with ui_file_path.open("r") as file:
+                            text_content = file.read()
+                            bnd["ui"]=text_content
+                    else:
+                        bnd["ui"]=None
                     icon_file = self.find_extension(self.lollms_paths.bindings_zoo_path/f"{f.name}", "logo", [".svg",".gif",".png"])
                     if icon_file is not None:
                         icon_path = Path(f"bindings/{f.name}/logo{icon_file.suffix}")

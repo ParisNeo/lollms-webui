@@ -247,7 +247,6 @@ import feather from 'feather-icons'
 import defaultImgPlaceholder from "../assets/default_model.png"
 import InteractiveMenu from "@/components/InteractiveMenu.vue"
 
-
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
   components:{InteractiveMenu},
