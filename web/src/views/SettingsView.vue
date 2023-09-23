@@ -1084,6 +1084,7 @@
                                 <BindingEntry ref="bindingZoo" v-for="(binding, index) in bindingsArr"
                                     :key="'index-' + index + '-' + binding.folder" :binding="binding"
                                     :on-selected="onSelectedBinding" :on-reinstall="onReinstallBinding"
+                                    :on-unInstall="onUnInstallBinding"
                                     :on-install="onInstallBinding" :on-settings="onSettingsBinding"
                                     :on-reload-binding="onReloadBinding"
                                     :selected="binding.folder === configFile.binding_name">
@@ -2597,9 +2598,44 @@ export default {
 
                 //     return
                 // }
-                this.update_binding(binding_object.binding.folder)
+                if (binding_object.disclaimer){
+                    this.$refs.yesNoDialog.askQuestion(binding_object.disclaimer, 'Proceed', 'Cancel')
+                    if (res) {
+                        this.update_binding(binding_object.binding.folder)
+                    }
+
+                }
+                else{
+                    this.update_binding(binding_object.binding.folder)
+                }
                 //console.log('lol',binding_object)
             }
+        },
+        onUnInstallBinding(binding_object){
+            this.isLoading = true
+            axios.post('/unInstall_binding', { name: binding_object.binding.folder }).then((res) => {
+
+                if (res) {
+                    this.isLoading = false
+                    console.log('unInstall_binding', res)
+                    if (res.data.status) {
+                        this.$refs.toast.showToast("Reinstalled binding successfully!", 4, true)
+                    } else {
+                        this.$refs.toast.showToast("Could not reinstall binding", 4, false)
+                    }
+                    return res.data;
+                }
+                this.isLoading = false
+                binding_object.isInstalled=False
+
+            })
+                // eslint-disable-next-line no-unused-vars
+
+                .catch(error => {
+                    this.isLoading = false
+                    this.$refs.toast.showToast("Could not reinstall binding\n" + error.message, 4, false)
+                    return { 'status': false }
+                });            
         },
         onReinstallBinding(binding_object) {
             this.isLoading = true

@@ -243,6 +243,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         
         self.add_endpoint("/install_model_from_path", "install_model_from_path", self.install_model_from_path, methods=["GET"])
         
+        self.add_endpoint("/unInstall_binding", "unInstall_binding", self.unInstall_binding, methods=["POST"])
         self.add_endpoint("/reinstall_binding", "reinstall_binding", self.reinstall_binding, methods=["POST"])
         self.add_endpoint("/reinstall_personality", "reinstall_personality", self.reinstall_personality, methods=["POST"])
 
@@ -988,6 +989,13 @@ class LoLLMsWebUI(LoLLMsAPPI):
                             bnd["ui"]=text_content
                     else:
                         bnd["ui"]=None
+                    disclaimer_file_path = f/"disclaimer.md"
+                    if disclaimer_file_path.exists():
+                        with disclaimer_file_path.open("r") as file:
+                            text_content = file.read()
+                            bnd["disclaimer"]=text_content
+                    else:
+                        bnd["disclaimer"]=None
                     icon_file = self.find_extension(self.lollms_paths.bindings_zoo_path/f"{f.name}", "logo", [".svg",".gif",".png"])
                     if icon_file is not None:
                         icon_path = Path(f"bindings/{f.name}/logo{icon_file.suffix}")
@@ -1286,7 +1294,36 @@ class LoLLMsWebUI(LoLLMsAPPI):
             ASCIIColors.error(f"Couldn't build binding: [{ex}]")
             trace_exception(ex)
             return jsonify({"status":False, 'error':str(ex)})
-        
+
+    def unInstall_binding(self):
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return jsonify({"status":False, 'error':str(e)})
+        ASCIIColors.info(f"- UnInstalling binding {data['name']}...")
+        try:
+            ASCIIColors.info("Unmounting binding and model")
+            self.binding = None
+            self.model = None
+            for per in self.mounted_personalities:
+                per.model = None
+            gc.collect()
+            ASCIIColors.info("UnInstalling binding")
+            self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL)
+            self.binding.uninstall()
+            ASCIIColors.success("Binding UnInstalled successfully")
+            self.config.binding_name= None
+            if self.config.auto_save:
+                ASCIIColors.info("Saving configuration")
+                self.config.save_config()
+            ASCIIColors.info("Please select a binding")
+            return jsonify({"status": True}) 
+        except Exception as ex:
+            ASCIIColors.error(f"Couldn't uninstall binding: [{ex}]")
+            trace_exception(ex)
+            return jsonify({"status":False, 'error':str(ex)})        
 
     def clear_uploads(self):
         ASCIIColors.info("")
