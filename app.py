@@ -1486,6 +1486,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             if language:
                 package_path += ":" + language
             if package_path in self.config["personalities"]:
+                ASCIIColors.error("Can't mount exact same personality twice")
                 return jsonify({"status": False,
                                 "error":"Can't mount exact same personality twice",
                                 "personalities":self.config["personalities"],
@@ -1513,6 +1514,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
         else:
             pth = str(config_file).replace('\\','/')
             ASCIIColors.error(f"nok : Personality not found @ {pth}")
+            
+            ASCIIColors.yellow(f"Available personalities: {[p.name for p in self.mounted_personalities]}")
             return jsonify({"status": False, "error":f"Personality not found @ {pth}"})         
 
 
@@ -1567,6 +1570,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         else:
             pth = str(config_file).replace('\\','/')
             ASCIIColors.error(f"nok : Personality not found @ {pth}")
+            ASCIIColors.yellow(f"Available personalities: {[p.name for p in self.mounted_personalities]}")
             return jsonify({"status": False, "error":f"Personality not found @ {pth}"})         
 
     def p_unmount_personality(self):
@@ -1603,7 +1607,12 @@ class LoLLMsWebUI(LoLLMsAPPI):
                         "active_personality_id":self.config["active_personality_id"]
                         })         
         except:
-            ASCIIColors.error(f"nok : Personality not found @ {category}/{name}")
+            if language:
+                ASCIIColors.error(f"nok : Personality not found @ {category}/{name}:{language}")
+            else:
+                ASCIIColors.error(f"nok : Personality not found @ {category}/{name}")
+                
+            ASCIIColors.yellow(f"Available personalities: {[p.name for p in self.mounted_personalities]}")
             return jsonify({"status": False, "error":"Couldn't unmount personality"})         
          
     def get_active_personality_settings(self):
