@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative items-start p-4 hover:bg-primary-light  rounded-lg mb-2 shadow-lg border-2 cursor-pointer select-none"
+    class="relative items-start p-4 hover:bg-primary-light  rounded-lg mb-2 shadow-lg border-2 select-none"
     :class="computed_classes" 
     :title="model.name">
     <!-- CUSTOM MODEL VIEW -->
@@ -31,13 +31,7 @@
         </button>
         Custom model
       </div>
-      <button v-if="model.isInstalled" type="button" title="Select"
-            @click="toggleSelected"
-            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
-            <i data-feather="check" :class="selected?'border-2 border-blue-300 rounded bg-green-300 w-5':'border-2 border-blue-300 rounded bg-gray-100 w-5'"></i>
-            <span class="sr-only">Select</span>
-      </button>        
-
+      <input v-model="model.selected" @click.stop="toggleSelected" type="checkbox" class='cursor-pointer border-2 border-blue-300 rounded w-10 h-10'>
       <div>
         <button v-if="model.isInstalled" title="Delete file from disk" type="button" @click.stop="toggleInstall"
           class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
@@ -117,12 +111,7 @@
         <div class="grow">
           <!-- EMPTY SPACE FILLER -->
         </div>
-        <button v-if="model.isInstalled" type="button" title="Select"
-            @click="toggleSelected"
-            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
-            <i data-feather="check" :class="selected?'border-2 border-blue-300 rounded bg-green-300 w-5':'border-2 border-blue-300 rounded bg-gray-100 w-5'"></i>
-            <span class="sr-only">Select</span>
-        </button>        
+        <input v-model="model.selected" @click.stop="toggleSelected" type="checkbox" class='cursor-pointer border-2 border-blue-300 rounded w-10 h-10'>
 
         <InteractiveMenu  :commands="commandsList" :force_position=2 title="Menu">
         
@@ -246,7 +235,6 @@ import { nextTick } from 'vue'
 import feather from 'feather-icons'
 import defaultImgPlaceholder from "../assets/default_model.png"
 import InteractiveMenu from "@/components/InteractiveMenu.vue"
-
 
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {

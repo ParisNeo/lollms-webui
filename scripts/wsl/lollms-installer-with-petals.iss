@@ -25,7 +25,7 @@ DefaultDirName={userappdata}\{#MyAppName}
 ChangesAssociations=yes
 DisableProgramGroupPage=yes
 LicenseFile=../../LICENSE
-InfoBeforeFile=../../CODE_OF_CONDUCT.md
+InfoBeforeFile=./explainer.md.
 InfoAfterFile=./README.md
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
@@ -44,31 +44,33 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "install_script.sh"; DestDir: "{app}"; Flags: ignoreversion
-Source: "lollms_petals_installer.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "wsl_installer.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ubuntu_installer.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "requirements_installer.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "lollms_petals_runner.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "run_script.sh"; DestDir: "{app}"; Flags: ignoreversion
 Source: "ubuntu.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "petals_server.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "petals_server.sh"; DestDir: "{app}"; Flags: ignoreversion
+Source: "uninstall.bat"; DestDir: "{app}"; Flags: ignoreversion
+
 Source: "../../assets\logo.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "../../assets\ubuntu.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "../../assets\petals.ico"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
-[Registry]
-Root: HKA; Subkey: "Software\Classes\{#MyAppAssocExt}\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppAssocKey}"; ValueData: ""; Flags: uninsdeletevalue
-Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}"; ValueType: string; ValueName: ""; ValueData: "{#MyAppAssocName}"; Flags: uninsdeletekey
-Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
-Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
-Root: HKA; Subkey: "Software\Classes\Applications\{#MyAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".myp"; ValueData: ""
+[Run]
+Filename: "{app}\wsl_installer.bat"; Flags: shellexec  waituntilterminated
+Filename: "{app}\ubuntu_installer.bat"; Flags: shellexec  waituntilterminated
+Filename: "{app}\requirements_installer.bat"; Flags: shellexec  waituntilterminated
+
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: shellexec postinstall skipifsilent
+
+[UninstallRun]
+Filename: "{app}\uninstall.bat"; Flags: shellexec; RunOnceId: 1
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\logo.ico"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; IconFilename: "{app}\logo.ico"
 Name: "{autodesktop}\ubuntu.bat"; Filename: "{app}\ubuntu.bat"; Tasks: desktopicon; IconFilename: "{app}\ubuntu.ico"    
 Name: "{autodesktop}\petals_server.bat"; Filename: "{app}\petals_server.bat"; Tasks: desktopicon; IconFilename: "{app}\petals.ico"
-
-[Run]
-Filename: "{app}\lollms_petals_installer.bat"; Flags: shellexec
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: shellexec postinstall skipifsilent
-

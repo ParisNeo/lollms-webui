@@ -56,10 +56,16 @@
           <span class="sr-only">Click to install</span>
         </button>
         <button v-if="binding.installed" title="Click to Reinstall binding" type="button"  @click.stop="toggleReinstall"
-          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-          Reinstall binding
+          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-green-700 hover:bg-red-800 focus:ring-4 focus:ring-green-300  rounded-lg  dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-red-900">
+          Reinstall
 
-          <span class="sr-only">Reinstall binding</span>
+          <span class="sr-only">Reinstall</span>
+        </button>
+        <button v-if="binding.installed" title="Click to Reinstall binding" type="button"  @click.stop="toggleUnInstall"
+          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+          Uninstall
+
+          <span class="sr-only">UnInstall</span>
         </button>
         <button v-if="selected" title="Click to open Settings" type="button" @click.stop="toggleSettings"
           class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -68,6 +74,7 @@
           <span class="sr-only">Settings</span>
         </button>
       </div>
+      <DynamicUIRenderer v-if="binding.ui" class="w-full h-full" :code="binding.ui"></DynamicUIRenderer>
       <!-- <div class="  justify-end">
           <i data-feather="sliders" class="w-5 m-1"></i>
         </div>
@@ -119,13 +126,17 @@ import { nextTick } from 'vue'
 import feather from 'feather-icons'
 import botImgPlaceholder from "../assets/logo.svg"
 import userImgPlaceholder from "../assets/default_user.svg"
+import DynamicUIRenderer from "@/components/DynamicUIRenderer.vue"
+
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
+  components:{DynamicUIRenderer},
   props: {
     binding: {},
     onSelected: Function,
     onReinstall: Function,
     onInstall: Function,
+    onUnInstall: Function,
     onSettings: Function,
     onReloadBinding: Function,
     selected: Boolean,
@@ -160,6 +171,9 @@ export default {
     },
     toggleInstall() {
         this.onInstall(this)
+    },
+    toggleUnInstall() {
+        this.onUnInstall(this)
     },
     toggleReinstall() {
       this.onReinstall(this)
