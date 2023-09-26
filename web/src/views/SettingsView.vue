@@ -2389,8 +2389,8 @@ export default {
             // }
             this.modelDownlaodInProgress = false
             this.addModel = {}
-            this.$refs.toast.showToast("Model installation aborted", 4, false)
             socket.emit('cancel_install', { model_name: modelEntry.model_name, binding_folder: modelEntry.binding_folder, model_url: modelEntry.model_url, patreon: model.patreon?model.patreon:"None"});
+            this.$refs.toast.showToast("Model installation aborted", 4, false)
         },
 
         // Model installation

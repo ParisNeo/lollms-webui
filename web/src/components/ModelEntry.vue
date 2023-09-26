@@ -31,7 +31,7 @@
         </button>
         Custom model
       </div>
-      <input v-model="model.selected" @click.stop="toggleSelected" type="checkbox" class='cursor-pointer border-2 border-blue-300 rounded w-10 h-10'>
+      <input v-if="model.isInstalled" v-model="model.selected" @click.stop="toggleSelected" type="checkbox" class='cursor-pointer border-2 border-blue-300 rounded w-10 h-10'>
       <div>
         <button v-if="model.isInstalled" title="Delete file from disk" type="button" @click.stop="toggleInstall"
           class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
@@ -111,7 +111,7 @@
         <div class="grow">
           <!-- EMPTY SPACE FILLER -->
         </div>
-        <input v-model="model.selected" @click.stop="toggleSelected" type="checkbox" class='cursor-pointer border-2 border-blue-300 rounded w-10 h-10'>
+        <input v-if="model.isInstalled" v-model="model.selected" @click.stop="toggleSelected" type="checkbox" class='cursor-pointer border-2 border-blue-300 rounded w-10 h-10'>
 
         <InteractiveMenu  :commands="commandsList" :force_position=2 title="Menu">
         
@@ -324,6 +324,7 @@ export default {
       //navigator.clipboard.writeText(this.path)
     },
     toggleCancelInstall() {
+      installing=false;
       this.onCancelInstall(this)
 
     },
