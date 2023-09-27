@@ -31,6 +31,7 @@ import shutil
 import re
 import string
 import requests
+from datetime import datetime
 
 def terminate_thread(thread):
     if thread:
@@ -383,7 +384,7 @@ class LoLLMsAPPI(LollmsApplication):
         @socketio.on('uninstall_model')
         def uninstall_model(data):
             model_path = data['path']
-            model_type:str=data["type"]
+            model_type:str=data.get("type","ggml")
             installation_dir = self.lollms_paths.personal_models_path/self.config["binding_name"]
             
             binding_folder = self.config["binding_name"]
@@ -789,6 +790,7 @@ class LoLLMsAPPI(LollmsApplication):
             self.connections[client_id]["cancel_generation"]=False
             
             if not self.model:
+                ASCIIColors.error("Model not selected. Please select a model")
                 self.notify("Model not selected. Please select a model", False, client_id)
                 return
  
@@ -1004,6 +1006,7 @@ class LoLLMsAPPI(LollmsApplication):
     def prepare_reception(self, client_id):
         self.connections[client_id]["generated_text"] = ""
         self.nb_received_tokens = 0
+        self.start_time = datetime.now()
 
 
     def clean_string(self, input_string):
@@ -1256,6 +1259,7 @@ class LoLLMsAPPI(LollmsApplication):
 
         if message_type == MSG_TYPE.MSG_TYPE_NEW_MESSAGE:
             self.nb_received_tokens = 0
+            self.start_time = datetime.now()
             self.new_message(
                                 client_id, 
                                 self.personality.name, 
@@ -1272,7 +1276,11 @@ class LoLLMsAPPI(LollmsApplication):
             self.close_message(client_id)
 
         elif message_type == MSG_TYPE.MSG_TYPE_CHUNK:
-            ASCIIColors.green(f"Received {self.nb_received_tokens} tokens",end="\r")
+            dt =(datetime.now() - self.start_time).seconds
+            if dt==0:
+                dt=1
+            spd = self.nb_received_tokens/dt
+            ASCIIColors.green(f"Received {self.nb_received_tokens} tokens (speed: {spd:.2f}t/s)              ",end="\r",flush=True) 
             sys.stdout = sys.__stdout__
             sys.stdout.flush()
             self.connections[client_id]["generated_text"] += chunk
@@ -1297,7 +1305,11 @@ class LoLLMsAPPI(LollmsApplication):
         elif message_type == MSG_TYPE.MSG_TYPE_FULL:
             self.connections[client_id]["generated_text"] = chunk
             self.nb_received_tokens += 1
-            ASCIIColors.green(f"Received {self.nb_received_tokens} tokens",end="\r",flush=True)
+            dt =(datetime.now() - self.start_time).seconds
+            if dt==0:
+                dt=1
+            spd = self.nb_received_tokens/dt
+            ASCIIColors.green(f"Received {self.nb_received_tokens} tokens (speed: {spd:.2f}t/s)              ",end="\r",flush=True) 
             self.update_message(client_id, chunk,  parameters, metadata, ui=None, msg_type=message_type)
             return True
         # Stream the generated text to the frontend
@@ -1330,6 +1342,7 @@ class LoLLMsAPPI(LollmsApplication):
 
     def _generate(self, prompt, n_predict, client_id, callback=None):
         self.nb_received_tokens = 0
+        self.start_time = datetime.now()
         if self.model is not None:
             ASCIIColors.info(f"warmup for generating {n_predict} tokens")
             if self.config["override_personality_model_parameters"]:
