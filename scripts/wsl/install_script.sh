@@ -29,22 +29,39 @@ cd ~/lollms-webui
 conda create --prefix ./env python=3.10 pip -y
 conda activate ./env
 
-# install cuda
-wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-wsl-ubuntu.pin
-sudo mv cuda-wsl-ubuntu.pin /etc/apt/preferences.d/cuda-repository-pin-600
-sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/3bf863cc.pub
-sudo add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/ /"
-sudo apt-get update
-sudo apt-get -y install cuda
-# Add cuda to the path
-export PATH=/usr/local/cuda/bin:$PATH
-#make it permanant
-echo 'export PATH=/usr/local/cuda/bin:$PATH' >> ~/.bashrc
-export LD_LIBRARY_PATH=/usr/local/cuda-12.2/targets/x86_64-linux/lib/:$LD_LIBRARY_PATH
-#make it permanant
-echo "export LD_LIBRARY_PATH=/usr/local/cuda-12.2/targets/x86_64-linux/lib/:$LD_LIBRARY_PATH" >> ~/.bashrc
+
+
+# Prompt the user for CPU or GPU installation
+read -p "Do you want to use your CPU or GPU for installation? (CPU/GPU): " choice
+
+if [[ "$choice" == "GPU" ]]; then
+    # Install CUDA (only if not already installed)
+    if ! dpkg -l | grep cuda; then
+        echo "Installing CUDA..."
+        # install cuda
+        wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-wsl-ubuntu.pin
+        sudo mv cuda-wsl-ubuntu.pin /etc/apt/preferences.d/cuda-repository-pin-600
+        sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/3bf863cc.pub
+        sudo add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/ /"
+        sudo apt-get update
+        sudo apt-get -y install cuda
+        # Add cuda to the path
+        export PATH=/usr/local/cuda/bin:$PATH
+        #make it permanant
+        echo 'export PATH=/usr/local/cuda/bin:$PATH' >> ~/.bashrc
+        export LD_LIBRARY_PATH=/usr/local/cuda-12.2/targets/x86_64-linux/lib/:$LD_LIBRARY_PATH
+        #make it permanant
+        echo "export LD_LIBRARY_PATH=/usr/local/cuda-12.2/targets/x86_64-linux/lib/:$LD_LIBRARY_PATH" >> ~/.bashrc
+    else
+        echo "CUDA is already installed."
+    fi
+else
+    # CPU installation
+    echo "Using CPU for installation..."
+fi
 # Install requirements
 pip install -r requirements.txt
+
 # by default ubuntu will start in lollms-webui path
 echo 'cd ~/lollms-webui' >> ~/.bashrc
 # Add automatic conda activate

@@ -793,7 +793,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
                     self.model = self.binding.build_model()
                     for per in self.mounted_personalities:
-                        per.model = self.model
+                        if per is not None:
+                            per.model = self.model
                 except Exception as ex:
                     # Catch the exception and get the traceback as a list of strings
                     traceback_lines = traceback.format_exception(type(ex), ex, ex.__traceback__)
