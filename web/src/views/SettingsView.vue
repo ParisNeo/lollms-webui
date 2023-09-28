@@ -1971,7 +1971,7 @@ export default {
     methods: {
         async selectSortOption(index){
             this.$store.state.sort_type=index
-            this.$store.dispatch('refreshModelsZoo');
+            //this.$store.dispatch('refreshModelsZoo');
             this.modelsFiltered = this.models
             console.log(`Selected sorting:${index}`)
         },
@@ -2876,9 +2876,6 @@ export default {
             console.log("updating binding_name")
             this.update_setting('binding_name', value, (res) => {
                 console.log("updated binding_name")
-                this.$store.dispatch('refreshModels');
-
-
                 const index = this.bindingsArr.findIndex(item => item.folder == value)
                 const item = this.bindingsArr[index]
                 if (item) {
