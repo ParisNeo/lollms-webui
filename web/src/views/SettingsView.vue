@@ -3168,7 +3168,7 @@ export default {
                 if (res) {
 
                     this.$store.dispatch('refreshConfig').then(() => {
-                        this.$store.dispatch('refreshPersonalitiesArr').then(() => {
+                        this.$store.dispatch('refreshPersonalitiesZoo').then(() => {
                         this.$store.dispatch('refreshMountedPersonalities');                
                         });
                     });

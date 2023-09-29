@@ -161,6 +161,8 @@ class LoLLMsAPPI(LollmsApplication):
             self.connections[request.sid] = {
                 "current_discussion":self.db.load_last_discussion(),
                 "generated_text":"",
+                "continuing": False,
+                "first_chunk": True,
                 "cancel_generation": False,          
                 "generation_thread": None,
                 "processing":False,
@@ -788,6 +790,10 @@ class LoLLMsAPPI(LollmsApplication):
             client_id = request.sid
             self.connections[client_id]["generated_text"]=""
             self.connections[client_id]["cancel_generation"]=False
+            self.connections[client_id]["continuing"]=False
+            self.connections[client_id]["first_chunk"]=True
+            
+
             
             if not self.model:
                 ASCIIColors.error("Model not selected. Please select a model")
@@ -827,6 +833,9 @@ class LoLLMsAPPI(LollmsApplication):
         @socketio.on('generate_msg_from')
         def generate_msg_from(data):
             client_id = request.sid
+            self.connections[client_id]["continuing"]=False
+            self.connections[client_id]["first_chunk"]=True
+            
             if self.connections[client_id]["current_discussion"] is None:
                 ASCIIColors.warning("Please select a discussion")
                 self.notify("Please select a discussion first", False, client_id)
@@ -835,7 +844,7 @@ class LoLLMsAPPI(LollmsApplication):
             if id_==-1:
                 message = self.connections[client_id]["current_discussion"].current_message
             else:
-                message = self.connections[client_id]["current_discussion"].get_message(id_)
+                message = self.connections[client_id]["current_discussion"].load_message(id_)
             if message is None:
                 return            
             self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message.id, client_id))
@@ -844,6 +853,9 @@ class LoLLMsAPPI(LollmsApplication):
         @socketio.on('continue_generate_msg_from')
         def handle_connection(data):
             client_id = request.sid
+            self.connections[client_id]["continuing"]=True
+            self.connections[client_id]["first_chunk"]=True
+            
             if self.connections[client_id]["current_discussion"] is None:
                 ASCIIColors.yellow("Please select a discussion")
                 self.notify("Please select a discussion", False, client_id)
@@ -852,7 +864,7 @@ class LoLLMsAPPI(LollmsApplication):
             if id_==-1:
                 message = self.connections[client_id]["current_discussion"].current_message
             else:
-                message = self.connections[client_id]["current_discussion"].get_message(id_)
+                message = self.connections[client_id]["current_discussion"].load_message(id_)
 
             self.connections[client_id]["generated_text"]=message.content
             self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message.id, client_id, True))
@@ -923,7 +935,10 @@ class LoLLMsAPPI(LollmsApplication):
                                                     installation_option=InstallOption.FORCE_INSTALL)
                         mounted_personalities.append(personality)
                         ASCIIColors.info("Reverted to default personality")
-        print(f'selected : {self.config["active_personality_id"]}')
+        if self.config["active_personality_id"]>=0 and self.config["active_personality_id"]<len(self.config["personalities"]):
+            ASCIIColors.success(f'selected model : {self.config["personalities"][self.config["active_personality_id"]]}')
+        else:
+            ASCIIColors.warning('An error was encountered while trying to mount personality')
         ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
         ASCIIColors.success(f" ║                      Done                        ║ ")
         ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
@@ -1004,7 +1019,11 @@ class LoLLMsAPPI(LollmsApplication):
    
 
     def prepare_reception(self, client_id):
-        self.connections[client_id]["generated_text"] = ""
+        if not self.connections[client_id]["continuing"]:
+            self.connections[client_id]["generated_text"] = ""
+            
+        self.connections[client_id]["first_chunk"]=True
+            
         self.nb_received_tokens = 0
         self.start_time = datetime.now()
 
@@ -1292,7 +1311,11 @@ class LoLLMsAPPI(LollmsApplication):
                 return False
             else:
                 self.nb_received_tokens += 1
-                self.update_message(client_id, chunk, parameters, metadata)
+                if self.connections[client_id]["continuing"] and self.connections[client_id]["first_chunk"]:
+                    self.update_message(client_id, self.connections[client_id]["generated_text"], parameters, metadata)
+                else:
+                    self.update_message(client_id, chunk, parameters, metadata)
+                self.connections[client_id]["first_chunk"]=False
                 # if stop generation is detected then stop
                 if not self.cancel_gen:
                     return True

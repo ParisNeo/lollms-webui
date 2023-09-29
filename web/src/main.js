@@ -9,6 +9,16 @@ import './assets/tailwind.css'
 const app = createApp(App)
 console.log("Loaded main.js")
 
+function copyObject(obj) {
+  const copy = {};
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      copy[key] = obj[key];
+    }
+  }
+  return copy;
+}
+
 // Create a new store instance.
 export const store = createStore({
     state () {
@@ -146,7 +156,7 @@ export const store = createStore({
           // Handle error
         }
       },
-      async refreshPersonalitiesArr({ commit }) {
+      async refreshPersonalitiesZoo({ commit }) {
           let personalities = []
           const catdictionary = await api_get_req("get_all_personalities")
           const catkeys = Object.keys(catdictionary); // returns categories
@@ -200,11 +210,13 @@ export const store = createStore({
         // console.log('perrs listo',this.state.personalities)
         for (let i = 0; i < this.state.config.personalities.length; i++) {
             const full_path_item = this.state.config.personalities[i]
-            
-            const index = this.state.personalities.findIndex(item => item.full_path == full_path_item || item.full_path+':'+item.language == full_path_item)
+            const parts = full_path_item.split(':')
+            const index = this.state.personalities.findIndex(item => item.full_path == full_path_item || item.full_path == parts[0])
             if(index>=0){
-              const pers = this.state.personalities[index]
-              console.log("Found personality : ", JSON.stringify(pers))
+              let pers = copyObject(this.state.personalities[index])
+              if(parts.length>0){
+                pers.language = parts[1]
+              }
               // console.log(`Personality : ${JSON.stringify(pers)}`)
               if (pers) {
                   mountedPersArr.push(pers)
@@ -217,6 +229,7 @@ export const store = createStore({
               console.log("Couldn't load personality : ",full_path_item)
             }
         }
+        console.log("Mounted personalities : ", mountedPersArr)
         commit('setMountedPersArr', mountedPersArr);
         
         this.state.mountedPers = this.state.personalities[this.state.personalities.findIndex(item => item.full_path == this.state.config.personalities[this.state.config.active_personality_id] || item.full_path+':'+item.language ==this.state.config.personalities[this.state.config.active_personality_id])]
@@ -436,7 +449,7 @@ app.mixin({
           this.$store.dispatch('refreshExtensionsZoo');
           this.$store.dispatch('refreshModels');
           
-          await this.$store.dispatch('refreshPersonalitiesArr')
+          await this.$store.dispatch('refreshPersonalitiesZoo')
           this.$store.dispatch('refreshMountedPersonalities');
           
           this.$store.state.ready = true
@@ -470,4 +483,4 @@ app.use(router)
 app.use(store)
 app.mount('#app')
 
-export{logObjectProperties}
+export{logObjectProperties, copyObject}

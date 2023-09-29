@@ -41,7 +41,7 @@
           </div>
           <div v-if="personality.language" class="flex items-center">
             <i data-feather="globe" class="w-5 m-1"></i>
-            <b>Languages:&nbsp;</b>
+            <b>Language:&nbsp;</b>
             {{ personality.language }}
           </div>
           <div class="flex items-center">
