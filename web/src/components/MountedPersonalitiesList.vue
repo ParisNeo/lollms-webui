@@ -87,9 +87,11 @@ import PersonalityEntry from './PersonalityEntry.vue'
 import Toast from './Toast.vue'
 import UniversalForm from './UniversalForm.vue';
 import feather from 'feather-icons'
+import {logObjectProperties} from "../main.js"
 
 import axios from "axios";
 import { nextTick } from "vue";
+import markdownItAttrs from "markdown-it-attrs";
 
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_LOLLMS_API_BASEURL
@@ -239,17 +241,14 @@ export default {
         async onPersonalitySelected(pers) {
             // eslint-disable-next-line no-unused-vars
             feather.replace()
-            console.log('ppa', pers)
+            console.log('Selected personality : ', JSON.stringify(pers.personality))
             if (pers) {
 
                 if (pers.selected) {
                     this.$refs.toast.showToast("Personality already selected", 4, true)
                     return
                 }
-
-
                 if (pers.isMounted) {
-
                     const res = await this.select_personality(pers)
                     if (res) {
                         if (res.status) {
@@ -389,33 +388,37 @@ export default {
         },
         async select_personality(pers) {
             if (!pers) { return { 'status': false, 'error': 'no personality - select_personality' } }
-            const id = this.configFile.personalities.findIndex(item => item === pers.full_path || item === pers.full_path+':'+pers.language)
-
-            console.log('id', JSON.stringify(id))
-            const obj = {
-                id: id
-            }
-
-
-            try {
-                const res = await axios.post('/select_personality', obj);
-
-                if (res) {
-                    this.$store.dispatch('refreshConfig').then(() => {
-                        console.log("recovered config", this.configFile.active_personality_id);
-                        this.$store.dispatch('refreshPersonalitiesArr').then(() => {
-                        this.$store.dispatch('refreshMountedPersonalities');
-                        });
-                    });
-
-                    return res.data
-
+            const id = this.configFile.personalities.findIndex(item => item === pers.full_path || item.split(':')[0] === pers.full_path)
+            if(id>-1){
+                console.log('Selecting personality with id:', JSON.stringify(id))
+                const obj = {
+                    id: id
                 }
-            } catch (error) {
-                console.log(error, 'select_personality - settings')
-                return
-            }
+                try {
+                    const res = await axios.post('/select_personality', obj);
 
+                    if (res) {
+                        this.$store.dispatch('refreshConfig').then(() => {
+                            console.log("recovered config", this.configFile.active_personality_id);
+                            this.$store.dispatch('refreshPersonalitiesArr').then(() => {
+                            this.$store.dispatch('refreshMountedPersonalities');
+                            });
+                        });
+
+                        return res.data
+
+                    }
+                } catch (error) {
+                    console.log(error, 'select_personality - settings')
+                    return
+                }
+
+            }
+            else{
+                console.log('Personalituy id is wrong')
+                this.$refs.toast.showToast("Personality id is wrong!", 4, false)
+                return { 'status': false, 'error': 'Personality id is wrong' }
+            }
         },
         async mountPersonality(pers) {
 

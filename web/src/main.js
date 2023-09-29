@@ -9,6 +9,16 @@ import './assets/tailwind.css'
 const app = createApp(App)
 console.log("Loaded main.js")
 
+function copyObject(obj) {
+  const copy = {};
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      copy[key] = obj[key];
+    }
+  }
+  return copy;
+}
+
 // Create a new store instance.
 export const store = createStore({
     state () {
@@ -146,7 +156,7 @@ export const store = createStore({
           // Handle error
         }
       },
-      async refreshPersonalitiesArr({ commit }) {
+      async refreshPersonalitiesZoo({ commit }) {
           let personalities = []
           const catdictionary = await api_get_req("get_all_personalities")
           const catkeys = Object.keys(catdictionary); // returns categories
@@ -196,13 +206,17 @@ export const store = createStore({
         if(this.state.config.active_personality_id<0){
           this.state.config.active_personality_id=0;
         }
-          let mountedPersArr = []
-          // console.log('perrs listo',this.state.personalities)
-          for (let i = 0; i < this.state.config.personalities.length; i++) {
-              const full_path_item = this.state.config.personalities[i]
-              const index = this.state.personalities.findIndex(item => item.full_path == full_path_item || item.full_path+':'+item.language == full_path_item)
-
-              const pers = this.state.personalities[index]
+        let mountedPersArr = []
+        // console.log('perrs listo',this.state.personalities)
+        for (let i = 0; i < this.state.config.personalities.length; i++) {
+            const full_path_item = this.state.config.personalities[i]
+            const parts = full_path_item.split(':')
+            const index = this.state.personalities.findIndex(item => item.full_path == full_path_item || item.full_path == parts[0])
+            if(index>=0){
+              let pers = copyObject(this.state.personalities[index])
+              if(parts.length>0){
+                pers.language = parts[1]
+              }
               // console.log(`Personality : ${JSON.stringify(pers)}`)
               if (pers) {
                   mountedPersArr.push(pers)
@@ -210,12 +224,17 @@ export const store = createStore({
               else {
                   mountedPersArr.push(this.state.personalities[this.state.personalities.findIndex(item => item.full_path == "generic/lollms")])
               }
-          }
-          commit('setMountedPersArr', mountedPersArr);
-          
-          this.state.mountedPers = this.state.personalities[this.state.personalities.findIndex(item => item.full_path == this.state.config.personalities[this.state.config.active_personality_id] || item.full_path+':'+item.language ==this.state.config.personalities[this.state.config.active_personality_id])]
-          // console.log(`${this.state.config.personalities[this.state.config.active_personality_id]}`)
-          // console.log(`Mounted personality: ${this.state.mountedPers}`)
+            }
+            else{
+              console.log("Couldn't load personality : ",full_path_item)
+            }
+        }
+        console.log("Mounted personalities : ", mountedPersArr)
+        commit('setMountedPersArr', mountedPersArr);
+        
+        this.state.mountedPers = this.state.personalities[this.state.personalities.findIndex(item => item.full_path == this.state.config.personalities[this.state.config.active_personality_id] || item.full_path+':'+item.language ==this.state.config.personalities[this.state.config.active_personality_id])]
+        // console.log(`${this.state.config.personalities[this.state.config.active_personality_id]}`)
+        // console.log(`Mounted personality: ${this.state.mountedPers}`)
       },
       async refreshBindings({ commit }) {
           let bindingsArr = await api_get_req("list_bindings")
@@ -394,15 +413,7 @@ export const store = createStore({
             console.log(error.message, 'fetchModels');
             this.state.refreshingModelsList=false;
         });        
-      },
-      fetchCustomModels({ commit }) {
-          axios.get('/list_models')
-              .then(response => {
-              })
-              .catch(error => {
-                  console.log(error.message, 'fetchCustomModels');
-              });
-      },      
+      },  
     }    
 })
 async function api_get_req(endpoint) {
@@ -429,18 +440,17 @@ app.mixin({
           console.log("recovered config : ${}");
           await this.$store.dispatch('getVersion');
           console.log("recovered version");          
-          await this.$store.dispatch('refreshPersonalitiesArr')
-
-          this.$store.dispatch('refreshMountedPersonalities');
           this.$store.dispatch('refreshBindings');
-          this.$store.dispatch('refreshModels');
     
           this.$store.dispatch('refreshDiskUsage');
           this.$store.dispatch('refreshRamUsage');
           this.$store.dispatch('refreshVramUsage');
           this.$store.dispatch('refreshModelsZoo');
           this.$store.dispatch('refreshExtensionsZoo');
+          this.$store.dispatch('refreshModels');
           
+          await this.$store.dispatch('refreshPersonalitiesZoo')
+          this.$store.dispatch('refreshMountedPersonalities');
           
           this.$store.state.ready = true
           console.log("done loading data")
@@ -451,7 +461,26 @@ app.mixin({
   beforeMount() {
   }
 })
+
+function logObjectProperties(obj) {
+  if (typeof obj !== 'object' || obj === null) {
+    console.log('Invalid object');
+    return;
+  }
+
+  let logString = "Object parameters and values:\n";
+  
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key) && typeof obj[key] !== 'function') {
+      logString += `${key}: ${obj[key]}\n`;
+    }
+  }
+
+  console.log(logString);
+}
+
 app.use(router)
 app.use(store)
 app.mount('#app')
 
+export{logObjectProperties, copyObject}
