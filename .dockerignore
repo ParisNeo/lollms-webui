@@ -1,0 +1,4 @@
+./data
+!./data/Documents
+./scripts/linux/lollms-webui/env
+./scripts/linux/installer_files

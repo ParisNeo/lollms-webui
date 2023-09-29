@@ -610,6 +610,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         return jsonify({"personality":self.personality.as_dict()})
     
     def get_all_personalities(self):
+        ASCIIColors.yellow("Listing all personalities")
         personalities_folder = self.lollms_paths.personalities_zoo_path
         personalities = {}
 
@@ -793,7 +794,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
                     self.model = self.binding.build_model()
                     for per in self.mounted_personalities:
-                        per.model = self.model
+                        if per is not None:
+                            per.model = self.model
                 except Exception as ex:
                     # Catch the exception and get the traceback as a list of strings
                     traceback_lines = traceback.format_exception(type(ex), ex, ex.__traceback__)
@@ -1024,7 +1026,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             try:
                 models = self.binding.list_models(self.config)
                 index = models.index(self.config.model_name)
-                ASCIIColors.yellow("Listing models")
+                ASCIIColors.yellow("Listing active models")
                 return jsonify({"model":models[index],"index":index})
             except Exception as ex:
                 return jsonify(None)
@@ -1039,8 +1041,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
     def list_personalities(self):
         category = request.args.get('category')
         if not category:
-            return jsonify([])
-            
+            return jsonify([])            
         try:
             personalities_dir = self.lollms_paths.personalities_zoo_path/f'{category}'  # replace with the actual path to the models folder
             personalities = [f.stem for f in personalities_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]

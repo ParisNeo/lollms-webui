@@ -1,0 +1,29 @@
+version: '3.8'
+
+services: 
+  webui:
+    build:
+      context: ../../
+      dockerfile: Dockerfile
+    env_file:
+      - ./docker.env
+    runtime: nvidia
+    environment:
+      - HOME=/data
+      - NVIDIA_VISIBLE_DEVICES=all
+      # - MODELS_DIR=${MODELS_DIR:-~/Documents/lollms}
+    volumes:
+      - ./data:/data
+      - ./data/.parisneo:/root/.parisneo/
+      - ./configs:/srv/configs
+      - ${MODELS_DIR:-~/Documents/lollms}:${LOLLMS_PERSONAL_PATH:-/srv/Documents/lollms}
+    tty: true
+    stdin_open: true
+    ports: 
+      - "0.0.0.0:9600:9600"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9600"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
