@@ -1,6 +1,7 @@
-from parser import parser
+from .parser import parser
 import shutil
 from pathlib import Path
+from lollms.binding import LOLLMSConfig
 
 
 def make_config(lollms_paths):

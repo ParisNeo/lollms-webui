@@ -3,6 +3,13 @@ from lollms.binding import BindingBuilder
 from api.config import load_config
 import gc
 import pkg_resources
+from flask import jsonify, request
+from lollms.helpers import ASCIIColors
+from pathlib import Path
+import traceback
+from ...config.scripts import install_bindings_requirements
+
+__version__ ="6.5"
 
 
 def save_settings(self):
@@ -73,6 +80,8 @@ def update_setting(self):
                 self.model = self.binding.build_model()
                 for per in self.mounted_personalities:
                     per.model = self.model
+            except ModuleNotFoundError:
+                install_bindings_requirements(big_class=self)
             except Exception as ex:
                 # Catch the exception and get the traceback as a list of strings
                 traceback_lines = traceback.format_exception(type(ex), ex, ex.__traceback__)

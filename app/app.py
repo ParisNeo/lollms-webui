@@ -42,7 +42,7 @@ from flask import (
 )
 
 from lollms.helpers import ASCIIColors, trace_exception
-
+from lollms.paths import LollmsPaths
 
 try:
     import mimetypes
@@ -84,8 +84,8 @@ if __name__ == "__main__":
     # Parsong parameters
     from LoLLMsWebUI_server.config.parser import parser
     from LoLLMsWebUI_server.config.config import make_config
-    parser.parse_args()
-    config = make_config()
+    args = parser.parse_args()
+    config = make_config(lollms_paths)
     
     bot = LoLLMsWebUI(args, app, socketio, config, config.file_path, lollms_paths)
 

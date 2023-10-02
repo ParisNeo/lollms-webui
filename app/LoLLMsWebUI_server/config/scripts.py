@@ -1,4 +1,10 @@
 import git
+import socket
+import sys
+from lollms.helpers import ASCIIColors
+from pathlib import Path
+import os
+import subprocess
 
 
 def run_update_script(args=None):
@@ -111,3 +117,16 @@ def sync_cfg(default_config, config):
     config["version"]=default_config["version"]
     
     return config, added_entries, removed_entries
+
+def install_bindings_requirements(big_class=None, bindings_path=None):
+    if bindings_path is None and big_class is not None:
+        bindings_path = os.path.join(big_class.lollms_paths.bindings_zoo_path, big_class.config['binding_name'], 'requirements.txt')
+    elif bindings_path is None and big_class is None:
+        print("Failed to install bindings requirements, no input given.")
+        return
+    
+    if not os.path.exists(bindings_path):
+        print(f"Bindings requirements does not exist: {bindings_path}")
+        return
+
+    subprocess.run(['pip', 'install', '-r', bindings_path])

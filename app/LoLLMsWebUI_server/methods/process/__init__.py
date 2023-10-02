@@ -1,2 +1,2 @@
-from lists import *
-from lollm_os import *
+from .lists import *
+from .lollm_os import *

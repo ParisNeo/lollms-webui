@@ -1,6 +1,8 @@
 from lollms.binding import BindingBuilder
 from lollms.config import InstallOption
 import gc
+from lollms.helpers import ASCIIColors
+from flask import jsonify, request
 
 
 def reinstall_binding(self):

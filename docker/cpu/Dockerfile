@@ -1,5 +1,7 @@
 FROM ubuntu:22.04
 
+ARG GPU
+
 # Remove any third-party apt sources to avoid issues with expiring keys.
 RUN rm -f /etc/apt/sources.list.d/*.list
 
@@ -37,7 +39,7 @@ ENV MAMBA_EXE=/usr/local/bin/micromamba \
     PATH=/home/user/micromamba/bin:$PATH
 
 # Set up the base Conda environment by installing PyTorch and friends.
-COPY conda-linux-64.lock /app/conda-linux-64.lock
+COPY docker/${GPU}/conda-linux-64.lock /app/conda-linux-64.lock
 RUN micromamba create -qy -n base -f /app/conda-linux-64.lock \
  && rm /app/conda-linux-64.lock \
  && micromamba shell init --shell=bash --prefix="$MAMBA_ROOT_PREFIX" \
@@ -92,7 +94,7 @@ COPY ./web /srv/web
 COPY ./assets /srv/assets
 COPY ./configs /src/configs
 COPY ./restart_script.py /srv/restart_script.py
-COPY global_paths_cfg.yaml /srv/global_paths_cfg.yaml
+COPY ./docker/global_paths_cfg.yaml /srv/global_paths_cfg.yaml
 
 
 ENV SHELL=/bin/bash

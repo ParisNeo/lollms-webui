@@ -1,3 +1,6 @@
+from flask import jsonify
+
+
 def get_generation_status(self):
     return jsonify({"status":self.busy})
 

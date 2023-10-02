@@ -6,7 +6,7 @@ services:
       context: ../
       dockerfile: Dockerfile
     env_file:
-      - ./docker.env
+      - ../docker.env
     runtime: nvidia
     environment:
       - HOME=/data

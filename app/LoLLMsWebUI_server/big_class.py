@@ -2,6 +2,8 @@ from lollms.paths import LollmsPaths
 from lollms.binding import LOLLMSConfig
 from lollms.main_config import LOLLMSConfig
 from api import LoLLMsAPPI
+from pathlib import Path
+from .config.scripts import check_update_, install_bindings_requirements
 
 
 class LoLLMsWebUI(LoLLMsAPPI):
@@ -21,10 +23,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 ASCIIColors.info("New version found. Updating!")
                 self.update_software()
 
+        _app.template_folder = "web/dist"
+
         self.app = _app
         self.cancel_gen = False
-
-        app.template_folder = "web/dist"
 
         if len(config["personalities"])>0:
             self.personality_category= config["personalities"][config["active_personality_id"]].split("/")[0]
@@ -34,6 +36,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.personality_name = "lollms"
 
         self.add_all_endpoints()
+        install_bindings_requirements(self)
 
     def add_endpoint(
         self,

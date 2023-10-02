@@ -1,2 +1,2 @@
-from discussion import *
-from personality import *
+from .discussion import *
+from .personality import *

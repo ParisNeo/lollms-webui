@@ -1,4 +1,7 @@
 from api.db import Discussion
+from lollms.helpers import ASCIIColors
+from flask import jsonify, request
+
 
 def export_multiple_discussions(self):
         data = request.get_json()
