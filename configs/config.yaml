@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 23
+version: 24
 binding_name: null
 model_name: null
 
@@ -26,6 +26,9 @@ n_threads: 8
 personalities: ["generic/lollms"]
 active_personality_id: 0
 override_personality_model_parameters: false #if true the personality parameters are overriden by those of the configuration (may affect personality behaviour) 
+
+extensions: []
+
 
 user_name: user
 user_description: ""

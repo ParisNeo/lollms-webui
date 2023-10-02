@@ -39,6 +39,7 @@ export const store = createStore({
         ramUsage:null,
         vramUsage:null,
         extensionsZoo:null,
+        activeExtensions:null,
       }
     },
     mutations: {      
@@ -79,6 +80,9 @@ export const store = createStore({
         state.vramUsage = vramUsage;
       },
       
+      setActiveExtensions(state, activeExtensions) {
+        state.activeExtensions = activeExtensions;
+      },
       setExtensionsZoo(state, extensionsZoo) {
         state.extensionsZoo = extensionsZoo;
       },
@@ -116,6 +120,10 @@ export const store = createStore({
       },
       getVramUsage(state) {
         return state.vramUsage;
+      },
+      
+      getActiveExtensions(state) {
+        return state.activeExtensions;
       },
       getExtensionsZoo(state) {
         return state.extensionsZoo;
@@ -203,7 +211,6 @@ export const store = createStore({
         let mountedPersArr = []
         // console.log('perrs listo',this.state.personalities)
         const indicesToRemove = [];
-        console.log("Personalities",  this.state.personalities)
         for (let i = 0; i < this.state.config.personalities.length; i++) {
             const full_path_item = this.state.config.personalities[i]
             const parts = full_path_item.split(':')
@@ -235,9 +242,7 @@ export const store = createStore({
             this.state.config.active_personality_id -= 1;
           }
         }
-        console.log("Personalities",  this.state.personalities)
 
-        console.log("Mounted personalities : ", mountedPersArr)
         commit('setMountedPersArr', mountedPersArr);
         
         this.state.mountedPers = this.state.personalities[this.state.personalities.findIndex(item => item.full_path == this.state.config.personalities[this.state.config.active_personality_id] || item.full_path+':'+item.language ==this.state.config.personalities[this.state.config.active_personality_id])]
@@ -260,8 +265,48 @@ export const store = createStore({
           commit('setModelsArr',modelsArr)
       },
       async refreshExtensionsZoo({ commit }) {
-          let extensionsZoo = await api_get_req("list_extensions")
-          commit('setExtensionsZoo',extensionsZoo)
+          let extensions = []
+          let catdictionary = await api_get_req("list_extensions")
+          const catkeys = Object.keys(catdictionary); // returns categories
+          console.log("Extensions recovered:"+this.state.config.extensions)
+
+          for (let j = 0; j < catkeys.length; j++) {
+              const catkey = catkeys[j];
+              const extensionsArray = catdictionary[catkey];
+              const modExtArr = extensionsArray.map((item) => {
+                  let isMounted = false;
+
+                  for(const extension of this.state.config.personalities){
+                    if(extension.includes(catkey + '/' + item.folder)){
+                      isMounted = true;
+                    }
+                  }
+                  // if (isMounted) {
+                  //     console.log(item)
+                  // }
+                  let newItem = {}
+                  newItem = item
+                  newItem.category = catkey // add new props to items
+                  newItem.full_path = catkey + '/' + item.folder // add new props to items
+                  newItem.isMounted = isMounted // add new props to items
+                  return newItem
+              })
+
+
+              if (extensions.length == 0) {
+                  extensions = modExtArr
+              } else {
+                  extensions = extensions.concat(modExtArr)
+              }
+          }
+
+          extensions.sort((a, b) => a.name.localeCompare(b.name))
+
+          commit('setActiveExtensions', this.state.config.extensions);
+
+          console.log("Done loading extensions")
+
+          commit('setExtensionsZoo',extensions)
       },
 
       async refreshDiskUsage({ commit }) {
@@ -388,8 +433,27 @@ function logObjectProperties(obj) {
   console.log(logString);
 }
 
+function flattenObject(obj, parentKey = "") {
+  let result = [];
+
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      const newKey = parentKey ? `${parentKey}/${key}` : key;
+
+      if (typeof obj[key] === "object") {
+        const nestedFields = flattenObject(obj[key], newKey);
+        result = result.concat(nestedFields);
+      } else {
+        result.push(newKey);
+      }
+    }
+  }
+
+  return result;
+}
+
 app.use(router)
 app.use(store)
 app.mount('#app')
 
-export{logObjectProperties, copyObject}
+export{logObjectProperties, copyObject, flattenObject}
