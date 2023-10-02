@@ -209,3 +209,4 @@ offload
 
 # Removing personal data
 personal_data
+!docker/global_paths_cfg.yaml
