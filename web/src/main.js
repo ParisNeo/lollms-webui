@@ -26,8 +26,6 @@ export const store = createStore({
         // count: 0,
         ready:false,
         version : "unknown",
-        sort_type : 0, // 0: by date, 1: by rank, 2: by name, 3: by maker, 4: by quantizer
-        refreshingModelsList:false,
         settingsChanged:false,
         isConnected: false, // Add the isConnected property
         config:null,
@@ -35,7 +33,6 @@ export const store = createStore({
         mountedPersArr:null,
         bindingsArr:null,
         modelsArr:null,
-        models_zoo:null,
         selectedModel:null,
         personalities:null,
         diskUsage:null,
@@ -85,9 +82,6 @@ export const store = createStore({
       setExtensionsZoo(state, extensionsZoo) {
         state.extensionsZoo = extensionsZoo;
       },
-      setModelsZoo(state, modelsZoo) {
-        state.models_zoo = modelsZoo;
-      },
       // increment (state) {
       //   state.count++
       // }    
@@ -122,9 +116,6 @@ export const store = createStore({
       },
       getVramUsage(state) {
         return state.vramUsage;
-      },
-      getModelsZoo(state) {
-        return state.models_zoo;
       },
       getExtensionsZoo(state) {
         return state.extensionsZoo;
@@ -267,50 +258,6 @@ export const store = createStore({
           }
             
           commit('setModelsArr',modelsArr)
-          // Returns array of model filenames which are = to name of models zoo entry
-          for (let i = 0; i < this.state.modelsArr.length; i++) {
-            const customModel = this.state.modelsArr[i]
-            let index = this.state.models_zoo.findIndex(x => x.name == customModel)
-            if(index==-1){
-              // The customModel is not directly in the model zoo, so check its variants
-              for (let j = 0; j < this.state.models_zoo.length; j++) {
-                let v = this.state.models_zoo[j]["variants"]
-                if(v!=undefined){
-                  index = v.findIndex(x => x.name == customModel);
-                  if(index!=-1){
-                    index=j
-                    console.log(`Found ${customModel} at index ${index}`)
-                    break;
-                  }  
-                }
-                else{
-
-                }
-              }
-            }
-
-            if (index == -1) {
-                let newModelEntry = {}
-                newModelEntry.name = customModel
-                newModelEntry.icon = ""
-                newModelEntry.isCustomModel = true
-                newModelEntry.isInstalled = true
-                this.state.models_zoo.push(newModelEntry)
-            }
-            else{
-              this.state.models_zoo[index].isInstalled=true;
-            }
-          }
-          this.state.models_zoo.sort((a, b) => {
-              if (a.isInstalled && !b.isInstalled) {
-                  return -1; // a is installed, b is not installed, so a comes first
-              } else if (!a.isInstalled && b.isInstalled) {
-                  return 1; // b is installed, a is not installed, so b comes first
-              } else {
-                  return 0; // both models are either installed or not installed, maintain their original order
-              }
-          });          
-          
       },
       async refreshExtensionsZoo({ commit }) {
           let extensionsZoo = await api_get_req("list_extensions")
@@ -377,58 +324,7 @@ export const store = createStore({
         }
 
       },
-      async refreshModelsZoo({ commit }) {
-        this.state.refreshingModelsList=true;
-        const response = await axios.get('/get_available_models');
-        let models_zoo = response.data
-        models_zoo = models_zoo.filter(model => model.variants &&  model.variants.length>0);
-        console.log(`REFRESHING models using sorting ${this.state.sort_type}`)
-        if(models_zoo.length>1){
-          if(this.state.sort_type==0){ //  Sort by date
-            models_zoo.sort((a, b) => {
-              const dateA = new Date(a.last_commit_time);
-              const dateB = new Date(b.last_commit_time);
-              
-              // Compare the date objects to sort by last_commit_time
-              return dateB - dateA;
-            });
-            console.log("Sorted")
-          } else if(this.state.sort_type==1){ //  Sort by rank
-            models_zoo.sort((a, b) => {
-              // Compare the date objects to sort by last_commit_time
-              return b.rank - a.rank;
-            });
-          
-          } else if(this.state.sort_type==2){ //  Sort by name
-            models_zoo.sort((a, b) => a.name.localeCompare(b.name))
-          } else if(this.state.sort_type==3){ //  Sort by name
-            models_zoo.sort((a, b) => a.name.localeCompare(b.name))
-          }
-          // models_zoo.sort((a, b) => a.name.localeCompare(b.name))
-          console.log("Sorted")  
-        }
-        else{
-          console.log("No sorting needed");
-        }
 
-
-        console.log("models_zoo")
-
-        
-        models_zoo.forEach(model => {
-            if (model.name == this.state.config["model_name"]) {
-                model.selected = true;
-            }
-            else{
-              model.selected = false; 
-            }
-        });            
-
-        commit('setModelsZoo', models_zoo)
-        this.state.refreshingModelsList=false;
-        console.log("models_zoo")
-        console.log(this.state.models_zoo)
-      }
     }    
 })
 async function api_get_req(endpoint) {
@@ -461,7 +357,6 @@ app.mixin({
       await this.$store.dispatch('refreshRamUsage');
       await this.$store.dispatch('refreshVramUsage');
       await this.$store.dispatch('refreshExtensionsZoo');
-      await this.$store.dispatch('refreshModelsZoo');
       await this.$store.dispatch('refreshModels');
       
       await this.$store.dispatch('refreshPersonalitiesZoo')

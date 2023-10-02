@@ -1113,13 +1113,14 @@
             <div
                 class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row p-3">
-                    <button @click.stop="mzc_collapsed = !mzc_collapsed"
+                    <button @click.stop="modelsZooToggleCollapse()"
                         class="text-2xl hover:text-primary  p-2 -m-2 w-full text-left flex items-center">
                         <div v-show="mzc_collapsed" ><i data-feather='chevron-right'></i></div>
                         <div v-show="!mzc_collapsed" ><i data-feather='chevron-down'></i></div>
 
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
                             Models zoo</h3>
+                        <!-- SPINNER -->
                         <div class="flex flex-row items-center">
 
                             <div v-if="!configFile.binding_name"
@@ -1146,20 +1147,6 @@
                                 </div>
                             </div>
 
-                            <!-- SPINNER -->
-                            <div v-if="isModelsLoading" role="status">
-                                <p>{{ loading_text }}</p>
-                                <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101"
-                                    fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                        fill="currentColor" />
-                                    <path
-                                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                        fill="currentFill" />
-                                </svg>
-                                <span class="sr-only">Loading...</span>
-                            </div>
                         </div>
                     </button>
                 </div>
@@ -1220,6 +1207,19 @@
                         <RadioOptions :radioOptions="sortOptions" @radio-selected="handleRadioSelected" />
                     </div>
                     <a href="https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard" target="_blank" class="mb-4 font-bold underline text-blue-500 pb-4">Hugging face Leaderboard</a>
+                    <!-- SPINNER -->
+                    <div v-if="is_loading_zoo" role="status" class="text-center w-full display: flex;align-items: center;">
+                            <svg aria-hidden="true" class="text-center w-full display: flex;align-items: center; h-20   animate-spin  fill-secondary" viewBox="0 0 100 101"
+                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                    fill="currentColor" />
+                                <path
+                                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                    fill="currentFill" />
+                            </svg>
+                            <p class="heartbeat-text">Loading models Zoo</p>
+                    </div>                    
                     <div v-if="searchModel">
                         <div v-if="modelsFiltered.length > 0" class="mb-2">
                             <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -1791,6 +1791,28 @@
     />    
 </template>
 <style scoped>
+
+.heartbeat-text {
+  font-size: 24px;
+  animation: pulsate 1.5s infinite;
+  /* You can adjust the animation duration and other properties as needed */
+}
+
+@keyframes pulsate {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 /* THESE ARE FOR TransitionGroup components */
 .list-move,
 /* apply transition to moving elements */
@@ -1895,6 +1917,7 @@ export default {
     data() {
 
         return {
+            models_zoo:[],
             // Sort options
             sortOptions: [
                 { label: 'Sort by Date', value: 0 },
@@ -1928,6 +1951,8 @@ export default {
             all_collapsed: true,
             minconf_collapsed: true, // Main configuration 
             bec_collapsed: true,
+            sort_type : 0, // 0: by date, 1: by rank, 2: by name, 3: by maker, 4: by quantizer
+            is_loading_zoo:false, // Is loading models zoo
             mzc_collapsed: true, // models zoo
             mzdc_collapsed: true, // models zoo download
             pzc_collapsed: true, // personalities zoo
@@ -1969,9 +1994,16 @@ export default {
 
     }, 
     methods: {
+        async modelsZooToggleCollapse(){
+            this.mzc_collapsed = !this.mzc_collapsed
+            if (!this.mzc_collapsed){
+                this.is_loading_zoo = true
+                await this.refreshModelsZoo();
+                this.is_loading_zoo = false;
+            }
+        }, 
         async selectSortOption(index){
             this.$store.state.sort_type=index
-            //this.$store.dispatch('refreshModelsZoo');
             this.modelsFiltered = this.models
             console.log(`Selected sorting:${index}`)
         },
@@ -2244,7 +2276,7 @@ export default {
                 const path = this.$refs.addmodeldialog.model_path;
 
                 // Emit an event to the Socket.IO server
-                socket.emit("install_model", { path: path, type: this.$store.state.models_zoo[0].type }, (response) => {
+                socket.emit("install_model", { path: path, type: this.models_zoo[0].type }, (response) => {
                     // Handle the response from the server
                     console.log("Model installation successful:", response);
                 });
@@ -2407,7 +2439,7 @@ export default {
             axios.post("/add_reference_to_local_model",{"path": this.reference_path}).then((resp)=>{
                 if(resp.status){
                     this.$refs.toast.showToast("Reference created", 4, true)
-                    this.$store.dispatch('refreshModelsZoo').then(resp=>{
+                    this.refreshModelsZoo().then(resp=>{
                         this.$store.dispatch('refreshModels');
                         console.log("Models refreshed")
                     });
@@ -2464,7 +2496,7 @@ export default {
 
             socket.on('install_progress', progressListener);
 
-            socket.emit('install_model', { path: path, type: this.$store.state.models_zoo[0].type });
+            socket.emit('install_model', { path: path, type: this.models_zoo[0].type });
             console.log("Started installation, please wait");
         },
         uploadLocalModel() {
@@ -2545,7 +2577,7 @@ export default {
                             model_object.uninstalling = false;
                             socket.off('install_progress', progressListener);
                             this.showProgress = false;
-                            this.$store.dispatch('refreshModelsZoo').then(resp=>{
+                            this.refreshModelsZoo().then(resp=>{
                                 this.$store.dispatch('refreshModels');
                                 console.log("Models refreshed")
                             });
@@ -2580,6 +2612,7 @@ export default {
         },
         onSelectedBinding(binding_object) {
             console.log("Binding selected")
+            this.mzc_collapsed=true;
             if (!binding_object.binding.installed) {
                 this.$refs.toast.showToast("Binding is not installed:\n" + binding_object.binding.name, 4, false)
                 return
@@ -2869,6 +2902,103 @@ export default {
             this.isLoading = false
 
         },
+        async refreshModelsZoo() {
+            const response = await axios.get('/get_available_models');
+            let models_zoo = response.data
+            models_zoo = models_zoo.filter(model => model.variants &&  model.variants.length>0);
+            console.log(`REFRESHING models using sorting ${this.sort_type}`)
+            if(models_zoo.length>1){
+            if(this.sort_type==0){ //  Sort by date
+                models_zoo.sort((a, b) => {
+                const dateA = new Date(a.last_commit_time);
+                const dateB = new Date(b.last_commit_time);
+                
+                // Compare the date objects to sort by last_commit_time
+                return dateB - dateA;
+                });
+                console.log("Sorted")
+            } else if(this.sort_type==1){ //  Sort by rank
+                models_zoo.sort((a, b) => {
+                // Compare the date objects to sort by last_commit_time
+                return b.rank - a.rank;
+                });
+            
+            } else if(this.sort_type==2){ //  Sort by name
+                models_zoo.sort((a, b) => a.name.localeCompare(b.name))
+            } else if(this.sort_type==3){ //  Sort by name
+                models_zoo.sort((a, b) => a.name.localeCompare(b.name))
+            }
+            // models_zoo.sort((a, b) => a.name.localeCompare(b.name))
+            console.log("Sorted")  
+            }
+            else{
+            console.log("No sorting needed");
+            }
+
+
+            console.log("models_zoo")
+
+            
+            models_zoo.forEach(model => {
+                if (model.name == this.$store.state.config["model_name"]) {
+                    model.selected = true;
+                }
+                else{
+                model.selected = false; 
+                }
+            });            
+
+            this.models_zoo = models_zoo
+            console.log("models_zoo")
+            console.log(this.models_zoo)
+
+            
+            // Returns array of model filenames which are = to name of models zoo entry
+            for (let i = 0; i < this.$store.state.modelsArr.length; i++) {
+                const customModel = this.$store.state.modelsArr[i]
+                let index = this.models_zoo.findIndex(x => x.name == customModel)
+                if(index==-1){
+                // The customModel is not directly in the model zoo, so check its variants
+                for (let j = 0; j < this.models_zoo.length; j++) {
+                    let v = this.models_zoo[j]["variants"]
+                    if(v!=undefined){
+                    index = v.findIndex(x => x.name == customModel);
+                    if(index!=-1){
+                        index=j
+                        console.log(`Found ${customModel} at index ${index}`)
+                        break;
+                    }  
+                    }
+                    else{
+
+                    }
+                }
+                }
+
+                if (index == -1) {
+                    let newModelEntry = {}
+                    newModelEntry.name = customModel
+                    newModelEntry.icon = ""
+                    newModelEntry.isCustomModel = true
+                    newModelEntry.isInstalled = true
+                    this.models_zoo.push(newModelEntry)
+                }
+                else{
+                this.models_zoo[index].isInstalled=true;
+                }
+            }
+            this.models_zoo.sort((a, b) => {
+                if (a.isInstalled && !b.isInstalled) {
+                    return -1; // a is installed, b is not installed, so a comes first
+                } else if (!a.isInstalled && b.isInstalled) {
+                    return 1; // b is installed, a is not installed, so b comes first
+                } else {
+                    return 0; // both models are either installed or not installed, maintain their original order
+                }
+            });   
+
+
+        },   
         update_binding(value) {
 
             // eslint-disable-next-line no-unused-vars
@@ -2891,7 +3021,7 @@ export default {
                     console.log("updated model")
                     this.configFile.model_name = null
                     this.$store.dispatch('refreshConfig');
-                    this.$store.dispatch('refreshModelsZoo').then(resp=>{
+                    this.refreshModelsZoo().then(resp=>{
                         this.$store.dispatch('refreshModels');
                         console.log("Models refreshed")
                     });
@@ -3080,7 +3210,7 @@ export default {
                 return
             }
             const searchTerm = this.searchModel.toLowerCase()
-            this.isModelsLoading = true;
+            this.is_loading_zoo = true;
             console.log("filtering models")
             const seachedModels = this.models.filter((item) => {
 
@@ -3089,7 +3219,7 @@ export default {
                 }
 
             })
-            this.isModelsLoading=false; 
+            this.is_loading_zoo=false; 
 
 
 
@@ -3330,14 +3460,6 @@ export default {
                 return this.$store.state.ready;
             },
         },
-        isModelsLoading:{
-            get() {
-                return this.$store.state.isModelsLoading;
-            },
-            set(value) {
-                this.$store.state.isModelsLoading = value;
-            }
-        },
         audio_out_voice:{
             get() {
                 return this.$store.state.config.audio_out_voice;
@@ -3532,7 +3654,7 @@ export default {
         },
         models: {
             get() {
-                return this.$store.state.models_zoo;
+                return this.models_zoo;
             },
             set(value) {
                 this.$store.commit('setModelsZoo', value);
@@ -3540,7 +3662,7 @@ export default {
         },
         installed_models: {
             get() {
-                return this.$store.state.models_zoo;
+                return this.models_zoo;
             },
             set(value) {
                 this.$store.commit('setModelsZoo', value);
