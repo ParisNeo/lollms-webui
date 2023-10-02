@@ -1,7 +1,7 @@
 version: '3.8'
 
 services: 
-  webui:
+  webui_nvidia:
     env_file:
       - ../docker.env
     build:

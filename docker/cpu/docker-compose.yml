@@ -1,21 +1,24 @@
 version: '3.8'
 
 services: 
-  webui:
-    build:
-      context: ../
-      dockerfile: Dockerfile
+  webui_cpu:
     env_file:
       - ../docker.env
+    build:
+      context: ../../
+      dockerfile: docker/${GPU}/Dockerfile
+      args:
+        GPU: ${GPU}
     runtime: nvidia
     environment:
       - HOME=/data
-      - NVIDIA_VISIBLE_DEVICES=all
+      # - NVIDIA_VISIBLE_DEVICES=all
+      # - GPU=$GPU
       # - MODELS_DIR=${MODELS_DIR:-~/Documents/lollms}
     volumes:
-      - ./data:/data
-      - ./data/.parisneo:/root/.parisneo/
-      - ./configs:/srv/configs
+      - ../../data:/data
+      - ../../data/.parisneo:/root/.parisneo/
+      - ../../configs:/srv/configs
       - ${MODELS_DIR:-~/Documents/lollms}:${LOLLMS_PERSONAL_PATH:-/srv/Documents/lollms}
     tty: true
     stdin_open: true
