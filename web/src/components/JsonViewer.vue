@@ -41,25 +41,18 @@ export default {
   },
   computed: {
     formattedJson() {
-      console.log(typeof this.jsonData)
       if (typeof this.jsonData==='string'){
         let jsonData = JSON.stringify(JSON.parse(this.jsonData), null, '\t').replace(/\n/g, '<br>')
-        console.log(jsonData)
-        console.log(this.jsonFormText)
         return  jsonData;
 
       }
       else{
         let jsonData = JSON.stringify(this.jsonData, null, '\t').replace(/\n/g, '<br>')
-        console.log(jsonData)
-        console.log(this.jsonFormText)
         return  jsonData;
 
       }
     },
     isObject() {
-      console.log(typeof this.jsonData)
-      console.log(this.jsonData)
       return typeof this.jsonData === 'object' && this.jsonData !== null;
     },
     isContentPresent() {

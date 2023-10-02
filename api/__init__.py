@@ -522,8 +522,8 @@ class LoLLMsAPPI(LollmsApplication):
             ASCIIColors.error(f'Client {request.sid} requested cancelling generation')
             terminate_thread(self.connections[client_id]['generation_thread'])
             ASCIIColors.error(f'Client {request.sid} canceled generation')
-            self.cancel_gen = False
             self.busy=False
+            
         @socketio.on('get_personality_files')
         def get_personality_files(data):
             client_id = request.sid
@@ -589,8 +589,7 @@ class LoLLMsAPPI(LollmsApplication):
                             "error":"Couldn't receive file: "+str(ex)
                         }, room=client_id
                 )
-            self.close_message(client_id)
-        
+            self.close_message(client_id)        
 
         @self.socketio.on('cancel_text_generation')
         def cancel_text_generation(data):
@@ -628,6 +627,7 @@ class LoLLMsAPPI(LollmsApplication):
         @self.socketio.on('generate_text')
         def handle_generate_text(data):
             client_id = request.sid
+            self.cancel_gen = False
             ASCIIColors.info(f"Text generation requested by client: {client_id}")
             if self.busy:
                 self.socketio.emit("busy", {"message":"I am busy. Come back later."}, room=client_id)
@@ -782,12 +782,10 @@ class LoLLMsAPPI(LollmsApplication):
             # Start the text generation task in a separate thread
             task = self.socketio.start_background_task(target=generate_text)
 
-
-
-
         @socketio.on('generate_msg')
         def generate_msg(data):
             client_id = request.sid
+            self.cancel_gen = False
             self.connections[client_id]["generated_text"]=""
             self.connections[client_id]["cancel_generation"]=False
             self.connections[client_id]["continuing"]=False
@@ -833,6 +831,7 @@ class LoLLMsAPPI(LollmsApplication):
         @socketio.on('generate_msg_from')
         def generate_msg_from(data):
             client_id = request.sid
+            self.cancel_gen = False
             self.connections[client_id]["continuing"]=False
             self.connections[client_id]["first_chunk"]=True
             
@@ -853,6 +852,7 @@ class LoLLMsAPPI(LollmsApplication):
         @socketio.on('continue_generate_msg_from')
         def handle_connection(data):
             client_id = request.sid
+            self.cancel_gen = False
             self.connections[client_id]["continuing"]=True
             self.connections[client_id]["first_chunk"]=True
             

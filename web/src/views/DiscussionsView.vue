@@ -1584,8 +1584,10 @@ export default {
         
         console.log("Waiting to be ready")
         while (this.$store.state.ready === false) {
-                await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for 100ms
-            }          
+            await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for 100ms
+            console.log(this.$store.state.ready)
+        }          
+        console.log("Ready")
         // Constructor
         this.setPageTitle()
         await this.list_discussions()

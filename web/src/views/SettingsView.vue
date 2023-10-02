@@ -1465,7 +1465,7 @@
                                                 :class="configFile.active_personality_id == configFile.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
                                                 :title="item.name">
                                         </button>
-                                        <button @click.stop="onPersonalityMount(item)">
+                                        <button @click.stop="unmountPersonality (item)">
 
                                             <span
                                                 class="hidden group-hover:block top-0 left-7 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
@@ -2120,10 +2120,10 @@ export default {
             nextTick(() => {
                 feather.replace()
             })
-            while (this.$store.state.ready === false) {
+            while (this.isReady === false) {
                 await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for 100ms
             }  
-
+            console.log("Ready")
             if (this.configFile.model_name) {
                 this.isModelSelected = true
             }
@@ -2407,7 +2407,10 @@ export default {
             axios.post("/add_reference_to_local_model",{"path": this.reference_path}).then((resp)=>{
                 if(resp.status){
                     this.$refs.toast.showToast("Reference created", 4, true)
-                    this.$store.dispatch('refreshModels');
+                    this.$store.dispatch('refreshModelsZoo').then(resp=>{
+                        this.$store.dispatch('refreshModels');
+                        console.log("Models refreshed")
+                    });
                 }
                 else{
                     this.$refs.toast.showToast("Couldn't create reference", 4, false)
@@ -2542,7 +2545,11 @@ export default {
                             model_object.uninstalling = false;
                             socket.off('install_progress', progressListener);
                             this.showProgress = false;
-                            this.$store.dispatch('refreshModelsZoo');
+                            this.$store.dispatch('refreshModelsZoo').then(resp=>{
+                                this.$store.dispatch('refreshModels');
+                                console.log("Models refreshed")
+                            });
+                            
                             this.modelsFiltered = this.models
                             this.$refs.toast.showToast("Model:\n" + model_object.model.name + "\nwas uninstalled!", 4, true)
                             this.$store.dispatch('refreshDiskUsage');
@@ -2578,13 +2585,6 @@ export default {
                 return
             }
             if (this.configFile.binding_name != binding_object.binding.folder) {
-
-                // disabled for now
-                // if (binding_object.binding.folder === 'backend_template' || binding_object.binding.folder === 'binding_template') {
-                //     this.$refs.toast.showToast("Cannot select template", 4, false)
-
-                //     return
-                // }
                 this.update_binding(binding_object.binding.folder)
             }
         },
@@ -2891,13 +2891,14 @@ export default {
                     console.log("updated model")
                     this.configFile.model_name = null
                     this.$store.dispatch('refreshConfig');
-                    this.$store.dispatch('refreshModelsZoo');
-                    this.$refs.toast.showToast("Binding changed.", 4, true)
+                    this.$store.dispatch('refreshModelsZoo').then(resp=>{
+                        this.$store.dispatch('refreshModels');
+                        console.log("Models refreshed")
+                    });
                     this.$forceUpdate();
+                    this.$refs.toast.showToast("Binding changed.", 4, true)
                 });
-                //this.fetchMainConfig();
-                //this.fetchBindings();
-                //this.fetchModels();
+
 
                 nextTick(() => {
                     feather.replace()
@@ -3323,6 +3324,12 @@ export default {
         }
     },
     computed: { 
+        isReady:{
+            
+            get() {
+                return this.$store.state.ready;
+            },
+        },
         isModelsLoading:{
             get() {
                 return this.$store.state.isModelsLoading;
