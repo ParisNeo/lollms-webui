@@ -14,7 +14,7 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-__version__ ="6.5"
+__version__ ="6.6"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
@@ -1008,8 +1008,75 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     print(f"Couldn't load backend card : {f}\n\t{ex}")
         return jsonify(bindings)
 
+
     def list_extensions(self):
-        return jsonify([])
+        ASCIIColors.yellow("Listing all extensions")
+        extensions_folder = self.lollms_paths.extensions_zoo_path
+        extensions = {}
+
+        for category_folder in  extensions_folder.iterdir():
+            cat = category_folder.stem
+            if category_folder.is_dir() and not category_folder.stem.startswith('.'):
+                extensions[category_folder.name] = []
+                for extensions_folder in category_folder.iterdir():
+                    pers = extensions_folder.stem
+                    if extensions_folder.is_dir() and not extensions_folder.stem.startswith('.'):
+                        extension_info = {"folder":extensions_folder.stem}
+                        config_path = extensions_folder / 'card.yaml'
+                        if not config_path.exists():
+                            continue                                    
+                        try:
+                            with open(config_path) as config_file:
+                                config_data = yaml.load(config_file, Loader=yaml.FullLoader)
+                                extension_info['name'] = config_data.get('name',"No Name")
+                                extension_info['author'] = config_data.get('author', 'ParisNeo')
+                                extension_info['description'] = config_data.get('personality_description',"")
+                                extension_info['version'] = config_data.get('version', '1.0.0')
+                                extension_info['installed'] = (self.lollms_paths.personal_configuration_path/f"personality_{extensions_folder.stem}.yaml").exists()
+                                extension_info['help'] = config_data.get('help', '')
+
+                            real_assets_path = extensions_folder/ 'assets'
+                            assets_path = Path("extensions") / cat / pers / 'assets'
+                            gif_logo_path = assets_path / 'logo.gif'
+                            webp_logo_path = assets_path / 'logo.webp'
+                            png_logo_path = assets_path / 'logo.png'
+                            jpg_logo_path = assets_path / 'logo.jpg'
+                            jpeg_logo_path = assets_path / 'logo.jpeg'
+                            svg_logo_path = assets_path / 'logo.svg'
+                            bmp_logo_path = assets_path / 'logo.bmp'
+
+                            gif_logo_path_ = real_assets_path / 'logo.gif'
+                            webp_logo_path_ = real_assets_path / 'logo.webp'
+                            png_logo_path_ = real_assets_path / 'logo.png'
+                            jpg_logo_path_ = real_assets_path / 'logo.jpg'
+                            jpeg_logo_path_ = real_assets_path / 'logo.jpeg'
+                            svg_logo_path_ = real_assets_path / 'logo.svg'
+                            bmp_logo_path_ = real_assets_path / 'logo.bmp'
+                                
+                            extension_info['has_logo'] = png_logo_path.is_file() or gif_logo_path.is_file()
+                            
+                            if gif_logo_path_.exists():
+                                extension_info['avatar'] = str(gif_logo_path).replace("\\","/")
+                            elif webp_logo_path_.exists():
+                                extension_info['avatar'] = str(webp_logo_path).replace("\\","/")
+                            elif png_logo_path_.exists():
+                                extension_info['avatar'] = str(png_logo_path).replace("\\","/")
+                            elif jpg_logo_path_.exists():
+                                extension_info['avatar'] = str(jpg_logo_path).replace("\\","/")
+                            elif jpeg_logo_path_.exists():
+                                extension_info['avatar'] = str(jpeg_logo_path).replace("\\","/")
+                            elif svg_logo_path_.exists():
+                                extension_info['avatar'] = str(svg_logo_path).replace("\\","/")
+                            elif bmp_logo_path_.exists():
+                                extension_info['avatar'] = str(bmp_logo_path).replace("\\","/")
+                            else:
+                                extension_info['avatar'] = ""
+                            
+                            extensions[category_folder.name].append(extension_info)
+                        except Exception as ex:
+                            ASCIIColors.warning(f"Couldn't load personality from {extensions_folder} [{ex}]")
+                            trace_exception(ex)
+        return json.dumps(extensions)
 
     
 
