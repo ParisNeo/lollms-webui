@@ -129,6 +129,45 @@ python app.py
 
 Once installed, you need to activate the environment then run the app.
 
+## Docker runtime
+Docker is a software development runtime that lets you run code in isolated units called containers. You do not need to do any local installs above if you are using docker. (**NOTE: lollms' docker is in beta**)
+
+Docker is available on Linux, MacOS, and Windows. You can install Docker on Linux. Docker supports CPU and Nvidia, but AMD does not support Docker.
+
+Note: Eventually we may build and push public images, but until then we will keep the build process fast and easy so you can build your own container with one command.
+
+### Using Docker
+Set GPU to `cpu` or `nvidia`, depending on your gear.
+
+Linux and MacOS
+```bash
+export GPU=cpu
+docker-compose -f docker/$GPU/docker-compose.yml build
+docker-compose -f docker/$GPU/docker-compose.yml up
+```
+
+Windows (cmd not powershell)
+```cmd
+set GPU=cpu
+docker-compose -f docker/%GPU%/docker-compose.yml build
+docker-compose -f docker/%GPU%/docker-compose.yml up
+```
+
+### Install Docker and docker-compose
+Linux:
+```bash
+sudo apt update
+sudo apt install docker.io
+sudo systemctl enable --now docker
+
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+```
+
+MacOS and Windows: https://www.docker.com/products/docker-desktop/
+
+
+
 # Code of conduct
 
 By using this tool, users agree to follow these guidelines :
