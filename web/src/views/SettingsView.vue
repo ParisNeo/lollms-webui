@@ -58,7 +58,7 @@
                     </button>
                 <div class="flex gap-3 items-center">
                     <div v-if="settingsChanged" class="flex gap-3 items-center">
-                        Apply changes:
+                        <p class="text-red-600 font-bold">Apply changes:</p>
                         <button v-if="!isLoading" class="text-2xl hover:text-secondary duration-75 active:scale-90"
                             title="Apply changes" type="button" @click.stop="applyConfiguration()">
                             <i data-feather="check"></i>
