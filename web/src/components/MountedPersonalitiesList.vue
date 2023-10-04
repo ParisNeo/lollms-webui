@@ -243,7 +243,6 @@ export default {
             feather.replace()
             console.log('Selected personality : ', JSON.stringify(pers.personality))
             if (pers) {
-
                 if (pers.selected) {
                     this.$refs.toast.showToast("Personality already selected", 4, true)
                     return
@@ -263,9 +262,6 @@ export default {
                     this.onPersonalityMounted(pers)
 
                 }
-
-
-
             }
 
         },
@@ -388,7 +384,20 @@ export default {
         },
         async select_personality(pers) {
             if (!pers) { return { 'status': false, 'error': 'no personality - select_personality' } }
-            const id = this.configFile.personalities.findIndex(item => item === pers.full_path || item.split(':')[0] === pers.full_path)
+            let id = -1
+            console.log("Personality full path : ",pers.full_path)
+            console.log("Personality language : ",pers.personality.language)
+
+            if(pers.personality.language!=null && pers.personality.language!=undefined){
+                console.log('Mounting a localized version of personality')
+                console.log('Mounted personalities :', JSON.stringify(this.configFile.personalities))
+                console.log("Personality to select: ",pers.full_path+':'+pers.personality.language)
+                id = this.configFile.personalities.findIndex(item => item === pers.full_path+':'+pers.personality.language)
+            }
+            else{
+                console.log('Mounted personalities :', JSON.stringify(this.configFile.personalities))
+                id = this.configFile.personalities.findIndex(item => item === pers.full_path)
+            }
             if(id>-1){
                 console.log('Selecting personality with id:', JSON.stringify(id))
                 const obj = {
@@ -415,7 +424,7 @@ export default {
 
             }
             else{
-                console.log('Personalituy id is wrong')
+                console.log('Personality id is wrong')
                 this.$refs.toast.showToast("Personality id is wrong!", 4, false)
                 return { 'status': false, 'error': 'Personality id is wrong' }
             }

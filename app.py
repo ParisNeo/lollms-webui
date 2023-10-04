@@ -14,7 +14,7 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-__version__ ="6.6"
+__version__ ="6.7RC1"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
@@ -1620,19 +1620,22 @@ class LoLLMsWebUI(LoLLMsAPPI):
         if config_file.exists():
             if language:
                 package_path += ":" + language
+            """
             if package_path in self.config["personalities"]:
                 ASCIIColors.error("Can't mount exact same personality twice")
                 return jsonify({"status": False,
                                 "error":"Can't mount exact same personality twice",
                                 "personalities":self.config["personalities"],
                                 "active_personality_id":self.config["active_personality_id"]
-                                })    
+                                })                
+            """
             self.config["personalities"].append(package_path)
             self.mounted_personalities = self.rebuild_personalities()
             self.config["active_personality_id"]= len(self.config["personalities"])-1
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             ASCIIColors.success("ok")
             if self.config["active_personality_id"]<0:
+                ASCIIColors.error("error:active_personality_id<0")
                 return jsonify({"status": False,
                                 "error":"active_personality_id<0",
                                 "personalities":self.config["personalities"],
@@ -1642,6 +1645,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 if self.config.auto_save:
                     ASCIIColors.info("Saving configuration")
                     self.config.save_config()
+                ASCIIColors.error("Mounted successfully")
                 return jsonify({"status": True,
                                 "personalities":self.config["personalities"],
                                 "active_personality_id":self.config["active_personality_id"]
@@ -1866,7 +1870,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
 
     def p_select_personality(self):
-
         data = request.get_json()
         id = data['id']
         print(f"- Selecting active personality {id} ...",end="")
@@ -1874,7 +1877,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.config["active_personality_id"]=id
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
             ASCIIColors.success("ok")
-            print(f"Mounted {self.personality.name}")
+            print(f"Selected {self.personality.name}")
             if self.config.auto_save:
                 ASCIIColors.info("Saving configuration")
                 self.config.save_config()
