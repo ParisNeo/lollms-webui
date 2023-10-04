@@ -1590,6 +1590,157 @@
                 </div>
 
             </div>
+            <!-- EXTENSIONS ZOO -->
+            <div
+                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                <div class="flex flex-row p-3 items-center">
+                    <button @click.stop="ezc_collapsed = !ezc_collapsed"
+                        class="text-2xl hover:text-primary  p-2 -m-2 text-left w-full  flex items-center">
+                    <div v-show="ezc_collapsed" ><i data-feather='chevron-right'></i></div>
+                    <div v-show="!ezc_collapsed" ><i data-feather='chevron-down'></i></div>
+                    <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
+                        Extensions zoo</h3>
+                    <div v-if="configFile.extensions" class="mr-2">|</div>
+                    <div v-if="configFile.extensions"
+                        class=" text-base font-semibold cursor-pointer select-none items-center flex flex-row">
+                            <!-- LIST -->
+                            <div class="flex -space-x-4 items-center " v-if="mountedExtensions.length > 0">
+                                <!-- ITEM -->
+                                <div class="relative  hover:-translate-y-2 duration-300 hover:z-10 shrink-0 "
+                                    v-for="(item, index) in mountedExtensions" :key="index + '-' + item.name"
+                                    ref="mountedExtensions">
+                                    <div class="group items-center flex flex-row">
+                                        <button @click.stop="onPersonalitySelected(item)">
+                                            <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
+                                                class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary "
+                                                :class="configFile.active_personality_id == configFile.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
+                                                :title="item.name">
+                                        </button>
+                                        <button @click.stop="unmountPersonality (item)">
+
+                                            <span
+                                                class="hidden group-hover:block top-0 left-7 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
+                                                title="Unmount personality">
+                                                <!-- UNMOUNT BUTTON -->
+                                                <svg aria-hidden="true" class="w-4 h-4 text-red-600 hover:text-red-500 "
+                                                    fill="currentColor" viewBox="0 0 20 20"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd"
+                                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                        clip-rule="evenodd"></path>
+                                                </svg>
+
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                    </div>
+                    </button>
+                </div>
+                <div :class="{ 'hidden': ezc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                    <!-- SEARCH BAR -->
+                    <div class="mx-2 mb-4">
+                            <label for="personality-search"
+                                class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <div v-if="searchExtensionInProgress">
+                                        <!-- SPINNER -->
+                                        <div role="status">
+                                            <svg aria-hidden="true"
+                                                class="inline w-4 h-4 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                                                viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                                    fill="currentColor" />
+                                                <path
+                                                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                                    fill="currentFill" />
+                                            </svg>
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </div>
+                                    <div v-if="!searchExtensionInProgress">
+                                        <!-- SEARCH -->
+                                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                        </svg>
+                                    </div>
+
+                                </div>
+                                <input type="search" id="personality-search"
+                                    class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    placeholder="Search personality..." required v-model="searchPersonality"
+                                    @keyup.stop="searchPersonality_func">
+                                <button v-if="searchPersonality" @click.stop="searchPersonality = ''" type="button"
+                                    class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                    Clear search</button>
+
+                                <!-- @input="filterPersonalities()" -->
+
+                            </div>
+
+                    </div>
+                    <div class="mx-2 mb-4" v-if="!searchPersonality">
+                        <label for="persCat" class="block  mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Extensions Category: ({{ extCatgArr.length }})
+                        </label>
+                        <select id="persCat" @change="update_extension_category($event.target.value, refresh)"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                            <option v-for="(item, index) in extCatgArr" :key="index"
+                                :selected="item == this.extension_category">{{
+                                    item
+                                }}
+
+                            </option>
+
+                        </select>
+                    </div>
+                    <div>
+                        <div v-if="extensionsFiltererd.length > 0" class="mb-2">
+                            <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                {{ searchPersonality ? 'Search results' : 'Personalities' }}: ({{
+                                    extensionsFiltererd.length
+                                }})
+                            </label>
+                            <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
+                                :class="pzl_collapsed ? '' : 'max-h-96'">
+                                <TransitionGroup name="bounce">
+                                    <ExtensionEntry ref="extensionsZoo" v-for="(pers, index) in extensionsFiltererd"
+                                        :key="'index-' + index + '-' + pers.name" :personality="pers"
+                                        :select_language="true"
+                                        :full_path="pers.full_path"
+                                        :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === pers.full_path || item === pers.full_path+':'+pers.language)"
+                                        :on-selected="onPersonalitySelected" 
+                                        :on-mount="mountPersonality" 
+                                        :on-un-mount="unmountPersonality"  
+                                        :on-remount="remountPersonality"
+                                        :on-reinstall="onPersonalityReinstall"
+                                        :on-settings="onSettingsPersonality" />
+                                </TransitionGroup>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EXPAND / COLLAPSE BUTTON -->
+                    <button v-if="pzl_collapsed"
+                        class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
+                        title="Collapse" type="button" @click="pzl_collapsed = !pzl_collapsed">
+                        <i data-feather="chevron-up"></i>
+                    </button>
+                    <button v-else
+                        class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
+                        title="Expand" type="button" @click="pzl_collapsed = !pzl_collapsed">
+                        <i data-feather="chevron-down"></i>
+                    </button>
+                </div>
+
+            </div>
 
             <!-- MODEL CONFIGURATION -->
             <div
@@ -1895,6 +2046,7 @@ import UniversalForm from '../components/UniversalForm.vue';
 import ChoiceDialog from "@/components/ChoiceDialog.vue";
 import Card from "@/components/Card.vue"
 import RadioOptions from '../components/RadioOptions.vue';
+import ExtensionEntry from "@/components/ExtensionEntry.vue"
 
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_LOLLMS_API_BASEURL
@@ -1912,7 +2064,8 @@ export default {
         UniversalForm,
         ChoiceDialog,
         Card,
-        RadioOptions
+        RadioOptions,
+        ExtensionEntry
     },
     data() {
 
@@ -1939,6 +2092,7 @@ export default {
             // Loading text
             loading_text:"",
             // Current personality category
+            extension_category:"ai_sensors",
             personality_category:null,
             // install custom model
             addModelDialogVisibility: false,
@@ -1946,6 +2100,7 @@ export default {
             // Zoo stuff
             personalitiesFiltered: [],
             modelsFiltered: [],
+            extensionsFiltererd: [],
             // Accordeon stuff 
             collapsedArr: [],
             all_collapsed: true,
@@ -1956,6 +2111,7 @@ export default {
             mzc_collapsed: true, // models zoo
             mzdc_collapsed: true, // models zoo download
             pzc_collapsed: true, // personalities zoo
+            ezc_collapsed: true, // extension zoo
             bzc_collapsed: true, // binding zoo
             pc_collapsed: true,
             mc_collapsed: true,
@@ -1965,6 +2121,7 @@ export default {
             pzl_collapsed: false,
             bzl_collapsed: false,
             // Settings stuff
+            extCatgArr: [],
             persCatgArr: [],
             persArr: [],
             showConfirmation: false,
@@ -1975,11 +2132,13 @@ export default {
             isMounted: false, // Needed to wait for $refs to be rendered
             bUrl: bUrl, // for personality images
             searchPersonality: "",
+            searchExtension: "",
             searchModel: "",
             searchPersonalityTimer: {},
             searchPersonalityTimerInterval: 1500, // timeout in ms
             searchModelTimerInterval: 1500, // timeout in ms
             searchPersonalityInProgress: false,
+            searchExtensionInProgress: false,
             searchModelInProgress: false,
             addModel: {},
             modelDownlaodInProgress: false,
@@ -2162,6 +2321,24 @@ export default {
             this.persCatgArr = await this.api_get_req("list_personalities_categories")
             this.persArr = await this.api_get_req("list_personalities?category="+this.configFile.personality_category)
 
+            console.log("category")
+
+            try{
+                this.extCatgArr = await this.api_get_req("list_extensions_categories")
+                console.log(this.extCatgArr)
+            }
+            catch{
+                console.log("Couldn't list catergories")
+                this.extCatgArr = []
+            }
+            try{
+                this.extArr = await this.api_get_req("list_extensions?category="+this.extension_category)
+            }
+            catch{
+                console.log("Couldn't list extensions")
+                this.extCatgArr = []
+            }
+
             // this.bindingsArr.sort((a, b) => a.name.localeCompare(b.name))
             // this.modelsArr.sort()
             // this.persCatgArr.sort()
@@ -2311,6 +2488,18 @@ export default {
                 console.log(`Listed personalities:\n${response}`)
             })
         },
+        fetchExtensions(){
+            this.api_get_req("list_extensions_categories").then(response => {
+                this.extCatgArr = response
+                this.extCatgArr.sort()
+            })
+
+            this.api_get_req("list_extensions").then(response => {
+                this.extArr = response
+                this.extArr.sort()
+                console.log(`Listed extensions:\n${response}`)
+            })
+        },        
         fetchHardwareInfos(){
             this.$store.dispatch('refreshDiskUsage');
             this.$store.dispatch('refreshRamUsage');
@@ -2848,6 +3037,10 @@ export default {
             this.personality_category = cat
             next()
         },
+        update_extension_category(cat, next){
+            this.extension_category = cat
+            next()
+        },
         // Refresh stuff
         refresh() {
             console.log("Refreshing")
@@ -3202,6 +3395,34 @@ export default {
             this.searchPersonalityInProgress = false
 
         },
+        async filterExtensions() {
+            if (!this.searchExtension) {
+                this.personalitiesFiltered = this.extensions.filter((item) => item.category === this.extension_category )
+                this.personalitiesFiltered.sort()
+                this.searchExtensionInProgress = false
+                return
+            }
+            const searchTerm = this.searchExtension.toLowerCase()
+            const seachedPersonalities = this.personalities.filter((item) => {
+
+                if (item.name && item.name.toLowerCase().includes(searchTerm) || item.description && item.description.toLowerCase().includes(searchTerm) || item.full_path && item.full_path.toLowerCase().includes(searchTerm)) {
+                    return item
+                }
+
+            })
+
+
+
+            if (seachedPersonalities.length > 0) {
+                this.personalitiesFiltered = seachedPersonalities.sort()
+            } else {
+                this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category)
+                this.personalitiesFiltered.sort()
+            }
+            this.searchExtensionInProgress = false
+
+        },
+
         async filterModels() {
             if (!this.searchModel) {
                 console.log("Searching model")
@@ -3634,6 +3855,14 @@ export default {
             },
             set(value) {
                 this.$store.commit('setMountedPers', value);
+            }
+        },
+        mountedExtensions:{
+            get() {
+                return this.$store.state.activeExtensions;
+            },
+            set(value) {
+                this.$store.commit('setActiveExtensions', value);
             }
         },
         bindingsArr: {

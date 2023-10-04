@@ -308,6 +308,12 @@ class LoLLMsWebUI(LoLLMsAPPI):
         )
         
         self.add_endpoint(
+            "/list_extensions_categories", "list_extensions_categories", self.list_extensions_categories, methods=["GET"]
+        )
+        self.add_endpoint(
+            "/list_extensions", "list_extensions", self.list_extensions, methods=["GET"]
+        )        
+        self.add_endpoint(
             "/list_discussions", "list_discussions", self.list_discussions, methods=["GET"]
         )
         
@@ -1117,6 +1123,23 @@ class LoLLMsWebUI(LoLLMsAPPI):
             ASCIIColors.error(f"No personalities found. Using default one {ex}")
         return jsonify(personalities)
 
+
+    def list_extensions_categories(self):
+        extensions_categories_dir = self.lollms_paths.extensions_zoo_path  # replace with the actual path to the models folder
+        extensions_categories = [f.stem for f in extensions_categories_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]
+        return jsonify(extensions_categories)
+    
+    def list_extensions(self):
+        category = request.args.get('category')
+        if not category:
+            return jsonify([])            
+        try:
+            extensions_dir = self.lollms_paths.extensions_zoo_path/f'{category}'  # replace with the actual path to the models folder
+            extensions = [f.stem for f in extensions_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]
+        except Exception as ex:
+            extensions=[]
+            ASCIIColors.error(f"No extensions found. Using default one {ex}")
+        return jsonify(extensions)
 
 
     def list_discussions(self):

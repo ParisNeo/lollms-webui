@@ -90,6 +90,7 @@ import botImgPlaceholder from "../assets/logo.svg"
 import userImgPlaceholder from "../assets/default_user.svg"
 import InteractiveMenu from "@/components/InteractiveMenu.vue"
 
+
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
   props: {

@@ -30,16 +30,17 @@ export const store = createStore({
         isConnected: false, // Add the isConnected property
         config:null,
         mountedPers:null,
-        mountedPersArr:null,
-        bindingsArr:null,
-        modelsArr:null,
+        mountedPersArr:[],
+        mountedExtensions:[],
+        bindingsArr:[],
+        modelsArr:[],
         selectedModel:null,
-        personalities:null,
+        personalities:[],
         diskUsage:null,
         ramUsage:null,
         vramUsage:null,
-        extensionsZoo:null,
-        activeExtensions:null,
+        extensionsZoo:[],
+        activeExtensions:[],
       }
     },
     mutations: {      
@@ -60,6 +61,9 @@ export const store = createStore({
       },
       setMountedPersArr(state, mountedPersArr) {
         state.mountedPersArr = mountedPersArr;
+      },
+      setMountedExtensions(state, mountedExtensions) {
+        state.mountedExtensions = mountedExtensions;
       },
       setBindingsArr(state, bindingsArr) {
         state.bindingsArr = bindingsArr;
@@ -103,6 +107,9 @@ export const store = createStore({
       getMountedPersArr(state) {
         return state.mountedPersArr;
       },
+      getmmountedExtensions(state) {
+        return state.mountedExtensions;
+      },      
       getMountedPers(state) {
         return state.mountedPers;
       },
@@ -217,7 +224,7 @@ export const store = createStore({
             const index = this.state.personalities.findIndex(item => item.full_path == full_path_item || item.full_path == parts[0])
             if(index>=0){
               let pers = copyObject(this.state.personalities[index])
-              if(parts.length>0){
+              if(parts.length>1){
                 pers.language = parts[1]
               }
               // console.log(`Personality : ${JSON.stringify(pers)}`)
@@ -276,7 +283,7 @@ export const store = createStore({
               const modExtArr = extensionsArray.map((item) => {
                   let isMounted = false;
 
-                  for(const extension of this.state.config.personalities){
+                  for(const extension of this.state.config.extensions){
                     if(extension.includes(catkey + '/' + item.folder)){
                       isMounted = true;
                     }
@@ -308,7 +315,33 @@ export const store = createStore({
 
           commit('setExtensionsZoo',extensions)
       },
+      refreshmountedExtensions({ commit }) {
+        let mountedExtensions = []
+        // console.log('perrs listo',this.state.personalities)
+        const indicesToRemove = [];
+        for (let i = 0; i < this.state.config.extensions.length; i++) {
+            const full_path_item = this.state.config.extensions[i]
+            const index = this.state.extensionsZoo.findIndex(item => item.full_path == full_path_item)
+            if(index>=0){
+              let ext = copyObject(this.state.extensions[index])
+              
+              if (ext) {
+                  mountedExtensions.push(ext)
+              }
+            }
+            else{
+              indicesToRemove.push(i)
+              console.log("Couldn't load extension : ",full_path_item)
+            }
+        }
+        // Remove the broken extensions using the collected indices
+        for (let i = indicesToRemove.length - 1; i >= 0; i--) {
+          console.log("Removing extensions : ",this.state.config.extensions[indicesToRemove[i]])
+          this.state.config.extensions.splice(indicesToRemove[i], 1);
+        }
 
+        commit('setMountedExtensions', mountedExtensions);
+      },
       async refreshDiskUsage({ commit }) {
         this.state.diskUsage = await api_get_req("disk_usage")
       },
@@ -402,6 +435,7 @@ app.mixin({
       await this.$store.dispatch('refreshRamUsage');
       await this.$store.dispatch('refreshVramUsage');
       await this.$store.dispatch('refreshExtensionsZoo');
+      await this.$store.dispatch('refreshmountedExtensions');
       await this.$store.dispatch('refreshModels');
       
       await this.$store.dispatch('refreshPersonalitiesZoo')
