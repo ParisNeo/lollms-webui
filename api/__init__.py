@@ -114,7 +114,7 @@ class LoLLMsAPPI(LollmsApplication):
 
         super().__init__("Lollms_webui",config, lollms_paths, callback=self.process_chunk)
         self.busy = False
-        
+        self.nb_received_tokens = 0
         
         self.socketio = socketio
         self.config_file_path = config_file_path
@@ -494,6 +494,7 @@ class LoLLMsAPPI(LollmsApplication):
                 
         @socketio.on('upload_file')
         def upload_file(data):
+            ASCIIColors.yellow("Uploading file")
             file = data['file']
             filename = file.filename
             save_path = self.lollms_paths.personal_uploads_path/filename  # Specify the desired folder path
@@ -537,6 +538,8 @@ class LoLLMsAPPI(LollmsApplication):
 
         @socketio.on('send_file')
         def send_file(data):
+            ASCIIColors.yellow("Receiving file")
+
             client_id = request.sid
             self.connections[client_id]["generated_text"]       = ""
             self.connections[client_id]["cancel_generation"]    = False
