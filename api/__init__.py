@@ -1040,11 +1040,13 @@ class LoLLMsAPPI(LollmsApplication):
         # Create a string containing all punctuation characters
         punctuation_chars = string.punctuation        
         # Define a regular expression pattern to match and remove non-alphanumeric characters
-        pattern = f'[^a-zA-Z0-9\s{re.escape(punctuation_chars)}]'  # This pattern matches any character that is not a letter, digit, space, or punctuation
-
+        #pattern = f'[^a-zA-Z0-9\s{re.escape(punctuation_chars)}]'  # This pattern matches any character that is not a letter, digit, space, or punctuation
+        pattern = f'[^a-zA-Z0-9\u00C0-\u017F\s{re.escape(punctuation_chars)}]'
         # Use re.sub to replace the matched characters with an empty string
         cleaned_string = re.sub(pattern, '', cleaned_string)
         return cleaned_string
+    
+
     def prepare_query(self, client_id, message_id=-1, is_continue=False):
         messages = self.connections[client_id]["current_discussion"].get_messages()
         full_message_list = []
