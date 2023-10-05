@@ -262,7 +262,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         self.add_endpoint("/mount_personality", "mount_personality", self.p_mount_personality, methods=["POST"])
         self.add_endpoint("/remount_personality", "remount_personality", self.p_remount_personality, methods=["POST"])
-        
+
+        self.add_endpoint("/mount_extension", "mount_extension", self.p_mount_extension, methods=["POST"])
+        self.add_endpoint("/remount_extension", "remount_extension", self.p_remount_extension, methods=["POST"])
+
+
         self.add_endpoint("/unmount_personality", "unmount_personality", self.p_unmount_personality, methods=["POST"])        
         self.add_endpoint("/select_personality", "select_personality", self.p_select_personality, methods=["POST"])
 
@@ -1025,7 +1029,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             if category_folder.is_dir() and not category_folder.stem.startswith('.'):
                 extensions[category_folder.name] = []
                 for extensions_folder in category_folder.iterdir():
-                    pers = extensions_folder.stem
+                    ext = extensions_folder.stem
                     if extensions_folder.is_dir() and not extensions_folder.stem.startswith('.'):
                         extension_info = {"folder":extensions_folder.stem}
                         config_path = extensions_folder / 'card.yaml'
@@ -1042,7 +1046,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                                 extension_info['help'] = config_data.get('help', '')
 
                             real_assets_path = extensions_folder/ 'assets'
-                            assets_path = Path("extensions") / cat / pers / 'assets'
+                            assets_path = Path("extensions") / cat / ext / 'assets'
                             gif_logo_path = assets_path / 'logo.gif'
                             webp_logo_path = assets_path / 'logo.webp'
                             png_logo_path = assets_path / 'logo.png'
@@ -1129,18 +1133,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
         extensions_categories = [f.stem for f in extensions_categories_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]
         return jsonify(extensions_categories)
     
-    def list_extensions(self):
-        category = request.args.get('category')
-        if not category:
-            return jsonify([])            
-        try:
-            extensions_dir = self.lollms_paths.extensions_zoo_path/f'{category}'  # replace with the actual path to the models folder
-            extensions = [f.stem for f in extensions_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]
-        except Exception as ex:
-            extensions=[]
-            ASCIIColors.error(f"No extensions found. Using default one {ex}")
-        return jsonify(extensions)
-
 
     def list_discussions(self):
         discussions = self.db.get_discussions()
@@ -1601,6 +1593,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return jsonify({"status":False, 'error':str(ex)})
                 
 
+
+
     def p_mount_personality(self):
         print("- Mounting personality")
         try:
@@ -1796,6 +1790,125 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 return jsonify({'status':False})        
         else:
             return jsonify({'status':False})            
+
+
+
+    def p_mount_extension(self):
+        print("- Mounting extension")
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
+        category = data['category']
+        name = data['folder']
+
+        language = data.get('language', None)
+
+        package_path = f"{category}/{name}"
+        package_full_path = self.lollms_paths.extensions_zoo_path/package_path
+        config_file = package_full_path / "config.yaml"
+        if config_file.exists():
+            self.config["extensions"].append(package_path)
+            self.mounted_extensions = self.rebuild_extensions()
+            ASCIIColors.success("ok")
+            if self.config.auto_save:
+                ASCIIColors.info("Saving configuration")
+                self.config.save_config()
+            ASCIIColors.error("Mounted successfully")
+            return jsonify({"status": True,
+                            "extensions":self.config["extensions"],
+                            })         
+        else:
+            pth = str(config_file).replace('\\','/')
+            ASCIIColors.error(f"nok : Personality not found @ {pth}")
+            
+            ASCIIColors.yellow(f"Available personalities: {[p.name for p in self.mounted_personalities]}")
+            return jsonify({"status": False, "error":f"Personality not found @ {pth}"})         
+
+
+
+    def p_remount_extension(self):
+        print("- Remounting extension")
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
+        category = data['category']
+        name = data['folder']
+
+
+
+
+        package_path = f"{category}/{name}"
+        package_full_path = self.lollms_paths.extensions_zoo_path/package_path
+        config_file = package_full_path / "config.yaml"
+        if config_file.exists():
+            ASCIIColors.info(f"Unmounting personality {package_path}")
+            index = self.config["extensions"].index(f"{category}/{name}")
+            self.config["extensions"].remove(f"{category}/{name}")
+            if len(self.config["extensions"])>0:
+                self.mounted_personalities = self.rebuild_extensions()
+            else:
+                self.personalities = ["generic/lollms"]
+                self.mounted_personalities = self.rebuild_extensions()
+
+
+            ASCIIColors.info(f"Mounting personality {package_path}")
+            self.config["personalities"].append(package_path)
+            self.mounted_personalities = self.rebuild_extensions()
+            ASCIIColors.success("ok")
+            if self.config["active_personality_id"]<0:
+                return jsonify({"status": False,
+                                "personalities":self.config["personalities"],
+                                "active_personality_id":self.config["active_personality_id"]
+                                })         
+            else:
+                return jsonify({"status": True,
+                                "personalities":self.config["personalities"],
+                                "active_personality_id":self.config["active_personality_id"]
+                                })         
+        else:
+            pth = str(config_file).replace('\\','/')
+            ASCIIColors.error(f"nok : Personality not found @ {pth}")
+            ASCIIColors.yellow(f"Available personalities: {[p.name for p in self.mounted_personalities]}")
+            return jsonify({"status": False, "error":f"Personality not found @ {pth}"})         
+
+    def p_unmount_extension(self):
+        print("- Unmounting extension ...")
+        try:
+            data = request.get_json()
+            # Further processing of the data
+        except Exception as e:
+            print(f"Error occurred while parsing JSON: {e}")
+            return
+        category    = data['category']
+        name        = data['folder']
+        language    = data.get('language',None)
+        try:
+            personality_id = f"{category}/{name}" if language is None else f"{category}/{name}:{language}"
+            index = self.config["personalities"].index(personality_id)
+            self.config["extensions"].remove(personality_id)
+            self.mounted_extensions = self.rebuild_extensions()
+            ASCIIColors.success("ok")
+            if self.config.auto_save:
+                ASCIIColors.info("Saving configuration")
+                self.config.save_config()
+            return jsonify({
+                        "status": True,
+                        "extensions":self.config["extensions"]
+                        })         
+        except:
+            if language:
+                ASCIIColors.error(f"nok : Personality not found @ {category}/{name}:{language}")
+            else:
+                ASCIIColors.error(f"nok : Personality not found @ {category}/{name}")
+                
+            ASCIIColors.yellow(f"Available personalities: {[p.name for p in self.mounted_personalities]}")
+            return jsonify({"status": False, "error":"Couldn't unmount personality"})     
 
     
     def set_active_binding_settings(self):

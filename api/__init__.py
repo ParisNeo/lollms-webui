@@ -13,6 +13,7 @@ from api.db import DiscussionsDB, Discussion
 from pathlib import Path
 from lollms.config import InstallOption
 from lollms.types import MSG_TYPE, SENDER_TYPES
+from lollms.extension import LOLLMSExtension
 from lollms.personality import AIPersonality, PersonalityBuilder
 from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding, ModelBuilder
 from lollms.paths import LollmsPaths
@@ -959,6 +960,78 @@ class LoLLMsAPPI(LollmsApplication):
             self.config["active_personality_id"]=0
             
         return mounted_personalities
+    
+
+    def rebuild_extensions(self, reload_all=False):
+        if reload_all:
+            self.mounted_extensions=[]
+
+        loaded = self.mounted_extensions
+        loaded_names = [f"{p.category}/{p.extension_folder_name}" for p in loaded]
+        mounted_extensions=[]
+        ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
+        ASCIIColors.success(f" ║           Building mounted Extensions            ║ ")
+        ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
+        to_remove=[]
+        for i,extension in enumerate(self.config['extensions']):
+            ASCIIColors.yellow(f" {extension}")
+            if extension in loaded_names:
+                mounted_extensions.append(loaded[loaded_names.index(extension)])
+            else:
+                personality_path = self.lollms_paths.personalities_zoo_path/f"{extension}" 
+                try:
+                    extension = LOLLMSExtension()
+                    mounted_extensions.append(extension)
+                except Exception as ex:
+                    ASCIIColors.error(f"Personality file not found or is corrupted ({personality_path}).\nReturned the following exception:{ex}\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+                    ASCIIColors.info("Trying to force reinstall")
+                    if self.config["debug"]:
+                        print(ex)
+                    try:
+                        personality = AIPersonality(
+                                                    personality_path, 
+                                                    self.lollms_paths, 
+                                                    self.config, 
+                                                    self.model, 
+                                                    app = self,
+                                                    run_scripts=True,                                                    
+                                                    selected_language=personality.split(":")[1] if ":" in personality else None,
+                                                    installation_option=InstallOption.FORCE_INSTALL)
+                        mounted_extensions.append(personality)
+                    except Exception as ex:
+                        ASCIIColors.error(f"Couldn't load personality at {personality_path}")
+                        trace_exception(ex)
+                        ASCIIColors.info(f"Unmounting personality")
+                        to_remove.append(i)
+                        personality = AIPersonality(None,                                                    
+                                                    self.lollms_paths, 
+                                                    self.config, 
+                                                    self.model, 
+                                                    run_scripts=True,
+                                                    installation_option=InstallOption.FORCE_INSTALL)
+                        mounted_extensions.append(personality)
+                        ASCIIColors.info("Reverted to default personality")
+        if self.config["active_personality_id"]>=0 and self.config["active_personality_id"]<len(self.config["personalities"]):
+            ASCIIColors.success(f'selected model : {self.config["personalities"][self.config["active_personality_id"]]}')
+        else:
+            ASCIIColors.warning('An error was encountered while trying to mount personality')
+        ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
+        ASCIIColors.success(f" ║                      Done                        ║ ")
+        ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
+        # Sort the indices in descending order to ensure correct removal
+        to_remove.sort(reverse=True)
+
+        # Remove elements from the list based on the indices
+        for index in to_remove:
+            if 0 <= index < len(mounted_extensions):
+                mounted_extensions.pop(index)
+                self.config["personalities"].pop(index)
+                ASCIIColors.info(f"removed personality {personality_path}")
+
+        if self.config["active_personality_id"]>=len(self.config["personalities"]):
+            self.config["active_personality_id"]=0
+            
+        return mounted_extensions
     # ================================== LOLLMSApp
 
     #properties

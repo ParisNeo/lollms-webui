@@ -5,7 +5,7 @@
     :class="selected_computed ? 'border-2 border-primary-light' : 'border-transparent', isMounted ? 'bg-blue-200 dark:bg-blue-700':''"
     :title="!personality.installed ? 'Not installed' : ''">
 
-    <div :class="!personality.installed ? 'opacity-50' : ''">
+    <div :class="!personality.installed ? 'border-red-500' : ''">
 
       <div class="flex flex-row items-center  flex-shrink-0 gap-3">
         <img @click="toggleSelected" ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)"

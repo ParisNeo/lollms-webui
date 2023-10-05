@@ -154,6 +154,13 @@ export const store = createStore({
           //let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
           configFile.personality_category = personality_path_infos[0]
           configFile.personality_folder = personality_path_infos[1]
+
+          if (configFile.extensions.length>0){
+            configFile.extension_category = configFile.extensions[-1]
+          }
+          else{
+            configFile.extension_category = "ai_sensors"
+          }
           console.log("Recovered config")
           console.log(configFile)
           console.log("Committing config");
@@ -275,7 +282,7 @@ export const store = createStore({
           let extensions = []
           let catdictionary = await api_get_req("list_extensions")
           const catkeys = Object.keys(catdictionary); // returns categories
-          console.log("Extensions recovered:"+this.state.config.extensions)
+          console.log("Extensions recovered:"+catdictionary)
 
           for (let j = 0; j < catkeys.length; j++) {
               const catkey = catkeys[j];

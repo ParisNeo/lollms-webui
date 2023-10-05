@@ -3,16 +3,16 @@
     class=" min-w-96 items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 cursor-pointer  select-none"
     tabindex="-1" 
     :class="selected_computed ? 'border-2 border-primary-light' : 'border-transparent', isMounted ? 'bg-blue-200 dark:bg-blue-700':''"
-    :title="!personality.installed ? 'Not installed' : ''">
+    :title="!extension.installed ? 'Not installed' : ''">
 
-    <div :class="!personality.installed ? 'opacity-50' : ''">
+    <div :class="!extension.installed ? 'border-red-500' : ''">
 
       <div class="flex flex-row items-center  flex-shrink-0 gap-3">
         <img @click="toggleSelected" ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)"
           class="w-10 h-10 rounded-full object-fill text-red-700 cursor-pointer">
-        <!-- :class="personality.installed ? 'grayscale-0':'grayscale'" -->
+        <!-- :class="extension.installed ? 'grayscale-0':'grayscale'" -->
         <h3 @click="toggleSelected" class="font-bold font-large text-lg line-clamp-3 cursor-pointer">
-          {{ personality.name }}
+          {{ extension.name }}
         </h3>
       </div>
       <div class="">
@@ -22,16 +22,16 @@
             <i data-feather="user" class="w-5 m-1"></i>
             <b>Author:&nbsp;</b>
 
-            {{ personality.author }}
+            {{ extension.author }}
           </div>
-          <div v-if="personality.languages && select_language" class="flex items-center">
+          <div v-if="extension.languages && select_language" class="flex items-center">
             <i data-feather="globe" class="w-5 m-1"></i>
             <b>Languages:&nbsp;</b>
-            <select id="languages" v-model ="personality.language"
+            <select id="languages" v-model ="extension.language"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                <option v-for="(item, index) in personality.languages" :key="index"
-                    :selected="item == personality.languages[0]">{{
+                <option v-for="(item, index) in extension.languages" :key="index"
+                    :selected="item == extension.languages[0]">{{
                         item
                     }}
 
@@ -39,16 +39,16 @@
 
             </select>
           </div>
-          <div v-if="personality.language" class="flex items-center">
+          <div v-if="extension.language" class="flex items-center">
             <i data-feather="globe" class="w-5 m-1"></i>
             <b>Language:&nbsp;</b>
-            {{ personality.language }}
+            {{ extension.language }}
           </div>
           <div class="flex items-center">
             <i data-feather="bookmark" class="w-5 m-1"></i>
             <b>Category:&nbsp;</b>
 
-            {{ personality.category }}
+            {{ extension.category }}
           </div>
 
         </div>
@@ -56,7 +56,7 @@
           <i data-feather="info" class="w-5 m-1"></i>
           <b>Description:&nbsp;</b><br>
         </div>
-        <p class="mx-1 opacity-80 h-20  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" :title="personality.description">{{ personality.description }}</p>
+        <p class="mx-1 opacity-80 h-20  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" :title="extension.description">{{ extension.description }}</p>
       </div>
       <div class="rounded bg-blue-300">
           <button v-if="isMounted" type="button" title="Select"
@@ -94,7 +94,7 @@ import InteractiveMenu from "@/components/InteractiveMenu.vue"
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
   props: {
-    personality: {},
+    extension: {},
     select_language: Boolean,
     selected: Boolean,
     full_path: String,
@@ -112,7 +112,7 @@ export default {
   data() {
     return {
       isMounted: false,
-      name: this.personality.name,
+      name: this.extension.name,
     };
   },
   computed:{
@@ -124,7 +124,7 @@ export default {
         if(this.isMounted){
           main_menu.push({name:"remount", icon: "feather:refresh-ccw", is_file:false, value:this.reMount})
         }
-        if(this.selected && this.personality.has_scripts){
+        if(this.selected && this.extension.has_scripts){
           main_menu.push({name:"settings", icon: "feather:settings", is_file:false, value:this.toggleSettings})
         }
         return main_menu
@@ -135,7 +135,7 @@ export default {
   },
   mounted() {
 
-    this.isMounted = this.personality.isMounted
+    this.isMounted = this.extension.isMounted
 
     nextTick(() => {
       feather.replace()
@@ -145,7 +145,7 @@ export default {
   },
   methods: {
     getImgUrl() {
-      return bUrl + this.personality.avatar
+      return bUrl + this.extension.avatar
     },
     defaultImg(event) {
       event.target.src = botImgPlaceholder

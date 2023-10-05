@@ -1711,17 +1711,17 @@
                             <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
                                 :class="pzl_collapsed ? '' : 'max-h-96'">
                                 <TransitionGroup name="bounce">
-                                    <ExtensionEntry ref="extensionsZoo" v-for="(pers, index) in extensionsFiltererd"
-                                        :key="'index-' + index + '-' + pers.name" :personality="pers"
+                                    <ExtensionEntry ref="extensionsZoo" v-for="(ext, index) in extensionsFiltererd"
+                                        :key="'index-' + index + '-' + ext.name" :extension="ext"
                                         :select_language="true"
-                                        :full_path="pers.full_path"
-                                        :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === pers.full_path || item === pers.full_path+':'+pers.language)"
-                                        :on-selected="onPersonalitySelected" 
-                                        :on-mount="mountPersonality" 
-                                        :on-un-mount="unmountPersonality"  
-                                        :on-remount="remountPersonality"
-                                        :on-reinstall="onPersonalityReinstall"
-                                        :on-settings="onSettingsPersonality" />
+                                        :full_path="ext.full_path"
+                                        :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === ext.full_path)"
+                                        :on-selected="onExtensionSelected" 
+                                        :on-mount="mountExtension" 
+                                        :on-un-mount="unmountExtension"  
+                                        :on-remount="remountExtension"
+                                        :on-reinstall="onExtensionReinstall"
+                                        :on-settings="onSettingsExtension" />
                                 </TransitionGroup>
                             </div>
                         </div>
@@ -2352,13 +2352,19 @@ export default {
             this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category)
             // this.personalitiesFiltered.sort()
             //mountedPersArr
+            console.log("Extensions zoo")
+            console.log(this.$store.state.extensionsZoo)
             this.modelsFiltered = this.models
+            this.extension_category = this.configFile.extension_category
+            this.extensionsFiltererd = this.$store.state.extensionsZoo.filter((item) => item.category === this.configFile.extension_category )
+            
 
             //this.bindings = await this.api_get_req("list_bindings")
             // this.bindingsArr.sort((a, b) => a.name.localeCompare(b.name))
             this.isLoading = false
             this.isMounted = true
 
+            this.extension_category = this.configFile.extension_category
 
 
         },
@@ -2504,6 +2510,7 @@ export default {
             this.$store.dispatch('refreshDiskUsage');
             this.$store.dispatch('refreshRamUsage');
         },
+        
         async onPersonalitySelected(pers) {
             console.log('on pers', pers)
             // eslint-disable-next-line no-unused-vars
@@ -2550,6 +2557,52 @@ export default {
             }
 
         },
+        async onExtensionSelected(ext) {
+            console.log('on ext', ext)
+            // eslint-disable-next-line no-unused-vars
+            if (this.isLoading) {
+                this.$refs.toast.showToast("Loading... please wait", 4, false)
+            }
+            this.isLoading = true
+            console.log('extension', ext)
+            if (ext) {
+
+                if (ext.selected) {
+                    this.$refs.toast.showToast("Extension already selected", 4, true)
+                    this.isLoading = false
+                    return
+                }
+
+
+                //this.settingsChanged = true
+
+                if (ext.isMounted && this.configFile.extensions.includes(ext.full_path)) {
+
+                    const res = await this.select_extension(ext)
+                    console.log('ext is mounted', res)
+                    if (res && res.status && res.active_personality_id > -1) {
+                        this.$refs.toast.showToast("Selected personality:\n" + ext.name, 4, true)
+
+                    } else {
+                        this.$refs.toast.showToast("Error on select personality:\n" + ext.name, 4, false)
+                    }
+                    this.isLoading = false
+
+                } else {
+                    console.log('mounting ext')
+                    this.mountPersonality(ext)
+
+                }
+
+
+                nextTick(() => {
+                    feather.replace()
+
+                })
+
+            }
+
+        },        
         onSelected(model_object, force=false) {
 
             // eslint-disable-next-line no-unused-vars
@@ -3052,7 +3105,17 @@ export default {
                     this.persCatgArr = cats
                     this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.personality_category)
                     this.personalitiesFiltered.sort()
+
                 })
+
+                this.api_get_req("list_extensions_categories").then((cats)=>{
+                    console.log("cats",cats)
+                    this.persCatgArr = cats
+                    this.extensionsFiltererd = this.$store.state.extensionsZoo.filter((item) => item.category === this.extension_category)
+                    this.extensionsFiltererd.sort()
+
+                })
+                
 
             });            
 
@@ -3477,10 +3540,6 @@ export default {
                 return
             }
 
-
-
-
-
         },
         async unmount_personality(pers) {
             if (!pers) { return { 'status': false, 'error': 'no personality - unmount_personality' } }
@@ -3529,6 +3588,50 @@ export default {
                 }
             } catch (error) {
                 console.log(error.message, 'select_personality - settings')
+                return
+            }
+
+        },
+        async mount_extension(ext) {
+            if (!ext) { return { 'status': false, 'error': 'no extension - mount_extension' } }
+
+            try {
+                const obj = {
+                    category: ext.category,
+                    folder: ext.folder,
+                }
+                const res = await axios.post('/mount_extension', obj);
+
+                if (res) {
+
+                    return res.data
+
+                }
+            } catch (error) {
+                console.log(error.message, 'mount_extension - settings')
+                return
+            }
+
+        },
+        async unmount_extension(ext) {
+            if (!ext) { return { 'status': false, 'error': 'no extension - unmount_extension' } }
+
+            const obj = {
+                language: ext.language,
+                category: ext.category,
+                folder: ext.folder
+            }
+
+
+            try {
+                const res = await axios.post('/unmount_extension', obj);
+
+                if (res) {
+                    return res.data
+
+                }
+            } catch (error) {
+                console.log(error.message, 'unmount_extension - settings')
                 return
             }
 
@@ -3618,6 +3721,87 @@ export default {
             await this.unmountPersonality(pers);
             await this.mountPersonality(pers);
         },
+
+        async mountExtension(ext) {
+            this.isLoading = true
+            console.log('mount ext', ext)
+            if (!ext) { return }
+
+            if (this.configFile.personalities.includes(ext.extension.full_path)) {
+                this.isLoading = false
+                this.$refs.toast.showToast("Extension already mounted", 4, false)
+
+                return
+            }
+
+            const res = await this.mount_extension(ext.extension)
+            console.log('mount_extension res', res)
+
+            if (res && res.status && res.extensions.includes(ext.extension.full_path)) {
+                this.configFile.extensions = res.extensions
+                this.$refs.toast.showToast("Extension mounted", 4, true)
+                ext.isMounted = true
+
+                const res2 = await this.select_extensions(ext.extensions)
+                if (res2.status) {
+                    this.$refs.toast.showToast("Selected extension:\n" + ext.extension.name, 4, true)
+
+                }
+                this.$store.dispatch('refreshMountedExtensions');
+            } else {
+                ext.isMounted = false
+                this.$refs.toast.showToast("Could not mount extension\nError: " + res.error + "\nResponse:\n" + res, 4, false)
+            }
+            this.isLoading = false
+
+        },
+        async unmountExtension(ext) {
+            this.isLoading = true
+            if (!ext) { return }
+
+            const res = await this.unmount_personality(ext.personality || ext)
+
+
+            if (res.status) {
+                this.configFile.personalities = res.personalities
+                this.$refs.toast.showToast("Extension unmounted", 4, true)
+                const persId = this.personalities.findIndex(item => item.full_path == ext.full_path)
+                const persFilteredId = this.personalitiesFiltered.findIndex(item => item.full_path == ext.full_path)
+                const persIdZoo = this.$refs.personalitiesZoo.findIndex(item => item.full_path == ext.full_path)
+                console.log('ppp', this.personalities[persId])
+
+                this.personalities[persId].isMounted = false
+
+                if (persFilteredId > -1) {
+                    this.personalitiesFiltered[persFilteredId].isMounted = false
+
+                }
+
+                if (persIdZoo > -1) {
+                    this.$refs.personalitiesZoo[persIdZoo].isMounted = false
+
+                }
+
+
+                //ext.isMounted = false
+                this.$store.dispatch('refreshMountedPersonalities');
+                // Select some other personality
+                const lastPers = this.mountedPersArr[this.mountedPersArr.length - 1]
+
+                console.log(lastPers, this.mountedPersArr.length)
+
+
+            } else {
+                this.$refs.toast.showToast("Could not unmount extension\nError: " + res.error, 4, false)
+            }
+
+            this.isLoading = false
+        },
+        async remountExtension(ext){
+            await this.unmountExtension(ext);
+            await this.mountExtension(ext);
+        },
+
         onPersonalityReinstall(persItem){
             console.log('on reinstall ', persItem)
             this.isLoading = true
