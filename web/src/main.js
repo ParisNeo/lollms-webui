@@ -40,7 +40,7 @@ export const store = createStore({
         ramUsage:null,
         vramUsage:null,
         extensionsZoo:[],
-        activeExtensions:[],
+        databases:[],
       }
     },
     mutations: {      
@@ -84,12 +84,13 @@ export const store = createStore({
         state.vramUsage = vramUsage;
       },
       
-      setActiveExtensions(state, activeExtensions) {
-        state.activeExtensions = activeExtensions;
-      },
       setExtensionsZoo(state, extensionsZoo) {
         state.extensionsZoo = extensionsZoo;
       },
+      setDatabases(state, databases) {
+        state.databases = databases;
+      },
+      
       // increment (state) {
       //   state.count++
       // }    
@@ -129,8 +130,8 @@ export const store = createStore({
         return state.vramUsage;
       },
       
-      getActiveExtensions(state) {
-        return state.activeExtensions;
+      getDatabasesList(state){
+        return state.databases;
       },
       getExtensionsZoo(state) {
         return state.extensionsZoo;
@@ -172,6 +173,13 @@ export const store = createStore({
           // Handle error
         }
       },
+      async refreshDatabase({ commit }) {
+        let databases = await api_get_req("list_databases")
+        console.log("databases:",databases)
+        commit('setDatabases', databases);
+      },
+
+
       async refreshPersonalitiesZoo({ commit }) {
           let personalities = []
           const catdictionary = await api_get_req("get_all_personalities")
@@ -433,6 +441,8 @@ app.mixin({
       actionsExecuted = true;
       console.log("Calling")
       await this.$store.dispatch('refreshConfig');
+      await this.$store.dispatch('refreshDatabase');
+      
       console.log("recovered config : ${}");
       await this.$store.dispatch('getVersion');
       console.log("recovered version");          

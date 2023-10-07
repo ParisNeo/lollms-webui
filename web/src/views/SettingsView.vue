@@ -759,7 +759,7 @@
                                         </td>
                                         </tr>  
                                     </table>
-                                </Card>
+                                </Card>                           
                                 <Card title="Files Vectorization" :is_subcard="true" class="pb-2  m-2">
                                     <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <tr>
@@ -778,7 +778,24 @@
                                             >
                                             </div>
                                         </td>
-                                        </tr>                                        
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="use_discussions_history" class="text-sm font-bold" style="margin-right: 1rem;">Activate discussion vectorization:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <input
+                                            type="checkbox"
+                                            id="use_discussions_history"
+                                            required
+                                            v-model="configFile.use_discussions_history"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>                                                                                 
                                         <tr>
                                         <td style="min-width: 200px;">
                                             <label for="data_vectorization_activate" class="text-sm font-bold" style="margin-right: 1rem;">Activate files vectorization:</label>
@@ -4043,7 +4060,7 @@ export default {
         },
         mountedExtensions:{
             get() {
-                return this.$store.state.activeExtensions;
+                return this.$store.state.config.extensions;
             },
             set(value) {
                 this.$store.commit('setActiveExtensions', value);

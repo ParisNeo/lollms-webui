@@ -19,7 +19,8 @@ from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding, ModelBuilde
 from lollms.paths import LollmsPaths
 from lollms.helpers import ASCIIColors, trace_exception
 from lollms.app import LollmsApplication
-from lollms.utilities import File64BitsManager, PromptReshaper
+from lollms.utilities import File64BitsManager, PromptReshaper, TextVectorizer
+
 import threading
 from tqdm import tqdm 
 import traceback
@@ -120,6 +121,9 @@ class LoLLMsAPPI(LollmsApplication):
         self.socketio = socketio
         self.config_file_path = config_file_path
         self.cancel_gen = False
+
+        
+        self.discussion_store = None
 
         # Keeping track of current discussion and message
         self._current_user_message_id = 0
@@ -1154,13 +1158,37 @@ class LoLLMsAPPI(LollmsApplication):
         if self.config["override_personality_model_parameters"]:
             conditionning = conditionning+ "\n!@>user description:\nName:"+self.config["user_name"]+"\n"+self.config["user_description"]+"\n"
 
-        if len(self.personality.files)>0 and self.personality.vectorizer:
+        str_docs = ""
+
+        if self.config.use_discussions_history:
+            if self.discussion_store is None:
+                self.discussion_store = TextVectorizer(self.config.data_vectorization_method, # supported "model_embedding" or "ftidf_vectorizer"
+                        model=self.model, #needed in case of using model_embedding
+                        database_path=self.lollms_paths.personal_databases_path/"discussionsdb.json",
+                        save_db=self.config.data_vectorization_save_db,
+                        visualize_data_at_startup=False,
+                        visualize_data_at_add_file=False,
+                        visualize_data_at_generate=False,
+                        data_visualization_method="PCA",
+                        database_dict=None)
+                corpus = self.db.export_all_as_markdown()
+                self.discussion_store.add_document("discussions", corpus, self.config.data_vectorization_chunk_size, self.config.data_vectorization_overlap_size )
+
             pr = PromptReshaper("{{conditionning}}\n!@>document chunks:\n{{doc}}\n{{content}}")
-            emb = self.personality.vectorizer.embed_query(message.content)
-            docs, sorted_similarities = self.personality.vectorizer.recover_text(emb, top_k=self.config.data_vectorization_nb_chunks)     
-            str_docs = ""
+            emb = self.discussion_store.embed_query(message.content)
+            docs, sorted_similarities = self.discussion_store.recover_text(emb, top_k=self.config.data_vectorization_nb_chunks)     
             for doc, infos in zip(docs, sorted_similarities):
                 str_docs+=f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
+
+
+        if len(self.personality.files)>0 and self.personality.vectorizer:
+            emb = self.personality.vectorizer.embed_query(message.content)
+            docs, sorted_similarities = self.personality.vectorizer.recover_text(emb, top_k=self.config.data_vectorization_nb_chunks)
+            for doc, infos in zip(docs, sorted_similarities):
+                str_docs+=f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
+
+        if str_docs!="":                
+            pr = PromptReshaper("{{conditionning}}\n!@>document chunks:\n{{doc}}\n{{content}}")
             discussion_messages = pr.build({
                                     "doc":str_docs,
                                     "conditionning":conditionning,
@@ -1494,7 +1522,7 @@ class LoLLMsAPPI(LollmsApplication):
                 self.connections[client_id]["current_discussion"].load_message(message_id)
                 self.connections[client_id]["generated_text"] = message.content
             else:
-                self.new_message(client_id, self.personality.name, "✍ please stand by ...")
+                self.new_message(client_id, self.personality.name, "✍ warming up ...")
             self.socketio.sleep(0.01)
 
             # prepare query and reception

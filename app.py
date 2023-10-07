@@ -14,7 +14,7 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-__version__ ="6.7Alpha1"
+__version__ ="6.7Alpha2"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
@@ -310,6 +310,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint(
             "/list_personalities", "list_personalities", self.list_personalities, methods=["GET"]
         )
+        self.add_endpoint(
+            "/list_databases", "list_databases", self.list_databases, methods=["GET"]
+        )
+        
         
         self.add_endpoint(
             "/list_extensions_categories", "list_extensions_categories", self.list_extensions_categories, methods=["GET"]
@@ -1126,6 +1130,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
             personalities=[]
             ASCIIColors.error(f"No personalities found. Using default one {ex}")
         return jsonify(personalities)
+    
+    def list_databases(self):
+        databases = [f.name for f in self.lollms_paths.personal_databases_path.iterdir() if f.suffix==".db"]
+        return jsonify(databases)
 
 
     def list_extensions_categories(self):

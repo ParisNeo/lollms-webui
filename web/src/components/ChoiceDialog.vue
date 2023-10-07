@@ -13,8 +13,8 @@
               :class="{'selected-choice': choice === selectedChoice}"
               class="py-2 px-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
             >
-              <span class="font-bold"> {{ choice.name }} </span><br>
-              <span class="text-xs text-gray-500"> {{ this.formatSize(choice.size) }}</span>
+              <span class="font-bold"> {{ displayName(choice) }} </span><br>
+              <span class="text-xs text-gray-500" v-if="choice.size"> {{ this.formatSize(choice.size) }}</span>
             </li>
           </ul>
         </div>
@@ -66,6 +66,16 @@ export default {
     };
   },
   methods: {
+    displayName(choice) {
+      console.log("choice:",choice)
+      if (typeof choice === 'string') {
+        return choice;
+      } else if (choice && choice.name) {
+        return choice.name;
+      } else {
+        return ''; 
+      }
+    },
     selectChoice(choice) {
       this.selectedChoice = choice; // Update the selectedChoice when a choice is clicked
       this.$emit("choice-selected", choice);

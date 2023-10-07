@@ -192,7 +192,7 @@
 }
 </style>
 <script>
-import botImgPlaceholder from "../assets/logo.svg"
+import botImgPlaceholder from "../assets/logo.png"
 import userImgPlaceholder from "../assets/default_user.svg"
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 import { nextTick } from 'vue'
@@ -368,8 +368,10 @@ export default {
         },
         getImgUrl() {
             if (this.avatar) {
+                console.log("Avatar:",bUrl + this.avatar)
                 return bUrl + this.avatar
             }
+            console.log("No avatar found")
             return botImgPlaceholder;
 
         },

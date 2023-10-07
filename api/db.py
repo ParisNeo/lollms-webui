@@ -249,6 +249,56 @@ class DiscussionsDB:
                 )
             discussions.append(discussion)
         return discussions
+    def export_all_as_markdown(self):
+        data = self.export_all_discussions_to_json()
+
+        # Initialize an empty result string
+        result = ''
+
+        # Iterate through discussions in the JSON data
+        for discussion in data:
+            # Extract the title
+            title = discussion['title']
+            # Append the title with '#' as Markdown heading
+            result += f'#{title}\n'
+
+            # Iterate through messages in the discussion
+            for message in discussion['messages']:
+                sender = message['sender']
+                content = message['content']
+                # Append the sender and content in a Markdown format
+                result += f'{sender}: {content}\n'
+
+        return result
+
+    def export_all_discussions_to_json(self):
+        # Convert the list of discussion IDs to a tuple
+        db_discussions = self.select(
+            f"SELECT * FROM discussion"
+        )
+        discussions = []
+        for row in db_discussions:
+            discussion_id = row[0]
+            discussion_title = row[1]
+            discussion = {"id": discussion_id, "title":discussion_title, "messages": []}
+            rows = self.select(f"SELECT sender, content, message_type, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at FROM message WHERE discussion_id=?",(discussion_id,))
+            for message_row in rows:
+                sender = message_row[0]
+                content = message_row[1]
+                content_type = message_row[2]
+                rank = message_row[3]
+                parent_message_id = message_row[4]
+                binding = message_row[5]
+                model = message_row[6]
+                personality = message_row[7]
+                created_at = message_row[8]
+                finished_generating_at = message_row[9]
+                
+                discussion["messages"].append(
+                    {"sender": sender, "content": content, "type": content_type, "rank": rank, "parent_message_id": parent_message_id, "binding": binding, "model":model, "personality":personality, "created_at":created_at, "finished_generating_at": finished_generating_at}
+                )
+            discussions.append(discussion)
+        return discussions
 
     def export_discussions_to_json(self, discussions_ids:list):
         # Convert the list of discussion IDs to a tuple

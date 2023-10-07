@@ -6,7 +6,6 @@
     :title="!extension.installed ? 'Not installed' : ''">
 
     <div :class="!extension.installed ? 'border-red-500' : ''">
-
       <div class="flex flex-row items-center  flex-shrink-0 gap-3">
         <img @click="toggleSelected" ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)"
           class="w-10 h-10 rounded-full object-fill text-red-700 cursor-pointer">

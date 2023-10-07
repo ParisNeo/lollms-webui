@@ -69,7 +69,7 @@
                         <i data-feather="refresh-ccw"></i>
                     </button>
                     <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Export database"
-                        type="button">
+                        type="button" @click.stop="database_selectorDialogVisible=true">
                         <i data-feather="database"></i>
                     </button>
                     <input type="file" ref="fileDialog" style="display: none" @change="importDiscussions" />
@@ -271,6 +271,13 @@
     <Toast ref="toast">
     </Toast>
     <MessageBox ref="messageBox" />
+    <ChoiceDialog reference="database_selector" class="z-20"
+      :show="database_selectorDialogVisible"
+      :choices="databases"
+      @choice-selected="ondatabase_selectorDialogSelected"
+      @close-dialog="onclosedatabase_selectorDialog"
+      @choice-validated="onvalidatedatabase_selectorChoice"
+    />      
 </template>
 
 
@@ -404,6 +411,7 @@ export default {
             isDiscussionBottom: false,
             personalityAvatars: [], // object array of personality name: and avatar: props
             fileList: [],
+            database_selectorDialogVisible:false,
             isDragOverDiscussion: false,
             isDragOverChat: false,
             panelCollapsed: false, // left panel collapse
@@ -411,6 +419,12 @@ export default {
         }
     },
     methods: {
+        ondatabase_selectorDialogSelected(choice){
+            console.log("Selected:",choice)
+            this.$store.state.config.database=choice;
+        },
+        onclosedatabase_selectorDialog(){this.database_selectorDialogVisible=false;},
+        onvalidatedatabase_selectorChoice(){this.database_selectorDialogVisible=false;},
         save_configuration() {
             this.showConfirmation = false
             axios.post('/save_settings', {})
@@ -1626,7 +1640,11 @@ export default {
     async activated() {
         //console.log('settings changed acc', this.$store.state.settingsChanged)
         // await this.getPersonalityAvatars()
+        while (this.isReady === false) {
+                await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for 100ms
+            }  
         await this.getPersonalityAvatars()
+        console.log("Avatars found:",this.personalityAvatars)
         if (this.isCreated) {
            // this.loadLastUsedDiscussion()
             nextTick(() => {
@@ -1644,7 +1662,8 @@ export default {
         ChatBox,
         WelcomeComponent,
         Toast,
-        DragDrop
+        DragDrop,       
+        ChoiceDialog
     },
     watch: {
         filterTitle(newVal) {
@@ -1680,6 +1699,15 @@ export default {
         
     },
     computed: {
+        isReady:{
+            
+            get() {
+                return this.$store.state.ready;
+            },
+        },
+        databases(){            
+            return this.$store.state.databases;
+        },
         client_id() {
             return socket.id
         },
@@ -1730,6 +1758,8 @@ import socket from '@/services/websocket.js'
 import { onMounted } from 'vue'
 import { initFlowbite } from 'flowbite'
 import { store } from '../main'
+
+import ChoiceDialog from '@/components/ChoiceDialog.vue'
 
 // initialize components based on data attribute selectors
 onMounted(() => {
