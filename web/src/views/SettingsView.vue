@@ -843,7 +843,7 @@
                                             @change="settingsChanged=true"
                                             class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
-                                                <option value="ftidf_vectorizer">ftidf Vectorizer</option>
+                                                <option value="tfidf_vectorizer">tfidf Vectorizer</option>
                                                 <option value="model_embedding">Model Embedding</option>
                                             </select>
                                         </td>
@@ -2218,7 +2218,7 @@ export default {
         oncloseVariantChoiceDialog(){
         this.variantSelectionDialogVisible=false;
         },
-        onvalidateVariantChoice(){
+        onvalidateVariantChoice(choice){
             this.variantSelectionDialogVisible=false;
             this.currenModelToInstall.installing=true;
             let model_object = this.currenModelToInstall;

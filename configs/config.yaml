@@ -59,7 +59,7 @@ audio_silenceTimer: 5000
 use_discussions_history: false # Activate vectorizing previous conversations
 use_files: true # Activate using files
 data_vectorization_activate: true # To activate/deactivate data vectorization
-data_vectorization_method: "ftidf_vectorizer" #"model_embedding" or "ftidf_vectorizer"
+data_vectorization_method: "tfidf_vectorizer" #"model_embedding" or "tfidf_vectorizer"
 data_visualization_method: "PCA" #"PCA" or "TSNE"
 data_vectorization_save_db: False # For each new session, new files
 data_vectorization_chunk_size: 512 # chunk size

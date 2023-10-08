@@ -419,12 +419,26 @@ export default {
         }
     },
     methods: {
-        ondatabase_selectorDialogSelected(choice){
+        async ondatabase_selectorDialogSelected(choice){
             console.log("Selected:",choice)
-            this.$store.state.config.database=choice;
         },
         onclosedatabase_selectorDialog(){this.database_selectorDialogVisible=false;},
-        onvalidatedatabase_selectorChoice(){this.database_selectorDialogVisible=false;},
+        async onvalidatedatabase_selectorChoice(choice){
+            this.database_selectorDialogVisible=false;
+            const res = await axios.post("/select_database",{"name": choice});
+            if(res.status){
+                console.log("Selected database")
+                this.$store.state.config = await axios.get("/get_config");
+                console.log("new config loaded :",this.$store.state.config)
+                let dbs = await axios.get("/list_databases")["data"];
+                console.log("New list of database: ",dbs)
+
+                this.$store.state.databases = dbs
+                console.log("New list of database: ",this.$store.state.databases)
+                location.reload();
+            }
+        
+        },
         save_configuration() {
             this.showConfirmation = false
             axios.post('/save_settings', {})

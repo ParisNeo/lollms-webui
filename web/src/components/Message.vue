@@ -77,11 +77,11 @@
                                 <i data-feather="copy"></i>
                             </div>
                             <div v-if="message.sender!=this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" title="Resend message"
-                                @click.stop="resendMessage()">
+                                @click.stop="resendMessage()" :class="{ 'disabled': editMsgMode }">
                                 <i data-feather="refresh-cw"></i>
                             </div>
                             <div v-if="message.sender==this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" title="Resend message"
-                                @click.stop="continueMessage()">
+                                @click.stop="continueMessage()" :class="{ 'disabled': editMsgMode }">
                                 <i data-feather="fast-forward"></i>
                             </div>                            
                             <!-- DELETE CONFIRMATION -->

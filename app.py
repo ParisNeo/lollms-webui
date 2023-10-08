@@ -14,7 +14,7 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-__version__ ="6.7Alpha2"
+__version__ ="6.7Beta1"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
@@ -26,6 +26,8 @@ import time
 import traceback
 import webbrowser
 from pathlib import Path
+import os
+from api.db import DiscussionsDB, Discussion
 
 def run_update_script(args=None):
     update_script = Path(__file__).parent/"update_script.py"
@@ -313,6 +315,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint(
             "/list_databases", "list_databases", self.list_databases, methods=["GET"]
         )
+        self.add_endpoint("/select_database", "select_database", self.select_database, methods=["POST"])
         
         
         self.add_endpoint(
@@ -1134,6 +1137,21 @@ class LoLLMsWebUI(LoLLMsAPPI):
     def list_databases(self):
         databases = [f.name for f in self.lollms_paths.personal_databases_path.iterdir() if f.suffix==".db"]
         return jsonify(databases)
+    
+    def select_database(self):
+        data = request.get_json()
+        self.config.db_path = data["name"]
+        print(f'Selecting database {data["name"]}')
+        # Create database object
+        self.db = DiscussionsDB(self.lollms_paths.personal_databases_path/data["name"])
+        ASCIIColors.info("Checking discussions database... ",end="")
+        self.db.create_tables()
+        self.db.add_missing_columns()
+        ASCIIColors.success("ok")
+
+        if self.config.auto_save:
+            self.config.save_config()
+        return jsonify({"status":True})
 
 
     def list_extensions_categories(self):
@@ -1812,8 +1830,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
         category = data['category']
         name = data['folder']
 
-        language = data.get('language', None)
-
         package_path = f"{category}/{name}"
         package_full_path = self.lollms_paths.extensions_zoo_path/package_path
         config_file = package_full_path / "config.yaml"
@@ -1830,7 +1846,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                             })         
         else:
             pth = str(config_file).replace('\\','/')
-            ASCIIColors.error(f"nok : Personality not found @ {pth}")
+            ASCIIColors.error(f"nok : Extension not found @ {pth}")
             
             ASCIIColors.yellow(f"Available personalities: {[p.name for p in self.mounted_personalities]}")
             return jsonify({"status": False, "error":f"Personality not found @ {pth}"})         

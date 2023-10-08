@@ -19,8 +19,8 @@ from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding, ModelBuilde
 from lollms.paths import LollmsPaths
 from lollms.helpers import ASCIIColors, trace_exception
 from lollms.app import LollmsApplication
-from lollms.utilities import File64BitsManager, PromptReshaper, TextVectorizer
-
+from lollms.utilities import File64BitsManager, PromptReshaper
+from safe_store import TextVectorizer, VectorizationMethod
 import threading
 from tqdm import tqdm 
 import traceback
@@ -136,7 +136,7 @@ class LoLLMsAPPI(LollmsApplication):
             self.db = DiscussionsDB(self.db_path)
         else:
             # Create database object
-            self.db = DiscussionsDB(self.lollms_paths.personal_path/"databases"/self.db_path)
+            self.db = DiscussionsDB(self.lollms_paths.personal_databases_path/self.db_path)
 
         # If the database is empty, populate it with tables
         ASCIIColors.info("Checking discussions database... ",end="")
@@ -1162,14 +1162,11 @@ class LoLLMsAPPI(LollmsApplication):
 
         if self.config.use_discussions_history:
             if self.discussion_store is None:
-                self.discussion_store = TextVectorizer(self.config.data_vectorization_method, # supported "model_embedding" or "ftidf_vectorizer"
+                self.discussion_store = TextVectorizer(self.config.data_vectorization_method, # supported "model_embedding" or "tfidf_vectorizer"
                         model=self.model, #needed in case of using model_embedding
                         database_path=self.lollms_paths.personal_databases_path/"discussionsdb.json",
                         save_db=self.config.data_vectorization_save_db,
-                        visualize_data_at_startup=False,
-                        visualize_data_at_add_file=False,
-                        visualize_data_at_generate=False,
-                        data_visualization_method="PCA",
+                        data_visualization_method=VectorizationMethod.PCA,
                         database_dict=None)
                 corpus = self.db.export_all_as_markdown()
                 self.discussion_store.add_document("discussions", corpus, self.config.data_vectorization_chunk_size, self.config.data_vectorization_overlap_size )
@@ -1182,8 +1179,7 @@ class LoLLMsAPPI(LollmsApplication):
 
 
         if len(self.personality.files)>0 and self.personality.vectorizer:
-            emb = self.personality.vectorizer.embed_query(message.content)
-            docs, sorted_similarities = self.personality.vectorizer.recover_text(emb, top_k=self.config.data_vectorization_nb_chunks)
+            docs, sorted_similarities = self.personality.vectorizer.recover_text(message.content, top_k=self.config.data_vectorization_nb_chunks)
             for doc, infos in zip(docs, sorted_similarities):
                 str_docs+=f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
 

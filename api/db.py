@@ -47,7 +47,7 @@ class DiscussionsDB:
                     personality TEXT,
                     sender TEXT NOT NULL,
                     content TEXT NOT NULL,
-                    type INT NOT NULL,
+                    message_type INT NOT NULL,
                     sender_type INT DEFAULT 0,
                     rank INT NOT NULL DEFAULT 0,
                     parent_message_id INT,
@@ -231,7 +231,7 @@ class DiscussionsDB:
             discussion_id = row[0]
             discussion_title = row[1]
             discussion = {"id": discussion_id, "title":discussion_title, "messages": []}
-            rows = self.select(f"SELECT sender, content, type, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at FROM message WHERE discussion_id=?",(discussion_id,))
+            rows = self.select(f"SELECT sender, content, message_type, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at FROM message WHERE discussion_id=?",(discussion_id,))
             for message_row in rows:
                 sender = message_row[1]
                 content = message_row[2]
@@ -245,7 +245,7 @@ class DiscussionsDB:
                 finished_generating_at = message_row[10]
                 
                 discussion["messages"].append(
-                    {"sender": sender, "content": content, "type": content_type, "rank": rank, "parent_message_id": parent_message_id, "binding": binding, "model":model, "personality":personality, "created_at":created_at, "finished_generating_at":finished_generating_at}
+                    {"sender": sender, "content": content, "message_type": content_type, "rank": rank, "parent_message_id": parent_message_id, "binding": binding, "model":model, "personality":personality, "created_at":created_at, "finished_generating_at":finished_generating_at}
                 )
             discussions.append(discussion)
         return discussions
@@ -295,7 +295,7 @@ class DiscussionsDB:
                 finished_generating_at = message_row[9]
                 
                 discussion["messages"].append(
-                    {"sender": sender, "content": content, "type": content_type, "rank": rank, "parent_message_id": parent_message_id, "binding": binding, "model":model, "personality":personality, "created_at":created_at, "finished_generating_at": finished_generating_at}
+                    {"sender": sender, "content": content, "message_type": content_type, "rank": rank, "parent_message_id": parent_message_id, "binding": binding, "model":model, "personality":personality, "created_at":created_at, "finished_generating_at": finished_generating_at}
                 )
             discussions.append(discussion)
         return discussions
@@ -327,7 +327,7 @@ class DiscussionsDB:
                 finished_generating_at = message_row[9]
                 
                 discussion["messages"].append(
-                    {"sender": sender, "content": content, "type": content_type, "rank": rank, "parent_message_id": parent_message_id, "binding": binding, "model":model, "personality":personality, "created_at":created_at, "finished_generating_at": finished_generating_at}
+                    {"sender": sender, "content": content, "message_type": content_type, "rank": rank, "parent_message_id": parent_message_id, "binding": binding, "model":model, "personality":personality, "created_at":created_at, "finished_generating_at": finished_generating_at}
                 )
             discussions.append(discussion)
         return discussions
@@ -347,7 +347,7 @@ class DiscussionsDB:
             for message_data in messages_data:
                 sender = message_data.get("sender")
                 content = message_data.get("content")
-                content_type = message_data.get("type")
+                content_type = message_data.get("message_type",message_data.get("type"))
                 rank = message_data.get("rank")
                 parent_message_id = message_data.get("parent_message_id")
                 binding = message_data.get("binding","")
@@ -356,11 +356,11 @@ class DiscussionsDB:
                 created_at = message_data.get("created_at",datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
                 finished_generating_at = message_data.get("finished_generating_at",datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
                 discussion["messages"].append(
-                    {"sender": sender, "content": content, "type": content_type, "rank": rank, "binding": binding, "model": model, "personality": personality, "created_at": created_at, "finished_generating_at": finished_generating_at}
+                    {"sender": sender, "content": content, "message_type": content_type, "rank": rank, "binding": binding, "model": model, "personality": personality, "created_at": created_at, "finished_generating_at": finished_generating_at}
                 )
 
                 # Insert message into the database
-                self.insert("INSERT INTO message (sender, content, type, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at, discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                self.insert("INSERT INTO message (sender, content, message_type, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at, discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                             (sender, content, content_type, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at, discussion_id))
 
             discussions.append(discussion)
@@ -460,13 +460,13 @@ class Message:
 
     def insert_into_db(self):
         self.message_id = self.discussions_db.insert(
-            "INSERT INTO message (sender, content, metadata, ui, type, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at, discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+            "INSERT INTO message (sender, content, metadata, ui, message_type, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at, discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
             (self.sender, self.content, self.metadata, self.ui, self.message_type, self.rank, self.parent_message_id, self.binding, self.model, self.personality, self.created_at, self.finished_generating_at, self.discussion_id)
         )
 
     def update_db(self):
         self.message_id = self.discussions_db.insert(
-            "INSERT INTO message (sender, content, metadata, ui, type, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at, discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+            "INSERT INTO message (sender, content, metadata, ui, message_type, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at, discussion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
             (self.sender, self.content, self.metadata, self.ui, self.message_type, self.rank, self.parent_message_id, self.binding, self.model, self.personality, self.created_at, self.finished_generating_at, self.discussion_id)
         )
     def update(self, new_content, new_metadata=None, new_ui=None, commit=True):
@@ -513,7 +513,7 @@ class Discussion:
         """Gets a list of messages information
 
         Returns:
-            list: List of entries in the format {"id":message id, "sender":sender name, "content":message content, "type":message type, "rank": message rank}
+            list: List of entries in the format {"id":message id, "sender":sender name, "content":message content, "message_type":message type, "rank": message rank}
         """
         self.current_message = Message.from_db(self.discussions_db, id)
         return self.current_message
@@ -596,7 +596,7 @@ class Discussion:
         """Gets a list of messages information
 
         Returns:
-            list: List of entries in the format {"id":message id, "sender":sender name, "content":message content, "type":message type, "rank": message rank}
+            list: List of entries in the format {"id":message id, "sender":sender name, "content":message content, "message_type":message type, "rank": message rank}
         """
         columns = Message.get_fields()
 

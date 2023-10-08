@@ -13,10 +13,19 @@
               :class="{'selected-choice': choice === selectedChoice}"
               class="py-2 px-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
             >
-              <span class="font-bold"> {{ displayName(choice) }} </span><br>
-              <span class="text-xs text-gray-500" v-if="choice.size"> {{ this.formatSize(choice.size) }}</span>
+              <span class="font-bold">{{ displayName(choice) }}</span><br>
+              <span class="text-xs text-gray-500" v-if="choice.size">{{ formatSize(choice.size) }}</span>
+              <button v-if="can_remove" @click="removeChoice(choice, index)" class="ml-2 text-red-500 hover:text-red-600">
+                X
+              </button>              
             </li>
           </ul>
+        </div>
+        <div class="mt-4" v-if="showInput">
+          <input v-model="newFilename" placeholder="Enter a filename" class="border border-gray-300 p-2 rounded-lg w-full">
+          <button @click="addNewFilename" class="mt-2 py-2 px-4 bg-green-500 hover:bg-green-600 text-white rounded-lg transition duration-300">
+            Add
+          </button>
         </div>
         <div class="flex justify-end mt-4">
           <button
@@ -38,6 +47,12 @@
           >
             Validate
           </button>
+          <button
+            @click="toggleInput"
+            class="py-2 px-4 ml-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition duration-300"
+          >
+            Add New
+          </button>
         </div>
       </div>
     </div>
@@ -49,7 +64,12 @@ export default {
   props: {
     show: {
       type: Boolean,
-      required: true,
+      default: false,
+      required: false,
+    },
+    can_remove: {
+      type: Boolean,
+      default: false,
     },
     title: {
       type: String,
@@ -63,6 +83,8 @@ export default {
   data() {
     return {
       selectedChoice: null,
+      showInput: false, // Control the visibility of the input box
+      newFilename: '', // Store the new filename
     };
   },
   methods: {
@@ -85,7 +107,7 @@ export default {
     },
     validateChoice() {
       // Perform validation if needed
-      this.$emit("choice-validated");
+      this.$emit("choice-validated", this.selectedChoice);
     },
     formatSize(size) {
       if (size < 1024) {
@@ -97,6 +119,27 @@ export default {
       } else {
         return (size / (1024 * 1024 * 1024)).toFixed(2) + " GB";
       }
+    },
+    toggleInput() {
+      // Toggle the visibility of the input box
+      this.showInput = !this.showInput;
+    },
+    addNewFilename() {
+      // Add the new filename to the choices array
+      const newChoice = this.newFilename.trim();
+      if (newChoice !== '') {
+        this.choices.push(newChoice);
+        this.newFilename = ''; // Clear the input field
+        this.selectChoice(newChoice); // Select the newly added filename
+      }
+      this.showInput = false;
+    },
+    removeChoice(choice, index) {
+      this.choices.splice(index, 1); // Remove the choice from the array
+      if (choice === this.selectedChoice) {
+        this.selectedChoice = null; // Clear the selected choice if it was removed
+      }
+      this.$emit("choice-removed", choice); // Emit a custom event to notify the parent component
     },
   },
 };
