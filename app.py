@@ -1141,6 +1141,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
     def select_database(self):
         data = request.get_json()
         self.config.db_path = data["name"]
+        if not self.config.db_path.endswith(".db"):
+            self.config.db_path += ".db"
         print(f'Selecting database {data["name"]}')
         # Create database object
         self.db = DiscussionsDB(self.lollms_paths.personal_databases_path/data["name"])
