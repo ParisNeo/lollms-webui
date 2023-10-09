@@ -1140,15 +1140,15 @@ class LoLLMsWebUI(LoLLMsAPPI):
     
     def select_database(self):
         data = request.get_json()
-        self.config.db_path = data["name"]
-        if not self.config.db_path.endswith(".db"):
-            self.config.db_path += ".db"
+        if not data["name"].endswith(".db"):
+            data["name"] += ".db"
         print(f'Selecting database {data["name"]}')
         # Create database object
         self.db = DiscussionsDB(self.lollms_paths.personal_databases_path/data["name"])
         ASCIIColors.info("Checking discussions database... ",end="")
         self.db.create_tables()
         self.db.add_missing_columns()
+        self.config.db_path = data["name"]
         ASCIIColors.success("ok")
 
         if self.config.auto_save:
