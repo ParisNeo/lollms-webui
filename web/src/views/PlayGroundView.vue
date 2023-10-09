@@ -42,12 +42,13 @@
           </div>
           <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4" :class="{ 'border-red-500': generating }">
             <div  v-if="tab_id === 'source'">
-              <textarea 
-                @click="text_element_clicked"
-                @keyup="text_element_changed"
-                v-model="text" 
-                ref="text_element" 
-                class="bg-white dark:bg-black m-0 border-2 rounded-md shadow-sm w-full mt-4 h-64 p-2 rounded shadow-lg  overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" type="text"></textarea>
+                <textarea ref="mdTextarea" @keydown.tab.prevent="insertTab"
+                class="block min-h-500 p-2.5 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 overflow-y-scroll flex flex-col shadow-lg p-10 pt-0 overflow-y-scroll dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+                :rows="4" 
+                :style="{ minHeight: mdRenderHeight + `px` }" placeholder="Enter message here..."
+                v-model="text">
+                </textarea>
+
               <span>Cursor position {{ cursorPosition }}</span>
             </div>
             <div  v-if="tab_id === 'render'">
@@ -427,6 +428,25 @@ export default {
     },
   },
   methods:{
+    insertTab(event) {
+            const textarea = event.target;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+    
+            const textBefore = textarea.value.substring(0, start);
+            const textAfter = textarea.value.substring(end);
+    
+            // Insert a tab character (or spaces if you prefer) at the cursor position
+            const newText = textBefore + '    ' + textAfter;
+    
+            // Update the textarea content and cursor position
+            this.text = newText;
+            this.$nextTick(() => {
+            textarea.selectionStart = textarea.selectionEnd = start + 4;
+            });
+    
+            event.preventDefault();
+        },    
     text_element_changed(){
       console.log("text_element_changed")
       this.cursorPosition = this.$refs.text_element.selectionStart;

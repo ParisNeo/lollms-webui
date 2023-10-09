@@ -14,7 +14,7 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-__version__ ="6.7Beta1"
+__version__ ="6.7"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
@@ -89,6 +89,7 @@ try:
     import shutil
     import socket
     from api.db import DiscussionsDB, Discussion
+    from safe_store import TextVectorizer, VectorizationMethod, VisualizationMethod
 
 except Exception as ex:
     trace_exception(ex)
@@ -302,9 +303,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint(
             "/list_bindings", "list_bindings", self.list_bindings, methods=["GET"]
         )
-        self.add_endpoint(
-            "/list_extensions", "list_extensions", self.list_extensions, methods=["GET"]
-        )
         
         self.add_endpoint(
             "/list_models", "list_models", self.list_models, methods=["GET"]
@@ -345,6 +343,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint("/user_infos/<path:filename>", "serve_user_infos", self.serve_user_infos, methods=["GET"])
         
         self.add_endpoint("/images/<path:filename>", "serve_images", self.serve_images, methods=["GET"])
+        self.add_endpoint("/extensions/<path:filename>", "serve_extensions", self.serve_extensions, methods=["GET"])
         self.add_endpoint("/bindings/<path:filename>", "serve_bindings", self.serve_bindings, methods=["GET"])
         self.add_endpoint("/personalities/<path:filename>", "serve_personalities", self.serve_personalities, methods=["GET"])
         self.add_endpoint("/outputs/<path:filename>", "serve_outputs", self.serve_outputs, methods=["GET"])
@@ -887,8 +886,31 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.rebuild_personalities()
             if self.config.auto_save:
                 self.config.save_config()
+
+            if self.config.data_vectorization_activate and self.config.use_discussions_history:
+                ASCIIColors.yellow("0- Detected discussion vectorization request")
+                folder = self.lollms_paths.personal_databases_path/"vectorized_dbs"
+                folder.mkdir(parents=True, exist_ok=True)
+                self.discussions_store = TextVectorizer(
+                    vectorization_method=VectorizationMethod.TFIDF_VECTORIZER,#=VectorizationMethod.BM25_VECTORIZER,
+                    database_path=folder/self.config.db_path,
+                    data_visualization_method=VisualizationMethod.PCA,#VisualizationMethod.PCA,
+                    save_db=True
+                )
+                ASCIIColors.yellow("1- Exporting discussions")
+                discussions = self.db.export_all_as_markdown_list_for_vectorization()
+                ASCIIColors.yellow("2- Adding discussions to vectorizer")
+                for (title,discussion) in discussions:
+                    if discussion!='':
+                        self.discussions_store.add_document(title, discussion, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
+                ASCIIColors.yellow("3- Indexing database")
+                self.discussions_store.index()
+                ASCIIColors.yellow("3- Saving database")
+                self.discussions_store.save_to_json()
+                ASCIIColors.yellow("Ready")
             return jsonify({"status":True})
-        except Exception as ex:    
+        except Exception as ex:
+            trace_exception(ex)
             return jsonify({"status":False,"error":str(ex)})
 
     
@@ -1160,6 +1182,26 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         if self.config.auto_save:
             self.config.save_config()
+        
+        if self.config.data_vectorization_activate and self.config.use_discussions_history:
+            ASCIIColors.yellow("0- Detected discussion vectorization request")
+            folder = self.lollms_paths.personal_databases_path/"vectorized_dbs"
+            folder.mkdir(parents=True, exist_ok=True)
+            self.discussions_store = TextVectorizer(
+                vectorization_method=VectorizationMethod.TFIDF_VECTORIZER,#=VectorizationMethod.BM25_VECTORIZER,
+                database_path=folder/self.config.db_path,
+                data_visualization_method=VisualizationMethod.PCA,#VisualizationMethod.PCA,
+                save_db=True
+            )
+            ASCIIColors.yellow("1- Exporting discussions")
+            discussions = self.db.export_all_as_markdown_list_for_vectorization()
+            ASCIIColors.yellow("2- Adding discussions to vectorizer")
+            for (title,discussion) in discussions:
+                self.discussions_store.add_document(title, discussion, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
+            ASCIIColors.yellow("3- Indexing database")
+            self.discussions_store.index()
+            ASCIIColors.yellow("Ready")
+
         return jsonify({"status":True})
 
 
@@ -1213,6 +1255,14 @@ class LoLLMsWebUI(LoLLMsAPPI):
                             
         fn = filename.split("/")[-1]
         return send_from_directory(path, fn)
+
+    def serve_extensions(self, filename):
+        path = str(self.lollms_paths.extensions_zoo_path/("/".join(filename.split("/")[:-1])))
+                            
+        fn = filename.split("/")[-1]
+        return send_from_directory(path, fn)
+
+    
     
     def serve_bindings(self, filename):
         path = str(self.lollms_paths.bindings_zoo_path/("/".join(filename.split("/")[:-1])))
@@ -1398,15 +1448,17 @@ class LoLLMsWebUI(LoLLMsAPPI):
         try:
             ASCIIColors.info("Unmounting binding and model")
             self.binding = None
-            self.model = None
-            for per in self.mounted_personalities:
-                per.model = None
             gc.collect()
             ASCIIColors.info("Reinstalling binding")
+            old_bn = self.config.binding_name
+            self.config.binding_name = data['name']
             self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL)
             ASCIIColors.success("Binding reinstalled successfully")
-
-            ASCIIColors.info("Please select a model")
+            self.config.binding_name = old_bn
+            self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths)
+            self.model = self.binding.build_model()
+            for per in self.mounted_personalities:
+                per.model = self.model
             return jsonify({"status": True}) 
         except Exception as ex:
             ASCIIColors.error(f"Couldn't build binding: [{ex}]")
@@ -1856,9 +1908,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
         else:
             pth = str(config_file).replace('\\','/')
             ASCIIColors.error(f"nok : Extension not found @ {pth}")
-            
-            ASCIIColors.yellow(f"Available personalities: {[p.name for p in self.mounted_personalities]}")
-            return jsonify({"status": False, "error":f"Personality not found @ {pth}"})         
+            return jsonify({"status": False, "error":f"Extension not found @ {pth}"})         
 
 
 

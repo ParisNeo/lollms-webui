@@ -56,11 +56,24 @@ h4 {
 }
 
 /* Include any additional styles you need */
+p {
+  font-size: 16px;
+  word-wrap: break-word;  
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
 ul {
   list-style-type: disc;
-  margin-left: 5px;
+  margin-left: 0px;
+}
+
+li {
+  list-style-type: disc;
+  margin-left: 20px;
 }
 
 ol {
   list-style-type: decimal;
+  margin-left: 20px;
 }

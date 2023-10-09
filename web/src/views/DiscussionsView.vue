@@ -736,6 +736,11 @@ export default {
             }
         },
         async selectDiscussion(item) {
+            if(this.isGenerating){
+                this.$refs.toast.showToast("You are currently generating a text. Please wait for text generation to finish or stop it before trying to select another discussion", 4, false)
+                return;
+            }
+
             if (item) {
                 // When discussion is selected it loads the discussion array
                 if (this.currentDiscussion===undefined) {

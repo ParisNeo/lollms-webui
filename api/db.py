@@ -249,6 +249,25 @@ class DiscussionsDB:
                 )
             discussions.append(discussion)
         return discussions
+
+    def export_all_as_markdown_list_for_vectorization(self):
+        data = self.export_all_discussions_to_json()
+        # Initialize an empty result string
+        discussions = []
+        # Iterate through discussions in the JSON data
+        for discussion in data:
+            # Extract the title
+            title = discussion['title']
+            messages = ""
+            # Iterate through messages in the discussion
+            for message in discussion['messages']:
+                sender = message['sender']
+                content = message['content']
+                # Append the sender and content in a Markdown format
+                messages += f'{sender}: {content}\n'
+            discussions.append([title, messages])
+        return discussions
+        
     def export_all_as_markdown(self):
         data = self.export_all_discussions_to_json()
 

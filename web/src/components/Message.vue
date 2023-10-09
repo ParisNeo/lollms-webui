@@ -76,12 +76,16 @@
                                 title="Copy message to clipboard" @click.stop="copyContentToClipboard()">
                                 <i data-feather="copy"></i>
                             </div>
-                            <div v-if="message.sender!=this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" title="Resend message"
-                                @click.stop="resendMessage()" :class="{ 'disabled': editMsgMode }">
+                            <div v-if="!editMsgMode && message.sender!=this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" 
+                                title="Resend message"
+                                @click.stop="resendMessage()" 
+                                :class="{ 'text-5xl': editMsgMode }">
                                 <i data-feather="refresh-cw"></i>
                             </div>
-                            <div v-if="message.sender==this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" title="Resend message"
-                                @click.stop="continueMessage()" :class="{ 'disabled': editMsgMode }">
+                            <div v-if="!editMsgMode && message.sender==this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" 
+                                title="Resend message"
+                                @click.stop="continueMessage()" 
+                                >
                                 <i data-feather="fast-forward"></i>
                             </div>                            
                             <!-- DELETE CONFIRMATION -->
@@ -96,7 +100,7 @@
                                 </button>
 
                             </div>
-                            <div v-if="!deleteMsgMode" class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2"
+                            <div v-if="!editMsgMode && !deleteMsgMode" class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2"
                                 title="Remove message" @click="deleteMsgMode = true">
                                 <i data-feather="trash"></i>
                             </div>
@@ -142,11 +146,17 @@
                     
                     <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :markdown-text="message.content">
                     </MarkdownRenderer>
-                    <textarea v-if="editMsgMode" ref="mdTextarea" :rows="4"
-                        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    <div >
+                        <textarea v-if="editMsgMode" ref="mdTextarea" @keydown.tab.prevent="insertTab"
+                        class="block p-2.5 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 overflow-y-scroll flex flex-col shadow-lg p-10 pt-0 overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+                        :rows="4" 
                         :style="{ minHeight: mdRenderHeight + `px` }" placeholder="Enter message here..."
-                        v-model="message.content"></textarea>
-                    <div  v-if="message.metadata !== null">
+                            v-model="message.content">
+                        </textarea>
+                    </div>
+                    
+
+                        <div  v-if="message.metadata !== null">
                         <div v-for="(metadata, index) in message.metadata" :key="'json-' + message.id + '-' + index" class="json font-bold">
                             <JsonViewer :jsonFormText="metadata.title" :jsonData="metadata.content" />
                         </div>
@@ -202,7 +212,6 @@ import RenderHTMLJS from './RenderHTMLJS.vue';
 import JsonViewer from "./JsonViewer.vue";
 import Step from './Step.vue';
 import DynamicUIRenderer from "./DynamicUIRenderer.vue"
-
 export default {
     // eslint-disable-next-line vue/multi-word-component-names
     name: 'Message',
@@ -212,7 +221,7 @@ export default {
         Step,
         RenderHTMLJS,
         JsonViewer,
-        DynamicUIRenderer
+        DynamicUIRenderer,
     },
     props: {
         message: Object,
@@ -254,7 +263,25 @@ export default {
         })
 
     }, methods: {
- 
+        insertTab(event) {
+            const textarea = event.target;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+    
+            const textBefore = textarea.value.substring(0, start);
+            const textAfter = textarea.value.substring(end);
+    
+            // Insert a tab character (or spaces if you prefer) at the cursor position
+            const newText = textBefore + '    ' + textAfter;
+    
+            // Update the textarea content and cursor position
+            this.message.content = newText;
+            this.$nextTick(() => {
+            textarea.selectionStart = textarea.selectionEnd = start + 4;
+            });
+    
+            event.preventDefault();
+        },
         onVoicesChanged() {
         // This event will be triggered when the voices are loaded
         this.voices = this.speechSynthesis.getVoices();

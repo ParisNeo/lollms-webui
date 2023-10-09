@@ -20,7 +20,7 @@ from lollms.paths import LollmsPaths
 from lollms.helpers import ASCIIColors, trace_exception
 from lollms.app import LollmsApplication
 from lollms.utilities import File64BitsManager, PromptReshaper
-from safe_store import TextVectorizer, VectorizationMethod
+from safe_store import TextVectorizer, VectorizationMethod, VisualizationMethod
 import threading
 from tqdm import tqdm 
 import traceback
@@ -115,6 +115,10 @@ class LoLLMsAPPI(LollmsApplication):
     def __init__(self, config:LOLLMSConfig, socketio, config_file_path:str, lollms_paths: LollmsPaths) -> None:
 
         super().__init__("Lollms_webui",config, lollms_paths, callback=self.process_chunk)
+
+
+
+
         self.busy = False
         self.nb_received_tokens = 0
         
@@ -123,7 +127,6 @@ class LoLLMsAPPI(LollmsApplication):
         self.cancel_gen = False
 
         
-        self.discussion_store = None
 
         # Keeping track of current discussion and message
         self._current_user_message_id = 0
@@ -143,6 +146,39 @@ class LoLLMsAPPI(LollmsApplication):
         self.db.create_tables()
         self.db.add_missing_columns()
         ASCIIColors.success("ok")
+
+
+
+        # prepare vectorization
+        if self.config.data_vectorization_activate and self.config.use_discussions_history:
+            try:
+                ASCIIColors.yellow("Loading vectorized discussions")
+                folder = self.lollms_paths.personal_databases_path/"vectorized_dbs"
+                folder.mkdir(parents=True, exist_ok=True)
+                self.discussions_store = TextVectorizer(
+                    vectorization_method=VectorizationMethod.TFIDF_VECTORIZER,#=VectorizationMethod.BM25_VECTORIZER,
+                    database_path=folder/self.config.db_path,
+                    data_visualization_method=VisualizationMethod.PCA,#VisualizationMethod.PCA,
+                    save_db=True
+                )
+
+                ASCIIColors.yellow("1- Exporting discussions")
+                discussions = self.db.export_all_as_markdown_list_for_vectorization()
+                ASCIIColors.yellow("2- Adding discussions to vectorizer")
+                for (title,discussion) in discussions:
+                    if discussion!='':
+                        self.discussions_store.add_document(title, discussion, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
+                ASCIIColors.yellow("3- Indexing database")
+                self.discussions_store.index()
+                ASCIIColors.yellow("3- Saving database")
+                self.discussions_store.save_to_json()
+                ASCIIColors.yellow("Ready")
+
+            except Exception as ex:
+                trace_exception(ex)
+                self.discussions_store = None
+        else:
+            self.discussions_store = None
 
         # This is used to keep track of messages 
         self.download_infos={}
@@ -1161,21 +1197,11 @@ class LoLLMsAPPI(LollmsApplication):
         str_docs = ""
 
         if self.config.use_discussions_history:
-            if self.discussion_store is None:
-                self.discussion_store = TextVectorizer(self.config.data_vectorization_method, # supported "model_embedding" or "tfidf_vectorizer"
-                        model=self.model, #needed in case of using model_embedding
-                        database_path=self.lollms_paths.personal_databases_path/"discussionsdb.json",
-                        save_db=self.config.data_vectorization_save_db,
-                        data_visualization_method=VectorizationMethod.PCA,
-                        database_dict=None)
-                corpus = self.db.export_all_as_markdown()
-                self.discussion_store.add_document("discussions", corpus, self.config.data_vectorization_chunk_size, self.config.data_vectorization_overlap_size )
-
-            pr = PromptReshaper("{{conditionning}}\n!@>document chunks:\n{{doc}}\n{{content}}")
-            emb = self.discussion_store.embed_query(message.content)
-            docs, sorted_similarities = self.discussion_store.recover_text(emb, top_k=self.config.data_vectorization_nb_chunks)     
-            for doc, infos in zip(docs, sorted_similarities):
-                str_docs+=f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
+            if self.discussions_store is not None:
+                pr = PromptReshaper("{{conditionning}}\n!@>document chunks:\n{{doc}}\n{{content}}")
+                docs, sorted_similarities = self.discussions_store.recover_text(message.content, top_k=self.config.data_vectorization_nb_chunks)     
+                for doc, infos in zip(docs, sorted_similarities):
+                    str_docs+=f"discussion chunk:\ndiscussion title: {infos[0]}\nchunk content:{doc}"
 
 
         if len(self.personality.files)>0 and self.personality.vectorizer:
