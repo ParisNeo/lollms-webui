@@ -192,6 +192,11 @@ def run_restart_script(args):
 class LoLLMsWebUI(LoLLMsAPPI):
     def __init__(self, args, _app, _socketio, config:LOLLMSConfig, config_file_path:Path|str, lollms_paths:LollmsPaths) -> None:
         self.args = args
+        if config.auto_update:
+            if check_update_():
+                ASCIIColors.info("New version found. Updating!")
+                self.update_software()
+
         if len(config.personalities)==0:
             config.personalities.append("generic/lollms")
             config["active_personality_id"] = 0
@@ -201,10 +206,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
             config["active_personality_id"] = 0
         super().__init__(config, _socketio, config_file_path, lollms_paths)
 
-        if config.auto_update:
-            if check_update_():
-                ASCIIColors.info("New version found. Updating!")
-                self.update_software()
 
         self.app = _app
         self.cancel_gen = False
