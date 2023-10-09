@@ -1,6 +1,6 @@
 <template>
 
-    <div class="container mx-auto p-4 bg-bg-light-tone dark:bg-bg-dark-tone  shadow-lg">
+    <div class="container mx-auto p-4 bg-bg-light-tone dark:bg-bg-dark-tone  shadow-lg overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4">
       <Card  :disableHoverAnimation="true" :disableFocus="true">
         <h2 class="text-2xl font-bold mb-2">About Lord of large Language Models</h2>
         <p class="mb-4"> Lollms version {{ version }}</p>
