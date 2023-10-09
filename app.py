@@ -27,7 +27,6 @@ import traceback
 import webbrowser
 from pathlib import Path
 import os
-from api.db import DiscussionsDB, Discussion
 
 def run_update_script(args=None):
     update_script = Path(__file__).parent/"update_script.py"
@@ -89,6 +88,7 @@ try:
     from api import LoLLMsAPPI
     import shutil
     import socket
+    from api.db import DiscussionsDB, Discussion
 
 except Exception as ex:
     trace_exception(ex)
@@ -1150,13 +1150,15 @@ class LoLLMsWebUI(LoLLMsAPPI):
     
     def select_database(self):
         data = request.get_json()
-        self.config.db_path = data["name"]
+        if not data["name"].endswith(".db"):
+            data["name"] += ".db"
         print(f'Selecting database {data["name"]}')
         # Create database object
         self.db = DiscussionsDB(self.lollms_paths.personal_databases_path/data["name"])
         ASCIIColors.info("Checking discussions database... ",end="")
         self.db.create_tables()
         self.db.add_missing_columns()
+        self.config.db_path = data["name"]
         ASCIIColors.success("ok")
 
         if self.config.auto_save:
