@@ -14,11 +14,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Docker Image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: false
-          tags: lollms-webui:latest
+        env:
+          GPU: cpu
+        run: docker build -f docker/cpu/dockerfile .
+        # uses: docker/build-push-action@v5
+        # with:
+        #   context: .
+        #   push: false
+        #   tags: lollms-webui:latest
 
   lint:
     runs-on: ubuntu-latest
