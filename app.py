@@ -27,7 +27,6 @@ import traceback
 import webbrowser
 from pathlib import Path
 import os
-from api.db import DiscussionsDB, Discussion
 
 def run_update_script(args=None):
     update_script = Path(__file__).parent/"update_script.py"
@@ -89,6 +88,7 @@ try:
     from api import LoLLMsAPPI
     import shutil
     import socket
+    from api.db import DiscussionsDB, Discussion
 
 except Exception as ex:
     trace_exception(ex)
