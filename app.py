@@ -127,11 +127,7 @@ def check_update_(branch_name="main"):
         # trace_exception(e)
         return False
 
-if check_update_():
-    run_update_script()
-
-  
-    
+   
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
