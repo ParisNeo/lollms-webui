@@ -16,12 +16,12 @@ jobs:
       - name: Build Docker Image
         env:
           GPU: cpu
-        run: docker build -f docker/cpu/dockerfile .
-        # uses: docker/build-push-action@v5
-        # with:
-        #   context: .
-        #   push: false
-        #   tags: lollms-webui:latest
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/cpu/Dockerfile
+          push: false
+          tags: lollms-webui:latest
 
   lint:
     runs-on: ubuntu-latest
