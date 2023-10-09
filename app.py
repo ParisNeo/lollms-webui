@@ -94,13 +94,43 @@ except Exception as ex:
     trace_exception(ex)
     run_update_script()
 
-
 try:
     import mimetypes
     mimetypes.add_type('application/javascript', '.js')
     mimetypes.add_type('text/css', '.css')    
 except:
-    ASCIIColors.yellow("Couldn't set mimetype")    
+    ASCIIColors.yellow("Couldn't set mimetype")  
+
+def check_update_(branch_name="main"):
+    try:
+        # Open the repository
+        repo_path = str(Path(__file__).parent)
+        ASCIIColors.yellow(f"Checking for updates from {repo_path}")
+        repo = git.Repo(repo_path)
+        
+        # Fetch updates from the remote for the specified branch
+        repo.remotes.origin.fetch(refspec=f"refs/heads/{branch_name}:refs/remotes/origin/{branch_name}")
+        
+        # Compare the local and remote commit IDs for the specified branch
+        local_commit = repo.head.commit
+        remote_commit = repo.remotes.origin.refs[branch_name].commit
+        
+        # Check if the local branch is behind the remote branch
+        is_behind = repo.is_ancestor(local_commit, remote_commit)
+        
+        ASCIIColors.yellow(f"update availability: {not is_behind}")
+        
+        # Return True if the local branch is behind the remote branch
+        return is_behind
+    except Exception as e:
+        # Handle any errors that may occur during the fetch process
+        # trace_exception(e)
+        return False
+
+if check_update_():
+    run_update_script()
+
+  
     
 
 log = logging.getLogger('werkzeug')
@@ -138,27 +168,7 @@ def get_ip_address():
         sock.close()
 
 
-def check_update_(branch_name="main"):
-    try:
-        # Open the repository
-        repo_path = str(Path(__file__).parent)
-        ASCIIColors.yellow(f"Checking for updates from {repo_path}")
-        repo = git.Repo(repo_path)
-        
-        # Fetch updates from the remote for the specified branch
-        repo.remotes.origin.fetch(refspec=f"refs/heads/{branch_name}:refs/remotes/origin/{branch_name}")
-        
-        # Compare the local and remote commit IDs for the specified branch
-        local_commit = repo.head.commit
-        remote_commit = repo.remotes.origin.refs[branch_name].commit
-        
-        ASCIIColors.yellow(f"update availability: {local_commit != remote_commit}")
-        # Return True if there are updates, False otherwise
-        return local_commit != remote_commit
-    except Exception as e:
-        # Handle any errors that may occur during the fetch process
-        # trace_exception(e)
-        return False
+
 
 
 def run_restart_script(args):

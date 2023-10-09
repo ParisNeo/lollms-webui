@@ -4,14 +4,18 @@ import sys
 import git
 import subprocess
 import argparse
+from pathlib import Path
 
 def run_git_pull():
     try:
-        repo = git.Repo(".")
+        print("----------------> Updating the code <-----------------------")
+        repo = git.Repo(Path(__file__).parent)
         origin = repo.remotes.origin
         origin.pull()
+        return True
     except git.GitCommandError as e:
         print(f"Error during git pull: {e}")
+        return False
 
 def install_requirements():
     try:
