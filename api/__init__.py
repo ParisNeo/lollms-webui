@@ -166,7 +166,7 @@ class LoLLMsAPPI(LollmsApplication):
                 discussions = self.db.export_all_as_markdown_list_for_vectorization()
                 ASCIIColors.yellow("2- Adding discussions to vectorizer")
                 for (title,discussion) in discussions:
-                    if discussion!='':
+                    if discussion!='' and title!='None':
                         self.discussions_store.add_document(title, discussion, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
                 ASCIIColors.yellow("3- Indexing database")
                 self.discussions_store.index()

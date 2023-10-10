@@ -888,26 +888,29 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 self.config.save_config()
 
             if self.config.data_vectorization_activate and self.config.use_discussions_history:
-                ASCIIColors.yellow("0- Detected discussion vectorization request")
-                folder = self.lollms_paths.personal_databases_path/"vectorized_dbs"
-                folder.mkdir(parents=True, exist_ok=True)
-                self.discussions_store = TextVectorizer(
-                    vectorization_method=VectorizationMethod.TFIDF_VECTORIZER,#=VectorizationMethod.BM25_VECTORIZER,
-                    database_path=folder/self.config.db_path,
-                    data_visualization_method=VisualizationMethod.PCA,#VisualizationMethod.PCA,
-                    save_db=True
-                )
-                ASCIIColors.yellow("1- Exporting discussions")
-                discussions = self.db.export_all_as_markdown_list_for_vectorization()
-                ASCIIColors.yellow("2- Adding discussions to vectorizer")
-                for (title,discussion) in discussions:
-                    if discussion!='':
-                        self.discussions_store.add_document(title, discussion, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
-                ASCIIColors.yellow("3- Indexing database")
-                self.discussions_store.index()
-                ASCIIColors.yellow("3- Saving database")
-                self.discussions_store.save_to_json()
-                ASCIIColors.yellow("Ready")
+                try:
+                    ASCIIColors.yellow("0- Detected discussion vectorization request")
+                    folder = self.lollms_paths.personal_databases_path/"vectorized_dbs"
+                    folder.mkdir(parents=True, exist_ok=True)
+                    self.discussions_store = TextVectorizer(
+                        vectorization_method=VectorizationMethod.TFIDF_VECTORIZER,#=VectorizationMethod.BM25_VECTORIZER,
+                        database_path=folder/self.config.db_path,
+                        data_visualization_method=VisualizationMethod.PCA,#VisualizationMethod.PCA,
+                        save_db=True
+                    )
+                    ASCIIColors.yellow("1- Exporting discussions")
+                    discussions = self.db.export_all_as_markdown_list_for_vectorization()
+                    ASCIIColors.yellow("2- Adding discussions to vectorizer")
+                    for (title,discussion) in discussions:
+                        if discussion!='':
+                            self.discussions_store.add_document(title, discussion, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
+                    ASCIIColors.yellow("3- Indexing database")
+                    self.discussions_store.index()
+                    ASCIIColors.yellow("3- Saving database")
+                    self.discussions_store.save_to_json()
+                    ASCIIColors.yellow("Ready")
+                except Exception as ex:
+                    ASCIIColors.error(f"Couldn't vectorize database:{ex}")
             return jsonify({"status":True})
         except Exception as ex:
             trace_exception(ex)
@@ -1184,23 +1187,30 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.config.save_config()
         
         if self.config.data_vectorization_activate and self.config.use_discussions_history:
-            ASCIIColors.yellow("0- Detected discussion vectorization request")
-            folder = self.lollms_paths.personal_databases_path/"vectorized_dbs"
-            folder.mkdir(parents=True, exist_ok=True)
-            self.discussions_store = TextVectorizer(
-                vectorization_method=VectorizationMethod.TFIDF_VECTORIZER,#=VectorizationMethod.BM25_VECTORIZER,
-                database_path=folder/self.config.db_path,
-                data_visualization_method=VisualizationMethod.PCA,#VisualizationMethod.PCA,
-                save_db=True
-            )
-            ASCIIColors.yellow("1- Exporting discussions")
-            discussions = self.db.export_all_as_markdown_list_for_vectorization()
-            ASCIIColors.yellow("2- Adding discussions to vectorizer")
-            for (title,discussion) in discussions:
-                self.discussions_store.add_document(title, discussion, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
-            ASCIIColors.yellow("3- Indexing database")
-            self.discussions_store.index()
-            ASCIIColors.yellow("Ready")
+            try:
+                ASCIIColors.yellow("0- Detected discussion vectorization request")
+                folder = self.lollms_paths.personal_databases_path/"vectorized_dbs"
+                folder.mkdir(parents=True, exist_ok=True)
+                self.discussions_store = TextVectorizer(
+                    vectorization_method=VectorizationMethod.TFIDF_VECTORIZER,#=VectorizationMethod.BM25_VECTORIZER,
+                    database_path=folder/self.config.db_path,
+                    data_visualization_method=VisualizationMethod.PCA,#VisualizationMethod.PCA,
+                    save_db=True
+                )
+                ASCIIColors.yellow("1- Exporting discussions")
+                self.notify("Exporting discussions",True, None)
+                discussions = self.db.export_all_as_markdown_list_for_vectorization()
+                ASCIIColors.yellow("2- Adding discussions to vectorizer")
+                self.notify("Adding discussions to vectorizer",True, None)
+                for (title,discussion) in discussions:
+                    self.discussions_store.add_document(title, discussion, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
+                ASCIIColors.yellow("3- Indexing database")
+                self.notify("Indexing database",True, None)
+                self.discussions_store.index()
+                ASCIIColors.yellow("Ready")
+            except Exception as ex:
+                self.notify(f"Couldn't vectorize the database:{ex}",False, None)
+                
 
         return jsonify({"status":True})
 
