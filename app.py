@@ -27,6 +27,7 @@ import traceback
 import webbrowser
 from pathlib import Path
 import os
+from lollms.utilities import AdvancedGarbageCollector
 
 def run_update_script(args=None):
     update_script = Path(__file__).parent/"update_script.py"
@@ -811,8 +812,17 @@ class LoLLMsWebUI(LoLLMsAPPI):
                         del self.binding
 
                     self.binding = None
+                    to_remove = []
                     for per in self.mounted_personalities:
-                        per.model = None
+                        if per is not None:
+                            per.model = None
+                        else:
+                            to_remove.append(per)
+                    for per in to_remove:
+                        self.mounted_personalities.remove(per)
+                    if len(self.mounted_personalities)==0:
+                        self.config.personalities= ["generic/lollms"]
+                        self.mount_personality(0)
                     gc.collect()
                     self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
                     self.model = self.binding.build_model()
@@ -1457,6 +1467,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
         ASCIIColors.info(f"- Reinstalling binding {data['name']}...")
         try:
             ASCIIColors.info("Unmounting binding and model")
+            GG = AdvancedGarbageCollector()
+            GG.safeHardCollect("binding", self)
             self.binding = None
             gc.collect()
             ASCIIColors.info("Reinstalling binding")

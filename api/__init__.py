@@ -1531,7 +1531,9 @@ class LoLLMsAPPI(LollmsApplication):
         return output
                      
     def start_message_generation(self, message, message_id, client_id, is_continue=False):
-
+        if self.personality is None:
+            self.notify("Select a personality",False,None)
+            return
         ASCIIColors.info(f"Text generation requested by client: {client_id}")
         # send the message to the bot
         print(f"Received message : {message.content}")
