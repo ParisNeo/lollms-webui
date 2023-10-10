@@ -1755,8 +1755,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                                 })         
         else:
             pth = str(config_file).replace('\\','/')
-            ASCIIColors.error(f"nok : Personality not found @ {pth}")
-            
+            ASCIIColors.error(f"nok : Personality not found @ {pth}")            
             ASCIIColors.yellow(f"Available personalities: {[p.name for p in self.mounted_personalities]}")
             return jsonify({"status": False, "error":f"Personality not found @ {pth}"})         
 
@@ -1798,6 +1797,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.config["personalities"].append(package_path)
             self.mounted_personalities = self.rebuild_personalities()
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
+            self.config["active_personality_id"]= len(self.config["personalities"])-1
             ASCIIColors.success("ok")
             if self.config["active_personality_id"]<0:
                 return jsonify({"status": False,
