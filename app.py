@@ -804,6 +804,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.config["override_personality_model_parameters"]=bool(data['setting_value'])
 
         elif setting_name == "model_name":
+            ASCIIColors.yellow(f"Changing model to: {data['setting_value']}")
             self.config["model_name"]=data['setting_value']
             if self.config["model_name"] is not None:
                 try:
@@ -1795,9 +1796,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
             ASCIIColors.info(f"Mounting personality {package_path}")
             self.config["personalities"].append(package_path)
+            self.config["active_personality_id"]= len(self.config["personalities"])-1
             self.mounted_personalities = self.rebuild_personalities()
             self.personality = self.mounted_personalities[self.config["active_personality_id"]]
-            self.config["active_personality_id"]= len(self.config["personalities"])-1
             ASCIIColors.success("ok")
             if self.config["active_personality_id"]<0:
                 return jsonify({"status": False,
