@@ -558,7 +558,7 @@ export default {
                         this.selectDiscussion(discussionItem)
                         this.load_discussion(data.id,()=>{
                             this.loading = false
-                            axios.post('/get_current_personality_files_list').then(res=>{
+                            axios.get('/get_current_personality_files_list').then(res=>{
                                 console.log("Files recovered")
                                 this.fileList = res.files
                             });

@@ -101,7 +101,38 @@
 
 
                         </div>
-                        <div v-if="item.type == 'int' || item.type == 'float'">
+                        <div v-if="item.type == 'int'">
+                            <label
+                                class="mb-2 relative flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white select-none"
+                                :class="item.help ? 'cursor-pointer ' : ''">
+                                <!-- TITLE -->
+                                <div class="text-base font-semibold">
+                                    {{ item.name }}:
+                                </div>
+
+                                <!-- HELP BUTTON -->
+                                <label v-if="item.help" class="relative inline-flex">
+                                    <input type="checkbox" v-model="item.isHelp" class="sr-only peer">
+                                    <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary">
+                                        <i data-feather="help-circle" class="w-5 h-5 "></i>
+                                    </div>
+                                </label>
+
+                            </label>
+                            <!-- HELP DESCRIPTION -->
+                            <p v-if="item.isHelp" class="text-sm font-normal text-gray-700 dark:text-gray-400 mb-2">
+                                {{ item.help }}
+                            </p>
+
+                            <input type="number" v-model="item.value"  step="1"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="Enter number">
+
+                            <input v-if="(item.min != null && item.max != null)" type="range" v-model="item.value"
+                                :min="item.min" :max="item.max" step="1"
+                                class="flex-none h-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        </div>
+                        <div v-if="item.type == 'float'">
                             <label
                                 class="mb-2 relative flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white select-none"
                                 :class="item.help ? 'cursor-pointer ' : ''">
@@ -131,7 +162,7 @@
                             <input v-if="(item.min != null && item.max != null)" type="range" v-model="item.value"
                                 :min="item.min" :max="item.max" step="0.1"
                                 class="flex-none h-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                        </div>
+                        </div>                        
                         <div v-if="item.type == 'bool'">
                             <div class="mb-2 relative flex items-center gap-2">
 

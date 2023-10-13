@@ -409,7 +409,7 @@ export default {
                     if (res) {
                         this.$store.dispatch('refreshConfig').then(() => {
                             console.log("recovered config", this.configFile.active_personality_id);
-                            this.$store.dispatch('refreshPersonalitiesArr').then(() => {
+                            this.$store.dispatch('refreshPersonalitiesZoo').then(() => {
                             this.$store.dispatch('refreshMountedPersonalities');
                             });
                         });

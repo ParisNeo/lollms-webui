@@ -484,6 +484,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
         
         data = request.get_json()
         code = data["code"]
+        discussion_id = data.get("discussion_id","unknown_discussion")
+        message_id = data.get("message_id","unknown_message")
+        
 
         ASCIIColors.info("Executing python code:")
         ASCIIColors.yellow(code)
@@ -495,7 +498,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
             start_time = time.time()
 
             # Create a temporary file.
-            tmp_file = self.lollms_paths.personal_data_path/"ai_code.py"
+            root_folder = self.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
+            root_folder.mkdir(parents=True,exist_ok=True)
+            tmp_file = root_folder/f"ai_code_{message_id}.py"
             with open(tmp_file,"w") as f:
                 f.write(code)
 
