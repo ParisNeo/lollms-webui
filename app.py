@@ -1045,35 +1045,36 @@ class LoLLMsWebUI(LoLLMsAPPI):
         bindings_dir = self.lollms_paths.bindings_zoo_path  # replace with the actual path to the models folder
         bindings=[]
         for f in bindings_dir.iterdir():
-            card = f/"binding_card.yaml"
-            if card.exists():
-                try:
-                    bnd = load_config(card)
-                    bnd["folder"]=f.stem
-                    installed = (self.lollms_paths.personal_configuration_path/"bindings"/f.stem/f"config.yaml").exists()
-                    bnd["installed"]=installed
-                    ui_file_path = f/"ui.html"
-                    if ui_file_path.exists():
-                        with ui_file_path.open("r") as file:
-                            text_content = file.read()
-                            bnd["ui"]=text_content
-                    else:
-                        bnd["ui"]=None
-                    disclaimer_file_path = f/"disclaimer.md"
-                    if disclaimer_file_path.exists():
-                        with disclaimer_file_path.open("r") as file:
-                            text_content = file.read()
-                            bnd["disclaimer"]=text_content
-                    else:
-                        bnd["disclaimer"]=None
-                    icon_file = self.find_extension(self.lollms_paths.bindings_zoo_path/f"{f.name}", "logo", [".svg",".gif",".png"])
-                    if icon_file is not None:
-                        icon_path = Path(f"bindings/{f.name}/logo{icon_file.suffix}")
-                        bnd["icon"]=str(icon_path)
+            if f.stem!="binding_template":
+                card = f/"binding_card.yaml"
+                if card.exists():
+                    try:
+                        bnd = load_config(card)
+                        bnd["folder"]=f.stem
+                        installed = (self.lollms_paths.personal_configuration_path/"bindings"/f.stem/f"config.yaml").exists()
+                        bnd["installed"]=installed
+                        ui_file_path = f/"ui.html"
+                        if ui_file_path.exists():
+                            with ui_file_path.open("r") as file:
+                                text_content = file.read()
+                                bnd["ui"]=text_content
+                        else:
+                            bnd["ui"]=None
+                        disclaimer_file_path = f/"disclaimer.md"
+                        if disclaimer_file_path.exists():
+                            with disclaimer_file_path.open("r") as file:
+                                text_content = file.read()
+                                bnd["disclaimer"]=text_content
+                        else:
+                            bnd["disclaimer"]=None
+                        icon_file = self.find_extension(self.lollms_paths.bindings_zoo_path/f"{f.name}", "logo", [".svg",".gif",".png"])
+                        if icon_file is not None:
+                            icon_path = Path(f"bindings/{f.name}/logo{icon_file.suffix}")
+                            bnd["icon"]=str(icon_path)
 
-                    bindings.append(bnd)
-                except Exception as ex:
-                    print(f"Couldn't load backend card : {f}\n\t{ex}")
+                        bindings.append(bnd)
+                    except Exception as ex:
+                        print(f"Couldn't load backend card : {f}\n\t{ex}")
         return jsonify(bindings)
 
 
