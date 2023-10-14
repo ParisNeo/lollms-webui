@@ -14,6 +14,11 @@
         <h3 @click="toggleSelected" class="font-bold font-large text-lg line-clamp-3 cursor-pointer">
           {{ personality.name }}
         </h3>
+        <button
+              class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
+              title="Copy link to clipboard" @click.stop="toggleCopyLink()">
+              <i data-feather="clipboard" class="w-5"></i>
+            </button>        
       </div>
       <div class="">
         <div class="">
@@ -103,7 +108,8 @@ export default {
     onUnMount: Function,
     onRemount: Function,
     onReinstall: Function,
-    onSettings: Function
+    onSettings: Function,
+    onCopyPersonalityName: Function
   },
   components:{
     InteractiveMenu
@@ -151,6 +157,10 @@ export default {
     },
     toggleTalk() {
       this.onTalk(this)
+    },
+    toggleCopyLink() {
+      this.onCopyPersonalityName(this)
+      //navigator.clipboard.writeText(this.path)
     },
     toggleSelected() {
       if(this.isMounted){

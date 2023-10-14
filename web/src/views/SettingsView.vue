@@ -1587,7 +1587,9 @@
                                         :on-un-mount="unmountPersonality"  
                                         :on-remount="remountPersonality"
                                         :on-reinstall="onPersonalityReinstall"
-                                        :on-settings="onSettingsPersonality" />
+                                        :on-settings="onSettingsPersonality"
+                                        :on-copy-personality-name="onCopyPersonalityName"
+                                        />
                                 </TransitionGroup>
                             </div>
                         </div>
@@ -2064,6 +2066,7 @@ import ChoiceDialog from "@/components/ChoiceDialog.vue";
 import Card from "@/components/Card.vue"
 import RadioOptions from '../components/RadioOptions.vue';
 import ExtensionEntry from "@/components/ExtensionEntry.vue"
+import {refreshHardwareUsage} from "../main"
 
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_LOLLMS_API_BASEURL
@@ -2167,7 +2170,7 @@ export default {
         socket.on('loading_text',this.on_loading_text);
         this.updateHasUpdates();
         //await socket.on('install_progress', this.progressListener);
-
+        //refreshHardwareUsage()
     }, 
     methods: {
         async modelsZooToggleCollapse(){
@@ -2634,7 +2637,9 @@ export default {
                             console.log("update_model",res)
                             this.configFile.model_name = model_object.model.name
                             if(res.status){
-                                this.$refs.toast.showToast("Selected model:\n" + model_object.name, 4, true)
+                                this.refreshModelsZoo().then(()=>{
+                                    this.$refs.toast.showToast("Selected model:\n" + model_object.name, 4, true)
+                                })
                             }else{
                                 this.$refs.toast.showToast("Couldn't select model:\n" + model_object.name, 4, false)
                             }
@@ -2666,9 +2671,12 @@ export default {
             navigator.clipboard.writeText(content.trim());
         },
         onCopyLink(modelEntry) {
-
             this.$refs.toast.showToast("Copied link to clipboard!", 4, true)
             navigator.clipboard.writeText('https://huggingface.co/'+modelEntry.model.quantizer+'/'+modelEntry.model.name);
+        },
+        onCopyPersonalityName(personality) {
+            this.$refs.toast.showToast("Copied name to clipboard!", 4, true)
+            navigator.clipboard.writeText(personality.name);
         },
         onCancelInstall() {
 
@@ -2871,11 +2879,11 @@ export default {
         },
         onSelectedBinding(binding_object) {
             console.log("Binding selected")
-            this.mzc_collapsed=true;
             if (!binding_object.binding.installed) {
                 this.$refs.toast.showToast("Binding is not installed:\n" + binding_object.binding.name, 4, false)
                 return
             }
+            this.mzc_collapsed=true;
             if (this.configFile.binding_name != binding_object.binding.folder) {
                 this.update_binding(binding_object.binding.folder)
             }

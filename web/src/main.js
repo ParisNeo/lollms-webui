@@ -365,12 +365,6 @@ export const store = createStore({
       },      
       async refreshVramUsage({ commit }) {
         const resp = await api_get_req("vram_usage")
-        // {
-        //   "gpu_0_total_vram": 11811160064,
-        //   "gpu_0_used_vram": 3177185280,
-        //   "nb_gpus": 1
-        // }
-
         const gpuArr = []
 
         if (resp.nb_gpus > 0) {
@@ -433,6 +427,11 @@ async function api_get_req(endpoint) {
   }
 }
 
+async function refreshHardwareUsage(store) {
+  await store.dispatch('refreshDiskUsage');
+  await store.dispatch('refreshRamUsage');
+  await store.dispatch('refreshVramUsage');
+}
 let actionsExecuted = false;
 
 app.mixin({
@@ -447,10 +446,7 @@ app.mixin({
       await this.$store.dispatch('getVersion');
       console.log("recovered version");          
       await this.$store.dispatch('refreshBindings');
-
-      await this.$store.dispatch('refreshDiskUsage');
-      await this.$store.dispatch('refreshRamUsage');
-      await this.$store.dispatch('refreshVramUsage');
+      await refreshHardwareUsage(this.$store);
       await this.$store.dispatch('refreshExtensionsZoo');
       await this.$store.dispatch('refreshmountedExtensions');
       await this.$store.dispatch('refreshModels');
@@ -459,7 +455,7 @@ app.mixin({
       await this.$store.dispatch('refreshMountedPersonalities');
       this.$store.state.ready = true;
       console.log("store status = ", this.$store.state.ready);
-    console.log("done loading data")
+      console.log("done loading data")
     }
 
   },
@@ -507,4 +503,4 @@ app.use(router)
 app.use(store)
 app.mount('#app')
 
-export{logObjectProperties, copyObject, flattenObject}
+export{logObjectProperties, copyObject, flattenObject, refreshHardwareUsage}

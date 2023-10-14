@@ -813,10 +813,12 @@ class LoLLMsWebUI(LoLLMsAPPI):
             self.config["model_name"]=data['setting_value']
             if self.config["model_name"] is not None:
                 try:
+                    GG = AdvancedGarbageCollector()
+                    GG.safeHardCollect("model", self.binding)
                     self.model = None
+                    self.binding.model = None
                     if self.binding:
                         del self.binding
-
                     self.binding = None
                     to_remove = []
                     for per in self.mounted_personalities:
@@ -831,6 +833,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                         self.mount_personality(0)
                     gc.collect()
                     self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
+                    
                     self.model = self.binding.build_model()
                     for per in self.mounted_personalities:
                         if per is not None:
