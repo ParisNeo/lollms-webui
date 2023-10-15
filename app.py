@@ -1139,7 +1139,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     ext = extensions_folder.stem
                     if extensions_folder.is_dir() and not extensions_folder.stem.startswith('.'):
                         extension_info = {"folder":extensions_folder.stem}
-                        config_path = extensions_folder / 'card.yaml'
+                        config_path = extensions_folder / 'config.yaml'
                         if not config_path.exists():
                             continue                                    
                         try:
@@ -1806,7 +1806,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 if self.config.auto_save:
                     ASCIIColors.info("Saving configuration")
                     self.config.save_config()
-                ASCIIColors.error("Mounted successfully")
+                ASCIIColors.error(f"Personality {name} mounted successfully")
                 return jsonify({"status": True,
                                 "personalities":self.config["personalities"],
                                 "active_personality_id":self.config["active_personality_id"]
@@ -1981,7 +1981,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
             if self.config.auto_save:
                 ASCIIColors.info("Saving configuration")
                 self.config.save_config()
-            ASCIIColors.error("Mounted successfully")
+            ASCIIColors.success(f"Extension {name} mounted successfully")
             return jsonify({"status": True,
                             "extensions":self.config["extensions"],
                             })         

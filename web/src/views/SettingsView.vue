@@ -1635,7 +1635,7 @@
                                                 :class="configFile.active_personality_id == configFile.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
                                                 :title="item.name">
                                         </button>
-                                        <button @click.stop="unmountPersonality (item)">
+                                        <button @click.stop="unmountExtension (item)">
 
                                             <span
                                                 class="hidden group-hover:block top-0 left-7 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
@@ -1734,7 +1734,6 @@
                                         :key="'index-' + index + '-' + ext.name" :extension="ext"
                                         :select_language="true"
                                         :full_path="ext.full_path"
-                                        :selected="configFile.active_personality_id == configFile.personalities.findIndex(item => item === ext.full_path)"
                                         :on-selected="onExtensionSelected" 
                                         :on-mount="mountExtension" 
                                         :on-un-mount="unmountExtension"  
@@ -1770,43 +1769,6 @@
                     <div v-show="!mep_collapsed" ><i data-feather='chevron-down'></i></div>
                     <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
                         Mounted Extensions Priority</h3>
-                    <div v-if="configFile.extensions" class="mr-2">|</div>
-                    <div v-if="configFile.extensions"
-                        class=" text-base font-semibold cursor-pointer select-none items-center flex flex-row">
-                            <!-- LIST -->
-                            <div class="flex -space-x-4 items-center " v-if="mountedExtensions.length > 0">
-                                <!-- ITEM -->
-                                <div class="relative  hover:-translate-y-2 duration-300 hover:z-10 shrink-0 "
-                                    v-for="(item, index) in mountedExtensions" :key="index + '-' + item.name"
-                                    ref="mountedExtensions">
-                                    <div class="group items-center flex flex-row">
-                                        <button @click.stop="onPersonalitySelected(item)">
-                                            <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
-                                                class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary "
-                                                :class="configFile.active_personality_id == configFile.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
-                                                :title="item.name">
-                                        </button>
-                                        <button @click.stop="unmountPersonality (item)">
-
-                                            <span
-                                                class="hidden group-hover:block top-0 left-7 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
-                                                title="Unmount personality">
-                                                <!-- UNMOUNT BUTTON -->
-                                                <svg aria-hidden="true" class="w-4 h-4 text-red-600 hover:text-red-500 "
-                                                    fill="currentColor" viewBox="0 0 20 20"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill-rule="evenodd"
-                                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                        clip-rule="evenodd"></path>
-                                                </svg>
-
-                                            </span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                    </div>
                     </button>
                 </div>
                 <div :class="{ 'hidden': mep_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
@@ -2429,6 +2391,9 @@ export default {
             this.modelsFiltered = this.models
             this.extension_category = this.configFile.extension_category
             this.extensionsFiltererd = this.$store.state.extensionsZoo.filter((item) => item.category === this.configFile.extension_category )
+            console.log("Extensions filtered")
+            console.log(this.extensionsFiltererd)
+
             
 
             //this.bindings = await this.api_get_req("list_bindings")
