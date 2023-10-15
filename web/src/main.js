@@ -331,6 +331,7 @@ export const store = createStore({
           commit('setExtensionsZoo',extensions)
       },
       refreshmountedExtensions({ commit }) {
+        console.log("Mounting extensions")
         let mountedExtensions = []
         // console.log('perrs listo',this.state.personalities)
         const indicesToRemove = [];
@@ -338,8 +339,7 @@ export const store = createStore({
             const full_path_item = this.state.config.extensions[i]
             const index = this.state.extensionsZoo.findIndex(item => item.full_path == full_path_item)
             if(index>=0){
-              let ext = copyObject(this.state.extensions[index])
-              
+              let ext = copyObject(this.state.config.extensions[index])
               if (ext) {
                   mountedExtensions.push(ext)
               }
