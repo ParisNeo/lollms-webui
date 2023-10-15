@@ -19,7 +19,9 @@
                 <hr
                     class=" mt-1 w-96 h-1 mx-auto my-2 md:my-2 dark:bg-bg-dark-tone-panel bg-bg-light-tone-panel border-0 rounded ">
                     <p class="text-2xl">Welcome</p>
-                    <span class="text-2xl font-bold ml-4">Loading ...</span>
+                    <div role="status" class="text-center w-full display: flex; flex-row align-items: center;">
+                            <p class="text-2xl animate-pulse">Loading ...</p>
+                    </div> 
 
             </div>
 
@@ -278,9 +280,9 @@
 
 
 <style scoped>
-.red-svg path {
-  fill: red;
-}
+
+
+
 .slide-right-enter-active {
   transition: transform 0.3s ease;
 }

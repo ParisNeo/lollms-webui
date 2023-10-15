@@ -1760,7 +1760,58 @@
                 </div>
 
             </div>
+            <!-- EXTENSIONS ZOO -->
+            <div
+                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                <div class="flex flex-row p-3 items-center">
+                    <button @click.stop="ezc_collapsed = !ezc_collapsed"
+                        class="text-2xl hover:text-primary  p-2 -m-2 text-left w-full  flex items-center">
+                    <div v-show="ezc_collapsed" ><i data-feather='chevron-right'></i></div>
+                    <div v-show="!ezc_collapsed" ><i data-feather='chevron-down'></i></div>
+                    <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
+                        Extensions zoo</h3>
+                    <div v-if="configFile.extensions" class="mr-2">|</div>
+                    <div v-if="configFile.extensions"
+                        class=" text-base font-semibold cursor-pointer select-none items-center flex flex-row">
+                            <!-- LIST -->
+                            <div class="flex -space-x-4 items-center " v-if="mountedExtensions.length > 0">
+                                <!-- ITEM -->
+                                <div class="relative  hover:-translate-y-2 duration-300 hover:z-10 shrink-0 "
+                                    v-for="(item, index) in mountedExtensions" :key="index + '-' + item.name"
+                                    ref="mountedExtensions">
+                                    <div class="group items-center flex flex-row">
+                                        <button @click.stop="onPersonalitySelected(item)">
+                                            <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
+                                                class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary "
+                                                :class="configFile.active_personality_id == configFile.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
+                                                :title="item.name">
+                                        </button>
+                                        <button @click.stop="unmountPersonality (item)">
 
+                                            <span
+                                                class="hidden group-hover:block top-0 left-7 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
+                                                title="Unmount personality">
+                                                <!-- UNMOUNT BUTTON -->
+                                                <svg aria-hidden="true" class="w-4 h-4 text-red-600 hover:text-red-500 "
+                                                    fill="currentColor" viewBox="0 0 20 20"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd"
+                                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                        clip-rule="evenodd"></path>
+                                                </svg>
+
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                    </div>
+                    </button>
+                </div>
+                <div :class="{ 'hidden': ezc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                </div>
+            </div>
             <!-- MODEL CONFIGURATION -->
             <div
                 class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
