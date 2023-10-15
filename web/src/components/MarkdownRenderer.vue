@@ -53,6 +53,15 @@ const markdownIt = new MarkdownIt('commonmark', {
       '`)">Show in vs code</span>'+
       '</button>':''
 
+      let btn_open_folder_txt = (lang=='python' || lang=='bash') ?'<button class="px-2 py-1 ml-10 mb-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">' +
+      '<span class="mr-1" id="exec-btn_' +
+      id + '6' +
+      '" onclick="openFolder(' +
+      id + '6,' + discussion_id + ',' + message_id + ',`' + lang +
+      '`)">Open folder</span>'+
+      '</button>':''
+
+
     if (lang && hljs.getLanguage(lang)) {
       try {
         const highlightedCode = hljs.highlight(lang, str).value;
@@ -249,6 +258,35 @@ export default {
         });
 
       }
+      function openFolder(id, discussion_id, message_id, lang) {
+        const codeElement = document.getElementById('code_' + id);
+        const codeExecElement = document.getElementById('code_exec_' + id);
+        const preExecElement = document.getElementById('pre_exec_' + id);
+        
+        const code = codeElement.innerText
+        const json = JSON.stringify({ 'code': code, 'discussion_id': discussion_id, 'message_id':message_id, 'language': lang})   
+        console.log(json)     
+        fetch('http://localhost:9600/open_folder', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: json
+        }).then(response=>{
+          // Parse the JSON data from the response body
+          return response.json();
+        })
+        .then(jsonData => {
+          // Now you can work with the JSON data
+          console.log(jsonData);
+          preExecElement.classList.remove('hidden');
+          codeExecElement.innerHTML = jsonData.output
+        })
+        .catch(error => {
+          // Handle any errors that occurred during the fetch process
+          console.error('Fetch error:', error);
+        });
+
+      }
+      
       `;
     script.async = true; // Set to true if the script should be loaded asynchronously
     document.body.appendChild(script);

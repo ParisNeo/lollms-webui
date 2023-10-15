@@ -77,21 +77,26 @@
                         type="button" @click="isSearch = !isSearch" :class="isSearch ? 'text-secondary' : ''">
                         <i data-feather="search"></i>
                     </button>
-                    <button  v-if="!showConfirmation" title="Save configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                        @click="showConfirmation = true">
+                    <button  v-if="!showSaveConfirmation" title="Save configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                        @click="showSaveConfirmation = true">
                         <i data-feather="save"></i>
                     </button>
                     <!-- SAVE CONFIG -->
-                    <div v-if="showConfirmation" class="flex gap-3 flex-1 items-center duration-75">
+                    <div v-if="showSaveConfirmation" class="flex gap-3 flex-1 items-center duration-75">
                         <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Cancel" type="button"
-                            @click.stop="showConfirmation = false">
+                            @click.stop="showSaveConfirmation = false">
                             <i data-feather="x"></i>
                         </button>
                         <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Confirm save changes"
                             type="button" @click.stop="save_configuration()">
                             <i data-feather="check"></i>
                         </button>
-                    </div>                    
+                    </div>       
+                    <button  v-if="!showBrainConfirmation" title="Activate Long term Memory" class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                        @click="toggleLTM()">
+                        <img v-if="UseDiscussionHistory" :src="SVGGreenBrain" width="25" height="25">
+                        <img v-else :src="SVGRedBrain" width="25" height="25">
+                    </button>
                     <div v-if="loading" title="Loading.." class="flex flex-row flex-grow justify-end">
                         <!-- SPINNER -->
                         <div role="status">
@@ -273,6 +278,9 @@
 
 
 <style scoped>
+.red-svg path {
+  fill: red;
+}
 .slide-right-enter-active {
   transition: transform 0.3s ease;
 }
@@ -340,8 +348,8 @@
 }
 </style>
 <script>
-
-
+import SVGRedBrain from '@/assets/brain_red.svg';
+import SVGGreenBrain from '@/assets/brain_green.svg';
 export default {
     
     setup() { },
@@ -395,6 +403,8 @@ export default {
             isGenerating: false,
             isCheckbox: false,
             isSelectAll: false,
+            showSaveConfirmation: false,
+            showBrainConfirmation: false,
             showConfirmation: false,
             chime: new Audio("chime_aud.wav"),
             showToast: false,
@@ -409,7 +419,7 @@ export default {
             isOpen: false
         }
     },
-    methods: {
+    methods: {     
         async ondatabase_selectorDialogSelected(choice){
             console.log("Selected:",choice)
         },
@@ -429,6 +439,28 @@ export default {
                 location.reload();
             }
         
+        },
+        toggleLTM(){
+            this.$store.state.config.use_discussions_history =! this.$store.state.config.use_discussions_history;
+            this.applyConfiguration();
+        },
+        applyConfiguration() {
+
+            this.isLoading = true;
+            axios.post('/apply_settings', {"config":this.$store.state.config}).then((res) => {
+                this.isLoading = false;
+                //console.log('apply-res',res)
+                if (res.data.status) {
+                    this.$refs.toast.showToast("Configuration changed successfully.", 4, true)
+                    //this.save_configuration()
+                } else {
+                    this.$refs.toast.showToast("Configuration change failed.", 4, false)
+                }
+                nextTick(() => {
+                    feather.replace()
+
+                })
+            })
         },
         save_configuration() {
             this.showConfirmation = false
@@ -1649,7 +1681,7 @@ export default {
         //console.log('chatbox mnt',this.$refs)
         this.$nextTick(() => {
             feather.replace();
-        });        
+        });
     },
     async activated() {
         //console.log('settings changed acc', this.$store.state.settingsChanged)
@@ -1677,9 +1709,9 @@ export default {
         WelcomeComponent,
         Toast,
         DragDrop,       
-        ChoiceDialog
+        ChoiceDialog        
     },
-    watch: {
+    watch: {  
         filterTitle(newVal) {
             if (newVal == '') {
                 this.filterInProgress = true
@@ -1712,7 +1744,10 @@ export default {
         },
         
     },
-    computed: {
+    computed: { 
+        UseDiscussionHistory() {
+            return this.$store.state.config.use_discussions_history;
+        }, 
         isReady:{
             
             get() {
@@ -1774,6 +1809,7 @@ import { initFlowbite } from 'flowbite'
 import { store } from '../main'
 
 import ChoiceDialog from '@/components/ChoiceDialog.vue'
+
 
 // initialize components based on data attribute selectors
 onMounted(() => {
