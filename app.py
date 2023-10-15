@@ -473,24 +473,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
         )
 
         self.add_endpoint(
-            "/execute_python_code", "execute_python_code", self.execute_python_code, methods=["POST"]
+            "/execute_code", "execute_code", self.execute_code, methods=["POST"]
         )
         
 
-
-
-    def execute_python_code(self):
-        """Executes Python code and returns the output."""
-        
-        data = request.get_json()
-        code = data["code"]
-        discussion_id = data.get("discussion_id","unknown_discussion")
-        message_id = data.get("message_id","unknown_message")
-        
-
-        ASCIIColors.info("Executing python code:")
-        ASCIIColors.yellow(code)
-
+    def execute_python(self, code, discussion_id, message_id):
         def spawn_process(code):
             """Executes Python code and returns the output as JSON."""
 
@@ -536,6 +523,67 @@ class LoLLMsWebUI(LoLLMsAPPI):
             return json.dumps(output_json)
         return spawn_process(code)
 
+    def execute_bash(self, code, discussion_id, message_id):
+        def spawn_process(code):
+            """Executes Python code and returns the output as JSON."""
+
+            # Start the timer.
+            start_time = time.time()
+
+            # Create a temporary file.
+            root_folder = self.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
+            root_folder.mkdir(parents=True,exist_ok=True)
+            try:
+                # Execute the Python code in a temporary file.
+                process = subprocess.Popen(    
+                    code,
+                    shell=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                )
+
+                # Get the output and error from the process.
+                output, error = process.communicate()
+            except Exception as ex:
+                # Stop the timer.
+                execution_time = time.time() - start_time
+                error_message = f"Error executing Python code: {ex}"
+                error_json = {"output": "<div class='text-red-500'>"+str(ex)+"\n"+get_trace_exception(ex)+"</div>", "execution_time": execution_time}
+                return json.dumps(error_json)
+
+            # Stop the timer.
+            execution_time = time.time() - start_time
+
+            # Check if the process was successful.
+            if process.returncode != 0:
+                # The child process threw an exception.
+                error_message = f"Error executing Python code: {error.decode('utf8')}"
+                error_json = {"output": "<div class='text-red-500'>"+error_message+"</div>", "execution_time": execution_time}
+                return json.dumps(error_json)
+
+            # The child process was successful.
+            output_json = {"output": output.decode("utf8"), "execution_time": execution_time}
+            return json.dumps(output_json)
+        return spawn_process(code)
+
+    def execute_code(self):
+        """Executes Python code and returns the output."""
+        
+        data = request.get_json()
+        code = data["code"]
+        discussion_id = data.get("discussion_id","unknown_discussion")
+        message_id = data.get("message_id","unknown_message")
+        language = data.get("language","python")
+        
+
+        ASCIIColors.info("Executing python code:")
+        ASCIIColors.yellow(code)
+
+        if language=="python":
+            return self.execute_python(code, discussion_id, message_id)
+        elif language=="bash":
+            return self.execute_bash(code, discussion_id, message_id)
+        
     def copy_files(self, src, dest):
         for item in os.listdir(src):
             src_file = os.path.join(src, item)

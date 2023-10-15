@@ -374,7 +374,7 @@ export default {
             this.filesList = []
             this.isFileSentList = []
         },
-        send_file(file){
+        send_file(file, next){
             const formData = new FormData();
             formData.append('file', file);
             console.log("Uploading file")
@@ -388,15 +388,8 @@ export default {
                 socket.on('file_received',(resp)=>{
                     if(resp.status){
                         console.log(resp.filename)
-
-                        let index = this.filesList.findIndex((file) => file.name === resp.filename);
-                        if(index>=0){
-                            this.isFileSentList[index]=true;
-                            console.log(this.isFileSentList)
-                        }
-                        else{
-                            console.log("Not found")
-                        }
+                        this.isFileSentList[this.filesList.length-1]=true;
+                        console.log(this.isFileSentList)
                         this.onShowToastMessage("File uploaded successfully",4,true);
                     }
                     else{
@@ -410,6 +403,8 @@ export default {
                         
                     }
                     socket.off('file_received')
+                    next()
+
                 }) 
                 socket.emit('send_file', data);
             };
@@ -522,11 +517,24 @@ export default {
             this.$emit('stopGenerating')
         },
         addFiles(event) {
-            console.log("Adding file")
-            this.filesList = this.filesList.concat([...event.target.files])
-            console.log(`Files_list : ${this.filesList}`)
-            this.isFileSentList = this.isFileSentList.concat([false] * this.filesList.length)
-            this.send_file(this.filesList[this.filesList.length-1])
+        console.log("Adding files");
+        const newFiles = [...event.target.files];
+        let index = 0;
+        const sendNextFile = () => {
+            if (index >= newFiles.length) {
+            console.log(`Files_list: ${this.filesList}`);
+            return;
+            }
+            const file = newFiles[index];
+            this.filesList.push(file);
+            this.isFileSentList.push(false);
+            this.send_file(file, () => {
+            index++;
+            sendNextFile();
+            }
+            );
+        };
+        sendNextFile();
         }
     },
     watch: {

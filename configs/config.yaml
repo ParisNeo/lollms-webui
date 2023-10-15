@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 25
+version: 26
 binding_name: null
 model_name: null
 
@@ -14,6 +14,7 @@ discussion_prompt_separator: "!@>"
 seed: -1
 n_predict: 1024
 ctx_size: 2048
+min_n_predict: 256
 temperature: 0.9
 top_k: 50
 top_p: 0.95

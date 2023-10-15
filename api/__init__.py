@@ -1215,13 +1215,13 @@ class LoLLMsAPPI(LollmsApplication):
                                     "doc":str_docs,
                                     "conditionning":conditionning,
                                     "content":discussion_messages
-                                    }, self.model.tokenize, self.model.detokenize, self.config.ctx_size, place_holders_to_sacrifice=["content"])
+                                    }, self.model.tokenize, self.model.detokenize, self.config.ctx_size-self.config.min_n_predict, place_holders_to_sacrifice=["content"])
         else:
             pr = PromptReshaper("{{conditionning}}\n{{content}}")
             discussion_messages = pr.build({
                                     "conditionning":conditionning,
                                     "content":discussion_messages
-                                    }, self.model.tokenize, self.model.detokenize, self.config.ctx_size, place_holders_to_sacrifice=["content"])
+                                    }, self.model.tokenize, self.model.detokenize, self.config.ctx_size-self.config.min_n_predict, place_holders_to_sacrifice=["content"])
         # remove extra returns
         discussion_messages = self.clean_string(discussion_messages)
         tokens = self.model.tokenize(discussion_messages)
