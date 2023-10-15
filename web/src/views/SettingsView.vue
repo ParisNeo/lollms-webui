@@ -1764,12 +1764,12 @@
             <div
                 class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row p-3 items-center">
-                    <button @click.stop="ezc_collapsed = !ezc_collapsed"
+                    <button @click.stop="mep_collapsed = !mep_collapsed"
                         class="text-2xl hover:text-primary  p-2 -m-2 text-left w-full  flex items-center">
-                    <div v-show="ezc_collapsed" ><i data-feather='chevron-right'></i></div>
-                    <div v-show="!ezc_collapsed" ><i data-feather='chevron-down'></i></div>
+                    <div v-show="mep_collapsed" ><i data-feather='chevron-right'></i></div>
+                    <div v-show="!mep_collapsed" ><i data-feather='chevron-down'></i></div>
                     <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
-                        Extensions zoo</h3>
+                        Mounted Extensions Priority</h3>
                     <div v-if="configFile.extensions" class="mr-2">|</div>
                     <div v-if="configFile.extensions"
                         class=" text-base font-semibold cursor-pointer select-none items-center flex flex-row">
@@ -1809,7 +1809,7 @@
                     </div>
                     </button>
                 </div>
-                <div :class="{ 'hidden': ezc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                <div :class="{ 'hidden': mep_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
                 </div>
             </div>
             <!-- MODEL CONFIGURATION -->
@@ -2183,6 +2183,7 @@ export default {
             mzdc_collapsed: true, // models zoo download
             pzc_collapsed: true, // personalities zoo
             ezc_collapsed: true, // extension zoo
+            mep_collapsed: true, // mounted extensions priority
             bzc_collapsed: true, // binding zoo
             pc_collapsed: true,
             mc_collapsed: true,
