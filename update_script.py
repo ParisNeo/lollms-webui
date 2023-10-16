@@ -12,6 +12,11 @@ def run_git_pull():
         repo = git.Repo(Path(__file__).parent)
         origin = repo.remotes.origin
         origin.pull()
+        print("Updating submodules")
+        try:
+            repo.git.submodule('update', '--init', '--recursive')
+        except:
+            print("Couldn't update submodules")
         return True
     except git.GitCommandError as e:
         print(f"Error during git pull: {e}")
