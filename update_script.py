@@ -15,6 +15,10 @@ def run_git_pull():
         print("Updating submodules")
         try:
             repo.git.submodule('update', '--init', '--recursive')
+            # Checkout the main branch on each submodule
+            for submodule in repo.submodules:
+                submodule_repo = submodule.module()
+                submodule_repo.git.checkout('main')            
         except:
             print("Couldn't update submodules")
         return True
