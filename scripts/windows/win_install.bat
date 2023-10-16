@@ -107,7 +107,7 @@ if /I "%gpuchoice%" == "B" (
 if not exist "%INSTALL_ENV_DIR%" (
   echo Packages to install: %PACKAGES_TO_INSTALL%
   call conda create --no-shortcuts -y -k -p "%INSTALL_ENV_DIR%" %CHANNEL% %PACKAGES_TO_INSTALL% || ( echo. && echo Conda environment creation failed. && goto end )
-  if /I "%gpuchoice%" == "A" call conda run --live-stream -p "%INSTALL_ENV_DIR%" python -m pip install torch==2.0.1+cu117 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117|| ( echo. && echo Pytorch installation failed.&& goto end )
+  if /I "%gpuchoice%" == "A" call conda run --live-stream -p "%INSTALL_ENV_DIR%" python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118|| ( echo. && echo Pytorch installation failed.&& goto end )
   if /I "%gpuchoice%" == "B" call conda run --live-stream -p "%INSTALL_ENV_DIR%" python -m pip install torch torchvision torchaudio   --index-url https://download.pytorch.org/whl/rocm5.4.2|| ( echo. && echo Pytorch installation failed.&& goto end )
   if /I "%gpuchoice%" == "C" call conda run --live-stream -p "%INSTALL_ENV_DIR%" python -m pip install torch torchvision torchaudio|| ( echo. && echo Pytorch installation failed.&& goto end )
 )
