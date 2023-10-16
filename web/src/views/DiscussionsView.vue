@@ -252,6 +252,7 @@
             <div class=" bottom-0 container flex flex-row items-center justify-center " v-if="currentDiscussion.id">
                 <ChatBox ref="chatBox" 
                     @messageSentEvent="sendMsg" 
+                    @createEmptyMessage="createEmptyMessage"
                     :loading="isGenerating" 
                     :discussionList="discussionArr" 
                     @stopGenerating="stopGenerating" 
@@ -1010,7 +1011,9 @@ export default {
                 console.log("Error: Could not get generation status", error);
             });
         },
-
+        createEmptyMessage(){
+            socket.emit('create_empty_message', {});
+        },
         sendMsg(msg) {
             // Sends message to binding
             if (!msg) {

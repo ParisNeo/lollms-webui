@@ -181,7 +181,15 @@
                                 class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer"
                             >
                             <i data-feather="mic"></i>
-                            </button>                          
+                            </button>
+                                                     
+                            <button v-if="!loading" type="button" @click="makeAnEmptyMessage"
+                                class=" w-6 hover:text-secondary duration-75 active:scale-90">
+
+                                <i data-feather="message-square"></i>
+
+                                <span class="sr-only">New empty message</span>
+                            </button>
                             <button v-if="!loading" type="button" @click="submit"
                                 class=" w-6 hover:text-secondary duration-75 active:scale-90">
 
@@ -257,7 +265,7 @@ import Toast from '../components/Toast.vue'
 
 export default {
     name: 'ChatBox',
-    emits: ["messageSentEvent", "stopGenerating", "loaded"],
+    emits: ["messageSentEvent", "stopGenerating", "loaded", "createEmptyMessage"],
     props: {
         onTalk: Function,
         discussionList: Array,
@@ -410,6 +418,9 @@ export default {
             };
             reader.readAsDataURL(file);        
         },
+        makeAnEmptyMessage() {
+            this.$emit('createEmptyMessage')
+        },
         startSpeechRecognition() {
             if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
                 this.recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
@@ -452,7 +463,7 @@ export default {
             } else {
                 console.error('Speech recognition is not supported in this browser.');
             }
-            },
+        },
 
         onPersonalitiesReadyFun(){
             this.personalities_ready = true;

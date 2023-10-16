@@ -49,7 +49,7 @@ gpuchoice="${gpuchoice:0:1}"
 
 if [[ "${gpuchoice^^}" == "A" ]]; then
   PACKAGES_TO_INSTALL="python=3.10 cuda-toolkit ninja git gcc"
-  CHANNEL="-c nvidia/label/cuda-11.7.0 -c nvidia -c conda-forge"
+  CHANNEL="-c nvidia/label/cuda-11.8.0 -c nvidia -c conda-forge"
 elif [[ "${gpuchoice^^}" == "B" ]]; then
   PACKAGES_TO_INSTALL="python=3.10  rocm-comgr rocm-smi ninja git gcc"
   CHANNEL=" -c conda-forge"
@@ -99,7 +99,7 @@ if [ ! -d "$INSTALL_ENV_DIR" ]; then
   echo "Packages to install: $PACKAGES_TO_INSTALL"
   conda create -y -k -p "$INSTALL_ENV_DIR" $CHANNEL $PACKAGES_TO_INSTALL || ( echo && echo "Conda environment creation failed." && exit 1 )
   if [[ "${gpuchoice^^}" == "A" ]]; then
-    conda run --live-stream -p "$INSTALL_ENV_DIR" python -m pip install torch==2.0.1+cu117 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117 || ( echo && echo "Pytorch installation failed." && exit 1 )
+    conda run --live-stream -p "$INSTALL_ENV_DIR" python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 || ( echo && echo "Pytorch installation failed." && exit 1 )
   elif [[ "${gpuchoice^^}" == "B" ]]; then
     conda run --live-stream -p "$INSTALL_ENV_DIR" python -m pip install torch torchvision torchaudio  --index-url https://download.pytorch.org/whl/rocm5.4.2 || ( echo && echo "Pytorch installation failed." && exit 1 )
   elif [[ "${gpuchoice^^}" == "C" ]]; then

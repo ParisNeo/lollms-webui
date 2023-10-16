@@ -667,6 +667,22 @@ class LoLLMsAPPI(LollmsApplication):
             output = interpreter.getvalue()
             self.socketio.emit("execution_output", {"output":output,"execution_time":end_time - start_time}, room=client_id)
 
+        @self.socketio.on('create_empty_message')
+        def create_empty_message(data):
+            client_id = request.sid
+            if self.personality is None:
+                self.notify("Select a personality",False,None)
+                return
+            ASCIIColors.info(f"Text generation requested by client: {client_id}")
+            # send the message to the bot
+            print(f"Creating an empty message for AI answer orientation")
+            if self.connections[client_id]["current_discussion"]:
+                if not self.model:
+                    self.notify("No model selected. Please make sure you select a model before starting generation", False, client_id)
+                    return          
+                self.new_message(client_id, self.personality.name, "✍ warming up ...")
+                self.socketio.sleep(0.01)            
+
         # A copy of the original lollms-server generation code needed for playground
         @self.socketio.on('generate_text')
         def handle_generate_text(data):

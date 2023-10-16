@@ -125,9 +125,12 @@ set "CUDA_PATH=%INSTALL_ENV_DIR%"
 if exist lollms-webui\ (
   cd lollms-webui
   git pull
+  git submodule --init
 ) else (
   git clone https://github.com/ParisNeo/lollms-webui.git
-  cd lollms-webui || goto end
+  cd lollms-webui 
+  git submodule --init
+  goto end
 )
 
 @rem Loop through each "git+" requirement and uninstall it   workaround for inconsistent git package updating
