@@ -680,7 +680,7 @@ class LoLLMsAPPI(LollmsApplication):
                 if not self.model:
                     self.notify("No model selected. Please make sure you select a model before starting generation", False, client_id)
                     return          
-                self.new_message(client_id, self.personality.name, "✍ warming up ...")
+                self.new_message(client_id, self.personality.name, "<edit this to put your ai answer start>")
                 self.socketio.sleep(0.01)            
 
         # A copy of the original lollms-server generation code needed for playground
