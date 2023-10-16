@@ -14,7 +14,7 @@ def run_git_pull():
         origin.pull()
         print("Updating submodules")
         try:
-            repo.git.submodule('update', '--init', '--recursive')
+            repo.git.submodule('update', '--init')
             # Checkout the main branch on each submodule
             for submodule in repo.submodules:
                 try:
