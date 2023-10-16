@@ -19,8 +19,9 @@ def run_git_pull():
             for submodule in repo.submodules:
                 submodule_repo = submodule.module()
                 submodule_repo.git.checkout('main')            
-        except:
+        except Exception as ex:
             print("Couldn't update submodules")
+            print(ex)
         return True
     except git.GitCommandError as e:
         print(f"Error during git pull: {e}")
