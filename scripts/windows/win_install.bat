@@ -125,11 +125,11 @@ set "CUDA_PATH=%INSTALL_ENV_DIR%"
 if exist lollms-webui\ (
   cd lollms-webui
   git pull
-  git submodule --init
+  git submodule update --init
 ) else (
   git clone https://github.com/ParisNeo/lollms-webui.git
   cd lollms-webui 
-  git submodule --init
+  git submodule update --init
   goto end
 )
 
@@ -143,26 +143,26 @@ call python -m pip install -r requirements.txt --upgrade
 if exist ..\win_run.bat (
     echo Win run found
 ) else (
-  copy scripts\win_run.bat ..\
+  copy scripts\windows\win_run.bat ..\
 )
 
 if exist ..\win_update.bat (
     echo Win update found
 ) else (
-  copy scripts\win_update.bat ..\
+  copy scripts\windows\win_update.bat ..\
 )
 
 
 if exist ..\win_conda_session.bat (
     echo win conda session script found
 ) else (
-  copy scripts\win_conda_session.bat ..\
+  copy scripts\windows\win_conda_session.bat ..\
 )
 
 if exist ..\win_update_models.bat (
     echo Win update models found
 ) else (
-  copy scripts\win_update_models.bat ..\
+  copy scripts\windows\win_update_models.bat ..\
 )
 
 setlocal enabledelayedexpansion
