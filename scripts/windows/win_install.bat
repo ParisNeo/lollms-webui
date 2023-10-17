@@ -130,7 +130,6 @@ if exist lollms-webui\ (
   git clone https://github.com/ParisNeo/lollms-webui.git
   cd lollms-webui 
   git submodule update --init
-  goto end
 )
 
 @rem Loop through each "git+" requirement and uninstall it   workaround for inconsistent git package updating
