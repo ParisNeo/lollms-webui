@@ -126,7 +126,15 @@ else
   git clone "$REPO_URL"
   cd lollms-webui || exit 1
 fi
+git submodule update --init
+cd zoos/bindings_zoo
+git checkout main
+cd ../personalities_zoo
+git checkout main
+cd ../extensions_zoo
+git checkout main
 
+cd ../..
 # Loop through each "git+" requirement and uninstall it (workaround for inconsistent git package updating)
 while IFS= read -r requirement; do
   if echo "$requirement" | grep -q "git+"; then
@@ -141,25 +149,25 @@ python -m pip install -r requirements.txt --upgrade
 if [[ -e "../linux_run.sh" ]]; then
     echo "Linux run found"
 else
-    cp scripts/linux_run.sh ../
+    cp scripts/linux/linux_run.sh ../
 fi
 
 if [[ -e "../linux_update.sh" ]]; then
     echo "Linux update found"
 else
-    cp scripts/linux_update.sh ../
+    cp scripts/linux/linux_update.sh ../
 fi
 
 if [[ -e "../linux_conda_session.sh" ]]; then
     echo "Linux update found"
 else
-    cp scripts/linux_conda_session.sh ../
+    cp scripts/linux/linux_conda_session.sh ../
 fi
 
 if [[ -e "../linux_update_models.sh" ]]; then
     echo "Linux update found"
 else
-    cp scripts/linux_update_models.sh ../
+    cp scripts/linux/linux_update_models.sh ../
 fi
 
 if [[ "${gpuchoice^^}" == "C" ]]; then

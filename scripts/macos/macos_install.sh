@@ -117,6 +117,16 @@ else
   cd lollms-webui || exit 1
 fi
 
+git submodule update --init
+cd zoos/bindings_zoo
+git checkout main
+cd ../personalities_zoo
+git checkout main
+cd ../extensions_zoo
+git checkout main
+
+cd ../..
+
 # Loop through each "git+" requirement and uninstall it (workaround for inconsistent git package updating)
 while IFS= read -r requirement; do
   if echo "$requirement" | grep -q "git+"; then
@@ -132,13 +142,13 @@ python -m pip install -r requirements.txt --upgrade
 if [[ -e "../macos_run.sh" ]]; then
     echo "Macos run found"
 else
-    cp macos_run.sh ../
+    cp scripts/macos/macos_run.sh ../
 fi
 
 if [[ -e "../macos_update.sh" ]]; then
     echo "Macos update found"
 else
-    cp macos_update.sh ../
+    cp scripts/macos/macos_update.sh ../
 fi
 
 if [[ "${gpuchoice^^}" == "B" ]]; then

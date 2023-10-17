@@ -29,16 +29,17 @@
         </button>
         Custom model
       </div>
-      <div v-if="model.selected" @click.stop="toggleSelected" class="cursor-pointer" style="background-color: white;">
-          <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-            <path d="M9 16.17l-4.17-4.17-1.42 1.41 5.59 5.59 12-12-1.41-1.41z"/>
+      <div v-if="model.isInstalled">
+        <div v-if="model.selected" @click.stop="toggleSelected" class="cursor-pointer" style="background-color: white;">
+            <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+              <path d="M9 16.17l-4.17-4.17-1.42 1.41 5.59 5.59 12-12-1.41-1.41z"/>
+            </svg>
+        </div>        
+        <div v-else @click.stop="toggleSelected" class="cursor-pointer" style="background-color: white;">
+          <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  viewBox="0 0 24 24">
           </svg>
-      </div>        
-      <div v-else @click.stop="toggleSelected" class="cursor-pointer" style="background-color: white;">
-        <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  viewBox="0 0 24 24">
-        </svg>
-      </div>   
-
+        </div>   
+      </div>
       <div>
         <button v-if="model.isInstalled" title="Delete file from disk" type="button" @click.stop="toggleInstall"
           class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
@@ -118,16 +119,17 @@
         <div class="grow">
           <!-- EMPTY SPACE FILLER -->
         </div>
-        <div v-if="model.selected" @click.stop="toggleSelected" class="cursor-pointer" style="background-color: white;">
-          <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-            <path d="M9 16.17l-4.17-4.17-1.42 1.41 5.59 5.59 12-12-1.41-1.41z"/>
-          </svg>
-        </div>        
-        <div v-else @click.stop="toggleSelected" class="cursor-pointer" style="background-color: white;">
-          <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  viewBox="0 0 24 24">
-          </svg>
-        </div>        
-
+        <div v-if="model.isInstalled">
+          <div v-if="model.selected" @click.stop="toggleSelected" class="cursor-pointer" style="background-color: white;">
+            <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+              <path d="M9 16.17l-4.17-4.17-1.42 1.41 5.59 5.59 12-12-1.41-1.41z"/>
+            </svg>
+          </div>        
+          <div v-else @click.stop="toggleSelected" class="cursor-pointer" style="background-color: white;">
+            <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  viewBox="0 0 24 24">
+            </svg>
+          </div>        
+        </div>
         <InteractiveMenu  :commands="commandsList" :force_position=2 title="Menu">
         
         </InteractiveMenu>

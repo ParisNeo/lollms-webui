@@ -125,12 +125,19 @@ set "CUDA_PATH=%INSTALL_ENV_DIR%"
 if exist lollms-webui\ (
   cd lollms-webui
   git pull
-  git submodule update --init
 ) else (
   git clone https://github.com/ParisNeo/lollms-webui.git
   cd lollms-webui 
-  git submodule update --init
 )
+git submodule update --init
+cd zoos/bindings_zoo
+git checkout main
+cd ../personalities_zoo
+git checkout main
+cd ../extensions_zoo
+git checkout main
+
+cd ../..
 
 @rem Loop through each "git+" requirement and uninstall it   workaround for inconsistent git package updating
 for /F "delims=" %%a in (requirements.txt) do echo "%%a"| findstr /C:"git+" >nul&& for /F "tokens=4 delims=/" %%b in ("%%a") do for /F "delims=@" %%c in ("%%b") do python -m pip uninstall -y %%c
