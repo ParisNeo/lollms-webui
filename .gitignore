@@ -207,3 +207,5 @@ offload
 
 # Removing personal data
 personal_data
+outputs_*
+output_*

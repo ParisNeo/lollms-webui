@@ -133,6 +133,8 @@ cd ../personalities_zoo
 git checkout main
 cd ../extensions_zoo
 git checkout main
+cd ../models_zoo
+git checkout main
 
 cd ../..
 # Loop through each "git+" requirement and uninstall it (workaround for inconsistent git package updating)
