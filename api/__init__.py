@@ -254,10 +254,10 @@ class LoLLMsAPPI(LollmsApplication):
                      
             def install_model_():
                 print("Install model triggered")
-                model_path = data["path"]
+                model_path = data["path"].replace("\\","/")
                 model_type:str=data["type"]
                 progress = 0
-                installation_dir = self.lollms_paths.personal_models_path/self.config["binding_name"]
+                installation_dir = self.binding.searchModelParentFolder(model_path.split('/')[-1])
                 if model_type=="gptq":
                     parts = model_path.split("/")
                     if len(parts)==2:
