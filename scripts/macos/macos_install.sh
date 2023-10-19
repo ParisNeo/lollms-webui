@@ -41,17 +41,20 @@ echo "B) Run CPU mode"
 echo
 read -rp "Input> " gpuchoice
 gpuchoice="${gpuchoice:0:1}"
-
-if [[ "${gpuchoice^^}" == "A" ]]; then
-  PACKAGES_TO_INSTALL="python=3.10 cuda-toolkit ninja git gcc"
+uppercase_gpuchoice=$(echo "$gpuchoice" | tr '[:lower:]' '[:upper:]')
+if [[ "$uppercase_gpuchoice" == "A" ]]; then
+  PACKAGES_TO_INSTALL="python=3.10 cuda-toolkit ninja git"
   CHANNEL="-c pytorch -c conda-forge"
-elif [[ "${gpuchoice^^}" == "B" ]]; then
-  PACKAGES_TO_INSTALL="python=3.10 ninja git gcc"
+elif [[ "$uppercase_gpuchoice" == "B" ]]; then
+  PACKAGES_TO_INSTALL="python=3.10 ninja git"
   CHANNEL="-c conda-forge"
 else
   echo "Invalid choice. Exiting..."
   exit 1
 fi
+
+echo "Installing gcc..."
+brew install gcc
 
 # Better isolation for virtual environment
 unset CONDA_SHLVL
@@ -63,6 +66,7 @@ export TMP="$PWD/installer_files/temp"
 
 MINICONDA_DIR="$PWD/installer_files/miniconda3"
 INSTALL_ENV_DIR="$PWD/installer_files/lollms_env"
+ENV_NAME="lollms"
 MINICONDA_DOWNLOAD_URL="https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
 REPO_URL="https://github.com/ParisNeo/lollms-webui.git"
 
@@ -89,22 +93,20 @@ source "$MINICONDA_DIR/bin/activate" || ( echo "Miniconda hook not found." && ex
 # Create the installer environment
 if [ ! -d "$INSTALL_ENV_DIR" ]; then
   echo "Packages to install: $PACKAGES_TO_INSTALL"
-  conda create -y -k -p "$INSTALL_ENV_DIR" $CHANNEL $PACKAGES_TO_INSTALL || ( echo && echo "Conda environment creation failed." && exit 1 )
-  if [[ "${gpuchoice^^}" == "A" ]]; then
-    conda run --live-stream -p "$INSTALL_ENV_DIR" python -m pip install torch torchvision torchaudio --channel pytorch --channel conda-forge || ( echo && echo "Pytorch installation failed." && exit 1 )
-  elif [[ "${gpuchoice^^}" == "B" ]]; then
-    conda run --live-stream -p "$INSTALL_ENV_DIR" python -m pip install torch torchvision torchaudio --channel pytorch --channel conda-forge || ( echo && echo "Pytorch installation failed." && exit 1 )
+  conda create -y -k -n "$ENV_NAME" $CHANNEL $PACKAGES_TO_INSTALL || ( echo && echo "Conda environment creation failed." && exit 1 )
+  echo "Conda created and using packages: $PACKAGES_TO_INSTALL"
+  echo "Installing tools"
+  if [[ "$(echo $gpuchoice | tr '[:lower:]' '[:upper:]')" == "A" ]]; then
+    conda run --live-stream -n "$ENV_NAME" python -m pip install torch torchvision torchaudio --channel pytorch --channel conda-forge || ( echo && echo "Pytorch installation failed." && exit 1 )
+  elif [[ "$(echo $gpuchoice | tr '[:lower:]' '[:upper:]')" == "B" ]]; then
+    conda run --live-stream -n "$ENV_NAME" python -m pip install torch torchvision torchaudio --channel pytorch --channel conda-forge || ( echo && echo "Pytorch installation failed." && exit 1 )
   fi
 fi
 
-# Check if conda environment was actually created
-if [ ! -x "$INSTALL_ENV_DIR/bin/python" ]; then
-  echo && echo "Conda environment is empty." && exit 1
-fi
-
 # Activate installer environment
-source activate "$INSTALL_ENV_DIR" || ( echo && echo "Conda environment activation failed." && exit 1 )
+source activate "$ENV_NAME" || ( echo && echo "Conda environment activation failed." && exit 1 )
 
+echo "$ENV_NAME Activated"
 # Set default CUDA toolkit to the one in the environment
 export CUDA_PATH="$INSTALL_ENV_DIR"
 
@@ -153,7 +155,8 @@ else
     cp scripts/macos/macos_update.sh ../
 fi
 
-if [[ "${gpuchoice^^}" == "B" ]]; then
+uppercase_gpuchoice=$(echo "$gpuchoice" | tr '[:lower:]' '[:upper:]')
+if [[ "$uppercase_gpuchoice" == "B" ]]; then
     echo "This is a .no_gpu file." > .no_gpu
 else
     echo "GPU is enabled, no .no_gpu file will be created."

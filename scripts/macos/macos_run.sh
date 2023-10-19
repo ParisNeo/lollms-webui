@@ -22,7 +22,8 @@ PYTHONPATH=""
 PYTHONHOME=""
 TEMP="./installer_files/temp"
 TMP="./installer_files/temp"
-INSTALL_ENV_DIR="./installer_files/lollms_env"
+ENV_NAME="lollms"
+INSTALL_ENV_DIR="./installer_files/miniconda3/envs/lollms"
 MINICONDA_DIR="./installer_files/miniconda3"
 
 if [ ! -f "$MINICONDA_DIR/bin/activate" ]; then
@@ -30,7 +31,7 @@ if [ ! -f "$MINICONDA_DIR/bin/activate" ]; then
     exit 1
 fi
 
-source "$MINICONDA_DIR/bin/activate" "$INSTALL_ENV_DIR"
+source "$MINICONDA_DIR/bin/activate" "$ENV_NAME"
 cd lollms-webui
 
 # Set default CUDA toolkit to the one in the environment

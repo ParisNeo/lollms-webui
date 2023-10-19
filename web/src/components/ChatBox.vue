@@ -125,6 +125,7 @@
                                 :title="selectedModel"
                                 :execute_cmd="setModel"  
                                 :icon="models_menu_icon" 
+                                :menu-icon-class="'rounded-full'"
                                 :commands="commandify(models)"
                                 :selected_entry="selectedModel"></InteractiveMenu>
                         <div v-if="selecting_model" title="Selecting model" class="flex flex-row flex-grow justify-end">
@@ -298,7 +299,7 @@ export default {
             showfilesList: true,
             showPersonalities: false,
             personalities_ready: false,
-            models_menu_icon:'#M'
+            models_menu_icon:""
         }
     },
     computed: {
