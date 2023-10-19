@@ -428,7 +428,7 @@ class LoLLMsAPPI(LollmsApplication):
         def uninstall_model(data):
             model_path = data['path']
             model_type:str=data.get("type","ggml")
-            installation_dir = self.lollms_paths.personal_models_path/self.config["binding_name"]
+            installation_dir = self.binding.searchModelParentFolder()
             
             binding_folder = self.config["binding_name"]
             if model_type=="gptq":
@@ -450,7 +450,7 @@ class LoLLMsAPPI(LollmsApplication):
                 if not installation_path.exists():
                     # Try to find a version
                     model_path = installation_path.name.lower().replace("-ggml","").replace("-gguf","")
-                    candidates = [m for m in (self.lollms_paths.personal_models_path/self.binding.binding_folder_name).iterdir() if model_path in m.name]
+                    candidates = [m for m in installation_dir.iterdir() if model_path in m.name]
                     if len(candidates)>0:
                         model_path = candidates[0]
                         installation_path = model_path
