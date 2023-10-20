@@ -140,13 +140,15 @@ cd ../models_zoo
 git checkout main
 
 cd ../..
-cd ../lollms_core
+
+cd lollms_core
 git checkout main
 
 cd ../utilities/safe_store
 git checkout main
 
 cd ../..
+
 # Loop through each "git+" requirement and uninstall it (workaround for inconsistent git package updating)
 while IFS= read -r requirement; do
   if echo "$requirement" | grep -q "git+"; then

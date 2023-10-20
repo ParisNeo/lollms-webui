@@ -140,14 +140,14 @@ cd ../models_zoo
 git checkout main
 
 cd ../..
-cd ../lollms_core
+
+cd lollms_core
 git checkout main
 
 cd ../utilities/safe_store
 git checkout main
 
 cd ../..
-
 
 @rem Loop through each "git+" requirement and uninstall it   workaround for inconsistent git package updating
 for /F "delims=" %%a in (requirements.txt) do echo "%%a"| findstr /C:"git+" >nul&& for /F "tokens=4 delims=/" %%b in ("%%a") do for /F "delims=@" %%c in ("%%b") do python -m pip uninstall -y %%c
