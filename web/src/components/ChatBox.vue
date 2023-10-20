@@ -485,6 +485,7 @@ export default {
         onUnmountFun(comp) {
             console.log('Unmounting personality')
             this.$refs.mountedPers.constructor()
+            
         },
         onRemount(comp){
             console.log('Remounting chat')

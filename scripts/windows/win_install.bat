@@ -140,12 +140,27 @@ cd ../models_zoo
 git checkout main
 
 cd ../..
+cd ../lollms_core
+git checkout main
+
+cd ../utilities/safe_store
+git checkout main
+
+cd ../..
+
 
 @rem Loop through each "git+" requirement and uninstall it   workaround for inconsistent git package updating
 for /F "delims=" %%a in (requirements.txt) do echo "%%a"| findstr /C:"git+" >nul&& for /F "tokens=4 delims=/" %%b in ("%%a") do for /F "delims=@" %%c in ("%%b") do python -m pip uninstall -y %%c
 
 @rem install the pip requirements
 call python -m pip install -r requirements.txt --upgrade
+
+@rem install the pip requirements
+call python -m pip install -e lollms_core --upgrade
+
+@rem install the pip requirements
+call python -m pip install -e utilities/safe_store --upgrade
+
 
 @rem create launcher
 if exist ..\win_run.bat (

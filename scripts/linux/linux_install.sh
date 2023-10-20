@@ -126,6 +126,9 @@ else
   git clone "$REPO_URL"
   cd lollms-webui || exit 1
 fi
+
+# Initilize all submodules and set them to main branch
+echo "Initializing submodules"
 git submodule update --init
 cd zoos/bindings_zoo
 git checkout main
@@ -134,6 +137,13 @@ git checkout main
 cd ../extensions_zoo
 git checkout main
 cd ../models_zoo
+git checkout main
+
+cd ../..
+cd ../lollms_core
+git checkout main
+
+cd ../utilities/safe_store
 git checkout main
 
 cd ../..
@@ -147,6 +157,9 @@ done < requirements.txt
 
 # Install the pip requirements
 python -m pip install -r requirements.txt --upgrade
+python -m pip install -e lollms_core --upgrade
+python -m pip install -e utilities/safe_store --upgrade
+
 
 if [[ -e "../linux_run.sh" ]]; then
     echo "Linux run found"

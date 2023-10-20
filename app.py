@@ -1806,7 +1806,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 if self.config.auto_save:
                     ASCIIColors.info("Saving configuration")
                     self.config.save_config()
-                ASCIIColors.error(f"Personality {name} mounted successfully")
+                ASCIIColors.success(f"Personality {name} mounted successfully")
                 return jsonify({"status": True,
                                 "personalities":self.config["personalities"],
                                 "active_personality_id":self.config["active_personality_id"]
@@ -1896,7 +1896,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
             else:
                 self.personalities = ["generic/lollms"]
                 self.mounted_personalities = self.rebuild_personalities()
-                self.personality = self.mounted_personalities[self.config["active_personality_id"]]
+                if self.config["active_personality_id"]<len(self.mounted_personalities):
+                    self.personality = self.mounted_personalities[self.config["active_personality_id"]]
+                else:
+                    self.config["active_personality_id"] = -1
             ASCIIColors.success("ok")
             if self.config.auto_save:
                 ASCIIColors.info("Saving configuration")
@@ -1906,7 +1909,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
                         "personalities":self.config["personalities"],
                         "active_personality_id":self.config["active_personality_id"]
                         })         
-        except:
+        except Exception as ex:
+            trace_exception(ex)
             if language:
                 ASCIIColors.error(f"nok : Personality not found @ {category}/{name}:{language}")
             else:

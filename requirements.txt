@@ -7,7 +7,6 @@ pyyaml
 markdown
 gevent
 gevent-websocket
-lollms
 langchain
 requests
 eventlet
@@ -15,4 +14,3 @@ websocket-client
 GitPython
 setuptools
 numpy==1.24
-safe_store

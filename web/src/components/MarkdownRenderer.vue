@@ -38,14 +38,14 @@ const markdownIt = new MarkdownIt('commonmark', {
     let discussion_id = 0
     let message_id = 0
 
-    let btn_exec_txt = (lang=='python' || lang=='bash') ?'<button class="px-2 py-1 ml-10 mb-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">' +
+    let btn_exec_txt = (lang=='python' || lang=='bash' || lang=='shell' || lang=='cmd' || lang=='powershell') ?'<button class="px-2 py-1 ml-10 mb-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">' +
       '<span class="mr-1" id="exec-btn_' +
       id +
       '" onclick="executeCode(' +
       id + ',' + discussion_id + ',' + message_id + ',`' + lang +
       '`)">Execute</span>'+
       '</button>':''
-    let btn_open_in_vs_code_txt = (lang=='python' || lang=='bash') ?'<button class="px-2 py-1 ml-10 mb-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">' +
+    let btn_open_in_vs_code_txt = (lang!='shell' && lang!='cmd' && lang!='powershell') ?'<button class="px-2 py-1 ml-10 mb-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">' +
       '<span class="mr-1" id="exec-btn_' +
       id + '5' +
       '" onclick="openInVsCode(' +
@@ -53,7 +53,7 @@ const markdownIt = new MarkdownIt('commonmark', {
       '`)">Show in vs code</span>'+
       '</button>':''
 
-      let btn_open_folder_txt = (lang=='python' || lang=='bash') ?'<button class="px-2 py-1 ml-10 mb-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">' +
+    let btn_open_folder_txt = (lang=='python') ?'<button class="px-2 py-1 ml-10 mb-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">' +
       '<span class="mr-1" id="exec-btn_' +
       id + '6' +
       '" onclick="openFolder(' +
@@ -85,7 +85,7 @@ const markdownIt = new MarkdownIt('commonmark', {
           '</button>' +
           btn_exec_txt +
           btn_open_in_vs_code_txt +
-          
+          btn_open_folder_txt+
           '<pre class="hljs p-1 rounded-md break-all grid grid-cols-1">' +
           '<code id="code_' +
           id +
@@ -130,6 +130,8 @@ const markdownIt = new MarkdownIt('commonmark', {
       btn_exec_txt +
 
       btn_open_in_vs_code_txt +
+
+      btn_open_folder_txt +
 
       '<pre class="hljs p-1 rounded-md break-all grid grid-cols-1">' +
       '<code id="code_' +

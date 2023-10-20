@@ -117,8 +117,6 @@ class LoLLMsAPPI(LollmsApplication):
         super().__init__("Lollms_webui",config, lollms_paths, callback=self.process_chunk)
 
 
-
-
         self.busy = False
         self.nb_received_tokens = 0
         
@@ -956,7 +954,7 @@ class LoLLMsAPPI(LollmsApplication):
             if personality in loaded_names:
                 mounted_personalities.append(loaded[loaded_names.index(personality)])
             else:
-                personality_path = self.lollms_paths.personalities_zoo_path/f"{personality}" if not ":" in personality else self.lollms_paths.personalities_zoo_path/f"{personality.split(':')[0]}"
+                personality_path = f"{personality}" if not ":" in personality else f"{personality.split(':')[0]}"
                 try:
                     personality = AIPersonality(personality_path,
                                                 self.lollms_paths, 
