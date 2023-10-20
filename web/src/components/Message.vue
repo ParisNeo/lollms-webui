@@ -144,7 +144,7 @@
                         </div>
                     </div>
                     
-                    <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :markdown-text="message.content">
+                    <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :markdown-text="message.content" :message_id="message.id">
                     </MarkdownRenderer>
                     <div >
                         <textarea v-if="editMsgMode" ref="mdTextarea" @keydown.tab.prevent="insertTab"

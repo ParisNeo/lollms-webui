@@ -43,12 +43,14 @@ export default {
       required: true,
     },
     discussion_id: {
-      type: String,
-      required: true,
+      type: [String, Number],
+      default: "0",
+      required: false,
     },
     message_id: {
-      type: String,
-      required: true,
+      value: "0",
+      type: [String, Number],
+      required: false,
     },
   },
   components: {
