@@ -285,8 +285,6 @@ export default {
   async mounted() {
     nextTick(() => {
       feather.replace()
-
-
     })
   },
   methods: {
@@ -331,6 +329,10 @@ export default {
     },
     toggleSelected(force=false) {
       this.onSelected(this,force)
+      nextTick(() => {
+        feather.replace()
+      })
+
     },
     toggleCopy() {
 

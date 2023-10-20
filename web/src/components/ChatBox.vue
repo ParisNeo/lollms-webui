@@ -143,9 +143,43 @@
                                 <span class="sr-only">Selecting model...</span>
                             </div>
                         </div>                        
-                        <div class="w-fit">
-                            <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
+                        <div class="w-fit group relative">
                             <!-- :onShowPersList="onShowPersListFun" -->
+                            <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-10 group-hover:translate-x-15 transition-all duration-300">
+                                <div class="w-full"
+                                    v-for="(item, index) in this.$store.state.mountedPersArr" :key="index + '-' + item.name"
+                                    ref="mountedPersonalities">
+                                    <div v-if="index!=this.$store.state.config.active_personality_id" class="group items-center flex flex-row">
+                                        <button @click.prevent="onPersonalitySelected(item)" class="w-8 h-8">
+                                            <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
+                                                class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                                :class="this.$store.state.active_personality_id == this.$store.state.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
+                                                :title="item.name">
+                                        </button>
+                                        <!--
+
+                                        <button @click.prevent="unmountPersonality (item)">
+                                            <span
+                                                class="hidden hover:block top-3 left-9 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
+                                                title="Unmount personality">
+                                                <svg aria-hidden="true" class="w-4 h-4 text-red-600 hover:text-red-500 "
+                                                    fill="currentColor" viewBox="0 0 20 20"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd"
+                                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                        clip-rule="evenodd"></path>
+                                                </svg>
+
+                                            </span>
+                                        </button>
+
+                                        -->
+                                    </div>
+                                </div>             
+                            </div>
+           
+                            <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
+
                         </div>
 
                         <div class="w-fit">
@@ -263,7 +297,7 @@ import { useStore } from 'vuex'; // Import the useStore function
 import { inject } from 'vue';
 import socket from '@/services/websocket.js'
 import Toast from '../components/Toast.vue'
-
+const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
     name: 'ChatBox',
     emits: ["messageSentEvent", "stopGenerating", "loaded", "createEmptyMessage"],
@@ -288,6 +322,7 @@ export default {
     },
     data() {
         return {
+            bUrl:bUrl,
             message: "",
             selecting_model:false,
             selectedModel:'',
@@ -327,6 +362,127 @@ export default {
         }
     },
     methods: {   
+        async unmountPersonality(pers) {
+            this.isLoading = true
+            if (!pers) { return }
+
+            const res = await this.unmount_personality(pers.personality || pers)
+
+
+            if (res.status) {
+                this.$store.state.config.personalities = res.personalities
+                this.$refs.toast.showToast("Personality unmounted", 4, true)
+
+                //pers.isMounted = false
+                this.$store.dispatch('refreshMountedPersonalities');
+                // Select some other personality
+                const lastPers = this.$store.state.mountedPersArr[this.$store.state.mountedPersArr.length - 1]
+
+                console.log(lastPers, this.$store.state.mountedPersArr.length)
+                // const res2 = await this.select_personality(lastPers.personality)
+                const res2 = await this.select_personality(pers.personality)
+                if (res2.status) {
+                    this.$refs.toast.showToast("Selected personality:\n" + lastPers.name, 4, true)
+                }
+
+
+            } else {
+                this.$refs.toast.showToast("Could not unmount personality\nError: " + res.error, 4, false)
+            }
+
+            this.isLoading = false
+        },
+        async unmount_personality(pers) {
+            if (!pers) { return { 'status': false, 'error': 'no personality - unmount_personality' } }
+
+            const obj = {
+                language: pers.language,
+                category: pers.category,
+                folder: pers.folder
+            }
+
+
+            try {
+                const res = await axios.post('/unmount_personality', obj);
+
+                if (res) {
+                    return res.data
+
+                }
+            } catch (error) {
+                console.log(error.message, 'unmount_personality - settings')
+                return
+            }
+
+        },        
+        async onPersonalitySelected(pers) {
+            console.log('on pers', pers)
+            // eslint-disable-next-line no-unused-vars
+            console.log('selecting ', pers)
+            if (pers) {
+
+                if (pers.selected) {
+                    this.$refs.toast.showToast("Personality already selected", 4, true)
+                    return
+                }
+
+
+                //this.settingsChanged = true
+
+                if (pers.isMounted && this.$store.state.config.personalities.includes(pers.full_path)) {
+
+                    const res = await this.select_personality(pers)
+                    console.log('pers is mounted', res)
+                    if (res && res.status && res.active_personality_id > -1) {
+                        this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
+
+                    } else {
+                        this.$refs.toast.showToast("Error on select personality:\n" + pers.name, 4, false)
+                    }
+
+                } else {
+                    console.log('mounting pers')
+                    this.mountPersonality(pers)
+
+                }
+
+
+                nextTick(() => {
+                    feather.replace()
+
+                })
+
+            }
+
+        },    
+        async select_personality(pers) {
+            if (!pers) { return { 'status': false, 'error': 'no personality - select_personality' } }
+            const id = this.$store.state.config.personalities.findIndex(item => item === pers.full_path)
+
+            const obj = {
+                id: id
+            }
+
+
+            try {
+                const res = await axios.post('/select_personality', obj);
+
+                if (res) {
+
+                    this.$store.dispatch('refreshConfig').then(() => {
+                        this.$store.dispatch('refreshPersonalitiesZoo').then(() => {
+                        this.$store.dispatch('refreshMountedPersonalities');                
+                        });
+                    });
+                    return res.data
+
+                }
+            } catch (error) {
+                console.log(error.message, 'select_personality - settings')
+                return
+            }
+
+        },    
         emitloaded(){
             this.$emit('loaded')
         },

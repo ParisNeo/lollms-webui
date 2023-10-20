@@ -975,6 +975,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     self.discussions_store.index()
                     ASCIIColors.yellow("3- Saving database")
                     self.discussions_store.save_to_json()
+                    if self.config.data_vectorization_visualize_on_vectorization:
+                        self.discussions_store.show_document(show_interactive_form=True)
                     ASCIIColors.yellow("Ready")
                 except Exception as ex:
                     ASCIIColors.error(f"Couldn't vectorize database:{ex}")

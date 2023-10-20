@@ -795,7 +795,24 @@
                                             >
                                             </div>
                                         </td>
-                                        </tr>                                                                                 
+                                        </tr> 
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="data_vectorization_visualize_on_vectorization" class="text-sm font-bold" style="margin-right: 1rem;">show vectorized data:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <input
+                                            type="checkbox"
+                                            id="data_vectorization_visualize_on_vectorization"
+                                            required
+                                            v-model="configFile.data_vectorization_visualize_on_vectorization"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>                                                                                                                         
                                         <tr>
                                         <td style="min-width: 200px;">
                                             <label for="data_vectorization_activate" class="text-sm font-bold" style="margin-right: 1rem;">Activate data Vectorization:</label>
@@ -2555,7 +2572,7 @@ export default {
                 this.$refs.toast.showToast("Loading... please wait", 4, false)
             }
             this.isLoading = true
-            console.log('ppa', pers)
+            console.log('selecting ', pers)
             if (pers) {
 
                 if (pers.selected) {

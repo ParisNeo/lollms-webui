@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 26
+version: 27
 binding_name: null
 model_name: null
 
@@ -13,7 +13,7 @@ port: 9600
 discussion_prompt_separator: "!@>"
 seed: -1
 n_predict: 1024
-ctx_size: 2048
+ctx_size: 4084
 min_n_predict: 256
 temperature: 0.9
 top_k: 50
@@ -58,6 +58,7 @@ audio_silenceTimer: 5000
 
 # Data vectorization
 use_discussions_history: false # Activate vectorizing previous conversations
+data_vectorization_visualize_on_vectorization: false
 use_files: true # Activate using files
 data_vectorization_activate: true # To activate/deactivate data vectorization
 data_vectorization_method: "tfidf_vectorizer" #"model_embedding" or "tfidf_vectorizer"

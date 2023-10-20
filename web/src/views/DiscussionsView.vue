@@ -96,7 +96,8 @@
                     </div>       
                     <button  v-if="!showBrainConfirmation" title="Activate Long term Memory" class="text-2xl hover:text-secondary duration-75 active:scale-90"
                         @click="toggleLTM()">
-                        <img v-if="UseDiscussionHistory" :src="SVGGreenBrain" width="25" height="25">
+                        <img v-if="isLoading" :src="SVGOrangeBrain" width="25" height="25">
+                        <img v-else-if="UseDiscussionHistory" :src="SVGGreenBrain" width="25" height="25">
                         <img v-else :src="SVGRedBrain" width="25" height="25">
                     </button>
                     <div v-if="loading" title="Loading.." class="flex flex-row flex-grow justify-end">
@@ -352,7 +353,9 @@
 </style>
 <script>
 import SVGRedBrain from '@/assets/brain_red.svg';
+import SVGOrangeBrain from '@/assets/brain_orange.svg';
 import SVGGreenBrain from '@/assets/brain_green.svg';
+
 export default {
     
     setup() { },
