@@ -255,7 +255,7 @@ class LoLLMsAPPI(LollmsApplication):
                 model_path = data["path"].replace("\\","/")
                 model_type:str=data["type"]
                 progress = 0
-                installation_dir = self.binding.searchModelParentFolder(model_path.split('/')[-1])
+                installation_dir = self.binding.searchModelParentFolder(model_path.split('/')[-1], model_type)
                 if model_type=="gptq":
                     parts = model_path.split("/")
                     if len(parts)==2:
