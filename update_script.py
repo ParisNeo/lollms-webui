@@ -35,6 +35,8 @@ def run_git_pull():
 def install_requirements():
     try:
         subprocess.check_call(["pip", "install", "--upgrade", "-r", "requirements.txt"])
+        subprocess.check_call(["pip", "install", "--upgrade", "-e", "lollms_core"])
+        subprocess.check_call(["pip", "install", "--upgrade", "-r", "utilities/safe_store"])
     except subprocess.CalledProcessError as e:
         print(f"Error during pip install: {e}")
 

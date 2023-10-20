@@ -14,7 +14,7 @@
 	path = zoos/models_zoo
 	url = https://github.com/ParisNeo/models_zoo.git
 	branch = main
-[submodule "lollms"]
+[submodule "lollms_core"]
 	path = lollms_core
 	url = https://github.com/ParisNeo/lollms.git
 	branch = main
