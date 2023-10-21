@@ -76,20 +76,39 @@ export default {
     const updateMarkdown = () => {
       if (props.markdownText) {
         let tokens = md.parse(props.markdownText, {});
-        markdownItems.value = tokens.map(token => {
-          if (token.type === 'fence') {
-            return {
-              type: 'code',
-              language: escapeHtml(token.info),
-              code: token.content,
-            };
-          } else {
-            return {
-              type: 'html',
-              html: md.renderer.render([token], md.options, {}),
-            };
+        let cumulated = [];
+        markdownItems.value = []
+        for (let i = 0; i < tokens.length; i++) {
+          if (tokens[i].type !== 'fence') {
+            cumulated.push(tokens[i]);
           }
-        });
+          else{
+            if(cumulated.length>0){
+              markdownItems.value.push(
+              {
+                type: 'html',
+                html: md.renderer.render(cumulated, md.options, {}),
+              });
+              cumulated = []
+            }
+            markdownItems.value.push(
+              {
+                type: 'code',
+                language: escapeHtml(tokens[i].info),
+                code: tokens[i].content,
+              }
+            )
+          }
+        }
+        if(cumulated.length>0){
+          markdownItems.value.push(
+          {
+            type: 'html',
+            html: md.renderer.render(cumulated, md.options, {}),
+          });
+          cumulated = []
+        }
+
       } else {
         markdownItems.value = [];
       }
@@ -101,6 +120,7 @@ export default {
     onMounted(updateMarkdown);
     return { markdownItems };
   },
+
 };
 </script>
 <style>

@@ -3169,7 +3169,7 @@ export default {
 
                 this.api_get_req("list_extensions_categories").then((cats)=>{
                     console.log("cats",cats)
-                    this.persCatgArr = cats
+                    this.extCatgArr = cats
                     this.extensionsFiltererd = this.$store.state.extensionsZoo.filter((item) => item.category === this.extension_category)
                     this.extensionsFiltererd.sort()
 
