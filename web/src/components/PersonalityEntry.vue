@@ -29,6 +29,13 @@
 
             {{ personality.author }}
           </div>
+          <div class="flex items-center">
+            <i data-feather="git-commit" class="w-5 m-1"></i>
+            <b>Version:&nbsp;</b>
+
+            {{ personality.version }}
+          </div>
+          
           <div v-if="personality.languages && select_language" class="flex items-center">
             <i data-feather="globe" class="w-5 m-1"></i>
             <b>Languages:&nbsp;</b>

@@ -96,7 +96,7 @@
                     </div>       
                     <button  v-if="!showBrainConfirmation" title="Activate Long term Memory" class="text-2xl hover:text-secondary duration-75 active:scale-90"
                         @click="toggleLTM()">
-                        <img v-if="isLoading" :src="SVGOrangeBrain" width="25" height="25" class="animate-pulse" title="Applying config, please stand by...">
+                        <img v-if="loading" :src="SVGOrangeBrain" width="25" height="25" class="animate-pulse" title="Applying config, please stand by...">
                         <img v-else-if="UseDiscussionHistory" :src="SVGGreenBrain" width="25" height="25">
                         <img v-else :src="SVGRedBrain" width="25" height="25">
                     </button>
@@ -451,9 +451,9 @@ export default {
             this.applyConfiguration();
         },
         applyConfiguration() {
-            this.isLoading = true;
+            this.loading = true;
             axios.post('/apply_settings', {"config":this.$store.state.config}).then((res) => {
-                this.isLoading = false;
+                this.loading = false;
                 //console.log('apply-res',res)
                 if (res.data.status) {
                     this.$refs.toast.showToast("Configuration changed successfully.", 4, true)
@@ -465,7 +465,7 @@ export default {
                     feather.replace()
                 })
             }).catch((err)=>{
-                this.isLoading = false;
+                this.loading = false;
                 this.$refs.toast.showToast("Configuration change failed.", 4, false)
             })
         },
