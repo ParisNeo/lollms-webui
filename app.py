@@ -581,8 +581,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         if language=="python":
             return self.execute_python(code, discussion_id, message_id)
-        elif language=="bash":
+        elif language in ["bash","shell","cmd","powershell"]:
             return self.execute_bash(code, discussion_id, message_id)
+        return {"output": "Unsupported language", "execution_time": 0}
         
     def copy_files(self, src, dest):
         for item in os.listdir(src):
