@@ -1262,16 +1262,14 @@
 
                             <div class="overflow-y-auto p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4 overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
                                 :class="mzl_collapsed ? '' : 'max-h-96'">
-                                <TransitionGroup name="list">
-                                    <model-entry ref="modelZoo" v-for="(model, index) in show_only_installed_models?filter_installed(modelsFiltered):modelsFiltered"
-                                        :key="'index-' + index + '-' + model.name" 
-                                        :model="model"
-                                        :is-installed="model.isInstalled" :on-install="onInstall"
-                                        :on-uninstall="onUninstall" :on-selected="onSelected"
-                                        :selected="model.name === configFile.model_name"
-                                        :model_type="model.model_type" :on-copy="onCopy" :on-copy-link="onCopyLink"
-                                        :on-cancel-install="onCancelInstall" />
-                                </TransitionGroup>
+                                <model-entry ref="modelZoo" v-for="(model, index) in show_only_installed_models?filter_installed(modelsFiltered):modelsFiltered"
+                                    :key="'index-' + index + '-' + model.name" 
+                                    :model="model"
+                                    :is-installed="model.isInstalled" :on-install="onInstall"
+                                    :on-uninstall="onUninstall" :on-selected="onSelected"
+                                    :selected="model.name === configFile.model_name"
+                                    :model_type="model.model_type" :on-copy="onCopy" :on-copy-link="onCopyLink"
+                                    :on-cancel-install="onCancelInstall" />
                             </div>
                         </div>
 
@@ -1285,7 +1283,6 @@
 
                             <div class="overflow-y-auto p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4 overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
                                 :class="mzl_collapsed ? '' : 'max-h-96'">
-                                <TransitionGroup name="list">
                                     <model-entry  ref="modelZoo" v-for="(model, index) in show_only_installed_models?filter_installed(models):models"
                                         :key="'index-' + index + '-' + model.name" 
                                         :model="model"
@@ -1294,7 +1291,6 @@
                                         :selected="model.name === configFile.model_name"
                                         :model_type="model.model_type" :on-copy="onCopy" :on-copy-link="onCopyLink"
                                         :on-cancel-install="onCancelInstall" />
-                                </TransitionGroup>
                             </div>
                         </div>
                     </div>
@@ -2673,9 +2669,16 @@ export default {
                             if(res.status){
                                 this.refreshModelsZoo().then(()=>{
                                     this.$refs.toast.showToast("Selected model:\n" + model_object.name, 4, true)
+                                    nextTick(() => {
+                                        feather.replace()
+                                    })
+
                                 })
                             }else{
                                 this.$refs.toast.showToast("Couldn't select model:\n" + model_object.name, 4, false)
+                                nextTick(() => {
+                                    feather.replace()
+                                })
                             }
                             this.settingsChanged = true
                             this.isModelSelected = true
@@ -3333,15 +3336,9 @@ export default {
                 console.log("updating model")
                 // If binding changes then reset model
                 this.update_model(null).then(()=>{
-                    console.log("updated model")
-                    this.configFile.model_name = null
-                    this.$store.dispatch('refreshConfig');
-                    this.refreshModelsZoo().then(resp=>{
-                        this.$store.dispatch('refreshModels');
-                        console.log("Models refreshed")
-                    });
-                    this.$forceUpdate();
-                    this.$refs.toast.showToast("Binding changed.", 4, true)
+                    setTimeout(()=>{
+                        location.reload();
+                    },1000)
                 });
 
 
@@ -3358,6 +3355,11 @@ export default {
             this.isLoading = true
             let res = await this.update_setting('model_name', value)
             this.isLoading = false
+            nextTick(() => {
+                feather.replace()
+
+            })
+
             return res
         },
         applyConfiguration() {

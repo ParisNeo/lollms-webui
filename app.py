@@ -475,6 +475,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.add_endpoint(
             "/execute_code", "execute_code", self.execute_code, methods=["POST"]
         )
+
+        self.add_endpoint(
+            "/open_code_folder", "open_code_folder", self.open_code_folder, methods=["POST"]
+        )
+        
         
 
     def execute_python(self, code, discussion_id, message_id):
