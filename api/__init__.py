@@ -1324,6 +1324,21 @@ class LoLLMsAPPI(LollmsApplication):
                         ):
         self.connections[client_id]["current_discussion"].current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         mtdt = json.dumps(metadata, indent=4) if metadata is not None and type(metadata)== list else metadata
+        if self.nb_received_tokens==1 and msg_type==MSG_TYPE.MSG_TYPE_CHUNK:
+            self.socketio.emit('update_message', {
+                                            "sender": self.personality.name,
+                                            'id':self.connections[client_id]["current_discussion"].current_message.id, 
+                                            'content': "✍ warming up ...",# self.connections[client_id]["generated_text"],
+                                            'ui': ui,
+                                            'discussion_id':self.connections[client_id]["current_discussion"].discussion_id,
+                                            'message_type': MSG_TYPE.MSG_TYPE_STEP_END.value,
+                                            'finished_generating_at': self.connections[client_id]["current_discussion"].current_message.finished_generating_at,
+                                            'parameters':parameters,
+                                            'metadata':metadata
+                                        }, room=client_id
+                                )
+
+
         self.socketio.emit('update_message', {
                                         "sender": self.personality.name,
                                         'id':self.connections[client_id]["current_discussion"].current_message.id, 
@@ -1432,7 +1447,7 @@ class LoLLMsAPPI(LollmsApplication):
                 if self.connections[client_id]["continuing"] and self.connections[client_id]["first_chunk"]:
                     self.update_message(client_id, self.connections[client_id]["generated_text"], parameters, metadata)
                 else:
-                    self.update_message(client_id, chunk, parameters, metadata)
+                    self.update_message(client_id, chunk, parameters, metadata, msg_type=MSG_TYPE.MSG_TYPE_CHUNK)
                 self.connections[client_id]["first_chunk"]=False
                 # if stop generation is detected then stop
                 if not self.cancel_gen:
@@ -1536,7 +1551,8 @@ class LoLLMsAPPI(LollmsApplication):
                 self.connections[client_id]["current_discussion"].load_message(message_id)
                 self.connections[client_id]["generated_text"] = message.content
             else:
-                self.new_message(client_id, self.personality.name, "✍ warming up ...")
+                self.new_message(client_id, self.personality.name, "")
+                self.update_message(client_id, "✍ warming up ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_START)
             self.socketio.sleep(0.01)
 
             # prepare query and reception

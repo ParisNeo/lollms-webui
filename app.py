@@ -584,7 +584,24 @@ class LoLLMsWebUI(LoLLMsAPPI):
         elif language in ["bash","shell","cmd","powershell"]:
             return self.execute_bash(code, discussion_id, message_id)
         return {"output": "Unsupported language", "execution_time": 0}
+
+    def open_code_folder(self):
+        """Executes Python code and returns the output."""
         
+        data = request.get_json()
+        code = data["code"]
+        discussion_id = data.get("discussion_id","unknown_discussion")
+        message_id = data.get("message_id","unknown_message")
+        language = data.get("language","python")
+        
+
+        ASCIIColors.info("Opening folder:")
+        # Create a temporary file.
+        root_folder = self.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
+        root_folder.mkdir(parents=True,exist_ok=True)
+
+        return {"output": "OK", "execution_time": 0}
+
     def copy_files(self, src, dest):
         for item in os.listdir(src):
             src_file = os.path.join(src, item)

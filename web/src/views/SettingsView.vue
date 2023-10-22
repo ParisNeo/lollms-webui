@@ -2142,7 +2142,7 @@ export default {
             // Loading text
             loading_text:"",
             // Current personality category
-            extension_category:"ai_sensors",
+            extension_category:"bound_extensions",
             personality_category:null,
             // install custom model
             addModelDialogVisibility: false,
