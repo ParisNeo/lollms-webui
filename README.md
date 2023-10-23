@@ -73,6 +73,10 @@ conda create --name lollms python=3.10
 ```bash
 conda activate lollms
 ```
+- If you want to use an nVidia GPU, install cuda toolkit 11.8
+```bash
+conda install -c "nvidia/label/cuda-11.8.0" cuda-toolkit
+```
 - Clone the project
 ```bash
 git clone https://github.com/ParisNeo/lollms-webui.git
@@ -80,6 +84,26 @@ git clone https://github.com/ParisNeo/lollms-webui.git
 - enter the lollms-webui folder
 ```bash
 cd lollms-webui
+```
+- download submodules (lollms_core, zoos and safe_store library)
+```bash
+git submodule init
+git submodule update
+cd zoos/bindings_zoo
+git checkout main
+cd ../personalities_zoo
+git checkout main
+cd ../extensions_zoo
+git checkout main
+cd ../models_zoo
+git checkout main
+cd ../../lollms_core
+git checkout main
+pip install -e .
+cd ../../utilities/safe_store
+git checkout main
+pip install -e .
+cd ../..
 ```
 - install dependancies
 ```bash
