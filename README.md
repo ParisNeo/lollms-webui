@@ -120,6 +120,7 @@ Make sure to add it to your path so that you can run it easily from a terminal.
 If you don't have git installed, please install it:
 [Install git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 Make sure to add it to your path so that you can run it easily from a terminal.
+- To use your GPU, you may need to install [nVidia cuda toolkit](https://developer.nvidia.com/cuda-toolkit)
 - Run a terminal and install pip:
 ```bash
 python -m ensurepip --upgrade
@@ -144,6 +145,26 @@ python -m venv ./env
 - On windows: `./env/Scripts/activate`
 - On linux: `./env/bin/activate`
 - On macos: `./env/bin/activate`
+- download submodules (lollms_core, zoos and safe_store library)
+```bash
+git submodule init
+git submodule update
+cd zoos/bindings_zoo
+git checkout main
+cd ../personalities_zoo
+git checkout main
+cd ../extensions_zoo
+git checkout main
+cd ../models_zoo
+git checkout main
+cd ../../lollms_core
+git checkout main
+pip install -e .
+cd ../../utilities/safe_store
+git checkout main
+pip install -e .
+cd ../..
+```
 - install dependancies
 ```bash
 pip install --upgrade -r requirements.txt
