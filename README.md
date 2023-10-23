@@ -17,7 +17,7 @@
 [![Downloads](https://static.pepy.tech/badge/lollms/week)](https://pepy.tech/project/lollms)
 
 ## LoLLMs webui download statistics
-[![Clones](https://img.shields.io/github/traffic/clones/ParisNeo/lollms-webui?style=flat-square)](https://github.com/ParisNeo/lollms-webui/graphs/traffic)
+[![Downloads](https://img.shields.io/github/downloads/ParisNeo/lollms-webui/total?style=flat-square)](https://github.com/ParisNeo/lollms-webui/releases)
 [![Downloads](https://img.shields.io/github/downloads/ParisNeo/lollms-webui/latest/total?style=flat-square)](https://github.com/ParisNeo/lollms-webui/releases)
 
 
