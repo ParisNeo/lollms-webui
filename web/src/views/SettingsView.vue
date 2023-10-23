@@ -110,135 +110,8 @@
                                         <div class="flex gap-2 items-center " v-for="item in vramUsage.gpus">
 
                                             <!-- GPU IMAGE  -->
-                                            <svg :title="item.gpu_model" aria-hidden="true"
-                                                class="w-10 h-10  fill-secondary" viewBox="0 -3 82 66" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M 5.9133057,14.000286 H 70.974329 a 8.9999999,8.9999999 0 0 1 8.999987,8.999998 V 47.889121 H 5.9133057 Z"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1116" />
-                                                <path d="m 5.9133057,28.634282 h -2.244251 v -9.367697 h 2.244251 z"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1118" />
-                                                <path d="M 5.9133057,42.648417 H 3.6690547 V 33.28072 h 2.244251 z"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1120" />
-                                                <path d="m 5.9133057,47.889121 v 4.42369"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1122" />
-                                                <path d="M 5.9133057,14.000286 H 2.3482707"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1124" />
-                                                <path d="M 2.3482707,14.000286 V 10.006515"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1126" />
-                                                <path
-                                                    d="m 74.31472,30.942798 a 11.594069,11.594069 0 0 0 -23.188136,0 11.594069,11.594069 0 0 0 23.188136,0 z"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1128" />
-                                                <path d="m 54.568046,22.699178 a 8.1531184,8.1531184 0 0 0 8.154326,8.24362"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1130" />
-                                                <path
-                                                    d="M 73.935201,28.000658 A 8.1531184,8.1531184 0 0 0 62.721525,30.944293"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1132" />
-                                                <path
-                                                    d="m 70.873258,39.186418 a 8.1531184,8.1531184 0 0 0 -8.152606,-8.24362"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1134" />
-                                                <path
-                                                    d="M 59.657782,42.124981 A 8.1531184,8.1531184 0 0 0 62.719435,30.940687"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1136" />
-                                                <path
-                                                    d="M 51.50515,33.881361 A 8.1531184,8.1531184 0 0 0 62.720652,30.942798"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1138" />
-                                                <path
-                                                    d="M 65.783521,19.760615 A 8.1531184,8.1531184 0 0 0 62.721869,30.944909"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1140" />
-                                                <path
-                                                    d="m 62.720652,22.789678 a 8.1531184,8.1531184 0 0 0 -3.06287,-3.029063"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1142" />
-                                                <path
-                                                    d="m 69.782328,26.864746 a 8.1531184,8.1531184 0 0 0 1.09093,-4.165568"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1144" />
-                                                <path
-                                                    d="m 69.781455,35.019358 a 8.1531184,8.1531184 0 0 0 4.154699,-1.137997"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1146" />
-                                                <path d="m 62.722372,39.09293 a 8.1531184,8.1531184 0 0 0 3.064668,3.031085"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1148" />
-                                                <path
-                                                    d="m 55.659849,35.019358 a 8.1531184,8.1531184 0 0 0 -1.091803,4.16706"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1150" />
-                                                <path
-                                                    d="M 55.659849,26.866238 A 8.1531184,8.1531184 0 0 0 51.50515,28.004235"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1152" />
-                                                <path d="m 22.744016,47.889121 h 38.934945 v 4.42369 H 22.744016 Z"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1154" />
-                                                <path d="m 20.54627,47.889121 h -4.395478 v 4.42369 h 4.395478 z"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1156" />
-                                                <path
-                                                    d="m 40.205007,30.942798 a 11.594071,11.594071 0 0 0 -23.188141,0 11.594071,11.594071 0 0 0 23.188141,0 z"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1158" />
-                                                <path d="m 20.458317,22.699178 a 8.1531184,8.1531184 0 0 0 8.154342,8.24362"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1160" />
-                                                <path
-                                                    d="m 35.672615,26.864746 a 8.1531184,8.1531184 0 0 0 1.09093,-4.165568"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1162" />
-                                                <path
-                                                    d="M 39.825489,28.000658 A 8.1531184,8.1531184 0 0 0 28.611786,30.944293"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1164" />
-                                                <path d="m 28.612659,39.09293 a 8.1531184,8.1531184 0 0 0 3.064669,3.031085"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1166" />
-                                                <path
-                                                    d="m 36.763545,39.186418 a 8.1531184,8.1531184 0 0 0 -8.152606,-8.24362"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1168" />
-                                                <path
-                                                    d="m 21.550126,35.019358 a 8.1531184,8.1531184 0 0 0 -1.091809,4.16706"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1170" />
-                                                <path
-                                                    d="M 25.54807,42.124981 A 8.1531184,8.1531184 0 0 0 28.609722,30.940687"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1172" />
-                                                <path
-                                                    d="m 21.550126,26.866238 a 8.1531184,8.1531184 0 0 0 -4.154684,1.137997"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1174" />
-                                                <path
-                                                    d="M 17.395442,33.881361 A 8.1531184,8.1531184 0 0 0 28.610939,30.942798"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1176" />
-                                                <path
-                                                    d="M 28.610939,22.789678 A 8.1531184,8.1531184 0 0 0 25.54807,19.760615"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1178" />
-                                                <path
-                                                    d="M 31.673809,19.760615 A 8.1531184,8.1531184 0 0 0 28.612156,30.944909"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1180" />
-                                                <path
-                                                    d="m 35.671742,35.019358 a 8.1531184,8.1531184 0 0 0 4.154673,-1.137997"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1182" />
-                                            </svg>
+                                            <img :src="SVGGPU"  width="25" height="25">
+
                                             <h3 class="font-bold font-large text-lg">
                                                 <div>{{ computedFileSize(item.used_vram) }} / {{ computedFileSize(item.total_vram) }} ({{ item.percentage }}%)
                                                 </div>
@@ -249,135 +122,7 @@
                                         <div class="flex gap-2 items-center ">
 
                                             <!-- GPU IMAGE  -->
-                                            <svg  aria-hidden="true"
-                                                class="w-10 h-10  fill-secondary" viewBox="0 -3 82 66" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M 5.9133057,14.000286 H 70.974329 a 8.9999999,8.9999999 0 0 1 8.999987,8.999998 V 47.889121 H 5.9133057 Z"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1116" />
-                                                <path d="m 5.9133057,28.634282 h -2.244251 v -9.367697 h 2.244251 z"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1118" />
-                                                <path d="M 5.9133057,42.648417 H 3.6690547 V 33.28072 h 2.244251 z"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1120" />
-                                                <path d="m 5.9133057,47.889121 v 4.42369"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1122" />
-                                                <path d="M 5.9133057,14.000286 H 2.3482707"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1124" />
-                                                <path d="M 2.3482707,14.000286 V 10.006515"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1126" />
-                                                <path
-                                                    d="m 74.31472,30.942798 a 11.594069,11.594069 0 0 0 -23.188136,0 11.594069,11.594069 0 0 0 23.188136,0 z"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1128" />
-                                                <path d="m 54.568046,22.699178 a 8.1531184,8.1531184 0 0 0 8.154326,8.24362"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1130" />
-                                                <path
-                                                    d="M 73.935201,28.000658 A 8.1531184,8.1531184 0 0 0 62.721525,30.944293"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1132" />
-                                                <path
-                                                    d="m 70.873258,39.186418 a 8.1531184,8.1531184 0 0 0 -8.152606,-8.24362"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1134" />
-                                                <path
-                                                    d="M 59.657782,42.124981 A 8.1531184,8.1531184 0 0 0 62.719435,30.940687"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1136" />
-                                                <path
-                                                    d="M 51.50515,33.881361 A 8.1531184,8.1531184 0 0 0 62.720652,30.942798"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1138" />
-                                                <path
-                                                    d="M 65.783521,19.760615 A 8.1531184,8.1531184 0 0 0 62.721869,30.944909"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1140" />
-                                                <path
-                                                    d="m 62.720652,22.789678 a 8.1531184,8.1531184 0 0 0 -3.06287,-3.029063"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1142" />
-                                                <path
-                                                    d="m 69.782328,26.864746 a 8.1531184,8.1531184 0 0 0 1.09093,-4.165568"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1144" />
-                                                <path
-                                                    d="m 69.781455,35.019358 a 8.1531184,8.1531184 0 0 0 4.154699,-1.137997"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1146" />
-                                                <path d="m 62.722372,39.09293 a 8.1531184,8.1531184 0 0 0 3.064668,3.031085"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1148" />
-                                                <path
-                                                    d="m 55.659849,35.019358 a 8.1531184,8.1531184 0 0 0 -1.091803,4.16706"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1150" />
-                                                <path
-                                                    d="M 55.659849,26.866238 A 8.1531184,8.1531184 0 0 0 51.50515,28.004235"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1152" />
-                                                <path d="m 22.744016,47.889121 h 38.934945 v 4.42369 H 22.744016 Z"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1154" />
-                                                <path d="m 20.54627,47.889121 h -4.395478 v 4.42369 h 4.395478 z"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1156" />
-                                                <path
-                                                    d="m 40.205007,30.942798 a 11.594071,11.594071 0 0 0 -23.188141,0 11.594071,11.594071 0 0 0 23.188141,0 z"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1158" />
-                                                <path d="m 20.458317,22.699178 a 8.1531184,8.1531184 0 0 0 8.154342,8.24362"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1160" />
-                                                <path
-                                                    d="m 35.672615,26.864746 a 8.1531184,8.1531184 0 0 0 1.09093,-4.165568"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1162" />
-                                                <path
-                                                    d="M 39.825489,28.000658 A 8.1531184,8.1531184 0 0 0 28.611786,30.944293"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1164" />
-                                                <path d="m 28.612659,39.09293 a 8.1531184,8.1531184 0 0 0 3.064669,3.031085"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1166" />
-                                                <path
-                                                    d="m 36.763545,39.186418 a 8.1531184,8.1531184 0 0 0 -8.152606,-8.24362"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1168" />
-                                                <path
-                                                    d="m 21.550126,35.019358 a 8.1531184,8.1531184 0 0 0 -1.091809,4.16706"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1170" />
-                                                <path
-                                                    d="M 25.54807,42.124981 A 8.1531184,8.1531184 0 0 0 28.609722,30.940687"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1172" />
-                                                <path
-                                                    d="m 21.550126,26.866238 a 8.1531184,8.1531184 0 0 0 -4.154684,1.137997"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1174" />
-                                                <path
-                                                    d="M 17.395442,33.881361 A 8.1531184,8.1531184 0 0 0 28.610939,30.942798"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1176" />
-                                                <path
-                                                    d="M 28.610939,22.789678 A 8.1531184,8.1531184 0 0 0 25.54807,19.760615"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1178" />
-                                                <path
-                                                    d="M 31.673809,19.760615 A 8.1531184,8.1531184 0 0 0 28.612156,30.944909"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1180" />
-                                                <path
-                                                    d="m 35.671742,35.019358 a 8.1531184,8.1531184 0 0 0 4.154673,-1.137997"
-                                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1"
-                                                    id="path1182" />
-                                            </svg>
+                                            <img :src="SVGGPU"  width="25" height="25">
                                             <h3 class="font-bold font-large text-lg">
                                                 <div> {{ vramUsage.gpus.length }}x
                                                 </div>
@@ -444,80 +189,8 @@
                     <div class="mb-2" v-for="item in vramUsage.gpus">
                         <label class="flex items-center gap-1 ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             <!-- GPU IMAGE  -->
-                            <svg aria-hidden="true" class="w-10 h-10 -my-5 fill-secondary" viewBox="0 -3 82 66" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M 5.9133057,14.000286 H 70.974329 a 8.9999999,8.9999999 0 0 1 8.999987,8.999998 V 47.889121 H 5.9133057 Z"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1116" />
-                                <path d="m 5.9133057,28.634282 h -2.244251 v -9.367697 h 2.244251 z"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1118" />
-                                <path d="M 5.9133057,42.648417 H 3.6690547 V 33.28072 h 2.244251 z"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1120" />
-                                <path d="m 5.9133057,47.889121 v 4.42369"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1122" />
-                                <path d="M 5.9133057,14.000286 H 2.3482707"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1124" />
-                                <path d="M 2.3482707,14.000286 V 10.006515"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1126" />
-                                <path
-                                    d="m 74.31472,30.942798 a 11.594069,11.594069 0 0 0 -23.188136,0 11.594069,11.594069 0 0 0 23.188136,0 z"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1128" />
-                                <path d="m 54.568046,22.699178 a 8.1531184,8.1531184 0 0 0 8.154326,8.24362"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1130" />
-                                <path d="M 73.935201,28.000658 A 8.1531184,8.1531184 0 0 0 62.721525,30.944293"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1132" />
-                                <path d="m 70.873258,39.186418 a 8.1531184,8.1531184 0 0 0 -8.152606,-8.24362"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1134" />
-                                <path d="M 59.657782,42.124981 A 8.1531184,8.1531184 0 0 0 62.719435,30.940687"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1136" />
-                                <path d="M 51.50515,33.881361 A 8.1531184,8.1531184 0 0 0 62.720652,30.942798"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1138" />
-                                <path d="M 65.783521,19.760615 A 8.1531184,8.1531184 0 0 0 62.721869,30.944909"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1140" />
-                                <path d="m 62.720652,22.789678 a 8.1531184,8.1531184 0 0 0 -3.06287,-3.029063"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1142" />
-                                <path d="m 69.782328,26.864746 a 8.1531184,8.1531184 0 0 0 1.09093,-4.165568"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1144" />
-                                <path d="m 69.781455,35.019358 a 8.1531184,8.1531184 0 0 0 4.154699,-1.137997"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1146" />
-                                <path d="m 62.722372,39.09293 a 8.1531184,8.1531184 0 0 0 3.064668,3.031085"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1148" />
-                                <path d="m 55.659849,35.019358 a 8.1531184,8.1531184 0 0 0 -1.091803,4.16706"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1150" />
-                                <path d="M 55.659849,26.866238 A 8.1531184,8.1531184 0 0 0 51.50515,28.004235"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1152" />
-                                <path d="m 22.744016,47.889121 h 38.934945 v 4.42369 H 22.744016 Z"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1154" />
-                                <path d="m 20.54627,47.889121 h -4.395478 v 4.42369 h 4.395478 z"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1156" />
-                                <path
-                                    d="m 40.205007,30.942798 a 11.594071,11.594071 0 0 0 -23.188141,0 11.594071,11.594071 0 0 0 23.188141,0 z"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1158" />
-                                <path d="m 20.458317,22.699178 a 8.1531184,8.1531184 0 0 0 8.154342,8.24362"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1160" />
-                                <path d="m 35.672615,26.864746 a 8.1531184,8.1531184 0 0 0 1.09093,-4.165568"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1162" />
-                                <path d="M 39.825489,28.000658 A 8.1531184,8.1531184 0 0 0 28.611786,30.944293"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1164" />
-                                <path d="m 28.612659,39.09293 a 8.1531184,8.1531184 0 0 0 3.064669,3.031085"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1166" />
-                                <path d="m 36.763545,39.186418 a 8.1531184,8.1531184 0 0 0 -8.152606,-8.24362"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1168" />
-                                <path d="m 21.550126,35.019358 a 8.1531184,8.1531184 0 0 0 -1.091809,4.16706"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1170" />
-                                <path d="M 25.54807,42.124981 A 8.1531184,8.1531184 0 0 0 28.609722,30.940687"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1172" />
-                                <path d="m 21.550126,26.866238 a 8.1531184,8.1531184 0 0 0 -4.154684,1.137997"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1174" />
-                                <path d="M 17.395442,33.881361 A 8.1531184,8.1531184 0 0 0 28.610939,30.942798"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1176" />
-                                <path d="M 28.610939,22.789678 A 8.1531184,8.1531184 0 0 0 25.54807,19.760615"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1178" />
-                                <path d="M 31.673809,19.760615 A 8.1531184,8.1531184 0 0 0 28.612156,30.944909"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1180" />
-                                <path d="m 35.671742,35.019358 a 8.1531184,8.1531184 0 0 0 4.154673,-1.137997"
-                                    style="fill:none;stroke:currentColor;stroke-width:2.5;stroke-opacity:1" id="path1182" />
-                            </svg>
+                            <img :src="SVGGPU"  width="25" height="25">
+
                             GPU usage:
                         </label>
                         <div class="flex flex-col mx-2">
@@ -1176,7 +849,7 @@
                                 <div class="flex gap-1 items-center">
                                     <img :src="imgModel" class="w-8 h-8 rounded-lg object-fill">
                                     <h3 class="font-bold font-large text-lg line-clamp-1">
-                                        {{ model_name }}
+                                        {{ configFile.model_name }}
                                     </h3>
                                 </div>
                             </div>
@@ -1276,14 +949,14 @@
                     </div>
                     <div v-if="!searchModel">
 
-                        <div v-if="models && models.length > 0" class="mb-2">
+                        <div v-if="models_zoo && models_zoo.length > 0" class="mb-2">
                             <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                Models: ({{ models.length }})
+                                Models: ({{ models_zoo.length }})
                             </label>
 
                             <div class="overflow-y-auto p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4 overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
                                 :class="mzl_collapsed ? '' : 'max-h-96'">
-                                    <model-entry  ref="modelZoo" v-for="(model, index) in show_only_installed_models?filter_installed(models):models"
+                                    <model-entry  ref="modelZoo" v-for="(model, index) in show_only_installed_models?filter_installed(models_zoo):models_zoo"
                                         :key="'index-' + index + '-' + model.name" 
                                         :model="model"
                                         :is-installed="model.isInstalled" :on-install="onInstall"
@@ -2093,6 +1766,8 @@ import Card from "@/components/Card.vue"
 import RadioOptions from '../components/RadioOptions.vue';
 import ExtensionEntry from "@/components/ExtensionEntry.vue"
 import {refreshHardwareUsage} from "../main"
+import SVGGPU from '@/assets/gpu.svg';
+
 
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_LOLLMS_API_BASEURL
@@ -2116,6 +1791,8 @@ export default {
     data() {
 
         return {
+            imgModel: defaultModelImgPlaceholder,
+            SVGGPU:SVGGPU,
             models_zoo:[],
             // Sort options
             sortOptions: [
@@ -2202,15 +1879,10 @@ export default {
     methods: {
         async modelsZooToggleCollapse(){
             this.mzc_collapsed = !this.mzc_collapsed
-            if (!this.mzc_collapsed){
-                this.is_loading_zoo = true
-                await this.refreshModelsZoo();
-                this.is_loading_zoo = false;
-            }
         }, 
         async selectSortOption(index){
             this.$store.state.sort_type=index
-            this.modelsFiltered = this.models
+            this.modelsFiltered = this.models_zoo
             console.log(`Selected sorting:${index}`)
         },
         handleRadioSelected(index){
@@ -2280,8 +1952,8 @@ export default {
                     model_object.start_time = response.start_time
                     model_object.installing = true
                     if (model_object.progress == 100) {
-                        const index = this.models.findIndex((model) => model.name === model_object.model.name);
-                        this.models[index].isInstalled = true;
+                        const index = this.models_zoo.findIndex((model) => model.name === model_object.model.name);
+                        this.models_zoo[index].isInstalled = true;
                         this.showProgress = false;
                         model_object.installing = false
 
@@ -2352,8 +2024,7 @@ export default {
             this.loading_text = text
 
         },
-        async constructor() {
-            console.log("Constructing")
+        async load_everything() {
             this.isLoading = true
             nextTick(() => {
                 feather.replace()
@@ -2391,7 +2062,7 @@ export default {
             // this.persCatgArr.sort()
             // this.persArr.sort()
             console.log("models_zoo:")
-            console.log(this.models)
+            console.log(this.models_zoo)
 
             
             //await this.getPersonalitiesArr()
@@ -2401,7 +2072,7 @@ export default {
             //mountedPersArr
             console.log("Extensions zoo")
             console.log(this.$store.state.extensionsZoo)
-            this.modelsFiltered = this.models
+            this.modelsFiltered = this.models_zoo
             this.extension_category = this.configFile.extension_category
             this.extensionsFiltererd = this.$store.state.extensionsZoo.filter((item) => item.category === this.configFile.extension_category )
             console.log("Extensions filtered")
@@ -2415,7 +2086,6 @@ export default {
             this.isMounted = true
 
             this.extension_category = this.configFile.extension_category
-
 
         },
         async open_mzl(){
@@ -2445,7 +2115,7 @@ export default {
                 // FInd model
                 if (this.$refs.modelZoo) {
                     const index = this.$refs.modelZoo.findIndex(item => item.model.name == response.model_name && this.configFile.binding_name == response.binding_folder)
-                    const modelEntry = this.models[index]
+                    const modelEntry = this.models_zoo[index]
 
                     if (modelEntry) {
                         // Model found
@@ -2466,7 +2136,7 @@ export default {
 
                 if (this.$refs.modelZoo) {
                     const index = this.$refs.modelZoo.findIndex(item => item.model.name == response.model_name && this.configFile.binding_name == response.binding_folder)
-                    const modelEntry = this.models[index]
+                    const modelEntry = this.models_zoo[index]
 
                     if (modelEntry) {
                         // Model found
@@ -2486,7 +2156,7 @@ export default {
                 // Installation failed or encountered an error
                 if (this.$refs.modelZoo) {
                     const index = this.$refs.modelZoo.findIndex(item => item.model.name == response.model_name && this.configFile.binding_name == response.binding_folder)
-                    const modelEntry = this.models[index]
+                    const modelEntry = this.models_zoo[index]
 
                     if (modelEntry) {
                         // Model found
@@ -2668,11 +2338,11 @@ export default {
                             this.configFile.model_name = model_object.model.name
                             if(res.status){
                                 this.refreshModelsZoo().then(()=>{
+                                    this.updateModelsZoo();
                                     this.$refs.toast.showToast("Selected model:\n" + model_object.name, 4, true)
                                     nextTick(() => {
                                         feather.replace()
                                     })
-
                                 })
                             }else{
                                 this.$refs.toast.showToast("Couldn't select model:\n" + model_object.name, 4, false)
@@ -2743,10 +2413,7 @@ export default {
             axios.post("/add_reference_to_local_model",{"path": this.reference_path}).then((resp)=>{
                 if(resp.status){
                     this.$refs.toast.showToast("Reference created", 4, true)
-                    this.refreshModelsZoo().then(resp=>{
-                        this.$store.dispatch('refreshModels');
-                        console.log("Models refreshed")
-                    });
+                    this.refreshModelsZoo().then(()=>{this.updateModelsZoo();})
                 }
                 else{
                     this.$refs.toast.showToast("Couldn't create reference", 4, false)
@@ -2881,12 +2548,9 @@ export default {
                             model_object.uninstalling = false;
                             socket.off('install_progress', progressListener);
                             this.showProgress = false;
-                            this.refreshModelsZoo().then(resp=>{
-                                this.$store.dispatch('refreshModels');
-                                console.log("Models refreshed")
-                            });
+                            this.refreshModelsZoo().then(()=>{this.updateModelsZoo();})
                             
-                            this.modelsFiltered = this.models
+                            this.modelsFiltered = this.models_zoo
                             this.$refs.toast.showToast("Model:\n" + model_object.model.name + "\nwas uninstalled!", 4, true)
                             this.$store.dispatch('refreshDiskUsage');
                         } else {
@@ -3221,9 +2885,25 @@ export default {
 
         },
         async refreshModelsZoo() {
-            const response = await axios.get('/get_available_models');
-            let models_zoo = response.data
-            models_zoo = models_zoo.filter(model => model.variants &&  model.variants.length>0);
+            await this.$store.dispatch('refreshModelsZoo');
+            console.log("ModelsZoo refreshed")
+            await this.$store.dispatch('refreshModels');
+            console.log("Models refreshed")
+        },
+        async updateModelsZoo(){
+            let models_zoo = this.$store.state.modelsZoo
+            if(models_zoo.length==0)
+                return
+            
+            console.log("loading models_zoo", models_zoo)
+            let index = models_zoo.findIndex(item => item.name == this.configFile.model_name)
+            if (index>0){
+                this.imgModel = models_zoo[index].icon
+            }
+            else{
+                this.imgModel = defaultModelImgPlaceholder
+            }
+
             console.log(`REFRESHING models using sorting ${this.sort_type}`)
             if(models_zoo.length>1){
             if(this.sort_type==0){ //  Sort by date
@@ -3252,7 +2932,7 @@ export default {
             else{
             console.log("No sorting needed");
             }
-
+            
 
             console.log("models_zoo")
 
@@ -3270,7 +2950,7 @@ export default {
             console.log("models_zoo")
             console.log(this.models_zoo)
 
-            
+
             // Returns array of model filenames which are = to name of models zoo entry
             for (let i = 0; i < this.$store.state.modelsArr.length; i++) {
                 const customModel = this.$store.state.modelsArr[i]
@@ -3314,16 +2994,16 @@ export default {
                     return 0; // both models are either installed or not installed, maintain their original order
                 }
             });   
-
-
-        },   
+        },
         update_binding(value) {
-
             // eslint-disable-next-line no-unused-vars
             this.isLoading = true
             console.log("updating binding_name")
-            this.update_setting('binding_name', value, (res) => {
+            this.update_setting('binding_name', value, async (res) => {
                 console.log("updated binding_name")
+                await this.$store.dispatch('refreshConfig');
+                await this.refreshModelsZoo();
+                await this.updateModelsZoo();
                 const index = this.bindingsArr.findIndex(item => item.folder == value)
                 const item = this.bindingsArr[index]
                 if (item) {
@@ -3336,9 +3016,6 @@ export default {
                 console.log("updating model")
                 // If binding changes then reset model
                 this.update_model(null).then(()=>{
-                    setTimeout(()=>{
-                        location.reload();
-                    },1000)
                 });
 
 
@@ -3357,7 +3034,6 @@ export default {
             this.isLoading = false
             nextTick(() => {
                 feather.replace()
-
             })
 
             return res
@@ -3550,14 +3226,14 @@ export default {
         async filterModels() {
             if (!this.searchModel) {
                 console.log("Searching model")
-                this.modelsFiltered = this.models
+                this.modelsFiltered = this.models_zoo
                 this.searchModelInProgress = false
                 return
             }
             const searchTerm = this.searchModel.toLowerCase()
             this.is_loading_zoo = true;
             console.log("filtering models")
-            const seachedModels = this.models.filter((item) => {
+            const seachedModels = this.models_zoo.filter((item) => {
 
                 if (item.name && item.name.toLowerCase().includes(searchTerm) || item.description && item.description.toLowerCase().includes(searchTerm) || item.category && item.category.toLowerCase().includes(searchTerm)) {
                     return item
@@ -3572,7 +3248,7 @@ export default {
 
                 this.modelsFiltered = seachedModels
             } else {
-                this.modelsFiltered = this.models
+                this.modelsFiltered = this.models_zoo
             }
             this.searchModelInProgress = false
 
@@ -3909,15 +3585,14 @@ export default {
 
 
     }, async mounted() {
-        this.constructor()
         console.log("Getting voices")
         this.getVoices();
+        this.updateModelsZoo();
+        console.log("Constructing")
+        this.load_everything()
     },
-    
     activated() {
-        if (this.isMounted) {
-            this.constructor()
-        }
+        //this.load_everything()
     },
     computed: { 
         isReady:{
@@ -4217,33 +3892,6 @@ export default {
             }
             catch (error) {
                 return defaultImgPlaceholder
-            }
-        },
-        imgModel() {
-            if (!this.isMounted) {
-                return
-            }
-            // console.log("Config file")
-            // console.log(this.configFile)
-            try {
-                let index = this.$refs.modelZoo.findIndex(item => item.model.name == this.configFile.model_name);
-                if(index==-1){
-                    for (let model of this.$refs.modelZoo){
-                        let v = model.model.variants;
-                        console.log(model.model)
-                        if(v!=undefined){
-                            index = v.findIndex(item => item.name == this.configFile.model_name)
-                            if(index!=-1){
-                                break;
-                            }
-                        }
-                    }
-                    
-                }
-                return this.$refs.modelZoo[index].$refs.imgElement.src
-            }
-            catch (error) {
-                return defaultModelImgPlaceholder
             }
         },
         model_name() {

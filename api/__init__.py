@@ -1324,7 +1324,7 @@ class LoLLMsAPPI(LollmsApplication):
                         ):
         self.connections[client_id]["current_discussion"].current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         mtdt = json.dumps(metadata, indent=4) if metadata is not None and type(metadata)== list else metadata
-        if self.nb_received_tokens==1 and msg_type==MSG_TYPE.MSG_TYPE_CHUNK:
+        if self.nb_received_tokens==1:
             self.socketio.emit('update_message', {
                                             "sender": self.personality.name,
                                             'id':self.connections[client_id]["current_discussion"].current_message.id, 

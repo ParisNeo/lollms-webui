@@ -21,6 +21,8 @@ import feather from 'feather-icons';
 import MarkdownIt from 'markdown-it';
 import emoji from 'markdown-it-emoji';
 import anchor from 'markdown-it-anchor';
+import MarkdownItMath from 'markdown-it-math';
+import MarkdownItMultimdTable from 'markdown-it-multimd-table';
 import implicitFigures from 'markdown-it-implicit-figures';
 import 'highlight.js/styles/tomorrow-night-blue.css';
 import 'highlight.js/styles/tokyo-night-dark.css';
@@ -71,7 +73,26 @@ export default {
       .use(implicitFigures, {
         figcaption: true,
       })
-      .use(attrs);
+      .use(attrs)
+      .use(MarkdownItMath, {
+        inlineOpen: '$',
+        inlineClose: '$',
+        blockOpen: '$$',
+        blockClose: '$$',
+      })
+      .use(MarkdownItMultimdTable,{
+        enableRowspan: true,
+        enableColspan: true,
+        enableGridTables: true,
+        enableGridTablesExtra: true,
+        enableTableIndentation: true,
+        tableCellPadding: ' ',
+        tableCellJoiner: '|',
+        multilineCellStartMarker: '|>',
+        multilineCellEndMarker: '<|',
+        multilineCellPadding: ' ',
+        multilineCellJoiner: '\n',
+      });
     const markdownItems = ref([]);
     const updateMarkdown = () => {
       if (props.markdownText) {

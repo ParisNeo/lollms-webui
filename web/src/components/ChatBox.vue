@@ -121,13 +121,6 @@
                     </div>
                     <!-- CHAT BOX -->
                     <div class="flex flex-row flex-grow items-center gap-2 overflow-visible">
-                        <InteractiveMenu 
-                                :title="selectedModel"
-                                :execute_cmd="setModel"  
-                                :icon="models_menu_icon" 
-                                :menu-icon-class="'rounded-full'"
-                                :commands="commandify(models)"
-                                :selected_entry="selectedModel"></InteractiveMenu>
                         <div v-if="selecting_model" title="Selecting model" class="flex flex-row flex-grow justify-end">
                             <!-- SPINNER -->
                             <div role="status">
@@ -142,7 +135,31 @@
                                 </svg>
                                 <span class="sr-only">Selecting model...</span>
                             </div>
-                        </div>                        
+                        </div>
+                        <div class="w-fit group relative">
+                            <!-- :onShowPersList="onShowPersListFun" -->
+                            <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-10 group-hover:translate-x-15 transition-all duration-300">
+                                <div class="w-full"
+                                    v-for="(item, index) in this.$store.state.installedModels" :key="index + '-' + item.name"
+                                    ref="installedModels">
+                                    <div v-if="item.name!=this.$store.state.config.model_name" class="group items-center flex flex-row">
+                                        <button @click.prevent="setModel(item)" class="w-8 h-8">
+                                            <img :src="item.icon?item.icon:modelImgPlaceholder" @error="modelImgPlaceholder"
+                                                class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                                :title="item.name">
+                                        </button>
+                                    </div>
+                                </div>             
+                            </div>
+                            <div class="group items-center flex flex-row">
+                                <button @click.prevent="showModelConfig()" class="w-8 h-8">
+                                    <img :src="this.$store.state.currentModel.icon?this.$store.state.currentModel.icon:modelImgPlaceholder" @error="modelImgPlaceholder"
+                                        class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                        :title="this.$store.state.currentModel?this.$store.state.currentModel.name:'unknown'">
+                                </button>
+                            </div>
+
+                        </div>                
                         <div class="w-fit group relative">
                             <!-- :onShowPersList="onShowPersListFun" -->
                             <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-10 group-hover:translate-x-15 transition-all duration-300">
@@ -297,6 +314,8 @@ import { useStore } from 'vuex'; // Import the useStore function
 import { inject } from 'vue';
 import socket from '@/services/websocket.js'
 import Toast from '../components/Toast.vue'
+import modelImgPlaceholder from "../assets/default_model.png"
+console.log("modelImgPlaceholder:",modelImgPlaceholder)
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
     name: 'ChatBox',
@@ -322,11 +341,11 @@ export default {
     },
     data() {
         return {
+            modelImgPlaceholder:modelImgPlaceholder,
             bUrl:bUrl,
             message: "",
             selecting_model:false,
             selectedModel:'',
-            models:{},
             isLesteningToVoice:false,
             filesList: [],
             isFileSentList: [],
@@ -362,6 +381,9 @@ export default {
         }
     },
     methods: {   
+        showModelConfig(){
+
+        },
         async unmountPersonality(pers) {
             this.isLoading = true
             if (!pers) { return }
@@ -498,27 +520,18 @@ export default {
 
             selectElement.dispatchEvent(event_);
         }, 
-        commandify(list_of_strings){
-            let list_of_dicts=[]
-            for (var i = 0; i < list_of_strings.length; i++) {
-                let dict={}
-                dict["name"]=list_of_strings[i]
-                dict["value"]=list_of_strings[i]
-                list_of_dicts.push(dict)
-            }
-            return list_of_dicts
-
-        },
         setModel(selectedModel){
-            console.log("Setting model to "+selectedModel);
+            console.log("Setting model to "+selectedModel.name);
             this.selecting_model=true
             this.selectedModel = selectedModel
             axios.post("/update_setting", {                
                         setting_name: "model_name",
-                        setting_value: selectedModel.value
-                    }).then((response) => {
+                        setting_value: selectedModel.name
+                    }).then(async (response) => {
                 console.log(response);
-                this.$refs.toast.showToast(`Model changed to ${selectedModel.value}`,4,true)
+                await this.$store.dispatch('refreshModels');
+                await this.$store.dispatch('refreshConfig');    
+                this.$refs.toast.showToast(`Model changed to ${selectedModel.name}`,4,true)
                 this.selecting_model=false
                 }).catch(err=>{
                 this.$refs.toast.showToast(`Error ${err}`,4,true)
@@ -739,22 +752,6 @@ export default {
 
     },
     mounted() {
-        axios.get('list_models').then(response => {
-          console.log("List models "+response.data)
-          this.models=response.data
-          axios.get('get_active_model').then(response => {
-            console.log("Active model " + JSON.stringify(response.data))
-            if(response.data!=undefined){
-              this.selectedModel = response.data["model"]
-            }
-            
-          }).catch(ex=>{
-            this.$refs.toast.showToast(`Error: ${ex}`,4,false)
-          });    
-
-        }).catch(ex=>{
-          this.$refs.toast.showToast(`Error: ${ex}`,4,false)
-        });    
         this.emitloaded();
         nextTick(() => {
             feather.replace()

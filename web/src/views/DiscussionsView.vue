@@ -356,6 +356,7 @@ import SVGRedBrain from '@/assets/brain_red.svg';
 import SVGOrangeBrain from '@/assets/brain_orange.svg';
 import SVGGreenBrain from '@/assets/brain_green.svg';
 
+
 export default {
     
     setup() { },

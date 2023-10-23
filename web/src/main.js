@@ -39,6 +39,9 @@ export const store = createStore({
         diskUsage:null,
         ramUsage:null,
         vramUsage:null,
+        modelsZoo:[],
+        installedModels:[],
+        currentModel:null,
         extensionsZoo:[],
         databases:[],
       }
@@ -83,7 +86,9 @@ export const store = createStore({
       setVramUsage(state, vramUsage) {
         state.vramUsage = vramUsage;
       },
-      
+      setModelsZoo(state, modelsZoo) {
+        state.modelsZoo = modelsZoo;
+      },      
       setExtensionsZoo(state, extensionsZoo) {
         state.extensionsZoo = extensionsZoo;
       },
@@ -132,6 +137,9 @@ export const store = createStore({
       
       getDatabasesList(state){
         return state.databases;
+      },
+      getModelsZoo(state) {
+        return state.modelsZoo;
       },
       getExtensionsZoo(state) {
         return state.extensionsZoo;
@@ -275,18 +283,30 @@ export const store = createStore({
           let bindingsArr = await api_get_req("list_bindings")
           commit('setBindingsArr',bindingsArr)
       },
-      async refreshModels({ commit }) {
-          console.log("Fetching models")
-          let modelsArr = await api_get_req("list_models");
-          console.log(`Found ${modelsArr}`)
-          let selectedModel = await api_get_req('get_active_model');
-          if(selectedModel!=undefined){
-            commit('setselectedModel',selectedModel["model"])
-          }
-            
-          commit('setModelsArr',modelsArr)
+      async refreshModelsZoo({ commit }) {
+        console.log("Fetching models")
+        const response = await axios.get('/get_available_models');
+        commit('setModelsZoo',response.data.filter(model => model.variants &&  model.variants.length>0))
       },
-      async refreshExtensionsZoo({ commit }) {
+      async refreshModels({ commit }) {
+        console.log("Fetching models")
+        let modelsArr = await api_get_req("list_models");
+        console.log(`Found ${modelsArr}`)
+        let selectedModel = await api_get_req('get_active_model');
+        if(selectedModel!=undefined){
+          commit('setselectedModel',selectedModel["model"])
+        }
+        commit('setModelsArr',modelsArr)
+        this.state.modelsZoo.map((item)=>{
+          item.isInstalled=modelsArr.includes(item.name)
+        })
+        this.state.installedModels = this.state.modelsZoo.filter(item=> item.isInstalled)
+        const index = this.state.modelsZoo.findIndex(item=>item.name == this.state.config.model_name)
+        if (index!=-1)
+            this.state.currentModel = this.state.modelsZoo[index]
+
+    },
+    async refreshExtensionsZoo({ commit }) {
           let extensions = []
           let catdictionary = await api_get_req("list_extensions")
           const catkeys = Object.keys(catdictionary); // returns categories
@@ -442,20 +462,19 @@ app.mixin({
       await this.$store.dispatch('refreshConfig');
       await this.$store.dispatch('refreshDatabase');
       
-      console.log("recovered config : ${}");
       await this.$store.dispatch('getVersion');
-      console.log("recovered version");          
       await this.$store.dispatch('refreshBindings');
       await refreshHardwareUsage(this.$store);
       await this.$store.dispatch('refreshExtensionsZoo');
       await this.$store.dispatch('refreshmountedExtensions');
-      await this.$store.dispatch('refreshModels');
       
       await this.$store.dispatch('refreshPersonalitiesZoo')
       await this.$store.dispatch('refreshMountedPersonalities');
+
+      await this.$store.dispatch('refreshModelsZoo');
+      await this.$store.dispatch('refreshModels');
+
       this.$store.state.ready = true;
-      console.log("store status = ", this.$store.state.ready);
-      console.log("done loading data")
     }
 
   },

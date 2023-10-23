@@ -193,7 +193,7 @@
             <b>License:&nbsp;</b>
             {{ model.license }}
           </div>
-          <div class="flex items-center">
+          <div v-if="model.quantizer!='None'" class="flex items-center">
             <i data-feather="user" class="w-5 m-1"></i>
             <b>quantizer:&nbsp;</b>
             <a :href="'https://huggingface.co/'+model.quantizer" target="_blank" rel="noopener noreferrer" @click.stop
