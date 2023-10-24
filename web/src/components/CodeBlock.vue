@@ -17,18 +17,23 @@
       </button>
     </div>
     <pre  class="hljs p-1 rounded-md break-all grid grid-cols-1">
-      <code class="overflow-x-auto break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" v-html="highlightedCode"></code>
+      <div class="code-container">
+          <code class="code-content overflow-x-auto break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" v-html="highlightedCode"></code>
+      </div>
+
     </pre>    
-    <pre  class="hljs p-1 rounded-md break-all grid grid-cols-1" v-if="executionOutput">
+    <pre  class="hljs mt-4 p-1 rounded-md break-all grid grid-cols-1" v-if="executionOutput">
       <div class="overflow-x-auto break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
         <div ref="execution_output" v-html="executionOutput"></div>
       </div>
     </pre>    
-  </div>
+
+</div>
 </template>
 <script>
 import { nextTick } from 'vue'
 import hljs from 'highlight.js'
+import feather from 'feather-icons';
 import 'highlight.js/styles/tomorrow-night-blue.css';
 import 'highlight.js/styles/tokyo-night-dark.css';
 
@@ -61,6 +66,11 @@ export default {
       executionOutput: '',  // new property
     };
   },
+  mounted() {
+    nextTick(() => {
+          feather.replace()
+    })
+  },
   computed: {
     highlightedCode() {
       let validLanguage;
@@ -70,8 +80,28 @@ export default {
         validLanguage = hljs.getLanguage(this.language) ? this.language : 'plaintext';
       }
       const trimmedCode = this.code.trim(); // Remove leading and trailing whitespace
-      return hljs.highlight(validLanguage, trimmedCode).value;
-    },
+      const lines = trimmedCode.split('\n');
+      const lineNumberWidth = lines.length.toString().length;
+      const lineNumbers = lines.map((line, index) => {
+        const lineNumber = index + 1;
+        return lineNumber.toString().padStart(lineNumberWidth, ' ');
+      });
+      const lineNumbersContainer = document.createElement('div');
+      lineNumbersContainer.classList.add('line-numbers');
+      lineNumbersContainer.innerHTML = lineNumbers.join('<br>');
+      const codeContainer = document.createElement('div');
+      codeContainer.classList.add('code-container');
+      const codeContent = document.createElement('pre');
+      const codeContentCode = document.createElement('code');
+      codeContentCode.classList.add('code-content');
+      codeContentCode.innerHTML = hljs.highlight(validLanguage, trimmedCode).value;
+      codeContent.appendChild(codeContentCode);
+      codeContainer.appendChild(lineNumbersContainer);
+      codeContainer.appendChild(codeContent);
+      return codeContainer.outerHTML;
+    }
+
+
   },
   methods: {
     copyCode() {
@@ -131,3 +161,23 @@ export default {
   },
 };
 </script>
+<style>
+.code-container {
+  display: flex;
+  margin: 0; /* Remove the default margin */
+}
+.line-numbers {
+  flex-shrink: 0;
+  padding-right: 5px; /* Adjust the padding as needed */
+  color: #999;
+  user-select: none; /* Prevent line numbers from being selected */
+  white-space: nowrap; /* Prevent line numbers from wrapping */
+  margin: 0; /* Remove the default margin */
+}
+.code-content {
+  flex-grow: 1;
+  margin: 0; /* Remove the default margin */
+}
+
+
+</style>

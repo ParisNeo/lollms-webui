@@ -22,6 +22,7 @@
     "markdown-it-implicit-figures": "^0.11.0",
     "markdown-it-math": "^4.1.1",
     "markdown-it-multimd-table": "^4.2.3",
+    "mermaid": "^9.0.0",
     "papaparse": "^5.4.1",
     "prismjs": "^1.29.0",
     "socket.io-client": "^4.6.1",
