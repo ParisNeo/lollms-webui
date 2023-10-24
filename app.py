@@ -18,6 +18,7 @@ __version__ ="6.7"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
+import platform
 import sys
 from flask import request, jsonify
 import io
@@ -26,7 +27,6 @@ import time
 import traceback
 import webbrowser
 from pathlib import Path
-import os
 from lollms.utilities import AdvancedGarbageCollector
 
 def run_update_script(args=None):
@@ -594,17 +594,18 @@ class LoLLMsWebUI(LoLLMsAPPI):
         """Executes Python code and returns the output."""
         
         data = request.get_json()
-        code = data["code"]
         discussion_id = data.get("discussion_id","unknown_discussion")
-        message_id = data.get("message_id","unknown_message")
-        language = data.get("language","python")
-        
 
         ASCIIColors.info("Opening folder:")
         # Create a temporary file.
         root_folder = self.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
         root_folder.mkdir(parents=True,exist_ok=True)
-
+        if platform.system() == 'Windows':
+            os.startfile(str(root_folder))
+        elif platform.system() == 'Linux':
+            os.system('xdg-open ' + str(root_folder))
+        elif platform.system() == 'Darwin':
+            os.system('open ' + str(root_folder))
         return {"output": "OK", "execution_time": 0}
 
     def copy_files(self, src, dest):
