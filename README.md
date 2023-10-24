@@ -107,7 +107,7 @@ git checkout main
 cd ../../lollms_core
 git checkout main
 pip install -e .
-cd ../../utilities/safe_store
+cd ../utilities/safe_store
 git checkout main
 pip install -e .
 cd ../..
