@@ -225,6 +225,16 @@ class DiscussionsDB:
 
 
     def export_to_json(self):
+        """
+        Export all discussions and their messages from the database to a JSON format.
+
+        Returns:
+            list: A list of dictionaries representing discussions and their messages.
+                Each dictionary contains the discussion ID, title, and a list of messages.
+                Each message dictionary contains the sender, content, message type, rank,
+                parent message ID, binding, model, personality, created at, and finished
+                generating at fields.
+        """        
         db_discussions = self.select("SELECT * FROM discussion")
         discussions = []
         for row in db_discussions:
@@ -251,6 +261,14 @@ class DiscussionsDB:
         return discussions
 
     def export_all_as_markdown_list_for_vectorization(self):
+        """
+        Export all discussions and their messages from the database to a Markdown list format.
+
+        Returns:
+            list: A list of lists representing discussions and their messages in a Markdown format.
+                Each inner list contains the discussion title and a string representing all
+                messages in the discussion in a Markdown format.
+        """        
         data = self.export_all_discussions_to_json()
         # Initialize an empty result string
         discussions = []
@@ -269,6 +287,14 @@ class DiscussionsDB:
         return discussions
         
     def export_all_as_markdown(self):
+        """
+        Export all discussions and their messages from the database to a Markdown format.
+
+        Returns:
+            str: A string representing all discussions and their messages in a Markdown format.
+                Each discussion is represented as a Markdown heading, and each message is
+                represented with the sender and content in a Markdown format.
+        """        
         data = self.export_all_discussions_to_json()
 
         # Initialize an empty result string
