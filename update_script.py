@@ -21,6 +21,8 @@ def run_git_pull():
                     submodule_repo = submodule.module()
                     submodule_repo.git.checkout('main')
                     print(f"Checking out main from {submodule}")
+                    submodule.update()
+                    print(f"Checking out main from {submodule}")
 
                 except Exception as ex:
                     print(f"Couldn't checkout module {submodule}")

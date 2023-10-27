@@ -575,63 +575,95 @@ class LoLLMsAPPI(LollmsApplication):
             except Exception as ex:
                 trace_exception(ex)        
 
-        @socketio.on('send_file')
-        def send_file(data):
-            ASCIIColors.yellow("Receiving file")
-
+        @socketio.on('send_file_chunk')
+        def send_file_chunk(data):
             client_id = request.sid
-            self.connections[client_id]["generated_text"]       = ""
-            self.connections[client_id]["cancel_generation"]    = False
+            filename = data['filename']
+            chunk = data['chunk']
+            offset = data['offset']
+            is_last_chunk = data['isLastChunk']
+            chunk_index = data['chunkIndex']
+            path:Path = self.lollms_paths.personal_uploads_path / self.personality.personality_folder_name
+            path.mkdir(parents=True, exist_ok=True)
+            file_path = path / data["filename"]
+            # Save the chunk to the server or process it as needed
+            # For example:
+            if chunk_index==0:
+                with open(file_path, 'wb') as file:
+                    file.write(chunk)
+            else:
+                with open(file_path, 'ab') as file:
+                    file.write(chunk)
 
-            if not self.config.use_files:
-                self.socketio.emit('file_received',
-                        {
-                            "status":False,
-                            "filename":data["filename"],
-                            "error":"Couldn't receive file: Verify that file type is compatible with the personality"
-                        }, room=client_id
-                ) 
-                return   
-
-            try:
-                self.personality.setCallback(partial(self.process_chunk,client_id = client_id))
-                ASCIIColors.info("Recovering file from front end")
-
-                path:Path = self.lollms_paths.personal_uploads_path / self.personality.personality_folder_name
-                path.mkdir(parents=True, exist_ok=True)
-                file_path = path / data["filename"]
-                File64BitsManager.b642file(data["fileData"],file_path)
+            if is_last_chunk:
+                print('File received and saved successfully')
                 if self.personality.processor:
                     result = self.personality.processor.add_file(file_path, partial(self.process_chunk, client_id=client_id))
                 else:
                     result = self.personality.add_file(file_path, partial(self.process_chunk, client_id=client_id))
-                if result:
-                    self.socketio.emit('file_received',
-                            {
-                                "status":True,
-                                "filename":data["filename"],
-                            }, room=client_id
-                    )    
-                else:
-                    self.socketio.emit('file_received',
-                            {
-                                "status":False,
-                                "filename":data["filename"],
-                                "error":"Couldn't receive file: Verify that file type is compatible with the personality"
-                            }, room=client_id
-                    )    
 
-            except Exception as ex:
-                ASCIIColors.error(ex)
-                trace_exception(ex)
-                self.socketio.emit('file_received',
-                        {
-                            "status":False,
-                            "filename":data["filename"],
-                            "error":"Couldn't receive file: "+str(ex)
-                        }, room=client_id
-                )
-            self.close_message(client_id)        
+                self.socketio.emit('file_received', {'status': True, 'filename': filename})
+            else:
+                # Request the next chunk from the client
+                self.socketio.emit('request_next_chunk', {'offset': offset + len(chunk)})
+
+        # @socketio.on('send_file')
+        # def send_file(data):
+        #     ASCIIColors.yellow("Receiving file")
+
+        #     client_id = request.sid
+        #     self.connections[client_id]["generated_text"]       = ""
+        #     self.connections[client_id]["cancel_generation"]    = False
+
+        #     if not self.config.use_files:
+        #         self.socketio.emit('file_received',
+        #                 {
+        #                     "status":False,
+        #                     "filename":data["filename"],
+        #                     "error":"Couldn't receive file: Verify that file type is compatible with the personality"
+        #                 }, room=client_id
+        #         ) 
+        #         return   
+
+        #     try:
+        #         self.personality.setCallback(partial(self.process_chunk,client_id = client_id))
+        #         ASCIIColors.info("Recovering file from front end")
+
+        #         path:Path = self.lollms_paths.personal_uploads_path / self.personality.personality_folder_name
+        #         path.mkdir(parents=True, exist_ok=True)
+        #         file_path = path / data["filename"]
+        #         File64BitsManager.b642file(data["fileData"],file_path)
+        #         if self.personality.processor:
+        #             result = self.personality.processor.add_file(file_path, partial(self.process_chunk, client_id=client_id))
+        #         else:
+        #             result = self.personality.add_file(file_path, partial(self.process_chunk, client_id=client_id))
+        #         if result:
+        #             self.socketio.emit('file_received',
+        #                     {
+        #                         "status":True,
+        #                         "filename":data["filename"],
+        #                     }, room=client_id
+        #             )    
+        #         else:
+        #             self.socketio.emit('file_received',
+        #                     {
+        #                         "status":False,
+        #                         "filename":data["filename"],
+        #                         "error":"Couldn't receive file: Verify that file type is compatible with the personality"
+        #                     }, room=client_id
+        #             )    
+
+        #     except Exception as ex:
+        #         ASCIIColors.error(ex)
+        #         trace_exception(ex)
+        #         self.socketio.emit('file_received',
+        #                 {
+        #                     "status":False,
+        #                     "filename":data["filename"],
+        #                     "error":"Couldn't receive file: "+str(ex)
+        #                 }, room=client_id
+        #         )
+        #     self.close_message(client_id)        
 
         @self.socketio.on('cancel_text_generation')
         def cancel_text_generation(data):

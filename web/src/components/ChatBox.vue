@@ -552,42 +552,81 @@ export default {
             this.filesList = []
             this.isFileSentList = []
         },
-        send_file(file, next){
-            const formData = new FormData();
-            formData.append('file', file);
-            console.log("Uploading file")
-            // Read the file as a data URL and emit it to the server
-            const reader = new FileReader();
-            reader.onload = () => {
-                const data = {
-                filename: file.name,
-                fileData: reader.result,
-                };
-                socket.on('file_received',(resp)=>{
-                    if(resp.status){
-                        console.log(resp.filename)
-                        this.isFileSentList[this.filesList.length-1]=true;
-                        console.log(this.isFileSentList)
-                        this.onShowToastMessage("File uploaded successfully",4,true);
-                    }
-                    else{
-                        this.onShowToastMessage("Couldn't upload file\n"+resp.error,4,false);
-                        try{
-                            this.filesList.removeItem(file)
-                        }
-                        catch{
+        // send_file(file, next){
+        //     const formData = new FormData();
+        //     formData.append('file', file);
+        //     console.log("Uploading file")
+        //     // Read the file as a data URL and emit it to the server
+        //     const reader = new FileReader();
+        //     reader.onload = () => {
+        //         const data = {
+        //         filename: file.name,
+        //         fileData: reader.result,
+        //         };
+        //         socket.on('file_received',(resp)=>{
+        //             if(resp.status){
+        //                 console.log(resp.filename)
+        //                 this.isFileSentList[this.filesList.length-1]=true;
+        //                 console.log(this.isFileSentList)
+        //                 this.onShowToastMessage("File uploaded successfully",4,true);
+        //             }
+        //             else{
+        //                 this.onShowToastMessage("Couldn't upload file\n"+resp.error,4,false);
+        //                 try{
+        //                     this.filesList.removeItem(file)
+        //                 }
+        //                 catch{
 
-                        }
+        //                 }
                         
-                    }
-                    socket.off('file_received')
-                    next()
+        //             }
+        //             socket.off('file_received')
+        //             next()
 
-                }) 
-                socket.emit('send_file', data);
+        //         }) 
+        //         console.log("Sending file")
+        //         socket.emit('send_file', data);
+        //     };
+        //     reader.readAsDataURL(file);        
+        // },
+        send_file(file, next) {
+            const fileReader = new FileReader();
+            const chunkSize = 24 * 1024; // Chunk size in bytes (e.g., 1MB)
+            let offset = 0;
+            let chunkIndex = 0;
+            fileReader.onloadend = () => {
+                if (fileReader.error) {
+                console.error('Error reading file:', fileReader.error);
+                return;
+                }
+                const chunk = fileReader.result;
+                const isLastChunk = offset + chunk.byteLength >= file.size;
+                socket.emit('send_file_chunk', {
+                filename: file.name,
+                chunk: chunk,
+                offset: offset,
+                isLastChunk: isLastChunk,
+                chunkIndex: chunkIndex
+                });
+                offset += chunk.byteLength;
+                chunkIndex++;
+                if (!isLastChunk) {
+                    readNextChunk();
+                } else {
+                    console.log('File sent successfully');
+                    this.isFileSentList[this.filesList.length-1]=true;
+                    console.log(this.isFileSentList)
+                    this.onShowToastMessage("File uploaded successfully",4,true);                
+                    next();
+                }
             };
-            reader.readAsDataURL(file);        
-        },
+            function readNextChunk() {
+                const blob = file.slice(offset, offset + chunkSize);
+                fileReader.readAsArrayBuffer(blob);
+            }
+            console.log('Uploading file');
+            readNextChunk();
+        },    
         makeAnEmptyMessage() {
             this.$emit('createEmptyMessage')
         },

@@ -10,7 +10,7 @@ import io from 'socket.io-client';
 const URL = process.env.NODE_ENV === "production" ? undefined : (import.meta.env.VITE_LOLLMS_API);
 const socket = new io(URL,{
     reconnection: true,           // Enable reconnection
-    reconnectionAttempts: 3,      // Maximum reconnection attempts
+    reconnectionAttempts: 10,      // Maximum reconnection attempts
     reconnectionDelay: 1000,      // Delay between reconnection attempts (in milliseconds)
   });
 
