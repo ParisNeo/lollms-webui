@@ -168,7 +168,7 @@ class LoLLMsAPPI(LollmsApplication):
                         self.discussions_store.add_document(title, discussion, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
                 ASCIIColors.yellow("3- Indexing database")
                 self.discussions_store.index()
-                ASCIIColors.yellow("3- Saving database")
+                ASCIIColors.yellow("4- Saving database")
                 self.discussions_store.save_to_json()
                 ASCIIColors.yellow("Ready")
 
