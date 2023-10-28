@@ -23,6 +23,13 @@
 
             {{ extension.author }}
           </div>
+          <div class="flex items-center">
+            <i data-feather="bookmark" class="w-5 m-1"></i>
+            <b>Based on:&nbsp;</b>
+
+            {{ extension.based_on }}
+          </div>
+
           <div v-if="extension.languages && select_language" class="flex items-center">
             <i data-feather="globe" class="w-5 m-1"></i>
             <b>Languages:&nbsp;</b>
@@ -55,7 +62,7 @@
           <i data-feather="info" class="w-5 m-1"></i>
           <b>Description:&nbsp;</b><br>
         </div>
-        <p class="mx-1 opacity-80 h-20  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" :title="extension.description">{{ extension.description }}</p>
+        <p class="mx-1 opacity-80 h-20  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" :title="extension.description" v-html="extension.description"></p>
       </div>
       <div class="rounded bg-blue-300">
           <button v-if="isMounted" type="button" title="Select"

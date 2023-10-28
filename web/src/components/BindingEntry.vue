@@ -113,7 +113,7 @@
           <i data-feather="info" class="w-5 m-1"></i>
           <b>Description:&nbsp;</b><br>
         </div>
-        <p class="mx-1 opacity-80 line-clamp-3" :title="binding.description">{{ binding.description }}</p>
+        <p class="mx-1 opacity-80 line-clamp-3" :title="binding.description" v-html="binding.description"></p>
 
 
       </div>

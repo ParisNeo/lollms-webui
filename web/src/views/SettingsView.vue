@@ -108,7 +108,6 @@
 
 
                                         <div class="flex gap-2 items-center " v-for="item in vramUsage.gpus">
-
                                             <!-- GPU IMAGE  -->
                                             <img :src="SVGGPU"  width="25" height="25">
 
@@ -2297,15 +2296,6 @@ export default {
                 //this.settingsChanged = true
 
                 if (ext.isMounted && this.configFile.extensions.includes(ext.full_path)) {
-
-                    const res = await this.select_extension(ext)
-                    console.log('ext is mounted', res)
-                    if (res && res.status && res.active_personality_id > -1) {
-                        this.$refs.toast.showToast("Selected personality:\n" + ext.name, 4, true)
-
-                    } else {
-                        this.$refs.toast.showToast("Error on select personality:\n" + ext.name, 4, false)
-                    }
                     this.isLoading = false
 
                 } else {
@@ -3478,12 +3468,6 @@ export default {
                 this.configFile.extensions = res.extensions
                 this.$refs.toast.showToast("Extension mounted", 4, true)
                 ext.isMounted = true
-
-                const res2 = await this.select_extensions(ext.extensions)
-                if (res2.status) {
-                    this.$refs.toast.showToast("Selected extension:\n" + ext.extension.name, 4, true)
-
-                }
                 this.$store.dispatch('refreshMountedExtensions');
             } else {
                 ext.isMounted = false
