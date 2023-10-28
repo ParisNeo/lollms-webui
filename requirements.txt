@@ -14,3 +14,4 @@ websocket-client
 GitPython
 setuptools
 numpy==1.24
+flask_compress
