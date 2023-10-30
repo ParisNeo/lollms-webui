@@ -1287,23 +1287,7 @@ class LoLLMsAPPI(LollmsApplication):
         
         return discussion_messages # Removes the last return
 
-    def remove_text_from_string(self, string, text_to_find):
-        """
-        Removes everything from the first occurrence of the specified text in the string (case-insensitive).
 
-        Parameters:
-        string (str): The original string.
-        text_to_find (str): The text to find in the string.
-
-        Returns:
-        str: The updated string.
-        """
-        index = string.lower().find(text_to_find.lower())
-
-        if index != -1:
-            string = string[:index]
-
-        return string
     
     def notify(self, content, status, client_id):
         self.socketio.emit('notification', {
