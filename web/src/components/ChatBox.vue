@@ -136,7 +136,7 @@
                                 <span class="sr-only">Selecting model...</span>
                             </div>
                         </div>
-                        <div class="w-fit group relative">
+                        <div class="w-fit group relative" v-if="!loading" >
                             <!-- :onShowPersList="onShowPersListFun" -->
                             <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-10 group-hover:translate-x-15 transition-all duration-300">
                                 <div class="w-full"
@@ -160,7 +160,7 @@
                             </div>
 
                         </div>                
-                        <div class="w-fit group relative">
+                        <div class="w-fit group relative" v-if="!loading" >
                             <!-- :onShowPersList="onShowPersListFun" -->
                             <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-10 group-hover:translate-x-15 transition-all duration-300">
                                 <div class="w-full"
@@ -199,7 +199,7 @@
 
                         </div>
 
-                        <div class="w-fit">
+                        <div class="w-fit" v-if="!loading" >
                             <PersonalitiesCommands
                                 v-if="personalities_ready && this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands!=''" 
                                 :commandsList="this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands"
@@ -209,7 +209,7 @@
                             ></PersonalitiesCommands>
                         </div>
 
-                        <div class="relative grow">
+                        <div class="relative grow"  v-if="!loading" >
                             <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"
                                 class="inline-block  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 placeholder="Send message..." @keydown.enter.exact="submitOnEnter($event)">
@@ -226,7 +226,7 @@
                         </div>
                         <!-- BUTTONS -->
                         <div class="inline-flex justify-center  rounded-full ">
-                            <button
+                            <button v-if="!loading" 
                                 type="button"
                                 @click="startSpeechRecognition"
                                 :class="{ 'text-red-500': isLesteningToVoice }"
@@ -234,9 +234,16 @@
                             >
                             <i data-feather="mic"></i>
                             </button>
+                            <button v-if="!loading" type="button" @click="makeAnEmptyUserMessage" title="New empty user message"
+                                class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
+
+                                <i data-feather="message-square"></i>
+
+                                <span class="sr-only">New empty User message</span>
+                            </button>
                                                      
-                            <button v-if="!loading" type="button" @click="makeAnEmptyMessage"
-                                class=" w-6 hover:text-secondary duration-75 active:scale-90">
+                            <button v-if="!loading" type="button" @click="makeAnEmptyAIMessage" title="New empty ai message"
+                                class=" w-6 text-red-400 hover:text-secondary duration-75 active:scale-90">
 
                                 <i data-feather="message-square"></i>
 
@@ -319,7 +326,7 @@ console.log("modelImgPlaceholder:",modelImgPlaceholder)
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
     name: 'ChatBox',
-    emits: ["messageSentEvent", "stopGenerating", "loaded", "createEmptyMessage"],
+    emits: ["messageSentEvent", "stopGenerating", "loaded", "createEmptyUserMessage", "createEmptyAIMessage"],
     props: {
         onTalk: Function,
         discussionList: Array,
@@ -385,7 +392,7 @@ export default {
 
         },
         async unmountPersonality(pers) {
-            this.isLoading = true
+            this.loading = true
             if (!pers) { return }
 
             const res = await this.unmount_personality(pers.personality || pers)
@@ -412,7 +419,7 @@ export default {
                 this.$refs.toast.showToast("Could not unmount personality\nError: " + res.error, 4, false)
             }
 
-            this.isLoading = false
+            this.loading = false
         },
         async unmount_personality(pers) {
             if (!pers) { return { 'status': false, 'error': 'no personality - unmount_personality' } }
@@ -616,7 +623,8 @@ export default {
                     console.log('File sent successfully');
                     this.isFileSentList[this.filesList.length-1]=true;
                     console.log(this.isFileSentList)
-                    this.onShowToastMessage("File uploaded successfully",4,true);                
+                    this.onShowToastMessage("File uploaded successfully",4,true);
+                    this.loading = false         
                     next();
                 }
             };
@@ -627,8 +635,11 @@ export default {
             console.log('Uploading file');
             readNextChunk();
         },    
-        makeAnEmptyMessage() {
-            this.$emit('createEmptyMessage')
+        makeAnEmptyUserMessage() {
+            this.$emit('createEmptyUserMessage')
+        },
+        makeAnEmptyAIMessage() {
+            this.$emit('createEmptyAIMessage')
         },
         startSpeechRecognition() {
             if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
@@ -738,24 +749,24 @@ export default {
             this.$emit('stopGenerating')
         },
         addFiles(event) {
-        console.log("Adding files");
-        const newFiles = [...event.target.files];
-        let index = 0;
-        const sendNextFile = () => {
-            if (index >= newFiles.length) {
-            console.log(`Files_list: ${this.filesList}`);
-            return;
-            }
-            const file = newFiles[index];
-            this.filesList.push(file);
-            this.isFileSentList.push(false);
-            this.send_file(file, () => {
-            index++;
+            console.log("Adding files");
+            const newFiles = [...event.target.files];
+            let index = 0;
+            const sendNextFile = () => {
+                if (index >= newFiles.length) {
+                console.log(`Files_list: ${this.filesList}`);
+                return;
+                }
+                const file = newFiles[index];
+                this.filesList.push(file);
+                this.isFileSentList.push(false);
+                this.send_file(file, () => {
+                index++;
+                sendNextFile();
+                }
+                );
+            };
             sendNextFile();
-            }
-            );
-        };
-        sendNextFile();
         }
     },
     watch: {

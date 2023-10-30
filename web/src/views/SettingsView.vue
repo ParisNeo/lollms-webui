@@ -2988,6 +2988,9 @@ export default {
         update_binding(value) {
             // eslint-disable-next-line no-unused-vars
             this.isLoading = true
+            this.$store.state.modelsZoo=[]
+            this.configFile.model_name = null
+            this.$store.state.config.model_name = null
             console.log("updating binding_name")
             this.update_setting('binding_name', value, async (res) => {
                 console.log("updated binding_name")
@@ -3002,10 +3005,16 @@ export default {
 
                 this.settingsChanged = true
                 this.isLoading = false
+                nextTick(() => {
+                    feather.replace()
+
+                })
+
 
                 console.log("updating model")
                 // If binding changes then reset model
                 this.update_model(null).then(()=>{
+                    
                 });
 
 
@@ -3014,6 +3023,11 @@ export default {
 
                 })
             })
+            nextTick(() => {
+                feather.replace()
+
+            })
+
 
         },
         async update_model(value) {

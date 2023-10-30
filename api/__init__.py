@@ -426,7 +426,7 @@ class LoLLMsAPPI(LollmsApplication):
         def uninstall_model(data):
             model_path = data['path']
             model_type:str=data.get("type","ggml")
-            installation_dir = self.binding.searchModelParentFolder()
+            installation_dir = self.binding.searchModelParentFolder(model_path)
             
             binding_folder = self.config["binding_name"]
             if model_type=="gptq":
@@ -700,18 +700,30 @@ class LoLLMsAPPI(LollmsApplication):
         @self.socketio.on('create_empty_message')
         def create_empty_message(data):
             client_id = request.sid
-            if self.personality is None:
-                self.notify("Select a personality",False,None)
-                return
-            ASCIIColors.info(f"Text generation requested by client: {client_id}")
-            # send the message to the bot
-            print(f"Creating an empty message for AI answer orientation")
-            if self.connections[client_id]["current_discussion"]:
-                if not self.model:
-                    self.notify("No model selected. Please make sure you select a model before starting generation", False, client_id)
-                    return          
-                self.new_message(client_id, self.personality.name, "<edit this to put your ai answer start>")
-                self.socketio.sleep(0.01)            
+            type = data.get("type",0)
+            if type==0:
+                ASCIIColors.info(f"Building empty User message requested by : {client_id}")
+                # send the message to the bot
+                print(f"Creating an empty message for AI answer orientation")
+                if self.connections[client_id]["current_discussion"]:
+                    if not self.model:
+                        self.notify("No model selected. Please make sure you select a model before starting generation", False, client_id)
+                        return          
+                    self.new_message(client_id, self.config.user_name, "", sender_type=SENDER_TYPES.SENDER_TYPES_USER)
+                    self.socketio.sleep(0.01)            
+            else:
+                if self.personality is None:
+                    self.notify("Select a personality",False,None)
+                    return
+                ASCIIColors.info(f"Building empty AI message requested by : {client_id}")
+                # send the message to the bot
+                print(f"Creating an empty message for AI answer orientation")
+                if self.connections[client_id]["current_discussion"]:
+                    if not self.model:
+                        self.notify("No model selected. Please make sure you select a model before starting generation", False, client_id)
+                        return          
+                    self.new_message(client_id, self.personality.name, "[edit this to put your ai answer start]")
+                    self.socketio.sleep(0.01)            
 
         # A copy of the original lollms-server generation code needed for playground
         @self.socketio.on('generate_text')
@@ -1302,8 +1314,8 @@ class LoLLMsAPPI(LollmsApplication):
 
     def new_message(self, 
                             client_id, 
-                            sender, 
-                            content,
+                            sender=None, 
+                            content="",
                             parameters=None,
                             metadata=None,
                             ui=None,
@@ -1312,7 +1324,8 @@ class LoLLMsAPPI(LollmsApplication):
                         ):
         
         mtdt = metadata if metadata is None or type(metadata) == str else json.dumps(metadata, indent=4)
-        
+        if sender==None:
+            sender= self.personality.name
         msg = self.connections[client_id]["current_discussion"].add_message(
             message_type        = message_type.value,
             sender_type         = sender_type.value,
@@ -1329,7 +1342,7 @@ class LoLLMsAPPI(LollmsApplication):
 
         self.socketio.emit('new_message',
                 {
-                    "sender":                   self.personality.name,
+                    "sender":                   sender,
                     "message_type":             message_type.value,
                     "sender_type":              SENDER_TYPES.SENDER_TYPES_AI.value,
                     "content":                  content,

@@ -931,7 +931,6 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 try:
                     if self.binding:
                         self.binding.destroy_model()
-
                     self.binding = None
                     self.model = None
                     for per in self.mounted_personalities:
@@ -2129,13 +2128,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                             entry["value"] = [entry["value"]]
                 self.binding.binding_config.update_template(data)
                 self.binding.binding_config.config.save_config()
-                self.binding = None
-                self.model = None
-                for per in self.mounted_personalities:
-                    per.model = None
-                gc.collect()
-                self.binding= BindingBuilder().build_binding(self.config, self.lollms_paths)
-                self.model = self.binding.build_model()
+                self.binding.settings_updated()
                 if self.config.auto_save:
                     ASCIIColors.info("Saving configuration")
                     self.config.save_config()

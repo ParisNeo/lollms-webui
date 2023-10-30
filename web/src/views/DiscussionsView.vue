@@ -218,6 +218,9 @@
                 </div>
             </div>
         </div>
+        <div class="absolute bottom-0 left-0 w-full bg-blue-200 dark:bg-blue-800 text-white py-2 cursor-pointer hover:text-green-500" @click="showDatabaseSelector">
+            <p class="ml-2">Current database: {{ formatted_database_name }}</p>
+        </div>
     </div>
     </transition>
     <div v-if="isReady" class="relative flex flex-col flex-grow " @dragover.stop.prevent="setDropZoneChat()">
@@ -253,7 +256,8 @@
             <div class=" bottom-0 container flex flex-row items-center justify-center " v-if="currentDiscussion.id">
                 <ChatBox ref="chatBox" 
                     @messageSentEvent="sendMsg" 
-                    @createEmptyMessage="createEmptyMessage"
+                    @createEmptyUserMessage="createEmptyUserMessage"
+                    @createEmptyAIMessage="createEmptyAIMessage"
                     :loading="isGenerating" 
                     :discussionList="discussionArr" 
                     @stopGenerating="stopGenerating" 
@@ -427,6 +431,9 @@ export default {
         }
     },
     methods: {     
+        showDatabaseSelector() {
+            this.database_selectorDialogVisible = true;
+        },        
         async ondatabase_selectorDialogSelected(choice){
             console.log("Selected:",choice)
         },
@@ -1016,8 +1023,11 @@ export default {
                 console.log("Error: Could not get generation status", error);
             });
         },
-        createEmptyMessage(){
-            socket.emit('create_empty_message', {});
+        createEmptyUserMessage(){
+            socket.emit('create_empty_message', {"type":0}); // 0 for user and 1 for AI
+        },
+        createEmptyAIMessage(){
+            socket.emit('create_empty_message', {"type":1}); // 0 for user and 1 for AI
         },
         sendMsg(msg) {
             // Sends message to binding
@@ -1755,6 +1765,11 @@ export default {
         
     },
     computed: { 
+        formatted_database_name() {
+            const db_name = this.$store.state.config.db_path;
+            const trimmed_name = db_name.slice(0, db_name.length - 3);
+            return trimmed_name;
+        },
         UseDiscussionHistory() {
             return this.$store.state.config.use_discussions_history;
         }, 
