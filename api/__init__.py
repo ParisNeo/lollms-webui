@@ -34,6 +34,7 @@ import re
 import string
 import requests
 from datetime import datetime
+from typing import List, Tuple
 
 def terminate_thread(thread):
     if thread:
@@ -1194,76 +1195,222 @@ class LoLLMsAPPI(LollmsApplication):
         return cleaned_string
     
 
-    def prepare_query(self, client_id, message_id=-1, is_continue=False):
+    def prepare_query(self, client_id: str, message_id: int = -1, is_continue: bool = False, n_tokens: int = 0) -> Tuple[str, str, List[str]]:
+        """
+        Prepares the query for the model.
+
+        Args:
+            client_id (str): The client ID.
+            message_id (int): The message ID. Default is -1.
+            is_continue (bool): Whether the query is a continuation. Default is False.
+            n_tokens (int): The number of tokens. Default is 0.
+
+        Returns:
+            Tuple[str, str, List[str]]: The prepared query, original message content, and tokenized query.
+        """
+
+        # Get the list of messages
         messages = self.connections[client_id]["current_discussion"].get_messages()
-        full_message_list = []
+
+        # Find the index of the message with the specified message_id
+        message_index = -1
         for i, message in enumerate(messages):
-            if message.id< message_id or (message_id==-1 and i<len(messages)-1): 
-                if message.content!='' and (message.message_type<=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER.value and message.message_type!=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value):
-                    full_message_list.append("\n"+self.config.discussion_prompt_separator+message.sender+": "+message.content.strip())
-            else:
+            if message.id == message_id:
+                message_index = i
                 break
-
-        link_text = "\n" #self.personality.link_text
-        if not is_continue:
-            full_message_list.append(self.config.discussion_prompt_separator +message.sender.strip().replace(":","")+": "+message.content.strip()+link_text+self.personality.ai_message_prefix.strip())
-        else:
-            full_message_list.append(self.config.discussion_prompt_separator +message.sender.strip().replace(":","")+": "+message.content.strip())
-
-
-        composed_messages = link_text.join(full_message_list)
-        t = self.model.tokenize(composed_messages)
-        cond_tk = self.model.tokenize(self.personality.personality_conditioning)
-        n_t = len(t)
-        n_cond_tk = len(cond_tk)
-        max_prompt_stx_size = 3*int(self.config.ctx_size/4)
-        if n_cond_tk+n_t>max_prompt_stx_size:
-            nb_tk = max_prompt_stx_size-n_cond_tk
-            composed_messages = self.model.detokenize(t[-nb_tk:])
-            ASCIIColors.warning(f"Cropping discussion to fit context [using {nb_tk} tokens/{self.config.ctx_size}]")
-        discussion_messages = composed_messages
         
-        
+        # Define current message
+        current_message = messages[message_index]
+
+        # Build the conditionning text block
         conditionning = self.personality.personality_conditioning
-        if self.config["override_personality_model_parameters"]:
-            conditionning = conditionning+ "\n!@>user description:\nName:"+self.config["user_name"]+"\n"+self.config["user_description"]+"\n"
 
-        str_docs = ""
-
-        if self.config.use_discussions_history:
-            if self.discussions_store is not None:
-                pr = PromptReshaper("{{conditionning}}\n!@>document chunks:\n{{doc}}\n{{content}}")
-                docs, sorted_similarities = self.discussions_store.recover_text(message.content, top_k=self.config.data_vectorization_nb_chunks)     
-                for doc, infos in zip(docs, sorted_similarities):
-                    str_docs+=f"discussion chunk:\ndiscussion title: {infos[0]}\nchunk content:{doc}"
-
-
-        if len(self.personality.files)>0 and self.personality.vectorizer:
-            docs, sorted_similarities = self.personality.vectorizer.recover_text(message.content, top_k=self.config.data_vectorization_nb_chunks)
+        # Check if there are document files to add to the prompt
+        documentation = ""
+        if len(self.personality.files) > 0 and self.personality.vectorizer:
+            docs, sorted_similarities = self.personality.vectorizer.recover_text(current_message.content, top_k=self.config.data_vectorization_nb_chunks)
             for doc, infos in zip(docs, sorted_similarities):
-                str_docs+=f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
+                documentation += f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
 
-        if str_docs!="":                
-            pr = PromptReshaper("{{conditionning}}\n!@>document chunks:\n{{doc}}\n{{content}}")
-            discussion_messages = pr.build({
-                                    "doc":str_docs,
-                                    "conditionning":conditionning,
-                                    "content":discussion_messages
-                                    }, self.model.tokenize, self.model.detokenize, self.config.ctx_size-self.config.min_n_predict, place_holders_to_sacrifice=["content"])
+        # Check if there is discussion history to add to the prompt
+        history = ""
+        if self.config.use_discussions_history and self.discussions_store is not None:
+            docs, sorted_similarities = self.discussions_store.recover_text(current_message.content, top_k=self.config.data_vectorization_nb_chunks)
+            for doc, infos in zip(docs, sorted_similarities):
+                history += f"discussion chunk:\ndiscussion title: {infos[0]}\nchunk content:{doc}"
+
+        # Tokenize the conditionning text and calculate its number of tokens
+        tokens_conditionning = self.model.tokenize(conditionning)
+        n_cond_tk = len(tokens_conditionning)
+
+        # Tokenize the documentation text and calculate its number of tokens
+        if len(documentation)>0:
+            tokens_documentation = self.model.tokenize(documentation)
+            n_doc_tk = len(tokens_documentation)
         else:
-            pr = PromptReshaper("{{conditionning}}\n{{content}}")
-            discussion_messages = pr.build({
-                                    "conditionning":conditionning,
-                                    "content":discussion_messages
-                                    }, self.model.tokenize, self.model.detokenize, self.config.ctx_size-self.config.min_n_predict, place_holders_to_sacrifice=["content"])
-        # remove extra returns
-        discussion_messages = self.clean_string(discussion_messages)
-        tokens = self.model.tokenize(discussion_messages)
-        if self.config["debug"]:
-            ASCIIColors.yellow(discussion_messages)
-            ASCIIColors.info(f"prompt size:{len(tokens)} tokens")
+            tokens_documentation = []
+            n_doc_tk = 0
 
-        return discussion_messages, message.content, tokens
+        # Tokenize the history text and calculate its number of tokens
+        if len(history)>0:
+            tokens_history = self.model.tokenize(history)
+            n_history_tk = len(tokens_history)
+        else:
+            tokens_history = []
+            n_history_tk = 0
+
+        # Calculate the total number of tokens between conditionning, documentation, and history
+        total_tokens = n_cond_tk + n_doc_tk + n_history_tk
+
+        # Calculate the available space for the messages
+        available_space = self.config.ctx_size - n_tokens - total_tokens
+
+        # Raise an error if the available space is 0 or less
+        if available_space<1:
+            raise Exception("Not enough space in context!!")
+
+        # Accumulate messages until the cumulative number of tokens exceeds available_space
+        tokens_accumulated = 0
+
+
+        # Initialize a list to store the full messages
+        full_message_list = []
+        # If this is not a continue request, we add the AI prompt
+        if not is_continue:
+            message_tokenized = self.model.tokenize(
+                "\n" +self.personality.ai_message_prefix.strip()
+            )
+            full_message_list.append(message_tokenized)
+            # Update the cumulative number of tokens
+            tokens_accumulated += len(message_tokenized)
+
+
+        # Accumulate messages starting from message_index
+        for i in range(message_index, -1, -1):
+            message = messages[i]
+
+            # Check if the message content is not empty and visible to the AI
+            if message.content != '' and (
+                    message.message_type <= MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER.value and message.message_type != MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value):
+
+                # Tokenize the message content
+                message_tokenized = self.model.tokenize(
+                    "\n" + self.config.discussion_prompt_separator + message.sender + ": " + message.content.strip())
+
+                # Check if adding the message will exceed the available space
+                if tokens_accumulated + len(message_tokenized) > available_space:
+                    break
+
+                # Add the tokenized message to the full_message_list
+                full_message_list.insert(0, message_tokenized)
+
+                # Update the cumulative number of tokens
+                tokens_accumulated += len(message_tokenized)
+
+        # Build the final discussion messages by detokenizing the full_message_list
+        discussion_messages = ""
+        for message_tokens in full_message_list:
+            discussion_messages += self.model.detokenize(message_tokens)
+
+        # Build the final prompt by concatenating the conditionning and discussion messages
+        prompt_data = conditionning + discussion_messages
+
+        # Tokenize the prompt data
+        tokens = self.model.tokenize(prompt_data)
+
+        # if this is a debug then show prompt construction details
+        if self.config["debug"]:
+            ASCIIColors.bold("CONDITIONNING")
+            ASCIIColors.yellow(conditionning)
+            ASCIIColors.bold("DOC")
+            ASCIIColors.yellow(documentation)
+            ASCIIColors.bold("HISTORY")
+            ASCIIColors.yellow(history)
+            ASCIIColors.bold("DISCUSSION")
+            ASCIIColors.hilight(discussion_messages,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
+            ASCIIColors.bold("Final prompt")
+            ASCIIColors.hilight(prompt_data,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
+            ASCIIColors.info(f"prompt size:{len(tokens)} tokens") 
+            ASCIIColors.info(f"available space after doc and history:{available_space} tokens") 
+
+        # Return the prepared query, original message content, and tokenized query
+        return prompt_data, current_message.content, tokens
+
+
+    """
+        def prepare_query(self, client_id, message_id=-1, is_continue=False):
+            messages = self.connections[client_id]["current_discussion"].get_messages()
+            full_message_list = []
+            for i, message in enumerate(messages):
+                if message.id< message_id or (message_id==-1 and i<len(messages)-1): 
+                    if message.content!='' and (message.message_type<=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER.value and message.message_type!=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value):
+                        full_message_list.append("\n"+self.config.discussion_prompt_separator+message.sender+": "+message.content.strip())
+                else:
+                    break
+
+            link_text = "\n" #self.personality.link_text
+            if not is_continue:
+                full_message_list.append(self.config.discussion_prompt_separator +message.sender.strip().replace(":","")+": "+message.content.strip()+link_text+self.personality.ai_message_prefix.strip())
+            else:
+                full_message_list.append(self.config.discussion_prompt_separator +message.sender.strip().replace(":","")+": "+message.content.strip())
+
+
+            composed_messages = link_text.join(full_message_list)
+            t = self.model.tokenize(composed_messages)
+            cond_tk = self.model.tokenize(self.personality.personality_conditioning)
+            n_t = len(t)
+            n_cond_tk = len(cond_tk)
+            max_prompt_stx_size = 3*int(self.config.ctx_size/4)
+            if n_cond_tk+n_t>max_prompt_stx_size:
+                nb_tk = max_prompt_stx_size-n_cond_tk
+                composed_messages = self.model.detokenize(t[-nb_tk:])
+                ASCIIColors.warning(f"Cropping discussion to fit context [using {nb_tk} tokens/{self.config.ctx_size}]")
+            discussion_messages = composed_messages
+            
+            
+            conditionning = self.personality.personality_conditioning
+            if self.config["override_personality_model_parameters"]:
+                conditionning = conditionning+ "\n!@>user description:\nName:"+self.config["user_name"]+"\n"+self.config["user_description"]+"\n"
+
+            str_docs = ""
+
+            if self.config.use_discussions_history:
+                if self.discussions_store is not None:
+                    pr = PromptReshaper("{{conditionning}}\n!@>document chunks:\n{{doc}}\n{{content}}")
+                    docs, sorted_similarities = self.discussions_store.recover_text(message.content, top_k=self.config.data_vectorization_nb_chunks)     
+                    for doc, infos in zip(docs, sorted_similarities):
+                        str_docs+=f"discussion chunk:\ndiscussion title: {infos[0]}\nchunk content:{doc}"
+
+
+            if len(self.personality.files)>0 and self.personality.vectorizer:
+                docs, sorted_similarities = self.personality.vectorizer.recover_text(message.content, top_k=self.config.data_vectorization_nb_chunks)
+                for doc, infos in zip(docs, sorted_similarities):
+                    str_docs+=f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
+
+            if str_docs!="":                
+                pr = PromptReshaper("{{conditionning}}\n!@>document chunks:\n{{doc}}\n{{content}}")
+                discussion_messages = pr.build({
+                                        "doc":str_docs,
+                                        "conditionning":conditionning,
+                                        "content":discussion_messages
+                                        }, self.model.tokenize, self.model.detokenize, self.config.ctx_size-self.config.min_n_predict, place_holders_to_sacrifice=["content"])
+            else:
+                pr = PromptReshaper("{{conditionning}}\n{{content}}")
+                discussion_messages = pr.build({
+                                        "conditionning":conditionning,
+                                        "content":discussion_messages
+                                        }, self.model.tokenize, self.model.detokenize, self.config.ctx_size-self.config.min_n_predict, place_holders_to_sacrifice=["content"])
+            # remove extra returns
+            discussion_messages = self.clean_string(discussion_messages)
+            tokens = self.model.tokenize(discussion_messages)
+            if self.config["debug"]:
+                ASCIIColors.yellow(discussion_messages)
+                ASCIIColors.info(f"prompt size:{len(tokens)} tokens")
+
+            return discussion_messages, message.content, tokens
+
+    """
+
 
     def get_discussion_to(self, client_id,  message_id=-1):
         messages = self.connections[client_id]["current_discussion"].get_messages()
@@ -1529,7 +1676,7 @@ class LoLLMsAPPI(LollmsApplication):
         self.nb_received_tokens = 0
         self.start_time = datetime.now()
         if self.model is not None:
-            ASCIIColors.info(f"warmup for generating {n_predict} tokens")
+            ASCIIColors.info(f"warmup for generating up to {n_predict} tokens")
             if self.config["override_personality_model_parameters"]:
                 output = self.model.generate(
                     prompt,
