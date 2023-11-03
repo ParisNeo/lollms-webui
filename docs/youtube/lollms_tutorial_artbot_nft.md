@@ -15,3 +15,26 @@ Therefore, let's be honest and focus on valuing the ideas behind the artwork. Wh
 Now that we've set the stage, let's unleash our imagination and embark on an artistic journey with artbot. Get ready to witness the incredible possibilities and showcase your unique artistic vision to the world through NFTs on opensea!
 
 
+
+
+
+
+
+
+To start,we assume you have already installed lollmz. If not, please refer to the previous video on my channel. In this video, we will show you how to use Artbot v2.0 on lollmz v6.7. Upgrades are constantly being added to the tool, so new features may come over time.
+
+To begin, let's go to the settings tab. Under the personalities section, select the category "Art". Now you can find Artbot. To mount it, simply press the menu and select "Mount". Great! Artbot is now mounted and selected. Let's head back to the discussions tab and press the "+" button to start a new discussion.
+
+First, let's take a look at the configurations that we can modify on this personality. To show the configuration page, just press the personality icon. As you can see, there are many configurations here. For example, you can choose the type of images to generate, ranging from artworks to photos and even game assets and icons.
+
+Next, we can select the engine. Up until this version, we support stable diffusion via the modified version of automatic1111's tool. We also support Dali2 via the OpenAI API. Please note that if you want to use Dali2, you will need to supply an OpenAI key.
+
+But that's not all! We have many other configurations available. For instance, you can activate or deactivate AI imagination block controlled by the active LLM model. You can also activate or deactivate the image generation, which can come in handy if you only want to generate the prompt and perform the generation using the stable diffusion web UI for tasks like inpainting or other complex operations. Additionally, you can use Midjourney or Dali3 (which we will support natively as soon as they release their API). There are also options to control the resolution, scaling, number of images to generate, and sampler.
+
+With these configurations, you have the power to customize your art generation experience and create truly unique and mesmerizing pieces. So what are you waiting for? Let your imagination run wild and let Artbot bring your artistic visions to life!
+
+In the next part of the video, we will learn how to generate an image using Artbot without utilizing the imagination module. To begin, simply deactivate the "imagine" option and enter your prompt. The system expects one or two lines of text. If you provide only one line, it will be considered as the positive prompt. If you provide a second line, it will be considered as the negative prompt, and the generation model will try to avoid its content.
+
+In this example, we will test a simple prompt with only a positive prompt. Once you press enter, the system will start generating the images. We will generate six images, so please wait for them to be built. Once they are ready, you can select the image you like the most and save it.
+
+Here we're going to make some Steampunk style artworks. As you can see, the artworks are good as we did use the default negative prompt which enhances the generated images. But here, we only relyed on our own positive prompt.
