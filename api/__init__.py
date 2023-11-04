@@ -1436,7 +1436,7 @@ class LoLLMsAPPI(LollmsApplication):
 
 
     
-    def notify(self, content, status, client_id):
+    def notify(self, content, status, client_id=None):
         self.socketio.emit('notification', {
                             'content': content,# self.connections[client_id]["generated_text"], 
                             'status': status
@@ -1563,7 +1563,9 @@ class LoLLMsAPPI(LollmsApplication):
         """
         Processes a chunk of generated text
         """
-
+        if not client_id in list(self.connections.keys()):
+            self.notify("Connection lost",False, client_id)
+            return
         if message_type == MSG_TYPE.MSG_TYPE_STEP:
             ASCIIColors.info("--> Step:"+chunk)
         if message_type == MSG_TYPE.MSG_TYPE_STEP_START:

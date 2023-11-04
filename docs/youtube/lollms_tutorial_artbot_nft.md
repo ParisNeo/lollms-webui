@@ -35,6 +35,9 @@ With these configurations, you have the power to customize your art generation e
 
 In the next part of the video, we will learn how to generate an image using Artbot without utilizing the imagination module. To begin, simply deactivate the "imagine" option and enter your prompt. The system expects one or two lines of text. If you provide only one line, it will be considered as the positive prompt. If you provide a second line, it will be considered as the negative prompt, and the generation model will try to avoid its content.
 
-In this example, we will test a simple prompt with only a positive prompt. Once you press enter, the system will start generating the images. We will generate six images, so please wait for them to be built. Once they are ready, you can select the image you like the most and save it.
+In this example, we will test a simple prompt with a positive prompt and my recipe negative prompt. Once you press enter, the system will start generating the images. We will generate six images, so please wait for them to be built. Once they are ready, you can select the image you like the most and save it.
 
-Here we're going to make some Steampunk style artworks. As you can see, the artworks are good as we did use the default negative prompt which enhances the generated images. But here, we only relyed on our own positive prompt.
+Here we're going to make some Steampunk style artworks. As you can see, the artworks are good as we did use the default negative prompt which enhances the generated images. It is important to learn how to prompt the AI in this imaginationless mode as you are the one who needs to do the imagination and the prompting.
+
+Now let's try to test a steampunk illustration in continuous mode. To activate this mode, just go to the settings of artbot and select continue_from_last_image. This means that the prompts will induce updates to last picture instead of starting from scratch. We can also fix the image to image denoising strength. A bigger value yields more changes to the generated image, and a smaller value yields less changes.
+
