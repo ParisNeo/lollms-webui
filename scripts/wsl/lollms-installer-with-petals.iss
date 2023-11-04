@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "lollms-with-petals"
-#define MyAppVersion "6.5"
+#define MyAppVersion "6.8"
 #define MyAppPublisher "ParisNeo"
 #define MyAppURL "https://www.lollms.com/"
 #define MyAppExeName "lollms_petals_runner.bat"

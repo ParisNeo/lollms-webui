@@ -1,4 +1,16 @@
 #!/bin/bash
+echo "      ___       ___           ___       ___       ___           ___      "
+echo "     /\__\     /\  \         /\__\     /\__\     /\__\         /\  \     "
+echo "    /:/  /    /::\  \       /:/  /    /:/  /    /::|  |       /::\  \    "
+echo "   /:/  /    /:/\:\  \     /:/  /    /:/  /    /:|:|  |      /:/\ \  \   "
+echo "  /:/  /    /:/  \:\  \   /:/  /    /:/  /    /:/|:|__|__   _\:\~\ \  \  "
+echo " /:/__/    /:/__/ \:\__\ /:/__/    /:/__/    /:/ |::::\__\ /\ \:\ \ \__\ "
+echo " \:\  \    \:\  \ /:/  / \:\  \    \:\  \    \/__/~~/:/  / \:\ \:\ \/__/ "
+echo "  \:\  \    \:\  /:/  /   \:\  \    \:\  \         /:/  /   \:\ \:\__\   "
+echo "   \:\  \    \:\/:/  /     \:\  \    \:\  \       /:/  /     \:\/:/  /   "
+echo "    \:\__\    \::/  /       \:\__\    \:\__\     /:/  /       \::/  /    "
+echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
+echo " By ParisNeo"
 
 # Update and upgrade packages
 sudo apt update
@@ -59,13 +71,39 @@ else
     # CPU installation
     echo "Using CPU for installation..."
 fi
+
+# Initilize all submodules and set them to main branch
+echo "Initializing submodules"
+git submodule update --init
+cd zoos/bindings_zoo
+git checkout main
+cd ../personalities_zoo
+git checkout main
+cd ../extensions_zoo
+git checkout main
+cd ../models_zoo
+git checkout main
+
+cd ../..
+
+cd lollms_core
+git checkout main
+
+cd ../utilities/safe_store
+git checkout main
+
+cd ../..
+
 # Install requirements
 pip install -r requirements.txt
+python -m pip install -e lollms_core --upgrade
+python -m pip install -e utilities/safe_store --upgrade
 
 # by default ubuntu will start in lollms-webui path
 echo 'cd ~/lollms-webui' >> ~/.bashrc
 # Add automatic conda activate
 echo 'conda activate ./env' >> ~/.bashrc
+
 
 # Exit WSL
 exit

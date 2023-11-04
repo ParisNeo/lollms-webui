@@ -203,7 +203,7 @@
                             <PersonalitiesCommands
                                 v-if="personalities_ready && this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands!=''" 
                                 :commandsList="this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands"
-                                :sendCommand="sendMessageEvent"
+                                :sendCommand="sendCMDEvent"
                                 :on-show-toast-message="onShowToastMessage"
                                 ref="personalityCMD"
                             ></PersonalitiesCommands>
@@ -326,7 +326,7 @@ console.log("modelImgPlaceholder:",modelImgPlaceholder)
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
     name: 'ChatBox',
-    emits: ["messageSentEvent", "stopGenerating", "loaded", "createEmptyUserMessage", "createEmptyAIMessage"],
+    emits: ["messageSentEvent", "sendCMDEvent", "stopGenerating", "loaded", "createEmptyUserMessage", "createEmptyAIMessage"],
     props: {
         onTalk: Function,
         discussionList: Array,
@@ -725,6 +725,9 @@ export default {
             this.filesList = []
             this.$emit('messageSentEvent', msg)
 
+        },
+        sendCMDEvent(cmd){
+            this.$emit('sendCMDEvent', cmd)
         },
         submitOnEnter(event) {
             if (event.which === 13) {

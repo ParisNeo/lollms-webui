@@ -86,6 +86,14 @@ export default {
             return this.$store.state.isConnected;
         }
     },
+    watch:{
+        isConnected(){
+            nextTick(() => {
+                feather.replace()
+            })
+        }
+
+    },
     data() {
         return {
             codeBlockStylesheet:'',
@@ -104,7 +112,6 @@ export default {
 
         nextTick(() => {
             feather.replace()
-
         })
 
 

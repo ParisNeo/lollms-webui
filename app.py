@@ -14,7 +14,7 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-__version__ ="6.7"
+__version__ ="6.8"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
@@ -362,6 +362,8 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         self.add_endpoint("/rename", "rename", self.rename, methods=["POST"])
         self.add_endpoint("/edit_title", "edit_title", self.edit_title, methods=["POST"])
+        self.add_endpoint("/make_title", "make_title", self.make_title, methods=["POST"])
+        
 
         self.add_endpoint(
             "/delete_discussion",
@@ -2233,6 +2235,16 @@ class LoLLMsWebUI(LoLLMsAPPI):
         self.connections[client_id]["current_discussion"] = Discussion(discussion_id, self.db)
         self.connections[client_id]["current_discussion"].rename(title)
         return jsonify({'status':True})
+    
+    def make_title(self):
+        ASCIIColors.info("Making title")
+        data                = request.get_json()
+        discussion_id       = data["id"]
+        discussion = Discussion(discussion_id, self.db)
+        title = self.make_discussion_title(discussion)
+        discussion.rename(title)
+        return jsonify({'status':True, 'title':title})
+    
     
     def delete_discussion(self):
         data            = request.get_json()

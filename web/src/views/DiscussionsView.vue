@@ -187,10 +187,6 @@
                 </div>
 
             </div>
-            <div class="z-5">
-                <DragDrop ref="dragdropDiscussion" @panelDrop="setFileListDiscussion">Drop your discussion file here
-                </DragDrop>
-            </div>
             <div class="relative flex flex-row flex-grow mb-10 z-0">
 
                 <!-- DISCUSSION LIST -->
@@ -202,8 +198,11 @@
                         <TransitionGroup v-if="list.length > 0" name="list">
                             <Discussion v-for="(item, index) in list" :key="item.id" :id="item.id" :title="item.title"
                                 :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"
-                                :checkBoxValue="item.checkBoxValue" @select="selectDiscussion(item)"
-                                @delete="deleteDiscussion(item.id)" @editTitle="editTitle"
+                                :checkBoxValue="item.checkBoxValue" 
+                                @select="selectDiscussion(item)"
+                                @delete="deleteDiscussion(item.id)" 
+                                @editTitle="editTitle" 
+                                @makeTitle="makeTitle"
                                 @checked="checkUncheckDiscussion" />
                         </TransitionGroup>
                         <div v-if="list.length < 1"
@@ -223,11 +222,7 @@
         </div>
     </div>
     </transition>
-    <div v-if="isReady" class="relative flex flex-col flex-grow " @dragover.stop.prevent="setDropZoneChat()">
-        <div class="z-20 h-max">
-            <DragDrop ref="dragdropChat" @panelDrop="setFileListChat"></DragDrop>
-        </div>
-
+    <div v-if="isReady" class="relative flex flex-col flex-grow " >
         <div id="messages-list"
             class=" z-0 flex flex-col  flex-grow  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
             :class="isDragOverChat ? 'pointer-events-none' : ''">
@@ -256,6 +251,7 @@
             <div class=" bottom-0 container flex flex-row items-center justify-center " v-if="currentDiscussion.id">
                 <ChatBox ref="chatBox" 
                     @messageSentEvent="sendMsg" 
+                    @sendCMDEvent="sendCmd"
                     @createEmptyUserMessage="createEmptyUserMessage"
                     @createEmptyAIMessage="createEmptyAIMessage"
                     :loading="isGenerating" 
@@ -271,7 +267,6 @@
         </div>
 
     </div>
-
     <Toast ref="toast">
     </Toast>
     <MessageBox ref="messageBox" />
@@ -658,6 +653,33 @@ export default {
                 this.setDiscussionLoading(id, this.loading)
             }
         },
+        async make_title(id) {
+            try {
+                if (id) {
+                    this.loading = true
+                    this.setDiscussionLoading(id, this.loading)
+                    const res = await axios.post('/make_title', {
+                        client_id: this.client_id,
+                        id: id,
+                    })
+                    console.log("Making title:",res)
+
+                    this.loading = false
+                    this.setDiscussionLoading(id, this.loading)
+                    if (res.status == 200) {
+                        const index = this.list.findIndex((x) => x.id == id)
+                        const discussionItem = this.list[index]
+                        discussionItem.title = res.data.title
+                        
+                        this.tempList = this.list
+                    }
+                }
+            } catch (error) {
+                console.log("Error: Could not edit title", error.message)
+                this.loading = false
+                this.setDiscussionLoading(id, this.loading)
+            }
+        },        
         async delete_message(id) {
             try {
                 const res = await axios.get('/delete_message', { params: { client_id: this.client_id, id: id } })
@@ -1091,6 +1113,9 @@ export default {
                 console.log("Error: Could not get generation status", error);
             });
         },
+        sendCmd(cmd){
+            socket.emit('execute_command', { command: cmd, parameters: [] });            
+        },
         notify(notif){
             self.isGenerating = false
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
@@ -1103,13 +1128,14 @@ export default {
         },
         streamMessageContent(msgObj) {
             // Streams response message content from binding
-            //console.log("Received message",msgObj)
+            console.log("Received message",msgObj)
             const discussion_id = msgObj.discussion_id
             this.setDiscussionLoading(discussion_id, true);
             if (this.currentDiscussion.id == discussion_id) {
-                this.isGenerating = true;
+                //this.isGenerating = true;
                 const index = this.discussionArr.findIndex((x) => x.id == msgObj.id)
                 const messageItem = this.discussionArr[index]
+                
                 if (
                     messageItem && (msgObj.message_type==this.msgTypes.MSG_TYPE_FULL ||
                     msgObj.message_type==this.msgTypes.MSG_TYPE_FULL_INVISIBLE_TO_AI)
@@ -1253,6 +1279,11 @@ export default {
             await this.edit_title(newTitleObj.id, newTitleObj.title)
             discussionItem.loading = false
         },
+        async makeTitle(editTitleObj) {
+            const index = this.list.findIndex((x) => x.id == editTitleObj.id)
+            await this.make_title(editTitleObj.id)
+        },
+
         checkUncheckDiscussion(event, id) {
             // If checked = true and item is not in array then add item to list
             const index = this.list.findIndex((x) => x.id == id)
@@ -1608,12 +1639,6 @@ export default {
 
 
         },
-        setDropZoneChat() {
-
-            this.isDragOverChat = true
-            this.$refs.dragdropChat.show = true
-
-        },
         async setFileListDiscussion(files) {
 
             if (files.length > 1) {
@@ -1633,15 +1658,6 @@ export default {
 
             this.isDragOverDiscussion = false
         },
-        setDropZoneDiscussion() {
-
-            this.isDragOverDiscussion = true
-            this.$refs.dragdropDiscussion.show = true
-
-        },
-
-
-
     },
     async created() {
         this.$nextTick(() => {
@@ -1652,6 +1668,16 @@ export default {
             console.log('WebSocket connection closed:', event.code, event.reason);
             this.socketIODisconnected();
         };
+        socket.on("connect_error", (error) => {
+            if (error.message === "ERR_CONNECTION_REFUSED") {
+            this.$store.state.isConnected = false
+            console.error("Connection refused. The server is not available.");
+            // Handle the ERR_CONNECTION_REFUSED error here
+            } else {
+            console.error("Connection error:", error);
+            // Handle other connection errors here
+            }
+        });        
         socket.onerror = (event) => {
             console.log('WebSocket connection error:', event.code, event.reason);
             this.socketIODisconnected();
@@ -1728,7 +1754,6 @@ export default {
         ChatBox,
         WelcomeComponent,
         Toast,
-        DragDrop,       
         ChoiceDialog        
     },
     watch: {  
@@ -1820,7 +1845,6 @@ import ChatBox from '../components/ChatBox.vue'
 import WelcomeComponent from '../components/WelcomeComponent.vue'
 import Toast from '../components/Toast.vue'
 import MessageBox from "@/components/MessageBox.vue";
-import DragDrop from '../components/DragDrop.vue'
 import feather from 'feather-icons'
 
 import axios from 'axios'

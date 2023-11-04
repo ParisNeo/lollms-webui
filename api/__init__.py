@@ -885,6 +885,18 @@ class LoLLMsAPPI(LollmsApplication):
             # Start the text generation task in a separate thread
             task = self.socketio.start_background_task(target=generate_text)
 
+        @socketio.on('execute_command')
+        def execute_command(data):
+            client_id = request.sid
+            command = data["command"]
+            parameters = data["parameters"]
+            if self.personality.processor is not None:
+                self.start_time = datetime.now()
+                self.personality.processor.callback = partial(self.process_chunk, client_id=client_id)
+                self.personality.processor.execute_command(command, parameters)
+            else:
+                self.notify("Non scripted personalities do not support commands",False,client_id)
+
         @socketio.on('generate_msg')
         def generate_msg(data):
             client_id = request.sid
@@ -1194,6 +1206,64 @@ class LoLLMsAPPI(LollmsApplication):
         cleaned_string = re.sub(pattern, '', cleaned_string)
         return cleaned_string
     
+    def make_discussion_title(self, discussion, client_id=None):
+        """
+        Builds a title for a discussion
+        """
+        # Get the list of messages
+        messages = discussion.get_messages()
+        discussion_messages = "!@>instruction: Create a short title to this discussion\n"
+        discussion_title = "\n!@>Discussion title:"
+
+        available_space = self.config.ctx_size - 150 - len(self.model.tokenize(discussion_messages))- len(self.model.tokenize(discussion_title))
+        # Initialize a list to store the full messages
+        full_message_list = []        
+        # Accumulate messages until the cumulative number of tokens exceeds available_space
+        tokens_accumulated = 0
+        # Accumulate messages starting from message_index
+        for message in messages:
+            # Check if the message content is not empty and visible to the AI
+            if message.content != '' and (
+                    message.message_type <= MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER.value and message.message_type != MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value):
+
+                # Tokenize the message content
+                message_tokenized = self.model.tokenize(
+                    "\n" + self.config.discussion_prompt_separator + message.sender + ": " + message.content.strip())
+
+                # Check if adding the message will exceed the available space
+                if tokens_accumulated + len(message_tokenized) > available_space:
+                    break
+
+                # Add the tokenized message to the full_message_list
+                full_message_list.insert(0, message_tokenized)
+
+                # Update the cumulative number of tokens
+                tokens_accumulated += len(message_tokenized)
+
+        # Build the final discussion messages by detokenizing the full_message_list
+        
+        for message_tokens in full_message_list:
+            discussion_messages += self.model.detokenize(message_tokens)
+        discussion_messages += discussion_title
+        title = [""]
+        def receive(
+                        chunk:str, 
+                        message_type:MSG_TYPE
+                    ):
+            title[0] += chunk
+            antiprompt = self.personality.detect_antiprompt(title[0])
+            if antiprompt:
+                ASCIIColors.warning(f"\nDetected hallucination with antiprompt: {antiprompt}")
+                title[0] = self.remove_text_from_string(title[0],antiprompt)
+                return False
+            else:
+                return True
+            
+        self._generate(discussion_messages, 150, client_id, receive)
+        ASCIIColors.info(title[0])
+        return title[0]
+
+
 
     def prepare_query(self, client_id: str, message_id: int = -1, is_continue: bool = False, n_tokens: int = 0) -> Tuple[str, str, List[str]]:
         """

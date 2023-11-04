@@ -30,38 +30,30 @@
 
         <!-- CONTROL BUTTONS -->
         <div class="flex items-center flex-1 max-h-6">
-            <!-- DELETE CONFIRM -->
-            <div v-if="showConfirmation && !editTitleMode" class="flex gap-3 flex-1 items-center justify-end  duration-75">
-                <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Confirm removal"
-                    type="button" @click.stop="deleteEvent()">
-                    <i data-feather="check"></i>
-                </button>
-                <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Cancel removal"
-                    type="button" @click.stop="showConfirmation = false">
-                    <i data-feather="x"></i>
-                </button>
-            </div>
             <!-- EDIT TITLE CONFIRM -->
-            <div v-if="showConfirmation && editTitleMode" class="flex gap-3 flex-1 items-center justify-end  duration-75">
+            <div v-if="showConfirmation" class="flex gap-3 flex-1 items-center justify-end  duration-75">
                 <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Discard title changes"
-                    type="button" @click.stop="editTitleMode = false">
+                    type="button" @click.stop="cancel()">
                     <i data-feather="x"></i>
                 </button>
                 <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Confirm title changes"
-                    type="button" @click.stop="editTitleEvent()">
+                    type="button" @click.stop="editTitleMode?editTitleEvent():deleteMode?deleteEvent():makeTitleEvent()">
                     <i data-feather="check"></i>
                 </button>
-
             </div>
             <!-- EDIT AND REMOVE -->
             <div v-if="!showConfirmation"
                 class="flex gap-3 flex-1 items-center justify-end invisible group-hover:visible duration-75">
+                <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Make a title" type="button"
+                    @click.stop="makeTitleMode = true">
+                    <i data-feather="type"></i>
+                </button>
                 <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Edit title" type="button"
                     @click.stop="editTitleMode = true">
                     <i data-feather="edit-2"></i>
                 </button>
-                <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Remove discussion"
-                    type="button" @click.stop="showConfirmation = true">
+                <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Remove discussion" type="button"
+                    @click.stop="deleteMode = true">
                     <i data-feather="trash"></i>
                 </button>
             </div>
@@ -76,7 +68,7 @@ import feather from 'feather-icons'
 
 export default {
     name: 'Discussion',
-    emits: ['delete', 'select', 'editTitle', 'checked'],
+    emits: ['delete', 'select', 'editTitle', 'makeTitle', 'checked'],
     props: {
         id: Number,
         title: String,
@@ -92,12 +84,20 @@ export default {
         return {
             showConfirmation: false,
             editTitleMode: false,
+            makeTitleMode: false,
+            deleteMode:false,
             editTitle: false,
             newTitle: String,
             checkBoxValue_local: false
         }
     },
     methods: {
+        cancel(){
+            this.editTitleMode = false
+            this.makeTitleMode = false
+            this.deleteMode = false
+            this.showConfirmation = false
+        },
         deleteEvent() {
             this.showConfirmation = false
             this.$emit("delete")
@@ -108,12 +108,21 @@ export default {
         editTitleEvent() {
             this.editTitle = false
             this.editTitleMode = false
+            this.makeTitleMode = false
+            this.deleteMode = false
             this.showConfirmation = false
             this.$emit("editTitle",
                 {
                     title: this.newTitle,
                     id: this.id
                 })
+        },
+        makeTitleEvent(){
+            this.$emit("makeTitle",
+                {
+                    id: this.id
+                })
+            this.showConfirmation = false
         },
         chnageTitle(text) {
             this.newTitle = text
@@ -141,6 +150,19 @@ export default {
             this.showConfirmation = newval
             this.editTitle = newval
             if (newval) {
+                nextTick(() => {
+                    try{
+                        this.$refs.titleBox.focus()
+                    }catch{}
+
+                })
+            }
+
+        },
+
+        deleteMode(newval) {
+            this.showConfirmation = newval
+            if (newval) {
 
 
                 nextTick(() => {
@@ -150,6 +172,11 @@ export default {
             }
 
         },
+        makeTitleMode(newval) {
+            this.showConfirmation = newval
+
+        },
+
         checkBoxValue(newval, oldval) {
             this.checkBoxValue_local = newval
 
