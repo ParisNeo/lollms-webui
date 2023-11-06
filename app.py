@@ -1,7 +1,6 @@
 ######
 # Project       : lollms-webui
 # Author        : ParisNeo with the help of the community
-# Supported by Nomic-AI
 # license       : Apache 2.0
 # Description   : 
 # A front end Flask application for llamacpp models.
@@ -718,10 +717,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
         personalities_folder = self.lollms_paths.personalities_zoo_path
         personalities = {}
 
-        for category_folder in  personalities_folder.iterdir():
+        for category_folder in  [self.lollms_paths.custom_personalities_path] + list(personalities_folder.iterdir()):
             cat = category_folder.stem
             if category_folder.is_dir() and not category_folder.stem.startswith('.'):
-                personalities[category_folder.name] = []
+                personalities[cat if category_folder!=self.lollms_paths.custom_personalities_path else "custom_personalities"] = []
                 for personality_folder in category_folder.iterdir():
                     pers = personality_folder.stem
                     if personality_folder.is_dir() and not personality_folder.stem.startswith('.'):
@@ -793,7 +792,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                             else:
                                 personality_info['avatar'] = ""
                             
-                            personalities[category_folder.name].append(personality_info)
+                            personalities[cat if category_folder!=self.lollms_paths.custom_personalities_path else "custom_personalities"].append(personality_info)
                         except Exception as ex:
                             ASCIIColors.warning(f"Couldn't load personality from {personality_folder} [{ex}]")
                             trace_exception(ex)
@@ -802,7 +801,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
     def get_personality(self):
         category = request.args.get('category')
         name = request.args.get('name')
-        personality_folder = self.lollms_paths.personalities_zoo_path/f"{category}"/f"{name}"
+        if category == "custom_personalities":
+            personality_folder = self.lollms_paths.custom_personalities_path/f"{name}"
+        else:
+            personality_folder = self.lollms_paths.personalities_zoo_path/f"{category}"/f"{name}"
         personality_path = personality_folder/f"config.yaml"
         personality_info = {}
         with open(personality_path) as config_file:
@@ -873,7 +875,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     self.config["active_personality_id"] = 0
                     self.config["personalities"][self.config["active_personality_id"]] = f"{self.personality_category}/{self.personality_name}"
                 
-                if self.personality_category!="Custom":
+                if self.personality_category!="custom_personalities":
                     personality_fn = self.lollms_paths.personalities_zoo_path/self.config["personalities"][self.config["active_personality_id"]]
                 else:
                     personality_fn = self.lollms_paths.personal_personalities_path/self.config["personalities"][self.config["active_personality_id"]].split("/")[-1]
@@ -1248,7 +1250,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
     def list_personalities_categories(self):
         personalities_categories_dir = self.lollms_paths.personalities_zoo_path  # replace with the actual path to the models folder
-        personalities_categories = [f.stem for f in personalities_categories_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]
+        personalities_categories = ["custom_personalities"]+[f.stem for f in personalities_categories_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]
         return jsonify(personalities_categories)
     
     def list_personalities(self):
@@ -1256,7 +1258,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
         if not category:
             return jsonify([])            
         try:
-            personalities_dir = self.lollms_paths.personalities_zoo_path/f'{category}'  # replace with the actual path to the models folder
+            if category=="custom_personalities":
+                personalities_dir = self.lollms_paths.custom_personalities_path  # replace with the actual path to the models folder
+            else:
+                personalities_dir = self.lollms_paths.personalities_zoo_path/f'{category}'  # replace with the actual path to the models folder
             personalities = [f.stem for f in personalities_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]
         except Exception as ex:
             personalities=[]
@@ -1326,7 +1331,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
     def delete_personality(self):
         category = request.args.get('category')
         name = request.args.get('name')
-        path = Path("personalities")/category/name
+        path = self.lollms_paths.personalities_zoo_path/category/name
         try:
             shutil.rmtree(path)
             return jsonify({'status':True})
@@ -1386,7 +1391,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
 
     def serve_personalities(self, filename):
-        path = str(self.lollms_paths.personalities_zoo_path/("/".join(filename.split("/")[:-1])))
+        if "custom_personalities" in filename:
+            path = str(self.lollms_paths.custom_personalities_path)
+        else:
+            path = str(self.lollms_paths.personalities_zoo_path/("/".join(filename.split("/")[:-1])))
                             
         fn = filename.split("/")[-1]
         return send_from_directory(path, fn)
@@ -1805,7 +1813,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
         language = data.get('language', None)
 
         package_path = f"{category}/{name}"
-        package_full_path = self.lollms_paths.personalities_zoo_path/package_path
+        if category=="custom_personalities":
+            package_full_path = self.lollms_paths.custom_personalities_path/f"{name}"
+        else:            
+            package_full_path = self.lollms_paths.personalities_zoo_path/package_path
+        
         config_file = package_full_path / "config.yaml"
         if config_file.exists():
             if language:
@@ -1863,7 +1875,11 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
 
         package_path = f"{category}/{name}"
-        package_full_path = self.lollms_paths.personalities_zoo_path/package_path
+        if category=="custom_personalities":
+            package_full_path = self.lollms_paths.custom_personalities_path/f"{name}"
+        else:            
+            package_full_path = self.lollms_paths.personalities_zoo_path/package_path
+        
         config_file = package_full_path / "config.yaml"
         if config_file.exists():
             ASCIIColors.info(f"Unmounting personality {package_path}")
