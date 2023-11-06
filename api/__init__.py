@@ -1298,6 +1298,8 @@ class LoLLMsAPPI(LollmsApplication):
         # Check if there are document files to add to the prompt
         documentation = ""
         if len(self.personality.files) > 0 and self.personality.vectorizer:
+            if documentation=="":
+                documentation="Documentation:\n"
             docs, sorted_similarities = self.personality.vectorizer.recover_text(current_message.content, top_k=self.config.data_vectorization_nb_chunks)
             for doc, infos in zip(docs, sorted_similarities):
                 documentation += f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
@@ -1305,6 +1307,8 @@ class LoLLMsAPPI(LollmsApplication):
         # Check if there is discussion history to add to the prompt
         history = ""
         if self.config.use_discussions_history and self.discussions_store is not None:
+            if history=="":
+                documentation="History:\n"
             docs, sorted_similarities = self.discussions_store.recover_text(current_message.content, top_k=self.config.data_vectorization_nb_chunks)
             for doc, infos in zip(docs, sorted_similarities):
                 history += f"discussion chunk:\ndiscussion title: {infos[0]}\nchunk content:{doc}"
@@ -1383,7 +1387,7 @@ class LoLLMsAPPI(LollmsApplication):
             discussion_messages += self.model.detokenize(message_tokens)
 
         # Build the final prompt by concatenating the conditionning and discussion messages
-        prompt_data = conditionning + discussion_messages
+        prompt_data = conditionning + documentation + history + discussion_messages
 
         # Tokenize the prompt data
         tokens = self.model.tokenize(prompt_data)
