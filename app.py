@@ -1392,7 +1392,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
     def serve_personalities(self, filename):
         if "custom_personalities" in filename:
-            path = str(self.lollms_paths.custom_personalities_path)
+            path = str(self.lollms_paths.custom_personalities_path/("/".join(filename.split("/")[1:-1])))
         else:
             path = str(self.lollms_paths.personalities_zoo_path/("/".join(filename.split("/")[:-1])))
                             
