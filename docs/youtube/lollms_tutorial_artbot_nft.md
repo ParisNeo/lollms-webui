@@ -106,7 +106,120 @@ Now to select our model, go back to lollms, and press the artbot contextual menu
 
 As you can see, the style has completely changed. We can see the manga like aspect of the generated images. You can try playing around with all those combinations, mixing models, your imagination, artbot imagination and your sense of beauty in order to produce even better images.
 
+To use artbot as a prompt generator, then use the advanced webui to perform more complex modifications, we can deactivate the paint option in artbot settings and start over. Now we can ask the AI to generate a prompt and then copy it and paste it in the stable diffusion web UI.
+
+We can change the batch size to increase the number of generated images.
+
+
+Now we can select a different model and regenerate using the same prompt.
+As you can see, the output has changed significantly. In fact, here we are using specialized models that tend to force the style to a specific value. Some models are more generic but they tend to be less interesting compared to the special ones.
+We can also notice that the quality of the output may vary significantly from model to model. So make sure you experiment with multiple models to get the best of your AI.
 
 You can also use the Stable diffusion webui to do inpainting, image guidance using controlnet and so much more. You can find more tutorials on stable diffusion web UI on the internet as this video is only about Artbot parts.
 
 
+Now that we know how to build interesting AI generated artworks, let's take a look at how to create an NFT for our artwork.
+As I said earlier, NFTs, or Non-Fungible Tokens, are unique digital assets that are stored on the blockchain. Unlike cryptocurrencies such as Bitcoin or Ethereum, which are fungible and can be exchanged on a one-to-one basis, NFTs cannot be modified or replicated. They are one-of-a-kind and have their own distinct value.
+Now, here's where it gets interesting. NFTs are governed by smart contracts, which are essentially sets of rules that dictate how these digital assets can be bought, sold, and traded. These contracts provide a level of security and trust, allowing NFTs to be traded even though they exist in a digital form that can be easily copied.
+
+Unlike traditional assets like stocks or real estate, the value of an NFT is not solely determined by its scarcity or physical attributes. Instead, it's the underlying factors that contribute to its value. Here are a few key elements:
+
+Authenticity: NFTs are unique and verifiable on the blockchain, ensuring their authenticity. This scarcity and proof of ownership can significantly increase their value.
+
+Reputation: The reputation of the creator or artist behind an NFT plays a crucial role in determining its value. Established artists or well-known creators often command higher prices for their NFTs due to their track record and fan base.
+
+Rarity: Just like in the physical world, rarity can drive up the value of an NFT. If there are only a limited number of copies or editions available, the demand for that particular NFT can increase its value.
+
+Utility and Functionality: Some NFTs have additional utility or functionality beyond their visual appeal. For example, an NFT could grant access to exclusive content, virtual experiences, or even real-world perks. This added utility can enhance its value in the eyes of collectors and enthusiasts.
+
+Market Demand: Ultimately, the value of an NFT is determined by the market. If there is high demand and competition for a particular NFT, its value can skyrocket. Factors such as current trends, popular themes, and cultural relevance can all influence market demand.
+
+Now that we understand the vague idea about NFTs, here is how to generate one using opensea.
+
+First, you need a crypto wallet as NFTs require what we call gas fee to generate and trade. On opensea, we use etherium as the cryptocurrency.
+
+So you need to create a wallet then to link it to opensea.
+
+When you load opensea, you can press login and sign with your current wallet. I use metamask, but there are multiple optiions out there.
+
+To begin, you have two options: creating a single NFT or dropping a collection. Let's take a closer look at each one.
+Option 1: Create a Single NFT
+If you have a specific piece of digital art, music, or any other digital asset that you want to turn into an NFT, this option is for you.
+Option 2: Drop a Collection
+If you have multiple pieces of digital content that you want to release as a collection, this option is perfect for you. Creating a collection allows you to showcase your work as a series or theme.
+
+When creating an NFT or a collection, it's important to consider the gas fees associated with the blockchain you choose to use. Gas fees are transaction fees that are required to be paid in order to execute operations on the blockchain, such as minting an NFT.
+
+If you choose to use a well-known blockchain like Ethereum, the gas fees tend to be higher. However, Ethereum is a stable and established blockchain with a strong track record. This means that your NFT will be secured on a reliable and widely recognized platform.
+
+On the other hand, there are newer blockchains that offer lower gas fees. While this may be more cost-effective in the short term, there may be less certainty about the future of these blockchains. It's important to weigh the pros and cons and consider the trade-offs between cost and long-term stability when choosing a blockchain for your NFTs.
+
+Ultimately, the choice of blockchain and the associated gas fees will depend on your specific needs and priorities as a creator or collector. Make sure to do your research and consider all factors before making a decision.
+
+Now we are ready to personalize our collection before dropping it. The collection will be proposed for minting which means that collectors will mint one or many items from this collection and they won't be able to see which element they won until the grand reveal. 
+
+Minting is the process of creating and issuing a new Non-Fungible Token (NFT) on the blockchain. It is similar to the concept of printing money, but in the digital realm. When you mint an NFT, you are essentially turning a digital asset, such as artwork, music, or collectibles, into a unique and verifiable token that can be bought, sold, and owned.
+
+During the minting process, you provide the necessary details and metadata for your NFT, including its title, description, and any additional information that adds value or context to the asset. Once the minting process is complete, your NFT is assigned a unique identifier and becomes part of the blockchain, ensuring its authenticity and immutability.
+
+Minting is a crucial step in the NFT creation process, as it establishes the ownership and provenance of the digital asset. It gives creators the ability to monetize their work, collectors the opportunity to own exclusive digital pieces, and the entire NFT ecosystem the foundation for secure and transparent transactions.
+
+So, if you're ready to bring your digital creations to life and join the exciting world of NFTs, get ready to mint your very own tokens and unleash their potential!
+
+
+Now let's get back to our collection. In the opensea collection editor, we can specify the collection name. You can provide a brief description, some tags and the block chain to drop the collection on. Here we choose art as tag and since we have already selected the etherium blockchain, we can't change that. You can also specify the payment token. Here I have set three token types that people can buy the NFTs with. You can also set the collection format and select collaborators if the collection was built by multiple artists.
+
+Before publishing our artworks, we're going to add some descriptions to each one. Since we have 35 unique elements, we're gonna use our NFT reshaper personality on lollms to automatically build the entire metadata information set. You can find it in art category in lollms.
+
+
+First set the path to the folder containing our collection in the personality settings.
+
+Then type start and wait for the magic to happen.
+
+
+The AI starts looking at the images one by one and builds the metadata file. You can look at the files individually and read their descriptions. It will add those descriptions to the csv file. These will be the files that you'll find in the collecvtion.
+
+You can find some of the artworks we have generated during this video there but when we drop the collection for minting, the collectors can't know beforehand which artwork they are minting. All they can know is that the artwork is one of those I have shown here. I myself don't even know which artwork you can get. The real value is in the entire collection. Minting multiple artworks allows you to maximize your chance to have the art work you really like. 
+
+
+If you didn't get the artwork you like, you can still buy it from another collector if they propose it for sale. But if an artwork was never minted, it will not be minted and so, no one will ever be able to buy it unless I put it in another collection.
+
+You should only create NFTs of photos for which you have the legal rights and ownership. If you are the photographer or artist and hold the copyright to the image, or if you have explicit permission from the copyright holder, then you can proceed. Using someone else's copyrighted photo without permission is not only unethical but also illegal. Also, since NFT value is tightly linked to the original artist, it can't have the same value. It is like buying an artwork copy of mona lisa. That artwork would not have the same price than the real thing, because the owner is not the real artist.
+
+Now Here are the 35 items in our collection.
+
+
+Now, let's Add our images and the generated metadata to the collection then press upload. once uploaded we can press continue and wait for the data to be processed. This may take a long time so let's move on.
+
+Once the importing is done, you can preview the items of the collection and see their description.  If you have done multiple uploads, sometimes the image descriptions get mingled. Don't worry, it is just a bug in their system that should be fixed. So try not to do multiple uploads to prevent this from happening.
+
+Now in settings page, we select a limited edition and set the items number to 35 which means each one of our images will be unique. We can also set the start of the minting and we define the public mint stage. There we fix the price of each element, the minting duration, and per-wallet mint limit which should forbid the collection from being owned by a single entity. Let's deactivate that. You can also set a pre-reveal image and description so that the people who mint the items have some idea about the artworks shared.
+
+Now we are ready to publish the drop. Press publish the drop and sign the transaction. Make sure you verify the fees on the block chain. For example, here the fees are very high. I advice you to wait till the fees are low enough before validating. You can literally have a factor of three between fees, so why the rush, just wait till you get a good low price.
+
+After waiting for a while we started to have some reasonable prices. We can wait even more but I need to publish this video so I'll stick with the 18$ price so  that I can show you how. Now we sign and validate. This will remove an amount of etherium from my wallet and perform the drop.
+
+Congratulations folks, We successfully published our Artbot Steampunk collection. We can share it on social media if we want. Let's go to the collection and mint some items.
+
+Here I'll mint two items from the collection and I'll leave the rest to you, if you are interested. You can pay in crypto or using a card. I'll just use my crypto wallet to buy the two items. As any transaction, there will be fees to the network here we pay the equivalent of 6$ for a total of 30$ purshace. You can wait to get better prices, but I'll just go along since my main objective is to show you how it works. For this collection, I did set a low price compared to the fees, but you can set any price you want. I want this collection to be collected so a lower price should help.
+
+Once you have minted the items, they're yours, but they are not revealed yet until the last day of the drop or until I decide that I want to stop the minting duration because all items are already sold out. In this collection, I have set the duration to 15 days starting from november second.
+
+You can see that I have already minted the colorful cyber bot and the colorful moustache steam bot. All the other items are still available as of now. You can list the items for sale with higher price or just keep them as collectables that you can show to your friends. These are like pokémon card or baseball cards. They may become more valuable in the future.
+
+To list for sale, just select the item, and press List for sale. You can set multiple parameters. For example, you can set a fixed price, or sell to the highest bidder. You can set a sale duration and multiple other settings. Be aware that opensees charge fees for those transactions. Also, you can tip the original creator by offering up to 10% of the selling price. You can select a lower value if you want, but the creator earnings ensure that an NFT that suddenly becomes very pricy, can give back to its original creator in one way or another.
+
+Once again, there is always the network gas fee. Here it is around 2.78$. I'm not selling this item, I'm just showing you, but if you want to sell, just sign the transaction and your item is on sail.
+
+Be aware that transactions require fees. And we are on Etherium blokchain which has pretty high fees. The sale of the collection elements should compensate the price, the network fees and the opensea fees or it would be a loss especially that non minted items are out of the final collection. Here between all fees, I spent around 40$ to build the collection which is decent considering that we are on etherium blockchain. I could have spent less if I automated the minting process, but maybe some day I'll build a lollms personality that can optimize the transactions process to minimize fees.  
+
+In this video, we have learned about Artbot and the different ways we can use it to build stunning artworks and evolve our ideas. We also learned about NFTs, how to build them, how to share them, and how to use NFT Reshaper to prepare the NFT metadata for us. We have also learned how to create and drop a collection and how to mint a collection, and sell our NFTs. 
+
+The collection we have created in this video is available in the description, If you liked the video and think the items are valuable, you can mint them before the end of the mint time. If the items are minted by someone else, you will be able to buy them after that if their owners want to sell them but it will probably be more expensive than the initial price as they gain interest and value over time. Note that if no one buyes an Item it wil not be minted on the blockchain which means it is not tradable and no one will be able to own it.
+
+Any way, If you liked this video, and don't want to buy NFTs, just leave a thumb up, subscribe to the channel for more videos about LoLLMs and its amazing tools and consider sharing the video with people. That helps alot.
+
+This video took me more than a week to make. You can tell by the advancement of lollms ui over the course of the week. It is a long process even with the help of AI, as I am building the tool while making the videos. I hope you liked this.
+
+Thanks for watching. 
+See ya
