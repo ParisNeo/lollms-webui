@@ -1397,9 +1397,12 @@ class LoLLMsAPPI(LollmsApplication):
             ASCIIColors.bold("HISTORY")
             ASCIIColors.yellow(history)
             ASCIIColors.bold("DISCUSSION")
-            ASCIIColors.hilight(discussion_messages,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
+            # TODO: upghrade to asciicolors 0.1.4
+            # ASCIIColors.hilight(discussion_messages,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
+            ASCIIColors.yellow(discussion_messages)
             ASCIIColors.bold("Final prompt")
-            ASCIIColors.hilight(prompt_data,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
+            # ASCIIColors.hilight(prompt_data,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
+            ASCIIColors.yellow(prompt_data)
             ASCIIColors.info(f"prompt size:{len(tokens)} tokens") 
             ASCIIColors.info(f"available space after doc and history:{available_space} tokens") 
 
