@@ -23,6 +23,7 @@ def run_git_pull():
                     print(f"Checking out main from {submodule}")
                     submodule.repo.git.submodule('update', '--remote', submodule.name)  # Force submodule update
                     print(f"Forcing update on {submodule}")
+                    submodule_repo.git.checkout('main')
 
                 except Exception as ex:
                     print(f"Couldn't checkout module {submodule}")
