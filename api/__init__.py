@@ -1683,6 +1683,8 @@ class LoLLMsAPPI(LollmsApplication):
             self.close_message(client_id)
 
         elif message_type == MSG_TYPE.MSG_TYPE_CHUNK:
+            if self.nb_received_tokens:
+                self.start_time = datetime.now()
             dt =(datetime.now() - self.start_time).seconds
             if dt==0:
                 dt=1
