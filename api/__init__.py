@@ -1055,7 +1055,7 @@ class LoLLMsAPPI(LollmsApplication):
             if 0 <= index < len(mounted_extensions):
                 mounted_extensions.pop(index)
                 self.config["personalities"].pop(index)
-                ASCIIColors.info(f"removed personality {personality_path}")
+                ASCIIColors.info(f"removed personality {extension_path}")
 
         if self.config["active_personality_id"]>=len(self.config["personalities"]):
             self.config["active_personality_id"]=0
