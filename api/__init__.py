@@ -2,7 +2,6 @@
 # Project       : lollms-webui
 # File          : api.py
 # Author        : ParisNeo with the help of the community
-# Supported by Nomic-AI
 # license       : Apache 2.0
 # Description   : 
 # A simple api to communicate with lollms-webui and its models.
