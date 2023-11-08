@@ -115,7 +115,7 @@ def parse_requirements_file(requirements_path):
 class LoLLMsAPPI(LollmsApplication):
     def __init__(self, config:LOLLMSConfig, socketio, config_file_path:str, lollms_paths: LollmsPaths) -> None:
 
-        super().__init__("Lollms_webui",config, lollms_paths, callback=self.process_chunk)
+        super().__init__("Lollms_webui",config, lollms_paths, callback=self.process_chunk, notification_callback=self.notify)
 
 
         self.busy = False
@@ -1405,7 +1405,7 @@ class LoLLMsAPPI(LollmsApplication):
             # ASCIIColors.hilight(discussion_messages,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
             ASCIIColors.yellow(discussion_messages)
             ASCIIColors.bold("Final prompt")
-            # ASCIIColors.hilight(prompt_data,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
+            #ASCIIColors.hilight(prompt_data,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
             ASCIIColors.yellow(prompt_data)
             ASCIIColors.info(f"prompt size:{len(tokens)} tokens") 
             ASCIIColors.info(f"available space after doc and history:{available_space} tokens") 

@@ -909,7 +909,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                         self.config.personalities= ["generic/lollms"]
                         self.mount_personality(0)
                     gc.collect()
-                    self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
+                    self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths, self.notify)
                     
                     self.model = self.binding.build_model()
                     for per in self.mounted_personalities:
@@ -940,7 +940,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                     for per in self.mounted_personalities:
                         per.model = None
                     gc.collect()
-                    self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths)
+                    self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths, self.notify)
                     self.model = None
                     self.config.save_config()
                     ASCIIColors.green("Model loaded successfully")
@@ -1569,10 +1569,10 @@ class LoLLMsWebUI(LoLLMsAPPI):
             ASCIIColors.info("Reinstalling binding")
             old_bn = self.config.binding_name
             self.config.binding_name = data['name']
-            self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL)
+            self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL, self.notify)
             ASCIIColors.success("Binding reinstalled successfully")
             self.config.binding_name = old_bn
-            self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths)
+            self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, self.notify)
             self.model = self.binding.build_model()
             for per in self.mounted_personalities:
                 per.model = self.model
@@ -1598,7 +1598,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 per.model = None
             gc.collect()
             ASCIIColors.info("UnInstalling binding")
-            self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL)
+            self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL, self.notify)
             self.binding.uninstall()
             ASCIIColors.success("Binding UnInstalled successfully")
             self.config.binding_name= None
@@ -1776,7 +1776,7 @@ class LoLLMsWebUI(LoLLMsAPPI):
                 personality.model = None
             gc.collect()
             ASCIIColors.info("Reloading binding")
-            self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths)
+            self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, self.notify)
             ASCIIColors.info("Binding loaded successfully")
 
             try:
