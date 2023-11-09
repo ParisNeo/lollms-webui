@@ -1,5 +1,5 @@
 <template>
-  <div v-html="evaluatedCode">
+  <div v-html="evaluatedCode" :key="componentKey">
   </div>
 </template>
 
@@ -11,13 +11,16 @@ export default {
   data() {
     return {
       evaluatedCode: '', // Store the evaluated code
+      componentKey: 0,
     };
   },
   watch: {
     code: {
       handler(newCode) {
         // Extract and evaluate script tags from the new code
+        console.log("Code changed")
         this.evaluateScriptTags(newCode);
+        this.componentKey++;
       },
       immediate: true, // Trigger the handler immediately when the component is mounted
     },
@@ -41,6 +44,7 @@ export default {
 
       // Set the evaluated code to the modified HTML
       this.evaluatedCode = tempDiv.innerHTML;
+      console.log("evaluated code: " + this.evaluatedCode)
     },
   },
 };

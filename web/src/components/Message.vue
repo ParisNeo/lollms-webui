@@ -162,7 +162,7 @@
                         </div>
                     </div>
 
-                    <DynamicUIRenderer v-if="message.ui !== null && message.ui !== undefined && message.ui !== ''" class="w-full h-full" :code="message_ui"></DynamicUIRenderer>
+                    <DynamicUIRenderer v-if="message.ui !== null && message.ui !== undefined && message.ui !== ''" class="w-full h-full" :code="message.ui"></DynamicUIRenderer>
                         
 
                 </div>
@@ -487,7 +487,7 @@ export default {
         },
         'message.ui': function (newContent) {
             console.log("ui changed")
-            console.log(this.message_ui)
+            console.log(this.message.ui)
         },
         showConfirmation() {
             nextTick(() => {
@@ -513,11 +513,6 @@ export default {
 
     },
     computed: {
-        message_ui:{
-            get(){
-                return this.message.ui
-            }
-        },
         isTalking :{
             get(){
                 return this.isSpeaking
