@@ -13,7 +13,7 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-__version__ ="6.8"
+__version__ ="7.0 (Alpha)"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
@@ -144,7 +144,6 @@ try:
     logging.basicConfig(level=logging.WARNING)
 
 
-
     def get_ip_address():
         # Create a socket object
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -194,7 +193,7 @@ try:
             if config.auto_update:
                 if check_update_():
                     ASCIIColors.info("New version found. Updating!")
-                    self.update_software()
+                    run_update_script()
 
             if len(config.personalities)==0:
                 config.personalities.append("generic/lollms")
@@ -360,6 +359,8 @@ try:
             self.add_endpoint("/edit_title", "edit_title", self.edit_title, methods=["POST"])
             self.add_endpoint("/make_title", "make_title", self.make_title, methods=["POST"])
             
+            self.add_endpoint("/get_server_address", "get_server_address", self.get_server_address, methods=["GET"])
+            
 
             self.add_endpoint(
                 "/delete_discussion",
@@ -480,6 +481,10 @@ try:
             )
             
             
+
+        def get_server_address(self):
+            server_address = request.host_url
+            return server_address
 
         def execute_python(self, code, discussion_id, message_id):
             def spawn_process(code):
@@ -1716,7 +1721,7 @@ try:
         def get_current_personality_files_list(self):
             if self.personality is None:
                 return jsonify({"state":False, "error":"No personality selected"})
-            return jsonify({"state":True, "files":[{"name":Path(f).name, "size":Path(f).stat().st_size} for f in self.personality.files]})
+            return jsonify({"state":True, "files":[{"name":Path(f).name, "size":Path(f).stat().st_size} for f in self.personality.text_files]})
 
         def clear_personality_files_list(self):
             if self.personality is None:
@@ -2540,9 +2545,14 @@ try:
         # if autoshow
         if config.auto_show_browser:
             webbrowser.open(f"http://{config['host']}:{config['port']}")
-        socketio.run(app, host=config["host"], port=config["port"],
-                    # prevent error: The Werkzeug web server is not designed to run in production
-                    allow_unsafe_werkzeug=True)
+
+
+        try:
+            socketio.run(app, host=config["host"], port=config["port"],
+                        # prevent error: The Werkzeug web server is not designed to run in production
+                        allow_unsafe_werkzeug=True)
+        except Exception as ex:
+            trace_exception(ex)
         # http_server = WSGIServer((config["host"], config["port"]), app, handler_class=WebSocketHandler)
         # http_server.serve_forever()
 except Exception as ex:

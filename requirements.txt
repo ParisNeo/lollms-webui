@@ -15,4 +15,4 @@ GitPython
 setuptools
 numpy==1.24
 flask_compress
-ascii_colors>=0.1.3
+ascii_colors>=0.1.4

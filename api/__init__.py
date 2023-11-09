@@ -726,6 +726,7 @@ class LoLLMsAPPI(LollmsApplication):
 
                         try:
                             ASCIIColors.print("warming up", ASCIIColors.color_bright_cyan)
+                            
                             generated_text = model.generate(fd, 
                                                             n_predict=n_predicts, 
                                                             callback=callback,
@@ -1192,7 +1193,8 @@ class LoLLMsAPPI(LollmsApplication):
                         chunk:str, 
                         message_type:MSG_TYPE
                     ):
-            title[0] += chunk
+            if chunk:
+                title[0] += chunk
             antiprompt = self.personality.detect_antiprompt(title[0])
             if antiprompt:
                 ASCIIColors.warning(f"\nDetected hallucination with antiprompt: {antiprompt}")
@@ -1239,7 +1241,7 @@ class LoLLMsAPPI(LollmsApplication):
 
         # Check if there are document files to add to the prompt
         documentation = ""
-        if len(self.personality.files) > 0 and self.personality.vectorizer:
+        if len(self.personality.text_files) > 0 and self.personality.vectorizer:
             if documentation=="":
                 documentation="Documentation:\n"
             docs, sorted_similarities = self.personality.vectorizer.recover_text(current_message.content, top_k=self.config.data_vectorization_nb_chunks)
@@ -1344,91 +1346,14 @@ class LoLLMsAPPI(LollmsApplication):
             ASCIIColors.yellow(history)
             ASCIIColors.bold("DISCUSSION")
             # TODO: upghrade to asciicolors 0.1.4
-            # ASCIIColors.hilight(discussion_messages,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
-            ASCIIColors.yellow(discussion_messages)
+            ASCIIColors.hilight(discussion_messages,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
             ASCIIColors.bold("Final prompt")
-            #ASCIIColors.hilight(prompt_data,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
-            ASCIIColors.yellow(prompt_data)
+            ASCIIColors.hilight(prompt_data,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
             ASCIIColors.info(f"prompt size:{len(tokens)} tokens") 
             ASCIIColors.info(f"available space after doc and history:{available_space} tokens") 
 
         # Return the prepared query, original message content, and tokenized query
         return prompt_data, current_message.content, tokens
-
-
-    """
-        def prepare_query(self, client_id, message_id=-1, is_continue=False):
-            messages = self.connections[client_id]["current_discussion"].get_messages()
-            full_message_list = []
-            for i, message in enumerate(messages):
-                if message.id< message_id or (message_id==-1 and i<len(messages)-1): 
-                    if message.content!='' and (message.message_type<=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER.value and message.message_type!=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value):
-                        full_message_list.append("\n"+self.config.discussion_prompt_separator+message.sender+": "+message.content.strip())
-                else:
-                    break
-
-            link_text = "\n" #self.personality.link_text
-            if not is_continue:
-                full_message_list.append(self.config.discussion_prompt_separator +message.sender.strip().replace(":","")+": "+message.content.strip()+link_text+self.personality.ai_message_prefix.strip())
-            else:
-                full_message_list.append(self.config.discussion_prompt_separator +message.sender.strip().replace(":","")+": "+message.content.strip())
-
-
-            composed_messages = link_text.join(full_message_list)
-            t = self.model.tokenize(composed_messages)
-            cond_tk = self.model.tokenize(self.personality.personality_conditioning)
-            n_t = len(t)
-            n_cond_tk = len(cond_tk)
-            max_prompt_stx_size = 3*int(self.config.ctx_size/4)
-            if n_cond_tk+n_t>max_prompt_stx_size:
-                nb_tk = max_prompt_stx_size-n_cond_tk
-                composed_messages = self.model.detokenize(t[-nb_tk:])
-                ASCIIColors.warning(f"Cropping discussion to fit context [using {nb_tk} tokens/{self.config.ctx_size}]")
-            discussion_messages = composed_messages
-            
-            
-            conditionning = self.personality.personality_conditioning
-            if self.config["override_personality_model_parameters"]:
-                conditionning = conditionning+ "\n!@>user description:\nName:"+self.config["user_name"]+"\n"+self.config["user_description"]+"\n"
-
-            str_docs = ""
-
-            if self.config.use_discussions_history:
-                if self.discussions_store is not None:
-                    pr = PromptReshaper("{{conditionning}}\n!@>document chunks:\n{{doc}}\n{{content}}")
-                    docs, sorted_similarities = self.discussions_store.recover_text(message.content, top_k=self.config.data_vectorization_nb_chunks)     
-                    for doc, infos in zip(docs, sorted_similarities):
-                        str_docs+=f"discussion chunk:\ndiscussion title: {infos[0]}\nchunk content:{doc}"
-
-
-            if len(self.personality.files)>0 and self.personality.vectorizer:
-                docs, sorted_similarities = self.personality.vectorizer.recover_text(message.content, top_k=self.config.data_vectorization_nb_chunks)
-                for doc, infos in zip(docs, sorted_similarities):
-                    str_docs+=f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
-
-            if str_docs!="":                
-                pr = PromptReshaper("{{conditionning}}\n!@>document chunks:\n{{doc}}\n{{content}}")
-                discussion_messages = pr.build({
-                                        "doc":str_docs,
-                                        "conditionning":conditionning,
-                                        "content":discussion_messages
-                                        }, self.model.tokenize, self.model.detokenize, self.config.ctx_size-self.config.min_n_predict, place_holders_to_sacrifice=["content"])
-            else:
-                pr = PromptReshaper("{{conditionning}}\n{{content}}")
-                discussion_messages = pr.build({
-                                        "conditionning":conditionning,
-                                        "content":discussion_messages
-                                        }, self.model.tokenize, self.model.detokenize, self.config.ctx_size-self.config.min_n_predict, place_holders_to_sacrifice=["content"])
-            # remove extra returns
-            discussion_messages = self.clean_string(discussion_messages)
-            tokens = self.model.tokenize(discussion_messages)
-            if self.config["debug"]:
-                ASCIIColors.yellow(discussion_messages)
-                ASCIIColors.info(f"prompt size:{len(tokens)} tokens")
-
-            return discussion_messages, message.content, tokens
-
-    """
 
 
     def get_discussion_to(self, client_id,  message_id=-1):
@@ -1625,7 +1550,7 @@ class LoLLMsAPPI(LollmsApplication):
             self.close_message(client_id)
 
         elif message_type == MSG_TYPE.MSG_TYPE_CHUNK:
-            if self.nb_received_tokens:
+            if self.nb_received_tokens==0:
                 self.start_time = datetime.now()
             dt =(datetime.now() - self.start_time).seconds
             if dt==0:
@@ -1634,7 +1559,8 @@ class LoLLMsAPPI(LollmsApplication):
             ASCIIColors.green(f"Received {self.nb_received_tokens} tokens (speed: {spd:.2f}t/s)              ",end="\r",flush=True) 
             sys.stdout = sys.__stdout__
             sys.stdout.flush()
-            self.connections[client_id]["generated_text"] += chunk
+            if chunk:
+                self.connections[client_id]["generated_text"] += chunk
             antiprompt = self.personality.detect_antiprompt(self.connections[client_id]["generated_text"])
             if antiprompt:
                 ASCIIColors.warning(f"\nDetected hallucination with antiprompt: {antiprompt}")

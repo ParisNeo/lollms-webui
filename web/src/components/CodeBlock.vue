@@ -43,6 +43,11 @@ hljs.configure({ languages: ['bash'] }); // Set bash as the default language
 hljs.highlightAll();
 export default {
   props: {
+    host: {
+      type: String,
+      required: false,
+      default: "http://localhost:9600",
+    },
     language: {
       type: String,
       required: true,
@@ -120,7 +125,7 @@ export default {
     executeCode() {
       const json = JSON.stringify({ 'code': this.code, 'discussion_id': this.discussion_id, 'message_id': this.message_id, 'language': this.language})   
       console.log(json)     
-      fetch('http://localhost:9600/execute_code', {
+      fetch(`${this.host}/execute_code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: json
@@ -141,7 +146,7 @@ export default {
     openFolder() {
       const json = JSON.stringify({ 'discussion_id': this.discussion_id })   
       console.log(json)     
-      fetch('http://localhost:9600/open_code_folder', {
+      fetch(`${this.host}/open_code_folder`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: json

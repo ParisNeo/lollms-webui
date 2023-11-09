@@ -243,16 +243,16 @@ class DiscussionsDB:
             discussion = {"id": discussion_id, "title":discussion_title, "messages": []}
             rows = self.select(f"SELECT sender, content, message_type, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at FROM message WHERE discussion_id=?",(discussion_id,))
             for message_row in rows:
-                sender = message_row[1]
-                content = message_row[2]
-                content_type = message_row[3]
-                rank = message_row[4]
-                parent_message_id = message_row[5]
-                binding = message_row[6]
-                model = message_row[7]
-                personality = message_row[8]
-                created_at = message_row[9]
-                finished_generating_at = message_row[10]
+                sender = message_row[0]
+                content = message_row[1]
+                content_type = message_row[2]
+                rank = message_row[3]
+                parent_message_id = message_row[4]
+                binding = message_row[5]
+                model = message_row[6]
+                personality = message_row[7]
+                created_at = message_row[8]
+                finished_generating_at = message_row[9]
                 
                 discussion["messages"].append(
                     {"sender": sender, "content": content, "message_type": content_type, "rank": rank, "parent_message_id": parent_message_id, "binding": binding, "model":model, "personality":personality, "created_at":created_at, "finished_generating_at":finished_generating_at}

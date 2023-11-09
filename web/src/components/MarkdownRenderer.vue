@@ -4,6 +4,7 @@
       <div v-for="(item, index) in markdownItems" :key="index">
         <code-block
           v-if="item.type === 'code'"
+          :host="host"
           :language="item.language"
           :code="item.code"
           :discussion_id="discussion_id"
@@ -40,6 +41,11 @@ function escapeHtml(unsafe) {
 export default {
   name: 'MarkdownRenderer',
   props: {
+    host: {
+      type: String,
+      required: false,
+      default: "http://localhost:9600",
+    },    
     markdownText: {
       type: String,
       required: true,

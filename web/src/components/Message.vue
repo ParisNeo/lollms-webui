@@ -144,7 +144,7 @@
                         </div>
                     </div>
                     
-                    <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :markdown-text="message.content" :message_id="message.id">
+                    <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :host="host" :markdown-text="message.content" :message_id="message.id">
                     </MarkdownRenderer>
                     <div >
                         <textarea v-if="editMsgMode" ref="mdTextarea" @keydown.tab.prevent="insertTab"
@@ -224,6 +224,11 @@ export default {
         DynamicUIRenderer,
     },
     props: {
+        host: {
+            type: String,
+            required: false,
+            default: "http://localhost:9600",
+        },            
         message: Object,
         avatar: ''
     },

@@ -230,8 +230,12 @@
             <!-- CHAT AREA -->
             <div class=" container pt-4 pb-10 mb-28">
                 <TransitionGroup v-if="discussionArr.length > 0" name="list">
-                    <Message v-for="(msg, index) in discussionArr" :key="msg.id" :message="msg"  :id="'msg-' + msg.id"
-                        ref="messages" @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
+                    <Message v-for="(msg, index) in discussionArr" 
+                        :key="msg.id" :message="msg"  :id="'msg-' + msg.id"
+                        :host="host"
+                        ref="messages"
+                        
+                        @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
                         @rankDown="rankDownMessage" @updateMessage="updateMessage" @resendMessage="resendMessage" @continueMessage="continueMessage"
                         :avatar="getAvatar(msg.sender)" />
 
@@ -362,6 +366,7 @@ export default {
     
     data() {
         return {
+            host:"",
             // To be synced with the backend database types
             msgTypes: {
                 // Messaging
@@ -545,8 +550,6 @@ export default {
                     this.loading = false
                     this.setDiscussionLoading(id, this.loading)
                     if (data) {
-                        console.log("received discussion")
-                        console.log(data)
                         // Filter out the user and bot entries
                         this.discussionArr = data.filter((item) => 
                                                                 item.message_type == this.msgTypes.MSG_TYPE_CHUNK ||
@@ -1128,7 +1131,6 @@ export default {
         },
         streamMessageContent(msgObj) {
             // Streams response message content from binding
-            console.log("Received message",msgObj)
             const discussion_id = msgObj.discussion_id
             this.setDiscussionLoading(discussion_id, true);
             if (this.currentDiscussion.id == discussion_id) {
@@ -1724,6 +1726,16 @@ export default {
         this.isCreated = true
     },
     async mounted() {
+        try {
+            const response = await fetch('/get_server_address'); // Replace with the actual endpoint on your Flask server
+            const serverAddress = await response.text();
+            console.log(`Server address: ${serverAddress}`)
+            this.host = `${serverAddress}`; // Construct the full server address dynamically
+        } catch (error) {
+            console.error('Error fetching server address:', error);
+            // Handle error if necessary
+            this.host =  process.env.VITE_LOLLMS_API
+        }        
         //console.log('chatbox mnt',this.$refs)
         this.$nextTick(() => {
             feather.replace();
