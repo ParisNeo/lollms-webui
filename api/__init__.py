@@ -256,7 +256,7 @@ class LoLLMsAPPI(LollmsApplication):
                 model_type:str=data["type"]
                 progress = 0
                 installation_dir = self.binding.searchModelParentFolder(model_path.split('/')[-1], model_type)
-                if model_type=="gptq":
+                if model_type=="gptq" or  model_type=="awq":
                     parts = model_path.split("/")
                     if len(parts)==2:
                         filename = parts[1]
@@ -298,6 +298,7 @@ class LoLLMsAPPI(LollmsApplication):
                                                             'speed': self.download_infos[signature]['speed'],
                                                         }, room=room_id
                                     )
+                        return
                     
                     socketio.emit('install_progress',{
                                                     'status': True,
