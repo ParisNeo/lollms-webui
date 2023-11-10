@@ -1244,7 +1244,7 @@ class LoLLMsAPPI(LollmsApplication):
         documentation = ""
         if len(self.personality.text_files) > 0 and self.personality.vectorizer:
             if documentation=="":
-                documentation="Documentation:\n"
+                documentation="!@>Documentation:\n"
             docs, sorted_similarities = self.personality.vectorizer.recover_text(current_message.content, top_k=self.config.data_vectorization_nb_chunks)
             for doc, infos in zip(docs, sorted_similarities):
                 documentation += f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
@@ -1253,10 +1253,16 @@ class LoLLMsAPPI(LollmsApplication):
         history = ""
         if self.config.use_discussions_history and self.discussions_store is not None:
             if history=="":
-                documentation="History:\n"
+                documentation="!@>History:\n"
             docs, sorted_similarities = self.discussions_store.recover_text(current_message.content, top_k=self.config.data_vectorization_nb_chunks)
             for doc, infos in zip(docs, sorted_similarities):
                 history += f"discussion chunk:\ndiscussion title: {infos[0]}\nchunk content:{doc}"
+
+        # Add information about the user
+        user_description=""
+        if self.config.use_user_name_in_discussions:
+            user_description="!@>User description:\n"+self.config.user_description
+
 
         # Tokenize the conditionning text and calculate its number of tokens
         tokens_conditionning = self.model.tokenize(conditionning)
@@ -1278,8 +1284,18 @@ class LoLLMsAPPI(LollmsApplication):
             tokens_history = []
             n_history_tk = 0
 
+
+        # Tokenize user description
+        if len(user_description)>0:
+            tokens_user_description = self.model.tokenize(user_description)
+            n_user_description_tk = len(tokens_user_description)
+        else:
+            tokens_user_description = []
+            n_user_description_tk = 0
+
+
         # Calculate the total number of tokens between conditionning, documentation, and history
-        total_tokens = n_cond_tk + n_doc_tk + n_history_tk
+        total_tokens = n_cond_tk + n_doc_tk + n_history_tk + n_user_description_tk
 
         # Calculate the available space for the messages
         available_space = self.config.ctx_size - n_tokens - total_tokens
@@ -1332,7 +1348,7 @@ class LoLLMsAPPI(LollmsApplication):
             discussion_messages += self.model.detokenize(message_tokens)
 
         # Build the final prompt by concatenating the conditionning and discussion messages
-        prompt_data = conditionning + documentation + history + discussion_messages
+        prompt_data = conditionning + documentation + history + user_description + discussion_messages
 
         # Tokenize the prompt data
         tokens = self.model.tokenize(prompt_data)

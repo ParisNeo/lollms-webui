@@ -34,20 +34,8 @@ def run_git_pull():
             # Clone the repository to the target path
             ASCIIColors.info("Lollms_core found in the app space.\nPulling last lollms_core")
             subprocess.run(["git", "-C", str(execution_path/"lollms_core"), "pull"])            
-            subprocess.run(["git", "-C", str(execution_path/"utilities/safe_store"), "pull"])            
-            # Pull the repository if it already exists
-            
-            ASCIIColors.info("Bindings zoo found in your personal space.\nPulling last personalities zoo")
-            subprocess.run(["git", "-C", self.lollms_paths.bindings_zoo_path, "pull"])            
-            # Pull the repository if it already exists
-            ASCIIColors.info("Personalities zoo found in your personal space.\nPulling last personalities zoo")
-            subprocess.run(["git", "-C", self.lollms_paths.personalities_zoo_path, "pull"])            
-            # Pull the repository if it already exists
-            ASCIIColors.info("Extensions zoo found in your personal space.\nPulling last Extensions zoo")
-            subprocess.run(["git", "-C", self.lollms_paths.extensions_zoo_path, "pull"])            
-            # Pull the repository if it already exists
-            ASCIIColors.info("Models zoo found in your personal space.\nPulling last Models zoo")
-            subprocess.run(["git", "-C", self.lollms_paths.models_zoo_path, "pull"])            
+            subprocess.run(["git", "-C", str(execution_path/"utilities/safe_store"), "pull"])         
+              
                     
         except Exception as ex:
             print("Couldn't update submodules")
