@@ -14,7 +14,7 @@ from lollms.config import InstallOption
 from lollms.types import MSG_TYPE, SENDER_TYPES
 from lollms.extension import LOLLMSExtension, ExtensionBuilder
 from lollms.personality import AIPersonality, PersonalityBuilder
-from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding, ModelBuilder
+from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding, ModelBuilder, BindingType
 from lollms.paths import LollmsPaths
 from lollms.helpers import ASCIIColors, trace_exception
 from lollms.app import LollmsApplication
@@ -1362,7 +1362,6 @@ class LoLLMsAPPI(LollmsApplication):
             ASCIIColors.bold("HISTORY")
             ASCIIColors.yellow(history)
             ASCIIColors.bold("DISCUSSION")
-            # TODO: upghrade to asciicolors 0.1.4
             ASCIIColors.hilight(discussion_messages,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
             ASCIIColors.bold("Final prompt")
             ASCIIColors.hilight(prompt_data,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
@@ -1642,33 +1641,64 @@ class LoLLMsAPPI(LollmsApplication):
         self.nb_received_tokens = 0
         self.start_time = datetime.now()
         if self.model is not None:
-            ASCIIColors.info(f"warmup for generating up to {n_predict} tokens")
-            if self.config["override_personality_model_parameters"]:
-                output = self.model.generate(
-                    prompt,
-                    callback=callback,
-                    n_predict=n_predict,
-                    temperature=self.config['temperature'],
-                    top_k=self.config['top_k'],
-                    top_p=self.config['top_p'],
-                    repeat_penalty=self.config['repeat_penalty'],
-                    repeat_last_n = self.config['repeat_last_n'],
-                    seed=self.config['seed'],
-                    n_threads=self.config['n_threads']
-                )
+            if self.model.binding_type==BindingType.TEXT_IMAGE and len(self.personality.image_files)>0:
+                ASCIIColors.info(f"warmup for generating up to {n_predict} tokens")
+                if self.config["override_personality_model_parameters"]:
+                    output = self.model.generate_with_images(
+                        prompt,
+                        self.personality.image_files,
+                        callback=callback,
+                        n_predict=n_predict,
+                        temperature=self.config['temperature'],
+                        top_k=self.config['top_k'],
+                        top_p=self.config['top_p'],
+                        repeat_penalty=self.config['repeat_penalty'],
+                        repeat_last_n = self.config['repeat_last_n'],
+                        seed=self.config['seed'],
+                        n_threads=self.config['n_threads']
+                    )
+                else:
+                    output = self.model.generate_with_images(
+                        prompt,
+                        self.personality.image_files,
+                        callback=callback,
+                        n_predict=min(n_predict,self.personality.model_n_predicts),
+                        temperature=self.personality.model_temperature,
+                        top_k=self.personality.model_top_k,
+                        top_p=self.personality.model_top_p,
+                        repeat_penalty=self.personality.model_repeat_penalty,
+                        repeat_last_n = self.personality.model_repeat_last_n,
+                        seed=self.config['seed'],
+                        n_threads=self.config['n_threads']
+                    )                
             else:
-                output = self.model.generate(
-                    prompt,
-                    callback=callback,
-                    n_predict=min(n_predict,self.personality.model_n_predicts),
-                    temperature=self.personality.model_temperature,
-                    top_k=self.personality.model_top_k,
-                    top_p=self.personality.model_top_p,
-                    repeat_penalty=self.personality.model_repeat_penalty,
-                    repeat_last_n = self.personality.model_repeat_last_n,
-                    seed=self.config['seed'],
-                    n_threads=self.config['n_threads']
-                )
+                ASCIIColors.info(f"warmup for generating up to {n_predict} tokens")
+                if self.config["override_personality_model_parameters"]:
+                    output = self.model.generate(
+                        prompt,
+                        callback=callback,
+                        n_predict=n_predict,
+                        temperature=self.config['temperature'],
+                        top_k=self.config['top_k'],
+                        top_p=self.config['top_p'],
+                        repeat_penalty=self.config['repeat_penalty'],
+                        repeat_last_n = self.config['repeat_last_n'],
+                        seed=self.config['seed'],
+                        n_threads=self.config['n_threads']
+                    )
+                else:
+                    output = self.model.generate(
+                        prompt,
+                        callback=callback,
+                        n_predict=min(n_predict,self.personality.model_n_predicts),
+                        temperature=self.personality.model_temperature,
+                        top_k=self.personality.model_top_k,
+                        top_p=self.personality.model_top_p,
+                        repeat_penalty=self.personality.model_repeat_penalty,
+                        repeat_last_n = self.personality.model_repeat_last_n,
+                        seed=self.config['seed'],
+                        n_threads=self.config['n_threads']
+                    )
         else:
             print("No model is installed or selected. Please make sure to install a model and select it inside your configuration before attempting to communicate with the model.")
             print("To do this: Install the model to your models/<binding name> folder.")
