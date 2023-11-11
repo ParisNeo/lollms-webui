@@ -13,7 +13,7 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-__version__ ="7.0 (Alpha)"
+__version__ ="7.0 (Beta)"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
@@ -235,11 +235,11 @@ try:
             
 
             self.add_endpoint("/reload_binding", "reload_binding", self.reload_binding, methods=["POST"])
+            self.add_endpoint("/restart_program", "restart_program", self.restart_program, methods=["GET"])
             self.add_endpoint("/update_software", "update_software", self.update_software, methods=["GET"])
             self.add_endpoint("/clear_uploads", "clear_uploads", self.clear_uploads, methods=["GET"])
             self.add_endpoint("/selectdb", "selectdb", self.selectdb, methods=["GET"])
 
-            self.add_endpoint("/restart_program", "restart_program", self.restart_program, methods=["GET"])
             
             self.add_endpoint("/check_update", "check_update", self.check_update, methods=["GET"])
             
@@ -1640,42 +1640,6 @@ try:
                 ASCIIColors.error(f"Couldn't clear the upload folder.\nMaybe some files are opened somewhere else.\Try doing it manually")
                 return {"status": False, 'error': "Couldn't clear the upload folder.\nMaybe some files are opened somewhere else.\Try doing it manually"}
 
-
-        def update_software(self):
-            ASCIIColors.info("")
-            ASCIIColors.info("")
-            ASCIIColors.info("")
-            ASCIIColors.info(" ╔══════════════════════════════════════════════════╗")
-            ASCIIColors.info(" ║               Upgrading backend                  ║")
-            ASCIIColors.info(" ╚══════════════════════════════════════════════════╝")
-            ASCIIColors.info("")
-            ASCIIColors.info("")
-            ASCIIColors.info("")        
-            # Perform a 'git pull' to check for updates
-            try:
-                # Execute 'git pull' and redirect the output to the console
-                process = subprocess.Popen(['git', 'pull'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-
-                # Read and print the output in real-time
-                while True:
-                    output = process.stdout.readline()
-                    if output == '' and process.poll() is not None:
-                        break
-                    if output:
-                        print(output.strip())
-
-                # Wait for the process to finish and get the return code
-                return_code = process.poll()
-
-                if return_code == 0:
-                    return {"status": True}
-                else:
-                    return {"status": False, 'error': f"git pull failed with return code {return_code}"}
-            
-            except subprocess.CalledProcessError as ex:
-                # There was an error in 'git pull' command
-                return {"status": False, 'error': str(ex)}
-            
         def selectdb(self):
             from tkinter import Tk, filedialog
             # Initialize Tkinter
@@ -1704,7 +1668,6 @@ try:
             ASCIIColors.info("")
             run_restart_script(self.args)
             
-
 
         def update_software(self):
             ASCIIColors.info("")

@@ -1314,10 +1314,10 @@
                                     v-for="(item, index) in mountedExtensions" :key="index + '-' + item.name"
                                     ref="mountedExtensions">
                                     <div class="group items-center flex flex-row">
-                                        <button @click.stop="onPersonalitySelected(item)">
+                                        <button @click.stop="onExtensionSelected(item)">
                                             <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
                                                 class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary "
-                                                :class="configFile.active_personality_id == configFile.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
+                                                :class="configFile.active_personality_id == configFile.extensions.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
                                                 :title="item.name">
                                         </button>
                                         <button @click.stop="unmountExtension (item)">
@@ -1878,6 +1878,9 @@ export default {
     methods: {
         async modelsZooToggleCollapse(){
             this.mzc_collapsed = !this.mzc_collapsed
+            if (!this.mzc_collapsed){
+                this.refreshModelsZoo();
+            }
         }, 
         async selectSortOption(index){
             this.$store.state.sort_type=index
@@ -2017,6 +2020,17 @@ export default {
             }
             
         },
+        async restart_software() {
+            console.log("Posting")
+            const res =  await this.api_get_req('restart_program')
+            console.log("Posting done")
+            if(res.status){
+                this.$refs.toast.showToast("Success!", 4, true)
+            }
+            else{
+                this.$refs.toast.showToast("Failure!", 4, false)
+            }
+        },        
         on_loading_text(text){
             
             console.log("Loading text",text)
@@ -2056,12 +2070,6 @@ export default {
                 this.extCatgArr = []
             }
 
-            // this.bindingsArr.sort((a, b) => a.name.localeCompare(b.name))
-            // this.modelsArr.sort()
-            // this.persCatgArr.sort()
-            // this.persArr.sort()
-            console.log("models_zoo:")
-            console.log(this.models_zoo)
 
             
             //await this.getPersonalitiesArr()
@@ -2069,18 +2077,10 @@ export default {
             this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category)
             // this.personalitiesFiltered.sort()
             //mountedPersArr
-            console.log("Extensions zoo")
-            console.log(this.$store.state.extensionsZoo)
             this.modelsFiltered = this.models_zoo
             this.extension_category = this.configFile.extension_category
             this.extensionsFiltererd = this.$store.state.extensionsZoo.filter((item) => item.category === this.configFile.extension_category )
-            console.log("Extensions filtered")
-            console.log(this.extensionsFiltererd)
-
-            
-
-            //this.bindings = await this.api_get_req("list_bindings")
-            // this.bindingsArr.sort((a, b) => a.name.localeCompare(b.name))
+           
             this.isLoading = false
             this.isMounted = true
 
@@ -2314,7 +2314,6 @@ export default {
 
         },        
         onSelected(model_object, force=false) {
-
             // eslint-disable-next-line no-unused-vars
             if (this.isLoading) {
                 this.$refs.toast.showToast("Loading... please wait", 4, false)
@@ -2327,13 +2326,12 @@ export default {
                             console.log("update_model",res)
                             this.configFile.model_name = model_object.model.name
                             if(res.status){
-                                this.refreshModelsZoo().then(()=>{
-                                    this.updateModelsZoo();
-                                    this.$refs.toast.showToast("Selected model:\n" + model_object.name, 4, true)
-                                    nextTick(() => {
-                                        feather.replace()
-                                    })
+                                this.$refs.toast.showToast("Selected model:\n" + model_object.name, 4, true)
+                                nextTick(() => {
+                                    feather.replace()
+                                    this.is_loading_zoo = false
                                 })
+                                self.updateModelsZoo()
                             }else{
                                 this.$refs.toast.showToast("Couldn't select model:\n" + model_object.name, 4, false)
                                 nextTick(() => {
@@ -2403,7 +2401,8 @@ export default {
             axios.post("/add_reference_to_local_model",{"path": this.reference_path}).then((resp)=>{
                 if(resp.status){
                     this.$refs.toast.showToast("Reference created", 4, true)
-                    this.refreshModelsZoo().then(()=>{this.updateModelsZoo();})
+                    this.is_loading_zoo = true;
+                    this.refreshModelsZoo().then(()=>{this.updateModelsZoo(); this.is_loading_zoofalse;})
                 }
                 else{
                     this.$refs.toast.showToast("Couldn't create reference", 4, false)
@@ -2538,7 +2537,8 @@ export default {
                             model_object.uninstalling = false;
                             socket.off('install_progress', progressListener);
                             this.showProgress = false;
-                            this.refreshModelsZoo().then(()=>{this.updateModelsZoo();})
+                            this.is_loading_zoo = true;
+                            this.refreshModelsZoo().then(()=>{this.updateModelsZoo(); this.is_loading_zoo = false;})
                             
                             this.modelsFiltered = this.models_zoo
                             this.$refs.toast.showToast("Model:\n" + model_object.model.name + "\nwas uninstalled!", 4, true)
@@ -2875,17 +2875,22 @@ export default {
 
         },
         async refreshModelsZoo() {
+            this.models_zoo = []
+            console.log("refreshing models")
+            this.is_loading_zoo = true;
             await this.$store.dispatch('refreshModelsZoo');
             console.log("ModelsZoo refreshed")
             await this.$store.dispatch('refreshModels');
             console.log("Models refreshed")
+            this.updateModelsZoo()
+            console.log("Models updated")
+            this.is_loading_zoo = false;
         },
         async updateModelsZoo(){
             let models_zoo = this.$store.state.modelsZoo
             if(models_zoo.length==0)
                 return
             
-            console.log("loading models_zoo", models_zoo)
             let index = models_zoo.findIndex(item => item.name == this.configFile.model_name)
             if (index>0){
                 this.imgModel = models_zoo[index].icon
@@ -2924,9 +2929,7 @@ export default {
             }
             
 
-            console.log("models_zoo")
 
-            
             models_zoo.forEach(model => {
                 if (model.name == this.$store.state.config["model_name"]) {
                     model.selected = true;
@@ -2937,8 +2940,6 @@ export default {
             });            
 
             this.models_zoo = models_zoo
-            console.log("models_zoo")
-            console.log(this.models_zoo)
 
 
             // Returns array of model filenames which are = to name of models zoo entry
@@ -2972,7 +2973,7 @@ export default {
                     this.models_zoo.push(newModelEntry)
                 }
                 else{
-                this.models_zoo[index].isInstalled=true;
+                    this.models_zoo[index].isInstalled=true;
                 }
             }
             this.models_zoo.sort((a, b) => {
@@ -2995,8 +2996,8 @@ export default {
             this.update_setting('binding_name', value, async (res) => {
                 console.log("updated binding_name")
                 await this.$store.dispatch('refreshConfig');
-                await this.refreshModelsZoo();
-                await this.updateModelsZoo();
+                this.models_zoo = []
+                this.mzc_collapsed = true;
                 const index = this.bindingsArr.findIndex(item => item.folder == value)
                 const item = this.bindingsArr[index]
                 if (item) {
@@ -3585,7 +3586,6 @@ export default {
     }, async mounted() {
         console.log("Getting voices")
         this.getVoices();
-        this.updateModelsZoo();
         console.log("Constructing")
         this.load_everything()
     },
@@ -3777,7 +3777,7 @@ export default {
         },
         mountedExtensions:{
             get() {
-                return this.$store.state.config.extensions;
+                return this.$store.state.mountedExtensions;
             },
             set(value) {
                 this.$store.commit('setActiveExtensions', value);
