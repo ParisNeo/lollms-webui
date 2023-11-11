@@ -160,7 +160,7 @@
                             </div>
 
                         </div>                
-                        <div class="w-fit group relative" v-if="!loading" >
+                        <div class="w-fit group relative" >
                             <!-- :onShowPersList="onShowPersListFun" -->
                             <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-10 group-hover:translate-x-15 transition-all duration-300">
                                 <div class="w-full"
@@ -173,8 +173,6 @@
                                                 :class="this.$store.state.active_personality_id == this.$store.state.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
                                                 :title="item.name">
                                         </button>
-                                        <!--
-
                                         <button @click.prevent="unmountPersonality (item)">
                                             <span
                                                 class="hidden hover:block top-3 left-9 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
@@ -189,8 +187,6 @@
 
                                             </span>
                                         </button>
-
-                                        -->
                                     </div>
                                 </div>             
                             </div>
@@ -199,7 +195,7 @@
 
                         </div>
 
-                        <div class="w-fit" v-if="!loading" >
+                        <div class="w-fit">
                             <PersonalitiesCommands
                                 v-if="personalities_ready && this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands!=''" 
                                 :commandsList="this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands"
@@ -209,7 +205,7 @@
                             ></PersonalitiesCommands>
                         </div>
 
-                        <div class="relative grow"  v-if="!loading" >
+                        <div class="relative grow">
                             <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"
                                 class="inline-block  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 placeholder="Send message..." @keydown.enter.exact="submitOnEnter($event)">
@@ -279,6 +275,7 @@
         </form>
     </div>
     <Toast ref="toast"/>
+    <UniversalForm ref="universalForm" class="z-20" />
 </template>
 <style scoped>
 /* THESE ARE FOR TransitionGroup components */
@@ -321,6 +318,7 @@ import { useStore } from 'vuex'; // Import the useStore function
 import { inject } from 'vue';
 import socket from '@/services/websocket.js'
 import Toast from '../components/Toast.vue'
+import UniversalForm from '../components/UniversalForm.vue';
 import modelImgPlaceholder from "../assets/default_model.png"
 console.log("modelImgPlaceholder:",modelImgPlaceholder)
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
@@ -336,6 +334,7 @@ export default {
     },
     components: {        
         Toast,
+        UniversalForm,
         MountedPersonalities,
         MountedPersonalitiesList,
         PersonalitiesCommands,
@@ -389,7 +388,55 @@ export default {
     },
     methods: {   
         showModelConfig(){
+            try {
+                this.isLoading = true
+                axios.get('/get_active_binding_settings').then(res => {
+                    this.isLoading = false
+                    if (res) {
 
+                        console.log('binding sett', res)
+
+                        if (res.data && Object.keys(res.data).length > 0) {
+
+                            // open form
+
+                            this.$refs.universalForm.showForm(res.data, "Binding settings ", "Save changes", "Cancel").then(res => {
+                                // send new data
+                                try {
+                                    axios.post('/set_active_binding_settings',
+                                        res).then(response => {
+
+                                            if (response && response.data) {
+                                                console.log('binding set with new settings', response.data)
+                                                this.$refs.toast.showToast("Binding settings updated successfully!", 4, true)
+
+                                            } else {
+                                                this.$refs.toast.showToast("Did not get binding settings responses.\n" + response, 4, false)
+                                                this.isLoading = false
+                                            }
+
+
+                                        })
+                                } catch (error) {
+                                    this.$refs.toast.showToast("Did not get binding settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.isLoading = false
+                                }
+
+
+
+                            })
+                        } else {
+                            this.$refs.toast.showToast("Binding has no settings", 4, false)
+                            this.isLoading = false
+                        }
+
+                    }
+                })
+
+            } catch (error) {
+                this.isLoading = false
+                this.$refs.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
+            }
         },
         async unmountPersonality(pers) {
             this.loading = true
@@ -559,43 +606,6 @@ export default {
             this.filesList = []
             this.isFileSentList = []
         },
-        // send_file(file, next){
-        //     const formData = new FormData();
-        //     formData.append('file', file);
-        //     console.log("Uploading file")
-        //     // Read the file as a data URL and emit it to the server
-        //     const reader = new FileReader();
-        //     reader.onload = () => {
-        //         const data = {
-        //         filename: file.name,
-        //         fileData: reader.result,
-        //         };
-        //         socket.on('file_received',(resp)=>{
-        //             if(resp.status){
-        //                 console.log(resp.filename)
-        //                 this.isFileSentList[this.filesList.length-1]=true;
-        //                 console.log(this.isFileSentList)
-        //                 this.onShowToastMessage("File uploaded successfully",4,true);
-        //             }
-        //             else{
-        //                 this.onShowToastMessage("Couldn't upload file\n"+resp.error,4,false);
-        //                 try{
-        //                     this.filesList.removeItem(file)
-        //                 }
-        //                 catch{
-
-        //                 }
-                        
-        //             }
-        //             socket.off('file_received')
-        //             next()
-
-        //         }) 
-        //         console.log("Sending file")
-        //         socket.emit('send_file', data);
-        //     };
-        //     reader.readAsDataURL(file);        
-        // },
         send_file(file, next) {
             const fileReader = new FileReader();
             const chunkSize = 24 * 1024; // Chunk size in bytes (e.g., 1MB)
@@ -730,15 +740,17 @@ export default {
             this.$emit('sendCMDEvent', cmd)
         },
         submitOnEnter(event) {
-            if (event.which === 13) {
-                event.preventDefault(); // Prevents the addition of a new line in the text field
+            if(!this.loading){
+                if (event.which === 13) {
+                    event.preventDefault(); // Prevents the addition of a new line in the text field
 
-                if (!event.repeat) {
+                    if (!event.repeat) {
 
-                    this.sendMessageEvent(this.message)
-                    this.message = "" // Clear input field
+                        this.sendMessageEvent(this.message)
+                        this.message = "" // Clear input field
+                    }
+
                 }
-
             }
         },
         submit() {

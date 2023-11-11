@@ -254,15 +254,15 @@
             </div>
             <div class=" bottom-0 container flex flex-row items-center justify-center " v-if="currentDiscussion.id">
                 <ChatBox ref="chatBox" 
+                    :loading="isGenerating" 
+                    :discussionList="discussionArr" 
+                    :on-show-toast-message="showToastMessage"
+                    :on-talk="talk"
                     @messageSentEvent="sendMsg" 
                     @sendCMDEvent="sendCmd"
                     @createEmptyUserMessage="createEmptyUserMessage"
                     @createEmptyAIMessage="createEmptyAIMessage"
-                    :loading="isGenerating" 
-                    :discussionList="discussionArr" 
                     @stopGenerating="stopGenerating" 
-                    :on-show-toast-message="showToastMessage"
-                    :on-talk="talk"
                     @loaded="recoverFiles"
                     >
                 </ChatBox>
@@ -431,6 +431,57 @@ export default {
         }
     },
     methods: {     
+        onSettingsBinding() {
+            try {
+                this.isLoading = true
+                axios.get('/get_active_binding_settings').then(res => {
+                    this.isLoading = false
+                    if (res) {
+
+                        console.log('binding sett', res)
+
+                        if (res.data && Object.keys(res.data).length > 0) {
+
+                            // open form
+
+                            this.$refs.universalForm.showForm(res.data, "Binding settings - " + bindingEntry.binding.name, "Save changes", "Cancel").then(res => {
+                                // send new data
+                                try {
+                                    axios.post('/set_active_binding_settings',
+                                        res).then(response => {
+
+                                            if (response && response.data) {
+                                                console.log('binding set with new settings', response.data)
+                                                this.$refs.toast.showToast("Binding settings updated successfully!", 4, true)
+
+                                            } else {
+                                                this.$refs.toast.showToast("Did not get binding settings responses.\n" + response, 4, false)
+                                                this.isLoading = false
+                                            }
+
+
+                                        })
+                                } catch (error) {
+                                    this.$refs.toast.showToast("Did not get binding settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.isLoading = false
+                                }
+
+
+
+                            })
+                        } else {
+                            this.$refs.toast.showToast("Binding has no settings", 4, false)
+                            this.isLoading = false
+                        }
+
+                    }
+                })
+
+            } catch (error) {
+                this.isLoading = false
+                this.$refs.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
+            }
+        },        
         showDatabaseSelector() {
             this.database_selectorDialogVisible = true;
         },        

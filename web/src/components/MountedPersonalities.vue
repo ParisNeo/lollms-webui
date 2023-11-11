@@ -36,11 +36,13 @@
     </div>
     <UniversalForm ref="universalForm" class="z-20" />
 </template>
-
+<Toast ref="toast">
+</Toast>
 <script>
 import axios from "axios";
 import defaultPersonalityImgPlaceholder from "../assets/logo.svg"
 import UniversalForm from '@/components/UniversalForm.vue';
+import Toast from '../components/Toast.vue'
 
 import { nextTick } from "vue";
 import { useStore } from 'vuex'; // Import the useStore function
@@ -60,6 +62,7 @@ export default {
         onReady:Function,
     },
     components: {
+        Toast,
         UniversalForm
     },
     data() {

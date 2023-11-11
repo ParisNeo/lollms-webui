@@ -1878,7 +1878,7 @@ export default {
     methods: {
         async modelsZooToggleCollapse(){
             this.mzc_collapsed = !this.mzc_collapsed
-            if (!this.mzc_collapsed){
+            if (!this.mzc_collapsed && this.modelsZoo==[]){
                 this.refreshModelsZoo();
             }
         }, 
@@ -2836,11 +2836,6 @@ export default {
             });            
 
             
-            //this.fetchMainConfig();
-            //this.fetchBindings();
-            //this.fetchModels();
-            //this.fetchPersonalities();
-            //this.fetchHardwareInfos();
 
         },
         // Accordeon stuff
