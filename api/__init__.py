@@ -1242,6 +1242,14 @@ class LoLLMsAPPI(LollmsApplication):
 
         # Check if there are document files to add to the prompt
         documentation = ""
+        if self.personality.persona_data_vectorizer:
+            if documentation=="":
+                documentation="!@>Documentation:\n"
+            docs, sorted_similarities = self.personality.persona_data_vectorizer.recover_text(current_message.content, top_k=self.config.data_vectorization_nb_chunks)
+            for doc, infos in zip(docs, sorted_similarities):
+                documentation += f"document chunk:\n{doc}"
+
+        
         if len(self.personality.text_files) > 0 and self.personality.vectorizer:
             if documentation=="":
                 documentation="!@>Documentation:\n"
