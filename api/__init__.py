@@ -1247,7 +1247,8 @@ class LoLLMsAPPI(LollmsApplication):
                 documentation="!@>Documentation:\n"
 
             if self.config.data_vectorization_build_keys_words:
-                query = self.personality.fastgen("Create a search query based on the following prompt: "+current_message.content+"\nsearch query: ")
+                query = self.personality.fast_gen("Create a search query based on the following prompt: "+current_message.content+"\nsearch query: ")
+                ASCIIColors.cyan(f"Query:{query}")
             else:
                 query = current_message.content
 
@@ -1261,7 +1262,8 @@ class LoLLMsAPPI(LollmsApplication):
                 documentation="!@>Documentation:\n"
 
             if self.config.data_vectorization_build_keys_words:
-                query = self.personality.fastgen("Create a search query based on the following prompt: "+current_message.content+"\nsearch query: ")
+                query = self.personality.fast_gen("Create a search query based on the following prompt: "+current_message.content+"\nsearch query: ")
+                ASCIIColors.cyan(f"Query:{query}")
             else:
                 query = current_message.content
 
