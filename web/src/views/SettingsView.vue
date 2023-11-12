@@ -4039,19 +4039,7 @@ export default {
                 this.applyConfiguration()
 
             }
-
             return false
-
-        }
-        if (!this.isModelSelected) {
-            const res = await this.$refs.yesNoDialog.askQuestion("Did You forgot to select model?\nYou need to select model before you leave, or else.", 'Ok', 'Cancel')
-            if (res) {
-                //
-
-            }
-
-            return false
-
         }
 
 

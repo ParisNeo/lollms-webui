@@ -168,7 +168,7 @@ This Flask server provides various endpoints to manage and interact with the cha
   "auto_read": false,
   "binding": "llama_cpp",
   "config": "local_config.yaml",
-  "ctx_size": 2048,
+  "ctx_size": 4096,
   "db_path": "databases/database.db",
   "debug": false,
   "host": "localhost",
