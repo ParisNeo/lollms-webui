@@ -13,6 +13,7 @@ export default async ({ mode }) => {
       if(serverAddress.includes('<')){
         console.log(`Server address not found`)
         return process.env.VITE_LOLLMS_API
+        
       }
       console.log(`Server address: ${serverAddress}`)
       return `${serverAddress}`; // Construct the full server address dynamically
@@ -22,6 +23,7 @@ export default async ({ mode }) => {
       return process.env.VITE_LOLLMS_API
     }
   }
+  
   const serverURL = await getFlaskServerURL() 
   console.log(serverURL)
   // Load app-level env vars to node-level env vars.

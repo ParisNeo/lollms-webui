@@ -460,6 +460,7 @@ app.mixin({
       actionsExecuted = true;
       console.log("Calling")
       await this.$store.dispatch('refreshConfig');
+      console.log("Config ready")
       await this.$store.dispatch('refreshDatabase');
       
       await this.$store.dispatch('getVersion');

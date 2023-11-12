@@ -1780,12 +1780,19 @@ export default {
         try {
             const response = await fetch('/get_server_address'); // Replace with the actual endpoint on your Flask server
             const serverAddress = await response.text();
+
+            if(serverAddress.includes('<')){
+                console.log(`Server address not found`)
+                return "http://localhost:9600/"//process.env.VITE_LOLLMS_API
+                
+            }
+
             console.log(`Server address: ${serverAddress}`)
             this.host = `${serverAddress}`; // Construct the full server address dynamically
         } catch (error) {
             console.error('Error fetching server address:', error);
             // Handle error if necessary
-            this.host =  process.env.VITE_LOLLMS_API
+            this.host =  "http://localhost:9600/"//process.env.VITE_LOLLMS_API
         }        
         //console.log('chatbox mnt',this.$refs)
         this.$nextTick(() => {

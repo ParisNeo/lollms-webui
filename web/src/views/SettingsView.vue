@@ -1878,7 +1878,10 @@ export default {
     methods: {
         async modelsZooToggleCollapse(){
             this.mzc_collapsed = !this.mzc_collapsed
-            if (!this.mzc_collapsed && this.modelsZoo==[]){
+            if (!this.mzc_collapsed && (this.modelsZoo==undefined || this.modelsZoo.length==0)){
+                console.log("Refreshing models")
+                await this.$store.dispatch('refreshConfig');
+                this.models_zoo = []
                 this.refreshModelsZoo();
             }
         }, 
