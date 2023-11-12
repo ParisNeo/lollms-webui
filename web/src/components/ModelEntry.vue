@@ -2,7 +2,8 @@
   <div
     class="relative items-start p-4 hover:bg-primary-light  rounded-lg mb-2 shadow-lg border-2 select-none"
     :class="computed_classes" 
-    :title="model.name">
+    :title="model.name"
+    @click.prevent="toggleSelected()">
     <!-- CUSTOM MODEL VIEW -->
     <div class="flex flex-row" v-if="model.isCustomModel">
       <div class="max-w-[300px] overflow-x-auto">
@@ -28,17 +29,6 @@
           <span class="sr-only">Custom model / local model</span>
         </button>
         Custom model
-      </div>
-      <div v-if="model.isInstalled">
-        <div v-if="model.selected" @click.stop="toggleSelected" class="cursor-pointer" style="background-color: white;">
-            <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path d="M9 16.17l-4.17-4.17-1.42 1.41 5.59 5.59 12-12-1.41-1.41z"/>
-            </svg>
-        </div>        
-        <div v-else @click.stop="toggleSelected" class="cursor-pointer" style="background-color: white;">
-          <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  viewBox="0 0 24 24">
-          </svg>
-        </div>   
       </div>
       <div>
         <button v-if="model.isInstalled" title="Delete file from disk" type="button" @click.stop="toggleInstall"
@@ -118,17 +108,6 @@
         </h3>
         <div class="grow">
           <!-- EMPTY SPACE FILLER -->
-        </div>
-        <div v-if="model.isInstalled">
-          <div v-if="model.selected" @click.stop="toggleSelected" class="cursor-pointer" style="background-color: white;">
-            <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path d="M9 16.17l-4.17-4.17-1.42 1.41 5.59 5.59 12-12-1.41-1.41z"/>
-            </svg>
-          </div>        
-          <div v-else @click.stop="toggleSelected" class="cursor-pointer" style="background-color: white;">
-            <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  viewBox="0 0 24 24">
-            </svg>
-          </div>        
         </div>
         <InteractiveMenu  :commands="commandsList" :force_position=2 title="Menu">
         
@@ -329,6 +308,7 @@ export default {
     },
     toggleSelected(force=false) {
       this.onSelected(this,force)
+      model.selected = true;
       nextTick(() => {
         feather.replace()
       })
@@ -363,9 +343,9 @@ export default {
         return 'border-transparent'
       }
       if(this.selected){
-        return 'border-4 border-gray-200 bg-primary'
+        return 'border-4 border-gray-200 bg-primary cursor-pointer'
       }      
-      return 'border-0 border-primary bg-primary'
+      return 'border-0 border-primary bg-primary cursor-pointer'
     },
     commandsList(){
       let main_menu = [
