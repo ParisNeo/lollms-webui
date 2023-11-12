@@ -989,7 +989,8 @@ class LoLLMsAPPI(LollmsApplication):
                         personality = AIPersonality(None,                                                    
                                                     self.lollms_paths, 
                                                     self.config, 
-                                                    self.model, 
+                                                    self.model,
+                                                    app=self,
                                                     run_scripts=True,
                                                     installation_option=InstallOption.FORCE_INSTALL)
                         mounted_personalities.append(personality)
