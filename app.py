@@ -1670,7 +1670,7 @@ try:
         def get_current_personality_files_list(self):
             if self.personality is None:
                 return jsonify({"state":False, "error":"No personality selected"})
-            return jsonify({"state":True, "files":[{"name":Path(f).name, "size":Path(f).stat().st_size} for f in self.personality.text_files]})
+            return jsonify({"state":True, "files":[{"name":Path(f).name, "size":Path(f).stat().st_size} for f in self.personality.text_files]+[{"name":Path(f).name, "size":Path(f).stat().st_size} for f in self.personality.image_files]})
 
         def clear_personality_files_list(self):
             if self.personality is None:

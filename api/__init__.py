@@ -1546,6 +1546,8 @@ class LoLLMsAPPI(LollmsApplication):
         """
         Processes a chunk of generated text
         """
+        if chunk is None:
+            return True
         if not client_id in list(self.connections.keys()):
             self.notify("Connection lost",False, client_id)
             return
