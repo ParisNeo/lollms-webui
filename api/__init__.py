@@ -1511,7 +1511,8 @@ class LoLLMsAPPI(LollmsApplication):
                                     }, room=client_id
                             )
         self.socketio.sleep(0.01)
-        self.connections[client_id]["current_discussion"].update_message(self.connections[client_id]["generated_text"], new_metadata=mtdt, new_ui=ui)
+        if msg_type != MSG_TYPE.MSG_TYPE_INFO:
+            self.connections[client_id]["current_discussion"].update_message(self.connections[client_id]["generated_text"], new_metadata=mtdt, new_ui=ui)
 
     def close_message(self, client_id):
         if not self.connections[client_id]["current_discussion"]:

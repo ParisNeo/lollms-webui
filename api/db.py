@@ -614,7 +614,6 @@ class Discussion:
         )
 
         self.messages.append(self.current_message)
-        self.current_message.update(content, metadata, ui)
         return self.current_message
 
     def rename(self, new_title):
