@@ -1,6 +1,6 @@
 ######
 # Project       : lollms-webui
-# File          : api.py
+# File          : api/__init__.py
 # Author        : ParisNeo with the help of the community
 # license       : Apache 2.0
 # Description   : 
@@ -430,7 +430,7 @@ class LoLLMsAPPI(LollmsApplication):
             installation_dir = self.binding.searchModelParentFolder(model_path)
             
             binding_folder = self.config["binding_name"]
-            if model_type=="gptq":
+            if model_type=="gptq" or  model_type=="awq":
                 filename = model_path.split("/")[4]
                 installation_path = installation_dir / filename
             else:
