@@ -10,6 +10,7 @@ export default async ({ mode }) => {
     try {
       const response = await fetch('/get_server_address'); // Replace with the actual endpoint on your Flask server
       const serverAddress = await response.text();
+      console.log(`${serverAddress}`)
       if(serverAddress.includes('<')){
         console.log(`Server address not found`)
         return process.env.VITE_LOLLMS_API

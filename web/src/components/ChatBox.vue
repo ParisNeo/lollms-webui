@@ -4,7 +4,7 @@
             <div class="flex flex-row p-2 rounded-t-lg ">
 
                 <button type="button"
-                    class="bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel hover:bg-bg-light-tone focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:hover:bg-bg-dark-tone focus:outline-none dark:focus:ring-blue-800"
+                    class="bg-red-500 dark:bg-red-800 hover:bg-red-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:hover:bg-bg-dark-tone focus:outline-none dark:focus:ring-blue-800"
                     @click.stop="stopGenerating">
                     Stop generating
                 </button>
@@ -140,9 +140,9 @@
                             <!-- :onShowPersList="onShowPersListFun" -->
                             <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-10 group-hover:translate-x-15 transition-all duration-300">
                                 <div class="w-full"
-                                    v-for="(item, index) in this.$store.state.installedModels" :key="index + '-' + item.name"
+                                    v-for="(item, index) in installedModels" :key="index + '-' + item.name"
                                     ref="installedModels">
-                                    <div v-if="item.name!=this.$store.state.config.model_name" class="group items-center flex flex-row">
+                                    <div v-if="item.name!=model_name" class="group items-center flex flex-row">
                                         <button @click.prevent="setModel(item)" class="w-8 h-8">
                                             <img :src="item.icon?item.icon:modelImgPlaceholder" @error="modelImgPlaceholder"
                                                 class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
@@ -153,9 +153,9 @@
                             </div>
                             <div class="group items-center flex flex-row">
                                 <button @click.prevent="showModelConfig()" class="w-8 h-8">
-                                    <img :src="this.$store.state.currentModel.icon?this.$store.state.currentModel.icon:modelImgPlaceholder" @error="modelImgPlaceholder"
+                                    <img :src="currentModel.icon?currentModel.icon:modelImgPlaceholder" @error="modelImgPlaceholder"
                                         class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
-                                        :title="this.$store.state.currentModel?this.$store.state.currentModel.name:'unknown'">
+                                        :title="currentModel?currentModel.name:'unknown'">
                                 </button>
                             </div>
 
@@ -363,6 +363,15 @@ export default {
         }
     },
     computed: {
+        currentModel() {
+            return this.$store.state.currentModel;
+        },
+        installedModels() {
+            return this.$store.state.installedModels;
+        },
+        model_name(){
+            return this.$store.state.config.model_name    
+        },
         config() {
             return this.$store.state.config;
         },
@@ -582,10 +591,11 @@ export default {
                         setting_name: "model_name",
                         setting_value: selectedModel.name
                     }).then(async (response) => {
+                console.log("UPDATED");
                 console.log(response);
-                await this.$store.dispatch('refreshModels');
                 await this.$store.dispatch('refreshConfig');    
-                this.$refs.toast.showToast(`Model changed to ${selectedModel.name}`,4,true)
+                await this.$store.dispatch('refreshModels');
+                this.$refs.toast.showToast(`Model changed to ${this.currentModel.name}`,4,true)
                 this.selecting_model=false
                 }).catch(err=>{
                 this.$refs.toast.showToast(`Error ${err}`,4,true)
@@ -785,6 +795,22 @@ export default {
         }
     },
     watch: {
+        installedModels: {
+            immediate: true,
+            handler(newVal) {
+                this.$nextTick(() => {
+                this.installedModels = newVal;
+                });
+            },
+        },   
+        model_name: {
+            immediate: true,
+            handler(newVal) {
+                this.$nextTick(() => {
+                this.model_name = newVal;
+                });
+            },
+        },                
         showfilesList() {
             nextTick(() => {
                 feather.replace()

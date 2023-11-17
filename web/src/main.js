@@ -88,7 +88,11 @@ export const store = createStore({
       },
       setModelsZoo(state, modelsZoo) {
         state.modelsZoo = modelsZoo;
-      },      
+      },   
+      setCurrentModel(state, currentModel) {
+        state.currentModel = currentModel;
+      },   
+         
       setExtensionsZoo(state, extensionsZoo) {
         state.extensionsZoo = extensionsZoo;
       },
@@ -140,6 +144,9 @@ export const store = createStore({
       },
       getModelsZoo(state) {
         return state.modelsZoo;
+      },
+      getCurrentModel(state) {
+        return state.currentModel;
       },
       getExtensionsZoo(state) {
         return state.extensionsZoo;
@@ -302,9 +309,9 @@ export const store = createStore({
         })
         this.state.installedModels = this.state.modelsZoo.filter(item=> item.isInstalled)
         const index = this.state.modelsZoo.findIndex(item=>item.name == this.state.config.model_name)
-        if (index!=-1)
-            this.state.currentModel = this.state.modelsZoo[index]
-
+        if (index!=-1){
+          commit('setCurrentModel',this.state.modelsZoo[index])
+        }
     },
     async refreshExtensionsZoo({ commit }) {
           let extensions = []
