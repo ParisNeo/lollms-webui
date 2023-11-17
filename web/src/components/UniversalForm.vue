@@ -302,12 +302,25 @@ export default {
                 this.show = true;
                 this.title = title || this.title
                 this.resolve = resolve;
-                console.log('show foam', this.controls_array)
+                console.log('show form', this.controls_array)
             });
         },
 
     },
     watch: {
+        controls_array: {
+        deep: true,
+        handler(newArray) {
+            newArray.forEach(item => {
+            if (item.type === 'int') {
+                item.value = parseInt(item.value);
+            } else if (item.type === 'float') {
+                item.value = parseFloat(item.value);
+            }
+            // Add more conditions for other types if needed
+            });
+        }
+        },
         show() {
             nextTick(() => {
                 feather.replace()
