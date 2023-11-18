@@ -506,6 +506,7 @@ try:
                         ["python", str(tmp_file)],
                         stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE,
+                        cwd=root_folder
                     )
 
                     # Get the output and error from the process.
