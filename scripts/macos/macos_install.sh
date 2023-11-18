@@ -44,7 +44,7 @@ gpuchoice="${gpuchoice:0:1}"
 uppercase_gpuchoice=$(echo "$gpuchoice" | tr '[:lower:]' '[:upper:]')
 if [[ "$uppercase_gpuchoice" == "A" ]]; then
   PACKAGES_TO_INSTALL="python=3.10 cuda-toolkit ninja git"
-  CHANNEL="-c pytorch -c conda-forge"
+  CHANNEL="-c nvidia/label/cuda-12.1.1 -c nvidia -c conda-forge"
 elif [[ "$uppercase_gpuchoice" == "B" ]]; then
   PACKAGES_TO_INSTALL="python=3.10 ninja git"
   CHANNEL="-c conda-forge"
