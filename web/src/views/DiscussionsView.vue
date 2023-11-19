@@ -1051,7 +1051,9 @@ export default {
 
                 steps                   : [],
                 parameters              : msgObj.parameters,
-                metadata                : msgObj.metadata
+                metadata                : msgObj.metadata,
+
+                open                    : msgObj.open
             }
             console.log(responseMessage)
             this.discussionArr.push(responseMessage)

@@ -147,7 +147,7 @@
                     <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :host="host" :markdown-text="message.content" :message_id="message.id">
                     </MarkdownRenderer>
                     <div >
-                        <textarea v-if="editMsgMode" ref="mdTextarea" @keydown.tab.prevent="insertTab"
+                        <textarea v-if="message.open" ref="mdTextarea" @keydown.tab.prevent="insertTab"
                         class="block p-2.5 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 overflow-y-scroll flex flex-col shadow-lg p-10 pt-0 overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
                         :rows="4" 
                         :style="{ minHeight: mdRenderHeight + `px` }" placeholder="Enter message here..."
@@ -240,7 +240,7 @@ export default {
             voices: [],            
             expanded: false,
             showConfirmation: false,
-            editMsgMode: false,
+            editMsgMode_: false,
             deleteMsgMode: false,
             mdRenderHeight: Number
 
@@ -496,13 +496,6 @@ export default {
             })
         },
 
-        editMsgMode(val) {
-
-            nextTick(() => {
-                feather.replace()
-
-            })
-        },
         deleteMsgMode() {
             nextTick(() => {
                 feather.replace()
@@ -513,6 +506,22 @@ export default {
 
     },
     computed: {
+        editMsgMode:{
+            get(){
+                if(this.message.hasOwnProperty('open'))
+                    return this.editMsgMode_ || this.message.open;
+                else
+                return this.editMsgMode_;
+            },
+            set(value){
+                this.message.open = value
+                this.editMsgMode_ = value
+                nextTick(() => {
+                    feather.replace()
+
+                })
+            }
+        },
         isTalking :{
             get(){
                 return this.isSpeaking

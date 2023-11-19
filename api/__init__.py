@@ -515,7 +515,7 @@ class LoLLMsAPPI(LollmsApplication):
         @socketio.on('load_discussion')
         def load_discussion(data):
             client_id = request.sid
-            ASCIIColors.yellow(f"Loading discussion for client {client_id}")
+            ASCIIColors.yellow(f"Loading discussion for client {client_id} ... ", end="")
             if "id" in data:
                 discussion_id = data["id"]
                 self.connections[client_id]["current_discussion"] = Discussion(discussion_id, self.db)
@@ -531,6 +531,7 @@ class LoLLMsAPPI(LollmsApplication):
                         jsons,
                         room=client_id
             )
+            ASCIIColors.green(f"ok")
                 
         @socketio.on('upload_file')
         def upload_file(data):
@@ -653,7 +654,7 @@ class LoLLMsAPPI(LollmsApplication):
                     if not self.model:
                         self.notify("No model selected. Please make sure you select a model before starting generation", False, client_id)
                         return          
-                    self.new_message(client_id, self.config.user_name, "", sender_type=SENDER_TYPES.SENDER_TYPES_USER)
+                    self.new_message(client_id, self.config.user_name, "", sender_type=SENDER_TYPES.SENDER_TYPES_USER, open=True)
                     self.socketio.sleep(0.01)            
             else:
                 if self.personality is None:
@@ -666,7 +667,7 @@ class LoLLMsAPPI(LollmsApplication):
                     if not self.model:
                         self.notify("No model selected. Please make sure you select a model before starting generation", False, client_id)
                         return          
-                    self.new_message(client_id, self.personality.name, "[edit this to put your ai answer start]")
+                    self.new_message(client_id, self.personality.name, "[edit this to put your ai answer start]", open=True)
                     self.socketio.sleep(0.01)            
 
         # A copy of the original lollms-server generation code needed for playground
@@ -1434,7 +1435,8 @@ class LoLLMsAPPI(LollmsApplication):
                             metadata=None,
                             ui=None,
                             message_type:MSG_TYPE=MSG_TYPE.MSG_TYPE_FULL, 
-                            sender_type:SENDER_TYPES=SENDER_TYPES.SENDER_TYPES_AI
+                            sender_type:SENDER_TYPES=SENDER_TYPES.SENDER_TYPES_AI,
+                            open=False
                         ):
         
         mtdt = metadata if metadata is None or type(metadata) == str else json.dumps(metadata, indent=4)
@@ -1471,7 +1473,9 @@ class LoLLMsAPPI(LollmsApplication):
                     'personality':              self.config["personalities"][self.config["active_personality_id"]],
 
                     'created_at':               self.connections[client_id]["current_discussion"].current_message.created_at,
-                    'finished_generating_at':   self.connections[client_id]["current_discussion"].current_message.finished_generating_at,                        
+                    'finished_generating_at':   self.connections[client_id]["current_discussion"].current_message.finished_generating_at,
+
+                    'open':                     open
                 }, room=client_id
         )
 
