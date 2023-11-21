@@ -8,9 +8,9 @@ import vue from '@vitejs/plugin-vue'
 export default async ({ mode }) => {
   async function getFlaskServerURL() {
     try {
+      console.log("Loading")
       const response = await fetch('/get_server_address'); // Replace with the actual endpoint on your Flask server
       const serverAddress = await response.text();
-      console.log(`${serverAddress}`)
       if(serverAddress.includes('<') || !serverAddress.startsWith("http")){
         console.log(`Server address not found`)
         return process.env.VITE_LOLLMS_API
