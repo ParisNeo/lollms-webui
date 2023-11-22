@@ -1466,6 +1466,7 @@ class LoLLMsAPPI(LollmsApplication):
                     "metadata":                 metadata,
                     "ui":                       ui,
                     "id":                       msg.id,
+                    "discussion_id":            self.connections[client_id]["current_discussion"].id,
                     "parent_message_id":        msg.parent_message_id,
 
                     'binding':                  self.config["binding_name"],
@@ -2841,14 +2842,11 @@ class LoLLMsAPPI(LollmsApplication):
                     extension = ExtensionBuilder().build_extension(extension_path,self.lollms_paths, self)
                     mounted_extensions.append(extension)
                 except Exception as ex:
-                    ASCIIColors.error(f"Personality file not found or is corrupted ({extension_path}).\nReturned the following exception:{ex}\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+                    ASCIIColors.error(f"Extension file not found or is corrupted ({extension_path}).\nReturned the following exception:{ex}\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+                    trace_exception(ex)
                     ASCIIColors.info("Trying to force reinstall")
                     if self.config["debug"]:
                         print(ex)
-        if self.config["active_personality_id"]>=0 and self.config["active_personality_id"]<len(self.config["personalities"]):
-            ASCIIColors.success(f'selected model : {self.config["personalities"][self.config["active_personality_id"]]}')
-        else:
-            ASCIIColors.warning('An error was encountered while trying to mount personality')
         ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
         ASCIIColors.success(f" ║                      Done                        ║ ")
         ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
@@ -2859,11 +2857,9 @@ class LoLLMsAPPI(LollmsApplication):
         for index in to_remove:
             if 0 <= index < len(mounted_extensions):
                 mounted_extensions.pop(index)
-                self.config["personalities"].pop(index)
+                self.config["extensions"].pop(index)
                 ASCIIColors.info(f"removed personality {extension_path}")
 
-        if self.config["active_personality_id"]>=len(self.config["personalities"]):
-            self.config["active_personality_id"]=0
             
         return mounted_extensions
     # ================================== LOLLMSApp

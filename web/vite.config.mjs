@@ -24,9 +24,15 @@ export default async ({ mode }) => {
       return process.env.VITE_LOLLMS_API
     }
   }
+  let serverURL = undefined;
+  try{
+    serverURL = await getFlaskServerURL() 
+    console.log(serverURL)
   
-  const serverURL = await getFlaskServerURL() 
-  console.log(serverURL)
+  }catch{
+    serverURL = process.env.VITE_LOLLMS_API
+    console.log(`Server address: ${serverAddress}`)
+  }
   // Load app-level env vars to node-level env vars.
   process.env = {...process.env, ...loadEnv(mode, process.cwd())};
   

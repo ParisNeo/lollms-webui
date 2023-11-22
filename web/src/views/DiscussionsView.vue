@@ -427,7 +427,8 @@ export default {
             isDragOverDiscussion: false,
             isDragOverChat: false,
             panelCollapsed: false, // left panel collapse
-            isOpen: false
+            isOpen: false,
+            discussion_id: 0,
         }
     },
     methods: {     
@@ -1037,6 +1038,7 @@ export default {
                 sender_type:            msgObj.sender_type,
                 content:                msgObj.content,//"✍ please stand by ...",
                 id:                     msgObj.id,
+                discussion_id:          msgObj.discussion_id,
                 parent_id:              msgObj.parent_id,
 
                 binding:                msgObj.binding,
@@ -1142,6 +1144,7 @@ export default {
                             sender_type:            this.senderTypes.SENDER_TYPES_USER,
                             content:                msg,
                             id:             lastmsgid,
+                            discussion_id:  this.discussion_id,
                             parent_id:      lastmsgid,
 
                             binding:                "",
@@ -1170,6 +1173,7 @@ export default {
             });
         },
         sendCmd(cmd){
+            this.isGenerating = true;
             socket.emit('execute_command', { command: cmd, parameters: [] });            
         },
         notify(notif){
@@ -1184,9 +1188,9 @@ export default {
         },
         streamMessageContent(msgObj) {
             // Streams response message content from binding
-            const discussion_id = msgObj.discussion_id
-            this.setDiscussionLoading(discussion_id, true);
-            if (this.currentDiscussion.id == discussion_id) {
+            this.discussion_id = msgObj.discussion_id
+            this.setDiscussionLoading(this.discussion_id, true);
+            if (this.currentDiscussion.id == this.discussion_id) {
                 //this.isGenerating = true;
                 const index = this.discussionArr.findIndex((x) => x.id == msgObj.id)
                 const messageItem = this.discussionArr[index]
@@ -1496,8 +1500,8 @@ export default {
 
             // Last message contains halucination suppression so we need to update the message content too
             const parent_id = msgObj.parent_id
-            const discussion_id = msgObj.discussion_id
-            if (this.currentDiscussion.id == discussion_id) {
+            this.discussion_id = msgObj.discussion_id
+            if (this.currentDiscussion.id == this.discussion_id) {
                 const index = this.discussionArr.findIndex((x) => x.id == msgObj.id)
                 this.discussionArr[index].content = msgObj.content
                 this.discussionArr[index].finished_generating_at = msgObj.finished_generating_at

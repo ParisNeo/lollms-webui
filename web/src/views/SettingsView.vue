@@ -1378,9 +1378,9 @@
                                 </div>
                                 <input type="search" id="personality-search"
                                     class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    placeholder="Search personality..." required v-model="searchPersonality"
-                                    @keyup.stop="searchPersonality_func">
-                                <button v-if="searchPersonality" @click.stop="searchPersonality = ''" type="button"
+                                    placeholder="Search extension..." required v-model="searchExtension"
+                                    @keyup.stop="searchExtension_func">
+                                <button v-if="searchExtension" @click.stop="searchExtension = ''" type="button"
                                     class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                     Clear search</button>
 
@@ -1389,7 +1389,7 @@
                             </div>
 
                     </div>
-                    <div class="mx-2 mb-4" v-if="!searchPersonality">
+                    <div class="mx-2 mb-4" v-if="!searchExtension">
                         <label for="persCat" class="block  mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Extensions Category: ({{ extCatgArr.length }})
                         </label>
@@ -1408,7 +1408,7 @@
                     <div>
                         <div v-if="extensionsFiltererd.length > 0" class="mb-2">
                             <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                {{ searchPersonality ? 'Search results' : 'Personalities' }}: ({{
+                                {{ searchExtension ? 'Search results' : 'Personalities' }}: ({{
                                     extensionsFiltererd.length
                                 }})
                             </label>
@@ -2048,6 +2048,9 @@ export default {
             while (this.isReady === false) {
                 await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for 100ms
             }  
+            
+            this.refresh();
+
             console.log("Ready")
             if (this.configFile.model_name) {
                 this.isModelSelected = true
@@ -2066,7 +2069,9 @@ export default {
                 this.extCatgArr = []
             }
             try{
+                console.log("Loading extension category content")
                 this.extArr = await this.api_get_req("list_extensions?category="+this.extension_category)
+                console.log(this.extArr)
             }
             catch{
                 console.log("Couldn't list extensions")
@@ -2306,7 +2311,6 @@ export default {
                     this.mountPersonality(ext)
 
                 }
-
 
                 nextTick(() => {
                     feather.replace()
@@ -3493,26 +3497,26 @@ export default {
             this.isLoading = true
             if (!ext) { return }
 
-            const res = await this.unmount_personality(ext.personality || ext)
+            const res = await this.p_unmount_extension(ext.extension || ext)
 
 
             if (res.status) {
-                this.configFile.personalities = res.personalities
+                this.configFile.extensions = res.extensions
                 this.$refs.toast.showToast("Extension unmounted", 4, true)
-                const persId = this.personalities.findIndex(item => item.full_path == ext.full_path)
-                const persFilteredId = this.personalitiesFiltered.findIndex(item => item.full_path == ext.full_path)
-                const persIdZoo = this.$refs.personalitiesZoo.findIndex(item => item.full_path == ext.full_path)
-                console.log('ppp', this.personalities[persId])
+                const extId = this.extensions.findIndex(item => item.full_path == ext.full_path)
+                const persFilteredId = this.extensionsFiltered.findIndex(item => item.full_path == ext.full_path)
+                const extIdZoo = this.$refs.extensionsZoo.findIndex(item => item.full_path == ext.full_path)
+                console.log('ext', this.extensions[extId])
 
-                this.personalities[persId].isMounted = false
+                this.extensions[extId].isMounted = false
 
                 if (persFilteredId > -1) {
-                    this.personalitiesFiltered[persFilteredId].isMounted = false
+                    this.extensionsFiltered[persFilteredId].isMounted = false
 
                 }
 
-                if (persIdZoo > -1) {
-                    this.$refs.personalitiesZoo[persIdZoo].isMounted = false
+                if (extIdZoo > -1) {
+                    this.$refs.extensionsZoo[extIdZoo].isMounted = false
 
                 }
 
@@ -3520,9 +3524,9 @@ export default {
                 //ext.isMounted = false
                 this.$store.dispatch('refreshMountedPersonalities');
                 // Select some other personality
-                const lastPers = this.mountedPersArr[this.mountedPersArr.length - 1]
+                const lastPers = this.mountedExtensions[this.mountedExtensions.length - 1]
 
-                console.log(lastPers, this.mountedPersArr.length)
+                console.log(lastPers, this.mountedExtensions.length)
 
 
             } else {
@@ -3534,6 +3538,32 @@ export default {
         async remountExtension(ext){
             await this.unmountExtension(ext);
             await this.mountExtension(ext);
+        },
+        onExtensionReinstall(extItem){
+            console.log('on reinstall ', extItem)
+            this.isLoading = true
+            console.log(extItem)
+            axios.post('/reinstall_extension', { name: extItem.extension.full_path }).then((res) => {
+
+                if (res) {
+                    this.isLoading = false
+                    console.log('reinstall_extension', res)
+                    if (res.data.status) {
+                        this.$refs.toast.showToast("Extension reinstalled successfully!", 4, true)
+                    } else {
+                        this.$refs.toast.showToast("Could not reinstall extension", 4, false)
+                    }
+                    return res.data;
+                }
+                this.isLoading = false
+            })
+                // eslint-disable-next-line no-unused-vars
+
+                .catch(error => {
+                    this.isLoading = false
+                    this.$refs.toast.showToast("Could not reinstall personality\n" + error.message, 4, false)
+                    return { 'status': false }
+                });            
         },
 
         onPersonalityReinstall(persItem){
@@ -3775,6 +3805,7 @@ export default {
         },
         mountedExtensions:{
             get() {
+                console.log("this.$store.state.mountedExtensions:",this.$store.state.mountedExtensions)
                 return this.$store.state.mountedExtensions;
             },
             set(value) {

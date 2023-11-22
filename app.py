@@ -64,6 +64,8 @@ try:
     from lollms.personality import AIPersonality
     from lollms.config import BaseConfig
     from lollms.paths import LollmsPaths, gptqlora_repo
+    from lollms.extension import LOLLMSExtension, ExtensionBuilder
+
 
     from api.db import Discussion
     from flask import (
@@ -253,6 +255,7 @@ try:
             self.add_endpoint("/unInstall_binding", "unInstall_binding", self.unInstall_binding, methods=["POST"])
             self.add_endpoint("/reinstall_binding", "reinstall_binding", self.reinstall_binding, methods=["POST"])
             self.add_endpoint("/reinstall_personality", "reinstall_personality", self.reinstall_personality, methods=["POST"])
+            self.add_endpoint("/reinstall_extension", "reinstall_extension", self.reinstall_extension, methods=["POST"])
 
             self.add_endpoint("/switch_personal_path", "switch_personal_path", self.switch_personal_path, methods=["POST"])
 
@@ -1500,6 +1503,41 @@ try:
                             "status": True
                         })
             
+        def reinstall_extension(self):
+            try:
+                data = request.get_json()
+                # Further processing of the data
+            except Exception as e:
+                print(f"Error occurred while parsing JSON: {e}")
+                return jsonify({"status":False, 'error':str(e)})
+            if not 'name' in data.keys():
+                try:
+                    data['name']=self.config.extensions[-1]
+                except Exception as ex:
+                    self.notify(ex,False)
+                    return
+            try:
+                extension_path = self.lollms_paths.extensions_zoo_path / data['name']
+                ASCIIColors.info(f"- Reinstalling extension {data['name']}...")
+                ASCIIColors.info("Unmounting extension")
+                if data['name'] in self.config.extensions:
+                    idx = self.config.extensions.index(data['name'])
+                    print(f"index = {idx}")
+                    if len(self.mount_extensions)>idx:
+                        del self.mounted_extensions[idx]
+                    gc.collect()
+                try:
+                    self.mounted_extensions.append(ExtensionBuilder().build_extension(extension_path,self.lollms_paths, self, InstallOption.FORCE_INSTALL))
+                    return jsonify({"status":True})
+                except Exception as ex:
+                    ASCIIColors.error(f"Extension file not found or is corrupted ({data['name']}).\nReturned the following exception:{ex}\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+                    trace_exception(ex)
+                    ASCIIColors.info("Trying to force reinstall")
+                    return jsonify({"status":False, 'error':str(e)})
+
+            except Exception as e:
+                return jsonify({"status":False, 'error':str(e)})
+        
         def reinstall_personality(self):
             try:
                 data = request.get_json()
@@ -1510,7 +1548,7 @@ try:
             if not 'name' in data:
                 data['name']=self.config.personalities[self.config["active_personality_id"]]
             try:
-                personality_path = lollms_paths.personalities_zoo_path / data['name']
+                personality_path = self.lollms_paths.personalities_zoo_path / data['name']
                 ASCIIColors.info(f"- Reinstalling personality {data['name']}...")
                 ASCIIColors.info("Unmounting personality")
                 idx = self.config.personalities.index(data['name'])
