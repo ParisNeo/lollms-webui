@@ -412,6 +412,36 @@ class DiscussionsDB:
 
         return discussions
 
+    def export_discussions_to_markdown(self, discussions_ids:list, title = ""):
+        # Convert the list of discussion IDs to a tuple
+        discussions_ids_tuple = tuple(discussions_ids)
+        txt = ','.join(['?'] * len(discussions_ids_tuple))
+        db_discussions = self.select(
+            f"SELECT * FROM discussion WHERE id IN ({txt})",
+            discussions_ids_tuple
+        )
+        discussions = f"# {title}" if title!="" else ""
+        for row in db_discussions:
+            discussion_id = row[0]
+            discussion_title = row[1]
+            discussions += f"## {discussion_title}\n"
+            rows = self.select(f"SELECT sender, content, message_type, rank, parent_message_id, binding, model, personality, created_at, finished_generating_at FROM message WHERE discussion_id=?",(discussion_id,))
+            for message_row in rows:
+                sender = message_row[0]
+                content = message_row[1]
+                content_type = message_row[2]
+                rank = message_row[3]
+                parent_message_id = message_row[4]
+                binding = message_row[5]
+                model = message_row[6]
+                personality = message_row[7]
+                created_at = message_row[8]
+                finished_generating_at = message_row[9]
+                
+                discussions +=f"### {sender}:\n{content}\n"
+            discussions +=f"\n"
+        return discussions
+
 
 class Message:
     def __init__(

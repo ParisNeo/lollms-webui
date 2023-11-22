@@ -174,9 +174,13 @@
                         <div class="flex gap-3">
 
                             <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
-                                title="Export selected to a file" type="button" @click.stop="exportDiscussions">
+                                title="Export selected to a json file" type="button" @click.stop="exportDiscussionsAsJson">
                                 <i data-feather="log-out"></i>
                             </button>
+                            <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
+                                title="Export selected to a martkdown file" type="button" @click.stop="exportDiscussionsAsMarkdown">
+                                <i data-feather="bookmark"></i>
+                            </button>                            
                             <button class="text-2xl hover:text-secondary duration-75 active:scale-90 " title="Select All"
                                 type="button" @click.stop="selectAllDiscussions">
                                 <i data-feather="list"></i>
@@ -798,11 +802,12 @@ export default {
                 return {}
             }
         },
-        async export_multiple_discussions(discussionIdArr) {
+        async export_multiple_discussions(discussionIdArr, export_format) {
             try {
                 if (discussionIdArr.length > 0) {
                     const res = await axios.post('/export_multiple_discussions', {
-                        discussion_ids: discussionIdArr
+                        discussion_ids: discussionIdArr,
+                        export_format: export_format
                     })
 
                     if (res) {
@@ -1578,6 +1583,17 @@ export default {
             a.click();
             document.body.removeChild(a);
         },
+        saveMarkdowntoFile(markdownData, filename) {
+            filename = filename || "data.md"
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(new Blob([markdownData], {
+                type: "text/plain"
+            }));
+            a.setAttribute("download", filename);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        },
         parseJsonObj(obj) {
             try {
                 const ret = JSON.parse(obj)
@@ -1597,7 +1613,53 @@ export default {
                 fileReader.readAsText(file)
             })
         },
-        async exportDiscussions() {
+        
+        async exportDiscussionsAsMarkdown() {
+            // Export selected discussions
+
+            const discussionIdArr = this.list.filter((item) => item.checkBoxValue == true).map((item) => {
+                return item.id
+            })
+
+            if (discussionIdArr.length > 0) {
+                console.log("export", discussionIdArr)
+                let dateObj = new Date()
+
+                const year = dateObj.getFullYear();
+                const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
+                const day = dateObj.getDate().toString().padStart(2, "0");
+                const hours = dateObj.getHours().toString().padStart(2, "0");
+                const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+                const seconds = dateObj.getSeconds().toString().padStart(2, "0");
+                const formattedDate =
+                    year +
+                    "." +
+                    month +
+                    "." +
+                    day +
+                    "." +
+                    hours +
+                    "" +
+                    minutes +
+                    "" +
+                    seconds;
+
+                const filename = 'discussions_export_' + formattedDate + '.md'
+                this.loading = true
+                const res = await this.export_multiple_discussions(discussionIdArr,"markdown")
+
+                if (res) {
+                    this.saveMarkdowntoFile(res, filename)
+                    this.$refs.toast.showToast("Successfully exported", 4, true)
+                    this.isCheckbox = false
+                } else {
+                    this.$refs.toast.showToast("Failed to export discussions", 4, false)
+                }
+                this.loading = false
+            }
+
+        },        
+        async exportDiscussionsAsJson() {
             // Export selected discussions
 
             const discussionIdArr = this.list.filter((item) => item.checkBoxValue == true).map((item) => {
@@ -1629,7 +1691,7 @@ export default {
 
                 const filename = 'discussions_export_' + formattedDate + '.json'
                 this.loading = true
-                const res = await this.export_multiple_discussions(discussionIdArr)
+                const res = await this.export_multiple_discussions(discussionIdArr, "json")
 
                 if (res) {
                     this.saveJSONtoFile(res, filename)

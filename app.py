@@ -692,7 +692,14 @@ try:
         def export_multiple_discussions(self):
             data = request.get_json()
             discussion_ids = data["discussion_ids"]
-            discussions = self.db.export_discussions_to_json(discussion_ids)
+            export_format = data["export_format"]
+
+            if export_format=="json":
+                discussions = self.db.export_discussions_to_json(discussion_ids)
+            elif export_format=="markdown":
+                discussions = self.db.export_discussions_to_markdown(discussion_ids)
+            else:
+                discussions = self.db.export_discussions_to_markdown(discussion_ids)
             return jsonify(discussions)
             
         def import_multiple_discussions(self):
