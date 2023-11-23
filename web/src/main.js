@@ -28,6 +28,7 @@ export const store = createStore({
         version : "unknown",
         settingsChanged:false,
         isConnected: false, // Add the isConnected property
+        isGenerating: false,
         config:null,
         mountedPers:null,
         mountedPersArr:[],
@@ -53,6 +54,10 @@ export const store = createStore({
       setIsConnected(state, isConnected) {
         state.isConnected = isConnected;
       },
+      setIsGenerating(state, isGenerating) {
+        state.isGenerating = isGenerating;
+      },
+      
       setConfig(state, config) {
         state.config = config;
       },
@@ -108,6 +113,11 @@ export const store = createStore({
       getIsConnected(state) {
         return state.isConnected
       },
+      getIsGenerating(state) {
+        return state.isGenerating
+      },
+
+      
       getConfig(state) {
         return state.config
       },

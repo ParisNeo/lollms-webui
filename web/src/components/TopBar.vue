@@ -16,6 +16,13 @@
             </RouterLink>
             <!-- GITHUB AND THEME BUTTONS -->
             <div class="flex gap-3 flex-1 items-center justify-end">
+                
+                <div v-if="!isGenerating" title="Connection status" class="text-green-500">
+                    <i data-feather="flag"></i>
+                </div>
+                <div v-if="isGenerating" title="Connection status" class="text-red-500">
+                    <i data-feather="flag"></i>
+                </div>
                 <div v-if="isConnected" title="Connection status" class="text-green-500">
                     <i data-feather="zap"></i>
                 </div>
@@ -82,6 +89,9 @@ import { mapState } from 'vuex';
 export default {
     name: 'TopBar',
     computed:{
+        isGenerating(){
+            return this.$store.state.isGenerating;
+        },
         isConnected(){
             return this.$store.state.isConnected;
         }

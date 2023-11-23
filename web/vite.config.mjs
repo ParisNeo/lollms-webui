@@ -28,7 +28,6 @@ export default async ({ mode }) => {
   try{
     serverURL = await getFlaskServerURL() 
     console.log(serverURL)
-  
   }catch{
     serverURL = process.env.VITE_LOLLMS_API
     console.log(`Server address: ${serverAddress}`)
@@ -49,7 +48,7 @@ export default async ({ mode }) => {
   server: {
     proxy: {
       "/api/": {
-        target:  serverURL,//process.env.VITE_LOLLMS_API,//getFlaskServerURL(),// process.env.VITE_LOLLMS_API,
+        target:  serverURL,//process.env.VITE_LOLLMS_API,//process.env.VITE_LOLLMS_API,//getFlaskServerURL(),// process.env.VITE_LOLLMS_API,
         changeOrigin: process.env.VITE_LOLLMS_API_CHANGE_ORIGIN,
         secure: process.env.VITE_LOLLMS_API_SECURE,
         rewrite: (path) => path.replace(/^\/api/, ""),

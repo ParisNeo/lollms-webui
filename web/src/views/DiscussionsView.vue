@@ -415,7 +415,6 @@ export default {
             filterTitle: '',
             filterInProgress: false,
             isCreated: false,
-            isGenerating: false,
             isCheckbox: false,
             isSelectAll: false,
             showSaveConfirmation: false,
@@ -1791,13 +1790,13 @@ export default {
         };
         socket.on("connect_error", (error) => {
             if (error.message === "ERR_CONNECTION_REFUSED") {
-            this.$store.state.isConnected = false
             console.error("Connection refused. The server is not available.");
             // Handle the ERR_CONNECTION_REFUSED error here
             } else {
             console.error("Connection error:", error);
             // Handle other connection errors here
             }
+            this.$store.state.isConnected = false
         });        
         socket.onerror = (event) => {
             console.log('WebSocket connection error:', event.code, event.reason);
@@ -1928,6 +1927,14 @@ export default {
         
     },
     computed: { 
+        isGenerating:{
+            get(){
+                return this.$store.state.isGenerating;
+            },
+            set(val){
+                this.$store.state.isGenerating=val
+            }
+        },
         formatted_database_name() {
             const db_name = this.$store.state.config.db_path;
             const trimmed_name = db_name.slice(0, db_name.length - 3);
