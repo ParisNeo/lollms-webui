@@ -2641,6 +2641,7 @@ class LoLLMsAPPI(LollmsApplication):
                 self.start_time = datetime.now()
                 self.personality.processor.callback = partial(self.process_chunk, client_id=client_id)
                 self.personality.processor.execute_command(command, parameters)
+                self.close_message(client_id)
             else:
                 self.notify("Non scripted personalities do not support commands",False,client_id)
 
@@ -2702,13 +2703,14 @@ class LoLLMsAPPI(LollmsApplication):
                 self.notify("Please select a discussion first", False, client_id)
                 return
             id_ = data['id']
+            generation_type = data.get('msg_type',None)
             if id_==-1:
                 message = self.connections[client_id]["current_discussion"].current_message
             else:
                 message = self.connections[client_id]["current_discussion"].load_message(id_)
             if message is None:
                 return            
-            self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message.id, client_id))
+            self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message.id, client_id, False, generation_type))
             self.connections[client_id]['generation_thread'].start()
 
         @socketio.on('continue_generate_msg_from')
@@ -3009,7 +3011,7 @@ class LoLLMsAPPI(LollmsApplication):
 
 
 
-    def prepare_query(self, client_id: str, message_id: int = -1, is_continue: bool = False, n_tokens: int = 0) -> Tuple[str, str, List[str]]:
+    def prepare_query(self, client_id: str, message_id: int = -1, is_continue: bool = False, n_tokens: int = 0, generation_type = None) -> Tuple[str, str, List[str]]:
         """
         Prepares the query for the model.
 
@@ -3041,43 +3043,45 @@ class LoLLMsAPPI(LollmsApplication):
 
         # Check if there are document files to add to the prompt
         documentation = ""
-        if self.personality.persona_data_vectorizer:
-            if documentation=="":
-                documentation="!@>Documentation:\n"
-
-            if self.config.data_vectorization_build_keys_words:
-                query = self.personality.fast_gen("!@>prompt:"+current_message.content+"\n!@>instruction: Convert the prompt to a web search query."+"\nDo not answer the prompt. Do not add explanations. Use comma separated syntax to make a list of keywords in the same line.\nThe keywords should reflect the ideas written in the prompt so that a seach engine can process them efficiently.\n!@>query: ", max_generation_size=256, show_progress=True)
-                ASCIIColors.cyan(f"Query:{query}")
-            else:
-                query = current_message.content
-
-            docs, sorted_similarities = self.personality.persona_data_vectorizer.recover_text(query, top_k=self.config.data_vectorization_nb_chunks)
-            for doc, infos in zip(docs, sorted_similarities):
-                documentation += f"document chunk:\n{doc}"
-
-        
-        if len(self.personality.text_files) > 0 and self.personality.vectorizer:
-            if documentation=="":
-                documentation="!@>Documentation:\n"
-
-            if self.config.data_vectorization_build_keys_words:
-                query = self.personality.fast_gen("!@>prompt:"+current_message.content+"\n!@>instruction: Convert the prompt to a web search query."+"\nDo not answer the prompt. Do not add explanations. Use comma separated syntax to make a list of keywords in the same line.\nThe keywords should reflect the ideas written in the prompt so that a seach engine can process them efficiently.\n!@>query: ", max_generation_size=256, show_progress=True)
-                ASCIIColors.cyan(f"Query:{query}")
-            else:
-                query = current_message.content
-
-            docs, sorted_similarities = self.personality.vectorizer.recover_text(query, top_k=self.config.data_vectorization_nb_chunks)
-            for doc, infos in zip(docs, sorted_similarities):
-                documentation += f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
-
-        # Check if there is discussion history to add to the prompt
         history = ""
-        if self.config.use_discussions_history and self.discussions_store is not None:
-            if history=="":
-                documentation="!@>History:\n"
-            docs, sorted_similarities = self.discussions_store.recover_text(current_message.content, top_k=self.config.data_vectorization_nb_chunks)
-            for doc, infos in zip(docs, sorted_similarities):
-                history += f"!@>discussion chunk:\n!@>discussion title: {infos[0]}\nchunk content:{doc}"
+
+        if generation_type != "simple_question":
+            if self.personality.persona_data_vectorizer:
+                if documentation=="":
+                    documentation="!@>Documentation:\n"
+
+                if self.config.data_vectorization_build_keys_words:
+                    query = self.personality.fast_gen("!@>prompt:"+current_message.content+"\n!@>instruction: Convert the prompt to a web search query."+"\nDo not answer the prompt. Do not add explanations. Use comma separated syntax to make a list of keywords in the same line.\nThe keywords should reflect the ideas written in the prompt so that a seach engine can process them efficiently.\n!@>query: ", max_generation_size=256, show_progress=True)
+                    ASCIIColors.cyan(f"Query:{query}")
+                else:
+                    query = current_message.content
+
+                docs, sorted_similarities = self.personality.persona_data_vectorizer.recover_text(query, top_k=self.config.data_vectorization_nb_chunks)
+                for doc, infos in zip(docs, sorted_similarities):
+                    documentation += f"document chunk:\n{doc}"
+
+            
+            if len(self.personality.text_files) > 0 and self.personality.vectorizer:
+                if documentation=="":
+                    documentation="!@>Documentation:\n"
+
+                if self.config.data_vectorization_build_keys_words:
+                    query = self.personality.fast_gen("!@>prompt:"+current_message.content+"\n!@>instruction: Convert the prompt to a web search query."+"\nDo not answer the prompt. Do not add explanations. Use comma separated syntax to make a list of keywords in the same line.\nThe keywords should reflect the ideas written in the prompt so that a seach engine can process them efficiently.\n!@>query: ", max_generation_size=256, show_progress=True)
+                    ASCIIColors.cyan(f"Query:{query}")
+                else:
+                    query = current_message.content
+
+                docs, sorted_similarities = self.personality.vectorizer.recover_text(query, top_k=self.config.data_vectorization_nb_chunks)
+                for doc, infos in zip(docs, sorted_similarities):
+                    documentation += f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
+
+            # Check if there is discussion history to add to the prompt
+            if self.config.use_discussions_history and self.discussions_store is not None:
+                if history=="":
+                    documentation="!@>History:\n"
+                docs, sorted_similarities = self.discussions_store.recover_text(current_message.content, top_k=self.config.data_vectorization_nb_chunks)
+                for doc, infos in zip(docs, sorted_similarities):
+                    history += f"!@>discussion chunk:\n!@>discussion title: {infos[0]}\nchunk content:{doc}"
 
         # Add information about the user
         user_description=""
@@ -3141,9 +3145,30 @@ class LoLLMsAPPI(LollmsApplication):
             tokens_accumulated += len(message_tokenized)
 
 
-        # Accumulate messages starting from message_index
-        for i in range(message_index, -1, -1):
-            message = messages[i]
+        if generation_type != "simple_question":
+            # Accumulate messages starting from message_index
+            for i in range(message_index, -1, -1):
+                message = messages[i]
+
+                # Check if the message content is not empty and visible to the AI
+                if message.content != '' and (
+                        message.message_type <= MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER.value and message.message_type != MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value):
+
+                    # Tokenize the message content
+                    message_tokenized = self.model.tokenize(
+                        "\n" + self.config.discussion_prompt_separator + message.sender + ": " + message.content.strip())
+
+                    # Check if adding the message will exceed the available space
+                    if tokens_accumulated + len(message_tokenized) > available_space:
+                        break
+
+                    # Add the tokenized message to the full_message_list
+                    full_message_list.insert(0, message_tokenized)
+
+                    # Update the cumulative number of tokens
+                    tokens_accumulated += len(message_tokenized)
+        else:
+            message = messages[message_index]
 
             # Check if the message content is not empty and visible to the AI
             if message.content != '' and (
@@ -3152,10 +3177,6 @@ class LoLLMsAPPI(LollmsApplication):
                 # Tokenize the message content
                 message_tokenized = self.model.tokenize(
                     "\n" + self.config.discussion_prompt_separator + message.sender + ": " + message.content.strip())
-
-                # Check if adding the message will exceed the available space
-                if tokens_accumulated + len(message_tokenized) > available_space:
-                    break
 
                 # Add the tokenized message to the full_message_list
                 full_message_list.insert(0, message_tokenized)
@@ -3217,7 +3238,7 @@ class LoLLMsAPPI(LollmsApplication):
 
 
     
-    def notify(self, content, status, client_id=None):
+    def notify(self, content, status=True, client_id=None):
         self.socketio.emit('notification', {
                             'content': content,# self.connections[client_id]["generated_text"], 
                             'status': status
@@ -3534,7 +3555,7 @@ class LoLLMsAPPI(LollmsApplication):
             output = ""
         return output
                      
-    def start_message_generation(self, message, message_id, client_id, is_continue=False):
+    def start_message_generation(self, message, message_id, client_id, is_continue=False, generation_type=None):
         if self.personality is None:
             self.notify("Select a personality",False,None)
             return
@@ -3555,7 +3576,7 @@ class LoLLMsAPPI(LollmsApplication):
             self.socketio.sleep(0.01)
 
             # prepare query and reception
-            self.discussion_messages, self.current_message, tokens = self.prepare_query(client_id, message_id, is_continue)
+            self.discussion_messages, self.current_message, tokens = self.prepare_query(client_id, message_id, is_continue, generation_type=generation_type)
             self.prepare_reception(client_id)
             self.generating = True
             self.connections[client_id]["processing"]=True

@@ -76,11 +76,17 @@
                                 title="Copy message to clipboard" @click.stop="copyContentToClipboard()">
                                 <i data-feather="copy"></i>
                             </div>
-                            <div v-if="!editMsgMode && message.sender!=this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" 
-                                title="Resend message"
-                                @click.stop="resendMessage()" 
+                            <div v-if="!editMsgMode && message.sender!=this.$store.state.mountedPers.name" class="text-lg text-red-500 hover:text-secondary duration-75 active:scale-90 p-2" 
+                                title="Resend message with full context"
+                                @click.stop="resendMessage('full_context')" 
                                 :class="{ 'text-5xl': editMsgMode }">
-                                <i data-feather="refresh-cw"></i>
+                                <i data-feather="send"></i>
+                            </div>
+                            <div v-if="!editMsgMode && message.sender!=this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" 
+                                title="Resend message without the full context"
+                                @click.stop="resendMessage('simple_question')" 
+                                :class="{ 'text-5xl': editMsgMode }">
+                                <i data-feather="send"></i>
                             </div>
                             <div v-if="!editMsgMode && message.sender==this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" 
                                 title="Resend message"
@@ -392,8 +398,8 @@ export default {
             this.$emit('updateMessage', this.message.id, this.message.content)
             this.editMsgMode = false
         },
-        resendMessage() {
-            this.$emit('resendMessage', this.message.id, this.message.content)
+        resendMessage(msg_type) {
+            this.$emit('resendMessage', this.message.id, this.message.content, msg_type)
         },
         continueMessage() {
             this.$emit('continueMessage', this.message.id, this.message.content)

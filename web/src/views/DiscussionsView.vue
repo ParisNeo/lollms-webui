@@ -1208,6 +1208,8 @@ export default {
                 }
                 else if(messageItem && msgObj.message_type==this.msgTypes.MSG_TYPE_CHUNK){
                     messageItem.content += msgObj.content
+                } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP){
+                    messageItem.steps.push({"message":msgObj.content,"done":true, "status":true })
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_START){
                     messageItem.steps.push({"message":msgObj.content,"done":false, "status":true })
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_END) {
@@ -1445,7 +1447,7 @@ export default {
             })
 
         },
-        resendMessage(msgId, msg) {
+        resendMessage(msgId, msg, msg_type) {
             nextTick(() => {
                 feather.replace()
 
@@ -1456,9 +1458,10 @@ export default {
             axios.get('/get_generation_status', {}).then((res) => {
                 if (res) {
                     if (!res.data.status) {
-                        socket.emit('generate_msg_from', { prompt: msg, id: msgId });
+                        socket.emit('generate_msg_from', { prompt: msg, id: msgId, msg_type: msg_type });
                     }
                     else {
+                        this.$refs.toast.showToast("The server is busy. Wait", 4, false)
                         console.log("Already generating");
                     }
                 }
@@ -1846,11 +1849,11 @@ export default {
     async mounted() {
         try {
             const response = await fetch('/get_server_address'); // Replace with the actual endpoint on your Flask server
-            const serverAddress = await response.text();
+            let serverAddress = await response.text();
 
             if(serverAddress.includes('<')){
                 console.log(`Server address not found`)
-                return "http://localhost:9600/"//process.env.VITE_LOLLMS_API
+                serverAddress = "http://localhost:9600/"//process.env.VITE_LOLLMS_API
                 
             }
 
