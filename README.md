@@ -1,4 +1,4 @@
-# LoLLMS Web UI
+# LoLLMs Web UI
 <div align="center">
   <img src="https://github.com/ParisNeo/lollms/blob/main/lollms/assets/logo.png" alt="Logo" width="200" height="200">
 </div>
