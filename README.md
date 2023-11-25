@@ -150,7 +150,7 @@ python -m venv ./env
 ```
 - Activate the virtual environment:
 - On windows: `./env/Scripts/activate`
-- On linux: `./env/bin/activate`
+- On linux: `source ./env/bin/activate`
 - On macos: `./env/bin/activate`
 - download submodules (lollms_core, zoos and safe_store library)
 ```bash

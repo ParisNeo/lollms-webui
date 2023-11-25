@@ -4,7 +4,7 @@
       <Card  :disableHoverAnimation="true" :disableFocus="true">
         <h2 class="text-2xl font-bold mb-2">About Lord of large Language Models</h2>
         <p class="mb-4"> Lollms version {{ version }}</p>
-        <p>Discord link: <a class="text-blue-500 hover:text-blue-400 duration-150" href="https://discord.gg/C73K7hjy">https://discord.gg/C73K7hjy</a></p>
+        <p>Discord link: <a class="text-blue-500 hover:text-blue-400 duration-150" href="https://discord.gg/C73K7hjy">https://discord.gg/vsGcArzs</a></p>
       </Card>
       
       <Card  :disableHoverAnimation="true" :disableFocus="true">
@@ -19,7 +19,7 @@
       <Card  :disableHoverAnimation="true" :disableFocus="true">
         <h2 class="text-2xl font-bold mb-2">Contact Us</h2>
         <p class="mb-4">If you have any further questions or need assistance, feel free to reach out to me.</p>
-        <p>Discord link: <a class="text-blue-500 hover:text-blue-400 duration-150" href="https://discord.gg/C73K7hjy">https://discord.gg/C73K7hjy</a></p>
+        <p>Discord link: <a class="text-blue-500 hover:text-blue-400 duration-150" href="https://discord.gg/C73K7hjy">https://discord.gg/vsGcArzs</a></p>
       </Card>
       <Card   :disableHoverAnimation="true" :disableFocus="true">
         <h2 class="text-2xl font-bold mb-2">Credits</h2>
