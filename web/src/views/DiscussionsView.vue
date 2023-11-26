@@ -1786,10 +1786,17 @@ export default {
         this.$nextTick(() => {
             feather.replace();
         });           
+        socket.on('disucssion_renamed',()=>{
 
+        })
         socket.onclose = (event) => {
-            console.log('WebSocket connection closed:', event.code, event.reason);
-            this.socketIODisconnected();
+            console.log('Received new title', event.id, event.title);
+            /*
+            {
+            'status': True,
+            'discussion_id':d.id,
+            'title':title
+            }*/
         };
         socket.on("connect_error", (error) => {
             if (error.message === "ERR_CONNECTION_REFUSED") {

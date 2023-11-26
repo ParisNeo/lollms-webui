@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 27
+version: 28
 binding_name: null
 model_name: null
 
@@ -43,6 +43,7 @@ db_path: database.db
 debug: False
 auto_update: true
 auto_save: true
+auto_title: false
 # Enables gpu usage
 enable_gpu: true
 # Automatically open the browser

@@ -87,7 +87,7 @@ try:
     import pkg_resources
     
     from api.config import load_config
-    from api import LoLLMsAPPI
+    from api import LoLLMsAPI
     import shutil
     import socket
     from api.db import DiscussionsDB, Discussion
@@ -189,7 +189,7 @@ try:
 
 
 
-    class LoLLMsWebUI(LoLLMsAPPI):
+    class LoLLMsWebUI(LoLLMsAPI):
         def __init__(self, args, _app, _socketio, config:LOLLMSConfig, config_file_path:Path|str, lollms_paths:LollmsPaths) -> None:
             self.args = args
             if config.auto_update:
@@ -1712,6 +1712,7 @@ try:
             ASCIIColors.info("")
             ASCIIColors.info("")
             run_update_script(self.args)
+            sys.exit()
             
         def get_current_personality_files_list(self):
             if self.personality is None:

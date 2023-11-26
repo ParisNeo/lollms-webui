@@ -348,6 +348,23 @@
                                             </div>
                                         </td>
                                         </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="auto_update" class="text-sm font-bold" style="margin-right: 1rem;">Auto title:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <input
+                                            type="checkbox"
+                                            id="auto_title"
+                                            required
+                                            v-model="configFile.auto_title"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>                                        
                                     </table>
                                 </Card>
                                 <Card  title="User" :is_subcard="true" class="pb-2  m-2">

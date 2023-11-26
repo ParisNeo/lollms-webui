@@ -656,6 +656,17 @@ class Discussion:
             f"UPDATE discussion SET title=? WHERE id=?",(new_title,self.discussion_id)
         )
 
+    def title(self):
+        """Renames the discussion
+
+        Args:
+            new_title (str): The nex discussion name
+        """
+        rows = self.discussions_db.select(
+            f"Select title from discussion WHERE id={self.discussion_id}"
+        )
+        return rows[0][0]
+
     def delete_discussion(self):
         """Deletes the discussion
         """
