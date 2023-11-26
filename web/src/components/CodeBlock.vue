@@ -1,7 +1,7 @@
 <template>
   <div class="bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel p-2 rounded-lg shadow-sm">
     <div class="flex flex-row bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel p-2 rounded-lg shadow-sm">
-      <span>{{ language }}</span>
+      <span class="text-2xl">{{ language }}</span>
       <button @click="copyCode" title="copy"
               :class="isCopied ? 'bg-green-500' : 'bg-bg-dark-tone-panel dark:bg-bg-dark-tone'" 
               class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
@@ -22,7 +22,7 @@
       </div>
 
     </pre>    
-    <span v-if="executionOutput" class="text-2xl text-red-500">Execution output</span>
+    <span v-if="executionOutput" class="text-2xl">Execution output</span>
     <pre  class="hljs mt-0 p-1 rounded-md break-all grid grid-cols-1" v-if="executionOutput">
       <div class="overflow-x-auto break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
         <div ref="execution_output" v-html="executionOutput"></div>
