@@ -909,7 +909,8 @@
                                 </div>
                                 <input type="search"
                                     class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    placeholder="Search models..." required v-model="searchModel"
+                                    placeholder="Search models..." required 
+                                    v-model="searchModel"
                                     @keyup.enter="searchModel_func">
                                 <button v-if="searchModel" @click.stop="searchModel = ''" type="button"
                                     class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -942,28 +943,6 @@
                             </svg>
                             <p class="heartbeat-text">Loading models Zoo</p>
                     </div>                    
-                    <div v-if="searchModel">
-                        <div v-if="modelsFiltered.length > 0" class="mb-2">
-                            <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                Search results: ({{ modelsFiltered.length }})
-                            </label>
-
-                            <div class="overflow-y-auto p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4 overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
-                                :class="mzl_collapsed ? '' : 'max-h-96'">
-                                <model-entry ref="modelZoo" v-for="(model, index) in show_only_installed_models?filter_installed(modelsFiltered):modelsFiltered"
-                                    :key="'index-' + index + '-' + model.name" 
-                                    :model="model"
-                                    :is-installed="model.isInstalled" :on-install="onInstall"
-                                    :on-uninstall="onUninstall" :on-selected="onSelected"
-                                    :selected="model.name === configFile.model_name"
-                                    :model_type="model.model_type" :on-copy="onCopy" :on-copy-link="onCopyLink"
-                                    :on-cancel-install="onCancelInstall" />
-                            </div>
-                        </div>
-
-                    </div>
-                    <div v-if="!searchModel">
-
                         <div v-if="models_zoo && models_zoo.length > 0" class="mb-2">
                             <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                 Models: ({{ models_zoo.length }})
@@ -971,7 +950,8 @@
 
                             <div class="overflow-y-auto p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4 overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
                                 :class="mzl_collapsed ? '' : 'max-h-96'">
-                                    <model-entry  ref="modelZoo" v-for="(model, index) in show_only_installed_models?filter_installed(models_zoo):models_zoo"
+                                <TransitionGroup name="list">
+                                    <model-entry  ref="modelZoo" v-for="(model, index) in rendered_models_zoo"
                                         :key="'index-' + index + '-' + model.name" 
                                         :model="model"
                                         :is-installed="model.isInstalled" :on-install="onInstall"
@@ -979,9 +959,11 @@
                                         :selected="model.name === configFile.model_name"
                                         :model_type="model.model_type" :on-copy="onCopy" :on-copy-link="onCopyLink"
                                         :on-cancel-install="onCancelInstall" />
+                                    <button ref="load_more_models" class="relative items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 select-none" @click="load_more_models">Load more models</button>
+                                </TransitionGroup>
                             </div>
                         </div>
-                    </div>
+                    
                     <!-- EXPAND / COLLAPSE BUTTON -->
                     <button v-if="mzl_collapsed"
                         class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
@@ -1029,28 +1011,6 @@
                 <div :class="{ 'hidden': mzdc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
 
                     <div class="mb-2">
-                        <!-- HIDDEN UNTIL ITS FIXED
-                        <div class="p-2 " v-if="!modelDownlaodInProgress">
-
-                            <form>
-                                <div class="mb-3">
-                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                        for="file_input">Upload model:</label>
-
-
-                                    <input @change="setFileList"
-                                        class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                                        ref="fileDialogAddModel" type="file" multiple>
-                                </div>
-
-                                <button type="button" @click.stop="uploadLocalModel"
-                                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Upload</button>
-
-
-                            </form>
-
-                        </div> -->
-
                         <div class="p-2  ">
                             <div>
                                 <div class="mb-3">
@@ -1809,6 +1769,10 @@ export default {
             binding_changed:false,
             SVGGPU:SVGGPU,
             models_zoo:[],
+            models_zoo_initialLoadCount: 10, // Number of entries to load initially
+            models_zoo_loadMoreCount: 5, // Number of entries to load each time
+            models_zoo_loadedEntries: [], // Array to store the loaded entries
+            models_zoo_scrollThreshold: 200, // Distance from the bottom of the page to trigger lazy loading
             // Sort options
             sortOptions: [
                 { label: 'Sort by Date', value: 0 },
@@ -1892,8 +1856,19 @@ export default {
         //refreshHardwareUsage()
     }, 
     methods: {
+        load_more_models(){
+            if(this.models_zoo_initialLoadCount+10<this.models_zoo.length){
+                this.models_zoo_initialLoadCount+=10
+            }
+            else{
+                this.models_zoo_initialLoadCount=this.models_zoo.length
+            }
+        },
         async modelsZooToggleCollapse(){
             this.mzc_collapsed = !this.mzc_collapsed
+            nextTick(() => {
+                feather.replace()
+            })
             if (this.binding_changed && !this.mzc_collapsed && (this.modelsZoo==undefined || this.modelsZoo.length==0)){
                 console.log("Refreshing models")
                 await this.$store.dispatch('refreshConfig');
@@ -1904,7 +1879,8 @@ export default {
         }, 
         async selectSortOption(index){
             this.$store.state.sort_type=index
-            this.modelsFiltered = this.models_zoo
+            this.updateModelsZoo();            
+            this.modelsFiltered = []
             console.log(`Selected sorting:${index}`)
         },
         handleRadioSelected(index){
@@ -1912,7 +1888,6 @@ export default {
             this.selectSortOption(index).then(()=>{
                 this.isLoading = false;
             })
-
         },
         filter_installed(models){
             console.log("filtering")
@@ -1928,7 +1903,6 @@ export default {
             speechSynthesis.onvoiceschanged = () => {
             // Set a default voice if needed
             };
-
         }
         },
         async updateHasUpdates() {
@@ -2102,7 +2076,7 @@ export default {
             this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category)
             // this.personalitiesFiltered.sort()
             //mountedPersArr
-            this.modelsFiltered = this.models_zoo
+            this.modelsFiltered = []
             this.extension_category = this.configFile.extension_category
             this.extensionsFiltererd = this.$store.state.extensionsZoo.filter((item) => item.category === this.configFile.extension_category )
            
@@ -2906,7 +2880,6 @@ export default {
             await this.$store.dispatch('refreshModels');
             console.log("Models refreshed")
             this.updateModelsZoo()
-            this.models_zoo = this.$store.state.modelsZoo;
             console.log("Models updated")
             this.is_loading_zoo = false;
         },
@@ -3007,6 +2980,8 @@ export default {
                 }
             });
             console.log("Done")
+            this.models_zoo = this.$store.state.modelsZoo;
+
         },
         
         update_binding(value) {
@@ -3252,15 +3227,10 @@ export default {
         },
 
         async filterModels() {
-            if (!this.searchModel) {
-                console.log("Searching model")
-                this.modelsFiltered = this.models_zoo
-                this.searchModelInProgress = false
-                return
-            }
             const searchTerm = this.searchModel.toLowerCase()
             this.is_loading_zoo = true;
             console.log("filtering models")
+            console.log(this.models_zoo)
             const seachedModels = this.models_zoo.filter((item) => {
 
                 if (item.name && item.name.toLowerCase().includes(searchTerm) || item.description && item.description.toLowerCase().includes(searchTerm) || item.category && item.category.toLowerCase().includes(searchTerm)) {
@@ -3273,10 +3243,9 @@ export default {
 
 
             if (seachedModels.length > 0) {
-
                 this.modelsFiltered = seachedModels
             } else {
-                this.modelsFiltered = this.models_zoo
+                this.modelsFiltered = []
             }
             this.searchModelInProgress = false
 
@@ -3405,8 +3374,9 @@ export default {
             this.isLoading = true
             console.log('mount pers', pers)
 
-
-            this.$refs.messageBox.showMessage(pers.personality.disclaimer)
+            if(pers.personality.disclaimer!=""){
+                this.$refs.messageBox.showMessage(pers.personality.disclaimer)
+            }
 
             if (!pers) { return }
 
@@ -3628,11 +3598,7 @@ export default {
             }
         },
         searchModel_func() {
-            clearTimeout(this.searchModelTimer)
-            if (this.searchModel) {
-                this.searchModelInProgress = true
-                setTimeout(this.filterModels, this.searchModelTimer)
-            }
+            this.filterModels()
         }
 
 
@@ -3646,6 +3612,27 @@ export default {
         //this.load_everything()
     },
     computed: { 
+        
+        rendered_models_zoo:{
+            get(){
+                if (this.searchModel){
+                    if(this.show_only_installed_models){
+                        return this.modelsFiltered.filter(element => element.isInstalled === true) 
+                    }else{
+                        return this.modelsFiltered.slice(0, Math.min(this.models_zoo.length,this.models_zoo_initialLoadCount))
+                    }
+                }
+                console.log("this.models_zoo")
+                console.log(this.models_zoo)
+                console.log(this.models_zoo_initialLoadCount)
+                if(this.show_only_installed_models){
+                    return this.models_zoo.filter(element => element.isInstalled === true) 
+                }
+                else{
+                    return this.models_zoo.slice(0, Math.min(this.models_zoo.length,this.models_zoo_initialLoadCount));
+                }
+            }
+        },
         imgBinding: {
             get(){
 
@@ -4094,11 +4081,6 @@ export default {
         searchPersonality(val) {
             if (val == "") {
                 this.filterPersonalities()
-            }
-        },
-        searchModel(val) {
-            if (val == "") {
-                this.filterModels()
             }
         },
         mzdc_collapsed() {

@@ -10,7 +10,7 @@
                 
                     <img class="w-24 animate-bounce" title="LoLLMS WebUI" src="@/assets/logo.png" alt="Logo">
                         <div class="flex flex-col items-start">
-                        <p class="text-2xl ">Lord of Large Language Models v {{ version_info }} </p>
+                        <p class="text-2xl ">Lord of Large Language Models {{ version_info }} </p>
                         <p class="text-gray-400 text-base">One tool to rule them all</p>
                         <p class="text-gray-400 text-base">by ParisNeo</p>
 
@@ -1944,8 +1944,8 @@ export default {
     computed: { 
         version_info:{
             get(){
-                if(this.$store.state.version!=undefined){
-                    return "v" + this.$store.state.version;
+                if(this.$store.state.version!=undefined && this.$store.state.version!="unknown"){
+                    return " v" + this.$store.state.version;
                 }
                 else{
                     return "";

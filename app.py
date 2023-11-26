@@ -755,6 +755,8 @@ try:
                                     config_data = yaml.load(config_file, Loader=yaml.FullLoader)
                                     personality_info['name'] = config_data.get('name',"No Name")
                                     personality_info['description'] = config_data.get('personality_description',"")
+                                    personality_info['disclaimer'] = config_data.get('disclaimer',"")
+                                    
                                     personality_info['author'] = config_data.get('author', 'ParisNeo')
                                     personality_info['version'] = config_data.get('version', '1.0.0')
                                     personality_info['installed'] = (self.lollms_paths.personal_configuration_path/f"personality_{personality_folder.stem}.yaml").exists() or personality_info['has_scripts']
