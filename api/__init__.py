@@ -3621,9 +3621,9 @@ class LoLLMsAPI(LollmsApplication):
                     d.rename(title)
                     self.socketio.emit('disucssion_renamed',{
                                                 'status': True,
-                                                'discussion_id':d.id,
+                                                'discussion_id':d.discussion_id,
                                                 'title':title
-                                                }, room=request.sid) 
+                                                }, room=client_id) 
 
             self.busy=False
 

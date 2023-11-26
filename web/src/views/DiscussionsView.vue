@@ -1786,17 +1786,21 @@ export default {
         this.$nextTick(() => {
             feather.replace();
         });           
-        socket.on('disucssion_renamed',()=>{
-
-        })
-        socket.onclose = (event) => {
-            console.log('Received new title', event.id, event.title);
+        socket.on('disucssion_renamed',(event)=>{
+            console.log('Received new title', event.discussion_id, event.title);
+            const index = this.list.findIndex((x) => x.id == event.discussion_id)
+            const discussionItem = this.list[index]
+            discussionItem.title = event.title
             /*
             {
             'status': True,
             'discussion_id':d.id,
             'title':title
             }*/
+        })
+        socket.onclose = (event) => {
+            console.log('WebSocket connection closed:', event.code, event.reason);
+            this.socketIODisconnected();
         };
         socket.on("connect_error", (error) => {
             if (error.message === "ERR_CONNECTION_REFUSED") {
