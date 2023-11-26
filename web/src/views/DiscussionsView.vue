@@ -10,18 +10,18 @@
                 
                     <img class="w-24 animate-bounce" title="LoLLMS WebUI" src="@/assets/logo.png" alt="Logo">
                         <div class="flex flex-col items-start">
-                        <p class="text-2xl ">Lord of Large Language Models v {{ store.state.version }} </p>
+                        <p class="text-2xl ">Lord of Large Language Models v {{ version_info }} </p>
                         <p class="text-gray-400 text-base">One tool to rule them all</p>
                         <p class="text-gray-400 text-base">by ParisNeo</p>
 
                         </div>
                 </div>
-                <hr
-                    class=" mt-1 w-96 h-1 mx-auto my-2 md:my-2 dark:bg-bg-dark-tone-panel bg-bg-light-tone-panel border-0 rounded ">
-                    <p class="text-2xl">Welcome</p>
-                    <div role="status" class="text-center w-full display: flex; flex-row align-items: center;">
-                            <p class="text-2xl animate-pulse">Loading ...</p>
-                    </div> 
+                <hr class=" mt-1 w-96 h-1 mx-auto my-2 md:my-2 dark:bg-bg-dark-tone-panel bg-bg-light-tone-panel border-0 rounded ">
+                <p class="text-2xl mb-10">Welcome</p>
+                <div role="status" class="text-center w-full display: flex; flex-row align-items: center;">
+                        <ProgressBar ref="loading_progress" :progress="loading_progress"></ProgressBar>
+                        <p class="text-2xl animate-pulse mt-2"> {{ loading_infos }} ...</p>
+                </div> 
 
             </div>
 
@@ -275,8 +275,7 @@
         </div>
 
     </div>
-    <Toast ref="toast">
-    </Toast>
+    <Toast ref="toast" />
     <MessageBox ref="messageBox" />
     <ChoiceDialog reference="database_selector" class="z-20"
       :show="database_selectorDialogVisible"
@@ -1858,23 +1857,23 @@ export default {
         this.isCreated = true
     },
     async mounted() {
+        let serverAddress = "http://localhost:9600/";
         try {
             const response = await fetch('/get_server_address'); // Replace with the actual endpoint on your Flask server
-            let serverAddress = await response.text();
-
+            serverAddress = await response.text();
             if(serverAddress.includes('<')){
                 console.log(`Server address not found`)
                 serverAddress = "http://localhost:9600/"//process.env.VITE_LOLLMS_API
                 
             }
-
             console.log(`Server address: ${serverAddress}`)
-            this.host = `${serverAddress}`; // Construct the full server address dynamically
         } catch (error) {
             console.error('Error fetching server address:', error);
             // Handle error if necessary
-            this.host =  "http://localhost:9600/"//process.env.VITE_LOLLMS_API
-        }        
+            serverAddress = "http://localhost:9600/"
+        }
+        this.host = `${serverAddress}`; // Construct the full server address dynamically
+        axios.defaults.baseURL = serverAddress
         //console.log('chatbox mnt',this.$refs)
         this.$nextTick(() => {
             feather.replace();
@@ -1905,7 +1904,9 @@ export default {
         ChatBox,
         WelcomeComponent,
         Toast,
-        ChoiceDialog        
+        ChoiceDialog,
+        MessageBox,
+        ProgressBar       
     },
     watch: {  
         filterTitle(newVal) {
@@ -1941,6 +1942,26 @@ export default {
         
     },
     computed: { 
+        version_info:{
+            get(){
+                if(this.$store.state.version!=undefined){
+                    return "v" + this.$store.state.version;
+                }
+                else{
+                    return "";
+                }
+            }
+        },
+        loading_infos:{
+            get(){
+                return this.$store.state.loading_infos;
+            }
+        },
+        loading_progress:{
+            get(){
+                return this.$store.state.loading_progress;
+            }
+        },
         isGenerating:{
             get(){
                 return this.$store.state.isGenerating;
@@ -2004,6 +2025,7 @@ import ChatBox from '../components/ChatBox.vue'
 import WelcomeComponent from '../components/WelcomeComponent.vue'
 import Toast from '../components/Toast.vue'
 import MessageBox from "@/components/MessageBox.vue";
+import ProgressBar from "@/components/ProgressBar.vue";
 import feather from 'feather-icons'
 
 import axios from 'axios'

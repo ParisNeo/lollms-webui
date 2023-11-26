@@ -797,14 +797,14 @@
                 </div>
                 <div :class="{ 'hidden': bzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
 
-                    <div v-if="bindingsArr&&bindingsArr.length > 0" class="mb-2">
+                    <div v-if="bindingsZoo&&bindingsZoo.length > 0" class="mb-2">
                         <label for="binding" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Bindings: ({{ bindingsArr.length }})
+                            Bindings: ({{ bindingsZoo.length }})
                         </label>
                         <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
                             :class="bzl_collapsed ? '' : 'max-h-96'">
                             <TransitionGroup name="list">
-                                <BindingEntry ref="bindingZoo" v-for="(binding, index) in bindingsArr"
+                                <BindingEntry ref="bindingZoo" v-for="(binding, index) in bindingsZoo"
                                     :key="'index-' + index + '-' + binding.folder" :binding="binding"
                                     :on-selected="onSelectedBinding" :on-reinstall="onReinstallBinding"
                                     :on-unInstall="onUnInstallBinding"
@@ -845,7 +845,6 @@
                             Models zoo</h3>
                         <!-- SPINNER -->
                         <div class="flex flex-row items-center">
-
                             <div v-if="!configFile.binding_name"
                                 class="text-base text-red-600 flex gap-3 items-center mr-2">
                                 <i data-feather="alert-triangle" class="flex-shrink-0"></i>
@@ -1807,7 +1806,7 @@ export default {
     data() {
 
         return {
-            imgModel: defaultModelImgPlaceholder,
+            binding_changed:false,
             SVGGPU:SVGGPU,
             models_zoo:[],
             // Sort options
@@ -1895,11 +1894,12 @@ export default {
     methods: {
         async modelsZooToggleCollapse(){
             this.mzc_collapsed = !this.mzc_collapsed
-            if (!this.mzc_collapsed && (this.modelsZoo==undefined || this.modelsZoo.length==0)){
+            if (this.binding_changed && !this.mzc_collapsed && (this.modelsZoo==undefined || this.modelsZoo.length==0)){
                 console.log("Refreshing models")
                 await this.$store.dispatch('refreshConfig');
                 this.models_zoo = []
                 this.refreshModelsZoo();
+                this.binding_changed = false;
             }
         }, 
         async selectSortOption(index){
@@ -2106,10 +2106,13 @@ export default {
             this.extension_category = this.configFile.extension_category
             this.extensionsFiltererd = this.$store.state.extensionsZoo.filter((item) => item.category === this.configFile.extension_category )
            
+            
+            this.updateModelsZoo();
+
             this.isLoading = false
             this.isMounted = true
-
             this.extension_category = this.configFile.extension_category
+            console.log("READY Stuff")
 
         },
         async open_mzl(){
@@ -2601,6 +2604,7 @@ export default {
             this.mzc_collapsed=true;
             if (this.configFile.binding_name != binding_object.binding.folder) {
                 this.update_binding(binding_object.binding.folder)
+                this.binding_changed = true;
             }
         },
         onInstallBinding(binding_object) {
@@ -2902,6 +2906,7 @@ export default {
             await this.$store.dispatch('refreshModels');
             console.log("Models refreshed")
             this.updateModelsZoo()
+            this.models_zoo = this.$store.state.modelsZoo;
             console.log("Models updated")
             this.is_loading_zoo = false;
         },
@@ -2946,9 +2951,6 @@ export default {
             else{
             console.log("No sorting needed");
             }
-            
-
-
             models_zoo.forEach(model => {
                 if (model.name == this.$store.state.config["model_name"]) {
                     model.selected = true;
@@ -2956,46 +2958,46 @@ export default {
                 else{
                 model.selected = false; 
                 }
-            });            
+            }); 
 
-            this.models_zoo = models_zoo
-
+            console.log("Selected models") 
 
             // Returns array of model filenames which are = to name of models zoo entry
             for (let i = 0; i < this.$store.state.modelsArr.length; i++) {
                 const customModel = this.$store.state.modelsArr[i]
-                let index = this.models_zoo.findIndex(x => x.name == customModel)
+                let index = models_zoo.findIndex(x => x.name == customModel)
                 if(index==-1){
-                // The customModel is not directly in the model zoo, so check its variants
-                for (let j = 0; j < this.models_zoo.length; j++) {
-                    let v = this.models_zoo[j]["variants"]
-                    if(v!=undefined){
-                    index = v.findIndex(x => x.name == customModel);
-                    if(index!=-1){
-                        index=j
-                        console.log(`Found ${customModel} at index ${index}`)
-                        break;
-                    }  
-                    }
-                    else{
+                    // The customModel is not directly in the model zoo, so check its variants
+                    for (let j = 0; j < models_zoo.length; j++) {
+                        let v = models_zoo[j]["variants"]
+                        if(v!=undefined){
+                            index = v.findIndex(x => x.name == customModel);
+                            if(index!=-1){
+                                index=j
+                                console.log(`Found ${customModel} at index ${index}`)
+                                break;
+                            }  
+                        }
+                        else{
 
+                        }
                     }
                 }
-                }
-
+                
                 if (index == -1) {
                     let newModelEntry = {}
                     newModelEntry.name = customModel
-                    newModelEntry.icon = ""
+                    newModelEntry.icon = this.imgBinding
                     newModelEntry.isCustomModel = true
                     newModelEntry.isInstalled = true
-                    this.models_zoo.push(newModelEntry)
+                    models_zoo.push(newModelEntry)
                 }
                 else{
-                    this.models_zoo[index].isInstalled=true;
+                    models_zoo[index].isInstalled=true;
                 }
             }
-            this.models_zoo.sort((a, b) => {
+            console.log("Determined models")
+            models_zoo.sort((a, b) => {
                 if (a.isInstalled && !b.isInstalled) {
                     return -1; // a is installed, b is not installed, so a comes first
                 } else if (!a.isInstalled && b.isInstalled) {
@@ -3003,8 +3005,10 @@ export default {
                 } else {
                     return 0; // both models are either installed or not installed, maintain their original order
                 }
-            });   
+            });
+            console.log("Done")
         },
+        
         update_binding(value) {
             // eslint-disable-next-line no-unused-vars
             this.isLoading = true
@@ -3017,8 +3021,8 @@ export default {
                 await this.$store.dispatch('refreshConfig');
                 this.models_zoo = []
                 this.mzc_collapsed = true;
-                const index = this.bindingsArr.findIndex(item => item.folder == value)
-                const item = this.bindingsArr[index]
+                const index = this.bindingsZoo.findIndex(item => item.folder == value)
+                const item = this.bindingsZoo[index]
                 if (item) {
                     item.installed = true
                 }
@@ -3400,6 +3404,10 @@ export default {
         async mountPersonality(pers) {
             this.isLoading = true
             console.log('mount pers', pers)
+
+
+            this.$refs.messageBox.showMessage(pers.personality.disclaimer)
+
             if (!pers) { return }
 
             if (this.configFile.personalities.includes(pers.personality.full_path)) {
@@ -3638,6 +3646,42 @@ export default {
         //this.load_everything()
     },
     computed: { 
+        imgBinding: {
+            get(){
+
+                if (!this.isMounted) {
+                    return defaultImgPlaceholder
+                }
+                try {
+                    return this.$refs.bindingZoo[this.$refs.bindingZoo.findIndex(item => item.binding.folder == this.configFile.binding_name)].$refs.imgElement.src
+                }
+                catch (error) {
+                    return defaultImgPlaceholder
+                }
+            }
+        },
+        imgModel:{
+            get() {
+                try{
+                    idx = this.$store.state.modelsZoo.findIndex(item => item.name == this.$store.state.selectedModel)
+                    if(idx>=0){
+                        return this.$store.state.modelsZoo[idx].avatar
+                    }
+                }
+                catch{
+
+                }
+                if (!this.isMounted) {
+                    return defaultImgPlaceholder
+                }
+                try {
+                    return this.$refs.bindingZoo[this.$refs.bindingZoo.findIndex(item => item.binding.folder == this.configFile.binding_name)].$refs.imgElement.src
+                }
+                catch (error) {
+                    return defaultImgPlaceholder
+                }                
+            },
+        },
         isReady:{
             
             get() {
@@ -3829,12 +3873,12 @@ export default {
                 this.$store.commit('setActiveExtensions', value);
             }
         },
-        bindingsArr: {
+        bindingsZoo: {
             get() {
-                return this.$store.state.bindingsArr;
+                return this.$store.state.bindingsZoo;
             },
             set(value) {
-                this.$store.commit('setBindingsArr', value);
+                this.$store.commit('setbindingsZoo', value);
             }
         },
         modelsArr: {
@@ -3927,17 +3971,6 @@ export default {
         // vram_total_space() {
         //     return this.computedFileSize(this.vramUsage.gpu_0_total_vram)
         // },
-        imgBinding() {
-            if (!this.isMounted) {
-                return
-            }
-            try {
-                return this.$refs.bindingZoo[this.$refs.bindingZoo.findIndex(item => item.binding.folder == this.configFile.binding_name)].$refs.imgElement.src
-            }
-            catch (error) {
-                return defaultImgPlaceholder
-            }
-        },
         model_name() {
             if (!this.isMounted) {
                 return
@@ -3948,9 +3981,9 @@ export default {
             if (!this.isMounted) {
                 return
             }
-            const index = this.bindingsArr.findIndex(item => item.folder === this.configFile.binding_name)
+            const index = this.bindingsZoo.findIndex(item => item.folder === this.configFile.binding_name)
             if (index > -1) {
-                return this.bindingsArr[index].name
+                return this.bindingsZoo[index].name
 
             } else {
                 return

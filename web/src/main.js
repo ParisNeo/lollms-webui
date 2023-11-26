@@ -25,6 +25,8 @@ export const store = createStore({
       return {
         // count: 0,
         ready:false,
+        loading_infos: "",
+        loading_progress: 0,
         version : "unknown",
         settingsChanged:false,
         isConnected: false, // Add the isConnected property
@@ -33,7 +35,7 @@ export const store = createStore({
         mountedPers:null,
         mountedPersArr:[],
         mountedExtensions:[],
-        bindingsArr:[],
+        bindingsZoo:[],
         modelsArr:[],
         selectedModel:null,
         personalities:[],
@@ -73,8 +75,8 @@ export const store = createStore({
       setMountedExtensions(state, mountedExtensions) {
         state.mountedExtensions = mountedExtensions;
       },
-      setBindingsArr(state, bindingsArr) {
-        state.bindingsArr = bindingsArr;
+      setbindingsZoo(state, bindingsZoo) {
+        state.bindingsZoo = bindingsZoo;
       },
       setModelsArr(state, modelsArr) {
         state.modelsArr = modelsArr;
@@ -133,8 +135,8 @@ export const store = createStore({
       getMountedPers(state) {
         return state.mountedPers;
       },
-      getbindingsArr(state) {
-        return state.bindingsArr;
+      getbindingsZoo(state) {
+        return state.bindingsZoo;
       },
       getModelsArr(state) {
         return state.modelsArr;
@@ -297,8 +299,8 @@ export const store = createStore({
         // console.log(`Mounted personality: ${this.state.mountedPers}`)
       },
       async refreshBindings({ commit }) {
-          let bindingsArr = await api_get_req("list_bindings")
-          commit('setBindingsArr',bindingsArr)
+          let bindingsZoo = await api_get_req("list_bindings")
+          commit('setbindingsZoo',bindingsZoo)
       },
       async refreshModelsZoo({ commit }) {
         console.log("Fetching models")
@@ -310,6 +312,7 @@ export const store = createStore({
         let modelsArr = await api_get_req("list_models");
         console.log(`Found ${modelsArr}`)
         let selectedModel = await api_get_req('get_active_model');
+        console.log("Selected model ", selectedModel);
         if(selectedModel!=undefined){
           commit('setselectedModel',selectedModel["model"])
         }
@@ -476,20 +479,40 @@ app.mixin({
     if (!actionsExecuted) {
       actionsExecuted = true;
       console.log("Calling")
+      this.$store.state.loading_infos = "Loading Configuration"
+      this.$store.state.loading_progress = 10
       await this.$store.dispatch('refreshConfig');
       console.log("Config ready")
+      this.$store.state.loading_infos = "Loading Database"
+      this.$store.state.loading_progress = 20
       await this.$store.dispatch('refreshDatabase');
       
+      this.$store.state.loading_infos = "Getting version"
+      this.$store.state.loading_progress = 30
       await this.$store.dispatch('getVersion');
+      this.$store.state.loading_infos = "Getting Bindings list"
+      this.$store.state.loading_progress = 40
       await this.$store.dispatch('refreshBindings');
       await refreshHardwareUsage(this.$store);
+      this.$store.state.loading_infos = "Getting extensions zoo"
+      this.$store.state.loading_progress = 50
       await this.$store.dispatch('refreshExtensionsZoo');
+      this.$store.state.loading_infos = "Getting mounted extensions"
+      this.$store.state.loading_progress = 60
       await this.$store.dispatch('refreshmountedExtensions');
       
+      this.$store.state.loading_infos = "Getting personalities zoo"
+      this.$store.state.loading_progress = 70
       await this.$store.dispatch('refreshPersonalitiesZoo')
+      this.$store.state.loading_infos = "Getting mounted personalities"
+      this.$store.state.loading_progress = 80
       await this.$store.dispatch('refreshMountedPersonalities');
 
+      this.$store.state.loading_infos = "Getting models zoo"
+      this.$store.state.loading_progress = 90
       await this.$store.dispatch('refreshModelsZoo');
+      this.$store.state.loading_infos = "Getting active models"
+      this.$store.state.loading_progress = 100
       await this.$store.dispatch('refreshModels');
 
       this.$store.state.ready = true;

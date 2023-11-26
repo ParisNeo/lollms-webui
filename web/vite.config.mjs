@@ -6,6 +6,7 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default async ({ mode }) => {
+  /*
   async function getFlaskServerURL() {
     try {
       console.log("Loading")
@@ -32,6 +33,7 @@ export default async ({ mode }) => {
     serverURL = process.env.VITE_LOLLMS_API
     console.log(`Server address: ${serverAddress}`)
   }
+  */
   // Load app-level env vars to node-level env vars.
   process.env = {...process.env, ...loadEnv(mode, process.cwd())};
   
@@ -48,7 +50,7 @@ export default async ({ mode }) => {
   server: {
     proxy: {
       "/api/": {
-        target:  serverURL,//process.env.VITE_LOLLMS_API,//process.env.VITE_LOLLMS_API,//getFlaskServerURL(),// process.env.VITE_LOLLMS_API,
+        target: process.env.VITE_LOLLMS_API,//serverURL,
         changeOrigin: process.env.VITE_LOLLMS_API_CHANGE_ORIGIN,
         secure: process.env.VITE_LOLLMS_API_SECURE,
         rewrite: (path) => path.replace(/^\/api/, ""),
