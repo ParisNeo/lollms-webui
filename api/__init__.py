@@ -838,7 +838,8 @@ class LoLLMsAPI(LollmsApplication):
             if self.personality.processor is not None:
                 self.start_time = datetime.now()
                 self.personality.processor.callback = partial(self.process_chunk, client_id=client_id)
-                self.personality.processor.execute_command(command, parameters)
+                self.connections[client_id]['generation_thread'] = threading.Thread(target=self.personality.processor.execute_command, args=(command, parameters))
+                self.connections[client_id]['generation_thread'].start()
             else:
                 self.notify("Non scripted personalities do not support commands",False,client_id)
 

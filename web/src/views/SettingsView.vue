@@ -1879,9 +1879,9 @@ export default {
         }, 
         async selectSortOption(index){
             this.$store.state.sort_type=index
-            this.updateModelsZoo();            
-            this.modelsFiltered = []
+            this.updateModelsZoo();   
             console.log(`Selected sorting:${index}`)
+            console.log(`models:${this.models_zoo}`)
         },
         handleRadioSelected(index){
             this.isLoading = true;
