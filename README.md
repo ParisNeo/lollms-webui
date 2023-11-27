@@ -80,9 +80,9 @@ conda create --name lollms python=3.10
 ```bash
 conda activate lollms
 ```
-- If you want to use an nVidia GPU, install cuda toolkit 11.8
+- If you want to use an nVidia GPU, install cuda toolkit 12.1
 ```bash
-conda install -c "nvidia/label/cuda-11.8.0" cuda-toolkit
+conda install -c "nvidia/label/cuda-12.1.1" cuda-toolkit
 ```
 - Clone the project
 ```bash
