@@ -323,8 +323,8 @@ export default {
       //navigator.clipboard.writeText(this.path)
     },
     toggleCancelInstall() {
-      installing=false;
       this.onCancelInstall(this)
+      this.installing=false;
 
     },
     handleSelection() {
