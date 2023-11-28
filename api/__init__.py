@@ -598,7 +598,7 @@ class LoLLMsAPI(LollmsApplication):
                     file.write(chunk)
 
             if is_last_chunk:
-                print('File received and saved successfully')
+                ASCIIColors.yellow('File received and saved successfully')
                 if self.personality.processor:
                     result = self.personality.processor.add_file(file_path, partial(self.process_chunk, client_id=client_id))
                 else:
@@ -1293,6 +1293,7 @@ class LoLLMsAPI(LollmsApplication):
         # Tokenize the conditionning text and calculate its number of tokens
         tokens_conditionning = self.model.tokenize(conditionning)
         n_cond_tk = len(tokens_conditionning)
+
 
         # Tokenize the documentation text and calculate its number of tokens
         if len(documentation)>0:

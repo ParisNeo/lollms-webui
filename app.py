@@ -13,7 +13,7 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-__version__ ="7.5 (Alpha)"
+__version__ ="7.5 (Beta)"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
@@ -26,8 +26,7 @@ import time
 import traceback
 import webbrowser
 from pathlib import Path
-from lollms.utilities import AdvancedGarbageCollector
-from lollms.utilities import reinstall_pytorch_with_cuda
+from lollms.utilities import AdvancedGarbageCollector, reinstall_pytorch_with_cuda
 def run_update_script(args=None):
     update_script = Path(__file__).parent/"update_script.py"
 
