@@ -100,10 +100,9 @@ try:
     except:
         ASCIIColors.yellow("Couldn't set mimetype")  
 
-    def check_update_(branch_name="main"):
+    def check_module_update_(repo_path, branch_name="main"):
         try:
             # Open the repository
-            repo_path = str(Path(__file__).parent)
             ASCIIColors.yellow(f"Checking for updates from {repo_path}")
             repo = git.Repo(repo_path)
             
@@ -121,6 +120,24 @@ try:
             
             # Return True if the local branch is behind the remote branch
             return is_behind
+        except Exception as e:
+            # Handle any errors that may occur during the fetch process
+            # trace_exception(e)
+            return False        
+
+    def check_update_(branch_name="main"):
+        try:
+            # Open the repository
+            repo_path = str(Path(__file__).parent)
+            if check_module_update_(repo_path, branch_name):
+                return True
+            repo_path = str(Path(__file__).parent/"lollms_core")
+            if check_module_update_(repo_path, branch_name):
+                return True
+            repo_path = str(Path(__file__).parent/"utilities/safe_store")
+            if check_module_update_(repo_path, branch_name):
+                return True
+            return False
         except Exception as e:
             # Handle any errors that may occur during the fetch process
             # trace_exception(e)
