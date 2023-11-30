@@ -116,7 +116,7 @@ try:
             # Check if the local branch is behind the remote branch
             is_behind = repo.is_ancestor(local_commit, remote_commit) and local_commit!= remote_commit
             
-            ASCIIColors.yellow(f"update availability: {not is_behind}")
+            ASCIIColors.yellow(f"update availability: {is_behind}")
             
             # Return True if the local branch is behind the remote branch
             return is_behind
