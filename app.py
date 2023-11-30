@@ -65,7 +65,7 @@ try:
     from lollms.paths import LollmsPaths, gptqlora_repo
     from lollms.extension import LOLLMSExtension, ExtensionBuilder
 
-
+    from flask_cors import CORS
     from api.db import Discussion
     from flask import (
         Flask,
@@ -149,6 +149,7 @@ try:
     log.setLevel(logging.ERROR)
 
     app = Flask("Lollms-WebUI", static_url_path="/static", static_folder="static")
+    CORS(app)
     from flask_compress import Compress
     #  async_mode='gevent', ping_timeout=1200, ping_interval=120, 
     socketio = SocketIO(app,  cors_allowed_origins="*", async_mode='gevent', ping_timeout=1200, ping_interval=120)

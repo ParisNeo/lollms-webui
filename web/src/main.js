@@ -166,9 +166,15 @@ export const store = createStore({
     },
     actions: {
       async getVersion(){
-        let res = await axios.get('/get_lollms_webui_version', {});
-        if (res) {
-            this.state.version = res.data.version
+        try{
+          let res = await axios.get('/get_lollms_webui_version', {});
+          if (res) {
+              this.state.version = res.data.version
+          }
+  
+        }
+        catch{
+          console.log("Coudln't get version")
         }
       },
       async refreshConfig({ commit }) {
