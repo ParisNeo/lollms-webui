@@ -91,7 +91,7 @@ try:
     import socket
     from api.db import DiscussionsDB, Discussion
     from safe_store import TextVectorizer, VectorizationMethod, VisualizationMethod
-
+    from tqdm import tqdm
 
     try:
         import mimetypes
@@ -1019,24 +1019,22 @@ try:
                         ASCIIColors.yellow("0- Detected discussion vectorization request")
                         folder = self.lollms_paths.personal_databases_path/"vectorized_dbs"
                         folder.mkdir(parents=True, exist_ok=True)
-                        self.discussions_store = TextVectorizer(
-                            vectorization_method=VectorizationMethod.TFIDF_VECTORIZER,#=VectorizationMethod.BM25_VECTORIZER,
-                            database_path=folder/self.config.db_path,
-                            data_visualization_method=VisualizationMethod.PCA,#VisualizationMethod.PCA,
-                            save_db=True
-                        )
+                        self.build_long_term_skills_memory()
+                        
                         ASCIIColors.yellow("1- Exporting discussions")
                         discussions = self.db.export_all_as_markdown_list_for_vectorization()
                         ASCIIColors.yellow("2- Adding discussions to vectorizer")
-                        for (title,discussion) in discussions:
+                        for (title,discussion) in tqdm(discussions):
                             if discussion!='':
-                                self.discussions_store.add_document(title, discussion, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
+                                skill = self.learn_from_discussion(discussion)
+                                self.long_term_memory.add_document(title, skill, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
                         ASCIIColors.yellow("3- Indexing database")
-                        self.discussions_store.index()
+                        self.long_term_memory.index()
                         ASCIIColors.yellow("4- Saving database")
-                        self.discussions_store.save_to_json()
+                        self.long_term_memory.save_to_json()
+                        
                         if self.config.data_vectorization_visualize_on_vectorization:
-                            self.discussions_store.show_document(show_interactive_form=True)
+                            self.long_term_memory.show_document(show_interactive_form=True)
                         ASCIIColors.yellow("Ready")
                     except Exception as ex:
                         ASCIIColors.error(f"Couldn't vectorize database:{ex}")
@@ -1311,7 +1309,7 @@ try:
                     ASCIIColors.yellow("0- Detected discussion vectorization request")
                     folder = self.lollms_paths.personal_databases_path/"vectorized_dbs"
                     folder.mkdir(parents=True, exist_ok=True)
-                    self.discussions_store = TextVectorizer(
+                    self.long_term_memory = TextVectorizer(
                         vectorization_method=VectorizationMethod.TFIDF_VECTORIZER,#=VectorizationMethod.BM25_VECTORIZER,
                         database_path=folder/self.config.db_path,
                         data_visualization_method=VisualizationMethod.PCA,#VisualizationMethod.PCA,
@@ -1323,10 +1321,10 @@ try:
                     ASCIIColors.yellow("2- Adding discussions to vectorizer")
                     self.notify("Adding discussions to vectorizer",True, None)
                     for (title,discussion) in discussions:
-                        self.discussions_store.add_document(title, discussion, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
+                        self.long_term_memory.add_document(title, discussion, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
                     ASCIIColors.yellow("3- Indexing database")
                     self.notify("Indexing database",True, None)
-                    self.discussions_store.index()
+                    self.long_term_memory.index()
                     ASCIIColors.yellow("Ready")
                 except Exception as ex:
                     self.notify(f"Couldn't vectorize the database:{ex}",False, None)
