@@ -13,6 +13,6 @@ eventlet
 websocket-client
 GitPython
 setuptools
-numpy==1.24
+numpy
 flask_compress
 ascii_colors>=0.1.4
