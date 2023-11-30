@@ -150,33 +150,17 @@ class LoLLMsAPI(LollmsApplication):
         # prepare vectorization
         if self.config.data_vectorization_activate and self.config.use_discussions_history:
             try:
-                ASCIIColors.yellow("Loading vectorized discussions")
+                ASCIIColors.yellow("Loading long term memory")
                 folder = self.lollms_paths.personal_databases_path/"vectorized_dbs"
                 folder.mkdir(parents=True, exist_ok=True)
-                self.discussions_store = TextVectorizer(
-                    vectorization_method=VectorizationMethod.TFIDF_VECTORIZER,#=VectorizationMethod.BM25_VECTORIZER,
-                    database_path=folder/self.config.db_path,
-                    data_visualization_method=VisualizationMethod.PCA,#VisualizationMethod.PCA,
-                    save_db=True
-                )
-
-                ASCIIColors.yellow("1- Exporting discussions")
-                discussions = self.db.export_all_as_markdown_list_for_vectorization()
-                ASCIIColors.yellow("2- Adding discussions to vectorizer")
-                for (title,discussion) in discussions:
-                    if discussion!='' and title!='None':
-                        self.discussions_store.add_document(title, discussion, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
-                ASCIIColors.yellow("3- Indexing database")
-                self.discussions_store.index()
-                ASCIIColors.yellow("4- Saving database")
-                self.discussions_store.save_to_json()
+                self.build_long_term_skills_memory()
                 ASCIIColors.yellow("Ready")
 
             except Exception as ex:
                 trace_exception(ex)
-                self.discussions_store = None
+                self.long_term_memory = None
         else:
-            self.discussions_store = None
+            self.long_term_memory = None
 
         # This is used to keep track of messages 
         self.download_infos={}
@@ -1284,12 +1268,12 @@ class LoLLMsAPI(LollmsApplication):
                     documentation += f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
 
             # Check if there is discussion history to add to the prompt
-            if self.config.use_discussions_history and self.discussions_store is not None:
+            if self.config.use_discussions_history and self.long_term_memory is not None:
                 if history=="":
-                    documentation="!@>History:\n"
-                docs, sorted_similarities = self.discussions_store.recover_text(current_message.content, top_k=self.config.data_vectorization_nb_chunks)
-                for doc, infos in zip(docs, sorted_similarities):
-                    history += f"!@>discussion chunk:\n!@>discussion title: {infos[0]}\nchunk content:{doc}"
+                    history="!@>previous discussions:\n"
+                docs, sorted_similarities = self.long_term_memory.recover_text(current_message.content, top_k=self.config.data_vectorization_nb_chunks)
+                for i,(doc, infos) in enumerate(zip(docs, sorted_similarities)):
+                    history += f"!@>previous discussion {i}:\n!@>discussion title:\n{infos[0]}\ndiscussion content:\n{doc}"
 
         # Add information about the user
         user_description=""
