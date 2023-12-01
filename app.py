@@ -2209,7 +2209,9 @@ try:
             print(f"- Selecting active personality {id} ...",end="")
             if id<len(self.mounted_personalities):
                 self.config["active_personality_id"]=id
-                self.personality = self.mounted_personalities[self.config["active_personality_id"]]
+                self.personality:AIPersonality = self.mounted_personalities[self.config["active_personality_id"]]
+                if self.personality.processor:
+                    self.personality.processor.selected()
                 ASCIIColors.success("ok")
                 print(f"Selected {self.personality.name}")
                 if self.config.auto_save:

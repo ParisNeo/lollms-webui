@@ -981,6 +981,8 @@ class LoLLMsAPI(LollmsApplication):
                                                     selected_language=personality.split(":")[1] if ":" in personality else None,
                                                     installation_option=InstallOption.FORCE_INSTALL)
                         mounted_personalities.append(personality)
+                        if personality.processor:
+                            personality.processor.mounted()
                     except Exception as ex:
                         ASCIIColors.error(f"Couldn't load personality at {personality_path}")
                         trace_exception(ex)
@@ -994,6 +996,9 @@ class LoLLMsAPI(LollmsApplication):
                                                     run_scripts=True,
                                                     installation_option=InstallOption.FORCE_INSTALL)
                         mounted_personalities.append(personality)
+                        if personality.processor:
+                            personality.processor.mounted()
+
                         ASCIIColors.info("Reverted to default personality")
         if self.config["active_personality_id"]>=0 and self.config["active_personality_id"]<len(self.config["personalities"]):
             ASCIIColors.success(f'selected model : {self.config["personalities"][self.config["active_personality_id"]]}')
@@ -1553,10 +1558,10 @@ class LoLLMsAPI(LollmsApplication):
                         self, 
                         chunk:str, 
                         message_type:MSG_TYPE,
-
                         parameters:dict=None, 
                         metadata:list=None, 
-                        client_id:int=0
+                        client_id:int=0,
+                        personality:AIPersonality=None
                     ):
         """
         Processes a chunk of generated text
@@ -1592,7 +1597,7 @@ class LoLLMsAPI(LollmsApplication):
             self.start_time = datetime.now()
             self.new_message(
                                 client_id, 
-                                self.personality.name, 
+                                self.personality.name if personality is None else personality.name, 
                                 chunk if parameters["type"]!=MSG_TYPE.MSG_TYPE_UI.value else '', 
                                 metadata = [{
                                     "title":chunk,
