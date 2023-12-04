@@ -14,7 +14,7 @@ discussion_prompt_separator: "!@>"
 seed: -1
 n_predict: 1024
 ctx_size: 4084
-min_n_predict: 256
+min_n_predict: 512
 temperature: 0.9
 top_k: 50
 top_p: 0.95

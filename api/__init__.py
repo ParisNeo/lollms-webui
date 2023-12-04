@@ -1821,7 +1821,7 @@ class LoLLMsAPI(LollmsApplication):
             self.socketio.sleep(0.01)
 
             # prepare query and reception
-            self.discussion_messages, self.current_message, tokens = self.prepare_query(client_id, message_id, is_continue, generation_type=generation_type)
+            self.discussion_messages, self.current_message, tokens = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type)
             self.prepare_reception(client_id)
             self.generating = True
             self.connections[client_id]["processing"]=True
