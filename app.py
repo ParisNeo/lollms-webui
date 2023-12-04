@@ -920,45 +920,18 @@ try:
             elif setting_name == "model_name":
                 ASCIIColors.yellow(f"Changing model to: {data['setting_value']}")
                 self.config["model_name"]=data['setting_value']
-                if self.config["model_name"] is not None:
-                    try:
-                        GG = AdvancedGarbageCollector()
-                        GG.safeHardCollect("model", self.binding)
-                        self.model = None
-                        self.binding.model = None
-                        if self.binding:
-                            del self.binding
-                        self.binding = None
-                        to_remove = []
-                        for per in self.mounted_personalities:
-                            if per is not None:
-                                per.model = None
-                            else:
-                                to_remove.append(per)
-                        for per in to_remove:
-                            self.mounted_personalities.remove(per)
-                        if len(self.mounted_personalities)==0:
-                            self.config.personalities= ["generic/lollms"]
-                            self.mount_personality(0)
-                        gc.collect()
-                        self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths, self.notify)
-                        
-                        self.model = self.binding.build_model()
-                        for per in self.mounted_personalities:
-                            if per is not None:
-                                per.model = self.model
-                    except Exception as ex:
-                        # Catch the exception and get the traceback as a list of strings
-                        traceback_lines = traceback.format_exception(type(ex), ex, ex.__traceback__)
-
-                        # Join the traceback lines into a single string
-                        traceback_text = ''.join(traceback_lines)
-                        ASCIIColors.error(f"Couldn't load model: [{ex}]")
-                        ASCIIColors.error(traceback_text)
-                        return jsonify({ "status":False, 'error':str(ex)})
-                else:
-                    ASCIIColors.warning("Trying to set a None model. Please select a model for the binding")
-                print("update_settings : New model selected")
+                self.config.save_config()
+                try:
+                    self.model = None
+                    for per in self.mounted_personalities:
+                        per.model = None
+                    self.model = self.binding.build_model()
+                    if self.model is not None:
+                        ASCIIColors.yellow("New model OK")
+                    for per in self.mounted_personalities:
+                        per.model = self.model
+                except Exception as ex:
+                    self.notify("It looks like you we couldn't load the model.\nThis can hapen when you don't have enough VRAM. Please restart the program.",False,30)
 
             elif setting_name== "binding_name":
                 if self.config['binding_name']!= data['setting_value']:
@@ -1013,31 +986,6 @@ try:
                 self.rebuild_personalities()
                 if self.config.auto_save:
                     self.config.save_config()
-
-                if self.config.data_vectorization_activate and self.config.use_discussions_history:
-                    try:
-                        ASCIIColors.yellow("0- Detected discussion vectorization request")
-                        folder = self.lollms_paths.personal_databases_path/"vectorized_dbs"
-                        folder.mkdir(parents=True, exist_ok=True)
-                        self.build_long_term_skills_memory()
-                        
-                        ASCIIColors.yellow("1- Exporting discussions")
-                        discussions = self.db.export_all_as_markdown_list_for_vectorization()
-                        ASCIIColors.yellow("2- Adding discussions to vectorizer")
-                        for (title,discussion) in tqdm(discussions):
-                            if discussion!='':
-                                skill = self.learn_from_discussion(discussion)
-                                self.long_term_memory.add_document(title, skill, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
-                        ASCIIColors.yellow("3- Indexing database")
-                        self.long_term_memory.index()
-                        ASCIIColors.yellow("4- Saving database")
-                        self.long_term_memory.save_to_json()
-                        
-                        if self.config.data_vectorization_visualize_on_vectorization:
-                            self.long_term_memory.show_document(show_interactive_form=True)
-                        ASCIIColors.yellow("Ready")
-                    except Exception as ex:
-                        ASCIIColors.error(f"Couldn't vectorize database:{ex}")
                 return jsonify({"status":True})
             except Exception as ex:
                 trace_exception(ex)
@@ -1320,8 +1268,15 @@ try:
                     discussions = self.db.export_all_as_markdown_list_for_vectorization()
                     ASCIIColors.yellow("2- Adding discussions to vectorizer")
                     self.notify("Adding discussions to vectorizer",True, None)
-                    for (title,discussion) in discussions:
-                        self.long_term_memory.add_document(title, discussion, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
+                    index = 0
+                    nb_discussions = len(discussions)
+
+                    for (title,discussion) in tqdm(discussions):
+                        self.socketio.emit('update_progress',{'value':int(100*(index/nb_discussions))})
+                        index += 1
+                        if discussion!='':
+                            skill = self.learn_from_discussion(title, discussion)
+                            self.long_term_memory.add_document(title, skill, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
                     ASCIIColors.yellow("3- Indexing database")
                     self.notify("Indexing database",True, None)
                     self.long_term_memory.index()

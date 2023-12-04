@@ -364,7 +364,17 @@ export default {
     },
     computed: {
         currentModel() {
-            return this.$store.state.currentModel;
+            if(this.$store.state.currentModel!=undefined){
+                console.log("Model found")
+                return this.$store.state.currentModel;
+            }
+            else{
+                console.log("No model found")
+                let obj = {}
+                obj.name="unknown"
+                return obj;
+
+            }
         },
         installedModels() {
             return this.$store.state.installedModels;

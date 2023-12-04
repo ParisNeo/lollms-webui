@@ -165,13 +165,16 @@ class LoLLMsAPI(LollmsApplication):
         # This is used to keep track of messages 
         self.download_infos={}
         
-        self.connections = {0:{
+        self.connections = {
+            0:{
                 "current_discussion":None,
                 "generated_text":"",
                 "cancel_generation": False,          
                 "generation_thread": None,
                 "processing":False,
-                "schedule_for_deletion":False
+                "schedule_for_deletion":False,
+                "continuing": False,
+                "first_chunk": True,
             }
         }
         
@@ -207,7 +210,42 @@ class LoLLMsAPI(LollmsApplication):
             
             ASCIIColors.error(f'Client {request.sid} disconnected')
 
-        
+        @socketio.on('upgrade_vectorization')
+        def upgrade_vectorization():
+            if self.config.data_vectorization_activate and self.config.use_discussions_history:
+                try:
+                    self.socketio.emit('show_progress')
+                    self.socketio.sleep(0)
+                    ASCIIColors.yellow("0- Detected discussion vectorization request")
+                    folder = self.lollms_paths.personal_databases_path/"vectorized_dbs"
+                    folder.mkdir(parents=True, exist_ok=True)
+                    self.build_long_term_skills_memory()
+                    
+                    ASCIIColors.yellow("1- Exporting discussions")
+                    discussions = self.db.export_all_as_markdown_list_for_vectorization()
+                    ASCIIColors.yellow("2- Adding discussions to vectorizer")
+                    index = 0
+                    nb_discussions = len(discussions)
+                    for (title,discussion) in tqdm(discussions):
+                        self.socketio.emit('update_progress',{'value':int(100*(index/nb_discussions))})
+                        self.socketio.sleep(0)
+                        index += 1
+                        if discussion!='':
+                            skill = self.learn_from_discussion(title, discussion)
+                            self.long_term_memory.add_document(title, skill, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
+                    ASCIIColors.yellow("3- Indexing database")
+                    self.long_term_memory.index()
+                    ASCIIColors.yellow("4- Saving database")
+                    self.long_term_memory.save_to_json()
+                    
+                    if self.config.data_vectorization_visualize_on_vectorization:
+                        self.long_term_memory.show_document(show_interactive_form=True)
+                    ASCIIColors.yellow("Ready")
+                except Exception as ex:
+                    ASCIIColors.error(f"Couldn't vectorize database:{ex}")
+            self.socketio.emit('hide_progress')
+            self.socketio.sleep(0)
+
         @socketio.on('cancel_install')
         def cancel_install(data):
             try:
@@ -475,6 +513,13 @@ class LoLLMsAPI(LollmsApplication):
         def new_discussion(data):
             client_id = request.sid
             title = data["title"]
+            if self.connections[client_id]["current_discussion"] is not None:
+                if self.long_term_memory is not None:
+                    title, content = self.connections[client_id]["current_discussion"].export_for_vectorization()
+                    skill = self.learn_from_discussion(title, content)
+                    self.long_term_memory.add_document(title, skill, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False, add_to_index=True)
+                    ASCIIColors.yellow("4- Saving database")
+                    self.long_term_memory.save_to_json()
             self.connections[client_id]["current_discussion"] = self.db.create_discussion(title)
             # Get the current timestamp
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -1435,10 +1480,11 @@ class LoLLMsAPI(LollmsApplication):
 
 
     
-    def notify(self, content, status=True, client_id=None):
+    def notify(self, content, status=True, duration=4, client_id=None):
         self.socketio.emit('notification', {
                             'content': content,# self.connections[client_id]["generated_text"], 
-                            'status': status
+                            'status': status,
+                            "duration": duration
                         }, room=client_id
                         )        
 
@@ -1532,6 +1578,8 @@ class LoLLMsAPI(LollmsApplication):
         self.socketio.sleep(0.01)
         if msg_type != MSG_TYPE.MSG_TYPE_INFO:
             self.connections[client_id]["current_discussion"].update_message(self.connections[client_id]["generated_text"], new_metadata=mtdt, new_ui=ui)
+
+
 
     def close_message(self, client_id):
         if not self.connections[client_id]["current_discussion"]:

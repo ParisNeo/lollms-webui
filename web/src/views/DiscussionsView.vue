@@ -226,7 +226,7 @@
         </div>
     </div>
     </transition>
-    <div v-if="isReady" class="relative flex flex-col flex-grow " >
+    <div v-if="isReady" class="relative flex flex-col flex-grow" >
         <div id="messages-list"
             class=" z-0 flex flex-col  flex-grow  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
             :class="isDragOverChat ? 'pointer-events-none' : ''">
@@ -254,9 +254,8 @@
 
             <div
                 class="absolute w-full bottom-0 bg-transparent p-10 pt-16 bg-gradient-to-t from-bg-light dark:from-bg-dark from-5% via-bg-light dark:via-bg-dark via-10% to-transparent to-100%">
-
             </div>
-            <div class=" bottom-0 container flex flex-row items-center justify-center " v-if="currentDiscussion.id">
+            <div class="bottom-0 flex flex-row items-center justify-center " v-if="currentDiscussion.id">
                 <ChatBox ref="chatBox" 
                     :loading="isGenerating" 
                     :discussionList="discussionArr" 
@@ -284,6 +283,10 @@
       @close-dialog="onclosedatabase_selectorDialog"
       @choice-validated="onvalidatedatabase_selectorChoice"
     />      
+    <div v-show="progress_visibility" role="status" class="fixed m-0 p-2 left-2 bottom-2  min-w-[24rem] max-w-[24rem] h-20 flex flex-col justify-center items-center pb-4 bg-blue-500 rounded-lg shadow-lg z-50 background-a">
+        <ProgressBar ref="progress" :progress="progress_value" class="w-full h-4"></ProgressBar>
+        <p class="text-2xl animate-pulse mt-2 text-white">{{ loading_infos }} ...</p>
+    </div>
 </template>
 
 
@@ -372,6 +375,8 @@ export default {
             host:"",
             // To be synced with the backend database types
             msgTypes: {
+                progress_visibility_val         : true,
+                progress_value                  : 0,
                 // Messaging
                 MSG_TYPE_CHUNK                  : 0, // A chunk of a message (used for classical chat)
                 MSG_TYPE_FULL                   : 1, // A full message (for some personality the answer is sent in bulk)
@@ -433,7 +438,17 @@ export default {
             discussion_id: 0,
         }
     },
-    methods: {     
+    methods: { 
+        show_progress(data){
+            this.progress_visibility_val = true;
+        },
+        hide_progress(data){
+            this.progress_visibility_val = false;
+        },
+        update_progress(data){
+            console.log("Progress update")
+            this.progress_value = data.value;
+        },
         onSettingsBinding() {
             try {
                 this.isLoading = true
@@ -508,27 +523,24 @@ export default {
             }
         
         },
-        toggleLTM(){
+        async toggleLTM(){
             this.$store.state.config.use_discussions_history =! this.$store.state.config.use_discussions_history;
-            this.applyConfiguration();
+            await this.applyConfiguration();
+            socket.emit('upgrade_vectorization');
         },
-        applyConfiguration() {
+        async applyConfiguration() {
             this.loading = true;
-            axios.post('/apply_settings', {"config":this.$store.state.config}).then((res) => {
-                this.loading = false;
-                //console.log('apply-res',res)
-                if (res.data.status) {
-                    this.$refs.toast.showToast("Configuration changed successfully.", 4, true)
-                    //this.save_configuration()
-                } else {
-                    this.$refs.toast.showToast("Configuration change failed.", 4, false)
-                }
-                nextTick(() => {
-                    feather.replace()
-                })
-            }).catch((err)=>{
-                this.loading = false;
+            const res = await axios.post('/apply_settings', {"config":this.$store.state.config})
+            this.loading = false;
+            //console.log('apply-res',res)
+            if (res.data.status) {
+                this.$refs.toast.showToast("Configuration changed successfully.", 4, true)
+                //this.save_configuration()
+            } else {
                 this.$refs.toast.showToast("Configuration change failed.", 4, false)
+            }
+            nextTick(() => {
+                feather.replace()
             })
         },
         save_configuration() {
@@ -1186,7 +1198,7 @@ export default {
                 const msgList = document.getElementById('messages-list')
                 this.scrollBottom(msgList)
             })            
-            this.$refs.toast.showToast(notif.content, 5, notif.status)
+            this.$refs.toast.showToast(notif.content, notif.duration, notif.status)
             this.chime.play()
         },
         streamMessageContent(msgObj) {
@@ -1834,6 +1846,10 @@ export default {
 
 
         // socket responses
+        socket.on('show_progress', this.show_progress)
+        socket.on('hide_progress', this.hide_progress)
+        socket.on('update_progress', this.update_progress)
+        
         socket.on('notification', this.notify)
         socket.on('new_message', this.new_message)
         socket.on('update_message', this.streamMessageContent)
@@ -1909,6 +1925,9 @@ export default {
         ProgressBar       
     },
     watch: {  
+        progress_visibility_val(newVal) {
+            console.log("progress_visibility changed")
+        },
         filterTitle(newVal) {
             if (newVal == '') {
                 this.filterInProgress = true
@@ -1942,6 +1961,11 @@ export default {
         
     },
     computed: { 
+        progress_visibility: {
+            get(){
+                return self.progress_visibility_val;
+            }
+        },        
         version_info:{
             get(){
                 if(this.$store.state.version!=undefined && this.$store.state.version!="unknown"){
@@ -1952,6 +1976,7 @@ export default {
                 }
             }
         },
+        
         loading_infos:{
             get(){
                 return this.$store.state.loading_infos;

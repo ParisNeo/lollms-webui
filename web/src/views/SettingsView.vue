@@ -487,6 +487,23 @@
                                         </tr> 
                                         <tr>
                                         <td style="min-width: 200px;">
+                                            <label for="summerize_discussion" class="text-sm font-bold" style="margin-right: 1rem;">Activate Continuous Learning from discussions:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <input
+                                            type="checkbox"
+                                            id="summerize_discussion"
+                                            required
+                                            v-model="configFile.summerize_discussion"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>                                         
+                                        <tr>
+                                        <td style="min-width: 200px;">
                                             <label for="data_vectorization_visualize_on_vectorization" class="text-sm font-bold" style="margin-right: 1rem;">show vectorized data:</label>
                                         </td>
                                         <td>

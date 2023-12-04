@@ -778,4 +778,23 @@ class Discussion:
         # Retrieve current rank value for message_id
         self.discussions_db.delete("DELETE FROM message WHERE id=?", (message_id,))
 
+    def export_for_vectorization(self):
+        """
+        Export all discussions and their messages from the database to a Markdown list format.
+
+        Returns:
+            list: A list of lists representing discussions and their messages in a Markdown format.
+                Each inner list contains the discussion title and a string representing all
+                messages in the discussion in a Markdown format.
+        """        
+        # Extract the title
+        title = self.title()
+        messages = ""
+        # Iterate through messages in the discussion
+        for message in self.messages:
+            sender = message.sender
+            content = message.content
+            # Append the sender and content in a Markdown format
+            messages += f'{sender}: {content}\n'
+        return title, messages
 # ========================================================================================================================

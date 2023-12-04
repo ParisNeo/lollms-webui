@@ -46,7 +46,10 @@
                 class="block min-h-500 p-2.5 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 overflow-y-scroll flex flex-col shadow-lg p-10 pt-0 overflow-y-scroll dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
                 :rows="4" 
                 :style="{ minHeight: mdRenderHeight + `px` }" placeholder="Enter message here..."
-                v-model="text">
+                v-model="text"
+                @click.prevent="mdTextarea_clicked"
+                @change.prevent="mdTextarea_changed"
+                >
                 </textarea>
 
               <span>Cursor position {{ cursorPosition }}</span>
@@ -300,6 +303,7 @@ export default {
   name: 'PlayGroundView',
   data() {
     return {
+      mdRenderHeight:300,
       selecting_model:false,
       tab_id:"source",
       generating:false,
@@ -341,8 +345,6 @@ export default {
         // Event handler for receiving generated text chunks
         socket.on('text_chunk', data => {
             this.appendToOutput(data.chunk);
-            // const text_element = document.getElementById('text_element');
-            // text_element.scrollTo(0, text_element.scrollHeight);
         });
 
         // Event handler for receiving generated text chunks
@@ -447,13 +449,13 @@ export default {
     
             event.preventDefault();
         },    
-    text_element_changed(){
-      console.log("text_element_changed")
-      this.cursorPosition = this.$refs.text_element.selectionStart;
+    mdTextarea_changed(){
+      console.log("mdTextarea_changed")
+      this.cursorPosition = this.$refs.mdTextarea.selectionStart;
     },      
-    text_element_clicked(){
-      console.log("text_element_clicked")
-      this.cursorPosition = this.$refs.text_element.selectionStart;
+    mdTextarea_clicked(){
+      console.log(`mdTextarea_clicked: ${this.$refs.mdTextarea.selectionStart}`)
+      this.cursorPosition = this.$refs.mdTextarea.selectionStart;
     },    
     setModel(){
       this.selecting_model=true
@@ -545,7 +547,7 @@ export default {
           speakChunk();
       },    
     getCursorPosition() {
-      return this.cursorPosition;
+      return this.$refs.mdTextarea.selectionStart;
     },    
     appendToOutput(chunk){
       this.pre_text += chunk
@@ -583,7 +585,11 @@ export default {
       this.pre_text = this.text.substring(0,this.getCursorPosition())
       this.post_text = this.text.substring(this.getCursorPosition(), this.text.length)
       var prompt = this.text.substring(0,this.getCursorPosition())
-      console.log(prompt)
+      console.log(this.text)
+      console.log(`cursor position :${this.getCursorPosition()}`)
+      console.log(`pretext:${this.pre_text}`)
+      console.log(`post_text:${this.post_text}`)
+      console.log(`prompt:${prompt}`)
       // Trigger the 'generate_text' event with the prompt
       socket.emit('generate_text', { prompt: prompt, personality: -1, n_predicts: this.n_predicts , n_crop: this.n_crop,
       parameters: {
