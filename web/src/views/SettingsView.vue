@@ -447,6 +447,21 @@
                                             </div>
                                         </td>
                                         </tr>  
+                                        <tr>
+                                            <td style="min-width: 200px;">
+                                                <label for="min_n_predict" class="text-sm font-bold" style="margin-right: 1rem;">Minimum number of output tokens space (forces the model to have more space to speak):</label>
+                                            </td>
+                                            <td style="width: 100%;">
+                                                <input
+                                                type="number"
+                                                id="min_n_predict"
+                                                required
+                                                v-model="configFile.min_n_predict"
+                                                @change="settingsChanged=true"
+                                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                                >
+                                            </td>
+                                        </tr>                                        
                                     </table>
                                 </Card>                           
                                 <Card title="Data Vectorization" :is_subcard="true" class="pb-2  m-2">
