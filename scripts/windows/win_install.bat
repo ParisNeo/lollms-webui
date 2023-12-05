@@ -8,7 +8,7 @@ set PATH=%PATH%;%SystemRoot%\system32
 
 cd /D "%~dp0"
 
-echo "%cd%"| findstr /C:" " >nul && call :PrintBigMessage "This script relies on Miniconda which can not be silently installed under a path with spaces." && goto end
+echo "%cd%"| findstr /C:" " >nul && call :PrintBigMessage "This script relies on Miniconda which can not be silently installed under a path with spaces. Please put it in a path without spaces and try again" && goto failed
 call :PrintBigMessage "WARNING: This script relies on Miniconda which will fail to install if the path is too long."
 set "SPCHARMESSAGE="WARNING: Special characters were detected in the installation path!" "         This can cause the installation to fail!""
 echo "%CD%"| findstr /R /C:"[!#\$%&()\*+,;<=>?@\[\]\^`{|}~]" >nul && (
@@ -38,7 +38,7 @@ echo By ParisNeo
 echo Please specify if you want to use a GPU or CPU.
 echo *Note* that only NVidea GPUs (cuda) or AMD GPUs (rocm) are supported.
 echo A) Enable cuda GPU
-echo B) Enable ROCm compatible GPU (AMD and other GPUs)
+echo B) Enable ROCm compatible GPU (AMD and other GPUs) (NOT SUPPORTED UNDER WINDOWS)
 echo C) Run CPU mode
 set /p "gpuchoice=Input> "
 set gpuchoice=%gpuchoice:~0,1%
@@ -77,7 +77,7 @@ if not exist "%MINICONDA_DIR%\Scripts\conda.exe" (
 
   @rem install miniconda
   echo. && echo Installing Miniconda To "%MINICONDA_DIR%" && echo Please Wait... && echo.
-  start "" /W /D "%cd%" "Miniconda3-latest-Windows-x86_64.exe" /InstallationType=JustMe /NoShortcuts=1 /AddToPath=0 /RegisterPython=0 /NoRegistry=1 /S /D=%MINICONDA_DIR% || ( echo. && echo Miniconda installer not found. && goto end )
+  start "" /W /D "%cd%" "Miniconda3-latest-Windows-x86_64.exe" /InstallationType=JustMe /NoShortcuts=1 /AddToPath=0 /RegisterPython=0 /NoRegistry=1 /S /D=%MINICONDA_DIR% || ( echo. && echo Miniconda installer not found. && goto failed )
   del /q "Miniconda3-latest-Windows-x86_64.exe"
   if not exist "%MINICONDA_DIR%\Scripts\activate.bat" ( echo. && echo Miniconda install failed. && goto end )
 )
@@ -208,7 +208,10 @@ for %%M in (%*) do echo * %%~M
 echo *******************************************************************
 echo. && echo.
 exit /b
-
+goto end
+:failed
+echo Install failed
+goto endend
 :end
 cd ..
 echo Creating bin folder (needed for ctransformers)
@@ -221,4 +224,5 @@ IF EXIST "installer_files\lollms_env\bin" (
 
 
 echo Installation complete.
+:endend
 pause
