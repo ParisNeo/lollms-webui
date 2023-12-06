@@ -1574,7 +1574,7 @@ try:
                 old_bn = self.config.binding_name
                 self.config.binding_name = data['name']
                 self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL, self.notify)
-                ASCIIColors.success("Binding reinstalled successfully")
+                ASCIIColors.success("Binding installed successfully")
                 self.notify("Please reboot the application so that the binding installation can be taken into consideration",True, 30, notification_type=1)
                 del self.binding
                 self.binding = None
