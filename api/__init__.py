@@ -1480,11 +1480,17 @@ class LoLLMsAPI(LollmsApplication):
 
 
     
-    def notify(self, content, status=True, duration=4, client_id=None):
+    def notify(self, content, status=True, duration=4, client_id=None, notification_type=0):
+        """
+        notification type is:
+        0 : suddle
+        1 : Critical (shows a message box )
+        """
         self.socketio.emit('notification', {
                             'content': content,# self.connections[client_id]["generated_text"], 
                             'status': status,
-                            "duration": duration
+                            "duration": duration,
+                            'notification_type':notification_type
                         }, room=client_id
                         )        
 

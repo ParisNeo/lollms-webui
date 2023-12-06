@@ -269,6 +269,7 @@ try:
             
             self.add_endpoint("/install_model_from_path", "install_model_from_path", self.install_model_from_path, methods=["GET"])
             
+            self.add_endpoint("/install_binding", "install_binding", self.install_binding, methods=["POST"])
             self.add_endpoint("/unInstall_binding", "unInstall_binding", self.unInstall_binding, methods=["POST"])
             self.add_endpoint("/reinstall_binding", "reinstall_binding", self.reinstall_binding, methods=["POST"])
             self.add_endpoint("/reinstall_personality", "reinstall_personality", self.reinstall_personality, methods=["POST"])
@@ -917,6 +918,32 @@ try:
             elif setting_name== "override_personality_model_parameters":
                 self.config["override_personality_model_parameters"]=bool(data['setting_value'])
 
+            elif setting_name== "binding_name":
+                if self.config['binding_name']!= data['setting_value']:
+                    print(f"New binding selected : {data['setting_value']}")
+                    self.config["binding_name"]=data['setting_value']
+                    try:
+                        if self.binding:
+                            self.binding.destroy_model()
+                        self.binding = None
+                        self.model = None
+                        for per in self.mounted_personalities:
+                            per.model = None
+                        gc.collect()
+                        self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.INSTALL_IF_NECESSARY, self.notify)
+                        self.model = None
+                        self.config.save_config()
+                        ASCIIColors.green("Binding loaded successfully")
+                    except Exception as ex:
+                        ASCIIColors.error(f"Couldn't build binding: [{ex}]")
+                        trace_exception(ex)
+                        return jsonify({"status":False, 'error':str(ex)})
+                else:
+                    if self.config["debug"]:
+                        print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
+                    return jsonify({'setting_name': data['setting_name'], "status":True})
+
+
             elif setting_name == "model_name":
                 ASCIIColors.yellow(f"Changing model to: {data['setting_value']}")
                 self.config["model_name"]=data['setting_value']
@@ -933,30 +960,6 @@ try:
                 except Exception as ex:
                     self.notify("It looks like you we couldn't load the model.\nThis can hapen when you don't have enough VRAM. Please restart the program.",False,30)
 
-            elif setting_name== "binding_name":
-                if self.config['binding_name']!= data['setting_value']:
-                    print(f"New binding selected : {data['setting_value']}")
-                    self.config["binding_name"]=data['setting_value']
-                    try:
-                        if self.binding:
-                            self.binding.destroy_model()
-                        self.binding = None
-                        self.model = None
-                        for per in self.mounted_personalities:
-                            per.model = None
-                        gc.collect()
-                        self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths, self.notify)
-                        self.model = None
-                        self.config.save_config()
-                        ASCIIColors.green("Model loaded successfully")
-                    except Exception as ex:
-                        ASCIIColors.error(f"Couldn't build binding: [{ex}]")
-                        trace_exception(ex)
-                        return jsonify({"status":False, 'error':str(ex)})
-                else:
-                    if self.config["debug"]:
-                        print(f"Configuration {data['setting_name']} set to {data['setting_value']}")
-                    return jsonify({'setting_name': data['setting_name'], "status":True})
 
             else:
                 if data['setting_name'] in self.config.config.keys():
@@ -1264,10 +1267,10 @@ try:
                         save_db=True
                     )
                     ASCIIColors.yellow("1- Exporting discussions")
-                    self.notify("Exporting discussions",True, None)
+                    self.notify("Exporting discussions")
                     discussions = self.db.export_all_as_markdown_list_for_vectorization()
                     ASCIIColors.yellow("2- Adding discussions to vectorizer")
-                    self.notify("Adding discussions to vectorizer",True, None)
+                    self.notify("Adding discussions to vectorizer")
                     index = 0
                     nb_discussions = len(discussions)
 
@@ -1557,6 +1560,35 @@ try:
             else:
                 return jsonify({})
 
+        def install_binding(self):
+            try:
+                data = request.get_json()
+                # Further processing of the data
+            except Exception as e:
+                print(f"Error occurred while parsing JSON: {e}")
+                return jsonify({"status":False, 'error':str(e)})
+            ASCIIColors.info(f"- Reinstalling binding {data['name']}...")
+            try:
+                ASCIIColors.info("Unmounting binding and model")
+                ASCIIColors.info("Reinstalling binding")
+                old_bn = self.config.binding_name
+                self.config.binding_name = data['name']
+                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL, self.notify)
+                ASCIIColors.success("Binding reinstalled successfully")
+                self.notify("Please reboot the application so that the binding installation can be taken into consideration",True, 30, notification_type=1)
+                del self.binding
+                self.binding = None
+                self.config.binding_name = old_bn
+                if old_bn is not None:
+                    self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, self.notify)
+                    self.model = self.binding.build_model()
+                    for per in self.mounted_personalities:
+                        per.model = self.model
+                return jsonify({"status": True}) 
+            except Exception as ex:
+                ASCIIColors.error(f"Couldn't build binding: [{ex}]")
+                trace_exception(ex)
+                return jsonify({"status":False, 'error':str(ex)})
 
         def reinstall_binding(self):
             try:
@@ -1568,8 +1600,7 @@ try:
             ASCIIColors.info(f"- Reinstalling binding {data['name']}...")
             try:
                 ASCIIColors.info("Unmounting binding and model")
-                GG = AdvancedGarbageCollector()
-                GG.safeHardCollect("binding", self)
+                del self.binding
                 self.binding = None
                 gc.collect()
                 ASCIIColors.info("Reinstalling binding")
@@ -1577,7 +1608,7 @@ try:
                 self.config.binding_name = data['name']
                 self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL, self.notify)
                 ASCIIColors.success("Binding reinstalled successfully")
-                self.notify("<b>Please reboot the application so that the binding installation</b>",True, 30)
+                self.notify("Please reboot the application so that the binding installation can be taken into consideration",True, 30, 1)
                 self.config.binding_name = old_bn
                 self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, self.notify)
                 self.model = self.binding.build_model()
@@ -1596,26 +1627,28 @@ try:
             except Exception as e:
                 print(f"Error occurred while parsing JSON: {e}")
                 return jsonify({"status":False, 'error':str(e)})
-            ASCIIColors.info(f"- UnInstalling binding {data['name']}...")
+            ASCIIColors.info(f"- Reinstalling binding {data['name']}...")
             try:
                 ASCIIColors.info("Unmounting binding and model")
-                self.binding = None
-                self.model = None
-                for per in self.mounted_personalities:
-                    per.model = None
-                gc.collect()
-                ASCIIColors.info("UnInstalling binding")
-                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL, self.notify)
+                if self.binding is not None:
+                    del self.binding
+                    self.binding = None
+                    gc.collect()
+                ASCIIColors.info("Uninstalling binding")
+                old_bn = self.config.binding_name
+                self.config.binding_name = data['name']
+                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.NEVER_INSTALL, self.notify)
                 self.binding.uninstall()
-                ASCIIColors.success("Binding UnInstalled successfully")
-                self.config.binding_name= None
-                if self.config.auto_save:
-                    ASCIIColors.info("Saving configuration")
-                    self.config.save_config()
-                ASCIIColors.info("Please select a binding")
+                ASCIIColors.green("Uninstalled successful")
+                if old_bn!=self.config.binding_name:
+                    self.config.binding_name = old_bn
+                    self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, self.notify)
+                    self.model = self.binding.build_model()
+                    for per in self.mounted_personalities:
+                        per.model = self.model
                 return jsonify({"status": True}) 
             except Exception as ex:
-                ASCIIColors.error(f"Couldn't uninstall binding: [{ex}]")
+                ASCIIColors.error(f"Couldn't build binding: [{ex}]")
                 trace_exception(ex)
                 return jsonify({"status":False, 'error':str(ex)})        
 

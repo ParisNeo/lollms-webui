@@ -373,10 +373,10 @@ export default {
     data() {
         return {
             host:"",
+            progress_visibility_val         : true,
+            progress_value                  : 0,
             // To be synced with the backend database types
             msgTypes: {
-                progress_visibility_val         : true,
-                progress_value                  : 0,
                 // Messaging
                 MSG_TYPE_CHUNK                  : 0, // A chunk of a message (used for classical chat)
                 MSG_TYPE_FULL                   : 1, // A full message (for some personality the answer is sent in bulk)
@@ -1197,8 +1197,13 @@ export default {
             nextTick(() => {
                 const msgList = document.getElementById('messages-list')
                 this.scrollBottom(msgList)
-            })            
-            this.$refs.toast.showToast(notif.content, notif.duration, notif.status)
+            })
+            if(notif.notification_type==0){
+                this.$refs.toast.showToast(notif.content, notif.duration, notif.status)
+            }
+            else if(notif.notification_type==1){
+                this.$refs.messageBox.showMessage(notif.content)
+            }
             this.chime.play()
         },
         streamMessageContent(msgObj) {

@@ -1757,7 +1757,7 @@ import YesNoDialog from "@/components/YesNoDialog.vue";
 import Toast from '../components/Toast.vue'
 import ModelEntry from '@/components/ModelEntry.vue';
 import PersonalityViewer from '@/components/PersonalityViewer.vue';
-import PersonalityEntry from "../components/PersonalityEntry.vue";
+import PersonalityEntry from "@/components/PersonalityEntry.vue";
 import BindingEntry from "../components/BindingEntry.vue";
 import socket from '@/services/websocket.js'
 import defaultModelImgPlaceholder from "../assets/default_model.png"
@@ -1884,10 +1884,23 @@ export default {
     async created() {
         socket.on('loading_text',this.on_loading_text);
         this.updateHasUpdates();
+        socket.on('notification', this.notify)
         //await socket.on('install_progress', this.progressListener);
         //refreshHardwareUsage()
     }, 
     methods: {
+        notify(notif){
+            nextTick(() => {
+                const msgList = document.getElementById('messages-list')
+                this.scrollBottom(msgList)
+            })
+            if(notif.notification_type==0){
+                this.$refs.toast.showToast(notif.content, notif.duration, notif.status)
+            }
+            else if(notif.notification_type==1){
+                this.$refs.messageBox.showMessage(notif.content)
+            }
+        },        
         load_more_models(){
             if(this.models_zoo_initialLoadCount+10<this.models_zoo.length){
                 this.models_zoo_initialLoadCount+=10
@@ -2623,30 +2636,63 @@ export default {
 
                 //     return
                 // }
+                this.isLoading = true
+
                 if (binding_object.disclaimer){
                     this.$refs.yesNoDialog.askQuestion(binding_object.disclaimer, 'Proceed', 'Cancel')
-                    if (res) {
-                        this.update_binding(binding_object.binding.folder)
-                    }
+                }
+                axios.post('/install_binding', { name: binding_object.binding.folder }).then((res) => {
 
+                if (res) {
+                    this.isLoading = false
+                    console.log('install_binding', res)
+                    if (res.data.status) {
+                        this.$refs.toast.showToast("Installed binding successfully!", 4, true)
+                        this.update_binding(binding_object.binding.folder);
+                    } else {
+                        this.$refs.toast.showToast("Could not reinstall binding", 4, false)
+                    }
+                    this.isLoading = false
+
+                    return res.data;
                 }
-                else{
-                    this.update_binding(binding_object.binding.folder)
-                }
-                //console.log('lol',binding_object)
+                this.isLoading = false
+                })
+                // eslint-disable-next-line no-unused-vars
+
+                .catch(error => {
+                    this.isLoading = false
+                    this.$refs.toast.showToast("Could not reinstall binding\n" + error.message, 4, false)
+                    return { 'status': false }
+                });                //console.log('lol',binding_object)
+            }
+            else{
+                this.update_binding(binding_object.binding.folder);                
             }
         },
         onUnInstallBinding(binding_object){
             this.isLoading = true
             axios.post('/unInstall_binding', { name: binding_object.binding.folder }).then((res) => {
-
+                
                 if (res) {
                     this.isLoading = false
                     console.log('unInstall_binding', res)
                     if (res.data.status) {
-                        this.$refs.toast.showToast("Reinstalled binding successfully!", 4, true)
+                        const index = this.bindingsZoo.findIndex(item => item.folder == binding_object.binding.folder)
+                        const item = this.bindingsZoo[index]
+                        if (item) {
+                            item.installed = true
+                        }
+                        else{
+                            item.installed = false
+                        }
+
+                        this.settingsChanged = true
+
+                        this.binding_changed = true;
+                        this.$refs.toast.showToast("Binding uninstalled successfully!", 4, true)
                     } else {
-                        this.$refs.toast.showToast("Could not reinstall binding", 4, false)
+                        this.$refs.toast.showToast("Could not uninstall binding", 4, false)
                     }
                     return res.data;
                 }
@@ -2658,7 +2704,7 @@ export default {
 
                 .catch(error => {
                     this.isLoading = false
-                    this.$refs.toast.showToast("Could not reinstall binding\n" + error.message, 4, false)
+                    this.$refs.toast.showToast("Could not uninstall binding\n" + error.message, 4, false)
                     return { 'status': false }
                 });            
         },
@@ -2890,7 +2936,7 @@ export default {
                 this.isLoading = false
                 console.log('update_setting', res)
                 if(res['status']){
-                    this.$refs.toast.showToast("Setting updated successfully.\nDon't forget to save to keep the setting permanently.", 4, true)
+                    this.$refs.toast.showToast("Setting updated successfully.\n", 4, true)
                 }
                 else{
                     this.$refs.toast.showToast("Setting update failed.\nPlease view the console for more details.", 4, false)
@@ -3032,6 +3078,9 @@ export default {
                 const item = this.bindingsZoo[index]
                 if (item) {
                     item.installed = true
+                }
+                else{
+                    item.installed = false
                 }
 
                 this.settingsChanged = true
