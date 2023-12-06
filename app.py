@@ -1646,6 +1646,12 @@ try:
                     self.model = self.binding.build_model()
                     for per in self.mounted_personalities:
                         per.model = self.model
+                else:
+                    self.config.binding_name = None
+                if self.config.auto_save:
+                    ASCIIColors.info("Saving configuration")
+                    self.config.save_config()
+                    
                 return jsonify({"status": True}) 
             except Exception as ex:
                 ASCIIColors.error(f"Couldn't build binding: [{ex}]")
