@@ -35,8 +35,8 @@
             await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for 100ms
         }
         console.log("ready")
-        this.updatePersonality();
         this.initWebGLScene();
+        this.updatePersonality();
     },
     beforeDestroy() {
       // Clean up WebGL resources here
@@ -70,12 +70,17 @@
       },
       updatePersonality() {
         const { mountedPersArr, config } = this.$store.state;
-  
+        
         // Get the active personality based on active_personality_id
         const activePersonality = mountedPersArr[config.active_personality_id];
-        console.log("activePersonality:",activePersonality)
 
-  
+        // Check if the active personality has an avatar
+        if (activePersonality.avatar) {
+            this.showBoxWithAvatar(activePersonality.avatar);
+        } else {
+            this.showDefaultCube();
+        }
+
         // Update the personality property
         this.$emit('update:personality', activePersonality);
       },
@@ -91,8 +96,11 @@
         });
       },
       showBoxWithAvatar(avatarUrl) {
-        // Remove existing cube
-        this.scene.remove(this.cube);
+        // Check if the cube exists in the scene
+        if (this.cube) {
+            // Remove existing cube
+            this.scene.remove(this.cube);
+        }
   
         // Create a box with avatar texture
         const geometry = new THREE.BoxGeometry();
