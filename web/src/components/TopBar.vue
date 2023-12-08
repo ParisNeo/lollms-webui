@@ -17,6 +17,12 @@
             <!-- GITHUB AND THEME BUTTONS -->
             <div class="flex gap-3 flex-1 items-center justify-end">
                 
+                <div v-if="isModelOK" title="Model is ok" class="text-green-500">
+                    M
+                </div>
+                <div v-if="!isModelOK" title="Model is not ok" class="text-red-500">
+                    M
+                </div>
                 <div v-if="!isGenerating" title="Text is not being generated. Ready to generate" class="text-green-500">
                     <i data-feather="flag"></i>
                 </div>
@@ -89,6 +95,9 @@ import { mapState } from 'vuex';
 export default {
     name: 'TopBar',
     computed:{
+        isModelOK(){
+            return this.$store.state.isModelOk;
+        },
         isGenerating(){
             return this.$store.state.isGenerating;
         },

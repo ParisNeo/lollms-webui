@@ -30,6 +30,7 @@ export const store = createStore({
         version : "unknown",
         settingsChanged:false,
         isConnected: false, // Add the isConnected property
+        isModelOk: false,
         isGenerating: false,
         config:null,
         mountedPers:null,
@@ -55,6 +56,9 @@ export const store = createStore({
       },
       setIsConnected(state, isConnected) {
         state.isConnected = isConnected;
+      },
+      setIsModelOk(state, isModelOk) {
+        state.isModelOk = isModelOk;
       },
       setIsGenerating(state, isGenerating) {
         state.isGenerating = isGenerating;
@@ -114,6 +118,9 @@ export const store = createStore({
     getters: {
       getIsConnected(state) {
         return state.isConnected
+      },
+      getIsModelOk(state) {
+        return state.isModelOk;
       },
       getIsGenerating(state) {
         return state.isGenerating
@@ -313,6 +320,10 @@ export const store = createStore({
         const response = await axios.get('/get_available_models');
         commit('setModelsZoo',response.data.filter(model => model.variants &&  model.variants.length>0))
       },
+      async refreshModelStatus({ commit }) {
+        let modelstatus = await api_get_req("get_model_status");
+        commit('setIsModelOk',modelstatus["status"])
+      },
       async refreshModels({ commit }) {
         console.log("Fetching models")
         let modelsArr = await api_get_req("list_models");
@@ -323,6 +334,7 @@ export const store = createStore({
           commit('setselectedModel',selectedModel["model"])
         }
         commit('setModelsArr',modelsArr)
+        console.log("setModelsArr",modelsArr)
         this.state.modelsZoo.map((item)=>{
           item.isInstalled=modelsArr.includes(item.name)
         })
@@ -520,6 +532,8 @@ app.mixin({
       this.$store.state.loading_infos = "Getting active models"
       this.$store.state.loading_progress = 100
       await this.$store.dispatch('refreshModels');
+      await this.$store.dispatch('refreshModelStatus');
+      
 
       this.$store.state.ready = true;
     }

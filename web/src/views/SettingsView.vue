@@ -838,7 +838,7 @@
                             <TransitionGroup name="list">
                                 <BindingEntry ref="bindingZoo" v-for="(binding, index) in bindingsZoo"
                                     :key="'index-' + index + '-' + binding.folder" :binding="binding"
-                                    :on-selected="onSelectedBinding" :on-reinstall="onReinstallBinding"
+                                    :on-selected="onBindingSelected" :on-reinstall="onReinstallBinding"
                                     :on-unInstall="onUnInstallBinding"
                                     :on-install="onInstallBinding" :on-settings="onSettingsBinding"
                                     :on-reload-binding="onReloadBinding"
@@ -987,7 +987,7 @@
                                         :key="'index-' + index + '-' + model.name" 
                                         :model="model"
                                         :is-installed="model.isInstalled" :on-install="onInstall"
-                                        :on-uninstall="onUninstall" :on-selected="onSelected"
+                                        :on-uninstall="onUninstall" :on-selected="onModelSelected"
                                         :selected="model.name === configFile.model_name"
                                         :model_type="model.model_type" :on-copy="onCopy" :on-copy-link="onCopyLink"
                                         :on-cancel-install="onCancelInstall" />
@@ -2023,7 +2023,7 @@ export default {
             socket.on('install_progress', progressListener);
 
 
-            socket.emit('install_model', { path: path, type:model_object.model.type });
+            socket.emit('install_model', { path: path, name: model_object.model.name, variant_name:this.selected_variant.name, type:model_object.model.type });
             console.log("Started installation, please wait");               
         },
 
@@ -2359,7 +2359,7 @@ export default {
             }
 
         },        
-        onSelected(model_object, force=false) {
+        onModelSelected(model_object, force=false) {
             // eslint-disable-next-line no-unused-vars
             if (this.isLoading) {
                 this.$refs.toast.showToast("Loading... please wait", 4, false)
@@ -2378,6 +2378,9 @@ export default {
                                     this.is_loading_zoo = false
                                 })
                                 self.updateModelsZoo()
+                                api_get_req("get_model_status").then((res)=>{
+                                    this.$store.commit('setIsModelOk', res);
+                                })
                             }else{
                                 this.$refs.toast.showToast("Couldn't select model:\n" + model_object.name, 4, false)
                                 nextTick(() => {
@@ -2614,7 +2617,7 @@ export default {
 
             })
         },
-        onSelectedBinding(binding_object) {
+        onBindingSelected(binding_object) {
             console.log("Binding selected")
             if (!binding_object.binding.installed) {
                 this.$refs.toast.showToast("Binding is not installed:\n" + binding_object.binding.name, 4, false)
@@ -2625,6 +2628,9 @@ export default {
                 this.update_binding(binding_object.binding.folder)
                 this.binding_changed = true;
             }
+            api_get_req("get_model_status").then((res)=>{
+                this.$store.commit('setIsModelOk', res);
+            })
         },
         onInstallBinding(binding_object) {
 

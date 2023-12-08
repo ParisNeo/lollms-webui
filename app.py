@@ -382,6 +382,7 @@ try:
             
             self.add_endpoint("/get_server_address", "get_server_address", self.get_server_address, methods=["GET"])
             
+            self.add_endpoint("/get_model_status", "get_model_status", self.get_model_status, methods=["GET"])
 
             self.add_endpoint(
                 "/delete_discussion",
@@ -501,7 +502,8 @@ try:
                 "/open_code_folder", "open_code_folder", self.open_code_folder, methods=["POST"]
             )
             
-            
+        def get_model_status(self):
+            return jsonify({"status":self.model is not None})
 
         def get_server_address(self):
             server_address = request.host_url
@@ -958,6 +960,7 @@ try:
                     for per in self.mounted_personalities:
                         per.model = self.model
                 except Exception as ex:
+                    trace_exception(ex)
                     self.notify("It looks like you we couldn't load the model.\nThis can hapen when you don't have enough VRAM. Please restart the program.",False,30)
 
 

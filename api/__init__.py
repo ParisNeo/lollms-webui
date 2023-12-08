@@ -114,13 +114,13 @@ def parse_requirements_file(requirements_path):
 class LoLLMsAPI(LollmsApplication):
     def __init__(self, config:LOLLMSConfig, socketio, config_file_path:str, lollms_paths: LollmsPaths) -> None:
 
+        self.socketio = socketio
         super().__init__("Lollms_webui",config, lollms_paths, callback=self.process_chunk, notification_callback=self.notify)
 
 
         self.busy = False
         self.nb_received_tokens = 0
         
-        self.socketio = socketio
         self.config_file_path = config_file_path
         self.cancel_gen = False
 
@@ -297,6 +297,10 @@ class LoLLMsAPI(LollmsApplication):
                         filename = parts[1]
                     else:
                         filename = parts[4]
+                    installation_path = installation_dir / filename
+                elif model_type=="gpt4all":
+                    filename = data["variant_name"]
+                    model_path = "http://gpt4all.io/models/gguf/"+filename
                     installation_path = installation_dir / filename
                 else:
                     filename = Path(model_path).name

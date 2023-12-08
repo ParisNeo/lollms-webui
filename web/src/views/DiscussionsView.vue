@@ -1992,6 +1992,14 @@ export default {
                 return this.$store.state.loading_progress;
             }
         },
+        isModelOk:{
+            get(){
+                return this.$store.state.isModelOk;
+            },
+            set(val){
+                this.$store.state.isModelOk=val
+            }
+        },
         isGenerating:{
             get(){
                 return this.$store.state.isGenerating;

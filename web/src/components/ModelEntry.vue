@@ -308,7 +308,7 @@ export default {
     },
     toggleSelected(force=false) {
       this.onSelected(this,force)
-      model.selected = true;
+      this.model.selected = true;
       nextTick(() => {
         feather.replace()
       })
