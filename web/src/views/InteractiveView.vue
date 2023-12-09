@@ -1,10 +1,10 @@
 <template>
       <div class="flex-col">
-      <div v-if="!activePersonality.scene_path" class="text-center">
+      <div v-if="!activePersonality || !activePersonality.scene_path" class="text-center">
         <!-- Display text when there's no scene_path or empty avatar -->
         Personality does not have a 3d avatar.
       </div>
-      <div v-if="(!activePersonality.avatar || activePersonality.avatar === '')" class="text-center">
+      <div v-if="!activePersonality || (!activePersonality.avatar || activePersonality.avatar === '')" class="text-center">
         Personality does not have an avatar.
       </div>
       <FloatingFrame />
