@@ -7,13 +7,21 @@
               class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
         <i data-feather="copy"></i>
       </button>
-      <button v-if="['python', 'shell', 'bash', 'cmd', 'powershell'].includes(language)" ref="btn_code_exec" @click="executeCode"  title="execute"
+      <button v-if="['python', 'sh', 'shell', 'bash', 'cmd', 'powershell'].includes(language)" ref="btn_code_exec" @click="executeCode"  title="execute"
               class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
         <i data-feather="play-circle"></i>
       </button>
       <button v-if="['python'].includes(language)" @click="openFolder"  title="open code project folder"
               class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
         <i data-feather="folder"></i>
+      </button>
+      <button v-if="['python'].includes(language)" @click="openFolderVsCode"  title="open code project folder in vscode"
+              class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
+        <i data-feather="briefcase"></i>
+      </button>
+      <button v-if="['python'].includes(language)" @click="openVsCode"  title="open code project folder in vscode"
+              class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
+        <i data-feather="briefcase"></i>
       </button>
     </div>
     <pre  class="hljs p-1 rounded-md break-all grid grid-cols-1">
@@ -138,6 +146,46 @@ export default {
         // Now you can work with the JSON data
         console.log(jsonData);
         this.executionOutput = jsonData.output;
+      })
+      .catch(error => {
+        // Handle any errors that occurred during the fetch process
+        console.error('Fetch error:', error);
+      });
+    },
+    openFolderVsCode(){
+      const json = JSON.stringify({ 'discussion_id': this.discussion_id })   
+      console.log(json)     
+      fetch(`${this.host}/open_code_in_vs_code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: json
+      }).then(response=>{
+        // Parse the JSON data from the response body
+        return response.json();
+      })
+      .then(jsonData => {
+        // Now you can work with the JSON data
+        console.log(jsonData);
+      })
+      .catch(error => {
+        // Handle any errors that occurred during the fetch process
+        console.error('Fetch error:', error);
+      });      
+    },
+    openVsCode() {
+      const json = JSON.stringify({ 'discussion_id': this.discussion_id, 'message_id': this.message_id, 'language': this.language })   
+      console.log(json)     
+      fetch(`${this.host}/open_code_folder_in_vs_code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: json
+      }).then(response=>{
+        // Parse the JSON data from the response body
+        return response.json();
+      })
+      .then(jsonData => {
+        // Now you can work with the JSON data
+        console.log(jsonData);
       })
       .catch(error => {
         // Handle any errors that occurred during the fetch process

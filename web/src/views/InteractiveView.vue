@@ -8,10 +8,13 @@
         Personality does not have an avatar.
       </div>
       <FloatingFrame />
+      <div class="floating-frame2">
+        <div v-html="htmlContent"></div>
+      </div>
       </div>
       <div ref="webglContainer">
       </div>
-  </template>
+</template>
   
   <script>
   import * as THREE from 'three';
@@ -153,6 +156,17 @@
   #webglContainer {
     top: 0;
     left: 0;
+  }
+  .floating-frame2 {
+    margin: 15px;
+    float: left;
+    width: 200px;
+    height: auto;
+    border: 1px solid #000;
+    border-radius: 4px;
+    overflow: hidden;
+    min-height: 200px;
+    z-index: 5000;
   }
   </style>
   

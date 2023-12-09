@@ -799,6 +799,7 @@ class LoLLMsAPI(LollmsApplication):
                                                             seed = parameters["seed"],                                           
                                                             )
                             ASCIIColors.success(f"\ndone")
+
                             if client_id in self.connections:
                                 if not self.connections[client_id]["requested_stop"]:
                                     # Emit the generated text to the client
@@ -898,10 +899,9 @@ class LoLLMsAPI(LollmsApplication):
                 self.start_time = datetime.now()
                 self.personality.processor.callback = partial(self.process_chunk, client_id=client_id)
                 self.personality.processor.execute_command(command, parameters)
-                self.close_message(client_id)
             else:
                 self.notify("Non scripted personalities do not support commands",False,client_id)
-
+            self.close_message(client_id)
         @socketio.on('generate_msg')
         def generate_msg(data):
             client_id = request.sid

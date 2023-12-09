@@ -1,14 +1,14 @@
 <template>
-    <div class="floating-frame">
-      <img v-if="isVideoActive" :src="imageDataUrl" alt="Webcam Frame" width="300" height="300" />
-      <div class="controls">
-        <button @click="startVideoStream">Activate Video</button>
-        <button @click="stopVideoStream">Deactivate Video</button>
-      </div>
+  <div class="floating-frame">
+    <img v-if="isVideoActive" :src="imageDataUrl" alt="Webcam Frame" width="300" height="300" />
+    <div class="controls">
+      <button v-if="!isVideoActive" class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" @click="startVideoStream">Activate Video</button>
+      <button v-if="isVideoActive" class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" @click="stopVideoStream">Deactivate Video</button>
     </div>
-  </template>
+  </div>
+</template>
   
-  <script>
+<script>
   import socket from '@/services/websocket.js';
   
   export default {

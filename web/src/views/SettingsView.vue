@@ -1322,14 +1322,13 @@
                                     v-for="(item, index) in mountedExtensions" :key="index + '-' + item.name"
                                     ref="mountedExtensions">
                                     <div class="group items-center flex flex-row">
-                                        <button @click.stop="onExtensionSelected(item)">
-                                            <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
+                                        <button>
+                                            <img :src="bUrl + item.avatar" @error="extensionImgPlacehodler"
                                                 class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary "
-                                                :class="configFile.active_personality_id == configFile.extensions.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
+                                                :class="'border-transparent z-0'"
                                                 :title="item.name">
                                         </button>
                                         <button @click.stop="unmountExtension (item)">
-
                                             <span
                                                 class="hidden group-hover:block top-0 left-7 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
                                                 title="Unmount personality">
@@ -1398,10 +1397,10 @@
 
                     </div>
                     <div class="mx-2 mb-4" v-if="!searchExtension">
-                        <label for="persCat" class="block  mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        <label for="extCat" class="block  mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Extensions Category: ({{ extCatgArr.length }})
                         </label>
-                        <select id="persCat" @change="update_extension_category($event.target.value, refresh)"
+                        <select id="extCat" @change="update_extension_category($event.target.value, refresh)"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                             <option v-for="(item, index) in extCatgArr" :key="index"
@@ -1421,32 +1420,30 @@
                                 }})
                             </label>
                             <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
-                                :class="pzl_collapsed ? '' : 'max-h-96'">
-                                <TransitionGroup name="bounce">
+                                :class="ezl_collapsed ? '' : 'max-h-96'">
                                     <ExtensionEntry ref="extensionsZoo" v-for="(ext, index) in extensionsFiltererd"
-                                        :key="'index-' + index + '-' + ext.name" :extension="ext"
+                                        :key="'index-' + index + '-' + ext.name" 
+                                        :extension="ext"
                                         :select_language="true"
                                         :full_path="ext.full_path"
-                                        :on-selected="onExtensionSelected" 
                                         :on-mount="mountExtension" 
                                         :on-un-mount="unmountExtension"  
                                         :on-remount="remountExtension"
                                         :on-reinstall="onExtensionReinstall"
                                         :on-settings="onSettingsExtension" />
-                                </TransitionGroup>
                             </div>
                         </div>
                     </div>
 
                     <!-- EXPAND / COLLAPSE BUTTON -->
-                    <button v-if="pzl_collapsed"
+                    <button v-if="ezc_collapsed"
                         class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
-                        title="Collapse" type="button" @click="pzl_collapsed = !pzl_collapsed">
+                        title="Collapse" type="button" @click="ezl_collapsed = !ezl_collapsed">
                         <i data-feather="chevron-up"></i>
                     </button>
                     <button v-else
                         class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
-                        title="Expand" type="button" @click="pzl_collapsed = !pzl_collapsed">
+                        title="Expand" type="button" @click="ezl_collapsed = !ezl_collapsed">
                         <i data-feather="chevron-down"></i>
                     </button>
                 </div>
@@ -1762,7 +1759,8 @@ import BindingEntry from "../components/BindingEntry.vue";
 import socket from '@/services/websocket.js'
 import defaultModelImgPlaceholder from "../assets/default_model.png"
 
-import defaultPersonalityImgPlaceholder from "../assets/logo.svg"
+import defaultPersonalityImgPlaceholder from "../assets/logo.png"
+import defaultExtensionImgPlaceholder from "../assets/extension.png"
 import defaultImgPlaceholder from "../assets/default_model.png"
 
 import AddModelDialog from "@/components/AddModelDialog.vue";
@@ -1772,6 +1770,7 @@ import ChoiceDialog from "@/components/ChoiceDialog.vue";
 import Card from "@/components/Card.vue"
 import RadioOptions from '../components/RadioOptions.vue';
 import ExtensionEntry from "@/components/ExtensionEntry.vue"
+
 import {refreshHardwareUsage} from "../main"
 import SVGGPU from '@/assets/gpu.svg';
 
@@ -1854,6 +1853,7 @@ export default {
             // Zoo accordeoon
             mzl_collapsed: false,
             pzl_collapsed: false,
+            ezl_collapsed: false,
             bzl_collapsed: false,
             // Settings stuff
             extCatgArr: [],
@@ -2098,6 +2098,7 @@ export default {
 
             try{
                 this.extCatgArr = await this.api_get_req("list_extensions_categories")
+                this.extension_category = this.extCatgArr[0]
                 console.log(this.extCatgArr)
             }
             catch{
@@ -2323,42 +2324,7 @@ export default {
             }
 
         },
-        async onExtensionSelected(ext) {
-            console.log('on ext', ext)
-            // eslint-disable-next-line no-unused-vars
-            if (this.isLoading) {
-                this.$refs.toast.showToast("Loading... please wait", 4, false)
-            }
-            this.isLoading = true
-            console.log('extension', ext)
-            if (ext) {
-
-                if (ext.selected) {
-                    this.$refs.toast.showToast("Extension already selected", 4, true)
-                    this.isLoading = false
-                    return
-                }
-
-
-                //this.settingsChanged = true
-
-                if (ext.isMounted && this.configFile.extensions.includes(ext.full_path)) {
-                    this.isLoading = false
-
-                } else {
-                    console.log('mounting ext')
-                    this.mountPersonality(ext)
-
-                }
-
-                nextTick(() => {
-                    feather.replace()
-
-                })
-
-            }
-
-        },        
+   
         onModelSelected(model_object, force=false) {
             // eslint-disable-next-line no-unused-vars
             if (this.isLoading) {
@@ -2759,6 +2725,53 @@ export default {
             this.$refs.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
             }
         },
+        onSettingsExtension(extensionEntry){
+            try {
+                this.isLoading = true
+                axios.get('/get_extension_settings',{name:extensionEntry.name}).then(res => {
+                    this.isLoading = false
+                    if (res) {
+
+                        console.log('ext sett', res)
+                        if (res.data && Object.keys(res.data).length > 0) {
+
+                            this.$refs.universalForm.showForm(res.data, "Extension settings - " + extensionEntry.extension.name, "Save changes", "Cancel").then(res => {
+
+                                // send new data
+                                try {
+                                    axios.post('/set_extension_settings', {"name":extensionEntry.name,"config":res}).then(response => {
+
+                                            if (response && response.data) {
+                                                console.log('extension set with new settings', response.data)
+                                                this.$refs.toast.showToast("Extension settings updated successfully!", 4, true)
+
+                                            } else {
+                                                this.$refs.toast.showToast("Did not get Extension settings responses.\n" + response, 4, false)
+                                                this.isLoading = false
+                                            }
+
+
+                                        })
+                                } catch (error) {
+                                    this.$refs.toast.showToast("Did not get Extension settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.isLoading = false
+                                }
+
+                            })
+                        } else {
+                            this.$refs.toast.showToast("Extension has no settings", 4, false)
+                            this.isLoading = false
+                        }
+
+                    }
+                })
+
+            } catch (error) {
+                this.isLoading = false
+                this.$refs.toast.showToast("Could not open personality settings. Endpoint error: " + error.message, 4, false)
+            }
+
+        },
         onSettingsBinding(bindingEntry) {
             try {
                 this.isLoading = true
@@ -2913,8 +2926,11 @@ export default {
                 this.api_get_req("list_extensions_categories").then((cats)=>{
                     console.log("cats",cats)
                     this.extCatgArr = cats
+                    console.log("this.$store.state.extensionsZoo",this.$store.state.extensionsZoo)
+                    console.log("this.extension_category", this.extension_category)
                     this.extensionsFiltererd = this.$store.state.extensionsZoo.filter((item) => item.category === this.extension_category)
                     this.extensionsFiltererd.sort()
+                    console.log("this.extensionsFiltererd", this.extensionsFiltererd)
 
                 })
                 
@@ -3676,6 +3692,9 @@ export default {
         personalityImgPlacehodler(event) {
             event.target.src = defaultPersonalityImgPlaceholder
         },
+        extensionImgPlacehodler(event){
+            event.target.src = defaultExtensionImgPlaceholder
+        },
         searchPersonality_func() {
             
             clearTimeout(this.searchPersonalityTimer)
@@ -4092,6 +4111,13 @@ export default {
 
     },
     watch: {
+        watch: {
+          extensionsFiltered(newValue, oldValue) {
+            // Perform any necessary UI updates here
+            // newValue represents the new value of extensionsFiltered
+            // oldValue represents the previous value of extensionsFiltered
+        }
+        },        
         bec_collapsed() {
             nextTick(() => {
                 feather.replace()
@@ -4135,6 +4161,11 @@ export default {
                 feather.replace()
 
             })
+        },
+        ezl_collapsed() {
+        nextTick(() => {
+            feather.replace()
+        })
         },
         bzl_collapsed() {
 

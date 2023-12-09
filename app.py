@@ -501,6 +501,12 @@ try:
             self.add_endpoint(
                 "/open_code_folder", "open_code_folder", self.open_code_folder, methods=["POST"]
             )
+            self.add_endpoint(
+                "/open_code_folder_in_vs_code", "open_code_folder_in_vs_code", self.open_code_folder_in_vs_code, methods=["POST"]
+            )
+            self.add_endpoint(
+                "/open_code_in_vs_code", "open_code_in_vs_code", self.open_code_in_vs_code, methods=["POST"]
+            )
             
         def get_model_status(self):
             return jsonify({"status":self.model is not None})
@@ -617,9 +623,37 @@ try:
             elif language in ["bash","shell","cmd","powershell"]:
                 return self.execute_bash(code, discussion_id, message_id)
             return {"output": "Unsupported language", "execution_time": 0}
+        
+
+        def open_code_folder_in_vs_code(self):
+            """Opens code folder in vs code."""
+            
+            data = request.get_json()
+            discussion_id = data.get("discussion_id","unknown_discussion")
+
+            ASCIIColors.info("Opening folder:")
+            # Create a temporary file.
+            root_folder = self.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
+            root_folder.mkdir(parents=True,exist_ok=True)
+            os.system('code ' + str(root_folder))
+            return {"output": "OK", "execution_time": 0}
+
+        def open_code_in_vs_code(self):
+            """Opens code in vs code."""
+            
+            data = request.get_json()
+            discussion_id = data.get("discussion_id","unknown_discussion")
+            message_id = data.get("message_id","")
+
+            ASCIIColors.info("Opening folder:")
+            # Create a temporary file.
+            root_folder = self.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"/f"{message_id}.py"
+            root_folder.mkdir(parents=True,exist_ok=True)
+            os.system('code ' + str(root_folder))
+            return {"output": "OK", "execution_time": 0}
 
         def open_code_folder(self):
-            """Executes Python code and returns the output."""
+            """Opens code folder."""
             
             data = request.get_json()
             discussion_id = data.get("discussion_id","unknown_discussion")
@@ -1125,8 +1159,7 @@ try:
                             print(f"Couldn't load backend card : {f}\n\t{ex}")
             return jsonify(bindings)
 
-
-        def list_extensions(self):
+        def get_extensions(self):
             ASCIIColors.yellow("Listing all extensions")
             extensions_folder = self.lollms_paths.extensions_zoo_path
             extensions = {}
@@ -1194,7 +1227,10 @@ try:
                             except Exception as ex:
                                 ASCIIColors.warning(f"Couldn't load personality from {extensions_folder} [{ex}]")
                                 trace_exception(ex)
-            return json.dumps(extensions)
+            return extensions
+
+        def list_extensions(self):
+            return json.dumps(self.get_extensions())
 
         
 
@@ -1976,7 +2012,21 @@ try:
                     
                 ASCIIColors.yellow(f"Available personalities: {[p.name for p in self.mounted_personalities]}")
                 return jsonify({"status": False, "error":"Couldn't unmount personality"})         
-            
+
+        def get_extension_settings(self):
+            print("- Retreiving extension settings")
+            data = request.get_json()
+            extension:LOLLMSExtension = next((element for element in self.mounted_extensions if element.name == data["name"]), None)
+            return jsonify(extension.extension_config.config_template.template)
+        
+        def set_extension_settings(self):
+            print("- Setting extension settings")
+            data = request.get_json()
+            extension:LOLLMSExtension = next((element for element in self.mounted_extensions if element.name == data["name"]), None)
+            extension.extension_config.update_template(data["config"])
+            return jsonify(extension.extension_config.config_template.template)
+        
+                   
         def get_active_personality_settings(self):
             print("- Retreiving personality settings")
             if self.personality.processor is not None:
@@ -1986,6 +2036,7 @@ try:
                     return jsonify({})        
             else:
                 return jsonify({})               
+            
 
         def get_active_binding_settings(self):
             print("- Retreiving binding settings")

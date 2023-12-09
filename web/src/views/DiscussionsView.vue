@@ -372,6 +372,7 @@ export default {
     
     data() {
         return {
+            currentDiscussion: {},
             host:"",
             progress_visibility_val         : true,
             progress_value                  : 0,
@@ -891,8 +892,10 @@ export default {
                 }
                 else{
                     if (this.currentDiscussion.id != item.id) {
-
+                        console.log("item",item)
+                        console.log("this.currentDiscussion",this.currentDiscussion)
                         this.currentDiscussion = item
+                        console.log("this.currentDiscussion",this.currentDiscussion)
 
                         this.setPageTitle(item)
 
