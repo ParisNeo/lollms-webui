@@ -1,23 +1,38 @@
 <template>
-    <div ref="webglContainer">
-      <div v-if="!personality.scene_path && (!personality.avatar || personality.avatar === '')">
+      <div class="flex-col">
+      <div v-if="!activePersonality.scene_path" class="text-center">
         <!-- Display text when there's no scene_path or empty avatar -->
+        Personality does not have a 3d avatar.
+      </div>
+      <div v-if="(!activePersonality.avatar || activePersonality.avatar === '')" class="text-center">
         Personality does not have an avatar.
       </div>
-    </div>
+      <FloatingFrame />
+      </div>
+      <div ref="webglContainer">
+      </div>
   </template>
   
   <script>
   import * as THREE from 'three';
   import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
   import { TextureLoader } from 'three';
+  import FloatingFrame from '@/components/FloatingFrame.vue';
   
   export default {
+    data(){  
+      return {
+          activePersonality: null
+      }
+    },
     props: {
       personality: {
         type: Object,
         default: () => ({}),
       },
+    },
+    components: {
+      FloatingFrame
     },
     computed: {
         isReady:{
@@ -34,7 +49,7 @@
         while (this.isReady === false) {
             await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for 100ms
         }
-        console.log("ready")
+        console.log("Personality:", this.personality)
         this.initWebGLScene();
         this.updatePersonality();
     },
@@ -72,17 +87,17 @@
         const { mountedPersArr, config } = this.$store.state;
         
         // Get the active personality based on active_personality_id
-        const activePersonality = mountedPersArr[config.active_personality_id];
+        this.activePersonality = mountedPersArr[config.active_personality_id];
 
         // Check if the active personality has an avatar
-        if (activePersonality.avatar) {
-            this.showBoxWithAvatar(activePersonality.avatar);
+        if (this.activePersonality.avatar) {
+            this.showBoxWithAvatar(this.activePersonality.avatar);
         } else {
             this.showDefaultCube();
         }
 
         // Update the personality property
-        this.$emit('update:personality', activePersonality);
+        this.$emit('update:personality', this.activePersonality);
       },
       loadScene(scenePath) {
         const loader = new GLTFLoader();
@@ -136,7 +151,6 @@
   
   <style>
   #webglContainer {
-    position: absolute;
     top: 0;
     left: 0;
   }

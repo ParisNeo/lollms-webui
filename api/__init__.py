@@ -19,6 +19,7 @@ from lollms.paths import LollmsPaths
 from lollms.helpers import ASCIIColors, trace_exception
 from lollms.app import LollmsApplication
 from lollms.utilities import File64BitsManager, PromptReshaper
+from lollms.media import WebcamImageSender
 from safe_store import TextVectorizer, VectorizationMethod, VisualizationMethod
 import threading
 from tqdm import tqdm 
@@ -177,6 +178,8 @@ class LoLLMsAPI(LollmsApplication):
                 "first_chunk": True,
             }
         }
+
+        self.webcam = WebcamImageSender(socketio)
         
         # =========================================================================================
         # Socket IO stuff    
@@ -209,6 +212,16 @@ class LoLLMsAPI(LollmsApplication):
                 pass
             
             ASCIIColors.error(f'Client {request.sid} disconnected')
+
+        
+        @socketio.on('start_webcam_video_stream')
+        def start_webcam_video_stream():
+            self.webcam.start_capture()
+
+        @socketio.on('stop_webcam_video_stream')
+        def stop_webcam_video_stream():
+            self.webcam.stop_capture()
+        
 
         @socketio.on('upgrade_vectorization')
         def upgrade_vectorization():

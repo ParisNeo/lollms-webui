@@ -382,7 +382,7 @@ export const store = createStore({
 
           extensions.sort((a, b) => a.name.localeCompare(b.name))
 
-          commit('setActiveExtensions', this.state.config.extensions);
+          //commit('setActiveExtensions', this.state.config.extensions);
 
           console.log("Done loading extensions")
 

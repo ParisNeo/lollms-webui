@@ -100,7 +100,7 @@ export default {
       const codeContent = document.createElement('pre');
       const codeContentCode = document.createElement('code');
       codeContentCode.classList.add('code-content');
-      codeContentCode.innerHTML = hljs.highlight(validLanguage, trimmedCode).value;
+      codeContentCode.innerHTML = hljs.highlight(trimmedCode,  {language: validLanguage, ignoreIllegals: true }).value;
       codeContent.appendChild(codeContentCode);
       codeContainer.appendChild(lineNumbersContainer);
       codeContainer.appendChild(codeContent);
