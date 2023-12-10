@@ -16,10 +16,11 @@ from lollms.extension import LOLLMSExtension, ExtensionBuilder
 from lollms.personality import AIPersonality, PersonalityBuilder
 from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding, ModelBuilder, BindingType
 from lollms.paths import LollmsPaths
-from lollms.helpers import ASCIIColors, trace_exception, NotificationType, NotificationDisplayType
+from lollms.helpers import ASCIIColors, trace_exception
+from lollms.com import NotificationType, NotificationDisplayType, LoLLMsCom
 from lollms.app import LollmsApplication
 from lollms.utilities import File64BitsManager, PromptReshaper
-from lollms.media import WebcamImageSender
+from lollms.media import WebcamImageSender, AudioRecorder
 from safe_store import TextVectorizer, VectorizationMethod, VisualizationMethod
 import threading
 from tqdm import tqdm 
@@ -116,7 +117,7 @@ class LoLLMsAPI(LollmsApplication):
     def __init__(self, config:LOLLMSConfig, socketio, config_file_path:str, lollms_paths: LollmsPaths) -> None:
 
         self.socketio = socketio
-        super().__init__("Lollms_webui",config, lollms_paths, callback=self.process_chunk, notification_callback=self.notify)
+        super().__init__("Lollms_webui",config, lollms_paths, callback=self.process_chunk)
 
 
         self.busy = False
@@ -178,9 +179,16 @@ class LoLLMsAPI(LollmsApplication):
                 "first_chunk": True,
             }
         }
-
-        self.webcam = WebcamImageSender(socketio)
-        
+        try:
+            self.webcam = WebcamImageSender(socketio)
+        except:
+            self.webcam = None
+        try:
+            rec_output_folder = lollms_paths.personal_outputs_path/"audio_rec"
+            rec_output_folder.mkdir(exist_ok=True, parents=True)
+            self.audio_cap = AudioRecorder(socketio,rec_output_folder/"rt.wav")
+        except:
+            rec_output_folder = None
         # =========================================================================================
         # Socket IO stuff    
         # =========================================================================================
@@ -221,7 +229,15 @@ class LoLLMsAPI(LollmsApplication):
         @socketio.on('stop_webcam_video_stream')
         def stop_webcam_video_stream():
             self.webcam.stop_capture()
-        
+
+        @socketio.on('start_webcam_video_stream')
+        def start_webcam_video_stream():
+            self.webcam.start_capture()
+
+        @socketio.on('stop_webcam_video_stream')
+        def stop_webcam_video_stream():
+            self.webcam.stop_capture()
+
 
         @socketio.on('upgrade_vectorization')
         def upgrade_vectorization():
@@ -711,20 +727,20 @@ class LoLLMsAPI(LollmsApplication):
                 print(f"Creating an empty message for AI answer orientation")
                 if self.connections[client_id]["current_discussion"]:
                     if not self.model:
-                        self.notify("No model selected. Please make sure you select a model before starting generation", False, client_id)
+                        self.error("No model selected. Please make sure you select a model before starting generation", client_id = client_id)
                         return          
                     self.new_message(client_id, self.config.user_name, "", sender_type=SENDER_TYPES.SENDER_TYPES_USER, open=True)
                     self.socketio.sleep(0.01)            
             else:
                 if self.personality is None:
-                    self.notify("Select a personality",False,None)
+                    self.warning("Select a personality")
                     return
                 ASCIIColors.info(f"Building empty AI message requested by : {client_id}")
                 # send the message to the bot
                 print(f"Creating an empty message for AI answer orientation")
                 if self.connections[client_id]["current_discussion"]:
                     if not self.model:
-                        self.notify("No model selected. Please make sure you select a model before starting generation", False, client_id)
+                        self.error("No model selected. Please make sure you select a model before starting generation", client_id=client_id)
                         return          
                     self.new_message(client_id, self.personality.name, "[edit this to put your ai answer start]", open=True)
                     self.socketio.sleep(0.01)            
@@ -900,7 +916,7 @@ class LoLLMsAPI(LollmsApplication):
                 self.personality.processor.callback = partial(self.process_chunk, client_id=client_id)
                 self.personality.processor.execute_command(command, parameters)
             else:
-                self.notify("Non scripted personalities do not support commands",False,client_id)
+                self.warning("Non scripted personalities do not support commands",client_id=client_id)
             self.close_message(client_id)
         @socketio.on('generate_msg')
         def generate_msg(data):
@@ -915,7 +931,7 @@ class LoLLMsAPI(LollmsApplication):
             
             if not self.model:
                 ASCIIColors.error("Model not selected. Please select a model")
-                self.notify("Model not selected. Please select a model", False, client_id)
+                self.error("Model not selected. Please select a model", client_id=client_id)
                 return
  
             if not self.busy:
@@ -946,7 +962,7 @@ class LoLLMsAPI(LollmsApplication):
                 #tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id, client_id))
                 #tpe.start()
             else:
-                self.notify("I am busy. Come back later.", False, client_id)
+                self.error("I am busy. Come back later.", client_id=client_id)
 
         @socketio.on('generate_msg_from')
         def generate_msg_from(data):
@@ -957,7 +973,7 @@ class LoLLMsAPI(LollmsApplication):
             
             if self.connections[client_id]["current_discussion"] is None:
                 ASCIIColors.warning("Please select a discussion")
-                self.notify("Please select a discussion first", False, client_id)
+                self.error("Please select a discussion first", client_id=client_id)
                 return
             id_ = data['id']
             generation_type = data.get('msg_type',None)
@@ -979,7 +995,7 @@ class LoLLMsAPI(LollmsApplication):
             
             if self.connections[client_id]["current_discussion"] is None:
                 ASCIIColors.yellow("Please select a discussion")
-                self.notify("Please select a discussion", False, client_id)
+                self.error("Please select a discussion", client_id=client_id)
                 return
             id_ = data['id']
             if id_==-1:
@@ -1495,15 +1511,14 @@ class LoLLMsAPI(LollmsApplication):
         
         return discussion_messages # Removes the last return
 
-
-    
     def notify(
                 self, 
                 content, 
                 notification_type:NotificationType=NotificationType.NOTIF_SUCCESS, 
-                duration=4, 
+                duration:int=4, 
                 client_id=None, 
-                display_type:NotificationDisplayType=NotificationDisplayType.TOAST
+                display_type:NotificationDisplayType=NotificationDisplayType.TOAST,
+                verbose=True
             ):
         self.socketio.emit('notification', {
                             'content': content,# self.connections[client_id]["generated_text"], 
@@ -1513,6 +1528,16 @@ class LoLLMsAPI(LollmsApplication):
                         }, room=client_id
                         )  
         self.socketio.sleep(0.01)
+        if verbose:
+            if notification_type==NotificationType.NOTIF_SUCCESS:
+                ASCIIColors.success(content)
+            elif notification_type==NotificationType.NOTIF_INFO:
+                ASCIIColors.info(content)
+            elif notification_type==NotificationType.NOTIF_WARNING:
+                ASCIIColors.warning(content)
+            else:
+                ASCIIColors.red(content)
+
 
     def new_message(self, 
                             client_id, 
@@ -1643,7 +1668,7 @@ class LoLLMsAPI(LollmsApplication):
         if chunk is None:
             return True
         if not client_id in list(self.connections.keys()):
-            self.notify("Connection lost",False, client_id)
+            self.error("Connection lost", client_id=client_id)
             return
         if message_type == MSG_TYPE.MSG_TYPE_STEP:
             ASCIIColors.info("--> Step:"+chunk)
@@ -1655,13 +1680,13 @@ class LoLLMsAPI(LollmsApplication):
             else:
                 ASCIIColors.error("--> Step ended:"+chunk)
         if message_type == MSG_TYPE.MSG_TYPE_EXCEPTION:
-            self.notify(chunk,False, client_id)
+            self.error(chunk, client_id=client_id)
             ASCIIColors.error("--> Exception from personality:"+chunk)
         if message_type == MSG_TYPE.MSG_TYPE_WARNING:
-            self.notify(chunk,True, client_id)
+            self.warning(chunk,client_id=client_id)
             ASCIIColors.error("--> Exception from personality:"+chunk)
         if message_type == MSG_TYPE.MSG_TYPE_INFO:
-            self.notify(chunk,True, client_id)
+            self.info(chunk, client_id=client_id)
             ASCIIColors.info("--> Info:"+chunk)
         if message_type == MSG_TYPE.MSG_TYPE_UI:
             self.update_message(client_id, "", parameters, metadata, chunk, MSG_TYPE.MSG_TYPE_UI)
@@ -1828,14 +1853,14 @@ class LoLLMsAPI(LollmsApplication):
                      
     def start_message_generation(self, message, message_id, client_id, is_continue=False, generation_type=None):
         if self.personality is None:
-            self.notify("Select a personality",False,None)
+            self.warning("Select a personality")
             return
         ASCIIColors.info(f"Text generation requested by client: {client_id}")
         # send the message to the bot
         print(f"Received message : {message.content}")
         if self.connections[client_id]["current_discussion"]:
             if not self.model:
-                self.notify("No model selected. Please make sure you select a model before starting generation", False, client_id)
+                self.error("No model selected. Please make sure you select a model before starting generation", client_id=client_id)
                 return          
             # First we need to send the new message ID to the client
             if is_continue:
@@ -1894,7 +1919,7 @@ class LoLLMsAPI(LollmsApplication):
             #No discussion available
             ASCIIColors.warning("No discussion selected!!!")
 
-            self.notify("No discussion selected!!!",False, client_id)
+            self.error("No discussion selected!!!", client_id=client_id)
             
             print()
             self.busy=False

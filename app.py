@@ -13,7 +13,7 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-__version__ ="7.5 (Beta)"
+__version__ ="8.0 (Alpha)"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
@@ -26,7 +26,7 @@ import time
 import traceback
 import webbrowser
 from pathlib import Path
-from lollms.helpers import NotificationType, NotificationDisplayType
+from lollms.com import NotificationType, NotificationDisplayType
 from lollms.utilities import AdvancedGarbageCollector, reinstall_pytorch_with_cuda
 def run_update_script(args=None):
     update_script = Path(__file__).parent/"update_script.py"
@@ -967,7 +967,7 @@ try:
                         for per in self.mounted_personalities:
                             per.model = None
                         gc.collect()
-                        self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.INSTALL_IF_NECESSARY, self.notify)
+                        self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.INSTALL_IF_NECESSARY, app=self)
                         self.model = None
                         self.config.save_config()
                         ASCIIColors.green("Binding loaded successfully")
@@ -996,7 +996,7 @@ try:
                         per.model = self.model
                 except Exception as ex:
                     trace_exception(ex)
-                    self.notify("It looks like you we couldn't load the model.\nThis can hapen when you don't have enough VRAM. Please restart the program.",False,30)
+                    self.InfoMessage("It looks like you we couldn't load the model.\nThis can hapen when you don't have enough VRAM. Please restart the program.",duration=30)
 
 
             else:
@@ -1307,10 +1307,10 @@ try:
                         save_db=True
                     )
                     ASCIIColors.yellow("1- Exporting discussions")
-                    self.notify("Exporting discussions")
+                    self.info("Exporting discussions")
                     discussions = self.db.export_all_as_markdown_list_for_vectorization()
                     ASCIIColors.yellow("2- Adding discussions to vectorizer")
-                    self.notify("Adding discussions to vectorizer")
+                    self.info("Adding discussions to vectorizer")
                     index = 0
                     nb_discussions = len(discussions)
 
@@ -1321,11 +1321,11 @@ try:
                             skill = self.learn_from_discussion(title, discussion)
                             self.long_term_memory.add_document(title, skill, chunk_size=self.config.data_vectorization_chunk_size, overlap_size=self.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False)
                     ASCIIColors.yellow("3- Indexing database")
-                    self.notify("Indexing database",True, None)
+                    self.info("Indexing database",True, None)
                     self.long_term_memory.index()
                     ASCIIColors.yellow("Ready")
                 except Exception as ex:
-                    self.notify(f"Couldn't vectorize the database:{ex}",False, None)
+                    self.error(f"Couldn't vectorize the database:{ex}")
                     
 
             return jsonify({"status":True})
@@ -1536,7 +1536,7 @@ try:
                 try:
                     data['name']=self.config.extensions[-1]
                 except Exception as ex:
-                    self.notify(ex,False)
+                    self.error(ex)
                     return
             try:
                 extension_path = self.lollms_paths.extensions_zoo_path / data['name']
@@ -1609,18 +1609,18 @@ try:
                 return jsonify({"status":False, 'error':str(e)})
             ASCIIColors.info(f"- Reinstalling binding {data['name']}...")
             try:
-                ASCIIColors.info("Unmounting binding and model")
-                ASCIIColors.info("Reinstalling binding")
+                self.info("Unmounting binding and model")
+                self.info("Reinstalling binding")
                 old_bn = self.config.binding_name
                 self.config.binding_name = data['name']
-                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL, self.notify)
-                ASCIIColors.success("Binding installed successfully")
-                self.notify("Please reboot the application so that the binding installation can be taken into consideration",True, 30, notification_type=1)
+                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL, app=self)
+                self.success("Binding installed successfully")
+                self.InfoMessage("Please reboot the application so that the binding installation can be taken into consideration")
                 del self.binding
                 self.binding = None
                 self.config.binding_name = old_bn
                 if old_bn is not None:
-                    self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, self.notify)
+                    self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, app=self)
                     self.model = self.binding.build_model()
                     for per in self.mounted_personalities:
                         per.model = self.model
@@ -1646,11 +1646,11 @@ try:
                 ASCIIColors.info("Reinstalling binding")
                 old_bn = self.config.binding_name
                 self.config.binding_name = data['name']
-                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL, self.notify)
-                self.notify("Binding reinstalled successfully")
-                self.notify("Please reboot the application so that the binding installation can be taken into consideration", NotificationType.NOTIF_INFO , display_type=NotificationDisplayType.MESSAGE_BOX)
+                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL, app=self)
+                self.success("Binding reinstalled successfully")
+                self.InfoMessage("Please reboot the application so that the binding installation can be taken into consideration")
                 self.config.binding_name = old_bn
-                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, self.notify)
+                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, app=self)
                 self.model = self.binding.build_model()
                 for per in self.mounted_personalities:
                     per.model = self.model
@@ -1665,7 +1665,7 @@ try:
                 data = request.get_json()
                 # Further processing of the data
             except Exception as e:
-                print(f"Error occurred while parsing JSON: {e}")
+                ASCIIColors.error(f"Error occurred while parsing JSON: {e}")
                 return jsonify({"status":False, 'error':str(e)})
             ASCIIColors.info(f"- Reinstalling binding {data['name']}...")
             try:
@@ -1677,12 +1677,12 @@ try:
                 ASCIIColors.info("Uninstalling binding")
                 old_bn = self.config.binding_name
                 self.config.binding_name = data['name']
-                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.NEVER_INSTALL, self.notify)
+                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.NEVER_INSTALL, app=self)
                 self.binding.uninstall()
                 ASCIIColors.green("Uninstalled successful")
                 if old_bn!=self.config.binding_name:
                     self.config.binding_name = old_bn
-                    self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, self.notify)
+                    self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, app=self)
                     self.model = self.binding.build_model()
                     for per in self.mounted_personalities:
                         per.model = self.model
@@ -1826,7 +1826,7 @@ try:
                     personality.model = None
                 gc.collect()
                 ASCIIColors.info("Reloading binding")
-                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, self.notify)
+                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, app=self)
                 ASCIIColors.info("Binding loaded successfully")
 
                 try:
