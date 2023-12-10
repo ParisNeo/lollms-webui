@@ -967,7 +967,7 @@ try:
                         for per in self.mounted_personalities:
                             per.model = None
                         gc.collect()
-                        self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.INSTALL_IF_NECESSARY, app=self)
+                        self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.INSTALL_IF_NECESSARY, lollmsCom=self)
                         self.model = None
                         self.config.save_config()
                         ASCIIColors.green("Binding loaded successfully")
@@ -1613,14 +1613,14 @@ try:
                 self.info("Reinstalling binding")
                 old_bn = self.config.binding_name
                 self.config.binding_name = data['name']
-                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL, app=self)
+                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL, lollmsCom=self)
                 self.success("Binding installed successfully")
                 self.InfoMessage("Please reboot the application so that the binding installation can be taken into consideration")
                 del self.binding
                 self.binding = None
                 self.config.binding_name = old_bn
                 if old_bn is not None:
-                    self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, app=self)
+                    self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, lollmsCom=self)
                     self.model = self.binding.build_model()
                     for per in self.mounted_personalities:
                         per.model = self.model
@@ -1646,11 +1646,11 @@ try:
                 ASCIIColors.info("Reinstalling binding")
                 old_bn = self.config.binding_name
                 self.config.binding_name = data['name']
-                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL, app=self)
+                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL, lollmsCom=self)
                 self.success("Binding reinstalled successfully")
                 self.InfoMessage("Please reboot the application so that the binding installation can be taken into consideration")
                 self.config.binding_name = old_bn
-                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, app=self)
+                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, lollmsCom=self)
                 self.model = self.binding.build_model()
                 for per in self.mounted_personalities:
                     per.model = self.model
@@ -1677,12 +1677,12 @@ try:
                 ASCIIColors.info("Uninstalling binding")
                 old_bn = self.config.binding_name
                 self.config.binding_name = data['name']
-                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.NEVER_INSTALL, app=self)
+                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.NEVER_INSTALL, lollmsCom=self)
                 self.binding.uninstall()
                 ASCIIColors.green("Uninstalled successful")
                 if old_bn!=self.config.binding_name:
                     self.config.binding_name = old_bn
-                    self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, app=self)
+                    self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, lollmsCom=self)
                     self.model = self.binding.build_model()
                     for per in self.mounted_personalities:
                         per.model = self.model
@@ -1826,7 +1826,7 @@ try:
                     personality.model = None
                 gc.collect()
                 ASCIIColors.info("Reloading binding")
-                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, app=self)
+                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, lollmsCom=self)
                 ASCIIColors.info("Binding loaded successfully")
 
                 try:
