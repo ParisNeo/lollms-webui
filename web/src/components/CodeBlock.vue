@@ -153,7 +153,7 @@ export default {
       });
     },
     openFolderVsCode(){
-      const json = JSON.stringify({ 'discussion_id': this.discussion_id })   
+      const json = JSON.stringify({ 'code': this.code, 'discussion_id': this.discussion_id, 'message_id': this.message_id, 'language': this.language})   
       console.log(json)     
       fetch(`${this.host}/open_code_in_vs_code`, {
         method: 'POST',
@@ -173,7 +173,7 @@ export default {
       });      
     },
     openVsCode() {
-      const json = JSON.stringify({ 'discussion_id': this.discussion_id, 'message_id': this.message_id, 'language': this.language })   
+      const json = JSON.stringify({ 'code': this.code, 'discussion_id': this.discussion_id, 'message_id': this.message_id, 'language': this.language })   
       console.log(json)     
       fetch(`${this.host}/open_code_folder_in_vs_code`, {
         method: 'POST',

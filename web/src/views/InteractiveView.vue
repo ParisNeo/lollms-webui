@@ -8,6 +8,7 @@
         Personality does not have an avatar.
       </div>
       <FloatingFrame />
+      <AudioFrame />
       <div class="floating-frame2">
         <div v-html="htmlContent"></div>
       </div>
@@ -21,6 +22,8 @@
   import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
   import { TextureLoader } from 'three';
   import FloatingFrame from '@/components/FloatingFrame.vue';
+  import AudioFrame from '@/components/AudioFrame.vue';
+  
   
   export default {
     data(){  
@@ -35,7 +38,8 @@
       },
     },
     components: {
-      FloatingFrame
+      FloatingFrame,
+      AudioFrame
     },
     computed: {
         isReady:{

@@ -630,12 +630,19 @@ try:
             """Opens code folder in vs code."""
             
             data = request.get_json()
+            code = data["code"]
             discussion_id = data.get("discussion_id","unknown_discussion")
+            message_id = data.get("message_id","unknown_message")
+            language = data.get("language","python")
 
             ASCIIColors.info("Opening folder:")
             # Create a temporary file.
             root_folder = self.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
             root_folder.mkdir(parents=True,exist_ok=True)
+            tmp_file = root_folder/f"ai_code_{message_id}.py"
+            with open(tmp_file,"w") as f:
+                f.write(code)
+            
             os.system('code ' + str(root_folder))
             return {"output": "OK", "execution_time": 0}
 
@@ -645,11 +652,18 @@ try:
             data = request.get_json()
             discussion_id = data.get("discussion_id","unknown_discussion")
             message_id = data.get("message_id","")
+            code = data["code"]
+            discussion_id = data.get("discussion_id","unknown_discussion")
+            message_id = data.get("message_id","unknown_message")
+            language = data.get("language","python")
 
             ASCIIColors.info("Opening folder:")
             # Create a temporary file.
             root_folder = self.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"/f"{message_id}.py"
             root_folder.mkdir(parents=True,exist_ok=True)
+            tmp_file = root_folder/f"ai_code_{message_id}.py"
+            with open(tmp_file,"w") as f:
+                f.write(code)
             os.system('code ' + str(root_folder))
             return {"output": "OK", "execution_time": 0}
 
