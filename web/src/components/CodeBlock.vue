@@ -17,11 +17,11 @@
       </button>
       <button v-if="['python'].includes(language)" @click="openFolderVsCode"  title="open code project folder in vscode"
               class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
-        <i data-feather="briefcase"></i>
+        <img src="@/assets/vscode_black.svg" width="25" height="25">
       </button>
-      <button v-if="['python'].includes(language)" @click="openVsCode"  title="open code project folder in vscode"
+      <button v-if="['python'].includes(language)" @click="openVsCode"  title="open code in vscode"
               class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
-        <i data-feather="briefcase"></i>
+        <img src="@/assets/vscode.svg" width="25" height="25">
       </button>
     </div>
     <pre  class="hljs p-1 rounded-md break-all grid grid-cols-1">

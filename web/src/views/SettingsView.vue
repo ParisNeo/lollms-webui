@@ -1894,10 +1894,10 @@ export default {
                 const msgList = document.getElementById('messages-list')
                 this.scrollBottom(msgList)
             })
-            if(notif.notification_type==0){
-                this.$refs.toast.showToast(notif.content, notif.duration, notif.status)
+            if(notif.display_type==0){
+                this.$refs.toast.showToast(notif.content, notif.duration, notif.notification_type)
             }
-            else if(notif.notification_type==1){
+            else if(notif.display_type==1){
                 this.$refs.messageBox.showMessage(notif.content)
             }
         },        

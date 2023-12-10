@@ -16,7 +16,7 @@ from lollms.extension import LOLLMSExtension, ExtensionBuilder
 from lollms.personality import AIPersonality, PersonalityBuilder
 from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding, ModelBuilder, BindingType
 from lollms.paths import LollmsPaths
-from lollms.helpers import ASCIIColors, trace_exception
+from lollms.helpers import ASCIIColors, trace_exception, NotificationType, NotificationDisplayType
 from lollms.app import LollmsApplication
 from lollms.utilities import File64BitsManager, PromptReshaper
 from lollms.media import WebcamImageSender
@@ -1497,19 +1497,22 @@ class LoLLMsAPI(LollmsApplication):
 
 
     
-    def notify(self, content, status=True, duration=4, client_id=None, notification_type=0):
-        """
-        notification type is:
-        0 : suddle
-        1 : Critical (shows a message box )
-        """
+    def notify(
+                self, 
+                content, 
+                notification_type:NotificationType=NotificationType.NOTIF_SUCCESS, 
+                duration=4, 
+                client_id=None, 
+                display_type:NotificationDisplayType=NotificationDisplayType.TOAST
+            ):
         self.socketio.emit('notification', {
                             'content': content,# self.connections[client_id]["generated_text"], 
-                            'status': status,
+                            'notification_type': notification_type.value,
                             "duration": duration,
-                            'notification_type':notification_type
+                            'display_type':display_type.value
                         }, room=client_id
-                        )        
+                        )  
+        self.socketio.sleep(0.01)
 
     def new_message(self, 
                             client_id, 

@@ -7,15 +7,25 @@
                     <div class="flex flex-row flex-grow items-center">
                         <slot>
 
-                            <div v-if="t.success"
+                            <div v-if="t.log_type==0"
+                                class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
+                                <i data-feather="x"></i>
+                                <span class="sr-only">Cross icon</span>
+                            </div>
+                            <div v-if="t.log_type==1"
                                 class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
                                 <i data-feather="check"></i>
                                 <span class="sr-only">Check icon</span>
                             </div>
-                            <div v-if="!t.success"
-                                class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
-                                <i data-feather="x"></i>
-                                <span class="sr-only">Cross icon</span>
+                            <div v-if="t.log_type==2"
+                                class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-blue-500 bg-blue-100 rounded-lg dark:bg-blue-800 dark:text-blue-200">
+                                <i data-feather="info"></i>
+                                <span class="sr-only"></span>
+                            </div>
+                            <div v-if="t.log_type==3"
+                                class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-orange-500 bg-orange-100 rounded-lg dark:bg-orange-800 dark:text-orange-200">
+                                <i data-feather="alert-triangle"></i>
+                                <span class="sr-only"></span>
                             </div>
                             <div class="ml-3 text-sm font-normal whitespace-pre-wrap line-clamp-3" :title="t.message">{{ t.message }}</div>
 
@@ -61,7 +71,7 @@ export default {
     data() {
         return {
             show: false,
-            success: true,
+            log_type: 1, // 0=error, 1=success, 2=info, 3=warning
             message: '',
             toastArr: []
         };
@@ -84,11 +94,11 @@ export default {
 
 
         },
-        showToast(message, duration_s = 3, success = true) {
+        showToast(message, duration_s = 3, log_type = true) {
             const id = parseInt(((new Date()).getTime() * Math.random()).toString()).toString()
             const toastObj = {
                 id: id,
-                success: success,
+                log_type: log_type,
                 message: message,
                 show: true,
                 //copy: this.copyToClipBoard(message)

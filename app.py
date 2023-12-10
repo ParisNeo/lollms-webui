@@ -26,6 +26,7 @@ import time
 import traceback
 import webbrowser
 from pathlib import Path
+from lollms.helpers import NotificationType, NotificationDisplayType
 from lollms.utilities import AdvancedGarbageCollector, reinstall_pytorch_with_cuda
 def run_update_script(args=None):
     update_script = Path(__file__).parent/"update_script.py"
@@ -1646,8 +1647,8 @@ try:
                 old_bn = self.config.binding_name
                 self.config.binding_name = data['name']
                 self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL, self.notify)
-                ASCIIColors.success("Binding reinstalled successfully")
-                self.notify("Please reboot the application so that the binding installation can be taken into consideration",True, 30, 1)
+                self.notify("Binding reinstalled successfully")
+                self.notify("Please reboot the application so that the binding installation can be taken into consideration", NotificationType.NOTIF_INFO , display_type=NotificationDisplayType.MESSAGE_BOX)
                 self.config.binding_name = old_bn
                 self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, self.notify)
                 self.model = self.binding.build_model()
