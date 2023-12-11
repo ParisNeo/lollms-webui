@@ -184,11 +184,12 @@ class LoLLMsAPI(LollmsApplication):
         except:
             self.webcam = None
         try:
-            rec_output_folder = lollms_paths.personal_outputs_path/"audio_rec"
-            rec_output_folder.mkdir(exist_ok=True, parents=True)
-            self.audio_cap = AudioRecorder(socketio,rec_output_folder/"rt.wav",lollmsCom=self)
+            self.rec_output_folder = lollms_paths.personal_outputs_path/"audio_rec"
+            self.rec_output_folder.mkdir(exist_ok=True, parents=True)
+            self.summoned = False
+            self.audio_cap = AudioRecorder(socketio,self.rec_output_folder/"rt.wav", callback=self.audio_callback,lollmsCom=self)
         except:
-            rec_output_folder = None
+            self.rec_output_folder = None
         # =========================================================================================
         # Socket IO stuff    
         # =========================================================================================
@@ -1012,7 +1013,52 @@ class LoLLMsAPI(LollmsApplication):
         ASCIIColors.blue(f"Your personal data is stored here :",end="")
         ASCIIColors.green(f"{self.lollms_paths.personal_path}")
 
+    def audio_callback(self, text):
+        if self.summoned:
+            client_id = 0
+            self.cancel_gen = False
+            self.connections[client_id]["generated_text"]=""
+            self.connections[client_id]["cancel_generation"]=False
+            self.connections[client_id]["continuing"]=False
+            self.connections[client_id]["first_chunk"]=True
+            
+            if not self.model:
+                ASCIIColors.error("Model not selected. Please select a model")
+                self.error("Model not selected. Please select a model", client_id=client_id)
+                return
+ 
+            if not self.busy:
+                if self.connections[client_id]["current_discussion"] is None:
+                    if self.db.does_last_discussion_have_messages():
+                        self.connections[client_id]["current_discussion"] = self.db.create_discussion()
+                    else:
+                        self.connections[client_id]["current_discussion"] = self.db.load_last_discussion()
 
+                prompt = text
+                ump = self.config.discussion_prompt_separator +self.config.user_name.strip() if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
+                message = self.connections[client_id]["current_discussion"].add_message(
+                    message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
+                    sender_type     = SENDER_TYPES.SENDER_TYPES_USER.value,
+                    sender          = ump.replace(self.config.discussion_prompt_separator,"").replace(":",""),
+                    content=prompt,
+                    metadata=None,
+                    parent_message_id=self.message_id
+                )
+
+                ASCIIColors.green("Starting message generation by "+self.personality.name)
+                self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message.id, client_id))
+                self.connections[client_id]['generation_thread'].start()
+                
+                self.socketio.sleep(0.01)
+                ASCIIColors.info("Started generation task")
+                self.busy=True
+                #tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id, client_id))
+                #tpe.start()
+            else:
+                self.error("I am busy. Come back later.", client_id=client_id)
+        else:
+            if text.lower()=="lollms":
+                self.summoned = True
     def rebuild_personalities(self, reload_all=False):
         if reload_all:
             self.mounted_personalities=[]
