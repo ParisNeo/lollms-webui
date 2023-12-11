@@ -21,7 +21,7 @@
                     <b>M</b>
                 </div>
                 <div v-if="!isModelOK" title="Model is not ok" class="text-red-500 cursor:pointer">
-                    M
+                    <b>M</b>
                 </div>
                 <div v-if="!isGenerating" title="Text is not being generated. Ready to generate" class="text-green-500 cursor:pointer">
                     <i data-feather="flag"></i>

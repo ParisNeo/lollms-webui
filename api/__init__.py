@@ -180,13 +180,13 @@ class LoLLMsAPI(LollmsApplication):
             }
         }
         try:
-            self.webcam = WebcamImageSender(socketio)
+            self.webcam = WebcamImageSender(socketio,lollmsCom=self)
         except:
             self.webcam = None
         try:
             rec_output_folder = lollms_paths.personal_outputs_path/"audio_rec"
             rec_output_folder.mkdir(exist_ok=True, parents=True)
-            self.audio_cap = AudioRecorder(socketio,rec_output_folder/"rt.wav")
+            self.audio_cap = AudioRecorder(socketio,rec_output_folder/"rt.wav",lollmsCom=self)
         except:
             rec_output_folder = None
         # =========================================================================================
