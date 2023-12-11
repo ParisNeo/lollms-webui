@@ -17,22 +17,22 @@
             <!-- GITHUB AND THEME BUTTONS -->
             <div class="flex gap-3 flex-1 items-center justify-end">
                 
-                <div v-if="isModelOK" title="Model is ok" class="text-green-500 cursor:pointer">
+                <div v-if="isModelOK" title="Model is ok" class="text-green-500 cursor-pointer">
                     <b>M</b>
                 </div>
-                <div v-if="!isModelOK" title="Model is not ok" class="text-red-500 cursor:pointer">
+                <div v-if="!isModelOK" title="Model is not ok" class="text-red-500 cursor-pointer">
                     <b>M</b>
                 </div>
-                <div v-if="!isGenerating" title="Text is not being generated. Ready to generate" class="text-green-500 cursor:pointer">
+                <div v-if="!isGenerating" title="Text is not being generated. Ready to generate" class="text-green-500 cursor-pointer">
                     <i data-feather="flag"></i>
                 </div>
-                <div v-if="isGenerating" title="Generation in progress..." class="text-red-500 cursor:pointer">
+                <div v-if="isGenerating" title="Generation in progress..." class="text-red-500 cursor-pointer">
                     <i data-feather="flag"></i>
                 </div>
-                <div v-if="isConnected" title="Connection status: Connected" class="text-green-500 cursor:pointer">
+                <div v-if="isConnected" title="Connection status: Connected" class="text-green-500 cursor-pointer">
                     <i data-feather="zap"></i>
                 </div>
-                <div v-if="!isConnected" title="Connection status: Not connected" class="text-red-500 cursor:pointer">
+                <div v-if="!isConnected" title="Connection status: Not connected" class="text-red-500 cursor-pointer">
                     <i data-feather="zap-off"></i>
                 </div>
                 <a href="https://github.com/ParisNeo/lollms-webui" target="_blank">
