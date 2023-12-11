@@ -7,7 +7,7 @@
                
                 <img class="w-24 animate-bounce" title="LoLLMS WebUI" src="@/assets/logo.png" alt="Logo">
                     <div class="flex flex-col items-start">
-                    <p class="text-2xl ">Lord of Large Language Models</p>
+                    <p class="text-2xl ">Lord of Large Language and Multimodal Systems</p>
                     <p class="text-gray-400 text-base">One tool to rule them all</p>
 
                     </div>

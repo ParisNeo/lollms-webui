@@ -10,7 +10,7 @@
                 
                     <img class="w-24 animate-bounce" title="LoLLMS WebUI" src="@/assets/logo.png" alt="Logo">
                         <div class="flex flex-col items-start">
-                        <p class="text-2xl ">Lord of Large Language Models {{ version_info }} </p>
+                        <p class="text-2xl ">Lord of Large Language and Multimodal Systems {{ version_info }} </p>
                         <p class="text-gray-400 text-base">One tool to rule them all</p>
                         <p class="text-gray-400 text-base">by ParisNeo</p>
 
@@ -261,6 +261,7 @@
                     :discussionList="discussionArr" 
                     :on-show-toast-message="showToastMessage"
                     :on-talk="talk"
+                    @personalitySelected="recoverFiles"
                     @messageSentEvent="sendMsg" 
                     @sendCMDEvent="sendCmd"
                     @createEmptyUserMessage="createEmptyUserMessage"

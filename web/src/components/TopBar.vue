@@ -7,7 +7,7 @@
                 <div class="flex items-center gap-3 flex-1">
                     <img class="w-12  hover:scale-95 duration-150 " title="LoLLMS WebUI" src="@/assets/logo.png" alt="Logo">
                     <div class="flex flex-col">
-                    <p class="text-2xl ">Lord of Large Language Models</p>
+                    <p class="text-2xl ">Lord of Large Language and Multimodal Systems</p>
                     <p class="text-gray-400 ">One tool to rule them all</p>
 
                     </div>
@@ -18,10 +18,10 @@
             <div class="flex gap-3 flex-1 items-center justify-end">
                 
                 <div v-if="isModelOK" title="Model is ok" class="text-green-500 cursor-pointer">
-                    <b>M</b>
+                    <b class="text-2xl">M</b>
                 </div>
                 <div v-if="!isModelOK" title="Model is not ok" class="text-red-500 cursor-pointer">
-                    <b>M</b>
+                    <b class="text-2xl">M</b>
                 </div>
                 <div v-if="!isGenerating" title="Text is not being generated. Ready to generate" class="text-green-500 cursor-pointer">
                     <i data-feather="flag"></i>

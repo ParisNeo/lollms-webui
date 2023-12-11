@@ -1013,7 +1013,7 @@ class LoLLMsAPI(LollmsApplication):
         ASCIIColors.blue(f"Your personal data is stored here :",end="")
         ASCIIColors.green(f"{self.lollms_paths.personal_path}")
 
-    def audio_callback(self, text):
+    def audio_callback(self, output):
         if self.summoned:
             client_id = 0
             self.cancel_gen = False
@@ -1057,7 +1057,7 @@ class LoLLMsAPI(LollmsApplication):
             else:
                 self.error("I am busy. Come back later.", client_id=client_id)
         else:
-            if text.lower()=="lollms":
+            if output["text"].lower()=="lollms":
                 self.summoned = True
     def rebuild_personalities(self, reload_all=False):
         if reload_all:

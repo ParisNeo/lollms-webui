@@ -324,7 +324,7 @@ console.log("modelImgPlaceholder:",modelImgPlaceholder)
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
     name: 'ChatBox',
-    emits: ["messageSentEvent", "sendCMDEvent", "stopGenerating", "loaded", "createEmptyUserMessage", "createEmptyAIMessage"],
+    emits: ["messageSentEvent", "sendCMDEvent", "stopGenerating", "loaded", "createEmptyUserMessage", "createEmptyAIMessage", "personalitySelected"],
     props: {
         onTalk: Function,
         discussionList: Array,
@@ -541,6 +541,8 @@ export default {
 
                 }
 
+                this.$emit('personalitySelected')
+            
 
                 nextTick(() => {
                     feather.replace()
