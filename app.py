@@ -2277,6 +2277,7 @@ try:
 
 
         def p_select_personality(self):
+            ASCIIColors.info("Selecting personality")
             data = request.get_json()
             id = data['id']
             print(f"- Selecting active personality {id} ...",end="")

@@ -19,7 +19,7 @@ from lollms.paths import LollmsPaths
 from lollms.helpers import ASCIIColors, trace_exception
 from lollms.com import NotificationType, NotificationDisplayType, LoLLMsCom
 from lollms.app import LollmsApplication
-from lollms.utilities import File64BitsManager, PromptReshaper
+from lollms.utilities import File64BitsManager, PromptReshaper, PackageManager, find_first_available_file_index
 from lollms.media import WebcamImageSender, AudioRecorder
 from safe_store import TextVectorizer, VectorizationMethod, VisualizationMethod
 import threading
@@ -36,6 +36,7 @@ import string
 import requests
 from datetime import datetime
 from typing import List, Tuple
+import time
 
 def terminate_thread(thread):
     if thread:
@@ -222,6 +223,43 @@ class LoLLMsAPI(LollmsApplication):
             
             ASCIIColors.error(f'Client {request.sid} disconnected')
 
+        @socketio.on('take_picture')
+        def take_picture():
+            try:
+                if not PackageManager.check_package_installed("cv2"):
+                    PackageManager.install_package("opencv-python")
+                import cv2
+                cap = cv2.VideoCapture(0)
+                n = time.time()
+                while(time.time()-n<2):
+                    _, frame = cap.read()
+                _, frame = cap.read()
+                cap.release()
+                self.info("Shot taken")
+                cam_shot_path = self.lollms_paths.personal_uploads_path/"camera_shots"
+                cam_shot_path.mkdir(parents=True, exist_ok=True)
+                filename = find_first_available_file_index(cam_shot_path, "cam_shot_", extension=".png")
+                save_path = cam_shot_path/f"cam_shot_{filename}.png"  # Specify the desired folder path
+
+                try:
+                    cv2.imwrite(str(save_path), frame)
+                    if not self.personality.processor is None:
+                        self.personality.processor.add_file(save_path, partial(self.process_chunk, client_id = request.sid))
+                        # File saved successfully
+                        socketio.emit('picture_taken', {'status':True, 'progress': 100})
+                    else:
+                        self.personality.add_file(save_path, partial(self.process_chunk, client_id = request.sid))
+                        # File saved successfully
+                        socketio.emit('picture_taken', {'status':True, 'progress': 100})
+                except Exception as e:
+                    # Error occurred while saving the file
+                    socketio.emit('picture_taken', {'status':False, 'error': str(e)})
+                    
+
+            except Exception as ex:
+                trace_exception(ex)
+                self.error("Couldn't use the webcam")
+        
         
         @socketio.on('start_webcam_video_stream')
         def start_webcam_video_stream():

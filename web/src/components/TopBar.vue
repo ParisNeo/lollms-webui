@@ -35,6 +35,12 @@
                 <div v-if="!isConnected" title="Connection status: Not connected" class="text-red-500 cursor-pointer">
                     <i data-feather="zap-off"></i>
                 </div>
+                <a href="#" @click="refreshPage">
+                    <div class="text-2xl  hover:text-primary duration-150" title="refresh page">
+                        <i data-feather="refresh-ccw"></i>
+                    </div>
+                </a>
+
                 <a href="https://github.com/ParisNeo/lollms-webui" target="_blank">
 
                     <div class="text-2xl  hover:text-primary duration-150" title="Visit repository page">
@@ -142,6 +148,10 @@ export default {
         this.systemTheme = window.matchMedia("prefers-color-scheme: dark").matches;
     },
     methods: {
+        refreshPage(event) {
+            event.preventDefault();
+            window.location.reload();
+        },
         // codeBlockTheme(theme) {
         //     const styleDark = document.createElement('link');
         //     styleDark.type = "text/css";

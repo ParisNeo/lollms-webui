@@ -230,6 +230,12 @@
                             >
                             <i data-feather="mic"></i>
                             </button>
+                            <button type="button" @click.stop="takePicture" title="take a shot from camera"
+                                class=" w-6 hover:text-secondary duration-75 active:scale-90">
+
+                                <i data-feather="camera"></i>
+
+                            </button>
                             <button v-if="!loading" type="button" @click="makeAnEmptyUserMessage" title="New empty user message"
                                 class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
 
@@ -523,8 +529,10 @@ export default {
 
 
                 //this.settingsChanged = true
-
-                if (pers.isMounted && this.$store.state.config.personalities.includes(pers.full_path)) {
+                const pers_path = pers.language===null?pers.full_path:pers.full_path+':'+pers.language
+                console.log("pers_path",pers_path)
+                console.log("this.$store.state.config.personalities",this.$store.state.config.personalities)
+                if (this.$store.state.config.personalities.includes(pers_path)) {
 
                     const res = await this.select_personality(pers)
                     console.log('pers is mounted', res)
@@ -537,8 +545,6 @@ export default {
 
                 } else {
                     console.log('mounting pers')
-                    this.mountPersonality(pers)
-
                 }
 
                 this.$emit('personalitySelected')
@@ -554,7 +560,9 @@ export default {
         },    
         async select_personality(pers) {
             if (!pers) { return { 'status': false, 'error': 'no personality - select_personality' } }
-            const id = this.$store.state.config.personalities.findIndex(item => item === pers.full_path)
+            const pers_path = pers.language===null?pers.full_path:pers.full_path+':'+pers.language
+            console.log("Selecting personality ",pers_path)
+            const id = this.$store.state.config.personalities.findIndex(item => item === pers_path)
 
             const obj = {
                 id: id
@@ -760,6 +768,18 @@ export default {
         },
         sendCMDEvent(cmd){
             this.$emit('sendCMDEvent', cmd)
+        },
+        takePicture(){
+            socket.emit('take_picture')
+            socket.on('picture_taken',()=>{
+                axios.get('/get_current_personality_files_list').then(res=>{
+                    this.filesList = res.data.files;
+                    this.isFileSentList= res.data.files.map(file => {
+                        return true;
+                    });
+                    console.log(`Files recovered: ${this.filesList}`)
+                })
+            });
         },
         submitOnEnter(event) {
             if(!this.loading){

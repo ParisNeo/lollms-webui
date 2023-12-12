@@ -239,6 +239,9 @@ export const store = createStore({
                         const parts = personality.split(':');
                         item.language = parts[1];
                       }
+                      else{
+                        item.language = null
+                      }
                     }
                   }
                   // if (isMounted) {
