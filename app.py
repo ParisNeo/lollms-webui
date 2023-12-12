@@ -530,7 +530,7 @@ try:
                 root_folder = self.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
                 root_folder.mkdir(parents=True,exist_ok=True)
                 tmp_file = root_folder/f"ai_code_{message_id}.py"
-                with open(tmp_file,"w") as f:
+                with open(tmp_file,"w",encoding="utf8") as f:
                     f.write(code)
 
                 try:
