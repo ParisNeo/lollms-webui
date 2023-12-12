@@ -508,6 +508,9 @@ try:
             self.add_endpoint(
                 "/open_code_in_vs_code", "open_code_in_vs_code", self.open_code_in_vs_code, methods=["POST"]
             )
+            self.add_endpoint(
+                "/open_file", "open_file", self.open_file, methods=["GET"]
+            )
             
         def get_model_status(self):
             return jsonify({"status":self.model is not None})
@@ -645,7 +648,13 @@ try:
             
             os.system('code ' + str(root_folder))
             return {"output": "OK", "execution_time": 0}
-
+        
+        def open_file(self):
+            """Opens code in vs code."""
+            path = request.args.get('path')
+            os.system("open "+path)
+            return {"output": "OK", "execution_time": 0}
+                    
         def open_code_in_vs_code(self):
             """Opens code in vs code."""
             
@@ -853,7 +862,7 @@ try:
                                 bmp_logo_path_ = real_assets_path / 'logo.bmp'
 
                                 if languages_path.exists():
-                                    personality_info['languages']=[f.stem for f in languages_path.iterdir() if f.suffix==".yaml"]
+                                    personality_info['languages']= [""]+[f.stem for f in languages_path.iterdir() if f.suffix==".yaml"]
                                 else:
                                     personality_info['languages']=None
                                     
