@@ -652,7 +652,7 @@ try:
         def open_file(self):
             """Opens code in vs code."""
             path = request.args.get('path')
-            os.system("open "+path)
+            os.system("start "+path)
             return {"output": "OK", "execution_time": 0}
                     
         def open_code_in_vs_code(self):
