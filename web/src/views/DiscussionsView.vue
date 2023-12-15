@@ -275,7 +275,6 @@
         </div>
 
     </div>
-    <Toast ref="toast" />
     <MessageBox ref="messageBox" />
     <ChoiceDialog reference="database_selector" class="z-20"
       :show="database_selectorDialogVisible"
@@ -472,17 +471,17 @@ export default {
 
                                             if (response && response.data) {
                                                 console.log('binding set with new settings', response.data)
-                                                this.$refs.toast.showToast("Binding settings updated successfully!", 4, true)
+                                                this.$store.state.toast.showToast("Binding settings updated successfully!", 4, true)
 
                                             } else {
-                                                this.$refs.toast.showToast("Did not get binding settings responses.\n" + response, 4, false)
+                                                this.$store.state.toast.showToast("Did not get binding settings responses.\n" + response, 4, false)
                                                 this.isLoading = false
                                             }
 
 
                                         })
                                 } catch (error) {
-                                    this.$refs.toast.showToast("Did not get binding settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.$store.state.toast.showToast("Did not get binding settings responses.\n Endpoint error: " + error.message, 4, false)
                                     this.isLoading = false
                                 }
 
@@ -490,7 +489,7 @@ export default {
 
                             })
                         } else {
-                            this.$refs.toast.showToast("Binding has no settings", 4, false)
+                            this.$store.state.toast.showToast("Binding has no settings", 4, false)
                             this.isLoading = false
                         }
 
@@ -499,7 +498,7 @@ export default {
 
             } catch (error) {
                 this.isLoading = false
-                this.$refs.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
+                this.$store.state.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
             }
         },        
         showDatabaseSelector() {
@@ -536,10 +535,11 @@ export default {
             this.loading = false;
             //console.log('apply-res',res)
             if (res.data.status) {
-                this.$refs.toast.showToast("Configuration changed successfully.", 4, true)
+                
+                this.$store.state.toast.showToast("Configuration changed successfully.", 4, true)
                 //this.save_configuration()
             } else {
-                this.$refs.toast.showToast("Configuration change failed.", 4, false)
+                this.$store.state.toast.showToast("Configuration change failed.", 4, false)
             }
             nextTick(() => {
                 feather.replace()
@@ -551,7 +551,7 @@ export default {
                 .then((res) => {
                     if (res) {
                         if (res.status) {
-                            this.$refs.toast.showToast("Settings saved!",4,true)
+                            this.$store.state.toast.showToast("Settings saved!",4,true)
                         }
                         else
                             this.$refs.messageBox.showMessage("Error: Couldn't save settings!")
@@ -567,7 +567,7 @@ export default {
         },        
         showToastMessage(text, duration, isok){
             console.log("sending",text)
-            this.$refs.toast.showToast(text, duration, isok)
+            this.$store.state.toast.showToast(text, duration, isok)
         },        
         togglePanel() {
             this.panelCollapsed = !this.panelCollapsed;
@@ -869,7 +869,7 @@ export default {
         },
         async selectDiscussion(item) {
             if(this.isGenerating){
-                this.$refs.toast.showToast("You are currently generating a text. Please wait for text generation to finish or stop it before trying to select another discussion", 4, false)
+                this.$store.state.toast.showToast("You are currently generating a text. Please wait for text generation to finish or stop it before trying to select another discussion", 4, false)
                 return;
             }
 
@@ -1092,7 +1092,7 @@ export default {
             /*
             }
             else {
-                this.$refs.toast.showToast("It seems that no model has been loaded. Please download and install a model first, then try again.", 4, false)
+                this.$store.state.toast.showToast("It seems that no model has been loaded. Please download and install a model first, then try again.", 4, false)
                 this.isGenerating = false
                 this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
                 this.chime.play()
@@ -1131,7 +1131,7 @@ export default {
         sendMsg(msg) {
             // Sends message to binding
             if (!msg) {
-                this.$refs.toast.showToast("Message contains no content!", 4, false)
+                this.$store.state.toast.showToast("Message contains no content!", 4, false)
                 return
             }
             this.isGenerating = true;
@@ -1203,7 +1203,7 @@ export default {
                 this.scrollBottom(msgList)
             })
             if(notif.display_type==0){
-                this.$refs.toast.showToast(notif.content, notif.duration, notif.notification_type)
+                this.$store.state.toast.showToast(notif.content, notif.duration, notif.notification_type)
             }
             else if(notif.display_type==1){
                 this.$refs.messageBox.showMessage(notif.content)
@@ -1257,7 +1257,7 @@ export default {
                     messageItem.ui = msgObj.ui      
                     console.log(messageItem.ui)
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_EXCEPTION) {
-                    this.$refs.toast.showToast(msgObj.content, 5, false)
+                    this.$store.state.toast.showToast(msgObj.content, 5, false)
                 }
                 // // Disables as per request
                 // nextTick(() => {
@@ -1305,7 +1305,7 @@ export default {
             }
         },        
         onCopyPersonalityName(personality) {
-            this.$refs.toast.showToast("Copied name to clipboard!", 4, true)
+            this.$store.state.toast.showToast("Copied name to clipboard!", 4, true)
             navigator.clipboard.writeText(personality.name);
         },
         async deleteDiscussion(id) {
@@ -1339,7 +1339,7 @@ export default {
             }
             this.tempList = this.list
             this.isCheckbox = false
-            this.$refs.toast.showToast("Removed (" + deleteList.length + ") items", 4, true)
+            this.$store.state.toast.showToast("Removed (" + deleteList.length + ") items", 4, true)
             this.showConfirmation = false
             console.log("Multi delete done")
         },
@@ -1350,7 +1350,7 @@ export default {
                 this.discussionArr.splice(this.discussionArr.findIndex(item => item.id == msgId), 1)
 
             }).catch(() => {
-                this.$refs.toast.showToast("Could not remove message", 4, false)
+                this.$store.state.toast.showToast("Could not remove message", 4, false)
                 console.log("Error: Could not delete message")
             })
 
@@ -1437,7 +1437,7 @@ export default {
                 const message = this.discussionArr[this.discussionArr.findIndex(item => item.id == msgId)]
                 message.rank = res.new_rank
             }).catch(() => {
-                this.$refs.toast.showToast("Could not rank up message", 4, false)
+                this.$store.state.toast.showToast("Could not rank up message", 4, false)
                 console.log("Error: Could not rank up message")
             })
 
@@ -1448,7 +1448,7 @@ export default {
                 const message = this.discussionArr[this.discussionArr.findIndex(item => item.id == msgId)]
                 message.rank = res.new_rank
             }).catch(() => {
-                this.$refs.toast.showToast("Could not rank down message", 4, false)
+                this.$store.state.toast.showToast("Could not rank down message", 4, false)
 
                 console.log("Error: Could not rank down message")
             })
@@ -1461,7 +1461,7 @@ export default {
                 message.content = msg
 
             }).catch(() => {
-                this.$refs.toast.showToast("Could not update message", 4, false)
+                this.$store.state.toast.showToast("Could not update message", 4, false)
 
                 console.log("Error: Could not update message")
             })
@@ -1481,7 +1481,7 @@ export default {
                         socket.emit('generate_msg_from', { prompt: msg, id: msgId, msg_type: msg_type });
                     }
                     else {
-                        this.$refs.toast.showToast("The server is busy. Wait", 4, false)
+                        this.$store.state.toast.showToast("The server is busy. Wait", 4, false)
                         console.log("Already generating");
                     }
                 }
@@ -1549,7 +1549,7 @@ export default {
             this.chime.play()
         },
         copyToClipBoard(messageEntry) {
-            this.$refs.toast.showToast("Copied to clipboard successfully", 4, true)
+            this.$store.state.toast.showToast("Copied to clipboard successfully", 4, true)
 
             let binding = ""
             if (messageEntry.message.binding) {
@@ -1621,7 +1621,7 @@ export default {
                 const ret = JSON.parse(obj)
                 return ret
             } catch (error) {
-                this.$refs.toast.showToast("Could not parse JSON. \n" + error.message, 4, false)
+                this.$store.state.toast.showToast("Could not parse JSON. \n" + error.message, 4, false)
                 return null
             }
 
@@ -1672,10 +1672,10 @@ export default {
 
                 if (res) {
                     this.saveMarkdowntoFile(res, filename)
-                    this.$refs.toast.showToast("Successfully exported", 4, true)
+                    this.$store.state.toast.showToast("Successfully exported", 4, true)
                     this.isCheckbox = false
                 } else {
-                    this.$refs.toast.showToast("Failed to export discussions", 4, false)
+                    this.$store.state.toast.showToast("Failed to export discussions", 4, false)
                 }
                 this.loading = false
             }
@@ -1717,10 +1717,10 @@ export default {
 
                 if (res) {
                     this.saveJSONtoFile(res, filename)
-                    this.$refs.toast.showToast("Successfully exported", 4, true)
+                    this.$store.state.toast.showToast("Successfully exported", 4, true)
                     this.isCheckbox = false
                 } else {
-                    this.$refs.toast.showToast("Failed to export discussions", 4, false)
+                    this.$store.state.toast.showToast("Failed to export discussions", 4, false)
                 }
                 this.loading = false
             }
@@ -1731,10 +1731,10 @@ export default {
 
             const res = await this.import_multiple_discussions(obj)
             if (res) {
-                this.$refs.toast.showToast("Successfully imported (" + obj.length + ")", 4, true)
+                this.$store.state.toast.showToast("Successfully imported (" + obj.length + ")", 4, true)
                 await this.list_discussions()
             } else {
-                this.$refs.toast.showToast("Failed to import discussions", 4, false)
+                this.$store.state.toast.showToast("Failed to import discussions", 4, false)
             }
 
 
@@ -1773,7 +1773,7 @@ export default {
             try {
                 this.$refs.chatBox.fileList = this.$refs.chatBox.fileList.concat(files)
             } catch (error) {
-                this.$refs.toast.showToast("Failed to set filelist in chatbox\n" + error.message, 4, false)
+                this.$store.state.toast.showToast("Failed to set filelist in chatbox\n" + error.message, 4, false)
 
             }
 
@@ -1785,17 +1785,17 @@ export default {
         async setFileListDiscussion(files) {
 
             if (files.length > 1) {
-                this.$refs.toast.showToast("Failed to import discussions. Too many files", 4, false)
+                this.$store.state.toast.showToast("Failed to import discussions. Too many files", 4, false)
                 return
             }
             const obj = await this.parseJsonFile(files[0])
 
             const res = await this.import_multiple_discussions(obj)
             if (res) {
-                this.$refs.toast.showToast("Successfully imported (" + obj.length + ")", 4, true)
+                this.$store.state.toast.showToast("Successfully imported (" + obj.length + ")", 4, true)
                 await this.list_discussions()
             } else {
-                this.$refs.toast.showToast("Failed to import discussions", 4, false)
+                this.$store.state.toast.showToast("Failed to import discussions", 4, false)
             }
 
 
@@ -1928,7 +1928,6 @@ export default {
         Message,
         ChatBox,
         WelcomeComponent,
-        Toast,
         ChoiceDialog,
         MessageBox,
         ProgressBar       
@@ -2062,12 +2061,14 @@ export default {
 
 <script setup>
 import Discussion from '../components/Discussion.vue'
+import ChoiceDialog from '@/components/ChoiceDialog.vue'
+import MessageBox from "@/components/MessageBox.vue";
+import ProgressBar from "@/components/ProgressBar.vue";
+
 import Message from '../components/Message.vue'
 import ChatBox from '../components/ChatBox.vue'
 import WelcomeComponent from '../components/WelcomeComponent.vue'
-import Toast from '../components/Toast.vue'
-import MessageBox from "@/components/MessageBox.vue";
-import ProgressBar from "@/components/ProgressBar.vue";
+
 import feather from 'feather-icons'
 
 import axios from 'axios'
@@ -2080,7 +2081,6 @@ import { onMounted } from 'vue'
 import { initFlowbite } from 'flowbite'
 import { store } from '../main'
 
-import ChoiceDialog from '@/components/ChoiceDialog.vue'
 
 
 // initialize components based on data attribute selectors

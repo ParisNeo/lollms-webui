@@ -359,7 +359,7 @@ class LoLLMsAPI(LollmsApplication):
 
                 progress = 0
                 installation_dir = self.binding.searchModelParentFolder(model_path.split('/')[-1], model_type)
-                if model_type=="gptq" or  model_type=="awq":
+                if model_type=="gptq" or  model_type=="awq" or model_type=="transformers":
                     parts = model_path.split("/")
                     if len(parts)==2:
                         filename = parts[1]

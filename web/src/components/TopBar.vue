@@ -82,6 +82,12 @@
         </nav>
         <!-- NAVIGATION BUTTONS -->
         <Navigation />
+        <Toast ref="toast" />
+        <MessageBox ref="messageBox" />
+        <div v-show="progress_visibility" role="status" class="fixed m-0 p-2 left-2 bottom-2  min-w-[24rem] max-w-[24rem] h-20 flex flex-col justify-center items-center pb-4 bg-blue-500 rounded-lg shadow-lg z-50 background-a">
+            <ProgressBar ref="progress" :progress="progress_value" class="w-full h-4"></ProgressBar>
+            <p class="text-2xl animate-pulse mt-2 text-white">{{ loading_infos }} ...</p>
+        </div>        
     </header>
 
     <body>
@@ -90,6 +96,11 @@
 </template>
 
 <script setup>
+import Discussion from '../components/Discussion.vue'
+import Toast from '../components/Toast.vue'
+import MessageBox from "@/components/MessageBox.vue";
+import ProgressBar from "@/components/ProgressBar.vue";
+
 import { RouterLink } from 'vue-router'
 import Navigation from './Navigation.vue'
 import { nextTick } from 'vue'
@@ -101,6 +112,9 @@ import { mapState } from 'vuex';
 export default {
     name: 'TopBar',
     computed:{
+        loading_infos(){
+            return this.$store.state.loading_infos;
+        },        
         isModelOK(){
             return this.$store.state.isModelOk;
         },
@@ -110,6 +124,12 @@ export default {
         isConnected(){
             return this.$store.state.isConnected;
         }
+    },
+    components: {
+        Discussion,
+        Toast,
+        MessageBox,
+        ProgressBar       
     },
     watch:{
         isConnected(){
@@ -121,6 +141,9 @@ export default {
     },
     data() {
         return {
+            database_selectorDialogVisible:false,
+            progress_visibility:false,
+            progress_value:0,
             codeBlockStylesheet:'',
             sunIcon: document.querySelector(".sun"),
             moonIcon: document.querySelector(".moon"),
@@ -129,6 +152,7 @@ export default {
         }
     },
     mounted() {
+        this.$store.state.toast = this.$refs.toast
         this.sunIcon = document.querySelector(".sun");
         this.moonIcon = document.querySelector(".moon");
         this.userTheme = localStorage.getItem("theme");
