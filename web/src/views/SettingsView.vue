@@ -34,21 +34,21 @@
                 <button
                     title="Clear uploads"
                     class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                    @click="api_get_req('clear_uploads').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast(['failed!'], 4, false)}})"
+                    @click="api_get_req('clear_uploads').then((res)=>{if(res.status){this.$store.state.toast.showToast('Success!', 4, true)}else{this.$store.state.toast.showToast(['failed!'], 4, false)}})"
                     >
                     <i data-feather="trash-2"></i>
                     </button>
                     <button
                     title="Restart program"
                     class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                    @click="api_get_req('restart_program').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast(['failed!'], 4, false)}})"
+                    @click="api_get_req('restart_program').then((res)=>{if(res.status){this.$store.state.toast.showToast('Success!', 4, true)}else{this.$store.state.toast.showToast(['failed!'], 4, false)}})"
                     >
                     <i data-feather="refresh-ccw"></i>
                     </button>
                     <button
                     title="Upgrade program "
                     class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                    @click="api_get_req('update_software').then((res)=>{if(res.status){this.$refs.toast.showToast('Success!', 4, true)}else{this.$refs.toast.showToast('Success!', 4, true)}})"
+                    @click="api_get_req('update_software').then((res)=>{if(res.status){this.$store.state.toast.showToast('Success!', 4, true)}else{this.$store.state.toast.showToast('Success!', 4, true)}})"
                     >
                     <i data-feather="arrow-up-circle"></i>
                     
@@ -1650,7 +1650,6 @@
             </div>
         </div>
     </div>
-    <Toast ref="toast" />
     <YesNoDialog ref="yesNoDialog" class="z-20" />
     <AddModelDialog ref="addmodeldialog" />
     <MessageBox ref="messageBox" />
@@ -1751,7 +1750,6 @@ import feather from 'feather-icons'
 import { nextTick, TransitionGroup } from 'vue'
 import MessageBox from "@/components/MessageBox.vue";
 import YesNoDialog from "@/components/YesNoDialog.vue";
-import Toast from '../components/Toast.vue'
 import ModelEntry from '@/components/ModelEntry.vue';
 import PersonalityViewer from '@/components/PersonalityViewer.vue';
 import PersonalityEntry from "@/components/PersonalityEntry.vue";
@@ -1785,7 +1783,6 @@ export default {
         ModelEntry,
         // eslint-disable-next-line vue/no-unused-components
         PersonalityViewer,
-        Toast,
         PersonalityEntry,
         BindingEntry,
         UniversalForm,
@@ -1895,7 +1892,7 @@ export default {
                 this.scrollBottom(msgList)
             })
             if(notif.display_type==0){
-                this.$refs.toast.showToast(notif.content, notif.duration, notif.notification_type)
+                this.$store.state.toast.showToast(notif.content, notif.duration, notif.notification_type)
             }
             else if(notif.display_type==1){
                 this.$refs.messageBox.showMessage(notif.content)
@@ -1967,7 +1964,7 @@ export default {
             let model_object = this.currenModelToInstall;
             if (model_object.linkNotValid) {
                 model_object.installing = false
-                this.$refs.toast.showToast("Link is not valid, file does not exist", 4, false)
+                this.$store.state.toast.showToast("Link is not valid, file does not exist", 4, false)
                 return
             }
             let path = 'https://huggingface.co/'+model_object.model.quantizer+'/'+model_object.model.name+'/resolve/main/'+this.selected_variant.name;
@@ -2003,7 +2000,7 @@ export default {
                         console.log("Installed successfully")
                         // Update the isInstalled property of the corresponding model
 
-                        this.$refs.toast.showToast("Model:\n" + model_object.model.name + "\ninstalled!", 4, true)
+                        this.$store.state.toast.showToast("Model:\n" + model_object.model.name + "\ninstalled!", 4, true)
                         this.$store.dispatch('refreshDiskUsage');
                     }
                 } else {
@@ -2014,7 +2011,7 @@ export default {
 
                     this.showProgress = false;
                     console.error('Installation failed:', response.error);
-                    this.$refs.toast.showToast("Model:\n" + model_object.model.name + "\nfailed to install!", 4, false)
+                    this.$store.state.toast.showToast("Model:\n" + model_object.model.name + "\nfailed to install!", 4, false)
                     this.$store.dispatch('refreshDiskUsage');
                 }
                 console.log("Here")
@@ -2036,7 +2033,7 @@ export default {
             axios.post('/upload_avatar', formData)
                 .then(response => {
                     console.log("Avatar uploaded successfully")
-                    this.$refs.toast.showToast("Avatar uploaded successfully!", 4, true)
+                    this.$store.state.toast.showToast("Avatar uploaded successfully!", 4, true)
                     // Assuming the server responds with the file name after successful upload
                     const fileName = response.data.fileName;
                     console.log("response",response);
@@ -2052,10 +2049,10 @@ export default {
             const res =  await this.api_get_req('update_software')
             console.log("Posting done")
             if(res.status){
-                this.$refs.toast.showToast("Success!", 4, true)
+                this.$store.state.toast.showToast("Success!", 4, true)
             }
             else{
-                this.$refs.toast.showToast("Failure!", 4, false)
+                this.$store.state.toast.showToast("Failure!", 4, false)
             }
             
         },
@@ -2064,10 +2061,10 @@ export default {
             const res =  await this.api_get_req('restart_program')
             console.log("Posting done")
             if(res.status){
-                this.$refs.toast.showToast("Success!", 4, true)
+                this.$store.state.toast.showToast("Success!", 4, true)
             }
             else{
-                this.$refs.toast.showToast("Failure!", 4, false)
+                this.$store.state.toast.showToast("Failure!", 4, false)
             }
         },        
         on_loading_text(text){
@@ -2195,7 +2192,7 @@ export default {
                 }
 
 
-                this.$refs.toast.showToast("Model:\n" + model_object.name + "\ninstalled!", 4, true)
+                this.$store.state.toast.showToast("Model:\n" + model_object.name + "\ninstalled!", 4, true)
                 this.$store.dispatch('refreshDiskUsage');
             } else if (response.status === 'failed') {
 
@@ -2213,7 +2210,7 @@ export default {
 
                     }
                     console.error('Installation failed:', response.error);
-                    this.$refs.toast.showToast("Model:\n" + model_object.name + "\nfailed to install!", 4, false)
+                    this.$store.state.toast.showToast("Model:\n" + model_object.name + "\nfailed to install!", 4, false)
                     this.$store.dispatch('refreshDiskUsage');
                 }
             }
@@ -2282,14 +2279,14 @@ export default {
             console.log('on pers', pers)
             // eslint-disable-next-line no-unused-vars
             if (this.isLoading) {
-                this.$refs.toast.showToast("Loading... please wait", 4, false)
+                this.$store.state.toast.showToast("Loading... please wait", 4, false)
             }
             this.isLoading = true
             console.log('selecting ', pers)
             if (pers) {
 
                 if (pers.selected) {
-                    this.$refs.toast.showToast("Personality already selected", 4, true)
+                    this.$store.state.toast.showToast("Personality already selected", 4, true)
                     this.isLoading = false
                     return
                 }
@@ -2302,10 +2299,10 @@ export default {
                     const res = await this.select_personality(pers)
                     console.log('pers is mounted', res)
                     if (res && res.status && res.active_personality_id > -1) {
-                        this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
+                        this.$store.state.toast.showToast("Selected personality:\n" + pers.name, 4, true)
 
                     } else {
-                        this.$refs.toast.showToast("Error on select personality:\n" + pers.name, 4, false)
+                        this.$store.state.toast.showToast("Error on select personality:\n" + pers.name, 4, false)
                     }
                     this.isLoading = false
 
@@ -2328,7 +2325,7 @@ export default {
         onModelSelected(model_object, force=false) {
             // eslint-disable-next-line no-unused-vars
             if (this.isLoading) {
-                this.$refs.toast.showToast("Loading... please wait", 4, false)
+                this.$store.state.toast.showToast("Loading... please wait", 4, false)
                 return
             }
             if (model_object) {
@@ -2338,7 +2335,7 @@ export default {
                             console.log("update_model",res)
                             this.configFile.model_name = model_object.model.name
                             if(res.status){
-                                this.$refs.toast.showToast("Selected model:\n" + model_object.name, 4, true)
+                                this.$store.state.toast.showToast("Selected model:\n" + model_object.name, 4, true)
                                 nextTick(() => {
                                     feather.replace()
                                     this.is_loading_zoo = false
@@ -2348,7 +2345,7 @@ export default {
                                     this.$store.commit('setIsModelOk', res);
                                 })
                             }else{
-                                this.$refs.toast.showToast("Couldn't select model:\n" + model_object.name, 4, false)
+                                this.$store.state.toast.showToast("Couldn't select model:\n" + model_object.name, 4, false)
                                 nextTick(() => {
                                     feather.replace()
                                 })
@@ -2359,7 +2356,7 @@ export default {
                     }
 
                 } else {
-                    this.$refs.toast.showToast("Model:\n" + model_object.model.name + "\nis not installed", 4, false)
+                    this.$store.state.toast.showToast("Model:\n" + model_object.model.name + "\nis not installed", 4, false)
                 }
 
                 nextTick(() => {
@@ -2377,15 +2374,15 @@ export default {
                 content = `Model name: ${modelEntry.name}\nFile size: ${modelEntry.fileSize}\nManually downloaded model `
             }
 
-            this.$refs.toast.showToast("Copied model info to clipboard!", 4, true)
+            this.$store.state.toast.showToast("Copied model info to clipboard!", 4, true)
             navigator.clipboard.writeText(content.trim());
         },
         onCopyLink(modelEntry) {
-            this.$refs.toast.showToast("Copied link to clipboard!", 4, true)
+            this.$store.state.toast.showToast("Copied link to clipboard!", 4, true)
             navigator.clipboard.writeText('https://huggingface.co/'+modelEntry.model.quantizer+'/'+modelEntry.model.name);
         },
         onCopyPersonalityName(personality) {
-            this.$refs.toast.showToast("Copied name to clipboard!", 4, true)
+            this.$store.state.toast.showToast("Copied name to clipboard!", 4, true)
             navigator.clipboard.writeText(personality.name);
         },
         onCancelInstall() {
@@ -2399,7 +2396,7 @@ export default {
             this.modelDownlaodInProgress = false
             this.addModel = {}
             socket.emit('cancel_install', { model_name: modelEntry.model_name, binding_folder: modelEntry.binding_folder, model_url: modelEntry.model_url, patreon: model.patreon?model.patreon:"None"});
-            this.$refs.toast.showToast("Model installation aborted", 4, false)
+            this.$store.state.toast.showToast("Model installation aborted", 4, false)
         },
 
         // Model installation
@@ -2415,12 +2412,12 @@ export default {
         onCreateReference() {
             axios.post("/add_reference_to_local_model",{"path": this.reference_path}).then((resp)=>{
                 if(resp.status){
-                    this.$refs.toast.showToast("Reference created", 4, true)
+                    this.$store.state.toast.showToast("Reference created", 4, true)
                     this.is_loading_zoo = true;
                     this.refreshModelsZoo().then(()=>{this.updateModelsZoo(); this.is_loading_zoofalse;})
                 }
                 else{
-                    this.$refs.toast.showToast("Couldn't create reference", 4, false)
+                    this.$store.state.toast.showToast("Couldn't create reference", 4, false)
                 }
             }) 
         },
@@ -2430,7 +2427,7 @@ export default {
 
             if (!this.addModel.url) {
 
-                this.$refs.toast.showToast("Link is empty", 4, false)
+                this.$store.state.toast.showToast("Link is empty", 4, false)
                 return
             }
             let path = this.addModel.url;
@@ -2455,7 +2452,7 @@ export default {
                         console.log("Installed successfully")
                         // Update the isInstalled property of the corresponding model
                         this.addModel = {}
-                        this.$refs.toast.showToast("Model:\n" + this.addModel.model_name + "\ninstalled!", 4, true)
+                        this.$store.state.toast.showToast("Model:\n" + this.addModel.model_name + "\ninstalled!", 4, true)
                         this.$store.dispatch('refreshDiskUsage');
                     }
                 } else {
@@ -2464,7 +2461,7 @@ export default {
                     // Installation failed or encountered an error
                     this.modelDownlaodInProgress = false;
                     console.error('Installation failed:', response.error);
-                    this.$refs.toast.showToast("Model:\n" + this.addModel.model_name + "\nfailed to install!", 4, false)
+                    this.$store.state.toast.showToast("Model:\n" + this.addModel.model_name + "\nfailed to install!", 4, false)
                     this.$store.dispatch('refreshDiskUsage');
                 }
             };
@@ -2479,7 +2476,7 @@ export default {
 
             if (this.uploadData.length == 0) {
 
-                this.$refs.toast.showToast("No files to upload", 4, false)
+                this.$store.state.toast.showToast("No files to upload", 4, false)
                 return
             }
             let path = this.addModel.url;
@@ -2509,7 +2506,7 @@ export default {
                         console.log("Installed successfully")
                         // Update the isInstalled property of the corresponding model
                         this.addModel = {}
-                        this.$refs.toast.showToast("Model:\n" + this.addModel.model_name + "\ninstalled!", 4, true)
+                        this.$store.state.toast.showToast("Model:\n" + this.addModel.model_name + "\ninstalled!", 4, true)
                         this.$store.dispatch('refreshDiskUsage');
                     }
                 } else {
@@ -2520,7 +2517,7 @@ export default {
 
 
                     console.error('Installation failed:', response.error);
-                    this.$refs.toast.showToast("Model:\n" + this.addModel.model_name + "\nfailed to install!", 4, false)
+                    this.$store.state.toast.showToast("Model:\n" + this.addModel.model_name + "\nfailed to install!", 4, false)
                     this.$store.dispatch('refreshDiskUsage');
                 }
             };
@@ -2556,7 +2553,7 @@ export default {
                             this.refreshModelsZoo().then(()=>{this.updateModelsZoo(); this.is_loading_zoo = false;})
                             
                             this.modelsFiltered = this.models_zoo
-                            this.$refs.toast.showToast("Model:\n" + model_object.model.name + "\nwas uninstalled!", 4, true)
+                            this.$store.state.toast.showToast("Model:\n" + model_object.model.name + "\nwas uninstalled!", 4, true)
                             this.$store.dispatch('refreshDiskUsage');
                         } else {
                             console.log("uninstalling failed", response)
@@ -2566,7 +2563,7 @@ export default {
                             socket.off('uninstall_progress', progressListener);
                             // eslint-disable-next-line no-undef
                             console.error('Uninstallation failed:', response.error);
-                            this.$refs.toast.showToast("Model:\n" + model_object.model.name + "\nfailed to uninstall!", 4, false)
+                            this.$store.state.toast.showToast("Model:\n" + model_object.model.name + "\nfailed to uninstall!", 4, false)
                             this.$store.dispatch('refreshDiskUsage');
                         }
                     };
@@ -2586,7 +2583,7 @@ export default {
         onBindingSelected(binding_object) {
             console.log("Binding selected")
             if (!binding_object.binding.installed) {
-                this.$refs.toast.showToast("Binding is not installed:\n" + binding_object.binding.name, 4, false)
+                this.$store.state.toast.showToast("Binding is not installed:\n" + binding_object.binding.name, 4, false)
                 return
             }
             this.mzc_collapsed=true;
@@ -2604,7 +2601,7 @@ export default {
 
                 // disabled for now
                 // if (binding_object.binding.folder === 'backend_template' || binding_object.binding.folder === 'binding_template') {
-                //     this.$refs.toast.showToast("Cannot select template", 4, false)
+                //     this.$store.state.toast.showToast("Cannot select template", 4, false)
 
                 //     return
                 // }
@@ -2619,10 +2616,10 @@ export default {
                     this.isLoading = false
                     console.log('install_binding', res)
                     if (res.data.status) {
-                        this.$refs.toast.showToast("Installed binding successfully!", 4, true)
+                        this.$store.state.toast.showToast("Installed binding successfully!", 4, true)
                         this.update_binding(binding_object.binding.folder);
                     } else {
-                        this.$refs.toast.showToast("Could not reinstall binding", 4, false)
+                        this.$store.state.toast.showToast("Could not reinstall binding", 4, false)
                     }
                     this.isLoading = false
 
@@ -2634,7 +2631,7 @@ export default {
 
                 .catch(error => {
                     this.isLoading = false
-                    this.$refs.toast.showToast("Could not reinstall binding\n" + error.message, 4, false)
+                    this.$store.state.toast.showToast("Could not reinstall binding\n" + error.message, 4, false)
                     return { 'status': false }
                 });                //console.log('lol',binding_object)
             }
@@ -2662,9 +2659,9 @@ export default {
                         this.settingsChanged = true
 
                         this.binding_changed = true;
-                        this.$refs.toast.showToast("Binding uninstalled successfully!", 4, true)
+                        this.$store.state.toast.showToast("Binding uninstalled successfully!", 4, true)
                     } else {
-                        this.$refs.toast.showToast("Could not uninstall binding", 4, false)
+                        this.$store.state.toast.showToast("Could not uninstall binding", 4, false)
                     }
                     return res.data;
                 }
@@ -2676,7 +2673,7 @@ export default {
 
                 .catch(error => {
                     this.isLoading = false
-                    this.$refs.toast.showToast("Could not uninstall binding\n" + error.message, 4, false)
+                    this.$store.state.toast.showToast("Could not uninstall binding\n" + error.message, 4, false)
                     return { 'status': false }
                 });            
         },
@@ -2688,9 +2685,9 @@ export default {
                     this.isLoading = false
                     console.log('reinstall_binding', res)
                     if (res.data.status) {
-                        this.$refs.toast.showToast("Reinstalled binding successfully!", 4, true)
+                        this.$store.state.toast.showToast("Reinstalled binding successfully!", 4, true)
                     } else {
-                        this.$refs.toast.showToast("Could not reinstall binding", 4, false)
+                        this.$store.state.toast.showToast("Could not reinstall binding", 4, false)
                     }
                     return res.data;
                 }
@@ -2700,7 +2697,7 @@ export default {
 
                 .catch(error => {
                     this.isLoading = false
-                    this.$refs.toast.showToast("Could not reinstall binding\n" + error.message, 4, false)
+                    this.$store.state.toast.showToast("Could not reinstall binding\n" + error.message, 4, false)
                     return { 'status': false }
                 });
         },
@@ -2711,18 +2708,18 @@ export default {
                     this.isLoading = false
                     if (res) {
                             if(res.status){
-                                this.$refs.toast.showToast("Upgraded to GPU", 4, true)
+                                this.$store.state.toast.showToast("Upgraded to GPU", 4, true)
                                 this.configFile.enable_gpu=true
                             }
                             else{
-                                this.$refs.toast.showToast("Could not upgrade to GPU. Endpoint error: " + res.error, 4, false)
+                                this.$store.state.toast.showToast("Could not upgrade to GPU. Endpoint error: " + res.error, 4, false)
                             }
                     }
                 })
             }
             catch (error) {
             this.isLoading = false
-            this.$refs.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
+            this.$store.state.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
             }
         },
         onSettingsExtension(extensionEntry){
@@ -2743,23 +2740,23 @@ export default {
 
                                             if (response && response.data) {
                                                 console.log('extension set with new settings', response.data)
-                                                this.$refs.toast.showToast("Extension settings updated successfully!", 4, true)
+                                                this.$store.state.toast.showToast("Extension settings updated successfully!", 4, true)
 
                                             } else {
-                                                this.$refs.toast.showToast("Did not get Extension settings responses.\n" + response, 4, false)
+                                                this.$store.state.toast.showToast("Did not get Extension settings responses.\n" + response, 4, false)
                                                 this.isLoading = false
                                             }
 
 
                                         })
                                 } catch (error) {
-                                    this.$refs.toast.showToast("Did not get Extension settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.$store.state.toast.showToast("Did not get Extension settings responses.\n Endpoint error: " + error.message, 4, false)
                                     this.isLoading = false
                                 }
 
                             })
                         } else {
-                            this.$refs.toast.showToast("Extension has no settings", 4, false)
+                            this.$store.state.toast.showToast("Extension has no settings", 4, false)
                             this.isLoading = false
                         }
 
@@ -2768,7 +2765,7 @@ export default {
 
             } catch (error) {
                 this.isLoading = false
-                this.$refs.toast.showToast("Could not open personality settings. Endpoint error: " + error.message, 4, false)
+                this.$store.state.toast.showToast("Could not open personality settings. Endpoint error: " + error.message, 4, false)
             }
 
         },
@@ -2793,17 +2790,17 @@ export default {
 
                                             if (response && response.data) {
                                                 console.log('binding set with new settings', response.data)
-                                                this.$refs.toast.showToast("Binding settings updated successfully!", 4, true)
+                                                this.$store.state.toast.showToast("Binding settings updated successfully!", 4, true)
 
                                             } else {
-                                                this.$refs.toast.showToast("Did not get binding settings responses.\n" + response, 4, false)
+                                                this.$store.state.toast.showToast("Did not get binding settings responses.\n" + response, 4, false)
                                                 this.isLoading = false
                                             }
 
 
                                         })
                                 } catch (error) {
-                                    this.$refs.toast.showToast("Did not get binding settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.$store.state.toast.showToast("Did not get binding settings responses.\n Endpoint error: " + error.message, 4, false)
                                     this.isLoading = false
                                 }
 
@@ -2811,7 +2808,7 @@ export default {
 
                             })
                         } else {
-                            this.$refs.toast.showToast("Binding has no settings", 4, false)
+                            this.$store.state.toast.showToast("Binding has no settings", 4, false)
                             this.isLoading = false
                         }
 
@@ -2820,7 +2817,7 @@ export default {
 
             } catch (error) {
                 this.isLoading = false
-                this.$refs.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
+                this.$store.state.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
             }
         },
         onReloadBinding(binding_object){
@@ -2832,9 +2829,9 @@ export default {
                     this.isLoading = false
                     console.log('reload_binding', res)
                     if (res.data.status) {
-                        this.$refs.toast.showToast("Binding reloaded successfully!", 4, true)
+                        this.$store.state.toast.showToast("Binding reloaded successfully!", 4, true)
                     } else {
-                        this.$refs.toast.showToast("Could not reinstall binding", 4, false)
+                        this.$store.state.toast.showToast("Could not reinstall binding", 4, false)
                     }
                     return res.data;
                 }
@@ -2844,7 +2841,7 @@ export default {
 
                 .catch(error => {
                     this.isLoading = false
-                    this.$refs.toast.showToast("Could not reinstall binding\n" + error.message, 4, false)
+                    this.$store.state.toast.showToast("Could not reinstall binding\n" + error.message, 4, false)
                     return { 'status': false }
                 });
         },
@@ -2867,23 +2864,23 @@ export default {
 
                                             if (response && response.data) {
                                                 console.log('personality set with new settings', response.data)
-                                                this.$refs.toast.showToast("Personality settings updated successfully!", 4, true)
+                                                this.$store.state.toast.showToast("Personality settings updated successfully!", 4, true)
 
                                             } else {
-                                                this.$refs.toast.showToast("Did not get Personality settings responses.\n" + response, 4, false)
+                                                this.$store.state.toast.showToast("Did not get Personality settings responses.\n" + response, 4, false)
                                                 this.isLoading = false
                                             }
 
 
                                         })
                                 } catch (error) {
-                                    this.$refs.toast.showToast("Did not get Personality settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.$store.state.toast.showToast("Did not get Personality settings responses.\n Endpoint error: " + error.message, 4, false)
                                     this.isLoading = false
                                 }
 
                             })
                         } else {
-                            this.$refs.toast.showToast("Personality has no settings", 4, false)
+                            this.$store.state.toast.showToast("Personality has no settings", 4, false)
                             this.isLoading = false
                         }
 
@@ -2892,7 +2889,7 @@ export default {
 
             } catch (error) {
                 this.isLoading = false
-                this.$refs.toast.showToast("Could not open personality settings. Endpoint error: " + error.message, 4, false)
+                this.$store.state.toast.showToast("Could not open personality settings. Endpoint error: " + error.message, 4, false)
             }
 
         },
@@ -2958,10 +2955,10 @@ export default {
                 this.isLoading = false
                 console.log('update_setting', res)
                 if(res['status']){
-                    this.$refs.toast.showToast("Setting updated successfully.\n", 4, true)
+                    this.$store.state.toast.showToast("Setting updated successfully.\n", 4, true)
                 }
                 else{
-                    this.$refs.toast.showToast("Setting update failed.\nPlease view the console for more details.", 4, false)
+                    this.$store.state.toast.showToast("Setting update failed.\nPlease view the console for more details.", 4, false)
                 }
                 if (next !== undefined) {
                     next(res)
@@ -3152,12 +3149,12 @@ export default {
                 //console.log('apply-res',res)
                 if (res.data.status) {
 
-                    this.$refs.toast.showToast("Configuration changed successfully.", 4, true)
+                    this.$store.state.toast.showToast("Configuration changed successfully.", 4, true)
                     this.settingsChanged = false
                     //this.save_configuration()
                 } else {
 
-                    this.$refs.toast.showToast("Configuration change failed.", 4, false)
+                    this.$store.state.toast.showToast("Configuration change failed.", 4, false)
 
                 }
                 nextTick(() => {
@@ -3485,7 +3482,7 @@ export default {
 
             if (this.configFile.personalities.includes(pers.personality.full_path)) {
                 this.isLoading = false
-                this.$refs.toast.showToast("Personality already mounted", 4, false)
+                this.$store.state.toast.showToast("Personality already mounted", 4, false)
 
                 return
             }
@@ -3495,18 +3492,18 @@ export default {
 
             if (res && res.status && res.active_personality_id > -1 && res.personalities.includes(pers.personality.full_path)) {
                 this.configFile.personalities = res.personalities
-                this.$refs.toast.showToast("Personality mounted", 4, true)
+                this.$store.state.toast.showToast("Personality mounted", 4, true)
                 pers.isMounted = true
 
                 const res2 = await this.select_personality(pers.personality)
                 if (res2.status) {
-                    this.$refs.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
+                    this.$store.state.toast.showToast("Selected personality:\n" + pers.personality.name, 4, true)
 
                 }
                 this.$store.dispatch('refreshMountedPersonalities');
             } else {
                 pers.isMounted = false
-                this.$refs.toast.showToast("Could not mount personality\nError: " + res.error + "\nResponse:\n" + res, 4, false)
+                this.$store.state.toast.showToast("Could not mount personality\nError: " + res.error + "\nResponse:\n" + res, 4, false)
             }
             this.isLoading = false
 
@@ -3520,7 +3517,7 @@ export default {
 
             if (res.status) {
                 this.configFile.personalities = res.personalities
-                this.$refs.toast.showToast("Personality unmounted", 4, true)
+                this.$store.state.toast.showToast("Personality unmounted", 4, true)
                 const persId = this.personalities.findIndex(item => item.full_path == pers.full_path)
                 const persFilteredId = this.personalitiesFiltered.findIndex(item => item.full_path == pers.full_path)
                 const persIdZoo = this.$refs.personalitiesZoo.findIndex(item => item.full_path == pers.full_path)
@@ -3548,13 +3545,13 @@ export default {
                 // const res2 = await this.select_personality(lastPers.personality)
                 const res2 = await this.select_personality(pers.personality)
                 if (res2.status) {
-                    this.$refs.toast.showToast("Selected personality:\n" + lastPers.name, 4, true)
+                    this.$store.state.toast.showToast("Selected personality:\n" + lastPers.name, 4, true)
 
                 }
 
 
             } else {
-                this.$refs.toast.showToast("Could not unmount personality\nError: " + res.error, 4, false)
+                this.$store.state.toast.showToast("Could not unmount personality\nError: " + res.error, 4, false)
             }
 
             this.isLoading = false
@@ -3571,7 +3568,7 @@ export default {
 
             if (this.configFile.personalities.includes(ext.extension.full_path)) {
                 this.isLoading = false
-                this.$refs.toast.showToast("Extension already mounted", 4, false)
+                this.$store.state.toast.showToast("Extension already mounted", 4, false)
 
                 return
             }
@@ -3581,12 +3578,12 @@ export default {
 
             if (res && res.status && res.extensions.includes(ext.extension.full_path)) {
                 this.configFile.extensions = res.extensions
-                this.$refs.toast.showToast("Extension mounted", 4, true)
+                this.$store.state.toast.showToast("Extension mounted", 4, true)
                 ext.isMounted = true
                 this.$store.dispatch('refreshMountedExtensions');
             } else {
                 ext.isMounted = false
-                this.$refs.toast.showToast("Could not mount extension\nError: " + res.error + "\nResponse:\n" + res, 4, false)
+                this.$store.state.toast.showToast("Could not mount extension\nError: " + res.error + "\nResponse:\n" + res, 4, false)
             }
             this.isLoading = false
 
@@ -3600,7 +3597,7 @@ export default {
 
             if (res.status) {
                 this.configFile.extensions = res.extensions
-                this.$refs.toast.showToast("Extension unmounted", 4, true)
+                this.$store.state.toast.showToast("Extension unmounted", 4, true)
                 const extId = this.extensions.findIndex(item => item.full_path == ext.full_path)
                 const persFilteredId = this.extensionsFiltered.findIndex(item => item.full_path == ext.full_path)
                 const extIdZoo = this.$refs.extensionsZoo.findIndex(item => item.full_path == ext.full_path)
@@ -3628,7 +3625,7 @@ export default {
 
 
             } else {
-                this.$refs.toast.showToast("Could not unmount extension\nError: " + res.error, 4, false)
+                this.$store.state.toast.showToast("Could not unmount extension\nError: " + res.error, 4, false)
             }
 
             this.isLoading = false
@@ -3647,9 +3644,9 @@ export default {
                     this.isLoading = false
                     console.log('reinstall_extension', res)
                     if (res.data.status) {
-                        this.$refs.toast.showToast("Extension reinstalled successfully!", 4, true)
+                        this.$store.state.toast.showToast("Extension reinstalled successfully!", 4, true)
                     } else {
-                        this.$refs.toast.showToast("Could not reinstall extension", 4, false)
+                        this.$store.state.toast.showToast("Could not reinstall extension", 4, false)
                     }
                     return res.data;
                 }
@@ -3659,7 +3656,7 @@ export default {
 
                 .catch(error => {
                     this.isLoading = false
-                    this.$refs.toast.showToast("Could not reinstall personality\n" + error.message, 4, false)
+                    this.$store.state.toast.showToast("Could not reinstall personality\n" + error.message, 4, false)
                     return { 'status': false }
                 });            
         },
@@ -3673,9 +3670,9 @@ export default {
                     this.isLoading = false
                     console.log('reinstall_personality', res)
                     if (res.data.status) {
-                        this.$refs.toast.showToast("Personality reinstalled successfully!", 4, true)
+                        this.$store.state.toast.showToast("Personality reinstalled successfully!", 4, true)
                     } else {
-                        this.$refs.toast.showToast("Could not reinstall personality", 4, false)
+                        this.$store.state.toast.showToast("Could not reinstall personality", 4, false)
                     }
                     return res.data;
                 }
@@ -3685,7 +3682,7 @@ export default {
 
                 .catch(error => {
                     this.isLoading = false
-                    this.$refs.toast.showToast("Could not reinstall personality\n" + error.message, 4, false)
+                    this.$store.state.toast.showToast("Could not reinstall personality\n" + error.message, 4, false)
                     return { 'status': false }
                 });
         },
