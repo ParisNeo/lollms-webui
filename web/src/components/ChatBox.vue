@@ -212,30 +212,38 @@
 
 
                             </textarea>
-                            <input type="file" ref="fileDialog" style="display: none" @change="addFiles" multiple />
-                            <button type="button" @click.stop="$refs.fileDialog.click()" title="Add files"
-                                class="absolute inset-y-0 right-0 flex items-center mr-2 w-6 hover:text-secondary duration-75 active:scale-90">
-
-                                <i data-feather="file-plus"></i>
-
-                            </button>
                         </div>
                         <!-- BUTTONS -->
                         <div class="inline-flex justify-center  rounded-full ">
                             <button v-if="!loading" 
                                 type="button"
                                 @click="startSpeechRecognition"
+                                title="Press and talk"
                                 :class="{ 'text-red-500': isLesteningToVoice }"
                                 class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer"
                             >
                             <i data-feather="mic"></i>
                             </button>
+
+                            <input type="file" ref="fileDialog" style="display: none" @change="addFiles" multiple />
+                            <button type="button" @click.stop="$refs.fileDialog.click()" title="Add files"
+                                class="m-1 w-6 hover:text-secondary duration-75 active:scale-90">
+
+                                <i data-feather="file-plus"></i>
+
+                            </button>
                             <button type="button" @click.stop="takePicture" title="take a shot from camera"
-                                class=" w-6 hover:text-secondary duration-75 active:scale-90">
+                                class="m-1 w-6 hover:text-secondary duration-75 active:scale-90">
 
                                 <i data-feather="camera"></i>
 
                             </button>
+                            <button type="button" @click.stop="addWebLink" title="add web link"
+                                class="m-1 w-6 hover:text-secondary duration-75 active:scale-90">
+
+                                <i data-feather="globe"></i>
+
+                            </button>                            
                             <button v-if="!loading" type="button" @click="makeAnEmptyUserMessage" title="New empty user message"
                                 class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
 
@@ -251,7 +259,7 @@
 
                                 <span class="sr-only">New empty message</span>
                             </button>
-                            <button v-if="!loading" type="button" @click="submit"
+                            <button v-if="!loading" type="button" @click="submit" title="Send"
                                 class=" w-6 hover:text-secondary duration-75 active:scale-90">
 
                                 <i data-feather="send"></i>
@@ -330,7 +338,7 @@ console.log("modelImgPlaceholder:",modelImgPlaceholder)
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
     name: 'ChatBox',
-    emits: ["messageSentEvent", "sendCMDEvent", "stopGenerating", "loaded", "createEmptyUserMessage", "createEmptyAIMessage", "personalitySelected"],
+    emits: ["messageSentEvent", "sendCMDEvent", "stopGenerating", "loaded", "createEmptyUserMessage", "createEmptyAIMessage", "personalitySelected","addWebLink"],
     props: {
         onTalk: Function,
         discussionList: Array,
@@ -768,6 +776,10 @@ export default {
         },
         sendCMDEvent(cmd){
             this.$emit('sendCMDEvent', cmd)
+        },
+        addWebLink(){
+            console.log("Emitting addWebLink")
+            this.$emit('addWebLink')
         },
         takePicture(){
             socket.emit('take_picture')

@@ -261,9 +261,11 @@
                     :discussionList="discussionArr" 
                     :on-show-toast-message="showToastMessage"
                     :on-talk="talk"
+
                     @personalitySelected="recoverFiles"
                     @messageSentEvent="sendMsg" 
                     @sendCMDEvent="sendCmd"
+                    @addWebLink="add_webpage"
                     @createEmptyUserMessage="createEmptyUserMessage"
                     @createEmptyAIMessage="createEmptyAIMessage"
                     @stopGenerating="stopGenerating" 
@@ -287,6 +289,8 @@
         <ProgressBar ref="progress" :progress="progress_value" class="w-full h-4"></ProgressBar>
         <p class="text-2xl animate-pulse mt-2 text-white">{{ loading_infos }} ...</p>
     </div>
+    <InputBox prompt-text="Enter the url to the page to use as discussion support" @ok="handleOk" ref="web_url_input_box"></InputBox>   
+
 </template>
 
 
@@ -440,6 +444,24 @@ export default {
         }
     },
     methods: { 
+        add_webpage(){
+            console.log("addWebLink received")
+            this.$refs.web_url_input_box.showPanel();
+        },
+        handleOk(){
+            console.log("OK")
+            socket.on('web_page_added',()=>{
+                axios.get('/get_current_personality_files_list').then(res=>{
+                    this.filesList = res.data.files;
+                    console.log("this.filesList",this.filesList)
+                    this.isFileSentList= res.data.files.map(file => {
+                        return true;
+                    });
+                    console.log(`Files recovered: ${this.filesList}`)
+                })
+            });
+            socket.emit('add_webpage',{'url':this.$refs.web_url_input_box.inputText})
+        },
         show_progress(data){
             this.progress_visibility_val = true;
         },
@@ -1930,7 +1952,8 @@ export default {
         WelcomeComponent,
         ChoiceDialog,
         MessageBox,
-        ProgressBar       
+        ProgressBar,
+        InputBox    
     },
     watch: {  
         progress_visibility_val(newVal) {
@@ -2064,6 +2087,8 @@ import Discussion from '../components/Discussion.vue'
 import ChoiceDialog from '@/components/ChoiceDialog.vue'
 import MessageBox from "@/components/MessageBox.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
+import InputBox from "@/components/input_box.vue";
+
 
 import Message from '../components/Message.vue'
 import ChatBox from '../components/ChatBox.vue'

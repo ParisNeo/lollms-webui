@@ -16,3 +16,4 @@ setuptools
 numpy
 flask_compress
 ascii_colors>=0.1.4
+beautifulsoup4

@@ -1,20 +1,22 @@
 <template>
-      <div class="flex-col w-[800]px y-overflow scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
-        <div v-if="!activePersonality || !activePersonality.scene_path" class="text-center">
-          <!-- Display text when there's no scene_path or empty avatar -->
-          Personality does not have a 3d avatar.
+    <div class="flex-row w-[800]px y-overflow scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+        <div ref="webglContainer">
+        <div class="flex-col y-overflow scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+          <div v-if="!activePersonality || !activePersonality.scene_path" class="text-center">
+            <!-- Display text when there's no scene_path or empty avatar -->
+            Personality does not have a 3d avatar.
+          </div>
+          <div v-if="!activePersonality || (!activePersonality.avatar || activePersonality.avatar === '')" class="text-center">
+            Personality does not have an avatar.
+          </div>
+          <FloatingFrame />
+          <AudioFrame />
+          <div class="floating-frame2">
+            <div v-html="htmlContent"></div>
+          </div>
         </div>
-        <div v-if="!activePersonality || (!activePersonality.avatar || activePersonality.avatar === '')" class="text-center">
-          Personality does not have an avatar.
         </div>
-        <FloatingFrame />
-        <AudioFrame />
-        <div class="floating-frame2">
-          <div v-html="htmlContent"></div>
-        </div>
-      </div>
-      <div ref="webglContainer">
-      </div>
+    </div>
 </template>
   
   <script>
