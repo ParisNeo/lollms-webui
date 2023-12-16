@@ -292,18 +292,22 @@ class LoLLMsAPI(LollmsApplication):
         
         @socketio.on('start_webcam_video_stream')
         def start_webcam_video_stream():
+            self.info("Starting video capture")
             self.webcam.start_capture()
 
         @socketio.on('stop_webcam_video_stream')
         def stop_webcam_video_stream():
+            self.info("Stopping video capture")
             self.webcam.stop_capture()
 
         @socketio.on('start_audio_stream')
         def start_audio_stream():
+            self.info("Starting audio capture")
             self.audio_cap.start_recording()
 
         @socketio.on('stop_audio_stream')
         def stop_audio_stream():
+            self.info("Stopping audio capture")
             self.audio_cap.stop_recording()
 
 

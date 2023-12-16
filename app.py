@@ -1773,6 +1773,7 @@ try:
             ASCIIColors.info("")
             ASCIIColors.info("")
             ASCIIColors.info("")
+            self.socketio.stop()
             run_restart_script(self.args)
             
 
@@ -1786,6 +1787,7 @@ try:
             ASCIIColors.info("")
             ASCIIColors.info("")
             ASCIIColors.info("")
+            self.socketio.stop()
             run_update_script(self.args)
             sys.exit()
             

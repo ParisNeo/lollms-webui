@@ -2,39 +2,33 @@
     <div class="absolute bottom-16 right-2 z-20 flex flex-col gap-3 min-w-[300px]">
         <TransitionGroup name="toastItem" tag="div">
             <div v-for=" t in toastArr" :key="t.id" class="relative">
-                <div class="flex flex-row items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
-                    role="alert">
-                    <div class="flex flex-row flex-grow items-center">
-                        <slot>
+                <div class="flex flex-row items-center w-full p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
+                    <div class="flex flex-row flex-grow items-center h-auto">
+                        <div v-if="t.log_type==0"
+                            class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
+                            <i data-feather="x"></i>
+                            <span class="sr-only">Cross icon</span>
+                        </div>
+                        <div v-if="t.log_type==1"
+                            class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
+                            <i data-feather="check"></i>
+                            <span class="sr-only">Check icon</span>
+                        </div>
+                        <div v-if="t.log_type==2"
+                            class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-blue-500 bg-blue-100 rounded-lg dark:bg-blue-800 dark:text-blue-200">
+                            <i data-feather="info"></i>
+                            <span class="sr-only"></span>
+                        </div>
+                        <div v-if="t.log_type==3"
+                            class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-orange-500 bg-orange-100 rounded-lg dark:bg-orange-800 dark:text-orange-200">
+                            <i data-feather="alert-triangle"></i>
+                            <span class="sr-only"></span>
+                        </div>
+                        <div class="ml-3 text-sm font-normal whitespace-pre-wrap line-clamp-3 max-w-xs max-h-[400px] overflow-auto break-words" :title="t.message">{{ t.message }}</div>
 
-                            <div v-if="t.log_type==0"
-                                class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
-                                <i data-feather="x"></i>
-                                <span class="sr-only">Cross icon</span>
-                            </div>
-                            <div v-if="t.log_type==1"
-                                class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
-                                <i data-feather="check"></i>
-                                <span class="sr-only">Check icon</span>
-                            </div>
-                            <div v-if="t.log_type==2"
-                                class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-blue-500 bg-blue-100 rounded-lg dark:bg-blue-800 dark:text-blue-200">
-                                <i data-feather="info"></i>
-                                <span class="sr-only"></span>
-                            </div>
-                            <div v-if="t.log_type==3"
-                                class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-orange-500 bg-orange-100 rounded-lg dark:bg-orange-800 dark:text-orange-200">
-                                <i data-feather="alert-triangle"></i>
-                                <span class="sr-only"></span>
-                            </div>
-                            <div class="ml-3 text-sm font-normal whitespace-pre-wrap line-clamp-3" :title="t.message">{{ t.message }}</div>
-
-                        </slot>
                     </div>
                 
                     <div class="flex ">
-
-
                         <button type="button" @click.stop="copyToClipBoard(t.message)" title="Copy message"
                             class=" bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700">
                             <span class="sr-only">Copy message</span>

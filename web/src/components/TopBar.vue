@@ -134,6 +134,9 @@ export default {
     },
     watch:{
         isConnected(){
+            if (!this.isConnected){
+                this.$store.state.toast.showToast("Server suddenly disconnected. Please reboot the server", 410, false)
+            }
             nextTick(() => {
                 feather.replace()
             })
