@@ -1,5 +1,5 @@
 <template>
-    <div class="container overflow-y-scroll flex flex-col shadow-lg p-10 pt-0 overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+    <div class="container overflow-y-scroll flex flex-row shadow-lg p-10 pt-0 overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
         <!-- CONTROL PANEL -->
         <div
             class="sticky top-0 z-10 flex flex-row mb-2 p-3 gap-3 w-full rounded-b-lg bg-bg-light-tone dark:bg-bg-dark-tone  shadow-lg">
@@ -84,7 +84,7 @@
             </div>
         </div>
 
-        <div :class="isLoading ? 'pointer-events-none opacity-30' : ''">
+        <div :class="isLoading ? 'pointer-events-none opacity-30' : 'w-full'">
             <!-- DISK AND RAM USAGE -->
             <div
                 class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
