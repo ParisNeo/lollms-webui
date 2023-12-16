@@ -84,10 +84,9 @@
             </div>
         </div>
 
-        <div :class="isLoading ? 'pointer-events-none opacity-30' : 'w-full'">
+        <div :class="isLoading ? 'pointer-events-none opacity-30 w-full' : 'w-full'">
             <!-- DISK AND RAM USAGE -->
-            <div
-                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+            <div class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row p-3">
                     <button @click.stop="sc_collapsed = !sc_collapsed"
                         class="text-2xl hover:text-primary  p-2 -m-2 w-full text-left flex flex-row items-center ">
