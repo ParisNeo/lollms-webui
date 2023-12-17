@@ -191,14 +191,14 @@
                 </div>
 
             </div>
-            <div class="relative flex flex-row flex-grow mb-10 z-0">
+            <div class="relative flex flex-row flex-grow mb-10 z-0  w-full">
 
                 <!-- DISCUSSION LIST -->
-                <div class="mx-4 flex flex-col flex-grow " :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
+                <div class="mx-4 flex flex-col flex-grow  w-full " :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
 
 
                     <div id="dis-list" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''"
-                        class="flex flex-col flex-grow  ">
+                        class="flex flex-col flex-grow  w-full">
                         <TransitionGroup v-if="list.length > 0" name="list">
                             <Discussion v-for="(item, index) in list" :key="item.id" :id="item.id" :title="item.title"
                                 :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"
@@ -226,13 +226,13 @@
         </div>
     </div>
     </transition>
-    <div v-if="isReady" class="relative flex flex-col flex-grow" >
+    <div v-if="isReady" class="relative flex flex-col flex-grow w-full" >
         <div id="messages-list"
-            class=" z-0 flex flex-col  flex-grow  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+            class="w-full z-0 flex flex-col  flex-grow  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
             :class="isDragOverChat ? 'pointer-events-none' : ''">
 
             <!-- CHAT AREA -->
-            <div class=" container pt-4 pb-10 mb-28">
+            <div class="container pt-4 pb-50 mb-50 w-full">
                 <TransitionGroup v-if="discussionArr.length > 0" name="list">
                     <Message v-for="(msg, index) in discussionArr" 
                         :key="msg.id" :message="msg"  :id="'msg-' + msg.id"
@@ -249,7 +249,7 @@
 
                 </TransitionGroup>
                 <WelcomeComponent v-if="!currentDiscussion.id" />
-
+                <div><br><br><br><br><br><br><br></div>
             </div>
 
             <div
