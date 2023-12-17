@@ -2615,8 +2615,14 @@ export default {
                     this.isLoading = false
                     console.log('install_binding', res)
                     if (res.data.status) {
-                        this.$store.state.toast.showToast("Installed binding successfully!", 4, true)
+                        this.$store.state.toast.showToast("Binding installed successfully!", 4, true)
                         this.update_binding(binding_object.binding.folder);
+                        this.$store.state.api_get_req('restart_program')
+                        this.$store.state.toast.showToast("Rebooting the app. Please wait...", 410, false)
+                        console.log("this.$store.state.api_get_req",this.$store.state.api_get_req)
+                        setTimeout(()=>{
+                            window.close();
+                        },2000)
                     } else {
                         this.$store.state.toast.showToast("Could not reinstall binding", 4, false)
                     }
@@ -2684,7 +2690,13 @@ export default {
                     this.isLoading = false
                     console.log('reinstall_binding', res)
                     if (res.data.status) {
-                        this.$store.state.toast.showToast("Reinstalled binding successfully!", 4, true)
+                        this.$store.state.toast.showToast("Binding reinstalled successfully!", 4, true)
+                        this.$store.state.api_get_req('restart_program')
+                        this.$store.state.toast.showToast("Rebooting the app. Please wait...", 410, false)
+                        console.log("this.$store.state.api_get_req",this.$store.state.api_get_req)
+                        setTimeout(()=>{
+                            window.close();
+                        },2000)
                     } else {
                         this.$store.state.toast.showToast("Could not reinstall binding", 4, false)
                     }

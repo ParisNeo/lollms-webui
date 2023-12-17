@@ -2012,16 +2012,23 @@ class LoLLMsAPI(LollmsApplication):
             self.prepare_reception(client_id)
             self.generating = True
             self.connections[client_id]["processing"]=True
-            self.generate(
-                            self.discussion_messages, 
-                            self.current_message, 
-                            n_predict = self.config.ctx_size-len(tokens)-1,
-                            client_id=client_id,
-                            callback=partial(self.process_chunk,client_id = client_id)
-                        )
-            print()
-            print("## Done Generation ##")
-            print()
+            try:
+                self.generate(
+                                self.discussion_messages, 
+                                self.current_message, 
+                                n_predict = self.config.ctx_size-len(tokens)-1,
+                                client_id=client_id,
+                                callback=partial(self.process_chunk,client_id = client_id)
+                            )
+                print()
+                ASCIIColors.success("## Done Generation ##")
+                print()
+            except Exception as ex:
+                trace_exception(ex)
+                print()
+                ASCIIColors.error("## Generation Error ##")
+                print()
+
             self.cancel_gen = False
 
             # Send final message

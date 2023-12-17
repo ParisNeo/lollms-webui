@@ -1011,7 +1011,8 @@ try:
                 try:
                     self.model = None
                     for per in self.mounted_personalities:
-                        per.model = None
+                        if per is not None:
+                            per.model = None
                     self.model = self.binding.build_model()
                     if self.model is not None:
                         ASCIIColors.yellow("New model OK")
@@ -1638,7 +1639,6 @@ try:
                 self.config.binding_name = data['name']
                 self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL, lollmsCom=self)
                 self.success("Binding installed successfully")
-                self.InfoMessage("Please reboot the application so that the binding installation can be taken into consideration")
                 del self.binding
                 self.binding = None
                 self.config.binding_name = old_bn
@@ -1671,12 +1671,12 @@ try:
                 self.config.binding_name = data['name']
                 self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.FORCE_INSTALL, lollmsCom=self)
                 self.success("Binding reinstalled successfully")
-                self.InfoMessage("Please reboot the application so that the binding installation can be taken into consideration")
                 self.config.binding_name = old_bn
                 self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, lollmsCom=self)
                 self.model = self.binding.build_model()
                 for per in self.mounted_personalities:
                     per.model = self.model
+                
                 return jsonify({"status": True}) 
             except Exception as ex:
                 ASCIIColors.error(f"Couldn't build binding: [{ex}]")

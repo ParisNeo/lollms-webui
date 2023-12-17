@@ -35,8 +35,8 @@
                 <div v-if="!isConnected" title="Connection status: Not connected" class="text-red-500 cursor-pointer">
                     <i data-feather="zap-off"></i>
                 </div>
-                <a href="#" @click="refreshPage">
-                    <div class="text-2xl  hover:text-primary duration-150" title="refresh page">
+                <a href="#" @click="restartProgram">
+                    <div class="text-2xl  hover:text-primary duration-150" title="restart program">
                         <i data-feather="refresh-ccw"></i>
                     </div>
                 </a>
@@ -135,6 +135,7 @@ export default {
     watch:{
         isConnected(){
             if (!this.isConnected){
+                this.disconnected_audio.play()
                 this.$store.state.toast.showToast("Server suddenly disconnected. Please reboot the server", 410, false)
             }
             nextTick(() => {
@@ -145,6 +146,8 @@ export default {
     },
     data() {
         return {
+            rebooting_the_tool_audio: new Audio("rebooting.mp3"),            
+            disconnected_audio: new Audio("disconnected.mp3"),
             database_selectorDialogVisible:false,
             progress_visibility:false,
             progress_value:0,
@@ -176,11 +179,16 @@ export default {
         this.systemTheme = window.matchMedia("prefers-color-scheme: dark").matches;
     },
     methods: {
-        async refreshPage(event) {
+        restartProgram(event) {
             event.preventDefault();
+            this.$store.state.api_get_req('restart_program')
+            this.rebooting_the_tool_audio.play()
+            this.$store.state.toast.showToast("Rebooting the app. Please wait...", 410, false)
+            //self.$store.state.toast.showToast("Rebooting the app. Please wait...", 50, true);
             console.log("this.$store.state.api_get_req",this.$store.state.api_get_req)
-            await this.$store.state.api_get_req('restart_program')
-            window.close();
+            setTimeout(()=>{
+                window.close();
+            },2000)
         },
         handleOk(inputText) {
             console.log("Input text:", inputText);
