@@ -95,12 +95,6 @@ if [ ! -d "$INSTALL_ENV_DIR" ]; then
   echo "Packages to install: $PACKAGES_TO_INSTALL"
   conda create -y -k -n "$ENV_NAME" $CHANNEL $PACKAGES_TO_INSTALL || ( echo && echo "Conda environment creation failed." && exit 1 )
   echo "Conda created and using packages: $PACKAGES_TO_INSTALL"
-  echo "Installing tools"
-  if [[ "$(echo $gpuchoice | tr '[:lower:]' '[:upper:]')" == "A" ]]; then
-    conda run --live-stream -n "$ENV_NAME" python -m pip install torch torchvision torchaudio --channel pytorch --channel conda-forge || ( echo && echo "Pytorch installation failed." && exit 1 )
-  elif [[ "$(echo $gpuchoice | tr '[:lower:]' '[:upper:]')" == "B" ]]; then
-    conda run --live-stream -n "$ENV_NAME" python -m pip install torch torchvision torchaudio --channel pytorch --channel conda-forge || ( echo && echo "Pytorch installation failed." && exit 1 )
-  fi
 fi
 
 # Activate installer environment

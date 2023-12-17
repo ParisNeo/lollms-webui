@@ -98,13 +98,6 @@ source "$MINICONDA_DIR/bin/activate" || ( echo "Miniconda hook not found." && ex
 if [ ! -d "$INSTALL_ENV_DIR" ]; then
   echo "Packages to install: $PACKAGES_TO_INSTALL"
   conda create -y -k -p "$INSTALL_ENV_DIR" $CHANNEL $PACKAGES_TO_INSTALL || ( echo && echo "Conda environment creation failed." && exit 1 )
-  if [[ "${gpuchoice^^}" == "A" ]]; then
-    conda run --live-stream -p "$INSTALL_ENV_DIR" python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 || ( echo && echo "Pytorch installation failed." && exit 1 )
-  elif [[ "${gpuchoice^^}" == "B" ]]; then
-    conda run --live-stream -p "$INSTALL_ENV_DIR" python -m pip install torch torchvision torchaudio  --index-url https://download.pytorch.org/whl/rocm5.4.2 || ( echo && echo "Pytorch installation failed." && exit 1 )
-  elif [[ "${gpuchoice^^}" == "C" ]]; then
-    conda run --live-stream -p "$INSTALL_ENV_DIR" python -m pip install torch torchvision torchaudio || ( echo && echo "Pytorch installation failed." && exit 1 )
-  fi
 fi
 
 # Check if conda environment was actually created

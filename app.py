@@ -13,7 +13,7 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-__version__ ="8.0 (Beta)"
+__version__ ="8.0"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
@@ -1649,7 +1649,7 @@ try:
                         per.model = self.model
                 return jsonify({"status": True}) 
             except Exception as ex:
-                ASCIIColors.error(f"Couldn't build binding: [{ex}]")
+                self.error(f"Couldn't build binding: [{ex}]")
                 trace_exception(ex)
                 return jsonify({"status":False, 'error':str(ex)})
 

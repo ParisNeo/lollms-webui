@@ -24,6 +24,7 @@ export const store = createStore({
     state () {
       return {
         // count: 0,
+        api_get_req:null,
         startSpeechRecognition:null,
         ready:false,
         loading_infos: "",
@@ -499,6 +500,7 @@ let actionsExecuted = false;
 app.mixin({
   async created() {
     if (!actionsExecuted) {
+      this.$store.state.api_get_req = api_get_req
       actionsExecuted = true;
       console.log("Calling")
       this.$store.state.loading_infos = "Loading Configuration"

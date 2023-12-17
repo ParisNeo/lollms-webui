@@ -40,7 +40,7 @@
                         <i data-feather="refresh-ccw"></i>
                     </div>
                 </a>
-
+                
                 <a href="https://github.com/ParisNeo/lollms-webui" target="_blank">
 
                     <div class="text-2xl  hover:text-primary duration-150" title="Visit repository page">
@@ -176,9 +176,11 @@ export default {
         this.systemTheme = window.matchMedia("prefers-color-scheme: dark").matches;
     },
     methods: {
-        refreshPage(event) {
+        async refreshPage(event) {
             event.preventDefault();
-            window.location.reload();
+            console.log("this.$store.state.api_get_req",this.$store.state.api_get_req)
+            await this.$store.state.api_get_req('restart_program')
+            window.close();
         },
         handleOk(inputText) {
             console.log("Input text:", inputText);
