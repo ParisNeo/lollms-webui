@@ -24,6 +24,7 @@ export const store = createStore({
     state () {
       return {
         // count: 0,
+        startSpeechRecognition:null,
         ready:false,
         loading_infos: "",
         loading_progress: 0,
