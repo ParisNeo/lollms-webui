@@ -38,6 +38,15 @@ from datetime import datetime
 from typing import List, Tuple
 import time
 
+from lollms.utilities import find_first_available_file_index
+
+if not PackageManager.check_package_installed("requests"):
+    PackageManager.install_package("requests")
+if not PackageManager.check_package_installed("bs4"):
+    PackageManager.install_package("beautifulsoup4")
+import requests
+from bs4 import BeautifulSoup
+
 def terminate_thread(thread):
     if thread:
         if not thread.is_alive():
@@ -223,6 +232,26 @@ class LoLLMsAPI(LollmsApplication):
             
             ASCIIColors.error(f'Client {request.sid} disconnected')
 
+        @socketio.on('add_webpage')
+        def add_webpage(data):
+            ASCIIColors.yellow("Scaping web page")
+            url = data['url']
+            index =  find_first_available_file_index(self.lollms_paths.personal_uploads_path,"web_",".txt")
+            file_path=self.lollms_paths.personal_uploads_path/f"web_{index}.txt"
+            self.scrape_and_save(url=url, file_path=file_path)
+            try:
+                if not self.personality.processor is None:
+                    self.personality.processor.add_file(file_path, partial(self.process_chunk, client_id = request.sid))
+                    # File saved successfully
+                    socketio.emit('web_page_added', {'status':True,})
+                else:
+                    self.personality.add_file(file_path, partial(self.process_chunk, client_id = request.sid))
+                    # File saved successfully
+                    socketio.emit('web_page_added', {'status':True})
+            except Exception as e:
+                # Error occurred while saving the file
+                socketio.emit('web_page_added', {'status':False})
+
         @socketio.on('take_picture')
         def take_picture():
             try:
@@ -263,18 +292,22 @@ class LoLLMsAPI(LollmsApplication):
         
         @socketio.on('start_webcam_video_stream')
         def start_webcam_video_stream():
+            self.info("Starting video capture")
             self.webcam.start_capture()
 
         @socketio.on('stop_webcam_video_stream')
         def stop_webcam_video_stream():
+            self.info("Stopping video capture")
             self.webcam.stop_capture()
 
         @socketio.on('start_audio_stream')
         def start_audio_stream():
+            self.info("Starting audio capture")
             self.audio_cap.start_recording()
 
         @socketio.on('stop_audio_stream')
         def stop_audio_stream():
+            self.info("Stopping audio capture")
             self.audio_cap.stop_recording()
 
 
@@ -1097,6 +1130,25 @@ class LoLLMsAPI(LollmsApplication):
         else:
             if output["text"].lower()=="lollms":
                 self.summoned = True
+    def scrape_and_save(self, url, file_path):
+        # Send a GET request to the URL
+        response = requests.get(url)
+        
+        # Parse the HTML content using BeautifulSoup
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # Find all the text content in the webpage
+        text_content = soup.get_text()
+        
+        # Remove extra returns and spaces
+        text_content = ' '.join(text_content.split())
+        
+        # Save the text content as a text file
+        with open(file_path, 'w', encoding="utf-8") as file:
+            file.write(text_content)
+        
+        self.info(f"Webpage content saved to {file_path}")
+
     def rebuild_personalities(self, reload_all=False):
         if reload_all:
             self.mounted_personalities=[]
@@ -1960,16 +2012,23 @@ class LoLLMsAPI(LollmsApplication):
             self.prepare_reception(client_id)
             self.generating = True
             self.connections[client_id]["processing"]=True
-            self.generate(
-                            self.discussion_messages, 
-                            self.current_message, 
-                            n_predict = self.config.ctx_size-len(tokens)-1,
-                            client_id=client_id,
-                            callback=partial(self.process_chunk,client_id = client_id)
-                        )
-            print()
-            print("## Done Generation ##")
-            print()
+            try:
+                self.generate(
+                                self.discussion_messages, 
+                                self.current_message, 
+                                n_predict = self.config.ctx_size-len(tokens)-1,
+                                client_id=client_id,
+                                callback=partial(self.process_chunk,client_id = client_id)
+                            )
+                print()
+                ASCIIColors.success("## Done Generation ##")
+                print()
+            except Exception as ex:
+                trace_exception(ex)
+                print()
+                ASCIIColors.error("## Generation Error ##")
+                print()
+
             self.cancel_gen = False
 
             # Send final message

@@ -191,14 +191,14 @@
                 </div>
 
             </div>
-            <div class="relative flex flex-row flex-grow mb-10 z-0">
+            <div class="relative flex flex-row flex-grow mb-10 z-0  w-full">
 
                 <!-- DISCUSSION LIST -->
-                <div class="mx-4 flex flex-col flex-grow " :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
+                <div class="mx-4 flex flex-col flex-grow  w-full " :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
 
 
                     <div id="dis-list" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''"
-                        class="flex flex-col flex-grow  ">
+                        class="flex flex-col flex-grow  w-full">
                         <TransitionGroup v-if="list.length > 0" name="list">
                             <Discussion v-for="(item, index) in list" :key="item.id" :id="item.id" :title="item.title"
                                 :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"
@@ -226,13 +226,13 @@
         </div>
     </div>
     </transition>
-    <div v-if="isReady" class="relative flex flex-col flex-grow" >
+    <div v-if="isReady" class="relative flex flex-col flex-grow w-full" >
         <div id="messages-list"
-            class=" z-0 flex flex-col  flex-grow  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+            class="w-full z-0 flex flex-col  flex-grow  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
             :class="isDragOverChat ? 'pointer-events-none' : ''">
 
             <!-- CHAT AREA -->
-            <div class=" container pt-4 pb-10 mb-28">
+            <div class="container pt-4 pb-50 mb-50 w-full">
                 <TransitionGroup v-if="discussionArr.length > 0" name="list">
                     <Message v-for="(msg, index) in discussionArr" 
                         :key="msg.id" :message="msg"  :id="'msg-' + msg.id"
@@ -249,7 +249,7 @@
 
                 </TransitionGroup>
                 <WelcomeComponent v-if="!currentDiscussion.id" />
-
+                <div><br><br><br><br><br><br><br></div>
             </div>
 
             <div
@@ -261,9 +261,11 @@
                     :discussionList="discussionArr" 
                     :on-show-toast-message="showToastMessage"
                     :on-talk="talk"
+
                     @personalitySelected="recoverFiles"
                     @messageSentEvent="sendMsg" 
                     @sendCMDEvent="sendCmd"
+                    @addWebLink="add_webpage"
                     @createEmptyUserMessage="createEmptyUserMessage"
                     @createEmptyAIMessage="createEmptyAIMessage"
                     @stopGenerating="stopGenerating" 
@@ -275,7 +277,6 @@
         </div>
 
     </div>
-    <MessageBox ref="messageBox" />
     <ChoiceDialog reference="database_selector" class="z-20"
       :show="database_selectorDialogVisible"
       :choices="databases"
@@ -287,6 +288,8 @@
         <ProgressBar ref="progress" :progress="progress_value" class="w-full h-4"></ProgressBar>
         <p class="text-2xl animate-pulse mt-2 text-white">{{ loading_infos }} ...</p>
     </div>
+    <InputBox prompt-text="Enter the url to the page to use as discussion support" @ok="handleOk" ref="web_url_input_box"></InputBox>   
+
 </template>
 
 
@@ -440,6 +443,24 @@ export default {
         }
     },
     methods: { 
+        add_webpage(){
+            console.log("addWebLink received")
+            this.$refs.web_url_input_box.showPanel();
+        },
+        handleOk(){
+            console.log("OK")
+            socket.on('web_page_added',()=>{
+                axios.get('/get_current_personality_files_list').then(res=>{
+                    this.filesList = res.data.files;
+                    console.log("this.filesList",this.filesList)
+                    this.isFileSentList= res.data.files.map(file => {
+                        return true;
+                    });
+                    console.log(`Files recovered: ${this.filesList}`)
+                })
+            });
+            socket.emit('add_webpage',{'url':this.$refs.web_url_input_box.inputText})
+        },
         show_progress(data){
             this.progress_visibility_val = true;
         },
@@ -463,7 +484,7 @@ export default {
 
                             // open form
 
-                            this.$refs.universalForm.showForm(res.data, "Binding settings - " + bindingEntry.binding.name, "Save changes", "Cancel").then(res => {
+                            this.$store.state.universalForm.showForm(res.data, "Binding settings - " + bindingEntry.binding.name, "Save changes", "Cancel").then(res => {
                                 // send new data
                                 try {
                                     axios.post('/set_active_binding_settings',
@@ -554,13 +575,13 @@ export default {
                             this.$store.state.toast.showToast("Settings saved!",4,true)
                         }
                         else
-                            this.$refs.messageBox.showMessage("Error: Couldn't save settings!")
+                            this.$store.state.messageBox.showMessage("Error: Couldn't save settings!")
                         return res.data;
                     }
                 })
                 .catch(error => {
                     console.log(error.message, 'save_configuration')
-                    this.$refs.messageBox.showMessage("Couldn't save settings!")
+                    this.$store.state.messageBox.showMessage("Couldn't save settings!")
                     return { 'status': false }
                 });
 
@@ -1206,7 +1227,7 @@ export default {
                 this.$store.state.toast.showToast(notif.content, notif.duration, notif.notification_type)
             }
             else if(notif.display_type==1){
-                this.$refs.messageBox.showMessage(notif.content)
+                this.$store.state.messageBox.showMessage(notif.content)
             }
             this.chime.play()
         },
@@ -1929,8 +1950,8 @@ export default {
         ChatBox,
         WelcomeComponent,
         ChoiceDialog,
-        MessageBox,
-        ProgressBar       
+        ProgressBar,
+        InputBox    
     },
     watch: {  
         progress_visibility_val(newVal) {
@@ -2062,8 +2083,9 @@ export default {
 <script setup>
 import Discussion from '../components/Discussion.vue'
 import ChoiceDialog from '@/components/ChoiceDialog.vue'
-import MessageBox from "@/components/MessageBox.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
+import InputBox from "@/components/input_box.vue";
+
 
 import Message from '../components/Message.vue'
 import ChatBox from '../components/ChatBox.vue'

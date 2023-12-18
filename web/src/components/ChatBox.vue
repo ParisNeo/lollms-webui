@@ -212,30 +212,38 @@
 
 
                             </textarea>
-                            <input type="file" ref="fileDialog" style="display: none" @change="addFiles" multiple />
-                            <button type="button" @click.stop="$refs.fileDialog.click()" title="Add files"
-                                class="absolute inset-y-0 right-0 flex items-center mr-2 w-6 hover:text-secondary duration-75 active:scale-90">
-
-                                <i data-feather="file-plus"></i>
-
-                            </button>
                         </div>
                         <!-- BUTTONS -->
                         <div class="inline-flex justify-center  rounded-full ">
                             <button v-if="!loading" 
                                 type="button"
                                 @click="startSpeechRecognition"
+                                title="Press and talk"
                                 :class="{ 'text-red-500': isLesteningToVoice }"
                                 class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer"
                             >
                             <i data-feather="mic"></i>
                             </button>
+
+                            <input type="file" ref="fileDialog" style="display: none" @change="addFiles" multiple />
+                            <button type="button" @click.stop="$refs.fileDialog.click()" title="Add files"
+                                class="m-1 w-6 hover:text-secondary duration-75 active:scale-90">
+
+                                <i data-feather="file-plus"></i>
+
+                            </button>
                             <button type="button" @click.stop="takePicture" title="take a shot from camera"
-                                class=" w-6 hover:text-secondary duration-75 active:scale-90">
+                                class="m-1 w-6 hover:text-secondary duration-75 active:scale-90">
 
                                 <i data-feather="camera"></i>
 
                             </button>
+                            <button type="button" @click.stop="addWebLink" title="add web link"
+                                class="m-1 w-6 hover:text-secondary duration-75 active:scale-90">
+
+                                <i data-feather="globe"></i>
+
+                            </button>                            
                             <button v-if="!loading" type="button" @click="makeAnEmptyUserMessage" title="New empty user message"
                                 class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
 
@@ -251,7 +259,7 @@
 
                                 <span class="sr-only">New empty message</span>
                             </button>
-                            <button v-if="!loading" type="button" @click="submit"
+                            <button v-if="!loading" type="button" @click="submit" title="Send"
                                 class=" w-6 hover:text-secondary duration-75 active:scale-90">
 
                                 <i data-feather="send"></i>
@@ -280,7 +288,6 @@
             </div>
         </form>
     </div>
-    <Toast ref="toast"/>
     <UniversalForm ref="universalForm" class="z-20" />
 </template>
 <style scoped>
@@ -323,14 +330,13 @@ import InteractiveMenu from '@/components/InteractiveMenu.vue';
 import { useStore } from 'vuex'; // Import the useStore function
 import { inject } from 'vue';
 import socket from '@/services/websocket.js'
-import Toast from '../components/Toast.vue'
 import UniversalForm from '../components/UniversalForm.vue';
 import modelImgPlaceholder from "../assets/default_model.png"
 console.log("modelImgPlaceholder:",modelImgPlaceholder)
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
     name: 'ChatBox',
-    emits: ["messageSentEvent", "sendCMDEvent", "stopGenerating", "loaded", "createEmptyUserMessage", "createEmptyAIMessage", "personalitySelected"],
+    emits: ["messageSentEvent", "sendCMDEvent", "stopGenerating", "loaded", "createEmptyUserMessage", "createEmptyAIMessage", "personalitySelected","addWebLink"],
     props: {
         onTalk: Function,
         discussionList: Array,
@@ -339,7 +345,6 @@ export default {
 
     },
     components: {        
-        Toast,
         UniversalForm,
         MountedPersonalities,
         MountedPersonalitiesList,
@@ -433,17 +438,17 @@ export default {
 
                                             if (response && response.data) {
                                                 console.log('binding set with new settings', response.data)
-                                                this.$refs.toast.showToast("Binding settings updated successfully!", 4, true)
+                                                this.$store.state.toast.showToast("Binding settings updated successfully!", 4, true)
 
                                             } else {
-                                                this.$refs.toast.showToast("Did not get binding settings responses.\n" + response, 4, false)
+                                                this.$store.state.toast.showToast("Did not get binding settings responses.\n" + response, 4, false)
                                                 this.isLoading = false
                                             }
 
 
                                         })
                                 } catch (error) {
-                                    this.$refs.toast.showToast("Did not get binding settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.$store.state.toast.showToast("Did not get binding settings responses.\n Endpoint error: " + error.message, 4, false)
                                     this.isLoading = false
                                 }
 
@@ -451,7 +456,7 @@ export default {
 
                             })
                         } else {
-                            this.$refs.toast.showToast("Binding has no settings", 4, false)
+                            this.$store.state.toast.showToast("Binding has no settings", 4, false)
                             this.isLoading = false
                         }
 
@@ -460,7 +465,7 @@ export default {
 
             } catch (error) {
                 this.isLoading = false
-                this.$refs.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
+                this.$store.state.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
             }
         },
         async unmountPersonality(pers) {
@@ -472,7 +477,7 @@ export default {
 
             if (res.status) {
                 this.$store.state.config.personalities = res.personalities
-                this.$refs.toast.showToast("Personality unmounted", 4, true)
+                this.$store.state.toast.showToast("Personality unmounted", 4, true)
 
                 //pers.isMounted = false
                 this.$store.dispatch('refreshMountedPersonalities');
@@ -483,12 +488,12 @@ export default {
                 // const res2 = await this.select_personality(lastPers.personality)
                 const res2 = await this.select_personality(pers.personality)
                 if (res2.status) {
-                    this.$refs.toast.showToast("Selected personality:\n" + lastPers.name, 4, true)
+                    this.$store.state.toast.showToast("Selected personality:\n" + lastPers.name, 4, true)
                 }
 
 
             } else {
-                this.$refs.toast.showToast("Could not unmount personality\nError: " + res.error, 4, false)
+                this.$store.state.toast.showToast("Could not unmount personality\nError: " + res.error, 4, false)
             }
 
             this.loading = false
@@ -523,7 +528,7 @@ export default {
             if (pers) {
 
                 if (pers.selected) {
-                    this.$refs.toast.showToast("Personality already selected", 4, true)
+                    this.$store.state.toast.showToast("Personality already selected", 4, true)
                     return
                 }
 
@@ -537,10 +542,10 @@ export default {
                     const res = await this.select_personality(pers)
                     console.log('pers is mounted', res)
                     if (res && res.status && res.active_personality_id > -1) {
-                        this.$refs.toast.showToast("Selected personality:\n" + pers.name, 4, true)
+                        this.$store.state.toast.showToast("Selected personality:\n" + pers.name, 4, true)
 
                     } else {
-                        this.$refs.toast.showToast("Error on select personality:\n" + pers.name, 4, false)
+                        this.$store.state.toast.showToast("Error on select personality:\n" + pers.name, 4, false)
                     }
 
                 } else {
@@ -615,10 +620,10 @@ export default {
                 console.log(response);
                 await this.$store.dispatch('refreshConfig');    
                 await this.$store.dispatch('refreshModels');
-                this.$refs.toast.showToast(`Model changed to ${this.currentModel.name}`,4,true)
+                this.$store.state.toast.showToast(`Model changed to ${this.currentModel.name}`,4,true)
                 this.selecting_model=false
                 }).catch(err=>{
-                this.$refs.toast.showToast(`Error ${err}`,4,true)
+                this.$store.state.toast.showToast(`Error ${err}`,4,true)
                 this.selecting_model=false
                 });
         
@@ -663,7 +668,7 @@ export default {
                     console.log('File sent successfully');
                     this.isFileSentList[this.filesList.length-1]=true;
                     console.log(this.isFileSentList)
-                    this.onShowToastMessage("File uploaded successfully",4,true);
+                    this.$store.state.toast.showToast("File uploaded successfully",4,true);
                     this.loading = false         
                     next();
                 }
@@ -768,6 +773,10 @@ export default {
         },
         sendCMDEvent(cmd){
             this.$emit('sendCMDEvent', cmd)
+        },
+        addWebLink(){
+            console.log("Emitting addWebLink")
+            this.$emit('addWebLink')
         },
         takePicture(){
             socket.emit('take_picture')

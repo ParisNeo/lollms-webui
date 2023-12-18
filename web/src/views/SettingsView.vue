@@ -1,5 +1,5 @@
 <template>
-    <div class="container overflow-y-scroll flex flex-col shadow-lg p-10 pt-0 overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+    <div class="container overflow-y-scroll flex flex-row shadow-lg p-10 pt-0 overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
         <!-- CONTROL PANEL -->
         <div
             class="sticky top-0 z-10 flex flex-row mb-2 p-3 gap-3 w-full rounded-b-lg bg-bg-light-tone dark:bg-bg-dark-tone  shadow-lg">
@@ -84,10 +84,9 @@
             </div>
         </div>
 
-        <div :class="isLoading ? 'pointer-events-none opacity-30' : ''">
+        <div :class="isLoading ? 'pointer-events-none opacity-30 w-full' : 'w-full'">
             <!-- DISK AND RAM USAGE -->
-            <div
-                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+            <div class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row p-3">
                     <button @click.stop="sc_collapsed = !sc_collapsed"
                         class="text-2xl hover:text-primary  p-2 -m-2 w-full text-left flex flex-row items-center ">
@@ -1652,8 +1651,6 @@
     </div>
     <YesNoDialog ref="yesNoDialog" class="z-20" />
     <AddModelDialog ref="addmodeldialog" />
-    <MessageBox ref="messageBox" />
-    <UniversalForm ref="universalForm" class="z-20" />
     <ChoiceDialog  class="z-20"
       :show="variantSelectionDialogVisible"
       :choices="variant_choices"
@@ -1748,7 +1745,6 @@ import filesize from '../plugins/filesize'
 import axios from "axios";
 import feather from 'feather-icons'
 import { nextTick, TransitionGroup } from 'vue'
-import MessageBox from "@/components/MessageBox.vue";
 import YesNoDialog from "@/components/YesNoDialog.vue";
 import ModelEntry from '@/components/ModelEntry.vue';
 import PersonalityViewer from '@/components/PersonalityViewer.vue';
@@ -1762,7 +1758,6 @@ import defaultExtensionImgPlaceholder from "../assets/extension.png"
 import defaultImgPlaceholder from "../assets/default_model.png"
 
 import AddModelDialog from "@/components/AddModelDialog.vue";
-import UniversalForm from '../components/UniversalForm.vue';
 
 import ChoiceDialog from "@/components/ChoiceDialog.vue";
 import Card from "@/components/Card.vue"
@@ -1778,14 +1773,12 @@ axios.defaults.baseURL = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
     components: {
         AddModelDialog,
-        MessageBox,
         YesNoDialog,
         ModelEntry,
         // eslint-disable-next-line vue/no-unused-components
         PersonalityViewer,
         PersonalityEntry,
         BindingEntry,
-        UniversalForm,
         ChoiceDialog,
         Card,
         RadioOptions,
@@ -1881,23 +1874,10 @@ export default {
     async created() {
         socket.on('loading_text',this.on_loading_text);
         this.updateHasUpdates();
-        socket.on('notification', this.notify)
         //await socket.on('install_progress', this.progressListener);
         //refreshHardwareUsage()
     }, 
-    methods: {
-        notify(notif){
-            nextTick(() => {
-                const msgList = document.getElementById('messages-list')
-                this.scrollBottom(msgList)
-            })
-            if(notif.display_type==0){
-                this.$store.state.toast.showToast(notif.content, notif.duration, notif.notification_type)
-            }
-            else if(notif.display_type==1){
-                this.$refs.messageBox.showMessage(notif.content)
-            }
-        },        
+    methods: {     
         load_more_models(){
             if(this.models_zoo_initialLoadCount+10<this.models_zoo.length){
                 this.models_zoo_initialLoadCount+=10
@@ -2616,8 +2596,8 @@ export default {
                     this.isLoading = false
                     console.log('install_binding', res)
                     if (res.data.status) {
-                        this.$store.state.toast.showToast("Installed binding successfully!", 4, true)
-                        this.update_binding(binding_object.binding.folder);
+                        this.$store.state.toast.showToast("Binding installed successfully!", 4, true)
+                        this.$store.state.messageBox.showMessage("It is advised to reboot the application after installing a binding")
                     } else {
                         this.$store.state.toast.showToast("Could not reinstall binding", 4, false)
                     }
@@ -2685,7 +2665,9 @@ export default {
                     this.isLoading = false
                     console.log('reinstall_binding', res)
                     if (res.data.status) {
-                        this.$store.state.toast.showToast("Reinstalled binding successfully!", 4, true)
+                        this.$store.state.toast.showToast("Binding reinstalled successfully!", 4, true)
+                        this.$store.state.messageBox.showMessage("It is advised to reboot the application after installing a binding")
+
                     } else {
                         this.$store.state.toast.showToast("Could not reinstall binding", 4, false)
                     }
@@ -2732,7 +2714,7 @@ export default {
                         console.log('ext sett', res)
                         if (res.data && Object.keys(res.data).length > 0) {
 
-                            this.$refs.universalForm.showForm(res.data, "Extension settings - " + extensionEntry.extension.name, "Save changes", "Cancel").then(res => {
+                            this.$store.state.universalForm.showForm(res.data, "Extension settings - " + extensionEntry.extension.name, "Save changes", "Cancel").then(res => {
 
                                 // send new data
                                 try {
@@ -2782,22 +2764,21 @@ export default {
 
                             // open form
 
-                            this.$refs.universalForm.showForm(res.data, "Binding settings - " + bindingEntry.binding.name, "Save changes", "Cancel").then(res => {
+                            this.$store.state.universalForm.showForm(res.data, "Binding settings - " + bindingEntry.binding.name, "Save changes", "Cancel").then(res => {
                                 // send new data
                                 try {
                                     axios.post('/set_active_binding_settings',
                                         res).then(response => {
-
                                             if (response && response.data) {
                                                 console.log('binding set with new settings', response.data)
                                                 this.$store.state.toast.showToast("Binding settings updated successfully!", 4, true)
-
+                                                axios.get('/update_binding_settings').then((res) => {
+                                                    this.$store.state.toast.showToast("Binding settings committed successfully!", 4, true)
+                                                })
                                             } else {
                                                 this.$store.state.toast.showToast("Did not get binding settings responses.\n" + response, 4, false)
                                                 this.isLoading = false
                                             }
-
-
                                         })
                                 } catch (error) {
                                     this.$store.state.toast.showToast("Did not get binding settings responses.\n Endpoint error: " + error.message, 4, false)
@@ -2855,7 +2836,7 @@ export default {
                         console.log('pers sett', res)
                         if (res.data && Object.keys(res.data).length > 0) {
 
-                            this.$refs.universalForm.showForm(res.data, "Personality settings - " + persEntry.personality.name, "Save changes", "Cancel").then(res => {
+                            this.$store.state.universalForm.showForm(res.data, "Personality settings - " + persEntry.personality.name, "Save changes", "Cancel").then(res => {
 
                                 // send new data
                                 try {
@@ -3169,16 +3150,16 @@ export default {
                 .then((res) => {
                     if (res) {
                         if (res.status) {
-                            // this.$refs.messageBox.showMessage("Settings saved!")
+                            // this.$store.state.messageBox.showMessage("Settings saved!")
                         }
                         else
-                            this.$refs.messageBox.showMessage("Error: Couldn't save settings!")
+                            this.$store.state.messageBox.showMessage("Error: Couldn't save settings!")
                         return res.data;
                     }
                 })
                 .catch(error => {
                     console.log(error.message, 'save_configuration')
-                    this.$refs.messageBox.showMessage("Couldn't save settings!")
+                    this.$store.state.messageBox.showMessage("Couldn't save settings!")
                     return { 'status': false }
                 });
 
@@ -3191,15 +3172,15 @@ export default {
                         .then((res) => {
                             if (res) {
                                 if (res.status)
-                                    this.$refs.messageBox.showMessage("Settings have been reset correctly")
+                                    this.$store.state.messageBox.showMessage("Settings have been reset correctly")
                                 else
-                                    this.$refs.messageBox.showMessage("Couldn't reset settings!")
+                                    this.$store.state.messageBox.showMessage("Couldn't reset settings!")
                                 return res.data;
                             }
                         })
                         .catch(error => {
                             console.log(error.message, 'reset_configuration')
-                            this.$refs.messageBox.showMessage("Couldn't reset settings!")
+                            this.$store.state.messageBox.showMessage("Couldn't reset settings!")
                             return { 'status': false }
                         });
                     // Perform delete operation
@@ -3475,7 +3456,7 @@ export default {
             console.log('mount pers', pers)
 
             if(pers.personality.disclaimer!=""){
-                this.$refs.messageBox.showMessage(pers.personality.disclaimer)
+                this.$store.state.messageBox.showMessage(pers.personality.disclaimer)
             }
 
             if (!pers) { return }

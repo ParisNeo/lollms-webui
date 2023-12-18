@@ -35,12 +35,12 @@
                 <div v-if="!isConnected" title="Connection status: Not connected" class="text-red-500 cursor-pointer">
                     <i data-feather="zap-off"></i>
                 </div>
-                <a href="#" @click="refreshPage">
-                    <div class="text-2xl  hover:text-primary duration-150" title="refresh page">
+                <a href="#" @click="restartProgram">
+                    <div class="text-2xl  hover:text-primary duration-150" title="restart program">
                         <i data-feather="refresh-ccw"></i>
                     </div>
                 </a>
-
+                
                 <a href="https://github.com/ParisNeo/lollms-webui" target="_blank">
 
                     <div class="text-2xl  hover:text-primary duration-150" title="Visit repository page">
@@ -87,7 +87,8 @@
         <div v-show="progress_visibility" role="status" class="fixed m-0 p-2 left-2 bottom-2  min-w-[24rem] max-w-[24rem] h-20 flex flex-col justify-center items-center pb-4 bg-blue-500 rounded-lg shadow-lg z-50 background-a">
             <ProgressBar ref="progress" :progress="progress_value" class="w-full h-4"></ProgressBar>
             <p class="text-2xl animate-pulse mt-2 text-white">{{ loading_infos }} ...</p>
-        </div>        
+        </div>     
+        <UniversalForm ref="universalForm" class="z-20" />
     </header>
 
     <body>
@@ -100,6 +101,8 @@ import Discussion from '../components/Discussion.vue'
 import Toast from '../components/Toast.vue'
 import MessageBox from "@/components/MessageBox.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
+import UniversalForm from '../components/UniversalForm.vue';
+
 
 import { RouterLink } from 'vue-router'
 import Navigation from './Navigation.vue'
@@ -129,10 +132,15 @@ export default {
         Discussion,
         Toast,
         MessageBox,
-        ProgressBar       
+        ProgressBar,
+        UniversalForm,
     },
     watch:{
         isConnected(){
+            if (!this.isConnected){
+                this.disconnected_audio.play()
+                this.$store.state.toast.showToast("Server suddenly disconnected. Please reboot the server", 410, false)
+            }
             nextTick(() => {
                 feather.replace()
             })
@@ -141,6 +149,8 @@ export default {
     },
     data() {
         return {
+            rebooting_the_tool_audio: new Audio("rebooting.mp3"),            
+            disconnected_audio: new Audio("disconnected.mp3"),
             database_selectorDialogVisible:false,
             progress_visibility:false,
             progress_value:0,
@@ -153,6 +163,8 @@ export default {
     },
     mounted() {
         this.$store.state.toast = this.$refs.toast
+        this.$store.state.messageBox = this.$refs.messageBox
+        this.$store.state.universalForm = this.$refs.universalForm
         this.sunIcon = document.querySelector(".sun");
         this.moonIcon = document.querySelector(".moon");
         this.userTheme = localStorage.getItem("theme");
@@ -172,9 +184,19 @@ export default {
         this.systemTheme = window.matchMedia("prefers-color-scheme: dark").matches;
     },
     methods: {
-        refreshPage(event) {
+        restartProgram(event) {
             event.preventDefault();
-            window.location.reload();
+            this.$store.state.api_get_req('restart_program')
+            this.rebooting_the_tool_audio.play()
+            this.$store.state.toast.showToast("Rebooting the app. Please wait...", 410, false)
+            //self.$store.state.toast.showToast("Rebooting the app. Please wait...", 50, true);
+            console.log("this.$store.state.api_get_req",this.$store.state.api_get_req)
+            setTimeout(()=>{
+                window.close();
+            },2000)
+        },
+        handleOk(inputText) {
+            console.log("Input text:", inputText);
         },
         // codeBlockTheme(theme) {
         //     const styleDark = document.createElement('link');

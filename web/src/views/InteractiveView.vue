@@ -1,28 +1,30 @@
 <template>
-      <div class="flex-col w-[800]px y-overflow scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
-        <div v-if="!activePersonality || !activePersonality.scene_path" class="text-center">
-          <!-- Display text when there's no scene_path or empty avatar -->
-          Personality does not have a 3d avatar.
-        </div>
-        <div v-if="!activePersonality || (!activePersonality.avatar || activePersonality.avatar === '')" class="text-center">
-          Personality does not have an avatar.
-        </div>
-        <FloatingFrame />
-        <AudioFrame />
-        <div class="floating-frame2">
-          <div v-html="htmlContent"></div>
-        </div>
-      </div>
-      <div ref="webglContainer">
-      </div>
+  <div ref="webglContainer">
+  </div>
+  <div class="flex-col y-overflow scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+    <div v-if="!activePersonality || !activePersonality.scene_path" class="text-center">
+      <!-- Display text when there's no scene_path or empty avatar -->
+      Personality does not have a 3d avatar.
+    </div>
+    <div v-if="!activePersonality || (!activePersonality.avatar || activePersonality.avatar === '')" class="text-center">
+      Personality does not have an avatar.
+    </div>
+    <div class="floating-frame2">
+      <div v-html="htmlContent"></div>
+    </div>
+  </div>
+  <VideoFrame ref="video_frame"/>
+  <AudioFrame ref="audio_frame"/>
 </template>
   
   <script>
   import * as THREE from 'three';
   import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
   import { TextureLoader } from 'three';
-  import FloatingFrame from '@/components/FloatingFrame.vue';
+  import VideoFrame from '@/components/VideoFrame.vue';
   import AudioFrame from '@/components/AudioFrame.vue';
+  import feather from 'feather-icons'
+  import { nextTick } from 'vue'
   
   
   export default {
@@ -38,7 +40,7 @@
       },
     },
     components: {
-      FloatingFrame,
+      VideoFrame,
       AudioFrame
     },
     computed: {
@@ -59,6 +61,11 @@
         console.log("Personality:", this.personality)
         this.initWebGLScene();
         this.updatePersonality();
+        nextTick(() => {
+          feather.replace()
+        })
+        this.$refs.video_frame.position = { bottom: 0, right: 0 }
+        this.$refs.audio_frame.position = { bottom: 0, right: 100 }
     },
     beforeDestroy() {
       // Clean up WebGL resources here
@@ -163,7 +170,6 @@
   }
   .floating-frame2 {
     margin: 15px;
-    float: left;
     width: 800px;
     height: auto;
     border: 1px solid #000;

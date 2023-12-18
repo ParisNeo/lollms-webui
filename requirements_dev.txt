@@ -7,7 +7,6 @@ pyyaml
 markdown
 gevent
 gevent-websocket
-langchain
 requests
 eventlet
 websocket-client
