@@ -37,3 +37,35 @@ The first time you run the app, you will need to specify a folder where to put y
 
 Now lollms is installed, but there is no binding installed nor a model. To do this, go to settings tab, select binding s zoo and install a binding depending on your preferences. Here I am using a GPU and want local generation, so I will select Hugging face to use full sized models, GPTQ quantized models or AWQ quantized models. The installation may take some while, you can look at the install details in the console window.
 
+Please reboot the app after installing a binding as some of the installed libraries may need a fresh reboot to function properly.
+
+Now that we have rebooted the tool, let's get back to the settings tab to install and select a model.
+
+Go to models zoo and select a model. The models depend on the binding you have selected. Here in hugging face binding, you can use unquantized models, GPTQ quantized models or AWQ quantized models.
+
+To install a model press the menu button and select install. Then select the file tto install and validate.
+
+Now wait for the model to be downloaded.
+
+Once downloaded just select the model and it will be loaded.
+
+Now let's go back to the Discussions view.
+
+We now can start interacting with the AI.
+
+To create a new discussion, press the + button from the side bar.
+
+Now let's type something.
+
+
+Voilà
+
+As you can see, the AI has written some text. The quality of the generated text depends heavily on the used model and its training. Here we used a small model with 7B parameters.
+
+Bigger models tend to be smarter but some small models like mistral models do yield very good qua
+
+Don't forget to like, share and subscribe.
+
+Thanks for watching
+
+See ya
