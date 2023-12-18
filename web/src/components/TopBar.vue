@@ -88,6 +88,7 @@
             <ProgressBar ref="progress" :progress="progress_value" class="w-full h-4"></ProgressBar>
             <p class="text-2xl animate-pulse mt-2 text-white">{{ loading_infos }} ...</p>
         </div>     
+        <UniversalForm ref="universalForm" class="z-20" />
     </header>
 
     <body>
@@ -100,6 +101,7 @@ import Discussion from '../components/Discussion.vue'
 import Toast from '../components/Toast.vue'
 import MessageBox from "@/components/MessageBox.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
+import UniversalForm from '../components/UniversalForm.vue';
 
 
 import { RouterLink } from 'vue-router'
@@ -131,6 +133,7 @@ export default {
         Toast,
         MessageBox,
         ProgressBar,
+        UniversalForm,
     },
     watch:{
         isConnected(){
@@ -160,6 +163,8 @@ export default {
     },
     mounted() {
         this.$store.state.toast = this.$refs.toast
+        this.$store.state.messageBox = this.$refs.messageBox
+        this.$store.state.universalForm = this.$refs.universalForm
         this.sunIcon = document.querySelector(".sun");
         this.moonIcon = document.querySelector(".moon");
         this.userTheme = localStorage.getItem("theme");

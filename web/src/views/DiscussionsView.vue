@@ -277,7 +277,6 @@
         </div>
 
     </div>
-    <MessageBox ref="messageBox" />
     <ChoiceDialog reference="database_selector" class="z-20"
       :show="database_selectorDialogVisible"
       :choices="databases"
@@ -485,7 +484,7 @@ export default {
 
                             // open form
 
-                            this.$refs.universalForm.showForm(res.data, "Binding settings - " + bindingEntry.binding.name, "Save changes", "Cancel").then(res => {
+                            this.$store.state.universalForm.showForm(res.data, "Binding settings - " + bindingEntry.binding.name, "Save changes", "Cancel").then(res => {
                                 // send new data
                                 try {
                                     axios.post('/set_active_binding_settings',
@@ -576,13 +575,13 @@ export default {
                             this.$store.state.toast.showToast("Settings saved!",4,true)
                         }
                         else
-                            this.$refs.messageBox.showMessage("Error: Couldn't save settings!")
+                            this.$store.state.messageBox.showMessage("Error: Couldn't save settings!")
                         return res.data;
                     }
                 })
                 .catch(error => {
                     console.log(error.message, 'save_configuration')
-                    this.$refs.messageBox.showMessage("Couldn't save settings!")
+                    this.$store.state.messageBox.showMessage("Couldn't save settings!")
                     return { 'status': false }
                 });
 
@@ -1228,7 +1227,7 @@ export default {
                 this.$store.state.toast.showToast(notif.content, notif.duration, notif.notification_type)
             }
             else if(notif.display_type==1){
-                this.$refs.messageBox.showMessage(notif.content)
+                this.$store.state.messageBox.showMessage(notif.content)
             }
             this.chime.play()
         },
@@ -1951,7 +1950,6 @@ export default {
         ChatBox,
         WelcomeComponent,
         ChoiceDialog,
-        MessageBox,
         ProgressBar,
         InputBox    
     },
@@ -2085,7 +2083,6 @@ export default {
 <script setup>
 import Discussion from '../components/Discussion.vue'
 import ChoiceDialog from '@/components/ChoiceDialog.vue'
-import MessageBox from "@/components/MessageBox.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
 import InputBox from "@/components/input_box.vue";
 

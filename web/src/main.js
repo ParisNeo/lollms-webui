@@ -24,6 +24,9 @@ export const store = createStore({
     state () {
       return {
         // count: 0,
+        universalForm:null,
+        toast:null,
+        messageBox:null,
         api_get_req:null,
         startSpeechRecognition:null,
         ready:false,

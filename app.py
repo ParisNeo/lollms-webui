@@ -511,6 +511,39 @@ try:
             self.add_endpoint(
                 "/open_file", "open_file", self.open_file, methods=["GET"]
             )
+
+            self.add_endpoint(
+                "/update_binding_settings", "update_binding_settings", self.update_binding_settings, methods=["GET"]
+            )
+            
+            
+        def update_binding_settings(self):
+            if self.binding:
+                self.binding.settings_updated()
+                ASCIIColors.green("Binding setting updated successfully")
+                return jsonify({"status":True})
+            else:
+                return jsonify({"status":False, 'error':"no binding found"})        
+            
+        def reload_binding(self, data):
+            print(f"Roloading binding selected : {data['binding_name']}")
+            self.config["binding_name"]=data['binding_name']
+            try:
+                if self.binding:
+                    self.binding.destroy_model()
+                self.binding = None
+                self.model = None
+                for per in self.mounted_personalities:
+                    per.model = None
+                gc.collect()
+                self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.INSTALL_IF_NECESSARY, lollmsCom=self)
+                self.model = None
+                self.config.save_config()
+                ASCIIColors.green("Binding loaded successfully")
+            except Exception as ex:
+                ASCIIColors.error(f"Couldn't build binding: [{ex}]")
+                trace_exception(ex)
+                return jsonify({"status":False, 'error':str(ex)})
             
         def get_model_status(self):
             return jsonify({"status":self.model is not None})
@@ -1764,17 +1797,9 @@ try:
                 return jsonify({'update_availability':False})
 
         def restart_program(self):
-            ASCIIColors.info("")
-            ASCIIColors.info("")
-            ASCIIColors.info("")
-            ASCIIColors.info(" ╔══════════════════════════════════════════════════╗")
-            ASCIIColors.info(" ║              Restarting backend                  ║")
-            ASCIIColors.info(" ╚══════════════════════════════════════════════════╝")
-            ASCIIColors.info("")
-            ASCIIColors.info("")
-            ASCIIColors.info("")
+            socketio.reboot=True
             self.socketio.stop()
-            run_restart_script(self.args)
+            self.socketio.sleep(1)
             
 
         def update_software(self):
@@ -1833,46 +1858,6 @@ try:
             version = __version__
             ASCIIColors.yellow("Lollms webui version : "+ version)
             return jsonify({"version":version})
-        
-        
-        def reload_binding(self):
-            try:
-                data = request.get_json()
-                # Further processing of the data
-            except Exception as e:
-                print(f"Error occurred while parsing JSON: {e}")
-                return jsonify({"status":False, 'error':str(e)})
-            ASCIIColors.info(f"- Reloading binding {data['name']}...")
-            try:
-                ASCIIColors.info("Unmounting binding and model")
-                self.binding = None
-                self.model = None
-                for personality in self.mounted_personalities:
-                    personality.model = None
-                gc.collect()
-                ASCIIColors.info("Reloading binding")
-                self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, lollmsCom=self)
-                ASCIIColors.info("Binding loaded successfully")
-
-                try:
-                    ASCIIColors.info("Reloading model")
-                    self.model = self.binding.build_model()
-                    ASCIIColors.info("Model reloaded successfully")
-                except Exception as ex:
-                    print(f"Couldn't build model: [{ex}]")
-                    trace_exception(ex)
-                try:
-                    self.rebuild_personalities(reload_all=True)
-                except Exception as ex:
-                    print(f"Couldn't reload personalities: [{ex}]")
-                return jsonify({"status": True}) 
-            except Exception as ex:
-                ASCIIColors.error(f"Couldn't build binding: [{ex}]")
-                trace_exception(ex)
-                return jsonify({"status":False, 'error':str(ex)})
-                    
-
-
 
         def p_mount_personality(self):
             print("- Mounting personality")
@@ -2639,9 +2624,22 @@ try:
 
 
         try:
+            socketio.reboot = False
             socketio.run(app, host=config["host"], port=config["port"],
                         # prevent error: The Werkzeug web server is not designed to run in production
                         allow_unsafe_werkzeug=True)
+            if socketio.reboot:
+                ASCIIColors.info("")
+                ASCIIColors.info("")
+                ASCIIColors.info("")
+                ASCIIColors.info(" ╔══════════════════════════════════════════════════╗")
+                ASCIIColors.info(" ║              Restarting backend                  ║")
+                ASCIIColors.info(" ╚══════════════════════════════════════════════════╝")
+                ASCIIColors.info("")
+                ASCIIColors.info("")
+                ASCIIColors.info("")
+                run_restart_script(args)
+                
         except Exception as ex:
             trace_exception(ex)
         # http_server = WSGIServer((config["host"], config["port"]), app, handler_class=WebSocketHandler)
