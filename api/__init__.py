@@ -1466,11 +1466,12 @@ class LoLLMsAPI(LollmsApplication):
                     ASCIIColors.cyan(f"Query:{query}")
                 else:
                     query = current_message.content
-
-                docs, sorted_similarities = self.personality.persona_data_vectorizer.recover_text(query, top_k=self.config.data_vectorization_nb_chunks)
-                for doc, infos in zip(docs, sorted_similarities):
-                    documentation += f"document chunk:\n{doc}"
-
+                try:
+                    docs, sorted_similarities = self.personality.persona_data_vectorizer.recover_text(query, top_k=self.config.data_vectorization_nb_chunks)
+                    for doc, infos in zip(docs, sorted_similarities):
+                        documentation += f"document chunk:\n{doc}"
+                except:
+                    self.warning("Couldn't add documentation to the context. Please verify the vector database")
             
             if len(self.personality.text_files) > 0 and self.personality.vectorizer:
                 if documentation=="":
@@ -1482,19 +1483,23 @@ class LoLLMsAPI(LollmsApplication):
                 else:
                     query = current_message.content
 
-                docs, sorted_similarities = self.personality.vectorizer.recover_text(query, top_k=self.config.data_vectorization_nb_chunks)
-                for doc, infos in zip(docs, sorted_similarities):
-                    documentation += f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
-
+                try:
+                    docs, sorted_similarities = self.personality.vectorizer.recover_text(query, top_k=self.config.data_vectorization_nb_chunks)
+                    for doc, infos in zip(docs, sorted_similarities):
+                        documentation += f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
+                except:
+                    self.warning("Couldn't add documentation to the context. Please verify the vector database")
             # Check if there is discussion history to add to the prompt
             if self.config.use_discussions_history and self.long_term_memory is not None:
                 if history=="":
                     history="!@>previous discussions:\n"
-                docs, sorted_similarities = self.long_term_memory.recover_text(current_message.content, top_k=self.config.data_vectorization_nb_chunks)
-                for i,(doc, infos) in enumerate(zip(docs, sorted_similarities)):
-                    history += f"!@>previous discussion {i}:\n!@>discussion title:\n{infos[0]}\ndiscussion content:\n{doc}"
 
-        # Add information about the user
+                try:
+                    docs, sorted_similarities = self.long_term_memory.recover_text(current_message.content, top_k=self.config.data_vectorization_nb_chunks)
+                    for i,(doc, infos) in enumerate(zip(docs, sorted_similarities)):
+                        history += f"!@>previous discussion {i}:\n!@>discussion title:\n{infos[0]}\ndiscussion content:\n{doc}"
+                except:
+                    self.warning("Couldn't add long term memory information to the context. Please verify the vector database")        # Add information about the user
         user_description=""
         if self.config.use_user_name_in_discussions:
             user_description="!@>User description:\n"+self.config.user_description
