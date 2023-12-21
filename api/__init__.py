@@ -1538,6 +1538,7 @@ class LoLLMsAPI(LollmsApplication):
 
         # Raise an error if the available space is 0 or less
         if available_space<1:
+            self.error("Not enough space in context!!")
             raise Exception("Not enough space in context!!")
 
         # Accumulate messages until the cumulative number of tokens exceeds available_space
