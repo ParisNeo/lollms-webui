@@ -255,11 +255,13 @@ class LoLLMsAPI(LollmsApplication):
         @socketio.on('take_picture')
         def take_picture():
             try:
+                self.info("Loading camera")
                 if not PackageManager.check_package_installed("cv2"):
                     PackageManager.install_package("opencv-python")
                 import cv2
                 cap = cv2.VideoCapture(0)
                 n = time.time()
+                self.info("Stand by for taking a shot in 2s")
                 while(time.time()-n<2):
                     _, frame = cap.read()
                 _, frame = cap.read()
@@ -273,14 +275,19 @@ class LoLLMsAPI(LollmsApplication):
                 try:
                     cv2.imwrite(str(save_path), frame)
                     if not self.personality.processor is None:
+                        self.info("Sending file to scripted persona")
                         self.personality.processor.add_file(save_path, partial(self.process_chunk, client_id = request.sid))
                         # File saved successfully
                         socketio.emit('picture_taken', {'status':True, 'progress': 100})
+                        self.info("File sent to scripted persona")
                     else:
+                        self.info("Sending file to persona")
                         self.personality.add_file(save_path, partial(self.process_chunk, client_id = request.sid))
                         # File saved successfully
                         socketio.emit('picture_taken', {'status':True, 'progress': 100})
+                        self.info("File sent to persona")
                 except Exception as e:
+                    trace_exception(e)
                     # Error occurred while saving the file
                     socketio.emit('picture_taken', {'status':False, 'error': str(e)})
                     
