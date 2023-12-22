@@ -44,7 +44,7 @@ set /p "gpuchoice=Input> "
 set gpuchoice=%gpuchoice:~0,1%
 
 if /I "%gpuchoice%" == "A" (
-  set "PACKAGES_TO_INSTALL=python=3.10 cuda-toolkit ninja git"
+  set "PACKAGES_TO_INSTALL=python=3.10 cuda-toolkit ninja git cuda-compiler"
   set "CHANNEL=-c nvidia/label/cuda-12.1.1 -c nvidia -c conda-forge"
 ) else if /I "%gpuchoice%" == "B" (
   set "PACKAGES_TO_INSTALL=python=3.10 rocm-comgr rocm-smi ninja git"

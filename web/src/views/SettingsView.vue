@@ -291,6 +291,23 @@
                                             </div>
                                         </td>
                                         </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="activate_debug" class="text-sm font-bold" style="margin-right: 1rem;">Activate debug mode:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                                <input
+                                            type="checkbox"
+                                            id="activate_debug"
+                                            required
+                                            v-model="configFile.debug"
+                                            @change="settingsChanged=true"
+                                            class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600 "
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>
                                         
                                         <tr>
                                         <td style="min-width: 200px;">
