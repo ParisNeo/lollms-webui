@@ -1494,7 +1494,8 @@ class LoLLMsAPI(LollmsApplication):
                     documentation="!@>Documentation:\n"
 
                 if self.config.data_vectorization_build_keys_words:
-                    query = self.personality.fast_gen("!@>prompt:"+current_message.content+"\n!@>instruction: Convert the prompt to a web search query."+"\nDo not answer the prompt. Do not add explanations. Use comma separated syntax to make a list of keywords in the same line.\nThe keywords should reflect the ideas written in the prompt so that a seach engine can process them efficiently.\n!@>query: ", max_generation_size=256, show_progress=True)
+                    discussion = self.recover_discussion(client_id)[-512:]
+                    query = self.personality.fast_gen(f"\n!@>instruction: Read the discussion and rewrite the last prompt for someone who didn't read the entire discussion.\nDo not answer the prompt. Do not add explanations.\n!@>discussion:\n{discussion}\n!@>enhanced query: ", max_generation_size=256, show_progress=True)
                     ASCIIColors.cyan(f"Query:{query}")
                 else:
                     query = current_message.content
