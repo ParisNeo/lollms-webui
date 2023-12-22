@@ -1549,6 +1549,9 @@ class LoLLMsAPI(LollmsApplication):
         # Calculate the available space for the messages
         available_space = self.config.ctx_size - n_tokens - total_tokens
 
+        if self.config.debug:
+            self.info(f"Tokens summary:\nConditionning:{n_cond_tk}\ndoc:{n_doc_tk}\nhistory:{n_history_tk}\nuser description:{n_user_description_tk}\nAvailable space:{available_space}",10)
+
         # Raise an error if the available space is 0 or less
         if available_space<1:
             self.error("Not enough space in context!!")
@@ -1634,6 +1637,8 @@ class LoLLMsAPI(LollmsApplication):
             ASCIIColors.hilight(prompt_data,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
             ASCIIColors.info(f"prompt size:{len(tokens)} tokens") 
             ASCIIColors.info(f"available space after doc and history:{available_space} tokens") 
+
+            self.info(f"Tokens summary:\nPrompt size:{len(tokens)}\nTo generate:{available_space}",10)
 
         # Return the prepared query, original message content, and tokenized query
         return prompt_data, current_message.content, tokens
