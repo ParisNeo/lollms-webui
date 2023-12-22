@@ -1494,7 +1494,7 @@ class LoLLMsAPI(LollmsApplication):
                     docs, sorted_similarities = self.personality.vectorizer.recover_text(query, top_k=self.config.data_vectorization_nb_chunks)
                     for doc, infos in zip(docs, sorted_similarities):
                         documentation += f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
-                    documentation += "\nrequest: Use the documentation data to answer the user questions. If the data is not present in the documentation, please notify the user."
+                    documentation += "\nimportant information: Use the documentation data to answer the user questions. If the data is not present in the documentation, please tell the user that the information he is asking for does not exist in the documentation section. It is strictly forbidden to give the user an answer without having actual proof from the documentation."
                 except:
                     self.warning("Couldn't add documentation to the context. Please verify the vector database")
             # Check if there is discussion history to add to the prompt
