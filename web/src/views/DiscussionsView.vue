@@ -477,9 +477,6 @@ export default {
                 axios.get('/get_active_binding_settings').then(res => {
                     this.isLoading = false
                     if (res) {
-
-                        console.log('binding sett', res)
-
                         if (res.data && Object.keys(res.data).length > 0) {
 
                             // open form
@@ -647,7 +644,7 @@ export default {
                                                                 item.message_type == this.msgTypes.MSG_TYPE_CODE ||
                                                                 item.message_type == this.msgTypes.MSG_TYPE_JSON_INFOS ||
                                                                 item.message_type == this.msgTypes.MSG_TYPE_UI
-                                                            )
+                                                        )
                         console.log("this.discussionArr")
                         console.log(this.discussionArr)
                         if(next){
