@@ -361,6 +361,7 @@ try:
             self.add_endpoint("/<path:filename>", "serve_static", self.serve_static, methods=["GET"])
             self.add_endpoint("/user_infos/<path:filename>", "serve_user_infos", self.serve_user_infos, methods=["GET"])
             
+            self.add_endpoint("/audio/<path:filename>", "serve_audio", self.serve_audio, methods=["GET"])
             self.add_endpoint("/images/<path:filename>", "serve_images", self.serve_images, methods=["GET"])
             self.add_endpoint("/extensions/<path:filename>", "serve_extensions", self.serve_extensions, methods=["GET"])
             self.add_endpoint("/bindings/<path:filename>", "serve_bindings", self.serve_bindings, methods=["GET"])
@@ -922,6 +923,8 @@ try:
                             except Exception as ex:
                                 ASCIIColors.warning(f"Couldn't load personality from {personality_folder} [{ex}]")
                                 trace_exception(ex)
+            ASCIIColors.green("OK")
+
             return json.dumps(personalities)
         
         def get_personality(self):
@@ -1438,6 +1441,15 @@ try:
                                 
             fn = filename.split("/")[-1]
             return send_from_directory(path, fn)
+        
+        def serve_audio(self, filename):
+            root_dir = self.lollms_paths.personal_outputs_path
+            path = os.path.join(root_dir, 'audio_out/')+"/".join(filename.split("/")[:-1])
+                                
+            fn = filename.split("/")[-1]
+            return send_from_directory(path, fn)
+        
+        
 
         def serve_extensions(self, filename):
             path = str(self.lollms_paths.extensions_zoo_path/("/".join(filename.split("/")[:-1])))
@@ -1990,7 +2002,7 @@ try:
             name        = data['folder']
             language    = data.get('language',None)
             try:
-                personality_id = f"{category}/{name}" if language is None else f"{category}/{name}:{language}"
+                personality_id = f"{category}/{name}" if language is None or language=="" else f"{category}/{name}:{language}"
                 index = self.config["personalities"].index(personality_id)
                 self.config["personalities"].remove(personality_id)
                 if self.config["active_personality_id"]>=index:

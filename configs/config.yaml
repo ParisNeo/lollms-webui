@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 30
+version: 31
 binding_name: null
 model_name: null
 
@@ -53,6 +53,7 @@ auto_show_browser: true
 audio_in_language: 'en-US'
 audio_out_voice: null
 auto_speak: false
+auto_read: false
 audio_pitch: 1
 audio_auto_send_input: true
 audio_silenceTimer: 5000

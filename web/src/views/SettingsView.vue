@@ -726,6 +726,23 @@
                                         </tr>                                        
                                         <tr>
                                         <td style="min-width: 200px;">
+                                            <label for="auto_read" class="text-sm font-bold" style="margin-right: 1rem;">Enable auto read:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <input
+                                            type="checkbox"
+                                            id="auto_read"
+                                            required
+                                            v-model="configFile.auto_read"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>                                        
+                                        <tr>
+                                        <td style="min-width: 200px;">
                                             <label for="audio_pitch" class="text-sm font-bold" style="margin-right: 1rem;">audio pitch:</label>
                                         </td>
                                         <td>
@@ -1936,6 +1953,7 @@ export default {
         // Fetch available voices from the SpeechSynthesis API
         if ('speechSynthesis' in window) {
             this.audioVoices = speechSynthesis.getVoices();
+            console.log("Voices:"+this.audioVoices)
             if (!this.audio_out_voice && this.audioVoices.length > 0) {
                 this.audio_out_voice = this.audioVoices[0].name;
             }
@@ -3896,6 +3914,15 @@ export default {
             set(value) {
                 // You should not set the value directly here; use the updateSetting method instead
                 this.$store.state.config.auto_speak = value
+            },
+        },
+        auto_read:{
+            get() {
+                return this.$store.state.config.auto_read;
+            },
+            set(value) {
+                // You should not set the value directly here; use the updateSetting method instead
+                this.$store.state.config.auto_read = value
             },
         },
         audio_pitch:{

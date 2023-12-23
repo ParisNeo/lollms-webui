@@ -37,7 +37,7 @@ import requests
 from datetime import datetime
 from typing import List, Tuple
 import time
-
+import numpy as np
 from lollms.utilities import find_first_available_file_index
 
 if not PackageManager.check_package_installed("requests"):
@@ -623,6 +623,7 @@ class LoLLMsAPI(LollmsApplication):
 
         @socketio.on('new_discussion')
         def new_discussion(data):
+            ASCIIColors.yellow("New descussion requested")
             client_id = request.sid
             title = data["title"]
             if self.connections[client_id]["current_discussion"] is not None:
@@ -1186,6 +1187,13 @@ class LoLLMsAPI(LollmsApplication):
                                                 selected_language=personality.split(":")[1] if ":" in personality else None,
                                                 run_scripts=True)
                     mounted_personalities.append(personality)
+                    if self.config.auto_read and len(self.personality.audio_samples)>0:
+                        try:
+                            from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
+                            if self.tts is None:
+                                self.tts = LollmsXTTS(self, voice_samples_path=Path(self.personality.audio_samples[0]).parent)
+                        except:
+                            self.warning(f"Personality {personality.name} request using custom voice but couldn't load XTTS")
                 except Exception as ex:
                     ASCIIColors.error(f"Personality file not found or is corrupted ({personality_path}).\nReturned the following exception:{ex}\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
                     ASCIIColors.info("Trying to force reinstall")
@@ -2049,6 +2057,55 @@ class LoLLMsAPI(LollmsApplication):
                                 client_id=client_id,
                                 callback=partial(self.process_chunk,client_id = client_id)
                             )
+                if self.config.auto_read and len(self.personality.audio_samples)>0:
+                    try:
+                        from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
+                        if self.tts is None:
+                            self.tts = LollmsXTTS(self, voice_samples_path=Path(self.personality.audio_samples[0]).parent)
+                        self.tts.set_speaker_folder(Path(self.personality.audio_samples[0]).parent)
+                        fn = self.personality.name.lower().replace(' ',"_").replace('.','')    
+                        fn = f"{fn}_{message_id}.wav"
+                        url = f"audio/{fn}"
+                        self.tts.tts_to_file(self.connections[client_id]["generated_text"], Path(self.personality.audio_samples[0]).name, f"{fn}", language="en")
+                        fl = f"""
+<audio controls autoplay>
+    <source src="{url}" type="audio/wav">
+    Your browser does not support the audio element.
+</audio>
+"""
+                        self.process_chunk(fl,MSG_TYPE.MSG_TYPE_CHUNK,client_id=client_id)
+                        
+                        """
+                        self.info("Creating audio output",10)
+                        self.personality.step_start("Creating audio output")
+                        if not PackageManager.check_package_installed("tortoise"):
+                            PackageManager.install_package("tortoise-tts")
+                        from tortoise import utils, api
+                        import sounddevice as sd
+                        if self.tts is None:
+                            self.tts = api.TextToSpeech( kv_cache=True, half=True)
+                        reference_clips = [utils.audio.load_audio(str(p), 22050) for p in self.personality.audio_samples]
+                        tk = self.model.tokenize(self.connections[client_id]["generated_text"])
+                        if len(tk)>100:
+                            chunk_size = 100
+                            
+                            for i in range(0, len(tk), chunk_size):
+                                chunk = self.model.detokenize(tk[i:i+chunk_size])
+                                if i==0:
+                                    pcm_audio = self.tts.tts_with_preset(chunk, voice_samples=reference_clips, preset='fast').numpy().flatten()
+                                else:
+                                    pcm_audio = np.concatenate([pcm_audio, self.tts.tts_with_preset(chunk, voice_samples=reference_clips, preset='ultra_fast').numpy().flatten()])
+                        else:
+                            pcm_audio = self.tts.tts_with_preset(self.connections[client_id]["generated_text"], voice_samples=reference_clips, preset='fast').numpy().flatten()
+                        sd.play(pcm_audio, 22050)
+                        self.personality.step_end("Creating audio output")                        
+                        """
+
+
+
+                    except Exception as ex:
+                        ASCIIColors.error("Couldn't read")
+                        trace_exception(ex)
                 print()
                 ASCIIColors.success("## Done Generation ##")
                 print()
