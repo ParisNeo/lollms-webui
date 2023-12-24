@@ -47,6 +47,26 @@ if not PackageManager.check_package_installed("bs4"):
 import requests
 from bs4 import BeautifulSoup
 
+
+def convert_language_name(language_name):
+    # Remove leading and trailing spaces
+    language_name = language_name.strip()
+    
+    # Convert to lowercase
+    language_name = language_name.lower().replace(".","")
+    
+    # Define a dictionary mapping language names to their codes
+    language_codes = {
+        "english": "en",
+        "spanish": "es",
+        "french": "fr",
+        "german": "de",
+        # Add more language names and codes as needed
+    }
+    
+    # Return the corresponding language code if found, or None otherwise
+    return language_codes.get(language_name)
+
 def terminate_thread(thread):
     if thread:
         if not thread.is_alive():
@@ -2062,11 +2082,12 @@ class LoLLMsAPI(LollmsApplication):
                         from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
                         if self.tts is None:
                             self.tts = LollmsXTTS(self, voice_samples_path=Path(self.personality.audio_samples[0]).parent)
+                        language = convert_language_name(self.personality.language)
                         self.tts.set_speaker_folder(Path(self.personality.audio_samples[0]).parent)
                         fn = self.personality.name.lower().replace(' ',"_").replace('.','')    
                         fn = f"{fn}_{message_id}.wav"
                         url = f"audio/{fn}"
-                        self.tts.tts_to_file(self.connections[client_id]["generated_text"], Path(self.personality.audio_samples[0]).name, f"{fn}", language="en")
+                        self.tts.tts_to_file(self.connections[client_id]["generated_text"], Path(self.personality.audio_samples[0]).name, f"{fn}", language=language)
                         fl = f"""
 <audio controls autoplay>
     <source src="{url}" type="audio/wav">
