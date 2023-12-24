@@ -11,15 +11,16 @@
             <RouterLink :to="{ name: 'playground' }" class="link-item dark:link-item-dark">
               Playground
             </RouterLink>
-            <RouterLink :to="{ name: 'extensions' }" class="link-item dark:link-item-dark">
-              Extensions
-            </RouterLink>
+            <!--
+
             <RouterLink :to="{ name: 'training' }" class="link-item dark:link-item-dark">
               Training
             </RouterLink>
             <RouterLink :to="{ name: 'quantizing' }" class="link-item dark:link-item-dark">
               Quantizing
             </RouterLink>
+
+            -->
             <RouterLink :to="{ name: 'settings' }" class="link-item dark:link-item-dark">
               Settings
             </RouterLink>

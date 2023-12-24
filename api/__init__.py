@@ -65,7 +65,7 @@ def convert_language_name(language_name):
     }
     
     # Return the corresponding language code if found, or None otherwise
-    return language_codes.get(language_name)
+    return language_codes.get(language_name,"en")
 
 def terminate_thread(thread):
     if thread:
@@ -1207,11 +1207,11 @@ class LoLLMsAPI(LollmsApplication):
                                                 selected_language=personality.split(":")[1] if ":" in personality else None,
                                                 run_scripts=True)
                     mounted_personalities.append(personality)
-                    if self.config.auto_read and len(self.personality.audio_samples)>0:
+                    if self.config.auto_read and len(personality.audio_samples)>0:
                         try:
                             from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
                             if self.tts is None:
-                                self.tts = LollmsXTTS(self, voice_samples_path=Path(self.personality.audio_samples[0]).parent)
+                                self.tts = LollmsXTTS(self, voice_samples_path=Path(personality.audio_samples[0]).parent)
                         except:
                             self.warning(f"Personality {personality.name} request using custom voice but couldn't load XTTS")
                 except Exception as ex:
