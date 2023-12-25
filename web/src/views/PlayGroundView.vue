@@ -22,6 +22,13 @@
                     class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer">
               <i data-feather="volume-2"></i>
             </button>
+            <button
+                    title="read"
+                    @click.stop="read()"
+                    :class="{ 'text-red-500': isTalking }"
+                    class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer">
+              <i data-feather="voicemail"></i>
+            </button>            
             <button v-show="!generating" id="export-button" @click="exportText" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="upload"></i></button>
             <button v-show="!generating" id="import-button" @click="importText" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="download"></i></button>
 
@@ -477,6 +484,18 @@ export default {
     onVoicesChanged() {
       // This event will be triggered when the voices are loaded
       this.voices = this.speechSynthesis.getVoices();
+      },
+      read(){
+        this.generating=true
+        axios.post("./read",{text:this.text}).then(response => {
+          console.log(response.data.url)
+          let url = response.data.url
+          this.text+=`\n<audio controls>\n<source src="${url}" type="audio/wav">\nYour browser does not support the audio element.\n</audio>`
+          this.generating=false
+        }).catch(ex=>{
+          this.$refs.toast.showToast(`Error: ${ex}`,4,false)
+          this.generating=false
+        });
       },
       speak() {
           if (this.msg) {

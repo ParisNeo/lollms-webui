@@ -27,7 +27,7 @@ import traceback
 import webbrowser
 from pathlib import Path
 from lollms.com import NotificationType, NotificationDisplayType
-from lollms.utilities import AdvancedGarbageCollector, reinstall_pytorch_with_cuda
+from lollms.utilities import AdvancedGarbageCollector, reinstall_pytorch_with_cuda, convert_language_name
 def run_update_script(args=None):
     update_script = Path(__file__).parent/"update_script.py"
 
@@ -485,6 +485,10 @@ try:
             )      
 
             self.add_endpoint(
+                "/read", "read", self.read, methods=["POST"]
+            )
+
+            self.add_endpoint(
                 "/get_presets", "get_presets", self.get_presets, methods=["GET"]
             )      
 
@@ -752,6 +756,23 @@ try:
                     if preset is not None:
                         presets.append(preset)
             return jsonify(presets)
+
+        def read(self):
+            # Get the JSON data from the POST request.
+            data = request.get_json()
+            try:
+                from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
+                if self.tts is None:
+                    self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent/"voices")
+                language = convert_language_name(self.personality.language)
+                self.tts.set_speaker_folder(Path(__file__).parent/"voices")
+                fn = self.personality.name.lower().replace(' ',"_").replace('.','')    
+                fn = f"playground_voice.wav"
+                url = f"audio/{fn}"
+                self.tts.tts_to_file(data['text'], "main_voice.wav", f"{fn}", language=language)
+                return jsonify({"url": url})
+            except:
+                return jsonify({"url": None})
 
         def add_preset(self):
             # Get the JSON data from the POST request.

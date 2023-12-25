@@ -38,7 +38,7 @@ from datetime import datetime
 from typing import List, Tuple
 import time
 import numpy as np
-from lollms.utilities import find_first_available_file_index
+from lollms.utilities import find_first_available_file_index, convert_language_name
 
 if not PackageManager.check_package_installed("requests"):
     PackageManager.install_package("requests")
@@ -48,24 +48,6 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def convert_language_name(language_name):
-    # Remove leading and trailing spaces
-    language_name = language_name.strip()
-    
-    # Convert to lowercase
-    language_name = language_name.lower().replace(".","")
-    
-    # Define a dictionary mapping language names to their codes
-    language_codes = {
-        "english": "en",
-        "spanish": "es",
-        "french": "fr",
-        "german": "de",
-        # Add more language names and codes as needed
-    }
-    
-    # Return the corresponding language code if found, or None otherwise
-    return language_codes.get(language_name,"en")
 
 def terminate_thread(thread):
     if thread:
@@ -1211,7 +1193,7 @@ class LoLLMsAPI(LollmsApplication):
                         try:
                             from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
                             if self.tts is None:
-                                self.tts = LollmsXTTS(self, voice_samples_path=Path(personality.audio_samples[0]).parent)
+                                self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent.parent/"voices")
                         except:
                             self.warning(f"Personality {personality.name} request using custom voice but couldn't load XTTS")
                 except Exception as ex:
@@ -2079,9 +2061,10 @@ class LoLLMsAPI(LollmsApplication):
                             )
                 if self.config.auto_read and len(self.personality.audio_samples)>0:
                     try:
+                        self.process_chunk("Generating voice output",MSG_TYPE.MSG_TYPE_STEP_START,client_id=client_id)
                         from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
                         if self.tts is None:
-                            self.tts = LollmsXTTS(self, voice_samples_path=Path(self.personality.audio_samples[0]).parent)
+                            self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent.parent/"voices")
                         language = convert_language_name(self.personality.language)
                         self.tts.set_speaker_folder(Path(self.personality.audio_samples[0]).parent)
                         fn = self.personality.name.lower().replace(' ',"_").replace('.','')    
@@ -2089,11 +2072,12 @@ class LoLLMsAPI(LollmsApplication):
                         url = f"audio/{fn}"
                         self.tts.tts_to_file(self.connections[client_id]["generated_text"], Path(self.personality.audio_samples[0]).name, f"{fn}", language=language)
                         fl = f"""
-<audio controls autoplay>
+<audio controls>
     <source src="{url}" type="audio/wav">
     Your browser does not support the audio element.
 </audio>
 """
+                        self.process_chunk("Generating voice output",MSG_TYPE.MSG_TYPE_STEP_END,client_id=client_id)
                         self.process_chunk(fl,MSG_TYPE.MSG_TYPE_CHUNK,client_id=client_id)
                         
                         """
