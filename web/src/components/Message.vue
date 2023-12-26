@@ -132,7 +132,15 @@
                                     :class="{ 'text-red-500': isTalking }">
                                     <i data-feather="volume-2"></i>
                                 </div>
-                            </div>                            
+                            </div>    
+                            <div class="flex flex-row items-center">
+                                <div class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2" 
+                                    title="read"
+                                    @click.stop="read()"
+                                    :class="{ 'text-red-500': isTalking }">
+                                    <i data-feather="voicemail"></i>
+                                </div>
+                            </div>                                                       
                         </div>
                     </div>
                 </div>
@@ -169,7 +177,10 @@
                     </div>
 
                     <DynamicUIRenderer v-if="message.ui !== null && message.ui !== undefined && message.ui !== ''" class="w-full h-full" :code="message.ui"></DynamicUIRenderer>
-                        
+                    <audio controls autoplay v-if="audio_url!=null">
+                        <source :src="audio_url" type="audio/wav">
+                        Your browser does not support the audio element.
+                    </audio>  
 
                 </div>
                 <!-- FOOTER -->
@@ -217,6 +228,8 @@ import MarkdownRenderer from './MarkdownRenderer.vue';
 import RenderHTMLJS from './RenderHTMLJS.vue';
 import JsonViewer from "./JsonViewer.vue";
 import Step from './Step.vue';
+import axios from 'axios'
+
 import DynamicUIRenderer from "./DynamicUIRenderer.vue"
 export default {
     // eslint-disable-next-line vue/multi-word-component-names
@@ -240,6 +253,8 @@ export default {
     },
     data() {
         return {
+            audio_url:null,
+            audio:null,
             msg:null,
             isSpeaking:false,
             speechSynthesis: null,
@@ -296,6 +311,23 @@ export default {
         onVoicesChanged() {
         // This event will be triggered when the voices are loaded
         this.voices = this.speechSynthesis.getVoices();
+        },
+        read(){
+            if(this.isSpeaking){
+                this.audio.pause()
+            }
+            else{
+                this.isSpeaking=true
+                axios.post("./read",{text:this.message.content}).then(response => {
+                let url = response.data.url
+                console.log(url)
+                this.audio_url = url                
+                }).catch(ex=>{
+                    this.$store.state.toast.showToast(`Error: ${ex}`,4,false)
+                    this.generating=false
+                });
+            }
+
         },
         speak() {
             if (this.msg) {

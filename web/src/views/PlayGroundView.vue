@@ -61,6 +61,11 @@
 
               <span>Cursor position {{ cursorPosition }}</span>
             </div>
+            <audio controls autoplay v-if="audio_url!=null">
+                <source :src="audio_url" type="audio/wav">
+                Your browser does not support the audio element.
+            </audio>  
+
             <div  v-if="tab_id === 'render'">
               <MarkdownRenderer ref="mdRender" :markdown-text="text" class="mt-4 p-2 rounded shadow-lg dark:bg-bg-dark">
               </MarkdownRenderer>          
@@ -161,7 +166,7 @@ import Toast from '../components/Toast.vue'
 import MarkdownRenderer from '../components/MarkdownRenderer.vue';
 import ClipBoardTextInput from "@/components/ClipBoardTextInput.vue";
 import Card from "@/components/Card.vue"
-
+const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 
 async function showInputPanel(name, default_value="", options=[]) {
     return new Promise((resolve, reject) => {
@@ -310,6 +315,7 @@ export default {
   name: 'PlayGroundView',
   data() {
     return {
+      audio_url:null,
       mdRenderHeight:300,
       selecting_model:false,
       tab_id:"source",
@@ -490,7 +496,7 @@ export default {
         axios.post("./read",{text:this.text}).then(response => {
           console.log(response.data.url)
           let url = response.data.url
-          this.text+=`\n<audio controls>\n<source src="${url}" type="audio/wav">\nYour browser does not support the audio element.\n</audio>`
+          this.audio_url = bUrl+url
           this.generating=false
         }).catch(ex=>{
           this.$refs.toast.showToast(`Error: ${ex}`,4,false)

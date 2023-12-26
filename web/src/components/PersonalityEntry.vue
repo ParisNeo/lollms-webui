@@ -39,7 +39,7 @@
           <div v-if="personality.languages && select_language" class="flex items-center">
             <i data-feather="globe" class="w-5 m-1"></i>
             <b>Languages:&nbsp;</b>
-            <select id="languages" v-model ="personality.language"
+            <select v-if="!isMounted" id="languages" v-model ="personality.language"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                 <option v-for="(item, index) in personality.languages" :key="index"
@@ -185,6 +185,7 @@ export default {
       console.log("Unmounting")
       console.log(this.onUnMount)
       this.onUnMount(this)
+      this.isMounted=false
     },
     toggleSettings() {
       this.onSettings(this)

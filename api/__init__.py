@@ -20,7 +20,13 @@ from lollms.helpers import ASCIIColors, trace_exception
 from lollms.com import NotificationType, NotificationDisplayType, LoLLMsCom
 from lollms.app import LollmsApplication
 from lollms.utilities import File64BitsManager, PromptReshaper, PackageManager, find_first_available_file_index
-from lollms.media import WebcamImageSender, AudioRecorder
+try:
+    from lollms.media import WebcamImageSender, AudioRecorder
+    Media_on=True
+except:
+    ASCIIColors.warning("Couldn't load media library.\nYou will not be able to perform any of the media linked operations. please verify the logs and install any required installations")
+    Media_on=False
+
 from safe_store import TextVectorizer, VectorizationMethod, VisualizationMethod
 import threading
 from tqdm import tqdm 
@@ -191,17 +197,23 @@ class LoLLMsAPI(LollmsApplication):
                 "first_chunk": True,
             }
         }
-        try:
-            self.webcam = WebcamImageSender(socketio,lollmsCom=self)
-        except:
+        if Media_on:
+            try:
+                self.webcam = WebcamImageSender(socketio,lollmsCom=self)
+            except:
+                self.webcam = None
+            try:
+                self.rec_output_folder = lollms_paths.personal_outputs_path/"audio_rec"
+                self.rec_output_folder.mkdir(exist_ok=True, parents=True)
+                self.summoned = False
+                self.audio_cap = AudioRecorder(socketio,self.rec_output_folder/"rt.wav", callback=self.audio_callback,lollmsCom=self)
+            except:
+                self.audio_cap = None
+                self.rec_output_folder = None
+        else:
             self.webcam = None
-        try:
-            self.rec_output_folder = lollms_paths.personal_outputs_path/"audio_rec"
-            self.rec_output_folder.mkdir(exist_ok=True, parents=True)
-            self.summoned = False
-            self.audio_cap = AudioRecorder(socketio,self.rec_output_folder/"rt.wav", callback=self.audio_callback,lollmsCom=self)
-        except:
             self.rec_output_folder = None
+
         # =========================================================================================
         # Socket IO stuff    
         # =========================================================================================

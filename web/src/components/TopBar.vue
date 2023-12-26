@@ -37,6 +37,11 @@
                 </div>
                 <a href="#" @click="restartProgram">
                     <div class="text-2xl  hover:text-primary duration-150" title="restart program">
+                        <i data-feather="power"></i>
+                    </div>
+                </a>
+                <a href="#" @click="refreshPage">
+                    <div class="text-2xl  hover:text-primary duration-150" title="refresh page">
                         <i data-feather="refresh-ccw"></i>
                     </div>
                 </a>
@@ -194,6 +199,9 @@ export default {
             setTimeout(()=>{
                 window.close();
             },2000)
+        },
+        refreshPage() {
+            window.location.reload();
         },
         handleOk(inputText) {
             console.log("Input text:", inputText);

@@ -630,16 +630,17 @@ export default {
         },
         clear_files(){
             axios.get('/clear_personality_files_list').then(res=>{
-                if(res.data.status){
-                    console.log(`Files removed`)
+                console.log(res)
+                if(res.data.state){
+                    this.$store.state.toast.showToast("File uploaded successfully",4,true);
+                    this.filesList.length = 0;
+                    this.isFileSentList.length = 0;
                 }
                 else{
-                    console.log(`Files couldn't be removed`)
+                    this.$store.state.toast.showToast("Files couldn't be removed",4,false);
                 }
             })
 
-            this.filesList = []
-            this.isFileSentList = []
         },
         send_file(file, next) {
             const fileReader = new FileReader();
@@ -767,7 +768,7 @@ export default {
             // console.log(this.filesList)
         },
         sendMessageEvent(msg) {
-            this.filesList = []
+            this.filesList.length = 0;
             this.$emit('messageSentEvent', msg)
 
         },

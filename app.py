@@ -16,6 +16,9 @@ __license__ = "Apache 2.0"
 __version__ ="8.0"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
+
+
+
 import os
 import platform
 import sys
@@ -26,8 +29,15 @@ import time
 import traceback
 import webbrowser
 from pathlib import Path
+from lollms.config import InstallOption
+from lollms.main_config import LOLLMSConfig
+from lollms.paths import LollmsPaths, gptqlora_repo
 from lollms.com import NotificationType, NotificationDisplayType
 from lollms.utilities import AdvancedGarbageCollector, reinstall_pytorch_with_cuda, convert_language_name
+lollms_paths = LollmsPaths.find_paths(force_local=True, custom_default_cfg_path="configs/config.yaml")
+# Configuration loading part
+config = LOLLMSConfig.autoload(lollms_paths)
+
 def run_update_script(args=None):
     update_script = Path(__file__).parent/"update_script.py"
 
@@ -59,11 +69,9 @@ try:
     import traceback
     import subprocess
     import signal
-    from lollms.config import InstallOption
-    from lollms.binding import LOLLMSConfig, BindingBuilder
+    from lollms.binding import BindingBuilder
     from lollms.personality import AIPersonality
     from lollms.config import BaseConfig
-    from lollms.paths import LollmsPaths, gptqlora_repo
     from lollms.extension import LOLLMSExtension, ExtensionBuilder
 
     from flask_cors import CORS
@@ -484,6 +492,14 @@ try:
                 "/import_multiple_discussions", "import_multiple_discussions", self.import_multiple_discussions, methods=["POST"]
             )      
 
+
+            self.add_endpoint(
+                "/list_voices", "list_voices", self.list_voices, methods=["GET"]
+            )
+            self.add_endpoint(
+                "/set_voice", "set_voice", self.set_voice, methods=["POST"]
+            )
+            
             self.add_endpoint(
                 "/read", "read", self.read, methods=["POST"]
             )
@@ -757,19 +773,42 @@ try:
                         presets.append(preset)
             return jsonify(presets)
 
+
+        def list_voices(self):
+            voices=["main_voice"]
+            voices_dir:Path=lollms_paths.custom_voices_path
+            voices += [v.stem for v in voices_dir.iterdir() if v.suffix==".wav"]
+            return jsonify({"voices":voices})
+
+        def set_voice(self):
+            data = request.get_json()
+            self.config.reading_voice=data["voice"]
+            if self.config.auto_save:
+                self.config.save_config()
+            return jsonify({"status":true})
+
         def read(self):
             # Get the JSON data from the POST request.
             data = request.get_json()
+            voice=data.get("voice",self.config.reading_voice)
+            if voice is None:
+                voice = "main_voice"
+            self.info("Starting to build voice")
             try:
                 from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
                 if self.tts is None:
                     self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent/"voices")
                 language = convert_language_name(self.personality.language)
-                self.tts.set_speaker_folder(Path(__file__).parent/"voices")
+                if voice!="main_voice":
+                    voices_folder = self.lollms_paths.custom_voices_path
+                else:
+                    voices_folder = Path(__file__).parent/"voices"
+                self.tts.set_speaker_folder(voices_folder)
                 fn = self.personality.name.lower().replace(' ',"_").replace('.','')    
                 fn = f"playground_voice.wav"
                 url = f"audio/{fn}"
-                self.tts.tts_to_file(data['text'], "main_voice.wav", f"{fn}", language=language)
+                self.tts.tts_to_file(data['text'], f"{voice}.wav", f"{fn}", language=language)
+                self.info("Voice file ready")
                 return jsonify({"url": url})
             except:
                 return jsonify({"url": None})
@@ -2521,7 +2560,6 @@ try:
         return config, added_entries, removed_entries
 
     if __name__ == "__main__":
-        lollms_paths = LollmsPaths.find_paths(force_local=True, custom_default_cfg_path="configs/config.yaml")
         db_folder = lollms_paths.personal_path/"databases"
         db_folder.mkdir(parents=True, exist_ok=True)
         
@@ -2653,7 +2691,10 @@ try:
         
         # if autoshow
         if config.auto_show_browser:
-            webbrowser.open(f"http://{config['host']}:{config['port']}")
+            if config['host']=="0.0.0.0":
+                webbrowser.open(f"http://localhost:{config['port']}")
+            else:
+                webbrowser.open(f"http://{config['host']}:{config['port']}")
 
 
         try:
