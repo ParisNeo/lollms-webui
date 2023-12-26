@@ -2089,8 +2089,8 @@ class LoLLMsAPI(LollmsApplication):
     Your browser does not support the audio element.
 </audio>
 """
-                        self.process_chunk("Generating voice output",MSG_TYPE.MSG_TYPE_STEP_END,client_id=client_id)
-                        self.process_chunk(fl,MSG_TYPE.MSG_TYPE_CHUNK,client_id=client_id)
+                        self.process_chunk("Generating voice output", MSG_TYPE.MSG_TYPE_STEP_END, {'status':True},client_id=client_id)
+                        self.process_chunk(fl,MSG_TYPE.MSG_TYPE_UI, client_id=client_id)
                         
                         """
                         self.info("Creating audio output",10)
