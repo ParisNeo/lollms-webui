@@ -1357,8 +1357,9 @@ try:
 
         def list_models(self):
             if self.binding is not None:
-                models = self.binding.list_models(self.config)
                 ASCIIColors.yellow("Listing models")
+                models = self.binding.list_models()
+                ASCIIColors.green("ok")
                 return jsonify(models)
             else:
                 return jsonify([])
@@ -1366,14 +1367,15 @@ try:
         def get_active_model(self):
             if self.binding is not None:
                 try:
-                    models = self.binding.list_models(self.config)
+                    ASCIIColors.yellow("Getting active model")
+                    models = self.binding.list_models()
                     index = models.index(self.config.model_name)
-                    ASCIIColors.yellow("Listing active models")
-                    return jsonify({"model":models[index],"index":index})
+                    ASCIIColors.green("ok")
+                    return jsonify({"status":True,"model":models[index],"index":index})
                 except Exception as ex:
-                    return jsonify(None)
+                    return jsonify({"status":False})
             else:
-                return jsonify(None)
+                return jsonify({"status":False})
 
         def list_personalities_categories(self):
             personalities_categories_dir = self.lollms_paths.personalities_zoo_path  # replace with the actual path to the models folder
@@ -2470,7 +2472,12 @@ try:
             """
             if self.binding is None:
                 return jsonify([])
-            model_list = self.binding.get_available_models()
+            try:
+                model_list = self.binding.get_available_models(self)
+            except Exception as ex:
+                self.error("Coudln't list models. Please reinstall the binding or notify ParisNeo on the discord server")
+                return jsonify([])
+
             return jsonify(model_list)
 
 

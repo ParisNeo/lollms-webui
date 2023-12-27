@@ -508,6 +508,10 @@ app.mixin({
       console.log("Calling")
       this.$store.state.loading_infos = "Loading Configuration"
       this.$store.state.loading_progress = 10
+      try{
+
+      }
+      catch
       await this.$store.dispatch('refreshConfig');
       console.log("Config ready")
       this.$store.state.loading_infos = "Loading Database"
