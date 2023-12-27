@@ -94,6 +94,8 @@
             <p class="text-2xl animate-pulse mt-2 text-white">{{ loading_infos }} ...</p>
         </div>     
         <UniversalForm ref="universalForm" class="z-20" />
+        <YesNoDialog ref="yesNoDialog" class="z-20" />
+
     </header>
 
     <body>
@@ -107,6 +109,7 @@ import Toast from '../components/Toast.vue'
 import MessageBox from "@/components/MessageBox.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
 import UniversalForm from '../components/UniversalForm.vue';
+import YesNoDialog from './YesNoDialog.vue';
 
 
 import { RouterLink } from 'vue-router'
@@ -139,6 +142,7 @@ export default {
         MessageBox,
         ProgressBar,
         UniversalForm,
+        YesNoDialog
     },
     watch:{
         isConnected(){
@@ -170,6 +174,8 @@ export default {
         this.$store.state.toast = this.$refs.toast
         this.$store.state.messageBox = this.$refs.messageBox
         this.$store.state.universalForm = this.$refs.universalForm
+        this.$store.state.yesNoDialog = this.$refs.yesNoDialog
+        
         this.sunIcon = document.querySelector(".sun");
         this.moonIcon = document.querySelector(".moon");
         this.userTheme = localStorage.getItem("theme");

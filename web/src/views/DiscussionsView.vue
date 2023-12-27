@@ -1226,6 +1226,11 @@ export default {
             else if(notif.display_type==1){
                 this.$store.state.messageBox.showMessage(notif.content)
             }
+            else if(notif.display_type==2){
+                this.$store.state.yesNoDialog.askQuestion(notif.content, 'Yes', 'Cancel').then(yesRes => {
+                    socket.emit("yesNoRes",{yesRes:yesRes})
+                })
+            }
             this.chime.play()
         },
         streamMessageContent(msgObj) {

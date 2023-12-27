@@ -1683,7 +1683,6 @@
             </div>
         </div>
     </div>
-    <YesNoDialog ref="yesNoDialog" class="z-20" />
     <AddModelDialog ref="addmodeldialog" />
     <ChoiceDialog  class="z-20"
       :show="variantSelectionDialogVisible"
@@ -1779,7 +1778,6 @@ import filesize from '../plugins/filesize'
 import axios from "axios";
 import feather from 'feather-icons'
 import { nextTick, TransitionGroup } from 'vue'
-import YesNoDialog from "@/components/YesNoDialog.vue";
 import ModelEntry from '@/components/ModelEntry.vue';
 import PersonalityViewer from '@/components/PersonalityViewer.vue';
 import PersonalityEntry from "@/components/PersonalityEntry.vue";
@@ -1807,7 +1805,6 @@ axios.defaults.baseURL = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
     components: {
         AddModelDialog,
-        YesNoDialog,
         ModelEntry,
         // eslint-disable-next-line vue/no-unused-components
         PersonalityViewer,
@@ -2552,7 +2549,7 @@ export default {
         },
         onUninstall(model_object) {
 
-            this.$refs.yesNoDialog.askQuestion("Are you sure you want to delete this model?\n [" + model_object.name + "]", 'Yes', 'Cancel').then(yesRes => {
+            this.$store.state.yesNoDialog.askQuestion("Are you sure you want to delete this model?\n [" + model_object.name + "]", 'Yes', 'Cancel').then(yesRes => {
                 if (yesRes) {
                     console.log("uninstalling model...")
                     const progressListener = (response) => {
@@ -2623,7 +2620,7 @@ export default {
                 this.isLoading = true
 
                 if (binding_object.disclaimer){
-                    this.$refs.yesNoDialog.askQuestion(binding_object.disclaimer, 'Proceed', 'Cancel')
+                    this.$store.state.yesNoDialog.askQuestion(binding_object.disclaimer, 'Proceed', 'Cancel')
                 }
                 axios.post('/install_binding', { name: binding_object.binding.folder }).then((res) => {
 
@@ -3200,7 +3197,7 @@ export default {
 
         },
         reset_configuration() {
-            this.$refs.yesNoDialog.askQuestion("Are you sure?\nThis will delete all your configurations and get back to default configuration.").then(response => {
+            this.$store.state.yesNoDialog.askQuestion("Are you sure?\nThis will delete all your configurations and get back to default configuration.").then(response => {
                 if (response) {
                     // User clicked Yes
                     axios.post('/reset_settings', {})
@@ -4237,7 +4234,7 @@ export default {
         // console.log('did settings?',this.settingsChanged)
         await this.$router.isReady()
         if (this.settingsChanged) {
-            const res = await this.$refs.yesNoDialog.askQuestion("Did You forget to apply changes?\nYou need to apply changes before you leave, or else.", 'Apply configuration', 'Cancel')
+            const res = await this.$store.state.yesNoDialog.askQuestion("Did You forget to apply changes?\nYou need to apply changes before you leave, or else.", 'Apply configuration', 'Cancel')
             if (res) {
                 this.applyConfiguration()
 

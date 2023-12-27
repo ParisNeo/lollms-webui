@@ -51,6 +51,7 @@ if not PackageManager.check_package_installed("requests"):
 if not PackageManager.check_package_installed("bs4"):
     PackageManager.install_package("beautifulsoup4")
 import requests
+from flask_socketio import SocketIO
 from bs4 import BeautifulSoup
 
 
@@ -132,10 +133,10 @@ def parse_requirements_file(requirements_path):
 
 
 class LoLLMsAPI(LollmsApplication):
-    def __init__(self, config:LOLLMSConfig, socketio, config_file_path:str, lollms_paths: LollmsPaths) -> None:
+    def __init__(self, config:LOLLMSConfig, socketio:SocketIO, config_file_path:str, lollms_paths: LollmsPaths) -> None:
 
         self.socketio = socketio
-        super().__init__("Lollms_webui",config, lollms_paths, callback=self.process_chunk)
+        super().__init__("Lollms_webui",config, lollms_paths, callback=self.process_chunk, socketio=socketio)
 
 
         self.busy = False
@@ -1152,6 +1153,7 @@ class LoLLMsAPI(LollmsApplication):
         else:
             if output["text"].lower()=="lollms":
                 self.summoned = True
+
     def scrape_and_save(self, url, file_path):
         # Send a GET request to the URL
         response = requests.get(url)
