@@ -33,7 +33,7 @@ from lollms.config import InstallOption
 from lollms.main_config import LOLLMSConfig
 from lollms.paths import LollmsPaths, gptqlora_repo
 from lollms.com import NotificationType, NotificationDisplayType
-from lollms.utilities import AdvancedGarbageCollector, reinstall_pytorch_with_cuda, convert_language_name
+from lollms.utilities import AdvancedGarbageCollector, reinstall_pytorch_with_cuda, convert_language_name, find_first_available_file_index
 lollms_paths = LollmsPaths.find_paths(force_local=True, custom_default_cfg_path="configs/config.yaml")
 # Configuration loading part
 config = LOLLMSConfig.autoload(lollms_paths)
@@ -788,8 +788,17 @@ try:
 
         def read(self):
             # Get the JSON data from the POST request.
+            try:
+                from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
+                if self.tts is None:
+                    self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent/"voices")
+            except:
+                return jsonify({"url": None})
+                
             data = request.get_json()
             voice=data.get("voice",self.config.current_voice)
+            index = find_first_available_file_index(self.tts.output_folder, "voice_sample_",".wav")
+            output_fn=data.get("fn",f"voice_sample_{index}.wav")
             if voice is None:
                 voice = "main_voice"
             self.info("Starting to build voice")
@@ -803,10 +812,8 @@ try:
                 else:
                     voices_folder = Path(__file__).parent/"voices"
                 self.tts.set_speaker_folder(voices_folder)
-                fn = self.personality.name.lower().replace(' ',"_").replace('.','')    
-                fn = f"playground_voice.wav"
-                url = f"audio/{fn}"
-                self.tts.tts_to_file(data['text'], f"{voice}.wav", f"{fn}", language=language)
+                url = f"audio/{output_fn}"
+                self.tts.tts_to_file(data['text'], f"{voice}.wav", f"{output_fn}", language=language)
                 self.info("Voice file ready")
                 return jsonify({"url": url})
             except:

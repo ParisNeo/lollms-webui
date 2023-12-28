@@ -72,6 +72,15 @@
                                 title="Edit message" @click.stop="editMsgMode = true">
                                 <i data-feather="edit"></i>
                             </div>
+                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2"
+                                title="Add python block" @click.stop="addPythonBlock()">
+                                <img :src="python_block" width="25" height="25">
+                            </div>
+                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2"
+                                title="Add bash block" @click.stop="addBashBlock()">
+                                <img :src="bash_block" width="25" height="25">
+                            </div>
+                            
                             <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2"
                                 title="Copy message to clipboard" @click.stop="copyContentToClipboard()">
                                 <i data-feather="copy"></i>
@@ -133,7 +142,7 @@
                                     <i data-feather="volume-2"></i>
                                 </div>
                             </div>    
-                            <div v-if="enable_voice_service" class="flex flex-row items-center">
+                            <div v-if="this.$store.state.config.enable_voice_service" class="flex flex-row items-center">
                                 <div class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2" 
                                     title="read"
                                     @click.stop="read()"
@@ -169,7 +178,7 @@
                         </textarea>
                     </div>
                     
-
+                    
                         <div  v-if="message.metadata !== null">
                         <div v-for="(metadata, index) in message.metadata" :key="'json-' + message.id + '-' + index" class="json font-bold">
                             <JsonViewer :jsonFormText="metadata.title" :jsonData="metadata.content" />
@@ -177,7 +186,7 @@
                     </div>
 
                     <DynamicUIRenderer v-if="message.ui !== null && message.ui !== undefined && message.ui !== ''" class="w-full h-full" :code="message.ui"></DynamicUIRenderer>
-                    <audio controls autoplay v-if="audio_url!=null">
+                    <audio controls autoplay v-if="audio_url!=null" ref="audio_player">
                         <source :src="audio_url" type="audio/wav">
                         Your browser does not support the audio element.
                     </audio>  
@@ -229,6 +238,9 @@ import RenderHTMLJS from './RenderHTMLJS.vue';
 import JsonViewer from "./JsonViewer.vue";
 import Step from './Step.vue';
 import axios from 'axios'
+import python_block from '@/assets/python_block.png';
+import bash_block from '@/assets/bash_block.png';
+
 
 import DynamicUIRenderer from "./DynamicUIRenderer.vue"
 export default {
@@ -253,6 +265,8 @@ export default {
     },
     data() {
         return {
+            python_block:python_block,
+            bash_block:bash_block,
             audio_url:null,
             audio:null,
             msg:null,
@@ -314,7 +328,8 @@ export default {
         },
         read(){
             if(this.isSpeaking){
-                this.audio.pause()
+                this.$refs.audio_player.pause()
+                this.isSpeaking=false
             }
             else{
                 this.isSpeaking=true
@@ -409,6 +424,31 @@ export default {
    
         toggleModel() {
             this.expanded = !this.expanded;
+        },
+        addBashBlock(){
+            let p =this.$refs.mdTextarea.selectionStart
+            if(p==0 || this.message.content[p-1]=="\n"){
+                this.message.content = this.message.content.slice(0, p) + "```bash\n\n```\n" + this.message.content.slice(p)
+            }
+            else{
+                this.message.content = this.message.content.slice(0, p) + "\n```bash\n\n```\n" + this.message.content.slice(p)
+            }
+            p = p+9
+            this.$refs.mdTextarea.focus();
+            this.$refs.mdTextarea.selectionStart = this.$refs.mdTextarea.selectionEnd = p;
+        },
+        addPythonBlock() {
+            let p =this.$refs.mdTextarea.selectionStart
+            if(p==0 || this.message.content[p-1]=="\n"){
+                this.message.content = this.message.content.slice(0, p) + "```python\n\n```\n" + this.message.content.slice(p)
+            }
+            else{
+                this.message.content = this.message.content.slice(0, p) + "\n```python\n\n```\n" + this.message.content.slice(p)
+            }
+
+            p = p+11
+            this.$refs.mdTextarea.focus();
+            this.$refs.mdTextarea.selectionStart = this.$refs.mdTextarea.selectionEnd = p;
         },
         copyContentToClipboard() {
             this.$emit('copy', this)
@@ -544,11 +584,6 @@ export default {
 
     },
     computed: {
-        enable_voice_service:{
-            get(){
-                this.$store.state.config.enable_voice_service
-            }
-        },
         editMsgMode:{
             get(){
                 if(this.message.hasOwnProperty('open'))
