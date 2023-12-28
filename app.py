@@ -257,11 +257,9 @@ try:
             )
             
             self.add_endpoint("/start_training", "start_training", self.start_training, methods=["POST"])
-
             self.add_endpoint("/get_lollms_version", "get_lollms_version", self.get_lollms_version, methods=["GET"])
             self.add_endpoint("/get_lollms_webui_version", "get_lollms_webui_version", self.get_lollms_webui_version, methods=["GET"])
             
-
             self.add_endpoint("/reload_binding", "reload_binding", self.reload_binding, methods=["POST"])
             self.add_endpoint("/restart_program", "restart_program", self.restart_program, methods=["GET"])
             self.add_endpoint("/update_software", "update_software", self.update_software, methods=["GET"])
@@ -775,6 +773,7 @@ try:
 
 
         def list_voices(self):
+            ASCIIColors.yellow("Listing voices")
             voices=["main_voice"]
             voices_dir:Path=lollms_paths.custom_voices_path
             voices += [v.stem for v in voices_dir.iterdir() if v.suffix==".wav"]
@@ -782,15 +781,15 @@ try:
 
         def set_voice(self):
             data = request.get_json()
-            self.config.reading_voice=data["voice"]
+            self.config.current_voice=data["voice"]
             if self.config.auto_save:
                 self.config.save_config()
-            return jsonify({"status":true})
+            return jsonify({"status":True})
 
         def read(self):
             # Get the JSON data from the POST request.
             data = request.get_json()
-            voice=data.get("voice",self.config.reading_voice)
+            voice=data.get("voice",self.config.current_voice)
             if voice is None:
                 voice = "main_voice"
             self.info("Starting to build voice")

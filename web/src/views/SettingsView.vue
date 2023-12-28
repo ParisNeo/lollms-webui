@@ -723,21 +723,55 @@
                                             >
                                             </div>
                                         </td>
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="enable_voice_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable voice service:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <input
+                                            type="checkbox"
+                                            id="enable_voice_service"
+                                            required
+                                            v-model="configFile.enable_voice_service"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>
                                         </tr>                                        
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="current_voice" class="text-sm font-bold" style="margin-right: 1rem;">Current voice:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                                <select v-model="current_voice" @change="settingsChanged=true" :disabled="!enable_voice_service">
+                                                <option v-for="voice in voices" :key="voice.id" :value="voice.id">
+                                                    {{ voice }}
+                                                </option>
+                                                </select>
+                                            </div>
+                                        </td>
+                                        </tr>                                        
+
+                                                                                
                                         <tr>
                                         <td style="min-width: 200px;">
                                             <label for="auto_read" class="text-sm font-bold" style="margin-right: 1rem;">Enable auto read:</label>
                                         </td>
                                         <td>
                                             <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="auto_read"
-                                            required
-                                            v-model="configFile.auto_read"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    id="auto_read"
+                                                    required
+                                                    v-model="configFile.auto_read"
+                                                    @change="settingsChanged=true"
+                                                    class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                                    :disabled="!enable_voice_service"
+                                                >
                                             </div>
                                         </td>
                                         </tr>                                        
@@ -1818,6 +1852,7 @@ export default {
     data() {
 
         return {
+            voices: [],
             binding_changed:false,
             SVGGPU:SVGGPU,
             models_zoo:[],
@@ -1909,6 +1944,15 @@ export default {
         //refreshHardwareUsage()
     }, 
     methods: {     
+        getSeviceVoices() {
+        axios.get('list_voices')
+            .then(response => {
+            this.voices = response.data["voices"];
+            })
+            .catch(error => {
+            console.error(error);
+            });
+        },
         load_more_models(){
             if(this.models_zoo_initialLoadCount+10<this.models_zoo.length){
                 this.models_zoo_initialLoadCount+=10
@@ -3723,6 +3767,7 @@ export default {
         this.getVoices();
         console.log("Constructing")
         this.load_everything()
+        this.getSeviceVoices()
     },
     activated() {
         //this.load_everything()
@@ -3922,6 +3967,34 @@ export default {
                 this.$store.state.config.auto_read = value
             },
         },
+        enable_voice_service:{
+            get() {
+                return this.$store.state.config.enable_voice_service;
+            },
+            set(value) {
+                // You should not set the value directly here; use the updateSetting method instead
+                this.$store.state.config.enable_voice_service = value
+            },
+        },
+        current_voice:{
+            get() {
+                if (this.$store.state.config.current_voice===null || this.$store.state.config.current_voice===undefined){
+                    console.log("current voice", this.$store.state.config.current_voice)
+                    return "main_voice";
+                }
+                return this.$store.state.config.current_voice;
+            },
+            set(value) {
+                // You should not set the value directly here; use the updateSetting method instead
+                if(value=="main_voice"){
+                    this.$store.state.config.current_voice = null
+                }
+                else{
+                    this.$store.state.config.current_voice = value
+                }
+            },
+        },
+
         audio_pitch:{
             get() {
                 return this.$store.state.config.audio_pitch;
@@ -4130,13 +4203,11 @@ export default {
 
     },
     watch: {
-        watch: {
-          extensionsFiltered(newValue, oldValue) {
-            // Perform any necessary UI updates here
-            // newValue represents the new value of extensionsFiltered
-            // oldValue represents the previous value of extensionsFiltered
-        }
-        },        
+        enable_voice_service(newValue) {
+            if (!newValue) {
+              this.configFile.auto_read = false;
+            }
+        },
         bec_collapsed() {
             nextTick(() => {
                 feather.replace()

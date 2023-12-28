@@ -1203,7 +1203,7 @@ class LoLLMsAPI(LollmsApplication):
                                                 selected_language=personality.split(":")[1] if ":" in personality else None,
                                                 run_scripts=True)
                     mounted_personalities.append(personality)
-                    if self.config.auto_read and len(personality.audio_samples)>0:
+                    if self.config.enable_voice_service and self.config.auto_read and len(personality.audio_samples)>0:
                         try:
                             from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
                             if self.tts is None:
@@ -2073,7 +2073,7 @@ class LoLLMsAPI(LollmsApplication):
                                 client_id=client_id,
                                 callback=partial(self.process_chunk,client_id = client_id)
                             )
-                if self.config.auto_read and len(self.personality.audio_samples)>0:
+                if self.config.enable_voice_service and self.config.auto_read and len(self.personality.audio_samples)>0:
                     try:
                         self.process_chunk("Generating voice output",MSG_TYPE.MSG_TYPE_STEP_START,client_id=client_id)
                         from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
