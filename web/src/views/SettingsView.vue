@@ -748,7 +748,7 @@
                                         <td>
                                             <div class="flex flex-row">
                                                 <select v-model="current_voice" @change="settingsChanged=true" :disabled="!enable_voice_service">
-                                                <option v-for="voice in voices" :key="voice.id" :value="voice.id">
+                                                <option v-for="voice in voices" :key="voice" :value="voice">
                                                     {{ voice }}
                                                 </option>
                                                 </select>
@@ -3986,10 +3986,12 @@ export default {
             },
             set(value) {
                 // You should not set the value directly here; use the updateSetting method instead
-                if(value=="main_voice"){
+                if(value=="main_voice" || value===undefined){
+                    console.log("Current voice set to None")
                     this.$store.state.config.current_voice = null
                 }
                 else{
+                    console.log("Current voice set to ",value)
                     this.$store.state.config.current_voice = value
                 }
             },
