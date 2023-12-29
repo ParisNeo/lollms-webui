@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 33
+version: 35
 binding_name: null
 model_name: null
 
@@ -49,14 +49,18 @@ enable_gpu: true
 # Automatically open the browser
 auto_show_browser: true
 
+# Voice service
+enable_voice_service: false
+xtts_base_url: http://127.0.0.1:8020
+auto_read: false
+current_voice: null
+current_language: en
+
 # Audio
 media_on: false
 audio_in_language: 'en-US'
 auto_speak: false
-auto_read: false
-enable_voice_service: false
 audio_out_voice: null
-current_voice: null
 audio_pitch: 1
 audio_auto_send_input: true
 audio_silenceTimer: 5000

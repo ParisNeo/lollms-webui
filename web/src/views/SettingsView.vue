@@ -688,7 +688,97 @@
                                                                                       
                                     </table>
                                 </Card>
-                                <Card title="Audio" :is_subcard="true" class="pb-2  m-2">
+
+
+                                <Card title="XTTS service" :is_subcard="true" class="pb-2  m-2">
+                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="enable_voice_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable voice service:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <input
+                                            type="checkbox"
+                                            id="enable_voice_service"
+                                            required
+                                            v-model="configFile.enable_voice_service"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>                                        
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="xtts_base_url" class="text-sm font-bold" style="margin-right: 1rem;">xtts base url:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <input
+                                            type="text"
+                                            id="xtts_base_url"
+                                            required
+                                            v-model="configFile.xtts_base_url"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr> 
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="current_language" class="text-sm font-bold" style="margin-right: 1rem;">Current language:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                                <select v-model="current_language" @change="settingsChanged=true" :disabled="!enable_voice_service">
+                                                <option v-for="language in voice_languages" :key="language" :value="language">
+                                                    {{ language }}
+                                                </option>
+                                                </select>
+                                            </div>
+                                        </td>
+                                        </tr>                                        
+
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="current_voice" class="text-sm font-bold" style="margin-right: 1rem;">Current voice:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                                <select v-model="current_voice" @change="settingsChanged=true" :disabled="!enable_voice_service">
+                                                <option v-for="voice in voices" :key="voice" :value="voice">
+                                                    {{ voice }}
+                                                </option>
+                                                </select>
+                                            </div>
+                                        </td>
+                                        </tr>                                        
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="auto_read" class="text-sm font-bold" style="margin-right: 1rem;">Enable auto read:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                                <input
+                                                    type="checkbox"
+                                                    id="auto_read"
+                                                    required
+                                                    v-model="configFile.auto_read"
+                                                    @change="settingsChanged=true"
+                                                    class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                                    :disabled="!enable_voice_service"
+                                                >
+                                            </div>
+                                        </td>
+                                        </tr>                    
+                                    </table>
+
+                                </Card>
+
+
+                                <Card title="Browser Audio" :is_subcard="true" class="pb-2  m-2">
                                     <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <tr>
                                         <td style="min-width: 200px;">
@@ -724,57 +814,6 @@
                                             </div>
                                         </td>
                                         </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="enable_voice_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable voice service:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="enable_voice_service"
-                                            required
-                                            v-model="configFile.enable_voice_service"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>                                        
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="current_voice" class="text-sm font-bold" style="margin-right: 1rem;">Current voice:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                                <select v-model="current_voice" @change="settingsChanged=true" :disabled="!enable_voice_service">
-                                                <option v-for="voice in voices" :key="voice" :value="voice">
-                                                    {{ voice }}
-                                                </option>
-                                                </select>
-                                            </div>
-                                        </td>
-                                        </tr>                                        
-
-                                                                                
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="auto_read" class="text-sm font-bold" style="margin-right: 1rem;">Enable auto read:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                                <input
-                                                    type="checkbox"
-                                                    id="auto_read"
-                                                    required
-                                                    v-model="configFile.auto_read"
-                                                    @change="settingsChanged=true"
-                                                    class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                                    :disabled="!enable_voice_service"
-                                                >
-                                            </div>
-                                        </td>
-                                        </tr>                                        
                                         <tr>
                                         <td style="min-width: 200px;">
                                             <label for="audio_pitch" class="text-sm font-bold" style="margin-right: 1rem;">audio pitch:</label>
@@ -1853,6 +1892,11 @@ export default {
 
         return {
             voices: [],
+            voice_languages: [
+                "en",
+                "fr",
+                "es"
+            ],
             binding_changed:false,
             SVGGPU:SVGGPU,
             models_zoo:[],
@@ -3974,6 +4018,16 @@ export default {
             set(value) {
                 // You should not set the value directly here; use the updateSetting method instead
                 this.$store.state.config.enable_voice_service = value
+            },
+        },
+        current_language:{
+            get() {
+                return this.$store.state.config.current_language;
+            },
+            set(value) {
+                // You should not set the value directly here; use the updateSetting method instead
+                console.log("Current voice set to ",value)
+                this.$store.state.config.current_language = value
             },
         },
         current_voice:{
