@@ -806,7 +806,7 @@ try:
                 from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
                 if self.tts is None:
                     self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent/"voices")
-                language = convert_language_name(self.personality.language)
+                language = self.config.current_language# convert_language_name()
                 if voice!="main_voice":
                     voices_folder = self.lollms_paths.custom_voices_path
                 else:
