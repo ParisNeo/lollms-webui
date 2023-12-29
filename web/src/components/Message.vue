@@ -73,11 +73,15 @@
                                 <i data-feather="edit"></i>
                             </div>
                             <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2"
-                                title="Add python block" @click.stop="addPythonBlock()">
+                                title="Add python block" @click.stop="addBlock('python')">
                                 <img :src="python_block" width="25" height="25">
                             </div>
                             <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2"
-                                title="Add bash block" @click.stop="addBashBlock()">
+                                title="Add javascript block" @click.stop="addBlock('javascript')">
+                                <img :src="javascript_block" width="25" height="25">
+                            </div>
+                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2"
+                                title="Add bash block" @click.stop="addBlock('bash')">
                                 <img :src="bash_block" width="25" height="25">
                             </div>
                             
@@ -239,6 +243,8 @@ import JsonViewer from "./JsonViewer.vue";
 import Step from './Step.vue';
 import axios from 'axios'
 import python_block from '@/assets/python_block.png';
+import javascript_block from '@/assets/javascript_block.svg';
+
 import bash_block from '@/assets/bash_block.png';
 
 
@@ -265,6 +271,7 @@ export default {
     },
     data() {
         return {
+            javascript_block:javascript_block,
             python_block:python_block,
             bash_block:bash_block,
             audio_url:null,
@@ -425,28 +432,16 @@ export default {
         toggleModel() {
             this.expanded = !this.expanded;
         },
-        addBashBlock(){
+        addBlock(bloc_name){
             let p =this.$refs.mdTextarea.selectionStart
             if(p==0 || this.message.content[p-1]=="\n"){
-                this.message.content = this.message.content.slice(0, p) + "```bash\n\n```\n" + this.message.content.slice(p)
+                this.message.content = this.message.content.slice(0, p) + "```"+bloc_name+"\n\n```\n" + this.message.content.slice(p)
+                p = p+4+bloc_name.length
             }
             else{
-                this.message.content = this.message.content.slice(0, p) + "\n```bash\n\n```\n" + this.message.content.slice(p)
+                this.message.content = this.message.content.slice(0, p) + "\n```"+bloc_name+"\n\n```\n" + this.message.content.slice(p)
+                p = p+3+bloc_name.length
             }
-            p = p+9
-            this.$refs.mdTextarea.focus();
-            this.$refs.mdTextarea.selectionStart = this.$refs.mdTextarea.selectionEnd = p;
-        },
-        addPythonBlock() {
-            let p =this.$refs.mdTextarea.selectionStart
-            if(p==0 || this.message.content[p-1]=="\n"){
-                this.message.content = this.message.content.slice(0, p) + "```python\n\n```\n" + this.message.content.slice(p)
-            }
-            else{
-                this.message.content = this.message.content.slice(0, p) + "\n```python\n\n```\n" + this.message.content.slice(p)
-            }
-
-            p = p+11
             this.$refs.mdTextarea.focus();
             this.$refs.mdTextarea.selectionStart = this.$refs.mdTextarea.selectionEnd = p;
         },

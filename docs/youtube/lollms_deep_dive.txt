@@ -1,0 +1,7 @@
+Hi there,
+
+In this video, we are going to delve into the inner workings of lollms. We will learn how the underlying L.L.Ms work, how the RAG system works, and how you can connect lollms to multiple sources or clients.
+
+To start, Large Language Models or LLMs for short, are a special kind of models that perform operations on text. We are going to focus on a specific type of tasks which is text generation from a prompt.
+
+

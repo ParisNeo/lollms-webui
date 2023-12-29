@@ -13,3 +13,4 @@ websocket-client
 GitPython
 setuptools
 numpy
+packaging
