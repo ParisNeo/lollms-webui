@@ -151,7 +151,7 @@
                                 </div>
                             </div>    
                             <div v-if="this.$store.state.config.enable_voice_service" class="flex flex-row items-center">
-                                <div v-if="isSynthesizingVoice" class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2" 
+                                <div v-if="!isSynthesizingVoice" class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2" 
                                     title="read"
                                     @click.stop="read()"
                                     :class="{ 'text-red-500': isTalking }">
