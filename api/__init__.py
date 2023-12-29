@@ -881,9 +881,10 @@ class LoLLMsAPI(LollmsApplication):
                         def callback(text, message_type: MSG_TYPE, metadata:dict={}):
                             if message_type == MSG_TYPE.MSG_TYPE_CHUNK:
                                 ASCIIColors.success(f"generated:{len(self.answer['full_text'].split())} words", end='\r')
-                                self.answer["full_text"] = self.answer["full_text"] + text
-                                self.socketio.emit('text_chunk', {'chunk': text, 'type':MSG_TYPE.MSG_TYPE_CHUNK.value}, room=client_id)
-                                self.socketio.sleep(0)
+                                if text is not None:
+                                    self.answer["full_text"] = self.answer["full_text"] + text
+                                    self.socketio.emit('text_chunk', {'chunk': text, 'type':MSG_TYPE.MSG_TYPE_CHUNK.value}, room=client_id)
+                                    self.socketio.sleep(0)
                             if client_id in self.connections:# Client disconnected                      
                                 if self.connections[client_id]["requested_stop"]:
                                     return False

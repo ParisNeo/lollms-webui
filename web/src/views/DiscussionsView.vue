@@ -1442,9 +1442,14 @@ export default {
             }
         },
         setDiscussionLoading(id, loading) {
-            const index = this.list.findIndex((x) => x.id == id)
-            const discussionItem = this.list[index]
-            discussionItem.loading = loading
+            try{
+                const index = this.list.findIndex((x) => x.id == id)
+                const discussionItem = this.list[index]
+                discussionItem.loading = loading
+            }
+            catch{
+                console.log("Error setting discussion loading")
+            }
         },
         setPageTitle(item) {
             // item is either title:String or {id:Number, title:String}
