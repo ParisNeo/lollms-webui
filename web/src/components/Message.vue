@@ -154,7 +154,7 @@
                                 <div v-if="!isSynthesizingVoice" class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2" 
                                     title="read"
                                     @click.stop="read()"
-                                    :class="{ 'text-red-500': isTalking }">
+                                >
                                     <i data-feather="voicemail"></i>
                                 </div>
                                 <svg v-else aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101"
@@ -368,7 +368,6 @@ export default {
                     this.isSynthesizingVoice=false
                 });
             }
-
         },
         speak() {
             if (this.msg) {
