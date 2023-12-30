@@ -22,7 +22,7 @@ main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 import os
 import platform
 import sys
-from flask import request, jsonify
+from flask import request, jsonify, url_for
 import io
 import sys
 import time
@@ -33,7 +33,7 @@ from lollms.config import InstallOption
 from lollms.main_config import LOLLMSConfig
 from lollms.paths import LollmsPaths, gptqlora_repo
 from lollms.com import NotificationType, NotificationDisplayType
-from lollms.utilities import AdvancedGarbageCollector, reinstall_pytorch_with_cuda, convert_language_name, find_first_available_file_index, add_period
+from lollms.utilities import PackageManager, AdvancedGarbageCollector, reinstall_pytorch_with_cuda, convert_language_name, find_first_available_file_index, add_period
 lollms_paths = LollmsPaths.find_paths(force_local=True, custom_default_cfg_path="configs/config.yaml")
 # Configuration loading part
 config = LOLLMSConfig.autoload(lollms_paths)
@@ -519,6 +519,10 @@ try:
             )
 
             self.add_endpoint(
+                "/install_xtts", "install_xtts", self.install_xtts, methods=["GET"]
+            )
+            
+            self.add_endpoint(
                 "/open_code_folder", "open_code_folder", self.open_code_folder, methods=["POST"]
             )
             self.add_endpoint(
@@ -570,7 +574,16 @@ try:
         def get_server_address(self):
             server_address = request.host_url
             return server_address
-
+        
+        def install_xtts(self):
+            try:
+                self.ShowBlockingMessage("Installing xTTS api server\nPlease stand by")
+                PackageManager.install_package("xtts-api-server")
+                self.HideBlockingMessage()
+                return jsonify({"status":True})
+            except Exception as ex:
+                self.HideBlockingMessage()
+                return jsonify({"status":False, 'error':str(ex)})
         def execute_python(self, code, discussion_id, message_id):
             def spawn_process(code):
                 """Executes Python code and returns the output as JSON."""
@@ -637,12 +650,18 @@ try:
                         pdflatex_command = self.config.pdf_latex_path
                     else:
                         pdflatex_command = 'pdflatex'
-
+                    # Set the execution path to the folder containing the tmp_file
+                    execution_path = tmp_file.parent
                     # Run the pdflatex command with the file path
-                    subprocess.run([pdflatex_command, tmp_file], check=True)
-
+                    result = subprocess.run([pdflatex_command, "-interaction=nonstopmode", tmp_file], check=True, capture_output=True, text=True, cwd=execution_path)
+                    # Check the return code of the pdflatex command
+                    if result.returncode != 0:
+                        error_message = result.stderr.strip()
+                        execution_time = time.time() - start_time
+                        error_json = {"output": f"Error occurred while compiling LaTeX: {error_message}", "execution_time": execution_time}
+                        return json.dumps(error_json)
                     # If the compilation is successful, you will get a PDF file
-                    pdf_file = pdflatex_command.with_suffix('.pdf')
+                    pdf_file = tmp_file.with_suffix('.pdf')
                     print(f"PDF file generated: {pdf_file}")
 
                 except subprocess.CalledProcessError as e:
@@ -654,7 +673,9 @@ try:
                 execution_time = time.time() - start_time
 
                 # The child process was successful.
-                output_json = {"output": f"Pdf file generated at: {pdf_file}", "execution_time": execution_time}
+                pdf_file=str(pdf_file)
+                url = f"{url_for('main')[:-4]}{pdf_file[pdf_file.index('outputs'):]}"
+                output_json = {"output": f"Pdf file generated at: {pdf_file}\n<a href='{url}'>Click here to show</a>", "execution_time": execution_time}
                 return json.dumps(output_json)
             return spawn_process(code)
 

@@ -732,6 +732,16 @@
                                         </tr>                                        
                                         <tr>
                                         <td style="min-width: 200px;">
+                                            <label for="install_xtts_service" class="text-sm font-bold" style="margin-right: 1rem;">Reinstall xTTS service:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallAudioService">Reinstall xtts service</button>
+                                            </div>
+                                        </td>
+                                        </tr>                                        
+                                        <tr>
+                                        <td style="min-width: 200px;">
                                             <label for="xtts_base_url" class="text-sm font-bold" style="margin-right: 1rem;">xtts base url:</label>
                                         </td>
                                         <td>
@@ -1270,8 +1280,6 @@
             <!-- PERSONALITY ZOO -->
             <div
                 class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
-
-
                 <div class="flex flex-row p-3 items-center">
                     <button @click.stop="pzc_collapsed = !pzc_collapsed"
                         class="text-2xl hover:text-primary  p-2 -m-2 text-left w-full  flex items-center">
@@ -2009,6 +2017,15 @@ export default {
         //refreshHardwareUsage()
     }, 
     methods: {     
+        reinstallAudioService(){
+            axios.get('install_xtts')
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+        },
         getSeviceVoices() {
         axios.get('list_voices')
             .then(response => {
