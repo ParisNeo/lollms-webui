@@ -7,7 +7,7 @@
               class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
         <i data-feather="copy"></i>
       </button>
-      <button v-if="['python', 'sh', 'shell', 'bash', 'cmd', 'powershell'].includes(language)" ref="btn_code_exec" @click="executeCode"  title="execute"
+      <button v-if="['python', 'sh', 'shell', 'bash', 'cmd', 'powershell', 'latex'].includes(language)" ref="btn_code_exec" @click="executeCode"  title="execute"
               class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
         <i data-feather="play-circle"></i>
       </button>

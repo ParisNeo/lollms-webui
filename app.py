@@ -618,6 +618,44 @@ try:
                 return json.dumps(output_json)
             return spawn_process(code)
 
+        def execute_latex(self, code, discussion_id, message_id):
+            def spawn_process(code):
+                """Executes Python code and returns the output as JSON."""
+
+                # Start the timer.
+                start_time = time.time()
+
+                # Create a temporary file.
+                root_folder = self.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
+                root_folder.mkdir(parents=True,exist_ok=True)
+                tmp_file = root_folder/f"latex_file_{message_id}.tex"
+                with open(tmp_file,"w",encoding="utf8") as f:
+                    f.write(code)
+                try:
+                    # Determine the pdflatex command based on the provided or default path
+                    if self.config.pdf_latex_path:
+                        pdflatex_command = self.config.pdf_latex_path
+                    else:
+                        pdflatex_command = 'pdflatex'
+
+                    # Run the pdflatex command with the file path
+                    subprocess.run([pdflatex_command, tmp_file], check=True)
+
+                    # If the compilation is successful, you will get a PDF file
+                    pdf_file = pdflatex_command.with_suffix('.pdf')
+                    print(f"PDF file generated: {pdf_file}")
+
+                except subprocess.CalledProcessError as e:
+                    print(f"Error occurred while compiling LaTeX: {e}") 
+
+                # Stop the timer.
+                execution_time = time.time() - start_time
+
+                # The child process was successful.
+                output_json = {"output": f"Pdf file generated at: {pdf_file}", "execution_time": execution_time}
+                return json.dumps(output_json)
+            return spawn_process(code)
+
         def execute_bash(self, code, discussion_id, message_id):
             def spawn_process(code):
                 """Executes Python code and returns the output as JSON."""
@@ -676,6 +714,8 @@ try:
 
             if language=="python":
                 return self.execute_python(code, discussion_id, message_id)
+            elif language=="latex":
+                return self.execute_latex(code, discussion_id, message_id)
             elif language in ["bash","shell","cmd","powershell"]:
                 return self.execute_bash(code, discussion_id, message_id)
             return {"output": "Unsupported language", "execution_time": 0}

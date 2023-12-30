@@ -57,6 +57,37 @@
           </div>
           <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4" :class="{ 'border-red-500': generating }">
             <div  v-if="tab_id === 'source'">
+                <div class="flex flex-row justify-end mx-2">
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                                title="Add python block" @click.stop="addBlock('python')">
+                                <img :src="python_block" width="25" height="25">
+                            </div>
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                                title="Add javascript block" @click.stop="addBlock('javascript')">
+                                <img :src="javascript_block" width="25" height="25">
+                            </div>
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                                title="Add c++ block" @click.stop="addBlock('c++')">
+                                <img :src="cpp_block" width="25" height="25">
+                            </div>
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                                title="Add html block" @click.stop="addBlock('html')">
+                                <img :src="html5_block" width="25" height="25">
+                            </div>
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                                title="Add LaTex block" @click.stop="addBlock('latex')">
+                                <img :src="LaTeX_block" width="25" height="25">
+                            </div>
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                                title="Add bash block" @click.stop="addBlock('bash')">
+                                <img :src="bash_block" width="25" height="25">
+                            </div>
+                            
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                                title="Copy message to clipboard" @click.stop="copyContentToClipboard()">
+                                <i data-feather="copy"></i>
+                            </div>
+                </div>
                 <textarea ref="mdTextarea" @keydown.tab.prevent="insertTab"
                 class="block min-h-500 p-2.5 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 overflow-y-scroll flex flex-col shadow-lg p-10 pt-0 overflow-y-scroll dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
                 :rows="4" 
@@ -176,6 +207,14 @@ import ClipBoardTextInput from "@/components/ClipBoardTextInput.vue";
 import Card from "@/components/Card.vue"
 import { nextTick, TransitionGroup } from 'vue'
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
+
+import python_block from '@/assets/python_block.png';
+import javascript_block from '@/assets/javascript_block.svg';
+import cpp_block from '@/assets/cpp_block.png';
+import html5_block from '@/assets/html5_block.png';
+import LaTeX_block from '@/assets/LaTeX_block.png';
+import bash_block from '@/assets/bash_block.png';
+
 
 async function showInputPanel(name, default_value="", options=[]) {
     return new Promise((resolve, reject) => {
@@ -324,6 +363,14 @@ export default {
   name: 'PlayGroundView',
   data() {
     return {
+
+      cpp_block:cpp_block,
+      html5_block:html5_block,
+      LaTeX_block:LaTeX_block,
+      javascript_block:javascript_block,
+      python_block:python_block,
+      bash_block:bash_block,
+
       isSynthesizingVoice:false,
       audio_url:null,
       mdRenderHeight:300,
@@ -461,6 +508,21 @@ export default {
     },
   },
   methods:{
+    addBlock(bloc_name){
+        console.log("Adding bloc :",bloc_name)
+        let p =this.$refs.mdTextarea.selectionStart
+        if(p==0 || this.text[p-1]=="\n"){
+            this.text = this.text.slice(0, p) + "```"+bloc_name+"\n\n```\n" + this.text.slice(p)
+            p = p+4+bloc_name.length
+        }
+        else{
+            this.text = this.text.slice(0, p) + "\n```"+bloc_name+"\n\n```\n" + this.text.slice(p)
+            p = p+3+bloc_name.length
+        }
+        this.$refs.mdTextarea.focus();
+        this.$refs.mdTextarea.selectionStart = this.$refs.mdTextarea.selectionEnd = p;
+    },
+
     insertTab(event) {
             const textarea = event.target;
             const start = textarea.selectionStart;

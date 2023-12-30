@@ -68,44 +68,52 @@
                                 </button>
 
                             </div>
-                            <div v-if="!editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2"
+                            <div v-if="!editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
                                 title="Edit message" @click.stop="editMsgMode = true">
                                 <i data-feather="edit"></i>
                             </div>
-                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2"
+                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
                                 title="Add python block" @click.stop="addBlock('python')">
                                 <img :src="python_block" width="25" height="25">
                             </div>
-                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2"
+                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
                                 title="Add javascript block" @click.stop="addBlock('javascript')">
                                 <img :src="javascript_block" width="25" height="25">
                             </div>
-                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2"
+                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
                                 title="Add c++ block" @click.stop="addBlock('c++')">
                                 <img :src="cpp_block" width="25" height="25">
                             </div>
-                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2"
+                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                                title="Add html block" @click.stop="addBlock('html')">
+                                <img :src="html5_block" width="25" height="25">
+                            </div>
+                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                                title="Add LaTex block" @click.stop="addBlock('latex')">
+                                <img :src="LaTeX_block" width="25" height="25">
+                            </div>
+                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
                                 title="Add bash block" @click.stop="addBlock('bash')">
                                 <img :src="bash_block" width="25" height="25">
                             </div>
                             
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2"
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
                                 title="Copy message to clipboard" @click.stop="copyContentToClipboard()">
                                 <i data-feather="copy"></i>
                             </div>
-                            <div v-if="!editMsgMode && message.sender!=this.$store.state.mountedPers.name" class="text-lg text-red-500 hover:text-secondary duration-75 active:scale-90 p-2" 
+                            <div v-if="!editMsgMode && message.sender!=this.$store.state.mountedPers.name" class="text-lg text-red-500 hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer" 
                                 title="Resend message with full context"
                                 @click.stop="resendMessage('full_context')" 
                                 :class="{ 'text-5xl': editMsgMode }">
                                 <i data-feather="send"></i>
                             </div>
-                            <div v-if="!editMsgMode && message.sender!=this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" 
+                            <div v-if="!editMsgMode && message.sender!=this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer" 
                                 title="Resend message without the full context"
                                 @click.stop="resendMessage('simple_question')" 
                                 :class="{ 'text-5xl': editMsgMode }">
                                 <i data-feather="send"></i>
                             </div>
-                            <div v-if="!editMsgMode && message.sender==this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" 
+                            <div v-if="!editMsgMode && message.sender==this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer" 
                                 title="Resend message"
                                 @click.stop="continueMessage()" 
                                 >
@@ -113,37 +121,37 @@
                             </div>                            
                             <!-- DELETE CONFIRMATION -->
                             <div v-if="deleteMsgMode" class="flex items-center duration-75">
-                                <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 p-2"
+                                <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 p-2 cursor-pointer"
                                     title="Cancel removal" type="button" @click.stop="deleteMsgMode = false">
                                     <i data-feather="x"></i>
                                 </button>
-                                <button class="text-2xl hover:text-secondary duration-75 active:scale-90 p-2"
+                                <button class="text-2xl hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
                                     title="Confirm removal" type="button" @click.stop="deleteMsg()">
                                     <i data-feather="check"></i>
                                 </button>
 
                             </div>
-                            <div v-if="!editMsgMode && !deleteMsgMode" class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2"
+                            <div v-if="!editMsgMode && !deleteMsgMode" class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2 cursor-pointer"
                                 title="Remove message" @click="deleteMsgMode = true">
                                 <i data-feather="trash"></i>
                             </div>
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2" title="Upvote"
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer" title="Upvote"
                                 @click.stop="rankUp()">
                                 <i data-feather="thumbs-up"></i>
                             </div>
                             <div class="flex flex-row items-center">
-                                <div class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2" title="Downvote"
+                                <div class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2 cursor-pointer" title="Downvote"
                                     @click.stop="rankDown()">
                                     <i data-feather="thumbs-down"></i>
                                 </div>
                                 <div v-if="message.rank != 0"
-                                    class="rounded-full px-2 text-sm flex items-center justify-center font-bold"
+                                    class="rounded-full px-2 text-sm flex items-center justify-center font-bold cursor-pointer"
                                     :class="message.rank > 0 ? 'bg-secondary' : 'bg-red-600'" title="Rank">{{
                                         message.rank }}
                                 </div>
                             </div>
                             <div class="flex flex-row items-center">
-                                <div class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2" 
+                                <div class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2 cursor-pointer" 
                                     title="speak"
                                     @click.stop="speak()"
                                     :class="{ 'text-red-500': isTalking }">
@@ -151,13 +159,13 @@
                                 </div>
                             </div>    
                             <div v-if="this.$store.state.config.enable_voice_service" class="flex flex-row items-center">
-                                <div v-if="!isSynthesizingVoice" class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2" 
+                                <div v-if="!isSynthesizingVoice" class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2 cursor-pointer" 
                                     title="read"
                                     @click.stop="read()"
                                 >
                                     <i data-feather="voicemail"></i>
                                 </div>
-                                <svg v-else aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101"
+                                <svg v-else aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101 cursor-pointer" title="Generating voice, please stand by ..."
                                     fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path
                                         d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
@@ -257,12 +265,12 @@ import RenderHTMLJS from './RenderHTMLJS.vue';
 import JsonViewer from "./JsonViewer.vue";
 import Step from './Step.vue';
 import axios from 'axios';
+
 import python_block from '@/assets/python_block.png';
 import javascript_block from '@/assets/javascript_block.svg';
 import cpp_block from '@/assets/cpp_block.png';
 import html5_block from '@/assets/html5_block.png';
-
-
+import LaTeX_block from '@/assets/LaTeX_block.png';
 import bash_block from '@/assets/bash_block.png';
 
 export default {
@@ -290,6 +298,7 @@ export default {
             isSynthesizingVoice:false,
             cpp_block:cpp_block,
             html5_block:html5_block,
+            LaTeX_block:LaTeX_block,
             javascript_block:javascript_block,
             python_block:python_block,
             bash_block:bash_block,
