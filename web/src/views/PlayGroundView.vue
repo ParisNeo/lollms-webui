@@ -573,7 +573,7 @@ export default {
       },
       read(){
         this.isSynthesizingVoice=true
-        axios.post("./read",{text:this.text}).then(response => {
+        axios.post("./text2Audio",{text:this.text}).then(response => {
           console.log(response.data.url)
           let url = response.data.url
           this.audio_url = bUrl+url

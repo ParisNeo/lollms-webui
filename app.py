@@ -33,7 +33,7 @@ from lollms.config import InstallOption
 from lollms.main_config import LOLLMSConfig
 from lollms.paths import LollmsPaths, gptqlora_repo
 from lollms.com import NotificationType, NotificationDisplayType
-from lollms.utilities import AdvancedGarbageCollector, reinstall_pytorch_with_cuda, convert_language_name, find_first_available_file_index
+from lollms.utilities import AdvancedGarbageCollector, reinstall_pytorch_with_cuda, convert_language_name, find_first_available_file_index, add_period
 lollms_paths = LollmsPaths.find_paths(force_local=True, custom_default_cfg_path="configs/config.yaml")
 # Configuration loading part
 config = LOLLMSConfig.autoload(lollms_paths)
@@ -499,7 +499,7 @@ try:
             )
             
             self.add_endpoint(
-                "/read", "read", self.read, methods=["POST"]
+                "/text2Audio", "text2Audio", self.text2Audio, methods=["POST"]
             )
 
             self.add_endpoint(
@@ -646,7 +646,9 @@ try:
                     print(f"PDF file generated: {pdf_file}")
 
                 except subprocess.CalledProcessError as e:
-                    print(f"Error occurred while compiling LaTeX: {e}") 
+                    self.error(f"Error occurred while compiling LaTeX: {e}") 
+                    error_json = {"output": "<div class='text-red-500'>"+str(ex)+"\n"+get_trace_exception(ex)+"</div>", "execution_time": execution_time}
+                    return json.dumps(error_json)
 
                 # Stop the timer.
                 execution_time = time.time() - start_time
@@ -826,7 +828,10 @@ try:
                 self.config.save_config()
             return jsonify({"status":True})
 
-        def read(self):
+
+
+
+        def text2Audio(self):
             # Get the JSON data from the POST request.
             try:
                 from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
@@ -853,7 +858,9 @@ try:
                     voices_folder = Path(__file__).parent/"voices"
                 self.tts.set_speaker_folder(voices_folder)
                 url = f"audio/{output_fn}"
-                self.tts.tts_to_file(data['text'], f"{voice}.wav", f"{output_fn}", language=language)
+                preprocessed_text= add_period(data['text'])
+
+                self.tts.tts_to_file(preprocessed_text, f"{voice}.wav", f"{output_fn}", language=language)
                 self.info("Voice file ready")
                 return jsonify({"url": url})
             except:

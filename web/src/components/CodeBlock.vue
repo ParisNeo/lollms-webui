@@ -8,10 +8,11 @@
         <i data-feather="copy"></i>
       </button>
       <button v-if="['python', 'sh', 'shell', 'bash', 'cmd', 'powershell', 'latex'].includes(language)" ref="btn_code_exec" @click="executeCode"  title="execute"
-              class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
+              class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200"
+              :class="isExecuting?'bg-green-500':''">
         <i data-feather="play-circle"></i>
       </button>
-      <button v-if="['python'].includes(language)" @click="openFolder"  title="open code project folder"
+      <button v-if="['python', 'latex'].includes(language)" @click="openFolder"  title="open code project folder"
               class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
         <i data-feather="folder"></i>
       </button>
@@ -76,6 +77,7 @@ export default {
   },
   data() {
     return {
+      isExecuting:false,
       isCopied: false,
       executionOutput: '',  // new property
     };
@@ -132,13 +134,20 @@ export default {
       })
     },
     executeCode() {
-      const json = JSON.stringify({ 'code': this.code, 'discussion_id': this.discussion_id, 'message_id': this.message_id, 'language': this.language})   
+      this.isExecuting=true;
+      const json = JSON.stringify({ 
+                                    'code': this.code, 
+                                    'discussion_id': this.discussion_id, 
+                                    'message_id': this.message_id, 
+                                    'language': this.language
+                                  })   
       console.log(json)     
       fetch(`${this.host}/execute_code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: json
       }).then(response=>{
+        this.isExecuting=false;
         // Parse the JSON data from the response body
         return response.json();
       })
@@ -148,6 +157,7 @@ export default {
         this.executionOutput = jsonData.output;
       })
       .catch(error => {
+        this.isExecuting=false;
         // Handle any errors that occurred during the fetch process
         console.error('Fetch error:', error);
       });
