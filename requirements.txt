@@ -16,3 +16,6 @@ GitPython
 ascii_colors>=0.1.4
 beautifulsoup4
 packaging
+
+fastapi
+uvicorn
