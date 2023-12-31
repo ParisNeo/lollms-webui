@@ -1921,11 +1921,23 @@ export default {
 
         return {
             voices: [],
-            voice_languages: [
-                "en",
-                "fr",
-                "es"
-            ],
+            voice_languages:{"Arabic": "ar",
+                            "Brazilian Portuguese": "pt",
+                            "Chinese": "zh-cn",
+                            "Czech": "cs",
+                            "Dutch": "nl",
+                            "English": "en",
+                            "French": "fr",
+                            "German": "de",
+                            "Italian": "it",
+                            "Polish": "pl",
+                            "Russian": "ru",
+                            "Spanish": "es",
+                            "Turkish": "tr",
+                            "Japanese": "ja",
+                            "Korean": "ko",
+                            "Hungarian": "hu",
+                            "Hindi": "hi"},
             binding_changed:false,
             SVGGPU:SVGGPU,
             models_zoo:[],
