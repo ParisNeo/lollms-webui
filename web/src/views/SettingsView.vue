@@ -764,8 +764,8 @@
                                         <td>
                                             <div class="flex flex-row">
                                                 <select v-model="current_language" @change="settingsChanged=true" :disabled="!enable_voice_service">
-                                                <option v-for="language in voice_languages" :key="language" :value="language">
-                                                    {{ language }}
+                                                <option v-for="language in voice_languages" :key="language.key" :value="language.value">
+                                                    {{ language.key }}
                                                 </option>
                                                 </select>
                                             </div>
@@ -1921,7 +1921,8 @@ export default {
 
         return {
             voices: [],
-            voice_languages:{"Arabic": "ar",
+            voice_languages:{
+                            "Arabic": "ar",
                             "Brazilian Portuguese": "pt",
                             "Chinese": "zh-cn",
                             "Czech": "cs",
@@ -1937,7 +1938,8 @@ export default {
                             "Japanese": "ja",
                             "Korean": "ko",
                             "Hungarian": "hu",
-                            "Hindi": "hi"},
+                            "Hindi": "hi"
+                        },
             binding_changed:false,
             SVGGPU:SVGGPU,
             models_zoo:[],

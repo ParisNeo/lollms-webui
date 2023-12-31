@@ -34,15 +34,6 @@ echo "    \:\__\    \::/  /       \:\__\    \:\__\     /:/  /       \::/  /    "
 echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
 echo By ParisNeo
 
-:retry
-echo Please specify if you want to use a GPU or CPU.
-echo *Note* that only NVidea GPUs (cuda) or AMD GPUs (rocm) are supported.
-echo A) Enable cuda GPU
-echo B) Enable ROCm compatible GPU (AMD and other GPUs) (NOT SUPPORTED UNDER WINDOWS)
-echo C) Run CPU mode
-set /p "gpuchoice=Input> "
-set gpuchoice=%gpuchoice:~0,1%
-
 @rem better isolation for virtual environment
 SET "CONDA_SHLVL="
 SET PYTHONNOUSERSITE=1
@@ -86,33 +77,32 @@ if not exist "%INSTALL_ENV_DIR%\python.exe" ( echo. && echo Conda environment is
 @rem activate installer env
 call conda activate "%INSTALL_ENV_DIR%" || ( echo. && echo Conda environment activation failed. && goto end )
 
+
+
 @rem clone the repository
 if exist lollms-webui\ (
   cd lollms-webui
   git pull
+  git submodule update --init --recursive
+  cd lollms-core 
+  pip install -e .
+  cd ..
+  cd utilities/safe_store
+  pip install -e .
+  cd ../..
 ) else (
-  git clone https://github.com/ParisNeo/lollms-webui.git
-  cd lollms-webui 
+  git clone --depth 1  --recurse-submodules https://github.com/ParisNeo/lollms-webui.git
+  git submodule update --init --recursive
+  pause
+  cd lollms-webui/lollms-core 
+  pip install -e .
+  cd ..
+  cd utilities/safe_store
+  pip install -e .
+  cd ../..
 )
-git submodule update --init
-cd zoos/bindings_zoo
-git checkout main
-cd ../personalities_zoo
-git checkout main
-cd ../extensions_zoo
-git checkout main
-cd ../models_zoo
-git checkout main
 
-cd ../..
-
-cd lollms_core
-git checkout main
-
-cd ../utilities/safe_store
-git checkout main
-
-cd ../..
+pip install -r requirements.txt
 
 @rem create launcher
 if exist ..\win_run.bat (
