@@ -1190,7 +1190,7 @@ try:
                         per.model = self.model
                 except Exception as ex:
                     trace_exception(ex)
-                    self.InfoMessage(f"It looks like you we couldn't load the model.\nHere is the error message:\n{ex}",duration=30)
+                    self.InfoMessage(f"It looks like you we couldn't load the model.\nHere is the error message:\n{ex}")
 
 
             else:

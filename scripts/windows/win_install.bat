@@ -157,4 +157,6 @@ goto endend
 cd ..
 echo Installation complete.
 :endend
+
+call python scripts\python\lollms_install.py
 pause
