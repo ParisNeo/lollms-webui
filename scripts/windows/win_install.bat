@@ -3,6 +3,22 @@
 @rem This script will install miniconda and git with all dependencies for this project
 @rem This enables a user to install this project without manually installing conda and git.
 
+echo "      ___       ___           ___       ___       ___           ___      "
+echo "     /\__\     /\  \         /\__\     /\__\     /\__\         /\  \     "
+echo "    /:/  /    /::\  \       /:/  /    /:/  /    /::|  |       /::\  \    "
+echo "   /:/  /    /:/\:\  \     /:/  /    /:/  /    /:|:|  |      /:/\ \  \   "
+echo "  /:/  /    /:/  \:\  \   /:/  /    /:/  /    /:/|:|__|__   _\:\~\ \  \  "
+echo " /:/__/    /:/__/ \:\__\ /:/__/    /:/__/    /:/ |::::\__\ /\ \:\ \ \__\ "
+echo " \:\  \    \:\  \ /:/  / \:\  \    \:\  \    \/__/~~/:/  / \:\ \:\ \/__/ "
+echo "  \:\  \    \:\  /:/  /   \:\  \    \:\  \         /:/  /   \:\ \:\__\   "
+echo "   \:\  \    \:\/:/  /     \:\  \    \:\  \       /:/  /     \:\/:/  /   "
+echo "    \:\__\    \::/  /       \:\__\    \:\__\     /:/  /       \::/  /    "
+echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
+echo V8.5 (alpha)
+echo -----------------
+echo By ParisNeo
+echo -----------------
+
 @rem workaround for broken Windows installs
 set PATH=%PATH%;%SystemRoot%\system32
 
@@ -20,19 +36,6 @@ pause
 cls
 
 md 
-
-echo "      ___       ___           ___       ___       ___           ___      "
-echo "     /\__\     /\  \         /\__\     /\__\     /\__\         /\  \     "
-echo "    /:/  /    /::\  \       /:/  /    /:/  /    /::|  |       /::\  \    "
-echo "   /:/  /    /:/\:\  \     /:/  /    /:/  /    /:|:|  |      /:/\ \  \   "
-echo "  /:/  /    /:/  \:\  \   /:/  /    /:/  /    /:/|:|__|__   _\:\~\ \  \  "
-echo " /:/__/    /:/__/ \:\__\ /:/__/    /:/__/    /:/ |::::\__\ /\ \:\ \ \__\ "
-echo " \:\  \    \:\  \ /:/  / \:\  \    \:\  \    \/__/~~/:/  / \:\ \:\ \/__/ "
-echo "  \:\  \    \:\  /:/  /   \:\  \    \:\  \         /:/  /   \:\ \:\__\   "
-echo "   \:\  \    \:\/:/  /     \:\  \    \:\  \       /:/  /     \:\/:/  /   "
-echo "    \:\__\    \::/  /       \:\__\    \:\__\     /:/  /       \::/  /    "
-echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
-echo By ParisNeo
 
 @rem better isolation for virtual environment
 SET "CONDA_SHLVL="
@@ -88,20 +91,21 @@ if exist lollms-webui\ (
   cd lollms-core 
   pip install -e .
   cd ..
-  cd utilities/safe_store
+  cd utilities\safe_store
   pip install -e .
-  cd ../..
+  cd ..\..
 ) else (
   git clone --depth 1  --recurse-submodules https://github.com/ParisNeo/lollms-webui.git
   git submodule update --init --recursive
+  cd lollms-webui\lollms_core
   cd
   pause
-  cd lollms-webui/lollms-core 
   pip install -e .
+  pause
   cd ..
-  cd utilities/safe_store
+  cd utilities\safe_store
   pip install -e .
-  cd ../..
+  cd ..\..
 )
 
 pip install -r requirements.txt
