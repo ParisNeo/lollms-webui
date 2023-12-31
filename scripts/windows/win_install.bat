@@ -84,6 +84,7 @@ if exist lollms-webui\ (
   cd lollms-webui
   git pull
   git submodule update --init --recursive
+  cd
   cd lollms-core 
   pip install -e .
   cd ..
@@ -93,6 +94,7 @@ if exist lollms-webui\ (
 ) else (
   git clone --depth 1  --recurse-submodules https://github.com/ParisNeo/lollms-webui.git
   git submodule update --init --recursive
+  cd
   pause
   cd lollms-webui/lollms-core 
   pip install -e .
