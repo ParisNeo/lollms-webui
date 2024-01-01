@@ -20,7 +20,6 @@
 [![Downloads](https://img.shields.io/github/downloads/ParisNeo/lollms-webui/total?style=flat-square)](https://github.com/ParisNeo/lollms-webui/releases)
 [![Downloads](https://img.shields.io/github/downloads/ParisNeo/lollms-webui/latest/total?style=flat-square)](https://github.com/ParisNeo/lollms-webui/releases)
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/4HoRd4-k4Jg" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 <a href="https://www.youtube.com/watch?v=4HoRd4-k4Jg">
   <img src="https://pbs.twimg.com/media/GCySsZPWwAAhrsV?format=jpg&name=medium" alt="Video Thumbnail">
 </a>
