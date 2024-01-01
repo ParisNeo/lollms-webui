@@ -2445,8 +2445,9 @@ export default {
 
 
                 //this.settingsChanged = true
-
-                if (pers.isMounted && this.configFile.personalities.includes(pers.full_path)) {
+                let pth = pers.language==null?pers.full_path:pers.full_path+":"+pers.language
+                console.log("pth",pth)
+                if (pers.isMounted && this.configFile.personalities.includes(pth)) {
 
                     const res = await this.select_personality(pers)
                     console.log('pers is mounted', res)
@@ -3553,7 +3554,9 @@ export default {
         },
         async select_personality(pers) {
             if (!pers) { return { 'status': false, 'error': 'no personality - select_personality' } }
-            const id = this.configFile.personalities.findIndex(item => item === pers.full_path)
+            let pth = pers.language==null?pers.full_path:pers.full_path+":"+pers.language
+            console.log("pth",pth)
+            const id = this.configFile.personalities.findIndex(item => item === pth)
 
             const obj = {
                 id: id

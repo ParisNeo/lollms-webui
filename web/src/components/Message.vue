@@ -72,7 +72,7 @@
                                 title="Edit message" @click.stop="editMsgMode = true">
                                 <i data-feather="edit"></i>
                             </div>
-                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
                                 title="Add python block" @click.stop="addBlock('python')">
                                 <img :src="python_block" width="25" height="25">
                             </div>
@@ -80,6 +80,11 @@
                                 title="Add javascript block" @click.stop="addBlock('javascript')">
                                 <img :src="javascript_block" width="25" height="25">
                             </div>
+                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                                title="Add json block" @click.stop="addBlock('json')">
+                                <img :src="json_block" width="25" height="25">
+                            </div>
+                            
                             <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
                                 title="Add c++ block" @click.stop="addBlock('c++')">
                                 <img :src="cpp_block" width="25" height="25">
@@ -268,6 +273,7 @@ import axios from 'axios';
 
 import python_block from '@/assets/python_block.png';
 import javascript_block from '@/assets/javascript_block.svg';
+import json_block from '@/assets/json_block.png';
 import cpp_block from '@/assets/cpp_block.png';
 import html5_block from '@/assets/html5_block.png';
 import LaTeX_block from '@/assets/LaTeX_block.png';
@@ -299,6 +305,7 @@ export default {
             cpp_block:cpp_block,
             html5_block:html5_block,
             LaTeX_block:LaTeX_block,
+            json_block:json_block,
             javascript_block:javascript_block,
             python_block:python_block,
             bash_block:bash_block,
@@ -342,21 +349,76 @@ export default {
             const textarea = event.target;
             const start = textarea.selectionStart;
             const end = textarea.selectionEnd;
-    
-            const textBefore = textarea.value.substring(0, start);
-            const textAfter = textarea.value.substring(end);
-    
-            // Insert a tab character (or spaces if you prefer) at the cursor position
-            const newText = textBefore + '    ' + textAfter;
-    
-            // Update the textarea content and cursor position
-            this.message.content = newText;
-            this.$nextTick(() => {
-            textarea.selectionStart = textarea.selectionEnd = start + 4;
-            });
-    
+            const isShiftPressed = event.shiftKey;
+
+            if (start === end) {
+                // If no text is selected, insert a tab or backtab as usual
+                if (isShiftPressed) {
+                    if(textarea.value.substring(start - 4,start)=="    "){
+                        // Backtab
+                        const textBefore = textarea.value.substring(0, start - 4);
+                        const textAfter = textarea.value.substring(end);
+
+                        // Remove the tab character (or spaces if you prefer) before the cursor position
+                        const newText = textBefore + textAfter;
+
+                        // Update the textarea content and cursor position
+                        this.message.content = newText;
+                        this.$nextTick(() => {
+                            textarea.selectionStart = textarea.selectionEnd = start - 4;
+                        });
+                    }
+
+                } else {
+                // Tab
+                const textBefore = textarea.value.substring(0, start);
+                const textAfter = textarea.value.substring(end);
+
+                // Insert a tab character (or spaces if you prefer) at the cursor position
+                const newText = textBefore + '    ' + textAfter;
+
+                // Update the textarea content and cursor position
+                this.message.content = newText;
+                this.$nextTick(() => {
+                    textarea.selectionStart = textarea.selectionEnd = start + 4;
+                });
+                }
+            } else {
+                // If text is selected, insert a tab or backtab at the beginning of each selected line
+                const lines = textarea.value.substring(start, end).split('\n');
+                const updatedLines = lines.map((line) => {
+                if (line.trim() === '') {
+                    return line; // Skip empty lines
+                } else if (isShiftPressed) {
+                    // Backtab
+                    if (line.startsWith('    ')) {
+                    return line.substring(4); // Remove the tab character (or spaces if you prefer)
+                    } else {
+                    return line; // Line doesn't start with a tab, skip backtab
+                    }
+                } else {
+                    // Tab
+                    return '    ' + line; // Insert a tab character (or spaces if you prefer) at the beginning of the line
+                }
+                });
+
+                const textBefore = textarea.value.substring(0, start);
+                const textAfter = textarea.value.substring(end);
+
+                // Update the textarea content with the modified lines
+                const newText = textBefore + updatedLines.join('\n') + textAfter;
+                this.message.content = newText;
+
+                // Update the textarea selection range
+                this.$nextTick(() => {
+                textarea.selectionStart = start;
+                textarea.selectionEnd = end + (updatedLines.length * 4); // Adjust selection end based on the added tabs
+                });
+            }
+
             event.preventDefault();
         },
+
         onVoicesChanged() {
         // This event will be triggered when the voices are loaded
         this.voices = this.speechSynthesis.getVoices();
@@ -460,15 +522,29 @@ export default {
             this.expanded = !this.expanded;
         },
         addBlock(bloc_name){
-            let p =this.$refs.mdTextarea.selectionStart
-            if(p==0 || this.message.content[p-1]=="\n"){
-                this.message.content = this.message.content.slice(0, p) + "```"+bloc_name+"\n\n```\n" + this.message.content.slice(p)
-                p = p+4+bloc_name.length
+            let ss =this.$refs.mdTextarea.selectionStart
+            let se =this.$refs.mdTextarea.selectionEnd
+            if(ss==se){
+                if(speechSynthesis==0 || this.message.content[ss-1]=="\n"){
+                    this.message.content = this.message.content.slice(0, ss) + "```"+bloc_name+"\n\n```\n" + this.message.content.slice(ss)
+                    ss = ss+4+bloc_name.length
+                }
+                else{
+                    this.message.content = this.message.content.slice(0, ss) + "\n```"+bloc_name+"\n\n```\n" + this.message.content.slice(ss)
+                    ss = ss+3+bloc_name.length
+                }
             }
             else{
-                this.message.content = this.message.content.slice(0, p) + "\n```"+bloc_name+"\n\n```\n" + this.message.content.slice(p)
-                p = p+3+bloc_name.length
+                if(speechSynthesis==0 || this.message.content[ss-1]=="\n"){
+                    this.message.content = this.message.content.slice(0, ss) + "```"+bloc_name+"\n"+this.message.content.slice(ss, se)+"\n```\n" + this.message.content.slice(se)
+                    ss = ss+4+bloc_name.length
+                }
+                else{
+                    this.message.content = this.message.content.slice(0, ss) + "\n```"+bloc_name+"\n"+this.message.content.slice(ss, se)+"\n```\n" + this.message.content.slice(se)
+                    p = p+3+bloc_name.length
+                }
             }
+
             this.$refs.mdTextarea.focus();
             this.$refs.mdTextarea.selectionStart = this.$refs.mdTextarea.selectionEnd = p;
         },

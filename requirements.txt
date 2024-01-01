@@ -19,4 +19,6 @@ packaging
 
 fastapi
 uvicorn
+python-socketio
+python-socketio[client]
 python-socketio[asyncio_client]

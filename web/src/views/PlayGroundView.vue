@@ -67,6 +67,10 @@
                                 <img :src="javascript_block" width="25" height="25">
                             </div>
                             <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                                title="Add json block" @click.stop="addBlock('json')">
+                                <img :src="json_block" width="25" height="25">
+                            </div>                            
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
                                 title="Add c++ block" @click.stop="addBlock('c++')">
                                 <img :src="cpp_block" width="25" height="25">
                             </div>
@@ -210,6 +214,8 @@ const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 
 import python_block from '@/assets/python_block.png';
 import javascript_block from '@/assets/javascript_block.svg';
+import json_block from '@/assets/json_block.png';
+
 import cpp_block from '@/assets/cpp_block.png';
 import html5_block from '@/assets/html5_block.png';
 import LaTeX_block from '@/assets/LaTeX_block.png';
@@ -368,6 +374,7 @@ export default {
       html5_block:html5_block,
       LaTeX_block:LaTeX_block,
       javascript_block:javascript_block,
+      json_block:json_block,
       python_block:python_block,
       bash_block:bash_block,
 
