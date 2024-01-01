@@ -683,6 +683,7 @@ export default {
         },    
         makeAnEmptyUserMessage() {
             this.$emit('createEmptyUserMessage',this.message)
+            this.message=""
         },
         makeAnEmptyAIMessage() {
             this.$emit('createEmptyAIMessage')

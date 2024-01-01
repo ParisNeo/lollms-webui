@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  @font-face {
+    font-family: 'Roboto';
+    src: url('./fonts/Roboto/Roboto-Regular.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'PTSans';
+    src: url('./fonts/PTSans/PTSans-Regular.ttf') format('truetype');
+  }
+}
+@layer utilities {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+}
+.display-none {
+  @apply hidden;
+}
+
+
+h1 {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+
+
+h2 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+h4 {
+  font-size: 18px;
+  font-style: italic;
+}
+
+/* Include any additional styles you need */
+p {
+  font-size: 16px;
+  word-wrap: break-word;  
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+ul {
+  list-style-type: disc;
+  margin-left: 0px;
+}
+
+li {
+  list-style-type: disc;
+  margin-left: 20px;
+}
+
+ol {
+  list-style-type: decimal;
+  margin-left: 20px;
+}
