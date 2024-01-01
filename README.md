@@ -20,6 +20,8 @@
 [![Downloads](https://img.shields.io/github/downloads/ParisNeo/lollms-webui/total?style=flat-square)](https://github.com/ParisNeo/lollms-webui/releases)
 [![Downloads](https://img.shields.io/github/downloads/ParisNeo/lollms-webui/latest/total?style=flat-square)](https://github.com/ParisNeo/lollms-webui/releases)
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/4HoRd4-k4Jg" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 
 Welcome to LoLLMS WebUI (Lord of Large Language Multimodal Systems: One tool to rule them all), the hub for LLM (Large Language Models) and multimodal intelligence systems. This project aims to provide a user-friendly interface to access and utilize various LLM and other AI models for a wide range of tasks. Whether you need help with writing, coding, organizing data, analyzing images, generating images, generating music or seeking answers to your questions, LoLLMS WebUI has got you covered.
 
