@@ -36,8 +36,6 @@ ASCIIColors.red(" LoLLMS configuratoin tool")
 ASCIIColors.yellow(f"Root dir : {root_path}")
 app = FastAPI(debug=True)
 
-class InstallProperties(BaseModel):
-    mode: str
 
 # Serve the index.html file for all routes
 @app.get("/{full_path:path}")
@@ -50,13 +48,16 @@ async def serve_index(request: Request, full_path: Path):
         return FileResponse(root_path/"scripts/python/lollms_installer/frontend/dist"/full_path)    
     return FileResponse(root_path/"scripts/python/lollms_installer/frontend/dist/index.html")
 
-app.mount("/", StaticFiles(directory=root_path/"scripts/python/lollms_installer/frontend/dist"), name="static")
+#  app.mount("/", StaticFiles(directory=root_path/"scripts/python/lollms_installer/frontend/dist"), name="static")
+
+
+class InstallProperties(BaseModel):
+    mode: str
 
 @app.post("/start_installing")
 def start_installing(data: InstallProperties):
-    if data=="cpu":
-        config.enable_gpu=False
-        
+    if data.mode=="cpu":
+        config.enable_gpu=False       
         config.save_config()
     else:
         config.enable_gpu=True
