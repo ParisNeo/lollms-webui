@@ -764,8 +764,8 @@
                                         <td>
                                             <div class="flex flex-row">
                                                 <select v-model="current_language" @change="settingsChanged=true" :disabled="!enable_voice_service">
-                                                <option v-for="language in voice_languages" :key="language.key" :value="language.value">
-                                                    {{ language.key }}
+                                                <option v-for="(value, key) in voice_languages" :key="key" :value="value">
+                                                    {{ key }}
                                                 </option>
                                                 </select>
                                             </div>

@@ -816,6 +816,7 @@ class LoLLMsAPI(LollmsApplication):
         def create_empty_message(data):
             client_id = request.sid
             type = data.get("type",0)
+            message = data.get("message","")
             if type==0:
                 ASCIIColors.info(f"Building empty User message requested by : {client_id}")
                 # send the message to the bot
@@ -824,7 +825,7 @@ class LoLLMsAPI(LollmsApplication):
                     if not self.model:
                         self.error("No model selected. Please make sure you select a model before starting generation", client_id = client_id)
                         return          
-                    self.new_message(client_id, self.config.user_name, "", sender_type=SENDER_TYPES.SENDER_TYPES_USER, open=True)
+                    self.new_message(client_id, self.config.user_name, message, sender_type=SENDER_TYPES.SENDER_TYPES_USER, open=True)
                     self.socketio.sleep(0.01)            
             else:
                 if self.personality is None:

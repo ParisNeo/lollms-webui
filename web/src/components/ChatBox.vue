@@ -682,7 +682,7 @@ export default {
             readNextChunk();
         },    
         makeAnEmptyUserMessage() {
-            this.$emit('createEmptyUserMessage')
+            this.$emit('createEmptyUserMessage',this.message)
         },
         makeAnEmptyAIMessage() {
             this.$emit('createEmptyAIMessage')

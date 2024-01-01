@@ -1140,8 +1140,8 @@ export default {
                 console.log("Error: Could not get generation status", error);
             });
         },
-        createEmptyUserMessage(){
-            socket.emit('create_empty_message', {"type":0}); // 0 for user and 1 for AI
+        createEmptyUserMessage(message){
+            socket.emit('create_empty_message', {"type":0,"message":message}); // 0 for user and 1 for AI
         },
         createEmptyAIMessage(){
             socket.emit('create_empty_message', {"type":1}); // 0 for user and 1 for AI
