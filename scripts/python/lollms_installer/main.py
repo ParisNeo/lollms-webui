@@ -46,6 +46,8 @@ async def serve_index(request: Request, full_path: Path):
         return FileResponse(root_path/"scripts/python/lollms_installer/frontend/dist"/full_path, media_type="application/javascript")    
     if str(full_path).endswith(".css"):
         return FileResponse(root_path/"scripts/python/lollms_installer/frontend/dist"/full_path)    
+    if str(full_path).endswith(".html"):
+        return FileResponse(root_path/"scripts/python/lollms_installer/frontend/dist"/full_path)    
     return FileResponse(root_path/"scripts/python/lollms_installer/frontend/dist/index.html")
 
 app.mount("/", StaticFiles(directory=root_path/"scripts/python/lollms_installer/frontend/dist"), name="static")

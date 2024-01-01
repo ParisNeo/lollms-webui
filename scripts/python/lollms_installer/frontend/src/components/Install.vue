@@ -39,7 +39,7 @@ export default {
   },
   methods: {
     install() {
-      axios.post({install_option:this.selectedOption}).then(()=>{
+      axios.post("/start_installing",{mode:this.selectedOption}).then(()=>{
 
       });
     },
