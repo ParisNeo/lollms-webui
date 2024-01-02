@@ -309,7 +309,7 @@ export default {
             javascript_block:javascript_block,
             python_block:python_block,
             bash_block:bash_block,
-            audio_url:null,
+            audio_url: null,
             audio:null,
             msg:null,
             isSpeaking:false,
@@ -343,6 +343,12 @@ export default {
             feather.replace()
             this.mdRenderHeight = this.$refs.mdRender.$el.offsetHeight
         })
+
+        if (this.message.hasOwnProperty("metadata")){
+            if(this.message.metadata!=null){
+                this.audio_url = this.message.metadata.hasOwnProperty("audio_url") ? this.message.metadata.audio_url : null
+            }
+        }
 
     }, methods: {
         insertTab(event) {
@@ -433,7 +439,8 @@ export default {
                 axios.post("./text2Audio",{text:this.message.content}).then(response => {
                 let url = response.data.url
                 console.log(url)
-                this.audio_url = url                
+                this.audio_url = url
+                this.$emit('updateMessage', this.message.id, this.message.content, this.audio_url)
                 }).catch(ex=>{
                     this.$store.state.toast.showToast(`Error: ${ex}`,4,false)
                     this.isSynthesizingVoice=false
@@ -565,7 +572,7 @@ export default {
 
         },
         updateMessage() {
-            this.$emit('updateMessage', this.message.id, this.message.content)
+            this.$emit('updateMessage', this.message.id, this.message.content, this.audio_url)
             this.editMsgMode = false
         },
         resendMessage(msg_type) {

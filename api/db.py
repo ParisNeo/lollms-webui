@@ -20,7 +20,7 @@ class DiscussionsDB:
 
 
     def create_tables(self):
-        db_version = 9
+        db_version = 10
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
 

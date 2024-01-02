@@ -3552,6 +3552,7 @@ export default {
             }
 
         },
+        
         async select_personality(pers) {
             if (!pers) { return { 'status': false, 'error': 'no personality - select_personality' } }
             let pth = pers.language==null?pers.full_path:pers.full_path+":"+pers.language

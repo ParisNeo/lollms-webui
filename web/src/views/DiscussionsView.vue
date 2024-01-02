@@ -820,9 +820,9 @@ export default {
                 return {}
             }
         },
-        async edit_message(id, message) {
+        async edit_message(id, message, audio_url) {
             try {
-                const res = await axios.get('/edit_message', { params: { client_id: this.client_id, id: id, message: message } })
+                const res = await axios.get('/edit_message', { params: { client_id: this.client_id, id: id, message: message, metadata: {audio_url:audio_url} } })
 
                 if (res) {
                     return res.data
@@ -1490,8 +1490,8 @@ export default {
             })
 
         },
-        async updateMessage(msgId, msg) {
-            await this.edit_message(msgId, msg).then(() => {
+        async updateMessage(msgId, msg, audio_url) {
+            await this.edit_message(msgId, msg, audio_url).then(() => {
 
                 const message = this.discussionArr[this.discussionArr.findIndex(item => item.id == msgId)]
                 message.content = msg

@@ -2501,8 +2501,9 @@ try:
             client_id       = request.args.get("client_id")
             message_id      = request.args.get("id")
             new_message     = request.args.get("message")
+            metadata        = request.args.get("metadata",None)
             try:
-                self.connections[client_id]["current_discussion"].edit_message(message_id, new_message)
+                self.connections[client_id]["current_discussion"].edit_message(message_id, new_message,new_metadata=metadata)
                 return jsonify({"status": True})
             except Exception as ex:
                 trace_exception(ex)

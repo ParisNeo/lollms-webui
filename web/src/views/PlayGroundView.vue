@@ -516,18 +516,31 @@ export default {
   },
   methods:{
     addBlock(bloc_name){
-        console.log("Adding bloc :",bloc_name)
-        let p =this.$refs.mdTextarea.selectionStart
-        if(p==0 || this.text[p-1]=="\n"){
-            this.text = this.text.slice(0, p) + "```"+bloc_name+"\n\n```\n" + this.text.slice(p)
-            p = p+4+bloc_name.length
-        }
-        else{
-            this.text = this.text.slice(0, p) + "\n```"+bloc_name+"\n\n```\n" + this.text.slice(p)
-            p = p+3+bloc_name.length
-        }
-        this.$refs.mdTextarea.focus();
-        this.$refs.mdTextarea.selectionStart = this.$refs.mdTextarea.selectionEnd = p;
+            let ss =this.$refs.mdTextarea.selectionStart
+            let se =this.$refs.mdTextarea.selectionEnd
+            if(ss==se){
+                if(speechSynthesis==0 || this.message.content[ss-1]=="\n"){
+                    this.message.content = this.message.content.slice(0, ss) + "```"+bloc_name+"\n\n```\n" + this.message.content.slice(ss)
+                    ss = ss+4+bloc_name.length
+                }
+                else{
+                    this.message.content = this.message.content.slice(0, ss) + "\n```"+bloc_name+"\n\n```\n" + this.message.content.slice(ss)
+                    ss = ss+3+bloc_name.length
+                }
+            }
+            else{
+                if(speechSynthesis==0 || this.message.content[ss-1]=="\n"){
+                    this.message.content = this.message.content.slice(0, ss) + "```"+bloc_name+"\n"+this.message.content.slice(ss, se)+"\n```\n" + this.message.content.slice(se)
+                    ss = ss+4+bloc_name.length
+                }
+                else{
+                    this.message.content = this.message.content.slice(0, ss) + "\n```"+bloc_name+"\n"+this.message.content.slice(ss, se)+"\n```\n" + this.message.content.slice(se)
+                    p = p+3+bloc_name.length
+                }
+            }
+
+            this.$refs.mdTextarea.focus();
+            this.$refs.mdTextarea.selectionStart = this.$refs.mdTextarea.selectionEnd = p;
     },
 
     insertTab(event) {
@@ -580,7 +593,14 @@ export default {
       },
       read(){
         this.isSynthesizingVoice=true
-        axios.post("./text2Audio",{text:this.text}).then(response => {
+        let ss =this.$refs.mdTextarea.selectionStart
+        let se =this.$refs.mdTextarea.selectionEnd
+
+        let text = this.text
+        if(ss!=se){
+          text = text.slice(ss,se)
+        }
+        axios.post("./text2Audio",{text:text}).then(response => {
           console.log(response.data.url)
           let url = response.data.url
           this.audio_url = bUrl+url
