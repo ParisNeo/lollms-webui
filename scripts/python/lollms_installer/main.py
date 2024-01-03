@@ -25,9 +25,15 @@ import socketio
 
 root_path = Path(__file__).parent.parent.parent.parent
 global_path = root_path/"global_paths_cfg.yaml"
-ASCIIColors.yellow(f"global_path: {global_path}")
-lollms_paths = LollmsPaths(global_path)
-config = LOLLMSConfig(lollms_paths.personal_configuration_path/"local_config.yaml")
+if global_path.exists():
+    ASCIIColors.yellow(f"global_path: {global_path}")
+    lollms_paths = LollmsPaths(global_path)
+    config = LOLLMSConfig.autoload(lollms_paths,lollms_paths.personal_configuration_path/"local_config.yaml")
+else:
+    ASCIIColors.yellow(f"global_path: {global_path}")
+    lollms_paths = LollmsPaths(global_path)
+    config = LOLLMSConfig.autoload(lollms_paths,lollms_paths.personal_configuration_path/"local_config.yaml")
+
 shared_folder = lollms_paths.personal_path/"shared"
 sd_folder = shared_folder / "auto_sd"
 output_dir = lollms_paths.personal_path / "outputs/sd"
@@ -48,7 +54,15 @@ sio = socketio.AsyncServer(async_mode='asgi')
 app = FastAPI(debug=True)
 app.mount("/socket.io", socketio.ASGIApp(sio))
 
-lollms_app = LollmsApplication("lollms_installer",config=config,lollms_paths=lollms_paths, load_binding=False, load_model=False, socketio=sio)
+lollms_app = LollmsApplication(
+                                    "lollms_installer",
+                                    config=config, 
+                                    lollms_paths=lollms_paths, 
+                                    load_binding=False, 
+                                    load_model=False, 
+                                    load_voice_service=False,
+                                    load
+                                    socketio=sio)
 
 # Serve the index.html file for all routes
 @app.get("/{full_path:path}")

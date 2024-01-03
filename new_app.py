@@ -44,6 +44,6 @@ if __name__ == "__main__":
         config.port=args.port
 
     LoLLMSWebUI.build_instance(config=config, lollms_paths=lollms_paths, socketio=sio)
-    from endpoints.lollms_infos import *
+    from lollms.server.endpoints.lollms_infos import *
 
     uvicorn.run(app, host=config.host, port=config.port)

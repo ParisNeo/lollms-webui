@@ -657,11 +657,16 @@ class LoLLMsAPI(LollmsApplication):
                 self.connections[client_id]["current_discussion"] = self.db.load_last_discussion()
         
             if self.personality.welcome_message!="":
+                if self.config.force_output_language_to_be and self.config.force_output_language_to_be.lower().strip() !="english":
+                    welcome_message = self.personality.fast_gen(f"!@>instruction: Translate the following text to {self.config.force_output_language_to_be.lower()}:\n{self.personality.welcome_message}\n!@>translation:")
+                else:
+                    welcome_message = self.personality.welcome_message
+
                 message = self.connections[client_id]["current_discussion"].add_message(
                     message_type        = MSG_TYPE.MSG_TYPE_FULL.value if self.personality.include_welcome_message_in_disucssion else MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value,
                     sender_type         = SENDER_TYPES.SENDER_TYPES_AI.value,
                     sender              = self.personality.name,
-                    content             = self.personality.welcome_message,
+                    content             = welcome_message,
                     metadata            = None,
                     rank                = 0, 
                     parent_message_id   = -1, 
@@ -1497,6 +1502,29 @@ class LoLLMsAPI(LollmsApplication):
         documentation = ""
         history = ""
 
+
+        # boosting information
+        if self.config.positive_boost:
+            positive_boost="\n!@>important information: "+self.config.positive_boost+"\n"
+            n_positive_boost = len(self.model.tokenize(positive_boost))
+        else:
+            positive_boost=""
+            n_positive_boost = 0
+
+        if self.config.negative_boost:
+            negative_boost="\n!@>important information: "+self.config.negative_boost+"\n"
+            n_negative_boost = len(self.model.tokenize(negative_boost))
+        else:
+            negative_boost=""
+            n_negative_boost = 0
+
+        if self.config.force_output_language_to_be:
+            force_language="\n!@>important information: Answer the user in this language :"+self.config.force_output_language_to_be+"\n"
+            n_force_language = len(self.model.tokenize(force_language))
+        else:
+            force_language=""
+            n_force_language = 0
+
         if generation_type != "simple_question":
             if self.personality.persona_data_vectorizer:
                 if documentation=="":
@@ -1580,7 +1608,7 @@ class LoLLMsAPI(LollmsApplication):
 
 
         # Calculate the total number of tokens between conditionning, documentation, and history
-        total_tokens = n_cond_tk + n_doc_tk + n_history_tk + n_user_description_tk
+        total_tokens = n_cond_tk + n_doc_tk + n_history_tk + n_user_description_tk + n_positive_boost + n_negative_boost + n_force_language
 
         # Calculate the available space for the messages
         available_space = self.config.ctx_size - n_tokens - total_tokens
@@ -1650,11 +1678,12 @@ class LoLLMsAPI(LollmsApplication):
 
         # Build the final discussion messages by detokenizing the full_message_list
         discussion_messages = ""
-        for message_tokens in full_message_list:
+        for i in range(len(full_message_list)-1):
+            message_tokens = full_message_list[i]
             discussion_messages += self.model.detokenize(message_tokens)
 
         # Build the final prompt by concatenating the conditionning and discussion messages
-        prompt_data = conditionning + documentation + history + user_description + discussion_messages
+        prompt_data = conditionning + documentation + history + user_description + discussion_messages + positive_boost + negative_boost + force_language + self.model.detokenize(full_message_list[-1])
 
         # Tokenize the prompt data
         tokens = self.model.tokenize(prompt_data)

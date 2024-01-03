@@ -710,7 +710,110 @@
                                         </tr>                                        
                                     </table>
                                 </Card>
+                                <Card title="Boost" :is_subcard="true" class="pb-2  m-2">
+                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="positive_boost" class="text-sm font-bold" style="margin-right: 1rem;">Positive Boost:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <input
+                                            type="text"
+                                            id="positive_boost"
+                                            required
+                                            v-model="configFile.positive_boost"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>                                        
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="negative_boost" class="text-sm font-bold" style="margin-right: 1rem;">Negative Boost:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <input
+                                            type="text"
+                                            id="negative_boost"
+                                            required
+                                            v-model="configFile.negative_boost"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>   
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="force_output_language_to_be" class="text-sm font-bold" style="margin-right: 1rem;">Force AI to answer in this language:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <input
+                                            type="text"
+                                            id="force_output_language_to_be"
+                                            required
+                                            v-model="configFile.force_output_language_to_be"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>                                                                                
+                                    </table>
+                                </Card>
 
+                                <Card title="Stable diffusion service" :is_subcard="true" class="pb-2  m-2">
+                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="enable_sd_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable sd service:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <input
+                                            type="checkbox"
+                                            id="enable_sd_service"
+                                            required
+                                            v-model="configFile.enable_sd_service"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>                                        
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="install_sd_service" class="text-sm font-bold" style="margin-right: 1rem;">Reinstall SD service:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallSDService">Reinstall sd service</button>
+                                            </div>
+                                        </td>
+                                        </tr>                                        
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="sd_base_url" class="text-sm font-bold" style="margin-right: 1rem;">sd base url:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <input
+                                            type="text"
+                                            id="sd_base_url"
+                                            required
+                                            v-model="configFile.sd_base_url"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr> 
+                                    </table>                                
+                                </Card>
                                 <Card title="XTTS service" :is_subcard="true" class="pb-2  m-2">
                                     <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <tr>
@@ -2031,6 +2134,16 @@ export default {
         //refreshHardwareUsage()
     }, 
     methods: {     
+        reinstallSDService(){
+            axios.get('install_sd')
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+
+        },
         reinstallAudioService(){
             axios.get('install_xtts')
             .then(response => {

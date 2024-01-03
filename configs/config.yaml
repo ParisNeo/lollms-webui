@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 36
+version: 39
 binding_name: null
 model_name: null
 
@@ -56,6 +56,10 @@ auto_read: false
 current_voice: null
 current_language: en
 
+# Image generation service
+enable_sd_service: false
+sd_base_url: http://127.0.0.1:7860
+
 # Audio
 media_on: false
 audio_in_language: 'en-US'
@@ -85,3 +89,8 @@ data_vectorization_make_persistance: false # If true, the data will be persistan
 
 # Helpers
 pdf_latex_path: null
+
+# boosting information
+positive_boost: null
+negative_boost: null
+force_output_language_to_be: null

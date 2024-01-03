@@ -521,6 +521,9 @@ try:
             self.add_endpoint(
                 "/install_xtts", "install_xtts", self.install_xtts, methods=["GET"]
             )
+            self.add_endpoint(
+                "/install_sd", "install_sd", self.install_sd, methods=["GET"]
+            )
             
             self.add_endpoint(
                 "/open_code_folder", "open_code_folder", self.open_code_folder, methods=["POST"]
@@ -575,6 +578,7 @@ try:
             server_address = request.host_url
             return server_address
         
+        
         def install_xtts(self):
             try:
                 self.ShowBlockingMessage("Installing xTTS api server\nPlease stand by")
@@ -584,6 +588,18 @@ try:
             except Exception as ex:
                 self.HideBlockingMessage()
                 return jsonify({"status":False, 'error':str(ex)})
+            
+        def install_sd(self):
+            try:
+                self.ShowBlockingMessage("Installing SD api server\nPlease stand by")
+                from lollms.image_gen_modules.lollms_sd import install_sd
+                install_sd()
+                self.HideBlockingMessage()
+                return jsonify({"status":True})
+            except Exception as ex:
+                self.HideBlockingMessage()
+                return jsonify({"status":False, 'error':str(ex)})
+            
         def execute_python(self, code, discussion_id, message_id):
             def spawn_process(code):
                 """Executes Python code and returns the output as JSON."""
