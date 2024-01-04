@@ -13,7 +13,7 @@ __github__ = "https://github.com/ParisNeo/lollms-webui"
 __copyright__ = "Copyright 2023, "
 __license__ = "Apache 2.0"
 
-__version__ ="8.5 (alpha)"
+__version__ ="8.5"
 
 main_repo = "https://github.com/ParisNeo/lollms-webui.git"
 
