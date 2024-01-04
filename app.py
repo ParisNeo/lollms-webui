@@ -303,6 +303,7 @@ try:
 
 
             self.add_endpoint("/unmount_personality", "unmount_personality", self.p_unmount_personality, methods=["POST"])        
+            self.add_endpoint("/unmount_all_personalities", "unmount_all_personalities", self.unmount_all_personalities, methods=["GET"])        
             self.add_endpoint("/select_personality", "select_personality", self.p_select_personality, methods=["POST"])
 
             self.add_endpoint("/get_personality_settings", "get_personality_settings", self.get_personality_settings, methods=["POST"])
@@ -2142,6 +2143,14 @@ try:
                 ASCIIColors.yellow(f"Available personalities: {[p.name for p in self.mounted_personalities]}")
                 return jsonify({"status": False, "error":f"Personality not found @ {pth}"})         
 
+        def unmount_all_personalities(self):
+            self.config.personalities=["generic/lollms"]
+            self.mounted_personalities=[]
+            self.personality=None
+            self.mount_personality(0)
+            self.config.save_config()
+            return jsonify({"status":True})
+        
         def p_unmount_personality(self):
             print("- Unmounting personality ...")
             try:

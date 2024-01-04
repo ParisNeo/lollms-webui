@@ -209,8 +209,6 @@
 
                 </div>
             </div>
-
-
             <!-- MAIN CONFIGS -->
             <div
                 class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
@@ -772,151 +770,6 @@
                                     </table>
                                 </Card>
 
-                                <Card title="Stable diffusion service" :is_subcard="true" class="pb-2  m-2">
-                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="enable_sd_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable sd service:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="enable_sd_service"
-                                            required
-                                            v-model="configFile.enable_sd_service"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>                                        
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="install_sd_service" class="text-sm font-bold" style="margin-right: 1rem;">Reinstall SD service:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallSDService">Reinstall sd service</button>
-                                            </div>
-                                        </td>
-                                        </tr>                                        
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="sd_base_url" class="text-sm font-bold" style="margin-right: 1rem;">sd base url:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="text"
-                                            id="sd_base_url"
-                                            required
-                                            v-model="configFile.sd_base_url"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr> 
-                                    </table>                                
-                                </Card>
-                                <Card title="XTTS service" :is_subcard="true" class="pb-2  m-2">
-                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="enable_voice_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable voice service:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="enable_voice_service"
-                                            required
-                                            v-model="configFile.enable_voice_service"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>                                        
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="install_xtts_service" class="text-sm font-bold" style="margin-right: 1rem;">Reinstall xTTS service:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallAudioService">Reinstall xtts service</button>
-                                            </div>
-                                        </td>
-                                        </tr>                                        
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="xtts_base_url" class="text-sm font-bold" style="margin-right: 1rem;">xtts base url:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="text"
-                                            id="xtts_base_url"
-                                            required
-                                            v-model="configFile.xtts_base_url"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr> 
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="current_language" class="text-sm font-bold" style="margin-right: 1rem;">Current language:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                                <select v-model="current_language" @change="settingsChanged=true" :disabled="!enable_voice_service">
-                                                <option v-for="(value, key) in voice_languages" :key="key" :value="value">
-                                                    {{ key }}
-                                                </option>
-                                                </select>
-                                            </div>
-                                        </td>
-                                        </tr>                                        
-
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="current_voice" class="text-sm font-bold" style="margin-right: 1rem;">Current voice:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                                <select v-model="current_voice" @change="settingsChanged=true" :disabled="!enable_voice_service">
-                                                <option v-for="voice in voices" :key="voice" :value="voice">
-                                                    {{ voice }}
-                                                </option>
-                                                </select>
-                                            </div>
-                                        </td>
-                                        </tr>                                        
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="auto_read" class="text-sm font-bold" style="margin-right: 1rem;">Enable auto read:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                                <input
-                                                    type="checkbox"
-                                                    id="auto_read"
-                                                    required
-                                                    v-model="configFile.auto_read"
-                                                    @change="settingsChanged=true"
-                                                    class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                                    :disabled="!enable_voice_service"
-                                                >
-                                            </div>
-                                        </td>
-                                        </tr>                    
-                                    </table>
-
-                                </Card>
-
 
                                 <Card title="Browser Audio" :is_subcard="true" class="pb-2  m-2">
                                     <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -1039,7 +892,168 @@
                 </div>
             </div>
 
+            <!-- Servers CONFIGS -->
+            <div
+                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                <div class="flex flex-row p-3">
+                    <button @click.stop="servers_conf_collapsed = !servers_conf_collapsed"
+                        class="text-2xl hover:text-primary p-2 -m-2 w-full text-left flex flex-row items-center">
+                        <div v-show="servers_conf_collapsed" ><i data-feather='chevron-right'></i></div>
+                        <div v-show="!servers_conf_collapsed" ><i data-feather='chevron-down'></i></div>
 
+                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            Servers configurations</h3>
+                    </button>
+                </div>
+                <div :class="{ 'hidden': servers_conf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+
+                    <Card title="Stable diffusion service" :is_subcard="true" class="pb-2  m-2">
+                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="enable_sd_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable sd service:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="checkbox"
+                                id="enable_sd_service"
+                                required
+                                v-model="configFile.enable_sd_service"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="install_sd_service" class="text-sm font-bold" style="margin-right: 1rem;">Reinstall SD service:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallSDService">Reinstall sd service</button>
+                                </div>
+                            </td>
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="sd_base_url" class="text-sm font-bold" style="margin-right: 1rem;">sd base url:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="text"
+                                id="sd_base_url"
+                                required
+                                v-model="configFile.sd_base_url"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr> 
+                        </table>                                
+                    </Card>
+                    <Card title="XTTS service" :is_subcard="true" class="pb-2  m-2">
+                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="enable_voice_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable voice service:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="checkbox"
+                                id="enable_voice_service"
+                                required
+                                v-model="configFile.enable_voice_service"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="install_xtts_service" class="text-sm font-bold" style="margin-right: 1rem;">Reinstall xTTS service:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallAudioService">Reinstall xtts service</button>
+                                </div>
+                            </td>
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="xtts_base_url" class="text-sm font-bold" style="margin-right: 1rem;">xtts base url:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="text"
+                                id="xtts_base_url"
+                                required
+                                v-model="configFile.xtts_base_url"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr> 
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="current_language" class="text-sm font-bold" style="margin-right: 1rem;">Current language:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                    <select v-model="current_language" @change="settingsChanged=true" :disabled="!enable_voice_service">
+                                    <option v-for="(value, key) in voice_languages" :key="key" :value="value">
+                                        {{ key }}
+                                    </option>
+                                    </select>
+                                </div>
+                            </td>
+                            </tr>                                        
+
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="current_voice" class="text-sm font-bold" style="margin-right: 1rem;">Current voice:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                    <select v-model="current_voice" @change="settingsChanged=true" :disabled="!enable_voice_service">
+                                    <option v-for="voice in voices" :key="voice" :value="voice">
+                                        {{ voice }}
+                                    </option>
+                                    </select>
+                                </div>
+                            </td>
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="auto_read" class="text-sm font-bold" style="margin-right: 1rem;">Enable auto read:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                    <input
+                                        type="checkbox"
+                                        id="auto_read"
+                                        required
+                                        v-model="configFile.auto_read"
+                                        @change="settingsChanged=true"
+                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        :disabled="!enable_voice_service"
+                                    >
+                                </div>
+                            </td>
+                            </tr>                    
+                        </table>
+
+                    </Card>
+
+                </div>
+            </div>
 
 
             <!-- BINDING ZOO -->
@@ -1420,7 +1434,6 @@
                                                 :title="item.name">
                                         </button>
                                         <button @click.stop="unmountPersonality (item)">
-
                                             <span
                                                 class="hidden group-hover:block top-0 left-7 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
                                                 title="Unmount personality">
@@ -1440,6 +1453,20 @@
                             </div>
 
                         </div>
+                        <button 
+                                @click.stop="unmountAll()" 
+                                class="bg-bg-light hover:border-green-200 ml-5 dark:bg-bg-dark rounded-full border-2 border-transparent"
+                                title="Unmount All"
+                                >
+                                <!-- UNMOUNT BUTTON -->
+                                <svg aria-hidden="true" class="w-4 h-4 text-red-600 hover:text-red-500 "
+                                    fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                        </button>
                     </button>
                 </div>
                 <div :class="{ 'hidden': pzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
@@ -2089,6 +2116,7 @@ export default {
             // Accordeon stuff 
             collapsedArr: [],
             all_collapsed: true,
+            servers_conf_collapsed: true, // Servers configuration
             minconf_collapsed: true, // Main configuration 
             bec_collapsed: true,
             sort_type : 0, // 0: by date, 1: by rank, 2: by name, 3: by maker, 4: by quantizer
@@ -2506,6 +2534,7 @@ export default {
             this.addModelDialogVisibility = false;
         },
         collapseAll(val) {
+            this.servers_conf_collapsed = val
             this.minconf_collapsed = val
             this.bec_collapsed = val
             this.mzc_collapsed = val
@@ -3762,6 +3791,11 @@ export default {
             }
             this.isLoading = false
 
+        },
+        async unmountAll(){
+            await axios.get('/unmount_all_personalities');
+            this.$store.dispatch('refreshMountedPersonalities');
+            this.$store.state.toast.showToast("All personas unmounted", 4, true)
         },
         async unmountPersonality(pers) {
             this.isLoading = true

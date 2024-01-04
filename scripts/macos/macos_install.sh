@@ -75,10 +75,21 @@ if [ ! -f "$MINICONDA_DIR/Scripts/conda" ]; then
   echo "Installing Miniconda to $MINICONDA_DIR"
   echo "Please wait..."
   echo
-  bash "Miniconda3-latest-MacOSX-x86_64.sh" -b -p "$MINICONDA_DIR" || ( echo && echo "Miniconda installer not found." && exit 1 )
-  rm -f "Miniconda3-latest-MacOSX-x86_64.sh"
-  if [ ! -f "$MINICONDA_DIR/bin/activate" ]; then
-    echo && echo "Miniconda install failed." && exit 1
+
+  if [ "$arch" == "arm64" ]; then
+    bash "Miniforge3-MacOSX-arm64.sh" -b -p "$MINICONDA_DIR" || ( echo && echo "Miniconda installer not found." && exit 1 )
+    rm -f "Miniforge3-MacOSX-arm64.sh"
+    if [ ! -f "$MINICONDA_DIR/bin/activate" ]; then
+      echo && echo "Miniconda install failed." && exit 1
+    fi
+  
+  else
+    bash "Miniconda3-latest-MacOSX-x86_64.sh" -b -p "$MINICONDA_DIR" || ( echo && echo "Miniconda installer not found." && exit 1 )
+    rm -f "Miniconda3-latest-MacOSX-x86_64.sh"
+    if [ ! -f "$MINICONDA_DIR/bin/activate" ]; then
+      echo && echo "Miniconda install failed." && exit 1
+    fi
+  
   fi
 fi
 
