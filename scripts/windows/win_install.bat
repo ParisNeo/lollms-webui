@@ -50,7 +50,7 @@ set INSTALL_ENV_DIR=%cd%\installer_files\lollms_env
 set MINICONDA_DOWNLOAD_URL=https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe
 set REPO_URL=https://github.com/ParisNeo/lollms-webui.git
 
-set "PACKAGES_TO_INSTALL=python=3.11 git"
+set "PACKAGES_TO_INSTALL=python=3.11 git pip"
 
 if not exist "%MINICONDA_DIR%\Scripts\conda.exe" (
   @rem download miniconda

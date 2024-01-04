@@ -35,7 +35,7 @@ if [[ "$PWD" =~ [^#\$\%\&\(\)\*\+\] ]]; then
 fi
 
 
-export PACKAGES_TO_INSTALL=python=3.11 git
+export PACKAGES_TO_INSTALL=python=3.11 git pip
 read -rp "Press Enter to continue..."
 
 clear
@@ -101,19 +101,19 @@ if [ -d "lollms-webui" ]; then
   cd lollms-core 
   pip install -e .
   cd ..
-  cd utilities\safe_store
+  cd utilities/safe_store
   pip install -e .
-  cd ..\..
+  cd ../..
 
 else
   git clone --depth 1  --recurse-submodules "$REPO_URL"
   git submodule update --init --recursive
-  cd lollms-webui\lollms_core
+  cd lollms-webui/lollms_core
   pip install -e .
   cd ..
-  cd utilities\safe_store
+  cd utilities/safe_store
   pip install -e .
-  cd ..\..
+  cd ../..
 
   cd lollms-webui || exit 1
 fi

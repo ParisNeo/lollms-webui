@@ -46,6 +46,11 @@ if __name__ == "__main__":
     LOLLMSWebUI.build_instance(config=config, lollms_paths=lollms_paths, socketio=sio)
 
     # Import all endpoints
-    from lollms.server.endpoints.lollms_infos import router
+    from lollms.server.endpoints.lollms_infos import router as lollms_infos_router
+    from lollms.server.endpoints.lollms_generator import router as lollms_generator_router
+
+    app.include_router(lollms_infos_router)
+    app.include_router(lollms_generator_router)
+
 
     uvicorn.run(app, host=config.host, port=config.port)
