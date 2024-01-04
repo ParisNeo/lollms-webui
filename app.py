@@ -1254,7 +1254,7 @@ try:
             ASCIIColors.green("PyTorch uninstalled successfully")
             reinstall_pytorch_with_cuda()
             ASCIIColors.yellow("Installing pytorch with cuda support")
-            self.config.enable_gpu=True
+            self.config.hardware_mode="nvidia-tensorcores"
             return jsonify({'status':res==0})
         
 
@@ -1992,7 +1992,7 @@ try:
             return jsonify({"state":True})
 
         def start_training(self):
-            if self.config.enable_gpu:
+            if self.config.hardware_mode=="nvidia-tensorcores" or self.config.hardware_mode=="nvidia" or self.config.hardware_mode=="apple-intel" or self.config.hardware_mode=="apple-silicon":
                 if not self.lollms_paths.gptqlora_path.exists():
                     # Clone the repository to the target path
                     ASCIIColors.info("No gptqlora found in your personal space.\nCloning the gptqlora repo")
@@ -2748,17 +2748,6 @@ try:
         if not user_avatar_path.exists():
             # If the user avatar doesn't exist, copy the default avatar from the assets folder
             shutil.copy(default_user_avatar, user_avatar_path)
-        # executor = ThreadPoolExecutor(max_workers=1)
-        # app.config['executor'] = executor
-        # Check if .no_gpu file exists
-        no_gpu_file = Path('.no_gpu')
-        if no_gpu_file.exists():
-            # If the file exists, change self.config.use_gpu to False
-            config.enable_gpu = False
-            config.save_config()
-            
-            # Remove the .no_gpu file
-            no_gpu_file.unlink()
         
         bot = LoLLMsWebUI(args, app, socketio, config, config.file_path, lollms_paths)
 

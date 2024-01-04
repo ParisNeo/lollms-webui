@@ -3,6 +3,22 @@
 # This script will install miniconda and git with all dependencies for this project
 # This enables a user to install this project without manually installing conda and git.
 
+echo "      ___       ___           ___       ___       ___           ___      "
+echo "     /\__\     /\  \         /\__\     /\__\     /\__\         /\  \     "
+echo "    /:/  /    /::\  \       /:/  /    /:/  /    /::|  |       /::\  \    "
+echo "   /:/  /    /:/\:\  \     /:/  /    /:/  /    /:|:|  |      /:/\ \  \   "
+echo "  /:/  /    /:/  \:\  \   /:/  /    /:/  /    /:/|:|__|__   _\:\~\ \  \  "
+echo " /:/__/    /:/__/ \:\__\ /:/__/    /:/__/    /:/ |::::\__\ /\ \:\ \ \__\ "
+echo " \:\  \    \:\  \ /:/  / \:\  \    \:\  \    \/__/~~/:/  / \:\ \:\ \/__/ "
+echo "  \:\  \    \:\  /:/  /   \:\  \    \:\  \         /:/  /   \:\ \:\__\   "
+echo "   \:\  \    \:\/:/  /     \:\  \    \:\  \       /:/  /     \:\/:/  /   "
+echo "    \:\__\    \::/  /       \:\__\    \:\__\     /:/  /       \::/  /    "
+echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
+echo "V8.5 (alpha)"
+echo "-----------------"
+echo "By ParisNeo"
+echo "-----------------"
+
 
 cd "$(dirname "$0")"
 
@@ -19,47 +35,12 @@ if [[ "$PWD" =~ [^#\$\%\&\(\)\*\+\] ]]; then
 fi
 
 
-
-
+export PACKAGES_TO_INSTALL=python=3.11 git
 read -rp "Press Enter to continue..."
 
 clear
 
-echo "      ___       ___           ___       ___       ___           ___      "
-echo "     /\__\     /\  \         /\__\     /\__\     /\__\         /\  \     "
-echo "    /:/  /    /::\  \       /:/  /    /:/  /    /::|  |       /::\  \    "
-echo "   /:/  /    /:/\:\  \     /:/  /    /:/  /    /:|:|  |      /:/\ \  \   "
-echo "  /:/  /    /:/  \:\  \   /:/  /    /:/  /    /:/|:|__|__   _\:\~\ \  \  "
-echo " /:/__/    /:/__/ \:\__\ /:/__/    /:/__/    /:/ |::::\__\ /\ \:\ \ \__\ "
-echo " \:\  \    \:\  \ /:/  / \:\  \    \:\  \    \/__/~~/:/  / \:\ \:\ \/__/ "
-echo "  \:\  \    \:\  /:/  /   \:\  \    \:\  \         /:/  /   \:\ \:\__\   "
-echo "   \:\  \    \:\/:/  /     \:\  \    \:\  \       /:/  /     \:\/:/  /   "
-echo "    \:\__\    \::/  /       \:\__\    \:\__\     /:/  /       \::/  /    "
-echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
-echo " By ParisNeo"
 
-echo "Please specify if you want to use a GPU or CPU."
-echo "*Note* that only NVidea GPUs (cuda) or AMD GPUs (rocm) are supported."
-echo "A) Enable Cuda (for nvidia GPUS)"
-echo "B) Enable ROCm (for AMD GPUs)"
-echo "C) Run CPU mode"
-echo
-read -rp "Input> " gpuchoice
-gpuchoice="${gpuchoice:0:1}"
-
-if [[ "${gpuchoice^^}" == "A" ]]; then
-  PACKAGES_TO_INSTALL="python=3.10 cuda-toolkit ninja git gcc"
-  CHANNEL="-c nvidia/label/cuda-12.1.1 -c nvidia -c conda-forge"
-elif [[ "${gpuchoice^^}" == "B" ]]; then
-  PACKAGES_TO_INSTALL="python=3.10  rocm-comgr rocm-smi ninja git gcc"
-  CHANNEL=" -c conda-forge"
-elif [[ "${gpuchoice^^}" == "C" ]]; then
-  PACKAGES_TO_INSTALL="python=3.10 ninja git gcc"
-  CHANNEL="-c conda-forge"
-else
-  echo "Invalid choice. Exiting..."
-  exit 1
-fi
 
 # Better isolation for virtual environment
 unset CONDA_SHLVL
@@ -115,32 +96,27 @@ export CUDA_PATH="$INSTALL_ENV_DIR"
 if [ -d "lollms-webui" ]; then
   cd lollms-webui || exit 1
   git pull
+  git submodule update --init --recursive
+  cd
+  cd lollms-core 
+  pip install -e .
+  cd ..
+  cd utilities\safe_store
+  pip install -e .
+  cd ..\..
+
 else
-  git clone "$REPO_URL"
+  git clone --depth 1  --recurse-submodules "$REPO_URL"
+  git submodule update --init --recursive
+  cd lollms-webui\lollms_core
+  pip install -e .
+  cd ..
+  cd utilities\safe_store
+  pip install -e .
+  cd ..\..
+
   cd lollms-webui || exit 1
 fi
-
-# Initilize all submodules and set them to main branch
-echo "Initializing submodules"
-git submodule update --init
-cd zoos/bindings_zoo
-git checkout main
-cd ../personalities_zoo
-git checkout main
-cd ../extensions_zoo
-git checkout main
-cd ../models_zoo
-git checkout main
-
-cd ../..
-
-cd lollms_core
-git checkout main
-
-cd ../utilities/safe_store
-git checkout main
-
-cd ../..
 
 # Loop through each "git+" requirement and uninstall it (workaround for inconsistent git package updating)
 while IFS= read -r requirement; do
@@ -152,8 +128,6 @@ done < requirements.txt
 
 # Install the pip requirements
 python -m pip install -r requirements.txt --upgrade
-python -m pip install -e lollms_core --upgrade
-python -m pip install -e utilities/safe_store --upgrade
 
 
 if [[ -e "../linux_run.sh" ]]; then
@@ -180,12 +154,10 @@ else
     cp scripts/linux/linux_update_models.sh ../
 fi
 
-if [[ "${gpuchoice^^}" == "C" ]]; then
-    echo "This is a .no_gpu file." > .no_gpu
-    echo "You have chosen to use only CPU on this system."
-else
-    echo "You have chosen to use GPU on this system."
-fi
+
+cd scripts/python/lollms_installer
+python main.py
+cd ..
 
 PrintBigMessage() {
   echo

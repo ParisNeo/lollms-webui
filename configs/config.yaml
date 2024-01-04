@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 39
+version: 40
 binding_name: null
 model_name: null
 
@@ -44,8 +44,8 @@ debug: False
 auto_update: true
 auto_save: true
 auto_title: false
-# Enables gpu usage
-enable_gpu: true
+# Install mode (cpu, cpu-noavx, nvidia-tensorcores, nvidia, amd-noavx, amd, apple-intel, apple-silicon)
+hardware_mode: nvidia-tensorcores
 # Automatically open the browser
 auto_show_browser: true
 

@@ -1574,7 +1574,7 @@ class LoLLMsAPI(LollmsApplication):
                     self.warning("Couldn't add long term memory information to the context. Please verify the vector database")        # Add information about the user
         user_description=""
         if self.config.use_user_name_in_discussions:
-            user_description="!@>User description:\n"+self.config.user_description
+            user_description="!@>User description:\n"+self.config.user_description+"\n"
 
 
         # Tokenize the conditionning text and calculate its number of tokens
@@ -1971,6 +1971,13 @@ class LoLLMsAPI(LollmsApplication):
                 dt=1
             spd = self.nb_received_tokens/dt
             ASCIIColors.green(f"Received {self.nb_received_tokens} tokens (speed: {spd:.2f}t/s)              ",end="\r",flush=True) 
+            antiprompt = self.personality.detect_antiprompt(self.connections[client_id]["generated_text"])
+            if antiprompt:
+                ASCIIColors.warning(f"\nDetected hallucination with antiprompt: {antiprompt}")
+                self.connections[client_id]["generated_text"] = self.remove_text_from_string(self.connections[client_id]["generated_text"],antiprompt)
+                self.update_message(client_id, self.connections[client_id]["generated_text"], parameters, metadata, None, MSG_TYPE.MSG_TYPE_FULL)
+                return False
+
             self.update_message(client_id, chunk,  parameters, metadata, ui=None, msg_type=message_type)
             return True
         # Stream the generated text to the frontend
@@ -1983,6 +1990,7 @@ class LoLLMsAPI(LollmsApplication):
         if self.personality.processor is not None:
             ASCIIColors.info("Running workflow")
             try:
+                self.personality.callback = callback
                 self.personality.processor.run_workflow( prompt, full_prompt, callback)
             except Exception as ex:
                 trace_exception(ex)

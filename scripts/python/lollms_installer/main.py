@@ -61,7 +61,7 @@ lollms_app = LollmsApplication(
                                     load_binding=False, 
                                     load_model=False, 
                                     load_voice_service=False,
-                                    load
+                                    load_sd_service=False,
                                     socketio=sio)
 
 # Serve the index.html file for all routes
@@ -91,39 +91,59 @@ def start_installing(data: InstallProperties):
     Returns:
     - A dictionary with a "message" key indicating the success of the installation.
     """
+    # Install mode (cpu, cpu-noavx, nvidia-tensorcores, nvidia, amd-noavx, amd, apple-intel, apple-silicon)
     if data.mode=="cpu":
-        config.enable_gpu=False
+        config.hardware_mode="cpu"
         try:
-            lollms_app.ShowBlockingMessage("Installing pytorch for CPU")
-            reinstall_pytorch_with_cpu()
+            lollms_app.ShowBlockingMessage("Setting hardware configuration to CPU")
             config.save_config()
             lollms_app.HideBlockingMessage()
         except:
             lollms_app.HideBlockingMessage()
-
-    elif data.mode=="cuda":
-        config.enable_gpu=True
+    if data.mode=="cpu-noavx":
+        config.hardware_mode="cpu-noavx"
+        try:
+            lollms_app.ShowBlockingMessage("Setting hardware configuration to CPU with no avx support")
+            config.save_config()
+            lollms_app.HideBlockingMessage()
+        except:
+            lollms_app.HideBlockingMessage()
+    elif data.mode=="nvidia":
+        config.hardware_mode="nvidia"
         try:
             lollms_app.ShowBlockingMessage("Installing pytorch for nVidia GPU (cuda)")
-            reinstall_pytorch_with_cuda()
             config.save_config()
             lollms_app.HideBlockingMessage()
         except:
             lollms_app.HideBlockingMessage()
-    elif data.mode=="rocm":
-        config.enable_gpu=True
+    elif data.mode=="nvidia-tensorcores":
+        config.hardware_mode="nvidia-tensorcores"
+        try:
+            lollms_app.ShowBlockingMessage("Installing pytorch for nVidia GPU (cuda)")
+            config.save_config()
+            lollms_app.HideBlockingMessage()
+        except:
+            lollms_app.HideBlockingMessage()
+    elif data.mode=="amd":
+        config.hardware_mode="amd"
         try:
             lollms_app.ShowBlockingMessage("Installing pytorch for AMD GPU (rocm)")
-            reinstall_pytorch_with_rocm()
             config.save_config()
             lollms_app.HideBlockingMessage()
         except:
             lollms_app.HideBlockingMessage()
-    elif data.mode=="metal":
+    elif data.mode=="apple-silicon":
+        config.hardware_mode="apple-silicon"
         try:
             lollms_app.ShowBlockingMessage("Installing pytorch for Apple Silicon (Metal)")
-            config.enable_gpu=False
-            reinstall_pytorch_with_cpu()
+            config.save_config()
+            lollms_app.HideBlockingMessage()
+        except:
+            lollms_app.HideBlockingMessage()
+    elif data.mode=="apple-intel":
+        config.hardware_mode="apple-intel"
+        try:
+            lollms_app.ShowBlockingMessage("Installing pytorch for Apple Silicon (Metal)")
             config.save_config()
             lollms_app.HideBlockingMessage()
         except:

@@ -228,6 +228,32 @@
                     <div class="flex flex-col mb-2 px-3 pb-2">
                                 <Card title="General" :is_subcard="true" class="pb-2 m-2">
                                     <table class="expand-to-fit bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="hardware_mode" class="text-sm font-bold" style="margin-right: 1rem;">Hardware mode:</label>
+                                        </td>
+                                        <td class="text-center items-center">
+                                            <div class="flex flex-row">
+                                            <select
+                                                id="hardware_mode"
+                                                required
+                                                v-model="configFile.hardware_mode"
+                                                @change="settingsChanged=true"
+                                                class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                                <option value="cpu">CPU</option>
+                                                <option value="cpu-noavx">CPU (No AVX)</option>
+                                                <option value="nvidia-tensorcores">NVIDIA (Tensor Cores)</option>
+                                                <option value="nvidia">NVIDIA</option>
+                                                <option value="amd-noavx">AMD (No AVX)</option>
+                                                <option value="amd">AMD</option>
+                                                <option value="apple-intel">Apple Intel</option>
+                                                <option value="apple-silicon">Apple Silicon</option>
+                                            </select>
+                                            </div>
+                                        </td>
+                                        </tr>                                        
                                         <tr>
                                         <td style="min-width: 200px;">
                                             <label for="db_path" class="text-sm font-bold" style="margin-right: 1rem;">Host:</label>
@@ -309,26 +335,6 @@
                                         </td>
                                         </tr>
                                         
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="enable_gpu" class="text-sm font-bold" style="margin-right: 1rem;">Enable GPU:</label>
-                                        </td>
-                                        <td class="text-center items-center">
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="enable_gpu"
-                                            required
-                                            v-model="configFile.enable_gpu"
-                                            @change="settingsChanged=true"
-                                            class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600 "
-                                            >
-                                            <button v-if="!configFile.enable_gpu" @click.prevent="upgrade2GPU" class="w-100 text-center rounded m-2 bg-blue-300 hover:bg-blue-200 text-l hover:text-primary p-2 m-2 text-left flex flex-row ">
-                                            Upgrade from CPU to GPU
-                                            </button>
-                                            </div>
-                                        </td>
-                                        </tr>
                                         <tr>
                                             
                                         <td style="min-width: 200px;">
@@ -2969,27 +2975,6 @@ export default {
                     return { 'status': false }
                 });
         },
-        upgrade2GPU(){
-            this.isLoading = true
-            try{
-                axios.get('/upgrade_to_gpu').then(res => {
-                    this.isLoading = false
-                    if (res) {
-                            if(res.status){
-                                this.$store.state.toast.showToast("Upgraded to GPU", 4, true)
-                                this.configFile.enable_gpu=true
-                            }
-                            else{
-                                this.$store.state.toast.showToast("Could not upgrade to GPU. Endpoint error: " + res.error, 4, false)
-                            }
-                    }
-                })
-            }
-            catch (error) {
-            this.isLoading = false
-            this.$store.state.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
-            }
-        },
         onSettingsExtension(extensionEntry){
             try {
                 this.isLoading = true
@@ -4142,13 +4127,13 @@ export default {
                 },
             },
             
-        enable_gpu:{
+        hardware_mode:{
             get() {
-                return this.$store.state.config.enable_gpu;
+                return this.$store.state.config.hardware_mode;
             },
             set(value) {
                 // You should not set the value directly here; use the updateSetting method instead
-                this.$store.state.config.enable_gpu = value
+                this.$store.state.config.hardware_mode = value
             },
 
         },

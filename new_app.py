@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from lollms.app import LollmsApplication
 from lollms.paths import LollmsPaths
 from lollms.main_config import LOLLMSConfig
-from lollms_webui import LoLLMSWebUI
+from lollms_webui import LOLLMSWebUI
 from pathlib import Path
 from ascii_colors import ASCIIColors
 import socketio
@@ -43,7 +43,9 @@ if __name__ == "__main__":
     if args.port:
         config.port=args.port
 
-    LoLLMSWebUI.build_instance(config=config, lollms_paths=lollms_paths, socketio=sio)
-    from lollms.server.endpoints.lollms_infos import *
+    LOLLMSWebUI.build_instance(config=config, lollms_paths=lollms_paths, socketio=sio)
+
+    # Import all endpoints
+    from lollms.server.endpoints.lollms_infos import router
 
     uvicorn.run(app, host=config.host, port=config.port)
