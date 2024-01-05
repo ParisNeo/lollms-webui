@@ -64,18 +64,7 @@ lollms_app = LollmsApplication(
                                     load_sd_service=False,
                                     socketio=sio)
 
-# Serve the index.html file for all routes
-@app.get("/{full_path:path}")
-async def serve_index(request: Request, full_path: Path):
-    if str(full_path).endswith(".js"):
-        return FileResponse(root_path/"scripts/python/lollms_installer/frontend/dist"/full_path, media_type="application/javascript")    
-    if str(full_path).endswith(".css"):
-        return FileResponse(root_path/"scripts/python/lollms_installer/frontend/dist"/full_path)    
-    if str(full_path).endswith(".html"):
-        return FileResponse(root_path/"scripts/python/lollms_installer/frontend/dist"/full_path)    
-    return FileResponse(root_path/"scripts/python/lollms_installer/frontend/dist/index.html")
-
-#  app.mount("/", StaticFiles(directory=root_path/"scripts/python/lollms_installer/frontend/dist"), name="static")
+app.mount("/", StaticFiles(directory=Path(__file__).parent/"frontend"/"dist", html=True), name="static")
 
 class InstallProperties(BaseModel):
     mode: str

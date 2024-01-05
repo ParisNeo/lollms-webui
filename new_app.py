@@ -8,6 +8,7 @@ This file is the entry point to the webui.
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 from lollms.app import LollmsApplication
 from lollms.paths import LollmsPaths
 from lollms.main_config import LOLLMSConfig
@@ -19,11 +20,30 @@ import uvicorn
 import argparse
 
 app = FastAPI()
-sio = socketio.AsyncServer(async_mode="asgi")
 
+
+
+
+# Create a Socket.IO server
+sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")  # Enable CORS for all origins
 app.mount("/socket.io", socketio.ASGIApp(sio))
-#app.mount("/socket.io", StaticFiles(directory="path/to/socketio.js"))
 
+# Define a WebSocket event handler
+@sio.event
+async def connect(sid, environ):
+    print(f"Connected: {sid}")
+
+@sio.event
+async def disconnect(sid):
+    print(f"Disconnected: {sid}")
+
+@sio.event
+async def message(sid, data):
+    print(f"Message from {sid}: {data}")
+    await sio.send(sid, "Message received!")
+
+
+#app.mount("/socket.io", StaticFiles(directory="path/to/socketio.js"))
 
 if __name__ == "__main__":
     # Parsong parameters
@@ -48,9 +68,13 @@ if __name__ == "__main__":
     # Import all endpoints
     from lollms.server.endpoints.lollms_infos import router as lollms_infos_router
     from lollms.server.endpoints.lollms_generator import router as lollms_generator_router
+    from endpoints.lollms_discussion import router as lollms_discussion_router
 
     app.include_router(lollms_infos_router)
     app.include_router(lollms_generator_router)
+    app.include_router(lollms_discussion_router)
+    
+    app.mount("/", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="static")
 
 
     uvicorn.run(app, host=config.host, port=config.port)
