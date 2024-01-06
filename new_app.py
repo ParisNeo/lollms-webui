@@ -18,25 +18,25 @@ from ascii_colors import ASCIIColors
 import socketio
 import uvicorn
 import argparse
+from socketio import ASGIApp
 
 app = FastAPI()
 
 # Create a Socket.IO server
 sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")  # Enable CORS for all origins
-app.mount("/socket.io", socketio.ASGIApp(sio))
 
 # Define a WebSocket event handler
 @sio.event
 async def connect(sid, environ):
-    print(f"Connected: {sid}")
+    ASCIIColors.yellow(f"Connected: {sid}")
 
 @sio.event
 async def disconnect(sid):
-    print(f"Disconnected: {sid}")
+    ASCIIColors.yellow(f"Disconnected: {sid}")
 
 @sio.event
 async def message(sid, data):
-    print(f"Message from {sid}: {data}")
+    ASCIIColors.yellow(f"Message from {sid}: {data}")
     await sio.send(sid, "Message received!")
 
 
@@ -83,6 +83,8 @@ if __name__ == "__main__":
     app.include_router(lollms_discussion_router)
     
     app.mount("/", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="static")
+
+    app = ASGIApp(socketio_server=sio, other_asgi_app=app)
 
 
     uvicorn.run(app, host=config.host, port=6523)#config.port)

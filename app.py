@@ -161,7 +161,7 @@ try:
     CORS(app)
     from flask_compress import Compress
     #  async_mode='gevent', ping_timeout=1200, ping_interval=120, 
-    socketio = SocketIO(app,  cors_allowed_origins="*", async_mode='gevent', ping_timeout=1200, ping_interval=120)
+    socketio = SocketIO(app,  cors_allowed_origins="*", async_mode='gevent', ping_timeout=1200, ping_interval=120, path='/socket.io')
     #socketio = SocketIO(app,  cors_allowed_origins="*", async_mode='threading',engineio_options={'websocket_compression': True, 'websocket_ping_interval': 20, 'websocket_ping_timeout': 120, 'websocket_max_queue': 100})
     compress = Compress(app)
     app.config['SECRET_KEY'] = 'secret!'

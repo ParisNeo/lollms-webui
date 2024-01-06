@@ -15,31 +15,24 @@ from lollms.types import MSG_TYPE, SENDER_TYPES
 from lollms.app import LollmsApplication
 from pathlib import Path
 from ascii_colors import ASCIIColors
-import subprocess
 from pathlib import Path
-
-from starlette.responses import FileResponse
-from starlette.requests import Request
 import webbrowser
 import socketio
+from fastapi import FastAPI
+from socketio import ASGIApp
+
 
 root_path = Path(__file__).parent.parent.parent.parent
 global_path = root_path/"global_paths_cfg.yaml"
 if global_path.exists():
     ASCIIColors.yellow(f"global_path: {global_path}")
-    lollms_paths = LollmsPaths(global_path)
+    lollms_paths = LollmsPaths(global_path, prepare_configuration=False)
     config = LOLLMSConfig.autoload(lollms_paths,lollms_paths.personal_configuration_path/"local_config.yaml")
 else:
     ASCIIColors.yellow(f"global_path: {global_path}")
-    lollms_paths = LollmsPaths(global_path)
+    lollms_paths = LollmsPaths(global_path, prepare_configuration=False)
     config = LOLLMSConfig.autoload(lollms_paths,lollms_paths.personal_configuration_path/"local_config.yaml")
 
-shared_folder = lollms_paths.personal_path/"shared"
-sd_folder = shared_folder / "auto_sd"
-output_dir = lollms_paths.personal_path / "outputs/sd"
-output_dir.mkdir(parents=True, exist_ok=True)
-script_path = sd_folder / "lollms_sd.bat"
-output_folder = lollms_paths.personal_outputs_path/"audio_out"
 
 ASCIIColors.red("                                     ")
 ASCIIColors.red(" __    _____ __    __    _____ _____ ")
@@ -52,7 +45,6 @@ ASCIIColors.yellow(f"Root dir : {root_path}")
 
 sio = socketio.AsyncServer(async_mode='asgi')
 app = FastAPI(debug=True)
-app.mount("/socket.io", socketio.ASGIApp(sio))
 
 lollms_app = LollmsApplication(
                                     "lollms_installer",
@@ -62,12 +54,16 @@ lollms_app = LollmsApplication(
                                     load_model=False, 
                                     load_voice_service=False,
                                     load_sd_service=False,
-                                    socketio=sio)
+                                    socketio=sio,
+                                    free_mode=True)
 
-app.mount("/", StaticFiles(directory=Path(__file__).parent/"frontend"/"dist", html=True), name="static")
 
 class InstallProperties(BaseModel):
     mode: str
+
+@app.get("/get_personal_path")
+def get_personal_path():
+    return lollms_paths.personal_path
 
 @app.post("/start_installing")
 def start_installing(data: InstallProperties):
@@ -139,6 +135,9 @@ def start_installing(data: InstallProperties):
             lollms_app.HideBlockingMessage()
     # Your code here
     return {"message": "Item created successfully"}
+
+app.mount("/", StaticFiles(directory=Path(__file__).parent/"frontend"/"dist", html=True), name="static")
+app = ASGIApp(socketio_server=sio, other_asgi_app=app)
 
 if __name__ == "__main__":
     webbrowser.open(f"http://localhost:8000")
