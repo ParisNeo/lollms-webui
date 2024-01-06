@@ -375,7 +375,6 @@ export default {
     
     data() {
         return {
-            currentDiscussion: {},
             host:"",
             progress_visibility_val         : true,
             progress_value                  : 0,

@@ -44,11 +44,13 @@
       Install
     </button>
   </div>
-  <MessageBox ></MessageBox>
+  <Toast ref="toast" />
+  <MessageBox ref="messageBox" />
 </template>
 
 <script>
-import MessageBox from '../components/messageBox.vue';
+import MessageBox from '../components/MessageBox.vue';
+import Toast from '../components/Toast.vue';
 import axios from 'axios';
 import LoLLMSLogo from '../assets/logo.png'
 export default {
@@ -59,12 +61,14 @@ export default {
     };
   },
   components:{
-    MessageBox
+    MessageBox,
+    Toast
   },
   methods: {
     install() {
+      this.$ref.toast.showToast(`Starting the install with option:${this.selectedOption}`, 4, true)
       axios.post("/start_installing",{mode:this.selectedOption}).then(()=>{
-
+        this.$ref.messageBox.showMessage("Success!\nPlease close this page and open the run script from your install folder")
       });
     },
   },

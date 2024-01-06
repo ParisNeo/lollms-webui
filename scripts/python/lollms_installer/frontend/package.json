@@ -11,6 +11,7 @@
   "dependencies": {
     "autoprefixer": "^10.4.16",
     "axios": "^1.6.3",
+    "feather-icons": "^4.29.1",
     "flowbite": "^2.2.1",
     "postcss": "^8.4.32",
     "tailwind-scrollbar": "^3.0.5",
