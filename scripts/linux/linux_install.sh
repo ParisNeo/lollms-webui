@@ -92,12 +92,15 @@ source activate "$INSTALL_ENV_DIR" || ( echo && echo "Conda environment activati
 # Set default cuda toolkit to the one in the environment
 export CUDA_PATH="$INSTALL_ENV_DIR"
 
+pwd
+pause
+
+
 # Clone the repository
 if [ -d "lollms-webui" ]; then
   cd lollms-webui || exit 1
   git pull
   git submodule update --init --recursive
-  cd
   cd lollms-core 
   pip install -e .
   cd ..
@@ -108,14 +111,22 @@ if [ -d "lollms-webui" ]; then
 else
   git clone --depth 1  --recurse-submodules "$REPO_URL"
   git submodule update --init --recursive
+  pwd
+  pause
   cd lollms-webui/lollms_core
+  pwd
+  pause
   pip install -e .
+  pwd
+  pause
   cd ..
   cd utilities/safe_store
+  pwd
+  pause
   pip install -e .
   cd ../..
-
-  cd lollms-webui || exit 1
+  pwd
+  pause
 fi
 
 # Loop through each "git+" requirement and uninstall it (workaround for inconsistent git package updating)

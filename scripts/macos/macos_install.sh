@@ -115,7 +115,6 @@ if [ -d "lollms-webui" ]; then
   cd lollms-webui || exit 1
   git pull
   git submodule update --init --recursive
-  cd
   cd lollms-core 
   pip install -e .
   cd ..
