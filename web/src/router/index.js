@@ -7,7 +7,7 @@ import TrainingView from '../views/TrainingView.vue'
 import QuantizingView from '../views/QuantizingView.vue'
 import DiscussionsView from '../views/DiscussionsView.vue'
 import InteractiveView from '../views/InteractiveView.vue'
-
+import NodesView from '../views/NodesView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,6 +51,11 @@ const router = createRouter({
       path: '/',
       name: 'interactive',
       component: InteractiveView
+    },
+    {
+      path: '/',
+      name: 'nodes',
+      component: NodesView
     },
 
   ],

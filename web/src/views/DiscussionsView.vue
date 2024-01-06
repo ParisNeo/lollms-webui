@@ -1918,23 +1918,23 @@ export default {
         this.isCreated = true
     },
     async mounted() {
-        let serverAddress = "http://localhost:9600/";
-        try {
-            const response = await fetch('/get_server_address'); // Replace with the actual endpoint on your Flask server
-            serverAddress = await response.text();
-            if(serverAddress.includes('<')){
-                console.log(`Server address not found`)
-                serverAddress = "http://localhost:9600/"//process.env.VITE_LOLLMS_API
+        // let serverAddress = "http://localhost:9600/";
+        // try {
+        //     const response = await fetch('/get_server_address'); // Replace with the actual endpoint on your Flask server
+        //     serverAddress = await response.text();
+        //     if(serverAddress.includes('<')){
+        //         console.log(`Server address not found`)
+        //         serverAddress = "http://localhost:9600/"//process.env.VITE_LOLLMS_API
                 
-            }
-            console.log(`Server address: ${serverAddress}`)
-        } catch (error) {
-            console.error('Error fetching server address:', error);
+        //     }
+        //     console.log(`Server address: ${serverAddress}`)
+        // } catch (error) {
+        //     console.error('Error fetching server address:', error);
             // Handle error if necessary
-            serverAddress = "http://localhost:9600/"
-        }
-        this.host = `${serverAddress}`; // Construct the full server address dynamically
-        axios.defaults.baseURL = serverAddress
+        //     serverAddress = "http://localhost:9600/"
+        // }
+        // this.host = `${serverAddress}`; // Construct the full server address dynamically
+        // axios.defaults.baseURL = serverAddress
         //console.log('chatbox mnt',this.$refs)
         this.$nextTick(() => {
             feather.replace();

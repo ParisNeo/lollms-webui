@@ -14,6 +14,11 @@ from ascii_colors import ASCIIColors
 from datetime import datetime
 from api.db import DiscussionsDB, Discussion
 from pathlib import Path
+import os, sys
+# The current version of the webui
+lollms_webui_version="9.0 (alpha)"
+
+import git
 
 try:
     from lollms.media import WebcamImageSender, AudioRecorder
@@ -79,6 +84,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             socketio=socketio
         )
         self.app_name = "LOLLMSWebUI"
+        self.version= lollms_webui_version
 
 
         self.busy = False
@@ -156,4 +162,69 @@ class LOLLMSWebUI(LOLLMSElfServer):
         else:
             self.webcam = None
             self.rec_output_folder = None
+
+
     # Other methods and properties of the LoLLMSWebUI singleton class
+    def check_module_update_(self, repo_path, branch_name="main"):
+        try:
+            # Open the repository
+            ASCIIColors.yellow(f"Checking for updates from {repo_path}")
+            repo = git.Repo(repo_path)
+            
+            # Fetch updates from the remote for the specified branch
+            repo.remotes.origin.fetch(refspec=f"refs/heads/{branch_name}:refs/remotes/origin/{branch_name}")
+            
+            # Compare the local and remote commit IDs for the specified branch
+            local_commit = repo.head.commit
+            remote_commit = repo.remotes.origin.refs[branch_name].commit
+            
+            # Check if the local branch is behind the remote branch
+            is_behind = repo.is_ancestor(local_commit, remote_commit) and local_commit!= remote_commit
+            
+            ASCIIColors.yellow(f"update availability: {is_behind}")
+            
+            # Return True if the local branch is behind the remote branch
+            return is_behind
+        except Exception as e:
+            # Handle any errors that may occur during the fetch process
+            # trace_exception(e)
+            return False        
+            
+    def check_update_(self, branch_name="main"):
+        try:
+            # Open the repository
+            repo_path = str(Path(__file__).parent)
+            if self.check_module_update_(repo_path, branch_name):
+                return True
+            repo_path = str(Path(__file__).parent/"lollms_core")
+            if self.check_module_update_(repo_path, branch_name):
+                return True
+            repo_path = str(Path(__file__).parent/"utilities/safe_store")
+            if self.check_module_update_(repo_path, branch_name):
+                return True
+            return False
+        except Exception as e:
+            # Handle any errors that may occur during the fetch process
+            # trace_exception(e)
+            return False
+                    
+    def run_update_script(self, args=None):
+        update_script = Path(__file__).parent/"update_script.py"
+
+        # Convert Namespace object to a dictionary
+        if args:
+            args_dict = vars(args)
+        else:
+            args_dict = {}
+        # Filter out any key-value pairs where the value is None
+        valid_args = {key: value for key, value in args_dict.items() if value is not None}
+
+        # Save the arguments to a temporary file
+        temp_file = Path(__file__).parent/"temp_args.txt"
+        with open(temp_file, "w") as file:
+            # Convert the valid_args dictionary to a string in the format "key1 value1 key2 value2 ..."
+            arg_string = " ".join([f"--{key} {value}" for key, value in valid_args.items()])
+            file.write(arg_string)
+
+        os.system(f"python {update_script}")
+        sys.exit(0)

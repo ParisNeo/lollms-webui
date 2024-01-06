@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "vue-draggable-resizable": "^2.3.0"
+  }
+}

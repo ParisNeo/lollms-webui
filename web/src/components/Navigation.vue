@@ -5,11 +5,14 @@
             <RouterLink :to="{ name: 'discussions' }" class="link-item dark:link-item-dark">
               Discussions
             </RouterLink>
-            <RouterLink :to="{ name: 'interactive' }" class="link-item dark:link-item-dark">
-              Interactive
-            </RouterLink>
             <RouterLink :to="{ name: 'playground' }" class="link-item dark:link-item-dark">
               Playground
+            </RouterLink>
+            <RouterLink :to="{ name: 'interactive' }" class="link-item dark:link-item-dark">
+              Interactive (under construction)
+            </RouterLink>
+            <RouterLink :to="{ name: 'nodes' }" class="link-item dark:link-item-dark">
+              Nodes (under construction)
             </RouterLink>
             <!--
 

@@ -261,94 +261,71 @@ try:
             self.add_endpoint("/get_lollms_webui_version", "get_lollms_webui_version", self.get_lollms_webui_version, methods=["GET"])
             
             self.add_endpoint("/reload_binding", "reload_binding", self.reload_binding, methods=["POST"])
+
+
             self.add_endpoint("/restart_program", "restart_program", self.restart_program, methods=["GET"])
             self.add_endpoint("/update_software", "update_software", self.update_software, methods=["GET"])
             self.add_endpoint("/clear_uploads", "clear_uploads", self.clear_uploads, methods=["GET"])
-            self.add_endpoint("/selectdb", "selectdb", self.selectdb, methods=["GET"])
 
-            
             self.add_endpoint("/check_update", "check_update", self.check_update, methods=["GET"])
             
-
+            self.add_endpoint("/disk_usage", "disk_usage", self.disk_usage, methods=["GET"])
+            self.add_endpoint("/ram_usage", "ram_usage", self.ram_usage, methods=["GET"])
+            self.add_endpoint("/vram_usage", "vram_usage", self.vram_usage, methods=["GET"])
         
-            self.add_endpoint("/post_to_personality", "post_to_personality", self.post_to_personality, methods=["POST"])
-
             
-            self.add_endpoint("/install_model_from_path", "install_model_from_path", self.install_model_from_path, methods=["GET"])
-            
+            self.add_endpoint("/list_bindings", "list_bindings", self.list_bindings, methods=["GET"])
             self.add_endpoint("/install_binding", "install_binding", self.install_binding, methods=["POST"])
             self.add_endpoint("/unInstall_binding", "unInstall_binding", self.unInstall_binding, methods=["POST"])
             self.add_endpoint("/reinstall_binding", "reinstall_binding", self.reinstall_binding, methods=["POST"])
-            self.add_endpoint("/reinstall_personality", "reinstall_personality", self.reinstall_personality, methods=["POST"])
-            self.add_endpoint("/reinstall_extension", "reinstall_extension", self.reinstall_extension, methods=["POST"])
+            self.add_endpoint("/get_active_binding_settings", "get_active_binding_settings", self.get_active_binding_settings, methods=["GET"])
+            self.add_endpoint("/set_active_binding_settings", "set_active_binding_settings", self.set_active_binding_settings, methods=["POST"])
 
-            self.add_endpoint("/switch_personal_path", "switch_personal_path", self.switch_personal_path, methods=["POST"])
 
+            self.add_endpoint("/list_models", "list_models", self.list_models, methods=["GET"])
+            self.add_endpoint("/get_active_model", "get_active_model", self.get_active_model, methods=["GET"])
             self.add_endpoint("/add_reference_to_local_model", "add_reference_to_local_model", self.add_reference_to_local_model, methods=["POST"])
-            
-            
-            self.add_endpoint("/add_model_reference", "add_model_reference", self.add_model_reference, methods=["POST"])
-            
-            self.add_endpoint("/upload_model", "upload_model", self.upload_model, methods=["POST"])
-            self.add_endpoint("/upload_avatar", "upload_avatar", self.upload_avatar, methods=["POST"])
-            
-            
+
+
+            self.add_endpoint("/post_to_personality", "post_to_personality", self.post_to_personality, methods=["POST"])
+            self.add_endpoint("/reinstall_personality", "reinstall_personality", self.reinstall_personality, methods=["POST"])
+
+
             self.add_endpoint("/list_mounted_personalities", "list_mounted_personalities", self.list_mounted_personalities, methods=["POST"])
+            self.add_endpoint("/list_personalities_categories", "list_personalities_categories", self.list_personalities_categories, methods=["GET"])
+            self.add_endpoint("/list_personalities", "list_personalities", self.list_personalities, methods=["GET"])
 
             self.add_endpoint("/mount_personality", "mount_personality", self.p_mount_personality, methods=["POST"])
             self.add_endpoint("/remount_personality", "remount_personality", self.p_remount_personality, methods=["POST"])
-
-            self.add_endpoint("/mount_extension", "mount_extension", self.p_mount_extension, methods=["POST"])
-            self.add_endpoint("/remount_extension", "remount_extension", self.p_remount_extension, methods=["POST"])
-
-
             self.add_endpoint("/unmount_personality", "unmount_personality", self.p_unmount_personality, methods=["POST"])        
             self.add_endpoint("/unmount_all_personalities", "unmount_all_personalities", self.unmount_all_personalities, methods=["GET"])        
             self.add_endpoint("/select_personality", "select_personality", self.p_select_personality, methods=["POST"])
-
             self.add_endpoint("/get_personality_settings", "get_personality_settings", self.get_personality_settings, methods=["POST"])
-
             self.add_endpoint("/get_active_personality_settings", "get_active_personality_settings", self.get_active_personality_settings, methods=["GET"])
-            self.add_endpoint("/get_active_binding_settings", "get_active_binding_settings", self.get_active_binding_settings, methods=["GET"])
-
             self.add_endpoint("/set_active_personality_settings", "set_active_personality_settings", self.set_active_personality_settings, methods=["POST"])
-            self.add_endpoint("/set_active_binding_settings", "set_active_binding_settings", self.set_active_binding_settings, methods=["POST"])
-
-            self.add_endpoint(
-                "/disk_usage", "disk_usage", self.disk_usage, methods=["GET"]
-            )
-
-            self.add_endpoint(
-                "/ram_usage", "ram_usage", self.ram_usage, methods=["GET"]
-            )
-            self.add_endpoint(
-                "/vram_usage", "vram_usage", self.vram_usage, methods=["GET"]
-            )
 
 
-            self.add_endpoint(
-                "/list_bindings", "list_bindings", self.list_bindings, methods=["GET"]
-            )
-            
-            self.add_endpoint(
-                "/list_models", "list_models", self.list_models, methods=["GET"]
-            )
-            self.add_endpoint(
-                "/get_active_model", "get_active_model", self.get_active_model, methods=["GET"]
-            )
-            
-            self.add_endpoint(
-                "/list_personalities_categories", "list_personalities_categories", self.list_personalities_categories, methods=["GET"]
-            )
-            self.add_endpoint(
-                "/list_personalities", "list_personalities", self.list_personalities, methods=["GET"]
-            )
-            self.add_endpoint(
-                "/list_databases", "list_databases", self.list_databases, methods=["GET"]
-            )
+            self.add_endpoint("/list_databases", "list_databases", self.list_databases, methods=["GET"])
             self.add_endpoint("/select_database", "select_database", self.select_database, methods=["POST"])
             
             
+            # ----
+
+
+            self.add_endpoint("/reinstall_extension", "reinstall_extension", self.reinstall_extension, methods=["POST"])
+            self.add_endpoint("/mount_extension", "mount_extension", self.p_mount_extension, methods=["POST"])
+            self.add_endpoint("/remount_extension", "remount_extension", self.p_remount_extension, methods=["POST"])
+
+            self.add_endpoint("/switch_personal_path", "switch_personal_path", self.switch_personal_path, methods=["POST"])
+
+            
+            self.add_endpoint("/upload_avatar", "upload_avatar", self.upload_avatar, methods=["POST"])
+            
+            
+
+
+            
+
             self.add_endpoint(
                 "/list_extensions_categories", "list_extensions_categories", self.list_extensions_categories, methods=["GET"]
             )
@@ -359,7 +336,6 @@ try:
                 "/list_discussions", "list_discussions", self.list_discussions, methods=["GET"]
             )
             
-            self.add_endpoint("/delete_personality", "delete_personality", self.delete_personality, methods=["GET"])
                     
             self.add_endpoint("/", "", self.index, methods=["GET"])
             self.add_endpoint("/settings/", "", self.index, methods=["GET"])
@@ -1555,16 +1531,6 @@ try:
             return jsonify(discussions)
 
 
-        def delete_personality(self):
-            category = request.args.get('category')
-            name = request.args.get('name')
-            path = self.lollms_paths.personalities_zoo_path/category/name
-            try:
-                shutil.rmtree(path)
-                return jsonify({'status':True})
-            except Exception as ex:
-                return jsonify({'status':False,'error':str(ex)})
-
         def add_endpoint(
             self,
             endpoint=None,
@@ -1720,32 +1686,6 @@ try:
                             "active_personality_id":self.config["active_personality_id"]
                             })         
 
-        def install_model_from_path(self):
-            from tkinter import Tk
-            from tkinter.filedialog import askopenfilename
-            
-            ASCIIColors.info(f"- Selecting model ...")
-            # Define the file types
-            filetypes = [
-                ("Model file", self.binding.supported_file_extensions),
-            ]
-            # Create the Tkinter root window
-            root = Tk()
-
-            # Hide the root window
-            root.withdraw()
-
-            # Open the file dialog
-            file_path = askopenfilename(filetypes=filetypes)
-            
-            file_path = Path(file_path)
-            #
-            with open(str(self.lollms_paths.personal_models_path/self.config.binding_name/(file_path.stem+".reference")),"w") as f:
-                f.write(file_path)
-            
-            return jsonify({
-                            "status": True
-                        })
             
         def reinstall_extension(self):
             try:
@@ -1945,15 +1885,6 @@ try:
                 ASCIIColors.error(f"Couldn't clear the upload folder.\nMaybe some files are opened somewhere else.\Try doing it manually")
                 return {"status": False, 'error': "Couldn't clear the upload folder.\nMaybe some files are opened somewhere else.\Try doing it manually"}
 
-        def selectdb(self):
-            from tkinter import Tk, filedialog
-            # Initialize Tkinter
-            root = Tk()
-            root.withdraw()
-
-            # Show file selection dialog
-            file_path = filedialog.askopenfilename()
-
         def check_update(self):
             if self.config.auto_update:
                 res = check_update_()
@@ -2143,14 +2074,6 @@ try:
                 ASCIIColors.yellow(f"Available personalities: {[p.name for p in self.mounted_personalities]}")
                 return jsonify({"status": False, "error":f"Personality not found @ {pth}"})         
 
-        def unmount_all_personalities(self):
-            self.config.personalities=["generic/lollms"]
-            self.mounted_personalities=[]
-            self.personality=None
-            self.mount_personality(0)
-            self.config.save_config()
-            return jsonify({"status":True})
-        
         def p_unmount_personality(self):
             print("- Unmounting personality ...")
             try:
@@ -2196,6 +2119,17 @@ try:
                     
                 ASCIIColors.yellow(f"Available personalities: {[p.name for p in self.mounted_personalities]}")
                 return jsonify({"status": False, "error":"Couldn't unmount personality"})         
+
+        def unmount_all_personalities(self):
+            self.config.personalities=["generic/lollms"]
+            self.mounted_personalities=[]
+            self.personality=None
+            self.mount_personality(0)
+            self.config.save_config()
+            return jsonify({"status":True})
+        
+
+
 
         def get_extension_settings(self):
             print("- Retreiving extension settings")
@@ -2460,25 +2394,6 @@ try:
                 ASCIIColors.error(f"nok : personality id out of bounds @ {id} >= {len(self.mounted_personalities)}")
                 return jsonify({"status": False, "error":"Invalid ID"})         
                         
-
-        def add_model_reference(self):
-            try:
-                ASCIIColors.info("Creating a model reference")
-                path = Path(request.path)
-                ref_path=self.lollms_paths.personal_models_path/self.config.binding_name/(path.name+".reference")
-                with open(ref_path,"w") as f:
-                    f.write(str(path))
-
-                return jsonify({"status": True})   
-            except Exception as ex:
-                ASCIIColors.error(ex)
-                trace_exception(ex)
-                return jsonify({"status": False})   
-
-        def upload_model(self):      
-            file = request.files['file']
-            file.save(self.lollms_paths.personal_models_path/self.config.binding_name/file.filename)
-            return jsonify({"status": True})   
 
         def upload_avatar(self):      
             file = request.files['avatar']

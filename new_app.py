@@ -21,9 +21,6 @@ import argparse
 
 app = FastAPI()
 
-
-
-
 # Create a Socket.IO server
 sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")  # Enable CORS for all origins
 app.mount("/socket.io", socketio.ASGIApp(sio))
@@ -67,14 +64,25 @@ if __name__ == "__main__":
 
     # Import all endpoints
     from lollms.server.endpoints.lollms_infos import router as lollms_infos_router
+    from lollms.server.endpoints.lollms_hardware_infos import router as lollms_hardware_infos_router
+    from lollms.server.endpoints.lollms_binding_infos import router as lollms_binding_infos_router
+    from lollms.server.endpoints.lollms_models_infos import router as lollms_models_infos_router
+    from lollms.server.endpoints.lollms_personalities_infos import router as lollms_personalities_infos_router
     from lollms.server.endpoints.lollms_generator import router as lollms_generator_router
     from endpoints.lollms_discussion import router as lollms_discussion_router
+    from endpoints.lollms_webui_infos import router as lollms_webui_infos_router
 
     app.include_router(lollms_infos_router)
+    app.include_router(lollms_hardware_infos_router)    
+    app.include_router(lollms_binding_infos_router)    
+    app.include_router(lollms_models_infos_router)   
+    app.include_router(lollms_personalities_infos_router)   
+
+    app.include_router(lollms_webui_infos_router)
     app.include_router(lollms_generator_router)
     app.include_router(lollms_discussion_router)
     
     app.mount("/", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="static")
 
 
-    uvicorn.run(app, host=config.host, port=config.port)
+    uvicorn.run(app, host=config.host, port=6523)#config.port)
