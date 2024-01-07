@@ -20,7 +20,7 @@ from lollms.paths import LollmsPaths
 from lollms.helpers import ASCIIColors, trace_exception
 from lollms.com import NotificationType, NotificationDisplayType, LoLLMsCom
 from lollms.app import LollmsApplication
-from lollms.utilities import File64BitsManager, PromptReshaper, PackageManager, find_first_available_file_index
+from lollms.utilities import File64BitsManager, PromptReshaper, PackageManager, find_first_available_file_index, run_async
 import git
 
 try:
@@ -228,7 +228,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 "processing":False,
                 "schedule_for_deletion":False
             }
-            await self.socketio.emit('connected', room=sid) 
+            await self.socketio.emit('connected', to=sid) 
             ASCIIColors.success(f'Client {sid} connected')
 
         @socketio.event
@@ -943,14 +943,15 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 display_type:NotificationDisplayType=NotificationDisplayType.TOAST,
                 verbose=True
             ):
-        self.socketio.emit('notification', {
-                            'content': content,# self.connections[client_id]["generated_text"], 
-                            'notification_type': notification_type.value,
-                            "duration": duration,
-                            'display_type':display_type.value
-                        }, room=client_id
-                        )  
-        self.socketio.sleep(0.01)
+        run_async(
+            self.socketio.emit('notification', {
+                                'content': content,# self.connections[client_id]["generated_text"], 
+                                'notification_type': notification_type.value,
+                                "duration": duration,
+                                'display_type':display_type.value
+                            }, to=client_id
+                            )
+        )
         if verbose:
             if notification_type==NotificationType.NOTIF_SUCCESS:
                 ASCIIColors.success(content)
@@ -1011,7 +1012,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     'finished_generating_at':   self.connections[client_id]["current_discussion"].current_message.finished_generating_at,
 
                     'open':                     open
-                }, room=client_id
+                }, to=client_id
         )
 
     def update_message(self, client_id, chunk,                             
@@ -1033,7 +1034,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                             'finished_generating_at': self.connections[client_id]["current_discussion"].current_message.finished_generating_at,
                                             'parameters':parameters,
                                             'metadata':metadata
-                                        }, room=client_id
+                                        }, to=client_id
                                 )
 
 
@@ -1047,7 +1048,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                         'finished_generating_at': self.connections[client_id]["current_discussion"].current_message.finished_generating_at,
                                         'parameters':parameters,
                                         'metadata':metadata
-                                    }, room=client_id
+                                    }, to=client_id
                             )
         self.socketio.sleep(0.01)
         if msg_type != MSG_TYPE.MSG_TYPE_INFO:
@@ -1074,7 +1075,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                         'created_at': self.connections[client_id]["current_discussion"].current_message.created_at,
                                         'finished_generating_at': self.connections[client_id]["current_discussion"].current_message.finished_generating_at,
 
-                                    }, room=client_id
+                                    }, to=client_id
                             )
     def process_chunk(
                         self, 
@@ -1398,7 +1399,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                                 'status': True,
                                                 'discussion_id':d.discussion_id,
                                                 'title':title
-                                                }, room=client_id) 
+                                                }, to=client_id) 
 
             self.busy=False
 

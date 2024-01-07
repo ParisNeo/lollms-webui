@@ -1,6 +1,6 @@
 """
 Project: lollms_installer
-Author: Your Name
+Author: ParisNeo
 Description: This tool is designed to install and configure the LoLLMS system on your machine. LoLLMS is a multi-bindings, multi-personalities LLM full-stack system for AI applications in robotics. It provides a user-friendly interface for setting up and managing the system.
 """
 from fastapi import FastAPI
