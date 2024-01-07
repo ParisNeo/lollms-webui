@@ -69,21 +69,16 @@ export default {
     };
   },
   async mounted(){
-    this.personal_path = await axios.get("/get_personal_path")
-    socket.on('notification', this.notify)
+    let response = await axios.get("/get_personal_path")
+    this.personal_path = response.data
+    console.log(this.personal_path)
+    //socket.on('notification', this.notify)
   },
   components:{
     MessageBox,
     Toast
   },
   methods: {
-    folderSelected(event) {
-      const files = event.target.files;
-      for (let i = 0; i < files.length; i++) {
-        console.log(files[i].webkitRelativePath);
-      }
-      personal_path = files[0].webkitRelativePath
-    },
     notify(notif){
         self.isGenerating = false
         this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
@@ -117,15 +112,6 @@ export default {
       axios.post("/start_installing",{mode:this.selectedOption}).then(()=>{
         this.$refs.messageBox.showMessage("Success!\nPlease close this page and open the run script from your install folder")
       });
-    },
-    selectFolder() {
-      axios.get('/choose_path')
-        .then(response => {
-          this.personal_path = response.data.new_path;
-        })
-        .catch(error => {
-          console.error(error);
-        });
     },
   },
 };

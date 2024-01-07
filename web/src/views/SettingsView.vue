@@ -1684,15 +1684,15 @@
                         </select>
                     </div>
                     <div>
-                        <div v-if="extensionsFiltererd.length > 0" class="mb-2">
+                        <div v-if="extensionsFiltered.length > 0" class="mb-2">
                             <label for="model" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                 {{ searchExtension ? 'Search results' : 'Personalities' }}: ({{
-                                    extensionsFiltererd.length
+                                    extensionsFiltered.length
                                 }})
                             </label>
                             <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
                                 :class="ezl_collapsed ? '' : 'max-h-96'">
-                                    <ExtensionEntry ref="extensionsZoo" v-for="(ext, index) in extensionsFiltererd"
+                                    <ExtensionEntry ref="extensionsZoo" v-for="(ext, index) in extensionsFiltered"
                                         :key="'index-' + index + '-' + ext.name" 
                                         :extension="ext"
                                         :select_language="true"
@@ -2112,7 +2112,7 @@ export default {
             // Zoo stuff
             personalitiesFiltered: [],
             modelsFiltered: [],
-            extensionsFiltererd: [],
+            extensionsFiltered: [],
             // Accordeon stuff 
             collapsedArr: [],
             all_collapsed: true,
@@ -2420,7 +2420,7 @@ export default {
             //mountedPersArr
             this.modelsFiltered = []
             this.extension_category = this.configFile.extension_category
-            this.extensionsFiltererd = this.$store.state.extensionsZoo.filter((item) => item.category === this.configFile.extension_category )
+            this.extensionsFiltered = this.$store.state.extensionsZoo.filter((item) => item.category === this.configFile.extension_category )
            
             
             this.updateModelsZoo();
@@ -3206,9 +3206,9 @@ export default {
                     this.extCatgArr = cats
                     console.log("this.$store.state.extensionsZoo",this.$store.state.extensionsZoo)
                     console.log("this.extension_category", this.extension_category)
-                    this.extensionsFiltererd = this.$store.state.extensionsZoo.filter((item) => item.category === this.extension_category)
-                    this.extensionsFiltererd.sort()
-                    console.log("this.extensionsFiltererd", this.extensionsFiltererd)
+                    this.extensionsFiltered = this.$store.state.extensionsZoo.filter((item) => item.category === this.extension_category)
+                    this.extensionsFiltered.sort()
+                    console.log("this.extensionsFiltered", this.extensionsFiltered)
 
                 })
                 
@@ -3521,7 +3521,7 @@ export default {
             const catkeys = Object.keys(dictionary); // returns categories folder names
             for (let j = 0; j < catkeys.length; j++) {
                 const catkey = catkeys[j];
-                const personalitiesArray = catdictionary[catkey];
+                const personalitiesArray = dictionary[catkey];
                 const modPersArr = personalitiesArray.map((item) => {
 
                     const isMounted = config.personalities.includes(catkey + '/' + item.folder)
@@ -3531,7 +3531,7 @@ export default {
                     let newItem = {}
                     newItem = item
                     newItem.category = catkey // add new props to items
-                    newItem.language = langkey // add new props to items
+                    newItem.language = "" // add new props to items
                     newItem.full_path = catkey + '/' + item.folder // add new props to items
                     newItem.isMounted = isMounted // add new props to items
                     return newItem
@@ -3552,6 +3552,48 @@ export default {
             this.isLoading = false
 
         },
+        async getExtensionsArr() {
+            this.isLoading = true
+            this.extensions = []
+            const dictionary = await this.api_get_req("get_all_extensions")
+            const config = this.$store.state.config
+            //console.log('asdas',config)
+            // console.log("all_extensions")
+            // console.log(dictionary)
+            const catkeys = Object.keys(dictionary); // returns categories folder names
+            for (let j = 0; j < catkeys.length; j++) {
+                const catkey = catkeys[j];
+                const extensionsArray = dictionary[catkey];
+                const modPersArr = extensionsArray.map((item) => {
+
+                    const isMounted = config.extensions.includes(catkey + '/' + item.folder)
+                    // if (isMounted) {
+                    //     console.log(item)
+                    // }
+                    let newItem = {}
+                    newItem = item
+                    newItem.category = catkey // add new props to items
+                    newItem.language = "" // add new props to items
+                    newItem.full_path = catkey + '/' + item.folder // add new props to items
+                    newItem.isMounted = isMounted // add new props to items
+                    return newItem
+                })
+
+
+                if (this.extensions.length == 0) {
+                    this.extensions = modPersArr
+                } else {
+                    this.extensions = this.extensions.concat(modPersArr)
+                }
+            }
+
+            this.extensions.sort((a, b) => a.name.localeCompare(b.name))
+            this.extensions = this.extensions.filter((item) => item.category === this.configFile.personality_category)
+            this.extensions.sort()
+            console.log('per filtered', this.extensionsFiltered)
+            this.isLoading = false
+
+        },        
         async filterPersonalities() {
             if (!this.searchPersonality) {
                 this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category )

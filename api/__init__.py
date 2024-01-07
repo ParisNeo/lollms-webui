@@ -19,7 +19,7 @@ from lollms.paths import LollmsPaths
 from lollms.helpers import ASCIIColors, trace_exception
 from lollms.com import NotificationType, NotificationDisplayType, LoLLMsCom
 from lollms.app import LollmsApplication
-from lollms.utilities import File64BitsManager, PromptReshaper, PackageManager, find_first_available_file_index
+from lollms.utilities import File64BitsManager, PromptReshaper, PackageManager, find_first_available_file_index,  terminate_thread
 try:
     from lollms.media import WebcamImageSender, AudioRecorder
     Media_on=True
@@ -56,22 +56,7 @@ from bs4 import BeautifulSoup
 
 
 
-def terminate_thread(thread):
-    if thread:
-        if not thread.is_alive():
-            ASCIIColors.yellow("Thread not alive")
-            return
 
-        thread_id = thread.ident
-        exc = ctypes.py_object(SystemExit)
-        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, exc)
-        if res > 1:
-            ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, None)
-            del thread
-            gc.collect()
-            raise SystemError("Failed to terminate the thread.")
-        else:
-            ASCIIColors.yellow("Canceled successfully")
 
 __author__ = "parisneo"
 __github__ = "https://github.com/ParisNeo/lollms-webui"

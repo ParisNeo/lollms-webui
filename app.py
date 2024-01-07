@@ -249,12 +249,8 @@ try:
             # Endpoints
             # =========================================================================================
             
-            self.add_endpoint(
-                "/get_current_personality_files_list", "get_current_personality_files_list", self.get_current_personality_files_list, methods=["GET"]
-            )
-            self.add_endpoint(
-                "/clear_personality_files_list", "clear_personality_files_list", self.clear_personality_files_list, methods=["GET"]
-            )
+            self.add_endpoint("/get_current_personality_files_list", "get_current_personality_files_list", self.get_current_personality_files_list, methods=["GET"])
+            self.add_endpoint("/clear_personality_files_list", "clear_personality_files_list", self.clear_personality_files_list, methods=["GET"])
             
             self.add_endpoint("/start_training", "start_training", self.start_training, methods=["POST"])
             self.add_endpoint("/get_lollms_version", "get_lollms_version", self.get_lollms_version, methods=["GET"])
@@ -307,53 +303,59 @@ try:
 
             self.add_endpoint("/list_databases", "list_databases", self.list_databases, methods=["GET"])
             self.add_endpoint("/select_database", "select_database", self.select_database, methods=["POST"])
+            self.add_endpoint("/uploads/<path:filename>", "serve_uploads", self.serve_uploads, methods=["GET"])
             
+
+            self.add_endpoint("/<path:filename>", "serve_static", self.serve_static, methods=["GET"])
+            self.add_endpoint("/user_infos/<path:filename>", "serve_user_infos", self.serve_user_infos, methods=["GET"])
+
+            self.add_endpoint("/bindings/<path:filename>", "serve_bindings", self.serve_bindings, methods=["GET"])
+            self.add_endpoint("/personalities/<path:filename>", "serve_personalities", self.serve_personalities, methods=["GET"])
+            self.add_endpoint("/extensions/<path:filename>", "serve_extensions", self.serve_extensions, methods=["GET"])
+            self.add_endpoint("/outputs/<path:filename>", "serve_outputs", self.serve_outputs, methods=["GET"])
+            self.add_endpoint("/data/<path:filename>", "serve_data", self.serve_data, methods=["GET"])
+            self.add_endpoint("/help/<path:filename>", "serve_help", self.serve_help, methods=["GET"])
+
+            self.add_endpoint("/audio/<path:filename>", "serve_audio", self.serve_audio, methods=["GET"])
+            self.add_endpoint("/images/<path:filename>", "serve_images", self.serve_images, methods=["GET"])
             
-            # ----
 
 
+            self.add_endpoint("/install_extension", "install_extension", self.install_extension, methods=["POST"])
             self.add_endpoint("/reinstall_extension", "reinstall_extension", self.reinstall_extension, methods=["POST"])
             self.add_endpoint("/mount_extension", "mount_extension", self.p_mount_extension, methods=["POST"])
             self.add_endpoint("/remount_extension", "remount_extension", self.p_remount_extension, methods=["POST"])
+            self.add_endpoint("/unmount_extension", "unmount_extension", self.p_unmount_extension, methods=["POST"])
+            self.add_endpoint("/list_extensions_categories", "list_extensions_categories", self.list_extensions_categories, methods=["GET"])
+            self.add_endpoint("/list_extensions", "list_extensions", self.list_extensions, methods=["GET"])
+            self.add_endpoint("/get_all_extensions", "get_all_extensions", self.get_all_extensions, methods=["GET"])
+
+
+            self.add_endpoint("/list_discussions", "list_discussions", self.list_discussions, methods=["GET"])
+            
+
+
+            # ----
+
+
 
             self.add_endpoint("/switch_personal_path", "switch_personal_path", self.switch_personal_path, methods=["POST"])
-
-            
             self.add_endpoint("/upload_avatar", "upload_avatar", self.upload_avatar, methods=["POST"])
             
             
 
 
+
+
             
 
-            self.add_endpoint(
-                "/list_extensions_categories", "list_extensions_categories", self.list_extensions_categories, methods=["GET"]
-            )
-            self.add_endpoint(
-                "/list_extensions", "list_extensions", self.list_extensions, methods=["GET"]
-            )        
-            self.add_endpoint(
-                "/list_discussions", "list_discussions", self.list_discussions, methods=["GET"]
-            )
             
                     
             self.add_endpoint("/", "", self.index, methods=["GET"])
             self.add_endpoint("/settings/", "", self.index, methods=["GET"])
             self.add_endpoint("/playground/", "", self.index, methods=["GET"])
             
-            self.add_endpoint("/<path:filename>", "serve_static", self.serve_static, methods=["GET"])
-            self.add_endpoint("/user_infos/<path:filename>", "serve_user_infos", self.serve_user_infos, methods=["GET"])
             
-            self.add_endpoint("/audio/<path:filename>", "serve_audio", self.serve_audio, methods=["GET"])
-            self.add_endpoint("/images/<path:filename>", "serve_images", self.serve_images, methods=["GET"])
-            self.add_endpoint("/extensions/<path:filename>", "serve_extensions", self.serve_extensions, methods=["GET"])
-            self.add_endpoint("/bindings/<path:filename>", "serve_bindings", self.serve_bindings, methods=["GET"])
-            self.add_endpoint("/personalities/<path:filename>", "serve_personalities", self.serve_personalities, methods=["GET"])
-            self.add_endpoint("/outputs/<path:filename>", "serve_outputs", self.serve_outputs, methods=["GET"])
-            self.add_endpoint("/data/<path:filename>", "serve_data", self.serve_data, methods=["GET"])
-            self.add_endpoint("/help/<path:filename>", "serve_help", self.serve_help, methods=["GET"])
-            
-            self.add_endpoint("/uploads/<path:filename>", "serve_uploads", self.serve_uploads, methods=["GET"])
 
             
             self.add_endpoint("/export_discussion", "export_discussion", self.export_discussion, methods=["GET"])
@@ -1347,8 +1349,13 @@ try:
                             print(f"Couldn't load backend card : {f}\n\t{ex}")
             return jsonify(bindings)
 
-        def get_extensions(self):
-            ASCIIColors.yellow("Listing all extensions")
+
+
+        def list_extensions(self):
+            return self.config.extensions
+
+        def get_all_extensions(self):
+            ASCIIColors.yellow("Gatting all extensions")
             extensions_folder = self.lollms_paths.extensions_zoo_path
             extensions = {}
 
@@ -1415,12 +1422,7 @@ try:
                             except Exception as ex:
                                 ASCIIColors.warning(f"Couldn't load personality from {extensions_folder} [{ex}]")
                                 trace_exception(ex)
-            return extensions
-
-        def list_extensions(self):
-            return json.dumps(self.get_extensions())
-
-        
+            return extensions        
 
         def list_models(self):
             if self.binding is not None:
@@ -1520,10 +1522,6 @@ try:
             return jsonify({"status":True})
 
 
-        def list_extensions_categories(self):
-            extensions_categories_dir = self.lollms_paths.extensions_zoo_path  # replace with the actual path to the models folder
-            extensions_categories = [f.stem for f in extensions_categories_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]
-            return jsonify(extensions_categories)
         
 
         def list_discussions(self):
@@ -1687,41 +1685,7 @@ try:
                             })         
 
             
-        def reinstall_extension(self):
-            try:
-                data = request.get_json()
-                # Further processing of the data
-            except Exception as e:
-                print(f"Error occurred while parsing JSON: {e}")
-                return jsonify({"status":False, 'error':str(e)})
-            if not 'name' in data.keys():
-                try:
-                    data['name']=self.config.extensions[-1]
-                except Exception as ex:
-                    self.error(ex)
-                    return
-            try:
-                extension_path = self.lollms_paths.extensions_zoo_path / data['name']
-                ASCIIColors.info(f"- Reinstalling extension {data['name']}...")
-                ASCIIColors.info("Unmounting extension")
-                if data['name'] in self.config.extensions:
-                    idx = self.config.extensions.index(data['name'])
-                    print(f"index = {idx}")
-                    if len(self.mount_extensions)>idx:
-                        del self.mounted_extensions[idx]
-                    gc.collect()
-                try:
-                    self.mounted_extensions.append(ExtensionBuilder().build_extension(extension_path,self.lollms_paths, self, InstallOption.FORCE_INSTALL))
-                    return jsonify({"status":True})
-                except Exception as ex:
-                    ASCIIColors.error(f"Extension file not found or is corrupted ({data['name']}).\nReturned the following exception:{ex}\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
-                    trace_exception(ex)
-                    ASCIIColors.info("Trying to force reinstall")
-                    return jsonify({"status":False, 'error':str(e)})
-
-            except Exception as e:
-                return jsonify({"status":False, 'error':str(e)})
-        
+       
         def reinstall_personality(self):
             try:
                 data = request.get_json()
@@ -2189,7 +2153,70 @@ try:
             else:
                 return jsonify({'status':False})            
 
+        
+        def install_extension(self):
+            try:
+                data = request.get_json()
+                # Further processing of the data
+            except Exception as e:
+                print(f"Error occurred while parsing JSON: {e}")
+                return jsonify({"status":False, 'error':str(e)})
+            if not 'name' in data.keys():
+                try:
+                    data['name']=self.config.extensions[-1]
+                except Exception as ex:
+                    self.error(ex)
+                    return
+            try:
+                extension_path = self.lollms_paths.extensions_zoo_path / data['name']
+                ASCIIColors.info(f"- Installing extension {data['name']}...")
+                try:
+                    self.mounted_extensions.append(ExtensionBuilder().build_extension(extension_path,self.lollms_paths, self, InstallOption.FORCE_INSTALL))
+                    return jsonify({"status":True})
+                except Exception as ex:
+                    ASCIIColors.error(f"Extension file not found or is corrupted ({data['name']}).\nReturned the following exception:{ex}\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+                    trace_exception(ex)
+                    ASCIIColors.info("Trying to force reinstall")
+                    return jsonify({"status":False, 'error':str(e)})
 
+            except Exception as e:
+                return jsonify({"status":False, 'error':str(e)})
+
+
+        def reinstall_extension(self):
+            try:
+                data = request.get_json()
+                # Further processing of the data
+            except Exception as e:
+                print(f"Error occurred while parsing JSON: {e}")
+                return jsonify({"status":False, 'error':str(e)})
+            if not 'name' in data.keys():
+                try:
+                    data['name']=self.config.extensions[-1]
+                except Exception as ex:
+                    self.error(ex)
+                    return
+            try:
+                extension_path = self.lollms_paths.extensions_zoo_path / data['name']
+                ASCIIColors.info(f"- Reinstalling extension {data['name']}...")
+                ASCIIColors.info("Unmounting extension")
+                if data['name'] in self.config.extensions:
+                    idx = self.config.extensions.index(data['name'])
+                    print(f"index = {idx}")
+                    if len(self.mount_extensions)>idx:
+                        del self.mounted_extensions[idx]
+                    gc.collect()
+                try:
+                    self.mounted_extensions.append(ExtensionBuilder().build_extension(extension_path,self.lollms_paths, self, InstallOption.FORCE_INSTALL))
+                    return jsonify({"status":True})
+                except Exception as ex:
+                    ASCIIColors.error(f"Extension file not found or is corrupted ({data['name']}).\nReturned the following exception:{ex}\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
+                    trace_exception(ex)
+                    ASCIIColors.info("Trying to force reinstall")
+                    return jsonify({"status":False, 'error':str(e)})
+
+            except Exception as e:
+                return jsonify({"status":False, 'error':str(e)})
 
         def p_mount_extension(self):
             print("- Mounting extension")
@@ -2304,7 +2331,13 @@ try:
                 ASCIIColors.yellow(f"Available personalities: {[p.name for p in self.mounted_personalities]}")
                 return jsonify({"status": False, "error":"Couldn't unmount personality"})     
 
-        
+
+        def list_extensions_categories(self):
+            extensions_categories_dir = self.lollms_paths.extensions_zoo_path  # replace with the actual path to the models folder
+            extensions_categories = [f.stem for f in extensions_categories_dir.iterdir() if f.is_dir() and not f.name.startswith(".")]
+            return jsonify(extensions_categories)        
+
+
         def set_active_binding_settings(self):
             print("- Setting binding settings")
             try:
