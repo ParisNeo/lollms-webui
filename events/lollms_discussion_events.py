@@ -36,7 +36,7 @@ lollmsElfServer = LOLLMSWebUI.get_instance()
 # ----------------------------------- events -----------------------------------------
 def add_events(sio:socketio):
         @sio.on('new_discussion')
-        async def new_discussion(sid, environ, data):   
+        async def new_discussion(sid, data):   
             ASCIIColors.yellow("New descussion requested")
             client_id = sid
             title = data["title"]
