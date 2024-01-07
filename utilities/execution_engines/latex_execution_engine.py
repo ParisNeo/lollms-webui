@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from starlette.responses import StreamingResponse
 from lollms.types import MSG_TYPE
 from lollms.main_config import BaseConfig
-from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception, get_trace_exception
+from ascii_colors import get_trace_exception, trace_exception
 from ascii_colors import ASCIIColors
 from api.db import DiscussionsDB
 from pathlib import Path
@@ -26,7 +26,7 @@ import json
 
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()           
 
-def execute_latex(lollmsElfServer:LOLLMSWebUI, code, discussion_id, message_id):
+def execute_latex(code, discussion_id, message_id):
     def spawn_process(code):
         """Executes Python code and returns the output as JSON."""
 
@@ -54,7 +54,7 @@ def execute_latex(lollmsElfServer:LOLLMSWebUI, code, discussion_id, message_id):
                 error_message = result.stderr.strip()
                 execution_time = time.time() - start_time
                 error_json = {"output": f"Error occurred while compiling LaTeX: {error_message}", "execution_time": execution_time}
-                return json.dumps(error_json)
+                return error_json
             # If the compilation is successful, you will get a PDF file
             pdf_file = tmp_file.with_suffix('.pdf')
             print(f"PDF file generated: {pdf_file}")
@@ -62,14 +62,18 @@ def execute_latex(lollmsElfServer:LOLLMSWebUI, code, discussion_id, message_id):
         except subprocess.CalledProcessError as ex:
             lollmsElfServer.error(f"Error occurred while compiling LaTeX: {ex}") 
             error_json = {"output": "<div class='text-red-500'>"+str(ex)+"\n"+get_trace_exception(ex)+"</div>", "execution_time": execution_time}
-            return json.dumps(error_json)
+            return error_json
 
         # Stop the timer.
         execution_time = time.time() - start_time
 
         # The child process was successful.
-        pdf_file=str(pdf_file)
-        url = f"{routing.get_url_path_for(lollmsElfServer.app.router, 'main')[:-4]}{pdf_file[pdf_file.index('outputs'):]}"
+        pdf_file=str(pdf_file).replace("\\","/")
+        if not "http" in lollmsElfServer.config.host:
+            host = "http://"+lollmsElfServer.config.host
+        else:
+            host = lollmsElfServer.config.host
+        url = f"{host}:{lollmsElfServer.config.port}/{pdf_file[pdf_file.index('outputs'):]}"
         output_json = {"output": f"Pdf file generated at: {pdf_file}\n<a href='{url}'>Click here to show</a>", "execution_time": execution_time}
-        return json.dumps(output_json)
+        return output_json
     return spawn_process(code)

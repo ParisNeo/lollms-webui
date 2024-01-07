@@ -282,7 +282,7 @@ try:
             self.add_endpoint("/get_active_model", "get_active_model", self.get_active_model, methods=["GET"])
             self.add_endpoint("/add_reference_to_local_model", "add_reference_to_local_model", self.add_reference_to_local_model, methods=["POST"])
             self.add_endpoint("/get_model_status", "get_model_status", self.get_model_status, methods=["GET"])
-
+            self.add_endpoint("/get_available_models", "get_available_models", self.get_available_models, methods=["GET"])
 
             self.add_endpoint("/post_to_personality", "post_to_personality", self.post_to_personality, methods=["POST"])
             self.add_endpoint("/reinstall_personality", "reinstall_personality", self.reinstall_personality, methods=["POST"])
@@ -304,8 +304,6 @@ try:
 
 
             self.add_endpoint("/uploads/<path:filename>", "serve_uploads", self.serve_uploads, methods=["GET"])
-            
-
             self.add_endpoint("/<path:filename>", "serve_static", self.serve_static, methods=["GET"])
             self.add_endpoint("/user_infos/<path:filename>", "serve_user_infos", self.serve_user_infos, methods=["GET"])
 
@@ -348,11 +346,14 @@ try:
             self.add_endpoint("/", "", self.index, methods=["GET"])
             self.add_endpoint("/settings/", "", self.index, methods=["GET"])
             self.add_endpoint("/playground/", "", self.index, methods=["GET"])
-
+            self.add_endpoint("/extensions", "extensions", self.extensions, methods=["GET"])
+            self.add_endpoint("/training", "training", self.training, methods=["GET"])
+            self.add_endpoint("/main", "main", self.main, methods=["GET"])
+            self.add_endpoint("/settings", "settings", self.settings, methods=["GET"])
+            self.add_endpoint("/help", "help", self.help, methods=["GET"])            
 
             self.add_endpoint("/switch_personal_path", "switch_personal_path", self.switch_personal_path, methods=["POST"])
             self.add_endpoint("/upload_avatar", "upload_avatar", self.upload_avatar, methods=["POST"])
-
 
 
             self.add_endpoint("/edit_message", "edit_message", self.edit_message, methods=["GET"])
@@ -361,7 +362,11 @@ try:
             self.add_endpoint("/delete_message", "delete_message", self.delete_message, methods=["GET"])
 
 
+            self.add_endpoint("/get_config", "get_config", self.get_config, methods=["GET"])
+            self.add_endpoint("/update_setting", "update_setting", self.update_setting, methods=["POST"])
+            self.add_endpoint("/apply_settings", "apply_settings", self.apply_settings, methods=["POST"])
 
+            self.add_endpoint("/save_settings", "save_settings", self.save_settings, methods=["POST"])            
             # ----
 
 
@@ -389,49 +394,18 @@ try:
 
             
 
-            self.add_endpoint("/get_config", "get_config", self.get_config, methods=["GET"])
 
 
-            self.add_endpoint(
-                "/get_available_models", "get_available_models", self.get_available_models, methods=["GET"]
-            )
 
 
-            self.add_endpoint(
-                "/extensions", "extensions", self.extensions, methods=["GET"]
-            )
 
-            self.add_endpoint(
-                "/upgrade_to_gpu", "upgrade_to_gpu", self.upgrade_to_gpu, methods=["GET"]
-            )
 
-            self.add_endpoint(
-                "/training", "training", self.training, methods=["GET"]
-            )
-            self.add_endpoint(
-                "/main", "main", self.main, methods=["GET"]
-            )
-            
-            self.add_endpoint(
-                "/settings", "settings", self.settings, methods=["GET"]
-            )
 
-            self.add_endpoint(
-                "/help", "help", self.help, methods=["GET"]
-            )
             
             
-            self.add_endpoint(
-                "/update_setting", "update_setting", self.update_setting, methods=["POST"]
-            )
-            self.add_endpoint(
-                "/apply_settings", "apply_settings", self.apply_settings, methods=["POST"]
-            )
-            
 
-            self.add_endpoint(
-                "/save_settings", "save_settings", self.save_settings, methods=["POST"]
-            )
+
+
 
             self.add_endpoint(
                 "/get_current_personality", "get_current_personality", self.get_current_personality, methods=["GET"]
@@ -493,22 +467,12 @@ try:
                 "/install_sd", "install_sd", self.install_sd, methods=["GET"]
             )
             
-            self.add_endpoint(
-                "/open_code_folder", "open_code_folder", self.open_code_folder, methods=["POST"]
-            )
-            self.add_endpoint(
-                "/open_code_folder_in_vs_code", "open_code_folder_in_vs_code", self.open_code_folder_in_vs_code, methods=["POST"]
-            )
-            self.add_endpoint(
-                "/open_code_in_vs_code", "open_code_in_vs_code", self.open_code_in_vs_code, methods=["POST"]
-            )
-            self.add_endpoint(
-                "/open_file", "open_file", self.open_file, methods=["GET"]
-            )
+            self.add_endpoint("/open_code_folder", "open_code_folder", self.open_code_folder, methods=["POST"])
+            self.add_endpoint("/open_code_folder_in_vs_code", "open_code_folder_in_vs_code", self.open_code_folder_in_vs_code, methods=["POST"])
+            self.add_endpoint("/open_code_in_vs_code", "open_code_in_vs_code", self.open_code_in_vs_code, methods=["POST"])
+            self.add_endpoint("/open_file", "open_file", self.open_file, methods=["GET"])
 
-            self.add_endpoint(
-                "/update_binding_settings", "update_binding_settings", self.update_binding_settings, methods=["GET"]
-            )
+            self.add_endpoint("/update_binding_settings", "update_binding_settings", self.update_binding_settings, methods=["GET"])
             
             
         def update_binding_settings(self):
@@ -1214,22 +1178,6 @@ try:
                 return jsonify({"status":False,"error":str(ex)})
 
         
-        def upgrade_to_gpu(self):
-            ASCIIColors.yellow("Received command to upgrade to GPU")
-            ASCIIColors.info("Installing cuda toolkit")
-            ASCIIColors.yellow("Removing pytorch")
-            try:
-                res = subprocess.check_call(["pip","uninstall","torch", "torchvision", "torchaudio", "-y"])
-            except :
-                pass
-            ASCIIColors.green("PyTorch uninstalled successfully")
-            reinstall_pytorch_with_cuda()
-            ASCIIColors.yellow("Installing pytorch with cuda support")
-            self.config.hardware_mode="nvidia-tensorcores"
-            return jsonify({'status':res==0})
-        
-
-
         def ram_usage(self):
             """
             Returns the RAM usage in bytes.

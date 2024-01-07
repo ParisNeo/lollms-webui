@@ -21,10 +21,13 @@ from safe_store.text_vectorizer import TextVectorizer, VectorizationMethod, Visu
 import tqdm
 from fastapi import FastAPI, UploadFile, File
 import shutil
+import os
+import platform
 
 from utilities.execution_engines.python_execution_engine import execute_python
 from utilities.execution_engines.latex_execution_engine import execute_latex
 from utilities.execution_engines.shell_execution_engine import execute_bash
+
 
 router = APIRouter()
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
@@ -56,6 +59,149 @@ async def execute_code(request: Request):
         elif language in ["bash","shell","cmd","powershell"]:
             return execute_bash(code, discussion_id, message_id)
         return {"output": "Unsupported language", "execution_time": 0}
+    except Exception as ex:
+        trace_exception(ex)
+        lollmsElfServer.error(ex)
+        return {"status":False,"error":str(ex)}
+    
+
+@router.post("/open_code_folder")
+async def open_code_folder(request: Request):
+    """
+    Opens code folder.
+
+    :param request: The HTTP request object.
+    :return: A JSON response with the status of the operation.
+    """
+
+    try:
+        data = (await request.json())
+        discussion_id = data.get("discussion_id","unknown_discussion")
+
+        ASCIIColors.info("Opening folder:")
+        # Create a temporary file.
+        root_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
+        root_folder.mkdir(parents=True,exist_ok=True)
+        if platform.system() == 'Windows':
+            os.startfile(str(root_folder))
+        elif platform.system() == 'Linux':
+            os.system('xdg-open ' + str(root_folder))
+        elif platform.system() == 'Darwin':
+            os.system('open ' + str(root_folder))
+        return {"output": "OK", "execution_time": 0}
+    except Exception as ex:
+        trace_exception(ex)
+        lollmsElfServer.error(ex)
+        return {"status":False,"error":str(ex)}
+
+
+
+@router.post("/open_code_folder_in_vs_code")
+async def open_code_folder_in_vs_code(request: Request):
+    """
+    Opens code folder.
+
+    :param request: The HTTP request object.
+    :return: A JSON response with the status of the operation.
+    """
+
+    try:
+        data = (await request.json())
+        code = data["code"]
+        discussion_id = data.get("discussion_id","unknown_discussion")
+        message_id = data.get("message_id","unknown_message")
+        language = data.get("language","python")
+
+        ASCIIColors.info("Opening folder:")
+        # Create a temporary file.
+        root_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
+        root_folder.mkdir(parents=True,exist_ok=True)
+        tmp_file = root_folder/f"ai_code_{message_id}.py"
+        with open(tmp_file,"w") as f:
+            f.write(code)
+        
+        os.system('code ' + str(root_folder))
+        return {"output": "OK", "execution_time": 0}
+    except Exception as ex:
+        trace_exception(ex)
+        lollmsElfServer.error(ex)
+        return {"status":False,"error":str(ex)}
+    
+
+async def open_file(request: Request):
+    """
+    Opens code in vs code.
+
+    :param request: The HTTP request object.
+    :return: A JSON response with the status of the operation.
+    """
+
+    try:
+        data = (await request.json())
+        path = data.get('path')
+        os.system("start "+path)
+        return {"output": "OK", "execution_time": 0}
+    except Exception as ex:
+        trace_exception(ex)
+        lollmsElfServer.error(ex)
+        return {"status":False,"error":str(ex)}
+
+
+async def open_code_in_vs_code(request: Request):
+    """
+    Opens code in vs code.
+
+    :param request: The HTTP request object.
+    :return: A JSON response with the status of the operation.
+    """
+
+    try:
+        data = (await request.json())
+        discussion_id = data.get("discussion_id","unknown_discussion")
+        message_id = data.get("message_id","")
+        code = data["code"]
+        discussion_id = data.get("discussion_id","unknown_discussion")
+        message_id = data.get("message_id","unknown_message")
+        language = data.get("language","python")
+
+        ASCIIColors.info("Opening folder:")
+        # Create a temporary file.
+        root_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"/f"{message_id}.py"
+        root_folder.mkdir(parents=True,exist_ok=True)
+        tmp_file = root_folder/f"ai_code_{message_id}.py"
+        with open(tmp_file,"w") as f:
+            f.write(code)
+        os.system('code ' + str(root_folder))
+        return {"output": "OK", "execution_time": 0}
+    except Exception as ex:
+        trace_exception(ex)
+        lollmsElfServer.error(ex)
+        return {"status":False,"error":str(ex)}
+    
+
+async def open_code_folder(request: Request):
+    """
+    Opens code folder.
+
+    :param request: The HTTP request object.
+    :return: A JSON response with the status of the operation.
+    """
+
+    try:
+        data = (await request.json())
+        discussion_id = data.get("discussion_id","unknown_discussion")
+
+        ASCIIColors.info("Opening folder:")
+        # Create a temporary file.
+        root_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
+        root_folder.mkdir(parents=True,exist_ok=True)
+        if platform.system() == 'Windows':
+            os.startfile(str(root_folder))
+        elif platform.system() == 'Linux':
+            os.system('xdg-open ' + str(root_folder))
+        elif platform.system() == 'Darwin':
+            os.system('open ' + str(root_folder))
+        return {"output": "OK", "execution_time": 0}
     except Exception as ex:
         trace_exception(ex)
         lollmsElfServer.error(ex)

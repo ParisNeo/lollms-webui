@@ -75,6 +75,7 @@ if __name__ == "__main__":
     from endpoints.lollms_message import router as lollms_message_router
     from endpoints.lollms_user import router as lollms_user_router
     from endpoints.lollms_advanced import router as lollms_advanced_router
+    from endpoints.chat_bar import router as chat_bar_router
     
 
 
@@ -98,6 +99,8 @@ if __name__ == "__main__":
     app.include_router(lollms_message_router)
     app.include_router(lollms_user_router)
     app.include_router(lollms_advanced_router)
+    app.include_router(chat_bar_router)
+    
     
     app.include_router(lollms_configuration_infos_router)
 
@@ -107,6 +110,7 @@ if __name__ == "__main__":
     lollms_webui_discussion_events_add(sio)
 
 
+    app.mount("/extensions", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="extensions")
     app.mount("/playground", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="playground")
     app.mount("/settings", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="settings")
     app.mount("/", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="static")
@@ -118,16 +122,17 @@ if __name__ == "__main__":
     # if autoshow
     if config.auto_show_browser:
         if config['host']=="0.0.0.0":
-            #webbrowser.open(f"http://localhost:{config['port']}")
-            webbrowser.open(f"http://localhost:{6523}") # needed for debug (to be removed in production)
+            webbrowser.open(f"http://localhost:{config['port']}")
+            #webbrowser.open(f"http://localhost:{6523}") # needed for debug (to be removed in production)
         else:
-            #webbrowser.open(f"http://{config['host']}:{config['port']}")
-            webbrowser.open(f"http://{config['host']}:{6523}") # needed for debug (to be removed in production)
+            webbrowser.open(f"http://{config['host']}:{config['port']}")
+            #webbrowser.open(f"http://{config['host']}:{6523}") # needed for debug (to be removed in production)
 
 
     try:
         sio.reboot = False
-        uvicorn.run(app, host=config.host, port=6523)#config.port)
+        #uvicorn.run(app, host=config.host, port=6523)
+        uvicorn.run(app, host=config.host, port=config.port)
         if sio.reboot:
             ASCIIColors.info("")
             ASCIIColors.info("")
