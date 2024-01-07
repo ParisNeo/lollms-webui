@@ -184,7 +184,7 @@
 
                         </div>
                     </div>
-                    <div class="mb-2" v-for="item in vramUsage.gpus">
+                    <div class="mb-2" v-for="item in vramUsage.gpus" :key="item">
                         <label class="flex items-center gap-1 ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             <!-- GPU IMAGE  -->
                             <img :src="SVGGPU"  width="25" height="25">
@@ -2438,8 +2438,6 @@ export default {
         },        
         async getVramUsage() {
             const resp = await this.api_get_req("vram_usage")
-
-
         },
         async progressListener(response) {
             // does not work Still freezes UI
@@ -2642,7 +2640,7 @@ export default {
                                     this.is_loading_zoo = false
                                 })
                                 self.updateModelsZoo()
-                                api_get_req("get_model_status").then((res)=>{
+                                this.api_get_req("get_model_status").then((res)=>{
                                     this.$store.commit('setIsModelOk', res);
                                 })
                             }else{
@@ -2892,7 +2890,7 @@ export default {
                 this.update_binding(binding_object.binding.folder)
                 this.binding_changed = true;
             }
-            api_get_req("get_model_status").then((res)=>{
+            this.api_get_req("get_model_status").then((res)=>{
                 this.$store.commit('setIsModelOk', res);
             })
         },
@@ -3223,13 +3221,13 @@ export default {
             this.showAccordion = !this.showAccordion;
         },
         async update_setting(setting_name_val, setting_value_val, next) {
-            console.log("Updating setting", setting_name_val, ":", setting_value_val)
             this.isLoading = true
             const obj = {
                 setting_name: setting_name_val,
                 setting_value: setting_value_val
             }
 
+            console.log("Updating setting", setting_name_val, ":", setting_value_val)
             let res = await axios.post('/update_setting', obj)
 
             if (res) {

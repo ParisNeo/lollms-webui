@@ -12,6 +12,7 @@ from fastapi.responses import HTMLResponse
 from lollms.app import LollmsApplication
 from lollms.paths import LollmsPaths
 from lollms.main_config import LOLLMSConfig
+from lollms.utilities import trace_exception
 from lollms_webui import LOLLMSWebUI
 from pathlib import Path
 from ascii_colors import ASCIIColors
@@ -19,6 +20,7 @@ import socketio
 import uvicorn
 import argparse
 from socketio import ASGIApp
+import webbrowser
 
 app = FastAPI()
 
@@ -57,7 +59,7 @@ if __name__ == "__main__":
         config.port=args.port
 
     LOLLMSWebUI.build_instance(config=config, lollms_paths=lollms_paths, socketio=sio)
-    lollmsElfServer = LOLLMSWebUI.get_instance()
+    lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
     # Import all endpoints
     from lollms.server.endpoints.lollms_binding_files_server import router as lollms_binding_files_server_router
     from lollms.server.endpoints.lollms_infos import router as lollms_infos_router
@@ -108,4 +110,33 @@ if __name__ == "__main__":
     app = ASGIApp(socketio_server=sio, other_asgi_app=app)
 
 
-    uvicorn.run(app, host=config.host, port=6523)#config.port)
+    # if autoshow
+    if config.auto_show_browser:
+        if config['host']=="0.0.0.0":
+            #webbrowser.open(f"http://localhost:{config['port']}")
+            webbrowser.open(f"http://localhost:{6523}") # needed for debug (to be removed in production)
+        else:
+            #webbrowser.open(f"http://{config['host']}:{config['port']}")
+            webbrowser.open(f"http://{config['host']}:{6523}") # needed for debug (to be removed in production)
+
+
+    try:
+        sio.reboot = False
+        uvicorn.run(app, host=config.host, port=6523)#config.port)
+        if sio.reboot:
+            ASCIIColors.info("")
+            ASCIIColors.info("")
+            ASCIIColors.info("")
+            ASCIIColors.info(" ╔══════════════════════════════════════════════════╗")
+            ASCIIColors.info(" ║              Restarting backend                  ║")
+            ASCIIColors.info(" ╚══════════════════════════════════════════════════╝")
+            ASCIIColors.info("")
+            ASCIIColors.info("")
+            ASCIIColors.info("")
+            lollmsElfServer.run_restart_script(args)
+            
+    except Exception as ex:
+        trace_exception(ex)
+
+
+    

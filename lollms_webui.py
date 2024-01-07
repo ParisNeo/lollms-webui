@@ -20,10 +20,10 @@ from lollms.paths import LollmsPaths
 from lollms.helpers import ASCIIColors, trace_exception
 from lollms.com import NotificationType, NotificationDisplayType, LoLLMsCom
 from lollms.app import LollmsApplication
-from lollms.utilities import File64BitsManager, PromptReshaper, PackageManager, find_first_available_file_index
+from lollms.utilities import File64BitsManager, PromptReshaper, PackageManager, find_first_available_file_index, run_async
 import git
 import asyncio
-
+import os
 try:
     from lollms.media import WebcamImageSender, AudioRecorder
     Media_on=True
@@ -316,7 +316,24 @@ class LOLLMSWebUI(LOLLMSElfServer):
         sys.exit(0)
 
 
+    def run_restart_script(self, args):
+        restart_script = Path(__file__).parent/"restart_script.py"
 
+        # Convert Namespace object to a dictionary
+        args_dict = vars(args)
+
+        # Filter out any key-value pairs where the value is None
+        valid_args = {key: value for key, value in args_dict.items() if value is not None}
+
+        # Save the arguments to a temporary file
+        temp_file = Path(__file__).parent/"temp_args.txt"
+        with open(temp_file, "w") as file:
+            # Convert the valid_args dictionary to a string in the format "key1 value1 key2 value2 ..."
+            arg_string = " ".join([f"--{key} {value}" for key, value in valid_args.items()])
+            file.write(arg_string)
+
+        os.system(f"python {restart_script}")
+        sys.exit(0)
 
     def audio_callback(self, output):
         if self.summoned:
@@ -942,9 +959,10 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 duration:int=4, 
                 client_id=None, 
                 display_type:NotificationDisplayType=NotificationDisplayType.TOAST,
-                verbose=True
+                verbose=True,
             ):
-        asyncio.run(
+        
+        run_async(
             self.socketio.emit('notification', {
                                 'content': content,# self.connections[client_id]["generated_text"], 
                                 'notification_type': notification_type.value,
@@ -992,7 +1010,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             model               = self.config["model_name"], 
             personality         = self.config["personalities"][self.config["active_personality_id"]],
         )  # first the content is empty, but we'll fill it at the end  
-        asyncio.run(
+        run_async(
             self.socketio.emit('new_message',
                     {
                         "sender":                   sender,
@@ -1026,7 +1044,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         self.connections[client_id]["current_discussion"].current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         mtdt = json.dumps(metadata, indent=4) if metadata is not None and type(metadata)== list else metadata
         if self.nb_received_tokens==1:
-            asyncio.run(
+            run_async(
                 self.socketio.emit('update_message', {
                                                 "sender": self.personality.name,
                                                 'id':self.connections[client_id]["current_discussion"].current_message.id, 
@@ -1041,7 +1059,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                     )
             )
 
-        asyncio.run(
+        run_async(
             self.socketio.emit('update_message', {
                                             "sender": self.personality.name,
                                             'id':self.connections[client_id]["current_discussion"].current_message.id, 
@@ -1067,7 +1085,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         self.connections[client_id]["generated_text"]=self.connections[client_id]["generated_text"].split("!@>")[0]
         # Send final message
         self.connections[client_id]["current_discussion"].current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        asyncio.run(
+        run_async(
             self.socketio.emit('close_message', {
                                             "sender": self.personality.name,
                                             "id": self.connections[client_id]["current_discussion"].current_message.id,
@@ -1125,7 +1143,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         if message_type == MSG_TYPE.MSG_TYPE_NEW_MESSAGE:
             self.nb_received_tokens = 0
             self.start_time = datetime.now()
-            asyncio.run(
+            run_async(
                 self.new_message(
                                     client_id, 
                                     self.personality.name if personality is None else personality.name, 
@@ -1404,7 +1422,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 if ttl is None or ttl=="" or ttl=="untitled":
                     title = self.make_discussion_title(d, client_id=client_id)
                     d.rename(title)
-                    asyncio.run(
+                    run_async(
                         self.socketio.emit('disucssion_renamed',{
                                                     'status': True,
                                                     'discussion_id':d.discussion_id,
