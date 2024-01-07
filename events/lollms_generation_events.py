@@ -33,7 +33,7 @@ lollmsElfServer = LOLLMSWebUI.get_instance()
 # ----------------------------------- events -----------------------------------------
 def add_events(sio:socketio):
     @sio.on('generate_msg')
-    def handle_generate_msg(sid, environ, data):        
+    def handle_generate_msg(sid, data):        
         client_id = sid
         lollmsElfServer.cancel_gen = False
         lollmsElfServer.connections[client_id]["generated_text"]=""
@@ -79,7 +79,7 @@ def add_events(sio:socketio):
             lollmsElfServer.error("I am busy. Come back later.", client_id=client_id)
 
     @sio.on('generate_msg_from')
-    def handle_generate_msg_from(sid, environ, data):
+    def handle_generate_msg_from(sid, data):
         client_id = sid
         lollmsElfServer.cancel_gen = False
         lollmsElfServer.connections[client_id]["continuing"]=False
@@ -101,7 +101,7 @@ def add_events(sio:socketio):
         lollmsElfServer.connections[client_id]['generation_thread'].start()
 
     @sio.on('continue_generate_msg_from')
-    def handle_continue_generate_msg_from(sid, environ, data):
+    def handle_continue_generate_msg_from(sid, data):
         client_id = sid
         lollmsElfServer.cancel_gen = False
         lollmsElfServer.connections[client_id]["continuing"]=True

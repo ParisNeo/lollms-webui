@@ -68,8 +68,10 @@ if __name__ == "__main__":
     from lollms.server.endpoints.lollms_extensions_infos import router as lollms_extensions_infos_router
     from lollms.server.endpoints.lollms_generator import router as lollms_generator_router
     from lollms.server.endpoints.lollms_configuration_infos import router as lollms_configuration_infos_router
-    from endpoints.lollms_discussion import router as lollms_discussion_router
     from endpoints.lollms_webui_infos import router as lollms_webui_infos_router
+    from endpoints.lollms_discussion import router as lollms_discussion_router
+    from endpoints.lollms_message import router as lollms_message_router
+    from endpoints.lollms_user import router as lollms_user_router
     
 
 
@@ -89,6 +91,9 @@ if __name__ == "__main__":
     app.include_router(lollms_webui_infos_router)
     app.include_router(lollms_generator_router)
     app.include_router(lollms_discussion_router)
+    app.include_router(lollms_message_router)
+    app.include_router(lollms_user_router)
+    
     app.include_router(lollms_configuration_infos_router)
 
 

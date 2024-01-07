@@ -281,6 +281,7 @@ try:
             self.add_endpoint("/list_models", "list_models", self.list_models, methods=["GET"])
             self.add_endpoint("/get_active_model", "get_active_model", self.get_active_model, methods=["GET"])
             self.add_endpoint("/add_reference_to_local_model", "add_reference_to_local_model", self.add_reference_to_local_model, methods=["POST"])
+            self.add_endpoint("/get_model_status", "get_model_status", self.get_model_status, methods=["GET"])
 
 
             self.add_endpoint("/post_to_personality", "post_to_personality", self.post_to_personality, methods=["POST"])
@@ -299,6 +300,7 @@ try:
             self.add_endpoint("/get_personality_settings", "get_personality_settings", self.get_personality_settings, methods=["POST"])
             self.add_endpoint("/get_active_personality_settings", "get_active_personality_settings", self.get_active_personality_settings, methods=["GET"])
             self.add_endpoint("/set_active_personality_settings", "set_active_personality_settings", self.set_active_personality_settings, methods=["POST"])
+            self.add_endpoint("/get_current_personality_path_infos", "get_current_personality_path_infos", self.get_current_personality_path_infos, methods=["GET"])
 
 
             self.add_endpoint("/list_databases", "list_databases", self.list_databases, methods=["GET"])
@@ -334,6 +336,13 @@ try:
             self.add_endpoint("/list_discussions", "list_discussions", self.list_discussions, methods=["GET"])
             
 
+            self.add_endpoint("/get_generation_status", "get_generation_status", self.get_generation_status, methods=["GET"])
+
+
+            self.add_endpoint("/", "", self.index, methods=["GET"])
+            self.add_endpoint("/settings/", "", self.index, methods=["GET"])
+            self.add_endpoint("/playground/", "", self.index, methods=["GET"])
+
 
             # ----
 
@@ -351,9 +360,6 @@ try:
 
             
                     
-            self.add_endpoint("/", "", self.index, methods=["GET"])
-            self.add_endpoint("/settings/", "", self.index, methods=["GET"])
-            self.add_endpoint("/playground/", "", self.index, methods=["GET"])
             
             
 
@@ -369,7 +375,6 @@ try:
             
             self.add_endpoint("/get_server_address", "get_server_address", self.get_server_address, methods=["GET"])
             
-            self.add_endpoint("/get_model_status", "get_model_status", self.get_model_status, methods=["GET"])
 
             self.add_endpoint(
                 "/delete_discussion",
@@ -378,27 +383,14 @@ try:
                 methods=["POST"],
             )
 
-            self.add_endpoint(
-                "/edit_message", "edit_message", self.edit_message, methods=["GET"]
-            )
-            self.add_endpoint(
-                "/message_rank_up", "message_rank_up", self.message_rank_up, methods=["GET"]
-            )
-            self.add_endpoint(
-                "/message_rank_down", "message_rank_down", self.message_rank_down, methods=["GET"]
-            )
-            self.add_endpoint(
-                "/delete_message", "delete_message", self.delete_message, methods=["GET"]
-            )
+            self.add_endpoint("/edit_message", "edit_message", self.edit_message, methods=["GET"])
+            self.add_endpoint("/message_rank_up", "message_rank_up", self.message_rank_up, methods=["GET"])
+            self.add_endpoint("/message_rank_down", "message_rank_down", self.message_rank_down, methods=["GET"])
+            self.add_endpoint("/delete_message", "delete_message", self.delete_message, methods=["GET"])
             
 
-            self.add_endpoint(
-                "/get_config", "get_config", self.get_config, methods=["GET"]
-            )
+            self.add_endpoint("/get_config", "get_config", self.get_config, methods=["GET"])
 
-            self.add_endpoint(
-                "/get_current_personality_path_infos", "get_current_personality_path_infos", self.get_current_personality_path_infos, methods=["GET"]
-            )
 
             self.add_endpoint(
                 "/get_available_models", "get_available_models", self.get_available_models, methods=["GET"]
@@ -428,9 +420,6 @@ try:
                 "/help", "help", self.help, methods=["GET"]
             )
             
-            self.add_endpoint(
-                "/get_generation_status", "get_generation_status", self.get_generation_status, methods=["GET"]
-            )
             
             self.add_endpoint(
                 "/update_setting", "update_setting", self.update_setting, methods=["POST"]
@@ -539,7 +528,8 @@ try:
                 self.binding = None
                 self.model = None
                 for per in self.mounted_personalities:
-                    per.model = None
+                    if per is not None:
+                        per.model = None
                 gc.collect()
                 self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.INSTALL_IF_NECESSARY, lollmsCom=self)
                 self.model = None
@@ -1153,7 +1143,8 @@ try:
                         self.binding = None
                         self.model = None
                         for per in self.mounted_personalities:
-                            per.model = None
+                            if per is not None:
+                                per.model = None
                         gc.collect()
                         self.binding = BindingBuilder().build_binding(self.config, self.lollms_paths, InstallOption.INSTALL_IF_NECESSARY, lollmsCom=self)
                         self.model = None
@@ -1182,7 +1173,8 @@ try:
                     if self.model is not None:
                         ASCIIColors.yellow("New model OK")
                     for per in self.mounted_personalities:
-                        per.model = self.model
+                        if per is not None:
+                            per.model = self.model
                 except Exception as ex:
                     trace_exception(ex)
                     self.InfoMessage(f"It looks like you we couldn't load the model.\nHere is the error message:\n{ex}")
@@ -1748,7 +1740,8 @@ try:
                     self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, lollmsCom=self)
                     self.model = self.binding.build_model()
                     for per in self.mounted_personalities:
-                        per.model = self.model
+                        if per is not None:
+                            per.model = self.model
                 return jsonify({"status": True}) 
             except Exception as ex:
                 self.error(f"Couldn't build binding: [{ex}]")
@@ -1777,7 +1770,8 @@ try:
                 self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, lollmsCom=self)
                 self.model = self.binding.build_model()
                 for per in self.mounted_personalities:
-                    per.model = self.model
+                    if per is not None:
+                        per.model = self.model
                 
                 return jsonify({"status": True}) 
             except Exception as ex:
@@ -1810,7 +1804,8 @@ try:
                     self.binding =  BindingBuilder().build_binding(self.config, self.lollms_paths, lollmsCom=self)
                     self.model = self.binding.build_model()
                     for per in self.mounted_personalities:
-                        per.model = self.model
+                        if per is not None:
+                            per.model = self.model
                 else:
                     self.config.binding_name = None
                 if self.config.auto_save:
@@ -1903,7 +1898,8 @@ try:
                 self.binding = None
                 self.model = None
                 for per in self.mounted_personalities:
-                    per.model = None
+                    if per is not None:
+                        per.model = None
                 gc.collect()
                 ASCIIColors.info(f"issuing command : python gptqlora.py --model_path {self.lollms_paths.personal_models_path/fn/data['model_name']}")
                 subprocess.run(["python", "gptqlora.py", "--model_path", self.lollms_paths.personal_models_path/fn/data["model_name"]],cwd=self.lollms_paths.gptqlora_path)    

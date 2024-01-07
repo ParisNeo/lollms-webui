@@ -1,3 +1,12 @@
+"""
+project: lollms_webui
+file: lollms_discussion.py 
+author: ParisNeo
+description: 
+    This module contains a set of FastAPI routes that provide information about the Lord of Large Language and Multimodal Systems (LoLLMs) Web UI
+    application. These routes allow users to manipulate the discussion elements.
+
+"""
 from fastapi import APIRouter
 from lollms_webui import LOLLMSWebUI
 from pydantic import BaseModel

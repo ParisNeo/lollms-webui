@@ -3681,9 +3681,9 @@ export default {
 
             try {
                 const obj = {
-                    language: pers.language,
-                    category: pers.category,
-                    folder: pers.folder,
+                    language: pers.language?pers.language:"",
+                    category: pers.category?pers.category:"",
+                    folder: pers.folder?pers.folder:"",
                 }
                 const res = await axios.post('/mount_personality', obj);
 
