@@ -3835,6 +3835,7 @@ export default {
         async unmountAll(){
             await axios.get('/unmount_all_personalities');
             this.$store.dispatch('refreshMountedPersonalities');
+            this.$store.dispatch('refreshConfig');
             this.$store.state.toast.showToast("All personas unmounted", 4, true)
         },
         async unmountPersonality(pers) {

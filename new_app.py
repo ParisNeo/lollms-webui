@@ -74,6 +74,7 @@ if __name__ == "__main__":
     from endpoints.lollms_discussion import router as lollms_discussion_router
     from endpoints.lollms_message import router as lollms_message_router
     from endpoints.lollms_user import router as lollms_user_router
+    from endpoints.lollms_advanced import router as lollms_advanced_router
     
 
 
@@ -89,12 +90,14 @@ if __name__ == "__main__":
     app.include_router(lollms_personalities_infos_router)   
     app.include_router(lollms_extensions_infos_router)   
     
+    
 
     app.include_router(lollms_webui_infos_router)
     app.include_router(lollms_generator_router)
     app.include_router(lollms_discussion_router)
     app.include_router(lollms_message_router)
     app.include_router(lollms_user_router)
+    app.include_router(lollms_advanced_router)
     
     app.include_router(lollms_configuration_infos_router)
 
@@ -108,6 +111,8 @@ if __name__ == "__main__":
     app.mount("/settings", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="settings")
     app.mount("/", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="static")
     app = ASGIApp(socketio_server=sio, other_asgi_app=app)
+
+    lollmsElfServer.app = app
 
 
     # if autoshow

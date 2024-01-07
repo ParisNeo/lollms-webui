@@ -649,8 +649,8 @@ try:
                     pdf_file = tmp_file.with_suffix('.pdf')
                     print(f"PDF file generated: {pdf_file}")
 
-                except subprocess.CalledProcessError as e:
-                    self.error(f"Error occurred while compiling LaTeX: {e}") 
+                except subprocess.CalledProcessError as ex:
+                    self.error(f"Error occurred while compiling LaTeX: {ex}") 
                     error_json = {"output": "<div class='text-red-500'>"+str(ex)+"\n"+get_trace_exception(ex)+"</div>", "execution_time": execution_time}
                     return json.dumps(error_json)
 

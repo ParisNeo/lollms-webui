@@ -513,16 +513,16 @@ app.mixin({
         await this.$store.dispatch('refreshConfig');
         console.log("Config ready")
       }
-      catch{
-
+      catch (ex){
+        console.log("Error cought:", ex)
       }
       try{
         this.$store.state.loading_infos = "Loading Database"
         this.$store.state.loading_progress = 20
         await this.$store.dispatch('refreshDatabase');
       }
-      catch{
-
+      catch (ex){
+        console.log("Error cought:", ex)
       }
       
       try{
@@ -530,8 +530,8 @@ app.mixin({
         this.$store.state.loading_progress = 30
         await this.$store.dispatch('getVersion');
       }
-      catch{
-
+      catch (ex){
+        console.log("Error cought:", ex)
       }
 
       try{
@@ -539,31 +539,31 @@ app.mixin({
         this.$store.state.loading_progress = 40
         await this.$store.dispatch('refreshBindings');
       }
-      catch{
-
+      catch (ex){
+        console.log("Error cought:", ex)
       }
       try{
         this.$store.state.loading_infos = "Getting Hardware usage"
         await refreshHardwareUsage(this.$store);
       }
-      catch{
-
+      catch (ex){
+        console.log("Error cought:", ex)
       }
       try{
         this.$store.state.loading_infos = "Getting extensions zoo"
         this.$store.state.loading_progress = 50
         await this.$store.dispatch('refreshExtensionsZoo');
       }
-      catch{
-
+      catch (ex){
+        console.log("Error cought:", ex)
       }
       try{
         this.$store.state.loading_infos = "Getting mounted extensions"
         this.$store.state.loading_progress = 60
         await this.$store.dispatch('refreshmountedExtensions');
       }
-      catch{
-
+      catch (ex){
+        console.log("Error cought:", ex)
       }
     
       try{
@@ -571,16 +571,16 @@ app.mixin({
         this.$store.state.loading_progress = 70
         await this.$store.dispatch('refreshPersonalitiesZoo')
       }
-      catch{
-
+      catch (ex){
+        console.log("Error cought:", ex)
       }
       try{
         this.$store.state.loading_infos = "Getting mounted personalities"
         this.$store.state.loading_progress = 80
         await this.$store.dispatch('refreshMountedPersonalities');
       }
-      catch{
-
+      catch (ex){
+        console.log("Error cought:", ex)
       }
 
       try{
@@ -588,8 +588,8 @@ app.mixin({
         this.$store.state.loading_progress = 90
         await this.$store.dispatch('refreshModelsZoo');
       }
-      catch{
-
+      catch (ex){
+        console.log("Error cought:", ex)
       }
       try{
         this.$store.state.loading_infos = "Getting active models"
@@ -597,8 +597,8 @@ app.mixin({
         await this.$store.dispatch('refreshModels');
         await this.$store.dispatch('refreshModelStatus');
       }
-      catch{
-
+      catch (ex){
+        console.log("Error cought:", ex)
       }
     
 
