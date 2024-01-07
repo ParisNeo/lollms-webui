@@ -101,8 +101,10 @@ if __name__ == "__main__":
     lollms_webui_generation_events_add(sio)
     lollms_webui_discussion_events_add(sio)
 
-    app.mount("/", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="static")
 
+    app.mount("/playground", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="playground")
+    app.mount("/settings", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="settings")
+    app.mount("/", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="static")
     app = ASGIApp(socketio_server=sio, other_asgi_app=app)
 
 

@@ -19,7 +19,8 @@ from api.db import DiscussionsDB
 from pathlib import Path
 from safe_store.text_vectorizer import TextVectorizer, VectorizationMethod, VisualizationMethod
 import tqdm
-
+from fastapi import FastAPI, UploadFile, File
+import shutil
 class PersonalPathParameters(BaseModel):
     path:str
 
@@ -42,7 +43,7 @@ def switch_personal_path(data:PersonalPathParameters):
             return {"status": False, 'error':f"Couldn't switch path: {ex}"}    
         
 @router.post("/upload_avatar")
-def upload_avatar(data):
-    file = data.files['avatar']
-    file.save(lollmsElfServer.lollms_paths.personal_user_infos_path/file.filename)
-    return {"status": True,"fileName":file.filename}
+def upload_avatar(avatar: UploadFile = File(...)):
+    with open(lollmsElfServer.lollms_paths.personal_user_infos_path/avatar.filename, "wb") as buffer:
+        shutil.copyfileobj(avatar.file, buffer)    
+    return {"status": True,"fileName":avatar.filename}

@@ -14,7 +14,7 @@ from starlette.responses import StreamingResponse
 from lollms.types import MSG_TYPE
 from lollms.utilities import detect_antiprompt, remove_text_from_string
 from ascii_colors import ASCIIColors
-from api.db import DiscussionsDB
+from api.db import DiscussionsDB, Discussion
 
 from safe_store.text_vectorizer import TextVectorizer, VectorizationMethod, VisualizationMethod
 import tqdm
@@ -25,8 +25,21 @@ class GenerateRequest(BaseModel):
 class DatabaseSelectionParameters(BaseModel):
     name: str
 
+class EditTitleParameters(BaseModel):
+    client_id: str
+    title: str
+    id: int
+
+class MakeTitleParameters(BaseModel):
+    id: int
+
+class DeleteDiscussionParameters(BaseModel):
+    client_id: str
+    id: int
+
+
 router = APIRouter()
-lollmsElfServer = LOLLMSWebUI.get_instance()
+lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
 
 @router.get("/list_discussions")
@@ -93,3 +106,41 @@ def select_database(data:DatabaseSelectionParameters):
             return {"status":False}
 
     return {"status":True}
+
+
+@router.post("/export_discussion")
+def export_discussion():
+    return {"discussion_text":lollmsElfServer.get_discussion_to()}
+
+
+@router.post("/edit_title")
+def edit_title(data:EditTitleParameters):
+    client_id           = data.client_id
+    title               = data.title
+    discussion_id       = data.id
+    lollmsElfServer.connections[client_id]["current_discussion"] = Discussion(discussion_id, lollmsElfServer.db)
+    lollmsElfServer.connections[client_id]["current_discussion"].rename(title)
+    return {'status':True}
+
+@router.post("/make_title")
+def make_title(data:MakeTitleParameters):
+    ASCIIColors.info("Making title")
+    discussion_id       = data.id
+    discussion = Discussion(discussion_id, lollmsElfServer.db)
+    title = lollmsElfServer.make_discussion_title(discussion)
+    discussion.rename(title)
+    return {'status':True, 'title':title}
+
+@router.get("/export")
+def export():
+    return lollmsElfServer.db.export_to_json()
+
+
+@router.post("/make_title")
+def delete_discussion(data: DeleteDiscussionParameters):
+    client_id       = data.client_id
+    discussion_id   = data.id
+    lollmsElfServer.connections[client_id]["current_discussion"] = Discussion(discussion_id, lollmsElfServer.db)
+    lollmsElfServer.connections[client_id]["current_discussion"].delete_discussion()
+    lollmsElfServer.connections[client_id]["current_discussion"] = None
+    return {'status':True}

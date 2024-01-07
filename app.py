@@ -303,8 +303,6 @@ try:
             self.add_endpoint("/get_current_personality_path_infos", "get_current_personality_path_infos", self.get_current_personality_path_infos, methods=["GET"])
 
 
-            self.add_endpoint("/list_databases", "list_databases", self.list_databases, methods=["GET"])
-            self.add_endpoint("/select_database", "select_database", self.select_database, methods=["POST"])
             self.add_endpoint("/uploads/<path:filename>", "serve_uploads", self.serve_uploads, methods=["GET"])
             
 
@@ -334,9 +332,17 @@ try:
 
 
             self.add_endpoint("/list_discussions", "list_discussions", self.list_discussions, methods=["GET"])
-            
+            self.add_endpoint("/export_discussion", "export_discussion", self.export_discussion, methods=["GET"])
+            self.add_endpoint("/list_databases", "list_databases", self.list_databases, methods=["GET"])
+            self.add_endpoint("/select_database", "select_database", self.select_database, methods=["POST"])
+            self.add_endpoint("/rename_discussion", "rename_discussion", self.rename_discussion, methods=["POST"])
+            self.add_endpoint("/delete_discussion","delete_discussion",self.delete_discussion,methods=["POST"])
+            self.add_endpoint("/edit_title", "edit_title", self.edit_title, methods=["POST"])
+            self.add_endpoint("/make_title", "make_title", self.make_title, methods=["POST"])
+            self.add_endpoint("/export", "export", self.export, methods=["GET"])
 
             self.add_endpoint("/get_generation_status", "get_generation_status", self.get_generation_status, methods=["GET"])
+            self.add_endpoint("/stop_gen", "stop_gen", self.stop_gen, methods=["GET"])
 
 
             self.add_endpoint("/", "", self.index, methods=["GET"])
@@ -344,12 +350,22 @@ try:
             self.add_endpoint("/playground/", "", self.index, methods=["GET"])
 
 
+            self.add_endpoint("/switch_personal_path", "switch_personal_path", self.switch_personal_path, methods=["POST"])
+            self.add_endpoint("/upload_avatar", "upload_avatar", self.upload_avatar, methods=["POST"])
+
+
+
+            self.add_endpoint("/edit_message", "edit_message", self.edit_message, methods=["GET"])
+            self.add_endpoint("/message_rank_up", "message_rank_up", self.message_rank_up, methods=["GET"])
+            self.add_endpoint("/message_rank_down", "message_rank_down", self.message_rank_down, methods=["GET"])
+            self.add_endpoint("/delete_message", "delete_message", self.delete_message, methods=["GET"])
+
+
+
             # ----
 
 
 
-            self.add_endpoint("/switch_personal_path", "switch_personal_path", self.switch_personal_path, methods=["POST"])
-            self.add_endpoint("/upload_avatar", "upload_avatar", self.upload_avatar, methods=["POST"])
             
             
 
@@ -364,29 +380,13 @@ try:
             
 
             
-            self.add_endpoint("/export_discussion", "export_discussion", self.export_discussion, methods=["GET"])
-            self.add_endpoint("/export", "export", self.export, methods=["GET"])
 
-            self.add_endpoint("/stop_gen", "stop_gen", self.stop_gen, methods=["GET"])
 
-            self.add_endpoint("/rename", "rename", self.rename, methods=["POST"])
-            self.add_endpoint("/edit_title", "edit_title", self.edit_title, methods=["POST"])
-            self.add_endpoint("/make_title", "make_title", self.make_title, methods=["POST"])
             
             self.add_endpoint("/get_server_address", "get_server_address", self.get_server_address, methods=["GET"])
             
 
-            self.add_endpoint(
-                "/delete_discussion",
-                "delete_discussion",
-                self.delete_discussion,
-                methods=["POST"],
-            )
 
-            self.add_endpoint("/edit_message", "edit_message", self.edit_message, methods=["GET"])
-            self.add_endpoint("/message_rank_up", "message_rank_up", self.message_rank_up, methods=["GET"])
-            self.add_endpoint("/message_rank_down", "message_rank_down", self.message_rank_down, methods=["GET"])
-            self.add_endpoint("/delete_message", "delete_message", self.delete_message, methods=["GET"])
             
 
             self.add_endpoint("/get_config", "get_config", self.get_config, methods=["GET"])
@@ -2431,12 +2431,12 @@ try:
             
             
             
-        def rename(self):
+        def rename_discussion(self):
             data = request.get_json()
             client_id = data["client_id"]
             title = data["title"]
             self.connections[client_id]["current_discussion"].rename(title)
-            return "renamed successfully"
+            return {"status":True}
         
         def edit_title(self):
             data                = request.get_json()
