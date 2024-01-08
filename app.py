@@ -301,6 +301,9 @@ try:
             self.add_endpoint("/get_active_personality_settings", "get_active_personality_settings", self.get_active_personality_settings, methods=["GET"])
             self.add_endpoint("/set_active_personality_settings", "set_active_personality_settings", self.set_active_personality_settings, methods=["POST"])
             self.add_endpoint("/get_current_personality_path_infos", "get_current_personality_path_infos", self.get_current_personality_path_infos, methods=["GET"])
+            self.add_endpoint("/get_personality", "get_personality", self.get_personality, methods=["GET"])
+            self.add_endpoint("/get_current_personality", "get_current_personality", self.get_current_personality, methods=["GET"])
+            self.add_endpoint("/get_all_personalities", "get_all_personalities", self.get_all_personalities, methods=["GET"])
 
 
             self.add_endpoint("/uploads/<path:filename>", "serve_uploads", self.serve_uploads, methods=["GET"])
@@ -339,6 +342,10 @@ try:
             self.add_endpoint("/make_title", "make_title", self.make_title, methods=["POST"])
             self.add_endpoint("/export", "export", self.export, methods=["GET"])
 
+            self.add_endpoint("/export_multiple_discussions", "export_multiple_discussions", self.export_multiple_discussions, methods=["POST"])      
+            self.add_endpoint("/import_multiple_discussions", "import_multiple_discussions", self.import_multiple_discussions, methods=["POST"])      
+
+
             self.add_endpoint("/get_generation_status", "get_generation_status", self.get_generation_status, methods=["GET"])
             self.add_endpoint("/stop_gen", "stop_gen", self.stop_gen, methods=["GET"])
 
@@ -366,25 +373,18 @@ try:
             self.add_endpoint("/update_setting", "update_setting", self.update_setting, methods=["POST"])
             self.add_endpoint("/apply_settings", "apply_settings", self.apply_settings, methods=["POST"])
 
-            self.add_endpoint("/save_settings", "save_settings", self.save_settings, methods=["POST"])            
+            self.add_endpoint("/save_settings", "save_settings", self.save_settings, methods=["POST"])        
+
+
+
+            self.add_endpoint("/open_code_folder", "open_code_folder", self.open_code_folder, methods=["POST"])
+            self.add_endpoint("/open_code_folder_in_vs_code", "open_code_folder_in_vs_code", self.open_code_folder_in_vs_code, methods=["POST"])
+            self.add_endpoint("/open_code_in_vs_code", "open_code_in_vs_code", self.open_code_in_vs_code, methods=["POST"])
+            self.add_endpoint("/open_file", "open_file", self.open_file, methods=["GET"])
+
+
             # ----
 
-
-
-            
-            
-
-
-
-
-            
-
-            
-                    
-            
-            
-
-            
 
 
             
@@ -392,46 +392,12 @@ try:
             
 
 
-            
 
 
-
-
-
-
-
-
-            
-            
-
-
-
-
-            self.add_endpoint(
-                "/get_current_personality", "get_current_personality", self.get_current_personality, methods=["GET"]
-            )
-            
-
-            self.add_endpoint(
-                "/get_all_personalities", "get_all_personalities", self.get_all_personalities, methods=["GET"]
-            )
-
-            self.add_endpoint(
-                "/get_personality", "get_personality", self.get_personality, methods=["GET"]
-            )
-            
             
             self.add_endpoint(
                 "/reset", "reset", self.reset, methods=["GET"]
             )
-            
-            self.add_endpoint(
-                "/export_multiple_discussions", "export_multiple_discussions", self.export_multiple_discussions, methods=["POST"]
-            )      
-            self.add_endpoint(
-                "/import_multiple_discussions", "import_multiple_discussions", self.import_multiple_discussions, methods=["POST"]
-            )      
-
 
             self.add_endpoint(
                 "/list_voices", "list_voices", self.list_voices, methods=["GET"]
@@ -467,10 +433,6 @@ try:
                 "/install_sd", "install_sd", self.install_sd, methods=["GET"]
             )
             
-            self.add_endpoint("/open_code_folder", "open_code_folder", self.open_code_folder, methods=["POST"])
-            self.add_endpoint("/open_code_folder_in_vs_code", "open_code_folder_in_vs_code", self.open_code_folder_in_vs_code, methods=["POST"])
-            self.add_endpoint("/open_code_in_vs_code", "open_code_in_vs_code", self.open_code_in_vs_code, methods=["POST"])
-            self.add_endpoint("/open_file", "open_file", self.open_file, methods=["GET"])
 
             self.add_endpoint("/update_binding_settings", "update_binding_settings", self.update_binding_settings, methods=["GET"])
             

@@ -152,9 +152,9 @@ echo Install failed
 goto endend
 :end
 
-cd scripts\python\lollms_installer
-call python main.py
-cd ..
+@rem cd scripts\python\lollms_installer
+@rem call python main.py
+@rem cd ..
 echo Installation complete.
 :endend
 pause

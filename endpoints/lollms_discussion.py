@@ -7,12 +7,12 @@ description:
     application. These routes allow users to manipulate the discussion elements.
 
 """
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from lollms_webui import LOLLMSWebUI
 from pydantic import BaseModel
 from starlette.responses import StreamingResponse
 from lollms.types import MSG_TYPE
-from lollms.utilities import detect_antiprompt, remove_text_from_string
+from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception
 from ascii_colors import ASCIIColors
 from api.db import DiscussionsDB, Discussion
 
@@ -144,3 +144,49 @@ def delete_discussion(data: DeleteDiscussionParameters):
     lollmsElfServer.connections[client_id]["current_discussion"].delete_discussion()
     lollmsElfServer.connections[client_id]["current_discussion"] = None
     return {'status':True}
+
+# ----------------------------- import/export --------------------
+
+@router.post("/export_multiple_discussions")
+async def export_multiple_discussions(request: Request):
+    """
+    Opens code in vs code.
+
+    :param request: The HTTP request object.
+    :return: A JSON response with the status of the operation.
+    """
+
+    try:
+        data = (await request.json())
+        discussion_ids = data["discussion_ids"]
+        export_format = data["export_format"]
+
+        if export_format=="json":
+            discussions = lollmsElfServer.db.export_discussions_to_json(discussion_ids)
+        elif export_format=="markdown":
+            discussions = lollmsElfServer.db.export_discussions_to_markdown(discussion_ids)
+        else:
+            discussions = lollmsElfServer.db.export_discussions_to_markdown(discussion_ids)
+        return discussions
+    except Exception as ex:
+        trace_exception(ex)
+        lollmsElfServer.error(ex)
+        return {"status":False,"error":str(ex)}
+    
+@router.post("/import_multiple_discussions")
+async def import_multiple_discussions(request: Request):
+    """
+    Opens code in vs code.
+
+    :param request: The HTTP request object.
+    :return: A JSON response with the status of the operation.
+    """
+
+    try:
+        discussions = (await request.json())["jArray"]
+        lollmsElfServer.db.import_from_json(discussions)
+        return discussions
+    except Exception as ex:
+        trace_exception(ex)
+        lollmsElfServer.error(ex)
+        return {"status":False,"error":str(ex)}

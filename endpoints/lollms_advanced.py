@@ -127,7 +127,7 @@ async def open_code_folder_in_vs_code(request: Request):
         lollmsElfServer.error(ex)
         return {"status":False,"error":str(ex)}
     
-
+@router.post("/open_file")
 async def open_file(request: Request):
     """
     Opens code in vs code.
@@ -147,6 +147,7 @@ async def open_file(request: Request):
         return {"status":False,"error":str(ex)}
 
 
+@router.post("/open_code_in_vs_code")
 async def open_code_in_vs_code(request: Request):
     """
     Opens code in vs code.
@@ -179,6 +180,7 @@ async def open_code_in_vs_code(request: Request):
         return {"status":False,"error":str(ex)}
     
 
+@router.post("/open_code_folder")
 async def open_code_folder(request: Request):
     """
     Opens code folder.

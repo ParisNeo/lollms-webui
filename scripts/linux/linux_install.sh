@@ -153,9 +153,9 @@ else
 fi
 
 
-cd scripts/python/lollms_installer
-python main.py
-cd ..
+# cd scripts/python/lollms_installer
+# python main.py
+# cd ..
 
 PrintBigMessage() {
   echo

@@ -80,8 +80,12 @@ if __name__ == "__main__":
 
 
     from lollms.server.events.lollms_generation_events import add_events as lollms_generation_events_add
+    from lollms.server.events.lollms_personality_events import add_events as lollms_personality_events_add
     from events.lollms_generation_events import add_events as lollms_webui_generation_events_add
     from events.lollms_discussion_events import add_events as lollms_webui_discussion_events_add
+    from events.lollms_chatbox_events import add_events as lollms_chatbox_events_add
+
+    
 
     app.include_router(lollms_infos_router)
     app.include_router(lollms_binding_files_server_router)
@@ -106,8 +110,10 @@ if __name__ == "__main__":
 
 
     lollms_generation_events_add(sio)
+    lollms_personality_events_add(sio)
     lollms_webui_generation_events_add(sio)
     lollms_webui_discussion_events_add(sio)
+    lollms_chatbox_events_add(sio)
 
 
     app.mount("/extensions", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="extensions")

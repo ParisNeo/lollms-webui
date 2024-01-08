@@ -1010,7 +1010,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             model               = self.config["model_name"], 
             personality         = self.config["personalities"][self.config["active_personality_id"]],
         )  # first the content is empty, but we'll fill it at the end  
-        run_async(
+        try:
             self.socketio.emit('new_message',
                     {
                         "sender":                   sender,
@@ -1033,8 +1033,29 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         'open':                     open
                     }, to=client_id
             )
-        )
+        except:
+            asyncio.run(self.socketio.emit('new_message',
+                    {
+                        "sender":                   sender,
+                        "message_type":             message_type.value,
+                        "sender_type":              SENDER_TYPES.SENDER_TYPES_AI.value,
+                        "content":                  content,
+                        "parameters":               parameters,
+                        "metadata":                 metadata,
+                        "ui":                       ui,
+                        "id":                       msg.id,
+                        "parent_message_id":        msg.parent_message_id,
 
+                        'binding':                  self.config["binding_name"],
+                        'model' :                   self.config["model_name"], 
+                        'personality':              self.config["personalities"][self.config["active_personality_id"]],
+
+                        'created_at':               self.connections[client_id]["current_discussion"].current_message.created_at,
+                        'finished_generating_at':   self.connections[client_id]["current_discussion"].current_message.finished_generating_at,
+
+                        'open':                     open
+                    }, to=client_id
+            ))
     def update_message(self, client_id, chunk,                             
                             parameters=None,
                             metadata=[], 
