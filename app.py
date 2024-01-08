@@ -614,7 +614,7 @@ try:
                 except Exception as ex:
                     # Stop the timer.
                     execution_time = time.time() - start_time
-                    error_message = f"Error executing Python code: {ex}"
+                    error_message = f"Error executing shell cmmands: {ex}"
                     error_json = {"output": "<div class='text-red-500'>"+str(ex)+"\n"+get_trace_exception(ex)+"</div>", "execution_time": execution_time}
                     return json.dumps(error_json)
 
@@ -643,14 +643,14 @@ try:
             language = data.get("language","python")
             
 
-            ASCIIColors.info("Executing python code:")
+            ASCIIColors.info("Executing code:")
             ASCIIColors.yellow(code)
 
             if language=="python":
                 return self.execute_python(code, discussion_id, message_id)
             elif language=="latex":
                 return self.execute_latex(code, discussion_id, message_id)
-            elif language in ["bash","shell","cmd","powershell"]:
+            elif language in ["bash","shell","cmd","powershell","sh"]:
                 return self.execute_bash(code, discussion_id, message_id)
             return {"output": "Unsupported language", "execution_time": 0}
         
