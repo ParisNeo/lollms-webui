@@ -98,7 +98,7 @@ handleClickOutside(event) {
       console.log(command.value)
       
       if (typeof command.value === 'function') {
-        console.log("Command detected")
+        console.log("Command detected",command)
         command.value();
       }
       if (this.execute_cmd) {

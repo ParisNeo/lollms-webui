@@ -3072,6 +3072,7 @@ export default {
                                                 this.$store.state.toast.showToast("Binding settings updated successfully!", 4, true)
                                                 axios.get('/update_binding_settings').then((res) => {
                                                     this.$store.state.toast.showToast("Binding settings committed successfully!", 4, true)
+                                                    window.location.reload();
                                                 })
                                             } else {
                                                 this.$store.state.toast.showToast("Did not get binding settings responses.\n" + response, 4, false)

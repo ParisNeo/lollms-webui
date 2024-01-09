@@ -383,21 +383,15 @@ try:
             self.add_endpoint("/open_file", "open_file", self.open_file, methods=["GET"])
 
 
+            self.add_endpoint("/reset", "reset", self.reset, methods=["GET"])
+            self.add_endpoint("/get_server_address", "get_server_address", self.get_server_address, methods=["GET"])
+
             # ----
 
 
 
             
-            self.add_endpoint("/get_server_address", "get_server_address", self.get_server_address, methods=["GET"])
             
-
-
-
-
-            
-            self.add_endpoint(
-                "/reset", "reset", self.reset, methods=["GET"]
-            )
 
             self.add_endpoint(
                 "/list_voices", "list_voices", self.list_voices, methods=["GET"]

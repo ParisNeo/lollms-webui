@@ -169,6 +169,10 @@ fi
 # python main.py
 # cd ..
 
+echo "Creating a bin dir (required for llamacpp binding)"
+mkdir ../installer_files/lollms_env/bin
+
+
 PrintBigMessage() {
   echo
   echo "*******************************************************************"

@@ -83,9 +83,12 @@ done < requirements.txt
 python -m pip install -r requirements.txt --upgrade
 
 
-cd scripts/python/lollms_installer
-python main.py
-cd ..
+# cd scripts/python/lollms_installer
+# python main.py
+# cd ..
+echo "Creating a bin dir (required for llamacpp binding)"
+mkdir ../installer_files/lollms_env/bin
+
 
 PrintBigMessage() {
   echo

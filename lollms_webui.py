@@ -962,8 +962,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 verbose=True,
             ):
         
-        asyncio.run(
-            self.socketio.emit('notification', {
+        run_async(partial(self.socketio.emit,'notification', {
                                 'content': content,# self.connections[client_id]["generated_text"], 
                                 'notification_type': notification_type.value,
                                 "duration": duration,
@@ -1044,8 +1043,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
         self.connections[client_id]["current_discussion"].current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         mtdt = json.dumps(metadata, indent=4) if metadata is not None and type(metadata)== list else metadata
         if self.nb_received_tokens==1:
-            asyncio.run(
-                self.socketio.emit('update_message', {
+            run_async(
+                partial(self.socketio.emit,'update_message', {
                                                 "sender": self.personality.name,
                                                 'id':self.connections[client_id]["current_discussion"].current_message.id, 
                                                 'content': "✍ warming up ...",# self.connections[client_id]["generated_text"],
@@ -1059,8 +1058,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                     )
             )
 
-        asyncio.run(
-            self.socketio.emit('update_message', {
+        run_async(
+            partial(self.socketio.emit,'update_message', {
                                             "sender": self.personality.name,
                                             'id':self.connections[client_id]["current_discussion"].current_message.id, 
                                             'content': chunk,# self.connections[client_id]["generated_text"],
@@ -1085,8 +1084,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
         self.connections[client_id]["generated_text"]=self.connections[client_id]["generated_text"].split("!@>")[0]
         # Send final message
         self.connections[client_id]["current_discussion"].current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        asyncio.run(
-            self.socketio.emit('close_message', {
+        run_async(
+            partial(self.socketio.emit,'close_message', {
                                             "sender": self.personality.name,
                                             "id": self.connections[client_id]["current_discussion"].current_message.id,
                                             "content":self.connections[client_id]["generated_text"],
@@ -1143,8 +1142,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
         if message_type == MSG_TYPE.MSG_TYPE_NEW_MESSAGE:
             self.nb_received_tokens = 0
             self.start_time = datetime.now()
-            asyncio.run(
-                self.new_message(
+            run_async(
+                partial(self.new_message,
                                     client_id, 
                                     self.personality.name if personality is None else personality.name, 
                                     chunk if parameters["type"]!=MSG_TYPE.MSG_TYPE_UI.value else '', 
