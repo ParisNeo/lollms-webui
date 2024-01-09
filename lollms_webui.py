@@ -1142,8 +1142,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         if message_type == MSG_TYPE.MSG_TYPE_NEW_MESSAGE:
             self.nb_received_tokens = 0
             self.start_time = datetime.now()
-            run_async(
-                partial(self.new_message,
+            self.new_message(
                                     client_id, 
                                     self.personality.name if personality is None else personality.name, 
                                     chunk if parameters["type"]!=MSG_TYPE.MSG_TYPE_UI.value else '', 
@@ -1153,7 +1152,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                         }
                                     ] if parameters["type"]==MSG_TYPE.MSG_TYPE_JSON_INFOS.value else None, 
                                     ui= chunk if parameters["type"]==MSG_TYPE.MSG_TYPE_UI.value else None, 
-                                    message_type= MSG_TYPE(parameters["type"]))
+                                    message_type= MSG_TYPE(parameters["type"])
             )
 
         elif message_type == MSG_TYPE.MSG_TYPE_FINISHED_MESSAGE:
@@ -1407,7 +1406,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
             # Send final message
             self.close_message(client_id)
-            self.socketio.sleep(0.01)
             self.connections[client_id]["processing"]=False
             if self.connections[client_id]["schedule_for_deletion"]:
                 del self.connections[client_id]
