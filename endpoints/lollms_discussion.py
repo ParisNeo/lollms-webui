@@ -37,6 +37,7 @@ class DeleteDiscussionParameters(BaseModel):
     client_id: str
     id: int
 
+# ----------------------- Defining router and main class ------------------------------
 
 router = APIRouter()
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()

@@ -28,6 +28,7 @@ from utilities.execution_engines.python_execution_engine import execute_python
 from utilities.execution_engines.latex_execution_engine import execute_latex
 from utilities.execution_engines.shell_execution_engine import execute_bash
 
+# ----------------------- Defining router and main class ------------------------------
 
 router = APIRouter()
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()

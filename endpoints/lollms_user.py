@@ -23,6 +23,8 @@ from fastapi import FastAPI, UploadFile, File
 import shutil
 class PersonalPathParameters(BaseModel):
     path:str
+    
+# ----------------------- Defining router and main class ------------------------------
 
 router = APIRouter()
 lollmsElfServer = LOLLMSWebUI.get_instance()

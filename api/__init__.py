@@ -232,6 +232,9 @@ class LoLLMsAPI(LollmsApplication):
             
             ASCIIColors.error(f'Client {request.sid} disconnected')
 
+
+        # ---- chatbox -----
+
         @socketio.on('add_webpage')
         def add_webpage(data):
             ASCIIColors.yellow("Scaping web page")
@@ -295,8 +298,38 @@ class LoLLMsAPI(LollmsApplication):
             except Exception as ex:
                 trace_exception(ex)
                 self.error("Couldn't use the webcam")
+
+        @self.socketio.on('create_empty_message')
+        def create_empty_message(data):
+            client_id = request.sid
+            type = data.get("type",0)
+            message = data.get("message","")
+            if type==0:
+                ASCIIColors.info(f"Building empty User message requested by : {client_id}")
+                # send the message to the bot
+                print(f"Creating an empty message for AI answer orientation")
+                if self.connections[client_id]["current_discussion"]:
+                    if not self.model:
+                        self.error("No model selected. Please make sure you select a model before starting generation", client_id = client_id)
+                        return          
+                    self.new_message(client_id, self.config.user_name, message, sender_type=SENDER_TYPES.SENDER_TYPES_USER, open=True)
+                    self.socketio.sleep(0.01)            
+            else:
+                if self.personality is None:
+                    self.warning("Select a personality")
+                    return
+                ASCIIColors.info(f"Building empty AI message requested by : {client_id}")
+                # send the message to the bot
+                print(f"Creating an empty message for AI answer orientation")
+                if self.connections[client_id]["current_discussion"]:
+                    if not self.model:
+                        self.error("No model selected. Please make sure you select a model before starting generation", client_id=client_id)
+                        return          
+                    self.new_message(client_id, self.personality.name, "[edit this to put your ai answer start]", open=True)
+                    self.socketio.sleep(0.01)                    
         
-        
+        # -- interactive view --
+
         @socketio.on('start_webcam_video_stream')
         def start_webcam_video_stream():
             self.info("Starting video capture")
@@ -316,6 +349,9 @@ class LoLLMsAPI(LollmsApplication):
         def stop_audio_stream():
             self.info("Stopping audio capture")
             self.audio_cap.stop_recording()
+
+
+        # -- vectorization --
 
 
         @socketio.on('upgrade_vectorization')
@@ -353,6 +389,10 @@ class LoLLMsAPI(LollmsApplication):
                     ASCIIColors.error(f"Couldn't vectorize database:{ex}")
             self.socketio.emit('hide_progress')
             self.socketio.sleep(0)
+
+
+
+        # -- model --
 
         @socketio.on('cancel_install')
         def cancel_install(data):
@@ -621,6 +661,9 @@ class LoLLMsAPI(LollmsApplication):
                                                     'binding_folder' : binding_folder
                                                 }, room=request.sid)
 
+
+        # -- discussion --
+
         @socketio.on('new_discussion')
         def new_discussion(data):
             ASCIIColors.yellow("New descussion requested")
@@ -692,7 +735,9 @@ class LoLLMsAPI(LollmsApplication):
                         room=client_id
             )
             ASCIIColors.green(f"ok")
-                
+
+        # -- upload file --
+
         @socketio.on('upload_file')
         def upload_file(data):
             ASCIIColors.yellow("Uploading file")
@@ -715,16 +760,8 @@ class LoLLMsAPI(LollmsApplication):
             except Exception as e:
                 # Error occurred while saving the file
                 socketio.emit('progress', {'status':False, 'error': str(e)})
-            
-        @socketio.on('cancel_generation')
-        def cancel_generation():
-            client_id = request.sid
-            self.cancel_gen = True
-            #kill thread
-            ASCIIColors.error(f'Client {request.sid} requested cancelling generation')
-            terminate_thread(self.connections[client_id]['generation_thread'])
-            ASCIIColors.error(f'Client {request.sid} canceled generation')
-            self.busy=False
+
+        # -- personality --
             
         @socketio.on('get_personality_files')
         def get_personality_files(data):
@@ -769,16 +806,20 @@ class LoLLMsAPI(LollmsApplication):
                 # Request the next chunk from the client
                 self.socketio.emit('request_next_chunk', {'offset': offset + len(chunk)})
 
-
-        @self.socketio.on('cancel_text_generation')
-        def cancel_text_generation(data):
+        @socketio.on('execute_command')
+        def execute_command(data):
             client_id = request.sid
-            self.connections[client_id]["requested_stop"]=True
-            print(f"Client {client_id} requested canceling generation")
-            self.socketio.emit("generation_canceled", {"message":"Generation is canceled."}, room=client_id)
-            self.socketio.sleep(0)
-            self.busy = False
-
+            command = data["command"]
+            parameters = data["parameters"]
+            if self.personality.processor is not None:
+                self.start_time = datetime.now()
+                self.personality.processor.callback = partial(self.process_chunk, client_id=client_id)
+                self.personality.processor.execute_command(command, parameters)
+            else:
+                self.warning("Non scripted personalities do not support commands",client_id=client_id)
+            self.close_message(client_id)
+        
+        # -- misc --
         @self.socketio.on('execute_python_code')
         def execute_python_code(data):
             """Executes Python code and returns the output."""
@@ -802,34 +843,27 @@ class LoLLMsAPI(LollmsApplication):
             output = interpreter.getvalue()
             self.socketio.emit("execution_output", {"output":output,"execution_time":end_time - start_time}, room=client_id)
 
-        @self.socketio.on('create_empty_message')
-        def create_empty_message(data):
+
+        # -- generation --
+
+        @socketio.on('cancel_generation')
+        def cancel_generation():
             client_id = request.sid
-            type = data.get("type",0)
-            message = data.get("message","")
-            if type==0:
-                ASCIIColors.info(f"Building empty User message requested by : {client_id}")
-                # send the message to the bot
-                print(f"Creating an empty message for AI answer orientation")
-                if self.connections[client_id]["current_discussion"]:
-                    if not self.model:
-                        self.error("No model selected. Please make sure you select a model before starting generation", client_id = client_id)
-                        return          
-                    self.new_message(client_id, self.config.user_name, message, sender_type=SENDER_TYPES.SENDER_TYPES_USER, open=True)
-                    self.socketio.sleep(0.01)            
-            else:
-                if self.personality is None:
-                    self.warning("Select a personality")
-                    return
-                ASCIIColors.info(f"Building empty AI message requested by : {client_id}")
-                # send the message to the bot
-                print(f"Creating an empty message for AI answer orientation")
-                if self.connections[client_id]["current_discussion"]:
-                    if not self.model:
-                        self.error("No model selected. Please make sure you select a model before starting generation", client_id=client_id)
-                        return          
-                    self.new_message(client_id, self.personality.name, "[edit this to put your ai answer start]", open=True)
-                    self.socketio.sleep(0.01)            
+            self.cancel_gen = True
+            #kill thread
+            ASCIIColors.error(f'Client {request.sid} requested cancelling generation')
+            terminate_thread(self.connections[client_id]['generation_thread'])
+            ASCIIColors.error(f'Client {request.sid} canceled generation')
+            self.busy=False
+
+        @self.socketio.on('cancel_text_generation')
+        def cancel_text_generation(data):
+            client_id = request.sid
+            self.connections[client_id]["requested_stop"]=True
+            print(f"Client {client_id} requested canceling generation")
+            self.socketio.emit("generation_canceled", {"message":"Generation is canceled."}, room=client_id)
+            self.socketio.sleep(0)
+            self.busy = False
 
         # A copy of the original lollms-server generation code needed for playground
         @self.socketio.on('generate_text')
@@ -993,18 +1027,6 @@ class LoLLMsAPI(LollmsApplication):
             # Start the text generation task in a separate thread
             task = self.socketio.start_background_task(target=generate_text)
 
-        @socketio.on('execute_command')
-        def execute_command(data):
-            client_id = request.sid
-            command = data["command"]
-            parameters = data["parameters"]
-            if self.personality.processor is not None:
-                self.start_time = datetime.now()
-                self.personality.processor.callback = partial(self.process_chunk, client_id=client_id)
-                self.personality.processor.execute_command(command, parameters)
-            else:
-                self.warning("Non scripted personalities do not support commands",client_id=client_id)
-            self.close_message(client_id)
         @socketio.on('generate_msg')
         def generate_msg(data):
             client_id = request.sid

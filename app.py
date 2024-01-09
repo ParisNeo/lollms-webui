@@ -386,6 +386,13 @@ try:
             self.add_endpoint("/reset", "reset", self.reset, methods=["GET"])
             self.add_endpoint("/get_server_address", "get_server_address", self.get_server_address, methods=["GET"])
 
+
+
+            self.add_endpoint("/list_voices", "list_voices", self.list_voices, methods=["GET"])
+            self.add_endpoint("/set_voice", "set_voice", self.set_voice, methods=["POST"])
+            self.add_endpoint("/text2Audio", "text2Audio", self.text2Audio, methods=["POST"])
+            self.add_endpoint("/install_xtts", "install_xtts", self.install_xtts, methods=["GET"])
+
             # ----
 
 
@@ -393,16 +400,6 @@ try:
             
             
 
-            self.add_endpoint(
-                "/list_voices", "list_voices", self.list_voices, methods=["GET"]
-            )
-            self.add_endpoint(
-                "/set_voice", "set_voice", self.set_voice, methods=["POST"]
-            )
-            
-            self.add_endpoint(
-                "/text2Audio", "text2Audio", self.text2Audio, methods=["POST"]
-            )
 
             self.add_endpoint(
                 "/get_presets", "get_presets", self.get_presets, methods=["GET"]
@@ -420,9 +417,6 @@ try:
                 "/execute_code", "execute_code", self.execute_code, methods=["POST"]
             )
 
-            self.add_endpoint(
-                "/install_xtts", "install_xtts", self.install_xtts, methods=["GET"]
-            )
             self.add_endpoint(
                 "/install_sd", "install_sd", self.install_sd, methods=["GET"]
             )
@@ -753,8 +747,6 @@ try:
             if self.config.auto_save:
                 self.config.save_config()
             return jsonify({"status":True})
-
-
 
 
         def text2Audio(self):

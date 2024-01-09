@@ -19,6 +19,7 @@ from api.db import DiscussionsDB
 from safe_store.text_vectorizer import TextVectorizer, VectorizationMethod, VisualizationMethod
 import tqdm
 
+# ----------------------- Defining router and main class ------------------------------
 
 router = APIRouter()
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()

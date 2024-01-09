@@ -13,21 +13,30 @@ from pydantic import BaseModel
 from starlette.responses import StreamingResponse
 from lollms.types import MSG_TYPE
 from lollms.main_config import BaseConfig
-from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception
+from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception, find_first_available_file_index, add_period
+from pathlib import Path
 from ascii_colors import ASCIIColors
 import os
 import platform
 
-from utilities.execution_engines.python_execution_engine import execute_python
-from utilities.execution_engines.latex_execution_engine import execute_latex
-from utilities.execution_engines.shell_execution_engine import execute_bash
-
+# ----------------------- Defining router and main class ------------------------------
 
 router = APIRouter()
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
-@router.post("/execute_code")
-async def execute_code(request: Request):
+
+# ----------------------- voice ------------------------------
+
+@router.get("/set_voice")
+def list_voices():
+    ASCIIColors.yellow("Listing voices")
+    voices=["main_voice"]
+    voices_dir:Path=lollmsElfServer.lollms_paths.custom_voices_path
+    voices += [v.stem for v in voices_dir.iterdir() if v.suffix==".wav"]
+    return {"voices":voices}
+
+@router.post("/set_voice")
+async def set_voice(request: Request):
     """
     Executes Python code and returns the output.
 
@@ -37,32 +46,19 @@ async def execute_code(request: Request):
 
     try:
         data = (await request.json())
-        code = data["code"]
-        discussion_id = data.get("discussion_id","unknown_discussion")
-        message_id = data.get("message_id","unknown_message")
-        language = data.get("language","python")
-        
-
-        ASCIIColors.info("Executing python code:")
-        ASCIIColors.yellow(code)
-
-        if language=="python":
-            return execute_python(code, discussion_id, message_id)
-        elif language=="latex":
-            return execute_latex(code, discussion_id, message_id)
-        elif language in ["bash","shell","cmd","powershell"]:
-            return execute_bash(code, discussion_id, message_id)
-        return {"output": "Unsupported language", "execution_time": 0}
+        lollmsElfServer.config.current_voice=data["voice"]
+        if lollmsElfServer.config.auto_save:
+            lollmsElfServer.config.save_config()
+        return {"status":True}
     except Exception as ex:
         trace_exception(ex)
         lollmsElfServer.error(ex)
         return {"status":False,"error":str(ex)}
-    
 
-@router.post("/open_code_folder")
-async def open_code_folder(request: Request):
+@router.post("/text2Audio")
+async def text2Audio(request: Request):
     """
-    Opens code folder.
+    Executes Python code and returns the output.
 
     :param request: The HTTP request object.
     :return: A JSON response with the status of the operation.
@@ -70,134 +66,39 @@ async def open_code_folder(request: Request):
 
     try:
         data = (await request.json())
-        discussion_id = data.get("discussion_id","unknown_discussion")
+        # Get the JSON data from the POST request.
+        try:
+            from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
+            if lollmsElfServer.tts is None:
+                lollmsElfServer.tts = LollmsXTTS(lollmsElfServer, voice_samples_path=Path(__file__).parent/"voices")
+        except:
+            return {"url": None}
+            
+        data = request.get_json()
+        voice=data.get("voice",lollmsElfServer.config.current_voice)
+        index = find_first_available_file_index(lollmsElfServer.tts.output_folder, "voice_sample_",".wav")
+        output_fn=data.get("fn",f"voice_sample_{index}.wav")
+        if voice is None:
+            voice = "main_voice"
+        lollmsElfServer.info("Starting to build voice")
+        try:
+            from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
+            if lollmsElfServer.tts is None:
+                lollmsElfServer.tts = LollmsXTTS(lollmsElfServer, voice_samples_path=Path(__file__).parent/"voices")
+            language = lollmsElfServer.config.current_language# convert_language_name()
+            if voice!="main_voice":
+                voices_folder = lollmsElfServer.lollms_paths.custom_voices_path
+            else:
+                voices_folder = Path(__file__).parent/"voices"
+            lollmsElfServer.tts.set_speaker_folder(voices_folder)
+            url = f"audio/{output_fn}"
+            preprocessed_text= add_period(data['text'])
 
-        ASCIIColors.info("Opening folder:")
-        # Create a temporary file.
-        root_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
-        root_folder.mkdir(parents=True,exist_ok=True)
-        if platform.system() == 'Windows':
-            os.startfile(str(root_folder))
-        elif platform.system() == 'Linux':
-            os.system('xdg-open ' + str(root_folder))
-        elif platform.system() == 'Darwin':
-            os.system('open ' + str(root_folder))
-        return {"output": "OK", "execution_time": 0}
-    except Exception as ex:
-        trace_exception(ex)
-        lollmsElfServer.error(ex)
-        return {"status":False,"error":str(ex)}
-
-
-
-@router.post("/open_code_folder_in_vs_code")
-async def open_code_folder_in_vs_code(request: Request):
-    """
-    Opens code folder.
-
-    :param request: The HTTP request object.
-    :return: A JSON response with the status of the operation.
-    """
-
-    try:
-        data = (await request.json())
-        code = data["code"]
-        discussion_id = data.get("discussion_id","unknown_discussion")
-        message_id = data.get("message_id","unknown_message")
-        language = data.get("language","python")
-
-        ASCIIColors.info("Opening folder:")
-        # Create a temporary file.
-        root_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
-        root_folder.mkdir(parents=True,exist_ok=True)
-        tmp_file = root_folder/f"ai_code_{message_id}.py"
-        with open(tmp_file,"w") as f:
-            f.write(code)
-        
-        os.system('code ' + str(root_folder))
-        return {"output": "OK", "execution_time": 0}
-    except Exception as ex:
-        trace_exception(ex)
-        lollmsElfServer.error(ex)
-        return {"status":False,"error":str(ex)}
-    
-@router.post("/open_file")
-async def open_file(request: Request):
-    """
-    Opens code in vs code.
-
-    :param request: The HTTP request object.
-    :return: A JSON response with the status of the operation.
-    """
-
-    try:
-        data = (await request.json())
-        path = data.get('path')
-        os.system("start "+path)
-        return {"output": "OK", "execution_time": 0}
-    except Exception as ex:
-        trace_exception(ex)
-        lollmsElfServer.error(ex)
-        return {"status":False,"error":str(ex)}
-
-
-@router.post("/open_code_in_vs_code")
-async def open_code_in_vs_code(request: Request):
-    """
-    Opens code in vs code.
-
-    :param request: The HTTP request object.
-    :return: A JSON response with the status of the operation.
-    """
-
-    try:
-        data = (await request.json())
-        discussion_id = data.get("discussion_id","unknown_discussion")
-        message_id = data.get("message_id","")
-        code = data["code"]
-        discussion_id = data.get("discussion_id","unknown_discussion")
-        message_id = data.get("message_id","unknown_message")
-        language = data.get("language","python")
-
-        ASCIIColors.info("Opening folder:")
-        # Create a temporary file.
-        root_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"/f"{message_id}.py"
-        root_folder.mkdir(parents=True,exist_ok=True)
-        tmp_file = root_folder/f"ai_code_{message_id}.py"
-        with open(tmp_file,"w") as f:
-            f.write(code)
-        os.system('code ' + str(root_folder))
-        return {"output": "OK", "execution_time": 0}
-    except Exception as ex:
-        trace_exception(ex)
-        lollmsElfServer.error(ex)
-        return {"status":False,"error":str(ex)}
-    
-
-@router.post("/open_code_folder")
-async def open_code_folder(request: Request):
-    """
-    Opens code folder.
-
-    :param request: The HTTP request object.
-    :return: A JSON response with the status of the operation.
-    """
-
-    try:
-        data = (await request.json())
-        discussion_id = data.get("discussion_id","unknown_discussion")
-
-        ASCIIColors.info("Opening folder:")
-        # Create a temporary file.
-        root_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
-        root_folder.mkdir(parents=True,exist_ok=True)
-        if platform.system() == 'Windows':
-            os.startfile(str(root_folder))
-        elif platform.system() == 'Linux':
-            os.system('xdg-open ' + str(root_folder))
-        elif platform.system() == 'Darwin':
-            os.system('open ' + str(root_folder))
-        return {"output": "OK", "execution_time": 0}
+            lollmsElfServer.tts.tts_to_file(preprocessed_text, f"{voice}.wav", f"{output_fn}", language=language)
+            lollmsElfServer.info("Voice file ready")
+            return {"url": url}
+        except:
+            return {"url": None}
     except Exception as ex:
         trace_exception(ex)
         lollmsElfServer.error(ex)
