@@ -475,7 +475,7 @@ try:
         def install_sd(self):
             try:
                 self.ShowBlockingMessage("Installing SD api server\nPlease stand by")
-                from lollms.image_gen_modules.lollms_sd import install_sd
+                from lollms.services.sd.lollms_sd import install_sd
                 install_sd()
                 self.HideBlockingMessage()
                 return jsonify({"status":True})
@@ -752,7 +752,7 @@ try:
         def text2Audio(self):
             # Get the JSON data from the POST request.
             try:
-                from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
+                from lollms.services.xtts.lollms_xtts import LollmsXTTS
                 if self.tts is None:
                     self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent/"voices")
             except:
@@ -766,7 +766,7 @@ try:
                 voice = "main_voice"
             self.info("Starting to build voice")
             try:
-                from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
+                from lollms.services.xtts.lollms_xtts import LollmsXTTS
                 if self.tts is None:
                     self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent/"voices")
                 language = self.config.current_language# convert_language_name()
@@ -1882,9 +1882,6 @@ try:
                 return
             category = data['category']
             name = data['folder']
-
-
-
 
             package_path = f"{category}/{name}"
             if category=="custom_personalities":

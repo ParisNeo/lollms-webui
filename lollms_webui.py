@@ -135,8 +135,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
             callback=callback,
             socketio=socketio
         )
-        self.app_name = "LOLLMSWebUI"
-        self.version= lollms_webui_version
+        self.app_name:str = "LOLLMSWebUI"
+        self.version:str = lollms_webui_version
 
 
         self.busy = False
@@ -335,7 +335,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         os.system(f"python {restart_script}")
         sys.exit(0)
 
-    def audio_callback(self, output):
+    def audio_callback(self, text):
         if self.summoned:
             client_id = 0
             self.cancel_gen = False
@@ -433,7 +433,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     mounted_personalities.append(personality)
                     if self.config.enable_voice_service and self.config.auto_read and len(personality.audio_samples)>0:
                         try:
-                            from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
+                            from lollms.services.xtts.lollms_xtts import LollmsXTTS
                             if self.tts is None:
                                 self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent.parent/"voices")
                         except:
@@ -721,7 +721,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
         # Check if there are document files to add to the prompt
         documentation = ""
-        history = ""
+        knowledge = ""
 
 
         # boosting information
@@ -782,15 +782,15 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     documentation += "\n!@>important information: Use the documentation data to answer the user questions. If the data is not present in the documentation, please tell the user that the information he is asking for does not exist in the documentation section. It is strictly forbidden to give the user an answer without having actual proof from the documentation."
                 except:
                     self.warning("Couldn't add documentation to the context. Please verify the vector database")
-            # Check if there is discussion history to add to the prompt
+            # Check if there is discussion knowledge to add to the prompt
             if self.config.use_discussions_history and self.long_term_memory is not None:
-                if history=="":
-                    history="!@>previous discussions:\n"
+                if knowledge=="":
+                    knowledge="!@>knowledge:\n"
 
                 try:
                     docs, sorted_similarities = self.long_term_memory.recover_text(current_message.content, top_k=self.config.data_vectorization_nb_chunks)
                     for i,(doc, infos) in enumerate(zip(docs, sorted_similarities)):
-                        history += f"!@>previous discussion {i}:\n!@>discussion title:\n{infos[0]}\ndiscussion content:\n{doc}"
+                        knowledge += f"!@>knowledge {i}:\n!@>title:\n{infos[0]}\ncontent:\n{doc}"
                 except:
                     self.warning("Couldn't add long term memory information to the context. Please verify the vector database")        # Add information about the user
         user_description=""
@@ -810,9 +810,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
             tokens_documentation = []
             n_doc_tk = 0
 
-        # Tokenize the history text and calculate its number of tokens
-        if len(history)>0:
-            tokens_history = self.model.tokenize(history)
+        # Tokenize the knowledge text and calculate its number of tokens
+        if len(knowledge)>0:
+            tokens_history = self.model.tokenize(knowledge)
             n_history_tk = len(tokens_history)
         else:
             tokens_history = []
@@ -828,7 +828,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             n_user_description_tk = 0
 
 
-        # Calculate the total number of tokens between conditionning, documentation, and history
+        # Calculate the total number of tokens between conditionning, documentation, and knowledge
         total_tokens = n_cond_tk + n_doc_tk + n_history_tk + n_user_description_tk + n_positive_boost + n_negative_boost + n_force_language
 
         # Calculate the available space for the messages
@@ -902,9 +902,11 @@ class LOLLMSWebUI(LOLLMSElfServer):
         for i in range(len(full_message_list)-1):
             message_tokens = full_message_list[i]
             discussion_messages += self.model.detokenize(message_tokens)
+        
+        ai_prefix = self.model.detokenize(full_message_list[-1])
 
         # Build the final prompt by concatenating the conditionning and discussion messages
-        prompt_data = conditionning + documentation + history + user_description + discussion_messages + positive_boost + negative_boost + force_language + self.model.detokenize(full_message_list[-1])
+        prompt_data = conditionning + documentation + knowledge + user_description + discussion_messages + positive_boost + negative_boost + force_language + ai_prefix
 
         # Tokenize the prompt data
         tokens = self.model.tokenize(prompt_data)
@@ -916,18 +918,32 @@ class LOLLMSWebUI(LOLLMSElfServer):
             ASCIIColors.bold("DOC")
             ASCIIColors.yellow(documentation)
             ASCIIColors.bold("HISTORY")
-            ASCIIColors.yellow(history)
+            ASCIIColors.yellow(knowledge)
             ASCIIColors.bold("DISCUSSION")
             ASCIIColors.hilight(discussion_messages,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
             ASCIIColors.bold("Final prompt")
             ASCIIColors.hilight(prompt_data,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
             ASCIIColors.info(f"prompt size:{len(tokens)} tokens") 
-            ASCIIColors.info(f"available space after doc and history:{available_space} tokens") 
+            ASCIIColors.info(f"available space after doc and knowledge:{available_space} tokens") 
 
             self.info(f"Tokens summary:\nPrompt size:{len(tokens)}\nTo generate:{available_space}",10)
 
+        # Details
+        context_details = {
+            "conditionning":conditionning,
+            "documentation":documentation,
+            "knowledge":knowledge,
+            "user_description":user_description,
+            "discussion_messages":discussion_messages,
+            "positive_boost":positive_boost,
+            "negative_boost":negative_boost,
+            "force_language":force_language,
+            "ai_prefix":ai_prefix
+
+        }    
+
         # Return the prepared query, original message content, and tokenized query
-        return prompt_data, current_message.content, tokens
+        return prompt_data, current_message.content, tokens, context_details
 
 
     def get_discussion_to(self, client_id,  message_id=-1):
@@ -1215,12 +1231,12 @@ class LOLLMSWebUI(LOLLMSElfServer):
         return True
 
 
-    def generate(self, full_prompt, prompt, n_predict, client_id, callback=None):
+    def generate(self, full_prompt, prompt, context_details, n_predict, client_id, callback=None):
         if self.personality.processor is not None:
             ASCIIColors.info("Running workflow")
             try:
                 self.personality.callback = callback
-                self.personality.processor.run_workflow( prompt, full_prompt, callback)
+                self.personality.processor.run_workflow( prompt, full_prompt, callback, context_details)
             except Exception as ex:
                 trace_exception(ex)
                 # Catch the exception and get the traceback as a list of strings
@@ -1329,14 +1345,15 @@ class LOLLMSWebUI(LOLLMSElfServer):
             self.socketio.sleep(0.01)
 
             # prepare query and reception
-            self.discussion_messages, self.current_message, tokens = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type)
+            self.discussion_messages, self.current_message, tokens, context_details = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type)
             self.prepare_reception(client_id)
             self.generating = True
             self.connections[client_id]["processing"]=True
             try:
                 self.generate(
                                 self.discussion_messages, 
-                                self.current_message, 
+                                self.current_message,
+                                context_details=context_details,
                                 n_predict = self.config.ctx_size-len(tokens)-1,
                                 client_id=client_id,
                                 callback=partial(self.process_chunk,client_id = client_id)
@@ -1344,7 +1361,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 if self.config.enable_voice_service and self.config.auto_read and len(self.personality.audio_samples)>0:
                     try:
                         self.process_chunk("Generating voice output",MSG_TYPE.MSG_TYPE_STEP_START,client_id=client_id)
-                        from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
+                        from lollms.services.xtts.lollms_xtts import LollmsXTTS
                         if self.tts is None:
                             self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent.parent/"voices")
                         language = convert_language_name(self.personality.language)

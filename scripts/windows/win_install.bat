@@ -88,7 +88,7 @@ if exist lollms-webui\ (
   git pull
   git submodule update --init --recursive
   cd
-  cd lollms-core 
+  cd lollms_core 
   pip install -e .
   cd ..
   cd utilities\safe_store

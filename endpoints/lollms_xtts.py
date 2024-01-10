@@ -68,7 +68,7 @@ async def text2Audio(request: Request):
         data = (await request.json())
         # Get the JSON data from the POST request.
         try:
-            from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
+            from lollms.services.xtts.lollms_xtts import LollmsXTTS
             if lollmsElfServer.tts is None:
                 lollmsElfServer.tts = LollmsXTTS(lollmsElfServer, voice_samples_path=Path(__file__).parent/"voices")
         except:
@@ -82,7 +82,7 @@ async def text2Audio(request: Request):
             voice = "main_voice"
         lollmsElfServer.info("Starting to build voice")
         try:
-            from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
+            from lollms.services.xtts.lollms_xtts import LollmsXTTS
             if lollmsElfServer.tts is None:
                 lollmsElfServer.tts = LollmsXTTS(lollmsElfServer, voice_samples_path=Path(__file__).parent/"voices")
             language = lollmsElfServer.config.current_language# convert_language_name()

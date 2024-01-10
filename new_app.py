@@ -76,6 +76,7 @@ if __name__ == "__main__":
     from endpoints.lollms_user import router as lollms_user_router
     from endpoints.lollms_advanced import router as lollms_advanced_router
     from endpoints.chat_bar import router as chat_bar_router
+    from endpoints.lollms_xtts import router as lollms_xtts_add_router
     
 
 
@@ -106,6 +107,8 @@ if __name__ == "__main__":
     app.include_router(lollms_user_router)
     app.include_router(lollms_advanced_router)
     app.include_router(chat_bar_router)
+    app.include_router(lollms_xtts_add_router)
+    
     
     
     

@@ -17,7 +17,7 @@
   //import "../css/classic.css";
   import "@baklavajs/themes/dist/syrup-dark.css";
   
-  import { AgentNode } from "../nodes/Agent";
+  import { AgentNode } from "../nodes/Personality";
   import { RAGNode } from "../nodes/Rag";
   import { TaskNode } from "../nodes/Task";
   

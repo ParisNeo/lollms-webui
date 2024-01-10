@@ -1121,7 +1121,7 @@ class LoLLMsAPI(LollmsApplication):
         ASCIIColors.blue(f"Your personal data is stored here :",end="")
         ASCIIColors.green(f"{self.lollms_paths.personal_path}")
 
-    def audio_callback(self, output):
+    def audio_callback(self, text):
         if self.summoned:
             client_id = 0
             self.cancel_gen = False
@@ -1153,7 +1153,7 @@ class LoLLMsAPI(LollmsApplication):
                     parent_message_id=self.message_id
                 )
 
-                ASCIIColors.green("Starting message generation by "+self.personality.name)
+                ASCIIColors.green("Starting message generation by " + self.personality.name)
                 self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message.id, client_id))
                 self.connections[client_id]['generation_thread'].start()
                 
@@ -1219,7 +1219,7 @@ class LoLLMsAPI(LollmsApplication):
                     mounted_personalities.append(personality)
                     if self.config.enable_voice_service and self.config.auto_read and len(personality.audio_samples)>0:
                         try:
-                            from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
+                            from lollms.services.xtts.lollms_xtts import LollmsXTTS
                             if self.tts is None:
                                 self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent.parent/"voices")
                         except:
@@ -2122,7 +2122,7 @@ class LoLLMsAPI(LollmsApplication):
                 if self.config.enable_voice_service and self.config.auto_read and len(self.personality.audio_samples)>0:
                     try:
                         self.process_chunk("Generating voice output",MSG_TYPE.MSG_TYPE_STEP_START,client_id=client_id)
-                        from lollms.audio_gen_modules.lollms_xtts import LollmsXTTS
+                        from lollms.services.xtts.lollms_xtts import LollmsXTTS
                         if self.tts is None:
                             self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent.parent/"voices")
                         language = convert_language_name(self.personality.language)

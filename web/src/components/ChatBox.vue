@@ -144,7 +144,7 @@
                                     ref="installedModels">
                                     <div v-if="item.name!=model_name" class="group items-center flex flex-row">
                                         <button @click.prevent="setModel(item)" class="w-8 h-8">
-                                            <img :src="item.icon?item.icon:modelImgPlaceholder" @error="modelImgPlaceholder"
+                                            <img :src="item.icon?item.icon:modelImgPlaceholder"
                                                 class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
                                                 :title="item.name">
                                         </button>
@@ -153,7 +153,7 @@
                             </div>
                             <div class="group items-center flex flex-row">
                                 <button @click.prevent="showModelConfig()" class="w-8 h-8">
-                                    <img :src="currentModel.icon?currentModel.icon:modelImgPlaceholder" @error="modelImgPlaceholder"
+                                    <img :src="currentModel.icon?currentModel.icon:modelImgPlaceholder"
                                         class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
                                         :title="currentModel?currentModel.name:'unknown'">
                                 </button>
