@@ -146,7 +146,10 @@ class LOLLMSWebUI(LOLLMSElfServer):
         self.cancel_gen = False
 
         
-
+        if self.config.auto_update:
+            if self.check_update_():
+                ASCIIColors.info("New version found. Updating!")
+                self.run_update_script()
         # Keeping track of current discussion and message
         self._current_user_message_id = 0
         self._current_ai_message_id = 0
