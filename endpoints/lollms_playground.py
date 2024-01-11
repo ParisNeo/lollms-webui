@@ -18,7 +18,7 @@ from pathlib import Path
 from ascii_colors import ASCIIColors
 import os
 import platform
-import yaml
+import yaml, json
 # ----------------------- Defining router and main class ------------------------------
 
 router = APIRouter()
@@ -26,7 +26,7 @@ lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
 
 # ----------------------- voice ------------------------------
-@router.get("/install_ollama")
+@router.get("/get_presets")
 def get_presets():
     presets = []
     presets_folder = Path("__file__").parent/"presets"
@@ -43,3 +43,56 @@ def get_presets():
             if preset is not None:
                 presets.append(preset)
     return presets
+
+@router.post("/add_preset")
+async def add_preset(request: Request):
+    """
+    Changes current voice
+
+    :param request: The HTTP request object.
+    :return: A JSON response with the status of the operation.
+    """
+    # Get the JSON data from the POST request.
+    preset_data = request.get_json()
+    presets_folder = lollmsElfServer.lollms_paths.personal_databases_path/"lollms_playground_presets"
+    if not presets_folder.exists():
+        presets_folder.mkdir(exist_ok=True, parents=True)
+
+    fn = preset_data["name"].lower().replace(" ","_")
+    filename = presets_folder/f"{fn}.yaml"
+    with open(filename, 'w', encoding='utf-8') as file:
+        yaml.dump(preset_data, file)
+    return {"status": True}
+
+@router.post("/del_preset")
+async def del_preset(request: Request):
+    """
+    Saves a preset to a file.
+
+    :param request: The HTTP request object.
+    :return: A JSON response with the status of the operation.
+    """
+    # Get the JSON data from the POST request.
+    preset_data = request.get_json()    
+    presets_folder = lollmsElfServer.lollms_paths.personal_databases_path/"lollms_playground_presets"
+    # TODO : process
+    return {"status":True}
+
+
+@router.post("/save_presets")
+async def save_presets(request: Request):
+    """
+    Saves a preset to a file.
+
+    :param request: The HTTP request object.
+    :return: A JSON response with the status of the operation.
+    """
+    # Get the JSON data from the POST request.
+    preset_data = request.get_json()    
+
+    presets_file = lollmsElfServer.lollms_paths.personal_databases_path/"presets.json"
+    # Save the JSON data to a file.
+    with open(presets_file, "w") as f:
+        json.dump(preset_data, f, indent=4)
+
+    return {"status":True,"message":"Preset saved successfully!"}

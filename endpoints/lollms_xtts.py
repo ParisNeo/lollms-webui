@@ -38,7 +38,7 @@ def list_voices():
 @router.post("/set_voice")
 async def set_voice(request: Request):
     """
-    Executes Python code and returns the output.
+    Changes current voice
 
     :param request: The HTTP request object.
     :return: A JSON response with the status of the operation.
@@ -74,7 +74,6 @@ async def text2Audio(request: Request):
         except:
             return {"url": None}
             
-        data = request.get_json()
         voice=data.get("voice",lollmsElfServer.config.current_voice)
         index = find_first_available_file_index(lollmsElfServer.tts.output_folder, "voice_sample_",".wav")
         output_fn=data.get("fn",f"voice_sample_{index}.wav")

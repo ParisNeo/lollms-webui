@@ -397,22 +397,14 @@ try:
 
             self.add_endpoint("/install_sd", "install_sd", self.install_sd, methods=["GET"])
 
-            
+
+            self.add_endpoint("/get_presets", "get_presets", self.get_presets, methods=["GET"])      
+            self.add_endpoint("/add_preset", "add_preset", self.add_preset, methods=["POST"])
+
             # ----
 
 
 
-            
-            
-
-
-            self.add_endpoint(
-                "/get_presets", "get_presets", self.get_presets, methods=["GET"]
-            )      
-
-            self.add_endpoint(
-                "/add_preset", "add_preset", self.add_preset, methods=["POST"]
-            )
 
             self.add_endpoint(
                 "/save_presets", "save_presets", self.save_presets, methods=["POST"]
@@ -421,8 +413,6 @@ try:
             self.add_endpoint(
                 "/execute_code", "execute_code", self.execute_code, methods=["POST"]
             )
-
-            
 
             self.add_endpoint("/update_binding_settings", "update_binding_settings", self.update_binding_settings, methods=["GET"])
             
