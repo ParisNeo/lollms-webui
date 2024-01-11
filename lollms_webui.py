@@ -749,6 +749,14 @@ class LOLLMSWebUI(LOLLMSElfServer):
             force_language=""
             n_force_language = 0
 
+        if self.config.fun_mode:
+            fun_mode="\n!@>important information: Fun mode activated. Don't forget to sprincle some fun in the output.\n"
+            n_fun_mode = len(self.model.tokenize(positive_boost))
+        else:
+            fun_mode=""
+            n_fun_mode = 0
+
+
         if generation_type != "simple_question":
             if self.personality.persona_data_vectorizer:
                 if documentation=="":
@@ -832,7 +840,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
 
         # Calculate the total number of tokens between conditionning, documentation, and knowledge
-        total_tokens = n_cond_tk + n_doc_tk + n_history_tk + n_user_description_tk + n_positive_boost + n_negative_boost + n_force_language
+        total_tokens = n_cond_tk + n_doc_tk + n_history_tk + n_user_description_tk + n_positive_boost + n_negative_boost + n_force_language + n_fun_mode
 
         # Calculate the available space for the messages
         available_space = self.config.ctx_size - n_tokens - total_tokens
@@ -909,7 +917,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         ai_prefix = self.model.detokenize(full_message_list[-1])
 
         # Build the final prompt by concatenating the conditionning and discussion messages
-        prompt_data = conditionning + documentation + knowledge + user_description + discussion_messages + positive_boost + negative_boost + force_language + ai_prefix
+        prompt_data = conditionning + documentation + knowledge + user_description + discussion_messages + positive_boost + negative_boost + force_language + fun_mode + ai_prefix
 
         # Tokenize the prompt data
         tokens = self.model.tokenize(prompt_data)
@@ -941,6 +949,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             "positive_boost":positive_boost,
             "negative_boost":negative_boost,
             "force_language":force_language,
+            "fun_mode":fun_mode,
             "ai_prefix":ai_prefix
 
         }    

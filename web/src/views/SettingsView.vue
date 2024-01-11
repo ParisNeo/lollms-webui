@@ -769,15 +769,15 @@
                                         </tr>
                                         <tr>
                                         <td style="min-width: 200px;">
-                                            <label for="positive_boost" class="text-sm font-bold" style="margin-right: 1rem;">Positive Boost:</label>
+                                            <label for="fun_mode" class="text-sm font-bold" style="margin-right: 1rem;">Fun mode:</label>
                                         </td>
                                         <td>
                                             <div class="flex flex-row">
                                             <input
-                                            type="text"
-                                            id="positive_boost"
+                                            type="checkbox"
+                                            id="fun_mode"
                                             required
-                                            v-model="configFile.positive_boost"
+                                            v-model="configFile.fun_mode"
                                             @change="settingsChanged=true"
                                             class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
