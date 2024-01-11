@@ -393,6 +393,11 @@ try:
             self.add_endpoint("/text2Audio", "text2Audio", self.text2Audio, methods=["POST"])
             self.add_endpoint("/install_xtts", "install_xtts", self.install_xtts, methods=["GET"])
 
+
+
+            self.add_endpoint("/install_sd", "install_sd", self.install_sd, methods=["GET"])
+
+            
             # ----
 
 
@@ -417,9 +422,6 @@ try:
                 "/execute_code", "execute_code", self.execute_code, methods=["POST"]
             )
 
-            self.add_endpoint(
-                "/install_sd", "install_sd", self.install_sd, methods=["GET"]
-            )
             
 
             self.add_endpoint("/update_binding_settings", "update_binding_settings", self.update_binding_settings, methods=["GET"])

@@ -955,6 +955,55 @@
                             </tr> 
                         </table>                                
                     </Card>
+                    <Card title="Ollama service" :is_subcard="true" class="pb-2  m-2">
+                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="enable_ollama_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable ollama service:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="checkbox"
+                                id="enable_ollama_service"
+                                required
+                                v-model="configFile.enable_ollama_service"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="ollama_base_url" class="text-sm font-bold" style="margin-right: 1rem;">Reinstall Ollama service:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallOLLAMAService">Reinstall olama service</button>
+                                </div>
+                            </td>
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="ollama_base_url" class="text-sm font-bold" style="margin-right: 1rem;">ollama base url:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="text"
+                                id="sd_base_url"
+                                required
+                                v-model="configFile.sd_base_url"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr> 
+                        </table>                                
+                    </Card>
+
                     <Card title="XTTS service" :is_subcard="true" class="pb-2  m-2">
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <tr>
@@ -2178,6 +2227,16 @@ export default {
             });
 
         },
+        reinstallOLLAMAService(){
+        axios.get('install_ollama')
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+
+        },
         reinstallAudioService(){
             axios.get('install_xtts')
             .then(response => {
@@ -3327,9 +3386,6 @@ export default {
                                 console.log(`Found ${customModel} at index ${index}`)
                                 break;
                             }  
-                        }
-                        else{
-
                         }
                     }
                 }

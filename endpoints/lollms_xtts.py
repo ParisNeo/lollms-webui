@@ -13,7 +13,7 @@ from pydantic import BaseModel
 from starlette.responses import StreamingResponse
 from lollms.types import MSG_TYPE
 from lollms.main_config import BaseConfig
-from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception, find_first_available_file_index, add_period
+from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception, find_first_available_file_index, add_period, PackageManager
 from pathlib import Path
 from ascii_colors import ASCIIColors
 import os
@@ -27,7 +27,7 @@ lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
 # ----------------------- voice ------------------------------
 
-@router.get("/set_voice")
+@router.get("/list_voices")
 def list_voices():
     ASCIIColors.yellow("Listing voices")
     voices=["main_voice"]
@@ -103,3 +103,14 @@ async def text2Audio(request: Request):
         trace_exception(ex)
         lollmsElfServer.error(ex)
         return {"status":False,"error":str(ex)}
+    
+@router.get("/install_xtts")
+def install_xtts():
+    try:
+        lollmsElfServer.ShowBlockingMessage("Installing xTTS api server\nPlease stand by")
+        PackageManager.install_package("xtts-api-server")
+        lollmsElfServer.HideBlockingMessage()
+        return {"status":True}
+    except Exception as ex:
+        lollmsElfServer.HideBlockingMessage()
+        return {"status":False, 'error':str(ex)}

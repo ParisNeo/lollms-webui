@@ -2,7 +2,7 @@ import { defineNode, NodeInterface, TextInterface, SelectInterface } from "bakla
 import axios from 'axios';
 import { store } from '../main'
 
-export const AgentNode = defineNode({
+export const PersonalityNode = defineNode({
   type: "PersonalityNode",
   title: "Personality",
   inputs: {
@@ -13,14 +13,13 @@ export const AgentNode = defineNode({
     ),
   },
   outputs: {
-    display: () => new TextInterface("Output", ""),
     response: () => new NodeInterface("Response", "")
   },
   async calculate({ request }) {
     console.log(store.state.config.personalities)
     let response = '';
     try {
-      const result = await axios.get('/generate', { params: { text: request } });
+      const result = await axios.post('/generate', { params: { text: request } });
       response = result.data;
     } catch (error) {
       console.error(error);

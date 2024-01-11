@@ -70,6 +70,7 @@ if __name__ == "__main__":
     from lollms.server.endpoints.lollms_extensions_infos import router as lollms_extensions_infos_router
     from lollms.server.endpoints.lollms_generator import router as lollms_generator_router
     from lollms.server.endpoints.lollms_configuration_infos import router as lollms_configuration_infos_router
+
     from endpoints.lollms_webui_infos import router as lollms_webui_infos_router
     from endpoints.lollms_discussion import router as lollms_discussion_router
     from endpoints.lollms_message import router as lollms_message_router
@@ -77,7 +78,8 @@ if __name__ == "__main__":
     from endpoints.lollms_advanced import router as lollms_advanced_router
     from endpoints.chat_bar import router as chat_bar_router
     from endpoints.lollms_xtts import router as lollms_xtts_add_router
-    
+    from endpoints.lollms_sd import router as lollms_sd_router    
+    from endpoints.lollms_ollama import router as lollms_ollama_router    
 
 
     from lollms.server.events.lollms_generation_events import add_events as lollms_generation_events_add
@@ -99,6 +101,7 @@ if __name__ == "__main__":
     app.include_router(lollms_extensions_infos_router)   
     
     
+    
 
     app.include_router(lollms_webui_infos_router)
     app.include_router(lollms_generator_router)
@@ -109,7 +112,9 @@ if __name__ == "__main__":
     app.include_router(chat_bar_router)
     app.include_router(lollms_xtts_add_router)
     
-    
+    app.include_router(lollms_sd_router)   
+    app.include_router(lollms_ollama_router)   
+
     
     
     app.include_router(lollms_configuration_infos_router)
