@@ -766,7 +766,24 @@
                                             >
                                             </div>
                                         </td>
-                                        </tr>                                                                                
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="positive_boost" class="text-sm font-bold" style="margin-right: 1rem;">Positive Boost:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <input
+                                            type="text"
+                                            id="positive_boost"
+                                            required
+                                            v-model="configFile.positive_boost"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>                                                                                                                     
                                     </table>
                                 </Card>
 

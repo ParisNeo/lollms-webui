@@ -21,17 +21,23 @@ CONDA_SHLVL=""
 PYTHONNOUSERSITE=1
 PYTHONPATH=""
 PYTHONHOME=""
-TEMP="./installer_files/temp"
+miniconda_folder="./installer_files"
 TMP="./installer_files/temp"
-INSTALL_ENV_DIR="./installer_files/lollms_env"
-MINICONDA_DIR="./installer_files/miniconda3"
 
-if [ ! -f "$MINICONDA_DIR/bin/activate" ]; then
-    echo "Miniconda not found."
-    exit 1
+if  [ -e "$miniconda_folder" ]; then
+    INSTALL_ENV_DIR="./installer_files/lollms_env"
+    MINICONDA_DIR="./installer_files/miniconda3"
+    MINICONDA_CMD="$MINICONDA_DIR/bin/activate"
+    if [ ! -f "$MINICONDA_DIR/bin/activate" ]; then
+        echo "Miniconda not found."
+        exit 1
+    fi
+else
+    INSTALL_ENV_DIR="lollms"
+    MINICONDA_CMD="conda activate"
 fi
 
-source "$MINICONDA_DIR/bin/activate" "$INSTALL_ENV_DIR"
+source "$MINICONDA_CMD" "$INSTALL_ENV_DIR"
 
 
 read -rp "Conda environment activated"

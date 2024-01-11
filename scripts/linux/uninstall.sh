@@ -4,8 +4,8 @@ echo "This will uninstall the environment. Are you sure? [Y/N]"
 read choice
 if [[ "$choice" =~ [yY] ]]; then
     # Download Python installer
-    printf "Removing virtual environment..."
-    rm -rf env
+    printf "Removing lollms conda environment"
+
     echo "OK"
     read -p "Press [Enter] to continue..."
 else

@@ -134,22 +134,11 @@ else
     cp scripts/linux/linux_run.sh ../
 fi
 
-if [[ -e "../linux_update.sh" ]]; then
-    echo "Linux update found"
-else
-    cp scripts/linux/linux_update.sh ../
-fi
 
 if [[ -e "../linux_conda_session.sh" ]]; then
     echo "Linux update found"
 else
     cp scripts/linux/linux_conda_session.sh ../
-fi
-
-if [[ -e "../linux_update_models.sh" ]]; then
-    echo "Linux update found"
-else
-    cp scripts/linux/linux_update_models.sh ../
 fi
 
 

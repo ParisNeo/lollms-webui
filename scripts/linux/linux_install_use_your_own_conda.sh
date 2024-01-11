@@ -67,8 +67,6 @@ else
   cd utilities/safe_store
   pip install -e .
   cd ../..
-
-  cd lollms-webui || exit 1
 fi
 
 # Loop through each "git+" requirement and uninstall it (workaround for inconsistent git package updating)
@@ -81,6 +79,21 @@ done < requirements.txt
 
 # Install the pip requirements
 python -m pip install -r requirements.txt --upgrade
+
+if [[ -e "../linux_run.sh" ]]; then
+    echo "Linux run found"
+else
+    pwd
+    cp scripts/linux/linux_run.sh ../
+fi
+
+if [[ -e "../linux_conda_session.sh" ]]; then
+    echo "Linux update found"
+else
+    pwd
+    cp scripts/linux/linux_conda_session.sh ../
+fi
+
 
 
 # cd scripts/python/lollms_installer

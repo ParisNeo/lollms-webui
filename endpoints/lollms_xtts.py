@@ -88,7 +88,7 @@ async def text2Audio(request: Request):
             if voice!="main_voice":
                 voices_folder = lollmsElfServer.lollms_paths.custom_voices_path
             else:
-                voices_folder = Path(__file__).parent/"voices"
+                voices_folder = Path(__file__).parent.parent/"voices"
             lollmsElfServer.tts.set_speaker_folder(voices_folder)
             url = f"audio/{output_fn}"
             preprocessed_text= add_period(data['text'])

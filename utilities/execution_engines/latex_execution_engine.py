@@ -61,6 +61,7 @@ def execute_latex(code, discussion_id, message_id):
 
         except subprocess.CalledProcessError as ex:
             lollmsElfServer.error(f"Error occurred while compiling LaTeX: {ex}") 
+            execution_time = time.time() - start_time
             error_json = {"output": "<div class='text-red-500'>"+str(ex)+"\n"+get_trace_exception(ex)+"</div>", "execution_time": execution_time}
             return error_json
 
