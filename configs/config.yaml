@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 42
+version: 43
 binding_name: null
 model_name: null
 

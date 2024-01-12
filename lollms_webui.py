@@ -750,7 +750,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             n_force_language = 0
 
         if self.config.fun_mode:
-            fun_mode="\n!@>important information: Fun mode activated. Don't forget to sprincle some fun in the output.\n"
+            fun_mode="\n!@>important information: Fun mode activated. In this mode you must answer in a funny playful way. Do not be serious in your answers. Each answer needs to make the user laugh.\n"
             n_fun_mode = len(self.model.tokenize(positive_boost))
         else:
             fun_mode=""
