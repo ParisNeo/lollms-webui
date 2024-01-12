@@ -115,37 +115,79 @@ def export_discussion():
 
 
 @router.post("/edit_title")
-def edit_title(data:EditTitleParameters):
-    client_id           = data.client_id
-    title               = data.title
-    discussion_id       = data.id
-    lollmsElfServer.connections[client_id]["current_discussion"] = Discussion(discussion_id, lollmsElfServer.db)
-    lollmsElfServer.connections[client_id]["current_discussion"].rename(title)
-    return {'status':True}
+async def edit_title(request: Request):
+    """
+    Executes Python code and returns the output.
 
+    :param request: The HTTP request object.
+    :return: A JSON response with the status of the operation.
+    """
+
+    try:
+        data = (await request.json())
+        client_id           = data.get("client_id")
+        title               = data.get("title")
+        discussion_id       = data.get("id")
+        lollmsElfServer.connections[client_id]["current_discussion"] = Discussion(discussion_id, lollmsElfServer.db)
+        lollmsElfServer.connections[client_id]["current_discussion"].rename(title)
+        return {'status':True}
+    except Exception as ex:
+        trace_exception(ex)
+        lollmsElfServer.error(ex)
+        return {"status":False,"error":str(ex)}
+        
 @router.post("/make_title")
-def make_title(data:MakeTitleParameters):
-    ASCIIColors.info("Making title")
-    discussion_id       = data.id
-    discussion = Discussion(discussion_id, lollmsElfServer.db)
-    title = lollmsElfServer.make_discussion_title(discussion)
-    discussion.rename(title)
-    return {'status':True, 'title':title}
+async def make_title(request: Request):
+    """
+    Executes Python code and returns the output.
 
+    :param request: The HTTP request object.
+    :return: A JSON response with the status of the operation.
+    """
+
+    try:
+        data = (await request.json())
+
+        ASCIIColors.info("Making title")
+        discussion_id       = data.get("id")
+        discussion = Discussion(discussion_id, lollmsElfServer.db)
+        title = lollmsElfServer.make_discussion_title(discussion)
+        discussion.rename(title)
+        return {'status':True, 'title':title}
+    except Exception as ex:
+        trace_exception(ex)
+        lollmsElfServer.error(ex)
+        return {"status":False,"error":str(ex)}
+    
 @router.get("/export")
 def export():
     return lollmsElfServer.db.export_to_json()
 
 
-@router.post("/make_title")
-def delete_discussion(data: DeleteDiscussionParameters):
-    client_id       = data.client_id
-    discussion_id   = data.id
-    lollmsElfServer.connections[client_id]["current_discussion"] = Discussion(discussion_id, lollmsElfServer.db)
-    lollmsElfServer.connections[client_id]["current_discussion"].delete_discussion()
-    lollmsElfServer.connections[client_id]["current_discussion"] = None
-    return {'status':True}
+@router.post("/delete_discussion")
+async def delete_discussion(request: Request):
+    """
+    Executes Python code and returns the output.
 
+    :param request: The HTTP request object.
+    :return: A JSON response with the status of the operation.
+    """
+
+    try:
+        data = (await request.json())
+
+        client_id       = data.client_id
+        discussion_id   = data.id
+        lollmsElfServer.connections[client_id]["current_discussion"] = Discussion(discussion_id, lollmsElfServer.db)
+        lollmsElfServer.connections[client_id]["current_discussion"].delete_discussion()
+        lollmsElfServer.connections[client_id]["current_discussion"] = None
+        return {'status':True}
+    except Exception as ex:
+        trace_exception(ex)
+        lollmsElfServer.error(ex)
+        return {"status":False,"error":str(ex)}
+    
+    
 # ----------------------------- import/export --------------------
 
 @router.post("/export_multiple_discussions")
