@@ -3039,7 +3039,8 @@ export default {
                     console.log('install_binding', res)
                     if (res.data.status) {
                         this.$store.state.toast.showToast("Binding installed successfully!", 4, true)
-                        this.$store.state.messageBox.showMessage("It is advised to reboot the application after installing a binding")
+                        this.$store.state.messageBox.showMessage("It is advised to reboot the application after installing a binding.\nPage will refresh in 5s.")
+                        setTimeout(()=>{window.location.href = "/"},5000) ;
                     } else {
                         this.$store.state.toast.showToast("Could not reinstall binding", 4, false)
                     }
@@ -3195,7 +3196,7 @@ export default {
                                                 this.$store.state.toast.showToast("Binding settings updated successfully!", 4, true)
                                                 axios.get('/update_binding_settings').then((res) => {
                                                     this.$store.state.toast.showToast("Binding settings committed successfully!", 4, true)
-                                                    window.location.reload();
+                                                    window.location.href = "/";
                                                 })
                                             } else {
                                                 this.$store.state.toast.showToast("Did not get binding settings responses.\n" + response, 4, false)

@@ -220,7 +220,7 @@ export default {
             },2000)
         },
         refreshPage() {
-            window.location.reload();
+            window.location.href = "/";
         },
         handleOk(inputText) {
             console.log("Input text:", inputText);
