@@ -260,7 +260,6 @@
 </style>
 <script>
 import botImgPlaceholder from "../assets/logo.png"
-import userImgPlaceholder from "../assets/default_user.svg"
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 import { nextTick } from 'vue'
 import feather from 'feather-icons'

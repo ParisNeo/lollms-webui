@@ -45,7 +45,12 @@
                         <i data-feather="refresh-ccw"></i>
                     </div>
                 </a>
-                
+                <a href="https://github.com/ParisNeo/lollms-webui" target="_blank">
+                <div class="text-2xl  hover:text-primary duration-150" title="Fast API doc">
+                    <a href="/docs"><img :src="FastAPI" width="75" height="25"></a> 
+                </div>
+                </a>
+
                 <a href="https://github.com/ParisNeo/lollms-webui" target="_blank">
 
                     <div class="text-2xl  hover:text-primary duration-150" title="Visit repository page">
@@ -71,7 +76,14 @@
                         </svg>
                     </div>
                 </a>
-                <div class="sun text-2xl w-6  hover:text-primary duration-150" title="Swith to Light theme"
+
+                <a href="https://www.youtube.com/channel/UCJzrg0cyQV2Z30SQ1v2FdSQ" target="_blank">
+
+                    <div class="text-2xl hover:text-primary duration-150" title="Visit my discord channel">
+                        <img :src="discord">
+                    </div>
+                </a>
+               <div class="sun text-2xl w-6  hover:text-primary duration-150" title="Swith to Light theme"
                     @click="themeSwitch()">
                     <i data-feather="sun"></i>
                 </div>
@@ -104,21 +116,20 @@
 </template>
 
 <script setup>
-import Discussion from '../components/Discussion.vue'
 import Toast from '../components/Toast.vue'
 import MessageBox from "@/components/MessageBox.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
 import UniversalForm from '../components/UniversalForm.vue';
 import YesNoDialog from './YesNoDialog.vue';
 
-
+import FastAPI from '@/assets/fastapi.png';
+import discord from '@/assets/discord.svg';
 import { RouterLink } from 'vue-router'
 import Navigation from './Navigation.vue'
 import { nextTick } from 'vue'
 import feather from 'feather-icons'
 </script>
 <script>
-import { mapState } from 'vuex';
 
 export default {
     name: 'TopBar',
@@ -137,12 +148,12 @@ export default {
         }
     },
     components: {
-        Discussion,
         Toast,
         MessageBox,
         ProgressBar,
         UniversalForm,
-        YesNoDialog
+        YesNoDialog,
+        Navigation,
     },
     watch:{
         isConnected(){
@@ -158,6 +169,8 @@ export default {
     },
     data() {
         return {
+            discord:discord,
+            FastAPI:FastAPI,
             rebooting_the_tool_audio: new Audio("rebooting.mp3"),            
             disconnected_audio: new Audio("disconnected.mp3"),
             database_selectorDialogVisible:false,
@@ -275,10 +288,6 @@ export default {
             this.moonIcon.classList.toggle("display-none");
         }
     },
-    components: {
-        Navigation,
-
-    }
 }
 
 </script>
