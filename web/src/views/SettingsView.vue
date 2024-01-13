@@ -1045,7 +1045,7 @@
                             </td>
                             <td>
                                 <div class="flex flex-row">
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallPetalsService">Reinstall olama service</button>
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallPetalsService">Reinstall petals service</button>
                                 </div>
                             </td>
                             </tr>                                        
