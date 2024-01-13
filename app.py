@@ -21,7 +21,7 @@ import uvicorn
 import argparse
 from socketio import ASGIApp
 import webbrowser
-
+import threading
 app = FastAPI()
 
 # Create a Socket.IO server
@@ -156,7 +156,16 @@ if __name__ == "__main__":
 
     try:
         sio.reboot = False
-        #uvicorn.run(app, host=config.host, port=6523)
+        if config.enable_lollms_service:
+            #uvicorn.run(app, host=config.host, port=6523)
+            def run_lollms_server():
+                parts = config.lollms_base_url.split(":")
+                uvicorn.run(app, host=":".join(parts[0:2]), port=int(parts[2]))
+            # New thread
+            thread = threading.Thread(target=run_lollms_server)
+
+            # start thread
+            thread.start()
         uvicorn.run(app, host=config.host, port=config.port)
         if sio.reboot:
             ASCIIColors.info("")

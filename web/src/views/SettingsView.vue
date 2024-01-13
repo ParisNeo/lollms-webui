@@ -1068,6 +1068,44 @@
                             </tr> 
                         </table>                                
                     </Card>
+                    <Card title="Lollms service" :is_subcard="true" class="pb-2  m-2">
+                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="enable_lollms_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable lollms service:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="checkbox"
+                                id="enable_lollms_service"
+                                required
+                                v-model="configFile.enable_lollms_service"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="lollms_base_url" class="text-sm font-bold" style="margin-right: 1rem;">lollms base url:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="text"
+                                id="lollms_base_url"
+                                required
+                                v-model="configFile.lollms_base_url"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr> 
+                        </table>                                
+                    </Card>                    
                     <Card title="XTTS service" :is_subcard="true" class="pb-2  m-2">
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <tr>
