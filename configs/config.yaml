@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 43
+version: 44
 binding_name: null
 model_name: null
 
@@ -63,6 +63,10 @@ sd_base_url: http://127.0.0.1:7860
 # ollama service
 enable_ollama_service: false
 ollama_base_url: http://0.0.0.0:11434
+
+# petals service
+enable_petals_service: false
+petals_base_url: http://0.0.0.0:8010
 
 # Audio
 media_on: false
