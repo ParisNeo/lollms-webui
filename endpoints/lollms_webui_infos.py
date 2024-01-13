@@ -17,7 +17,7 @@ from lollms.utilities import load_config
 from pathlib import Path
 from typing import List
 import sys
-
+import socketio
 # ----------------------- Defining router and main class ------------------------------
 
 # Create an instance of the LoLLMSWebUI class
@@ -35,7 +35,7 @@ async def get_lollms_webui_version():
 async def restart_program():
    """Restart the program."""
    # Stop the socketIO server
-   lollmsElfServer.socketio.stop()
+   lollmsElfServer.socketio.shutdown()
    # Sleep for 1 second before rebooting
    lollmsElfServer.socketio.sleep(1)
    # Reboot the program
@@ -55,7 +55,8 @@ async def update_software():
    ASCIIColors.info("")
    ASCIIColors.info("")
    # Stop the socketIO server
-   lollmsElfServer.socketio.stop()
+   lollmsElfServer.socketio.shutdown()
+
    # Run the update script using the provided arguments
    lollmsElfServer.run_update_script(lollmsElfServer.args)
    # Exit the program after successful update
