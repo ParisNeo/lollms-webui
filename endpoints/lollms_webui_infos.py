@@ -21,7 +21,7 @@ import sys
 # ----------------------- Defining router and main class ------------------------------
 
 # Create an instance of the LoLLMSWebUI class
-lollmsElfServer = LOLLMSWebUI.get_instance()
+lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
 router = APIRouter()
 
 @router.get("/get_lollms_webui_version")
