@@ -299,7 +299,7 @@ class LoLLMsAPI(LollmsApplication):
                 trace_exception(ex)
                 self.error("Couldn't use the webcam")
 
-        @self.socketio.on('create_empty_message')
+        @socketio.on('create_empty_message')
         def create_empty_message(data):
             client_id = request.sid
             type = data.get("type",0)

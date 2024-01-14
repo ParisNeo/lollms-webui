@@ -87,6 +87,10 @@ if __name__ == "__main__":
     from lollms.server.events.lollms_generation_events import add_events as lollms_generation_events_add
     from lollms.server.events.lollms_personality_events import add_events as lollms_personality_events_add
     from lollms.server.events.lollms_files_events import add_events as lollms_files_events_add
+    from lollms.server.events.lollms_model_events import add_events as lollms_model_events_add
+    from lollms.server.events.lollms_rag_events import add_events as lollms_rag_events_add
+
+
     from events.lollms_generation_events import add_events as lollms_webui_generation_events_add
     from events.lollms_discussion_events import add_events as lollms_webui_discussion_events_add
     from events.lollms_chatbox_events import add_events as lollms_chatbox_events_add
@@ -127,7 +131,8 @@ if __name__ == "__main__":
     lollms_generation_events_add(sio)
     lollms_personality_events_add(sio)
     lollms_files_events_add(sio)
- 
+    lollms_model_events_add(sio)
+    lollms_rag_events_add(sio)
 
     lollms_webui_generation_events_add(sio)
     lollms_webui_discussion_events_add(sio)
