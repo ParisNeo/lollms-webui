@@ -47,7 +47,7 @@
                 </a>
                 <a href="https://github.com/ParisNeo/lollms-webui" target="_blank">
                 <div class="text-2xl  hover:text-primary duration-150" title="Fast API doc">
-                    <a href="/docs"><img :src="FastAPI" width="75" height="25"></a> 
+                    <a href="/docs" target="_blank"><img :src="FastAPI" width="75" height="25"></a> 
                 </div>
                 </a>
 
@@ -77,10 +77,9 @@
                     </div>
                 </a>
 
-                <a href="https://www.youtube.com/channel/UCJzrg0cyQV2Z30SQ1v2FdSQ" target="_blank">
-
+                <a href="https://discord.com/channels/1092918764925882418" target="_blank">
                     <div class="text-2xl hover:text-primary duration-150" title="Visit my discord channel">
-                        <img :src="discord">
+                        <img :src="discord" width="25" height="25">
                     </div>
                 </a>
                <div class="sun text-2xl w-6  hover:text-primary duration-150" title="Swith to Light theme"

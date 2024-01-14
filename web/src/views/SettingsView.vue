@@ -942,6 +942,11 @@
                                 >
                                 </div>
                             </td>
+                            <td>
+                                <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates Stable diffusion service. The service will be automatically loaded at startup alowing you to use the stable diffusion endpoint to generate images')">
+                                    <i data-feather="help-circle" class="w-5 h-5 "></i>
+                                </div>
+                            </td>                            
                             </tr>                                        
                             <tr>
                             <td style="min-width: 200px;">
@@ -988,6 +993,11 @@
                                 @change="settingsChanged=true"
                                 class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                 >
+                                </div>
+                            </td>
+                            <td>
+                                <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates ollama service. The service will be automatically loaded at startup alowing you to use the ollama binding.\nIf you are using windows, this uses wsl which requires you to have it installed or at least activated.\nIf You are using windows, this will install wsl so you need to activate it.\n<a href=\'https://techcommunity.microsoft.com/t5/windows-11/how-to-install-the-linux-windows-subsystem-in-windows-11/m-p/2701207\' target=\'_blank\'>Here is how you can do that</a>')">
+                                    <i data-feather="help-circle" class="w-5 h-5 "></i>
                                 </div>
                             </td>
                             </tr>                                        
@@ -1038,6 +1048,12 @@
                                 >
                                 </div>
                             </td>
+                            <td>
+                                <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates Petals service. The service will be automatically loaded at startup alowing you to use the petals endpoint to generate text in a distributed network.\nIf You are using windows, this will install wsl so you need to activate it.\n<a href=\'https://techcommunity.microsoft.com/t5/windows-11/how-to-install-the-linux-windows-subsystem-in-windows-11/m-p/2701207\' target=\'_blank\'>Here is how you can do that</a>')">
+                                    <i data-feather="help-circle" class="w-5 h-5 "></i>
+                                </div>
+                            </td>                            
+
                             </tr>                                        
                             <tr>
                             <td style="min-width: 200px;">

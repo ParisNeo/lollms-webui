@@ -240,8 +240,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
             try:
                 if self.connections[sid]["processing"]:
                     self.connections[sid]["schedule_for_deletion"]=True
-                else:
-                    del self.connections[sid]
+                # else:
+                #    del self.connections[sid]
             except Exception as ex:
                 pass
             
