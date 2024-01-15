@@ -9,7 +9,7 @@
               Playground
             </RouterLink>
             <RouterLink :to="{ name: 'interactive' }" class="link-item dark:link-item-dark">
-              Interactive (under construction)
+              interactive
             </RouterLink>
             <RouterLink :to="{ name: 'nodes' }" class="link-item dark:link-item-dark">
               Nodes (under construction)
@@ -33,16 +33,16 @@
           </div>
       </div>
     </div>
-  </template>
-  
-  <script setup>
+</template>
+
+<script setup>
   import { nextTick } from 'vue';
   import feather from 'feather-icons';
   import { RouterLink } from 'vue-router';
   import { store } from '../main';
-  </script>
+</script>
   
-  <style>
+<style>
   .container {
     /* Remove margin and padding */
     margin: 0;
@@ -139,5 +139,5 @@
     align-items: center;
     padding: 5px;
   }
-  </style>
+</style>
   

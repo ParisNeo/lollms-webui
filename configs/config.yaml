@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 45
+version: 46
 binding_name: null
 model_name: null
 
@@ -42,6 +42,13 @@ db_path: database.db
 # Automatic updates
 debug: False
 auto_update: true
+auto_sync_personalities: true
+auto_sync_extensions: true
+auto_sync_bindings: true
+auto_sync_models: true
+
+
+
 auto_save: true
 auto_title: false
 # Install mode (cpu, cpu-noavx, nvidia-tensorcores, nvidia, amd-noavx, amd, apple-intel, apple-silicon)
