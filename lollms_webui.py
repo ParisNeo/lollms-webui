@@ -94,6 +94,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         try_select_binding=False,
         try_select_model=False,
         callback=None,
+        args=None,
         socketio = None
     ):
         if LOLLMSWebUI.__instance is None:
@@ -107,6 +108,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 try_select_binding=try_select_binding,
                 try_select_model=try_select_model,
                 callback=callback,
+                args=args,
                 socketio=socketio
             )
         return LOLLMSWebUI.__instance    
@@ -121,6 +123,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         try_select_binding=False,
         try_select_model=False,
         callback=None,
+        args=None,
         socketio=None
     ) -> None:
         super().__init__(
@@ -137,6 +140,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         )
         self.app_name:str = "LOLLMSWebUI"
         self.version:str = lollms_webui_version
+        self.args = args
 
 
         self.busy = False

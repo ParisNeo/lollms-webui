@@ -58,7 +58,7 @@ if __name__ == "__main__":
     if args.port:
         config.port=args.port
 
-    LOLLMSWebUI.build_instance(config=config, lollms_paths=lollms_paths, socketio=sio)
+    LOLLMSWebUI.build_instance(config=config, lollms_paths=lollms_paths, args=args, socketio=sio)
     lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
     # Import all endpoints
     from lollms.server.endpoints.lollms_binding_files_server import router as lollms_binding_files_server_router
