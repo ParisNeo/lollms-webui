@@ -4260,13 +4260,13 @@ export default {
         imgModel:{
             get() {
                 try{
-                    idx = this.$store.state.modelsZoo.findIndex(item => item.name == this.$store.state.selectedModel)
+                    let idx = this.$store.state.modelsZoo.findIndex(item => item.name == this.$store.state.selectedModel)
                     if(idx>=0){
                         return this.$store.state.modelsZoo[idx].avatar
                     }
                 }
                 catch{
-
+                    console.log("error")
                 }
                 if (!this.isMounted) {
                     return defaultImgPlaceholder

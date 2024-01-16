@@ -8,7 +8,7 @@
             <RouterLink :to="{ name: 'playground' }" class="link-item dark:link-item-dark">
               Playground
             </RouterLink>
-            <RouterLink :to="{ name: 'interactive' }" class="link-item dark:link-item-dark">
+            <RouterLink v-if="this.$store.state.config.enable_voice_service" :to="{ name: 'interactive' }" class="link-item dark:link-item-dark">
               interactive
             </RouterLink>
             <RouterLink :to="{ name: 'nodes' }" class="link-item dark:link-item-dark">
