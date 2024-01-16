@@ -405,13 +405,13 @@ try:
 
             self.add_endpoint("/execute_code", "execute_code", self.execute_code, methods=["POST"])
 
+            self.add_endpoint("/update_binding_settings", "update_binding_settings", self.update_binding_settings, methods=["GET"])
 
             # ----
 
 
 
 
-            self.add_endpoint("/update_binding_settings", "update_binding_settings", self.update_binding_settings, methods=["GET"])
             
             
         def update_binding_settings(self):
