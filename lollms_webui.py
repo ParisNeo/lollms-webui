@@ -55,7 +55,6 @@ if not PackageManager.check_package_installed("requests"):
 if not PackageManager.check_package_installed("bs4"):
     PackageManager.install_package("beautifulsoup4")
 import requests
-from flask_socketio import SocketIO
 from bs4 import BeautifulSoup
 
 
@@ -95,7 +94,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         try_select_model=False,
         callback=None,
         args=None,
-        socketio = None
+        sio = None
     ):
         if LOLLMSWebUI.__instance is None:
             LOLLMSWebUI(
@@ -109,7 +108,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 try_select_model=try_select_model,
                 callback=callback,
                 args=args,
-                socketio=socketio
+                sio=sio
             )
         return LOLLMSWebUI.__instance    
     def __init__(
@@ -124,7 +123,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         try_select_model=False,
         callback=None,
         args=None,
-        socketio=None
+        sio=None
     ) -> None:
         super().__init__(
             config,
@@ -136,7 +135,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             try_select_binding=try_select_binding,
             try_select_model=try_select_model,
             callback=callback,
-            socketio=socketio
+            sio=sio
         )
         self.app_name:str = "LOLLMSWebUI"
         self.version:str = lollms_webui_version
@@ -205,14 +204,14 @@ class LOLLMSWebUI(LOLLMSElfServer):
         }
         if Media_on:
             try:
-                self.webcam = WebcamImageSender(socketio,lollmsCom=self)
+                self.webcam = WebcamImageSender(sio,lollmsCom=self)
             except:
                 self.webcam = None
             try:
                 self.rec_output_folder = lollms_paths.personal_outputs_path/"audio_rec"
                 self.rec_output_folder.mkdir(exist_ok=True, parents=True)
                 self.summoned = False
-                self.audio_cap = AudioRecorder(socketio,self.rec_output_folder/"rt.wav", callback=self.audio_callback,lollmsCom=self)
+                self.audio_cap = AudioRecorder(sio,self.rec_output_folder/"rt.wav", callback=self.audio_callback,lollmsCom=self)
             except:
                 self.audio_cap = None
                 self.rec_output_folder = None
@@ -223,7 +222,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
 
         # Define a WebSocket event handler
-        @socketio.event
+        @sio.event
         async def connect(sid, environ):
             #Create a new connection information
             self.connections[sid] = {
@@ -236,10 +235,10 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 "processing":False,
                 "schedule_for_deletion":False
             }
-            await self.socketio.emit('connected', to=sid) 
+            await self.sio.emit('connected', to=sid) 
             ASCIIColors.success(f'Client {sid} connected')
 
-        @socketio.event
+        @sio.event
         def disconnect(sid):
             try:
                 if self.connections[sid]["processing"]:
@@ -378,7 +377,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message.id, client_id))
                 self.connections[client_id]['generation_thread'].start()
                 
-                self.socketio.sleep(0.01)
+                self.sio.sleep(0.01)
                 ASCIIColors.info("Started generation task")
                 self.busy=True
                 #tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id, client_id))
@@ -994,7 +993,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 verbose=True,
             ):
         
-        run_async(partial(self.socketio.emit,'notification', {
+        run_async(partial(self.sio.emit,'notification', {
                                 'content': content,# self.connections[client_id]["generated_text"], 
                                 'notification_type': notification_type.value,
                                 "duration": duration,
@@ -1042,7 +1041,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             personality         = self.config["personalities"][self.config["active_personality_id"]],
         )  # first the content is empty, but we'll fill it at the end  
         run_async(partial(
-                    self.socketio.emit,'new_message',
+                    self.sio.emit,'new_message',
                         {
                             "sender":                   sender,
                             "message_type":             message_type.value,
@@ -1076,7 +1075,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         mtdt = json.dumps(metadata, indent=4) if metadata is not None and type(metadata)== list else metadata
         if self.nb_received_tokens==1:
             run_async(
-                partial(self.socketio.emit,'update_message', {
+                partial(self.sio.emit,'update_message', {
                                                 "sender": self.personality.name,
                                                 'id':self.connections[client_id]["current_discussion"].current_message.id, 
                                                 'content': "✍ warming up ...",# self.connections[client_id]["generated_text"],
@@ -1091,7 +1090,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             )
 
         run_async(
-            partial(self.socketio.emit,'update_message', {
+            partial(self.sio.emit,'update_message', {
                                             "sender": self.personality.name,
                                             'id':self.connections[client_id]["current_discussion"].current_message.id, 
                                             'content': chunk,# self.connections[client_id]["generated_text"],
@@ -1117,7 +1116,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         # Send final message
         self.connections[client_id]["current_discussion"].current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         run_async(
-            partial(self.socketio.emit,'close_message', {
+            partial(self.sio.emit,'close_message', {
                                             "sender": self.personality.name,
                                             "id": self.connections[client_id]["current_discussion"].current_message.id,
                                             "content":self.connections[client_id]["generated_text"],
@@ -1358,7 +1357,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
             else:
                 self.new_message(client_id, self.personality.name, "")
                 self.update_message(client_id, "✍ warming up ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_START)
-            self.socketio.sleep(0.01)
 
             # prepare query and reception
             self.discussion_messages, self.current_message, tokens, context_details = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type)
@@ -1453,7 +1451,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     title = self.make_discussion_title(d, client_id=client_id)
                     d.rename(title)
                     asyncio.run(
-                        self.socketio.emit('disucssion_renamed',{
+                        self.sio.emit('disucssion_renamed',{
                                                     'status': True,
                                                     'discussion_id':d.discussion_id,
                                                     'title':title

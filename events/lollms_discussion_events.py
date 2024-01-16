@@ -79,12 +79,12 @@ def add_events(sio:socketio):
                     finished_generating_at=None
                 )
  
-                await lollmsElfServer.socketio.emit('discussion_created',
+                await lollmsElfServer.sio.emit('discussion_created',
                             {'id':lollmsElfServer.connections[client_id]["current_discussion"].discussion_id},
                             to=client_id
                 )                        
             else:
-                await lollmsElfServer.socketio.emit('discussion_created',
+                await lollmsElfServer.sio.emit('discussion_created',
                             {'id':0},
                             to=client_id
                 )                        
@@ -104,7 +104,7 @@ def add_events(sio:socketio):
                     lollmsElfServer.connections[client_id]["current_discussion"] = lollmsElfServer.db.create_discussion()
             messages = lollmsElfServer.connections[client_id]["current_discussion"].get_messages()
             jsons = [m.to_json() for m in messages]
-            await lollmsElfServer.socketio.emit('discussion',
+            await lollmsElfServer.sio.emit('discussion',
                         jsons,
                         to=client_id
             )

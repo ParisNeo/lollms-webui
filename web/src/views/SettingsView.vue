@@ -950,7 +950,7 @@
                             </tr>                                        
                             <tr>
                             <td style="min-width: 200px;">
-                                <label for="install_sd_service" class="text-sm font-bold" style="margin-right: 1rem;">Reinstall SD service:</label>
+                                <label for="install_sd_service" class="text-sm font-bold" style="margin-right: 1rem;">Install SD service:</label>
                             </td>
                             <td>
                                 <div class="flex flex-row">
@@ -1003,7 +1003,7 @@
                             </tr>                                        
                             <tr>
                             <td style="min-width: 200px;">
-                                <label for="ollama_base_url" class="text-sm font-bold" style="margin-right: 1rem;">Reinstall Ollama service:</label>
+                                <label for="ollama_base_url" class="text-sm font-bold" style="margin-right: 1rem;">Install Ollama service:</label>
                             </td>
                             <td>
                                 <div class="flex flex-row">
@@ -1057,7 +1057,7 @@
                             </tr>                                        
                             <tr>
                             <td style="min-width: 200px;">
-                                <label for="petals_base_url" class="text-sm font-bold" style="margin-right: 1rem;">Reinstall Petals service:</label>
+                                <label for="petals_base_url" class="text-sm font-bold" style="margin-right: 1rem;">Install Petals service:</label>
                             </td>
                             <td>
                                 <div class="flex flex-row">
@@ -2871,7 +2871,7 @@ export default {
             // }
             this.modelDownlaodInProgress = false
             this.addModel = {}
-            socket.emit('cancel_install', { model_name: modelEntry.model_name, binding_folder: modelEntry.binding_folder, model_url: modelEntry.model_url, patreon: model.patreon?model.patreon:"None"});
+            socket.emit('cancel_install', { model_name: modelEntry.model_name, binding_folder: modelEntry.binding_folder, model_url: modelEntry.model_url, patreon: modelEntry.patreon?modelEntry.patreon:"None"});
             this.$store.state.toast.showToast("Model installation aborted", 4, false)
         },
 

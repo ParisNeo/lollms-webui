@@ -120,7 +120,7 @@ def parse_requirements_file(requirements_path):
 class LoLLMsAPI(LollmsApplication):
     def __init__(self, config:LOLLMSConfig, socketio:SocketIO, config_file_path:str, lollms_paths: LollmsPaths) -> None:
 
-        self.socketio = socketio
+        self.sio = socketio
         super().__init__("Lollms_webui",config, lollms_paths, callback=self.process_chunk, socketio=socketio)
 
 
@@ -216,13 +216,13 @@ class LoLLMsAPI(LollmsApplication):
                 "processing":False,
                 "schedule_for_deletion":False
             }
-            self.socketio.emit('connected', room=request.sid) 
+            self.sio.emit('connected', room=request.sid) 
             ASCIIColors.success(f'Client {request.sid} connected')
 
         @socketio.on('disconnect')
         def disconnect():
             try:
-                self.socketio.emit('disconnected', room=request.sid) 
+                self.sio.emit('disconnected', room=request.sid) 
                 if self.connections[request.sid]["processing"]:
                     self.connections[request.sid]["schedule_for_deletion"]=True
                 else:
@@ -313,7 +313,7 @@ class LoLLMsAPI(LollmsApplication):
                         self.error("No model selected. Please make sure you select a model before starting generation", client_id = client_id)
                         return          
                     self.new_message(client_id, self.config.user_name, message, sender_type=SENDER_TYPES.SENDER_TYPES_USER, open=True)
-                    self.socketio.sleep(0.01)            
+                    self.sio.sleep(0.01)            
             else:
                 if self.personality is None:
                     self.warning("Select a personality")
@@ -326,7 +326,7 @@ class LoLLMsAPI(LollmsApplication):
                         self.error("No model selected. Please make sure you select a model before starting generation", client_id=client_id)
                         return          
                     self.new_message(client_id, self.personality.name, "[edit this to put your ai answer start]", open=True)
-                    self.socketio.sleep(0.01)                    
+                    self.sio.sleep(0.01)                    
         
         # -- interactive view --
 
@@ -358,8 +358,8 @@ class LoLLMsAPI(LollmsApplication):
         def upgrade_vectorization():
             if self.config.data_vectorization_activate and self.config.use_discussions_history:
                 try:
-                    self.socketio.emit('show_progress')
-                    self.socketio.sleep(0)
+                    self.sio.emit('show_progress')
+                    self.sio.sleep(0)
                     ASCIIColors.yellow("0- Detected discussion vectorization request")
                     folder = self.lollms_paths.personal_databases_path/"vectorized_dbs"
                     folder.mkdir(parents=True, exist_ok=True)
@@ -371,8 +371,8 @@ class LoLLMsAPI(LollmsApplication):
                     index = 0
                     nb_discussions = len(discussions)
                     for (title,discussion) in tqdm(discussions):
-                        self.socketio.emit('update_progress',{'value':int(100*(index/nb_discussions))})
-                        self.socketio.sleep(0)
+                        self.sio.emit('update_progress',{'value':int(100*(index/nb_discussions))})
+                        self.sio.sleep(0)
                         index += 1
                         if discussion!='':
                             skill = self.learn_from_discussion(title, discussion)
@@ -387,8 +387,8 @@ class LoLLMsAPI(LollmsApplication):
                     ASCIIColors.yellow("Ready")
                 except Exception as ex:
                     ASCIIColors.error(f"Couldn't vectorize database:{ex}")
-            self.socketio.emit('hide_progress')
-            self.socketio.sleep(0)
+            self.sio.emit('hide_progress')
+            self.sio.sleep(0)
 
 
 
@@ -402,14 +402,14 @@ class LoLLMsAPI(LollmsApplication):
                 model_url = data["model_url"]
                 signature = f"{model_name}_{binding_folder}_{model_url}"
                 self.download_infos[signature]["cancel"]=True
-                self.socketio.emit('canceled', {
+                self.sio.emit('canceled', {
                                                 'status': True
                                                 },
                                                 room=request.sid 
                                     )            
             except Exception as ex:
                 trace_exception(ex)
-                self.socketio.emit('canceled', {
+                self.sio.emit('canceled', {
                                                 'status': False,
                                                 'error':str(ex)
                                                 },
@@ -418,196 +418,8 @@ class LoLLMsAPI(LollmsApplication):
 
         @socketio.on('install_model')
         def install_model(data):
-            room_id = request.sid            
-                     
-            def install_model_():
-                print("Install model triggered")
-                model_path = data["path"].replace("\\","/")
-
-                if data["type"].lower() in model_path.lower():
-                    model_type:str=data["type"]
-                else:
-                    mtt = None
-                    for mt in self.binding.models_dir_names:
-                        if mt.lower() in  model_path.lower():
-                            mtt = mt
-                            break
-                    if mtt:
-                        model_type = mtt
-                    else:
-                        model_type:str=self.binding.models_dir_names[0]
-
-                progress = 0
-                installation_dir = self.binding.searchModelParentFolder(model_path.split('/')[-1], model_type)
-                if model_type=="gptq" or  model_type=="awq" or model_type=="transformers":
-                    parts = model_path.split("/")
-                    if len(parts)==2:
-                        filename = parts[1]
-                    else:
-                        filename = parts[4]
-                    installation_path = installation_dir / filename
-                elif model_type=="gpt4all":
-                    filename = data["variant_name"]
-                    model_path = "http://gpt4all.io/models/gguf/"+filename
-                    installation_path = installation_dir / filename
-                else:
-                    filename = Path(model_path).name
-                    installation_path = installation_dir / filename
-                print("Model install requested")
-                print(f"Model path : {model_path}")
-
-                model_name = filename
-                binding_folder = self.config["binding_name"]
-                model_url = model_path
-                signature = f"{model_name}_{binding_folder}_{model_url}"
-                try:
-                    self.download_infos[signature]={
-                        "start_time":datetime.now(),
-                        "total_size":self.binding.get_file_size(model_path),
-                        "downloaded_size":0,
-                        "progress":0,
-                        "speed":0,
-                        "cancel":False
-                    }
-                    
-                    if installation_path.exists():
-                        print("Error: Model already exists. please remove it first")
-                        socketio.emit('install_progress',{
-                                                            'status': False,
-                                                            'error': f'model already exists. Please remove it first.\nThe model can be found here:{installation_path}',
-                                                            'model_name' : model_name,
-                                                            'binding_folder' : binding_folder,
-                                                            'model_url' : model_url,
-                                                            'start_time': self.download_infos[signature]['start_time'].strftime("%Y-%m-%d %H:%M:%S"),
-                                                            'total_size': self.download_infos[signature]['total_size'],
-                                                            'downloaded_size': self.download_infos[signature]['downloaded_size'],
-                                                            'progress': self.download_infos[signature]['progress'],
-                                                            'speed': self.download_infos[signature]['speed'],
-                                                        }, room=room_id
-                                    )
-                        return
-                    
-                    socketio.emit('install_progress',{
-                                                    'status': True,
-                                                    'progress': progress,
-                                                    'model_name' : model_name,
-                                                    'binding_folder' : binding_folder,
-                                                    'model_url' : model_url,
-                                                    'start_time': self.download_infos[signature]['start_time'].strftime("%Y-%m-%d %H:%M:%S"),
-                                                    'total_size': self.download_infos[signature]['total_size'],
-                                                    'downloaded_size': self.download_infos[signature]['downloaded_size'],
-                                                    'progress': self.download_infos[signature]['progress'],
-                                                    'speed': self.download_infos[signature]['speed'],
-
-                                                    }, room=room_id)
-                    
-                    def callback(downloaded_size, total_size):
-                        progress = (downloaded_size / total_size) * 100
-                        now = datetime.now()
-                        dt = (now - self.download_infos[signature]['start_time']).total_seconds()
-                        speed = downloaded_size/dt
-                        self.download_infos[signature]['downloaded_size'] = downloaded_size
-                        self.download_infos[signature]['speed'] = speed
-
-                        if progress - self.download_infos[signature]['progress']>2:
-                            self.download_infos[signature]['progress'] = progress
-                            socketio.emit('install_progress',{
-                                                            'status': True,
-                                                            'model_name' : model_name,
-                                                            'binding_folder' : binding_folder,
-                                                            'model_url' : model_url,
-                                                            'start_time': self.download_infos[signature]['start_time'].strftime("%Y-%m-%d %H:%M:%S"),
-                                                            'total_size': self.download_infos[signature]['total_size'],
-                                                            'downloaded_size': self.download_infos[signature]['downloaded_size'],
-                                                            'progress': self.download_infos[signature]['progress'],
-                                                            'speed': self.download_infos[signature]['speed'],
-                                                            }, room=room_id)
-                        
-                        if self.download_infos[signature]["cancel"]:
-                            raise Exception("canceled")
-                            
-                        
-                    if hasattr(self.binding, "download_model"):
-                        try:
-                            self.binding.download_model(model_path, installation_path, callback)
-                        except Exception as ex:
-                            ASCIIColors.warning(str(ex))
-                            trace_exception(ex)
-                            socketio.emit('install_progress',{
-                                        'status': False,
-                                        'error': 'canceled',
-                                        'model_name' : model_name,
-                                        'binding_folder' : binding_folder,
-                                        'model_url' : model_url,
-                                        'start_time': self.download_infos[signature]['start_time'].strftime("%Y-%m-%d %H:%M:%S"),
-                                        'total_size': self.download_infos[signature]['total_size'],
-                                        'downloaded_size': self.download_infos[signature]['downloaded_size'],
-                                        'progress': self.download_infos[signature]['progress'],
-                                        'speed': self.download_infos[signature]['speed'],
-                                    }, room=room_id
-                            )
-                            del self.download_infos[signature]
-                            try:
-                                if installation_path.is_dir():
-                                    shutil.rmtree(installation_path)
-                                else:
-                                    installation_path.unlink()
-                            except Exception as ex:
-                                trace_exception(ex)
-                                ASCIIColors.error(f"Couldn't delete file. Please try to remove it manually.\n{installation_path}")
-                            return
-
-                    else:
-                        try:
-                            self.download_file(model_path, installation_path, callback)
-                        except Exception as ex:
-                            ASCIIColors.warning(str(ex))
-                            trace_exception(ex)
-                            socketio.emit('install_progress',{
-                                        'status': False,
-                                        'error': 'canceled',
-                                        'model_name' : model_name,
-                                        'binding_folder' : binding_folder,
-                                        'model_url' : model_url,
-                                        'start_time': self.download_infos[signature]['start_time'].strftime("%Y-%m-%d %H:%M:%S"),
-                                        'total_size': self.download_infos[signature]['total_size'],
-                                        'downloaded_size': self.download_infos[signature]['downloaded_size'],
-                                        'progress': self.download_infos[signature]['progress'],
-                                        'speed': self.download_infos[signature]['speed'],
-                                    }, room=room_id
-                            )
-                            del self.download_infos[signature]
-                            installation_path.unlink()
-                            return                        
-                    socketio.emit('install_progress',{
-                                                    'status': True, 
-                                                    'error': '',
-                                                    'model_name' : model_name,
-                                                    'binding_folder' : binding_folder,
-                                                    'model_url' : model_url,
-                                                    'start_time': self.download_infos[signature]['start_time'].strftime("%Y-%m-%d %H:%M:%S"),
-                                                    'total_size': self.download_infos[signature]['total_size'],
-                                                    'downloaded_size': self.download_infos[signature]['downloaded_size'],
-                                                    'progress': 100,
-                                                    'speed': self.download_infos[signature]['speed'],
-                                                    }, room=room_id)
-                    del self.download_infos[signature]
-                except Exception as ex:
-                    trace_exception(ex)
-                    socketio.emit('install_progress',{
-                                'status': False,
-                                'error': str(ex),
-                                'model_name' : model_name,
-                                'binding_folder' : binding_folder,
-                                'model_url' : model_url,
-                                'start_time': '',
-                                'total_size': 0,
-                                'downloaded_size': 0,
-                                'progress': 0,
-                                'speed': 0,
-                            }, room=room_id
-                    )                    
-            tpe = threading.Thread(target=install_model_, args=())
+            client_id = request.sid            
+            tpe = threading.Thread(target=self.binding.install_model, args=(data["type"], data["path"], data["variant_name"], client_id))
             tpe.start()
 
         @socketio.on('uninstall_model')
@@ -705,12 +517,12 @@ class LoLLMsAPI(LollmsApplication):
                     finished_generating_at=None
                 )
  
-                self.socketio.emit('discussion_created',
+                self.sio.emit('discussion_created',
                             {'id':self.connections[client_id]["current_discussion"].discussion_id},
                             room=client_id
                 )                        
             else:
-                self.socketio.emit('discussion_created',
+                self.sio.emit('discussion_created',
                             {'id':0},
                             room=client_id
                 )                        
@@ -730,7 +542,7 @@ class LoLLMsAPI(LollmsApplication):
                     self.connections[client_id]["current_discussion"] = self.db.create_discussion()
             messages = self.connections[client_id]["current_discussion"].get_messages()
             jsons = [m.to_json() for m in messages]
-            self.socketio.emit('discussion',
+            self.sio.emit('discussion',
                         jsons,
                         room=client_id
             )
@@ -801,10 +613,10 @@ class LoLLMsAPI(LollmsApplication):
                 else:
                     result = self.personality.add_file(file_path, partial(self.process_chunk, client_id=client_id))
 
-                self.socketio.emit('file_received', {'status': True, 'filename': filename})
+                self.sio.emit('file_received', {'status': True, 'filename': filename})
             else:
                 # Request the next chunk from the client
-                self.socketio.emit('request_next_chunk', {'offset': offset + len(chunk)})
+                self.sio.emit('request_next_chunk', {'offset': offset + len(chunk)})
 
         @socketio.on('execute_command')
         def execute_command(data):
@@ -820,7 +632,7 @@ class LoLLMsAPI(LollmsApplication):
             self.close_message(client_id)
         
         # -- misc --
-        @self.socketio.on('execute_python_code')
+        @self.sio.on('execute_python_code')
         def execute_python_code(data):
             """Executes Python code and returns the output."""
             client_id = request.sid
@@ -841,7 +653,7 @@ class LoLLMsAPI(LollmsApplication):
 
             # Get the output.
             output = interpreter.getvalue()
-            self.socketio.emit("execution_output", {"output":output,"execution_time":end_time - start_time}, room=client_id)
+            self.sio.emit("execution_output", {"output":output,"execution_time":end_time - start_time}, room=client_id)
 
 
         # -- generation --
@@ -856,24 +668,24 @@ class LoLLMsAPI(LollmsApplication):
             ASCIIColors.error(f'Client {request.sid} canceled generation')
             self.busy=False
 
-        @self.socketio.on('cancel_text_generation')
+        @self.sio.on('cancel_text_generation')
         def cancel_text_generation(data):
             client_id = request.sid
             self.connections[client_id]["requested_stop"]=True
             print(f"Client {client_id} requested canceling generation")
-            self.socketio.emit("generation_canceled", {"message":"Generation is canceled."}, room=client_id)
-            self.socketio.sleep(0)
+            self.sio.emit("generation_canceled", {"message":"Generation is canceled."}, room=client_id)
+            self.sio.sleep(0)
             self.busy = False
 
         # A copy of the original lollms-server generation code needed for playground
-        @self.socketio.on('generate_text')
+        @self.sio.on('generate_text')
         def handle_generate_text(data):
             client_id = request.sid
             self.cancel_gen = False
             ASCIIColors.info(f"Text generation requested by client: {client_id}")
             if self.busy:
-                self.socketio.emit("busy", {"message":"I am busy. Come back later."}, room=client_id)
-                self.socketio.sleep(0)
+                self.sio.emit("busy", {"message":"I am busy. Come back later."}, room=client_id)
+                self.sio.sleep(0)
                 ASCIIColors.warning(f"OOps request {client_id}  refused!! Server busy")
                 return
             def generate_text():
@@ -908,8 +720,8 @@ class LoLLMsAPI(LollmsApplication):
                                 ASCIIColors.success(f"generated:{len(self.answer['full_text'].split())} words", end='\r')
                                 if text is not None:
                                     self.answer["full_text"] = self.answer["full_text"] + text
-                                    self.socketio.emit('text_chunk', {'chunk': text, 'type':MSG_TYPE.MSG_TYPE_CHUNK.value}, room=client_id)
-                                    self.socketio.sleep(0)
+                                    self.sio.emit('text_chunk', {'chunk': text, 'type':MSG_TYPE.MSG_TYPE_CHUNK.value}, room=client_id)
+                                    self.sio.sleep(0)
                             if client_id in self.connections:# Client disconnected                      
                                 if self.connections[client_id]["requested_stop"]:
                                     return False
@@ -940,10 +752,10 @@ class LoLLMsAPI(LollmsApplication):
                             if client_id in self.connections:
                                 if not self.connections[client_id]["requested_stop"]:
                                     # Emit the generated text to the client
-                                    self.socketio.emit('text_generated', {'text': generated_text}, room=client_id)                
-                                    self.socketio.sleep(0)
+                                    self.sio.emit('text_generated', {'text': generated_text}, room=client_id)                
+                                    self.sio.sleep(0)
                         except Exception as ex:
-                            self.socketio.emit('generation_error', {'error': str(ex)}, room=client_id)
+                            self.sio.emit('generation_error', {'error': str(ex)}, room=client_id)
                             ASCIIColors.error(f"\ndone")
                         self.busy = False
                     else:
@@ -982,8 +794,8 @@ class LoLLMsAPI(LollmsApplication):
                             def callback(text, message_type: MSG_TYPE, metadata:dict={}):
                                 if message_type == MSG_TYPE.MSG_TYPE_CHUNK:
                                     self.answer["full_text"] = self.answer["full_text"] + text
-                                    self.socketio.emit('text_chunk', {'chunk': text}, room=client_id)
-                                    self.socketio.sleep(0)
+                                    self.sio.emit('text_chunk', {'chunk': text}, room=client_id)
+                                    self.sio.sleep(0)
                                 try:
                                     if self.connections[client_id]["requested_stop"]:
                                         return False
@@ -1013,19 +825,19 @@ class LoLLMsAPI(LollmsApplication):
                             ASCIIColors.success("\ndone")
 
                             # Emit the generated text to the client
-                            self.socketio.emit('text_generated', {'text': generated_text}, room=client_id)
-                            self.socketio.sleep(0)
+                            self.sio.emit('text_generated', {'text': generated_text}, room=client_id)
+                            self.sio.sleep(0)
                         except Exception as ex:
-                            self.socketio.emit('generation_error', {'error': str(ex)}, room=client_id)
+                            self.sio.emit('generation_error', {'error': str(ex)}, room=client_id)
                             ASCIIColors.error(f"\ndone")
                         self.busy = False
                 except Exception as ex:
                         trace_exception(ex)
-                        self.socketio.emit('generation_error', {'error': str(ex)}, room=client_id)
+                        self.sio.emit('generation_error', {'error': str(ex)}, room=client_id)
                         self.busy = False
 
             # Start the text generation task in a separate thread
-            task = self.socketio.start_background_task(target=generate_text)
+            task = self.sio.start_background_task(target=generate_text)
 
         @socketio.on('generate_msg')
         def generate_msg(data):
@@ -1065,7 +877,7 @@ class LoLLMsAPI(LollmsApplication):
                 self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message.id, client_id))
                 self.connections[client_id]['generation_thread'].start()
                 
-                self.socketio.sleep(0.01)
+                self.sio.sleep(0.01)
                 ASCIIColors.info("Started generation task")
                 self.busy=True
                 #tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id, client_id))
@@ -1157,7 +969,7 @@ class LoLLMsAPI(LollmsApplication):
                 self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message.id, client_id))
                 self.connections[client_id]['generation_thread'].start()
                 
-                self.socketio.sleep(0.01)
+                self.sio.sleep(0.01)
                 ASCIIColors.info("Started generation task")
                 self.busy=True
                 #tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id, client_id))
@@ -1747,14 +1559,14 @@ class LoLLMsAPI(LollmsApplication):
                 display_type:NotificationDisplayType=NotificationDisplayType.TOAST,
                 verbose=True
             ):
-        self.socketio.emit('notification', {
+        self.sio.emit('notification', {
                             'content': content,# self.connections[client_id]["generated_text"], 
                             'notification_type': notification_type.value,
                             "duration": duration,
                             'display_type':display_type.value
                         }, room=client_id
                         )  
-        self.socketio.sleep(0.01)
+        self.sio.sleep(0.01)
         if verbose:
             if notification_type==NotificationType.NOTIF_SUCCESS:
                 ASCIIColors.success(content)
@@ -1795,7 +1607,7 @@ class LoLLMsAPI(LollmsApplication):
             personality         = self.config["personalities"][self.config["active_personality_id"]],
         )  # first the content is empty, but we'll fill it at the end  
 
-        self.socketio.emit('new_message',
+        self.sio.emit('new_message',
                 {
                     "sender":                   sender,
                     "message_type":             message_type.value,
@@ -1827,7 +1639,7 @@ class LoLLMsAPI(LollmsApplication):
         self.connections[client_id]["current_discussion"].current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         mtdt = json.dumps(metadata, indent=4) if metadata is not None and type(metadata)== list else metadata
         if self.nb_received_tokens==1:
-            self.socketio.emit('update_message', {
+            self.sio.emit('update_message', {
                                             "sender": self.personality.name,
                                             'id':self.connections[client_id]["current_discussion"].current_message.id, 
                                             'content': "✍ warming up ...",# self.connections[client_id]["generated_text"],
@@ -1841,7 +1653,7 @@ class LoLLMsAPI(LollmsApplication):
                                 )
 
 
-        self.socketio.emit('update_message', {
+        self.sio.emit('update_message', {
                                         "sender": self.personality.name,
                                         'id':self.connections[client_id]["current_discussion"].current_message.id, 
                                         'content': chunk,# self.connections[client_id]["generated_text"],
@@ -1853,7 +1665,7 @@ class LoLLMsAPI(LollmsApplication):
                                         'metadata':metadata
                                     }, room=client_id
                             )
-        self.socketio.sleep(0.01)
+        self.sio.sleep(0.01)
         if msg_type != MSG_TYPE.MSG_TYPE_INFO:
             self.connections[client_id]["current_discussion"].update_message(self.connections[client_id]["generated_text"], new_metadata=mtdt, new_ui=ui)
 
@@ -1866,7 +1678,7 @@ class LoLLMsAPI(LollmsApplication):
         self.connections[client_id]["generated_text"]=self.connections[client_id]["generated_text"].split("!@>")[0]
         # Send final message
         self.connections[client_id]["current_discussion"].current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.socketio.emit('close_message', {
+        self.sio.emit('close_message', {
                                         "sender": self.personality.name,
                                         "id": self.connections[client_id]["current_discussion"].current_message.id,
                                         "content":self.connections[client_id]["generated_text"],
@@ -2104,7 +1916,7 @@ class LoLLMsAPI(LollmsApplication):
             else:
                 self.new_message(client_id, self.personality.name, "")
                 self.update_message(client_id, "✍ warming up ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_START)
-            self.socketio.sleep(0.01)
+            self.sio.sleep(0.01)
 
             # prepare query and reception
             self.discussion_messages, self.current_message, tokens = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type)
@@ -2184,7 +1996,7 @@ class LoLLMsAPI(LollmsApplication):
 
             # Send final message
             self.close_message(client_id)
-            self.socketio.sleep(0.01)
+            self.sio.sleep(0.01)
             self.connections[client_id]["processing"]=False
             if self.connections[client_id]["schedule_for_deletion"]:
                 del self.connections[client_id]
@@ -2198,7 +2010,7 @@ class LoLLMsAPI(LollmsApplication):
                 if ttl is None or ttl=="" or ttl=="untitled":
                     title = self.make_discussion_title(d, client_id=client_id)
                     d.rename(title)
-                    self.socketio.emit('disucssion_renamed',{
+                    self.sio.emit('disucssion_renamed',{
                                                 'status': True,
                                                 'discussion_id':d.discussion_id,
                                                 'title':title

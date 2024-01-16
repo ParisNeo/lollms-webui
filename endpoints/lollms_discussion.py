@@ -93,7 +93,7 @@ def select_database(data:DatabaseSelectionParameters):
             nb_discussions = len(discussions)
 
             for (title,discussion) in tqdm(discussions):
-                lollmsElfServer.socketio.emit('update_progress',{'value':int(100*(index/nb_discussions))})
+                lollmsElfServer.sio.emit('update_progress',{'value':int(100*(index/nb_discussions))})
                 index += 1
                 if discussion!='':
                     skill = lollmsElfServer.learn_from_discussion(title, discussion)

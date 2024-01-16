@@ -35,11 +35,11 @@ async def get_lollms_webui_version():
 async def restart_program():
    """Restart the program."""
    # Stop the socketIO server
-   lollmsElfServer.socketio.shutdown()
+   lollmsElfServer.sio.shutdown()
    # Sleep for 1 second before rebooting
-   lollmsElfServer.socketio.sleep(1)
+   lollmsElfServer.sio.sleep(1)
    # Reboot the program
-   lollmsElfServer.socketio.reboot = True
+   lollmsElfServer.sio.reboot = True
 
 @router.get("/update_software")
 async def update_software():
@@ -55,7 +55,7 @@ async def update_software():
    ASCIIColors.info("")
    ASCIIColors.info("")
    # Stop the socketIO server
-   lollmsElfServer.socketio.shutdown()
+   lollmsElfServer.sio.shutdown()
 
    # Run the update script using the provided arguments
    lollmsElfServer.run_update_script(lollmsElfServer.args)

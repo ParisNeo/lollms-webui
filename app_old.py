@@ -850,7 +850,7 @@ try:
             if self.config["debug"]:
                 print("Configuration saved")
             # Tell that the setting was changed
-            self.socketio.emit('save_settings', {"status":True})
+            self.sio.emit('save_settings', {"status":True})
             return jsonify({"status":True})
         
 
@@ -1383,7 +1383,7 @@ try:
                     nb_discussions = len(discussions)
 
                     for (title,discussion) in tqdm(discussions):
-                        self.socketio.emit('update_progress',{'value':int(100*(index/nb_discussions))})
+                        self.sio.emit('update_progress',{'value':int(100*(index/nb_discussions))})
                         index += 1
                         if discussion!='':
                             skill = self.learn_from_discussion(title, discussion)
@@ -1738,8 +1738,8 @@ try:
 
         def restart_program(self):
             socketio.reboot=True
-            self.socketio.stop()
-            self.socketio.sleep(1)
+            self.sio.stop()
+            self.sio.sleep(1)
             
 
         def update_software(self):
@@ -1752,7 +1752,7 @@ try:
             ASCIIColors.info("")
             ASCIIColors.info("")
             ASCIIColors.info("")
-            self.socketio.stop()
+            self.sio.stop()
             run_update_script(self.args)
             sys.exit()
             
