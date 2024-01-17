@@ -176,8 +176,8 @@ async def delete_discussion(request: Request):
     try:
         data = (await request.json())
 
-        client_id       = data.client_id
-        discussion_id   = data.id
+        client_id           = data.get("client_id")
+        discussion_id       = data.get("id")
         lollmsElfServer.connections[client_id]["current_discussion"] = Discussion(discussion_id, lollmsElfServer.db)
         lollmsElfServer.connections[client_id]["current_discussion"].delete_discussion()
         lollmsElfServer.connections[client_id]["current_discussion"] = None
