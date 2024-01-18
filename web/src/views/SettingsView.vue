@@ -2223,6 +2223,7 @@ export default {
     data() {
 
         return {
+            defaultModelImgPlaceholder:defaultModelImgPlaceholder,
             voices: [],
             voice_languages:{
                             "Arabic": "ar",
