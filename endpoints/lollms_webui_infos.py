@@ -13,11 +13,12 @@ from fastapi import APIRouter, Request
 import pkg_resources
 from lollms_webui import LOLLMSWebUI
 from ascii_colors import ASCIIColors
-from lollms.utilities import load_config
+from lollms.utilities import load_config, run_async
 from pathlib import Path
 from typing import List
 import sys
 import socketio
+import time
 # ----------------------- Defining router and main class ------------------------------
 
 # Create an instance of the LoLLMSWebUI class
@@ -35,9 +36,9 @@ async def get_lollms_webui_version():
 async def restart_program():
    """Restart the program."""
    # Stop the socketIO server
-   lollmsElfServer.sio.shutdown()
+   run_async(lollmsElfServer.sio.shutdown)
    # Sleep for 1 second before rebooting
-   lollmsElfServer.sio.sleep(1)
+   time.sleep(1)
    # Reboot the program
    lollmsElfServer.sio.reboot = True
 
@@ -55,7 +56,9 @@ async def update_software():
    ASCIIColors.info("")
    ASCIIColors.info("")
    # Stop the socketIO server
-   lollmsElfServer.sio.shutdown()
+   run_async(lollmsElfServer.sio.shutdown)
+   # Sleep for 1 second before rebooting
+   time.sleep(1)
 
    # Run the update script using the provided arguments
    lollmsElfServer.run_update_script(lollmsElfServer.args)

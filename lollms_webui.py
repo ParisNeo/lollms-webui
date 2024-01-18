@@ -75,7 +75,7 @@ def terminate_thread(thread):
             raise SystemError("Failed to terminate the thread.")
         else:
             ASCIIColors.yellow("Canceled successfully")# The current version of the webui
-lollms_webui_version="9.0 (alpha)"
+lollms_webui_version="9.0"
 
 
 
@@ -917,8 +917,10 @@ class LOLLMSWebUI(LOLLMSElfServer):
             message_tokens = full_message_list[i]
             discussion_messages += self.model.detokenize(message_tokens)
         
-        ai_prefix = self.model.detokenize(full_message_list[-1])
-
+        if len(full_message_list)>0:
+            ai_prefix = self.model.detokenize(full_message_list[-1])
+        else:
+            ai_prefix = ""
         # Build the final prompt by concatenating the conditionning and discussion messages
         prompt_data = conditionning + documentation + knowledge + user_description + discussion_messages + positive_boost + negative_boost + force_language + fun_mode + ai_prefix
 
