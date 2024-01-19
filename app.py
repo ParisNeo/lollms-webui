@@ -25,7 +25,8 @@ import threading
 app = FastAPI()
 
 # Create a Socket.IO server
-sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")  # Enable CORS for all origins
+sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*", ping_timeout=1200, ping_interval=30)  # Enable CORS for all origins
+
 
 
 @sio.event
