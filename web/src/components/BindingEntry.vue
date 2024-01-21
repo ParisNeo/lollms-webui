@@ -55,6 +55,12 @@
 
           <span class="sr-only">Click to install</span>
         </button>
+        <button v-if="binding.installed" title="Click to install" type="button" @click.stop="toggleInstall"
+          class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          Install another version or install extra
+
+          <span class="sr-only">Click to install</span>
+        </button>        
         <button v-if="binding.installed" title="Click to Reinstall binding" type="button"  @click.stop="toggleReinstall"
           class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-green-700 hover:bg-red-800 focus:ring-4 focus:ring-green-300  rounded-lg  dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-red-900">
           Reinstall
