@@ -31,7 +31,7 @@
         Custom model
       </div>
       <div>
-        <button v-if="model.isInstalled" title="Delete file from disk" type="button" @click.stop="toggleInstall"
+        <button v-if="model.isInstalled" title="Delete file from disk" type="button" @click.stop="uninstall"
           class="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-center focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  rounded-lg  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
           Uninstall
           <span class="sr-only">Remove</span>
@@ -297,6 +297,14 @@ export default {
     defaultImg(event) {
       event.target.src = defaultImgPlaceholder
     },
+    install(){
+      this.onInstall(this);
+    },
+    uninstall(){
+      if (this.isInstalled) {
+        this.onUninstall(this);
+      }        
+    },
     toggleInstall() {
 
       if (this.isInstalled) {
@@ -351,15 +359,19 @@ export default {
     },
     commandsList(){
       let main_menu = [
-                {name:this.model.isInstalled?"Uninstall":"Install", icon: "feather:settings", is_file:false, value:this.toggleInstall},
-                {name:"Copy model info to clipboard", icon: "feather:settings", is_file:false, value:this.toggleCopy},
-              ];
-        if(this.selected){
-          main_menu.push({name:"Reload", icon: "feather:refresh-ccw", is_file:false, value:this.toggleSelected})
-        }
+        {name:this.model.isInstalled?"Install Extra":"Install", icon: "feather:settings", is_file:false, value:this.install},
+        {name:"Copy model info to clipboard", icon: "feather:settings", is_file:false, value:this.toggleCopy},
+      ];
+      if(this.model.isInstalled){
+          main_menu.push({name:"UnInstall", icon: "feather:settings", is_file:false, value:this.uninstall})
+      }
+
+      if(this.selected){
+        main_menu.push({name:"Reload", icon: "feather:refresh-ccw", is_file:false, value:this.toggleSelected})
+      }
         return main_menu
-      },  
-      selected_computed(){
+    },  
+    selected_computed(){
         return this.selected
     },    
     fileSize: {
