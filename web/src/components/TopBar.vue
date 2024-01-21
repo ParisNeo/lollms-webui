@@ -7,7 +7,7 @@
                 <div class="flex items-center gap-3 flex-1">
                     <img class="w-12  hover:scale-95 duration-150 " title="LoLLMS WebUI" src="@/assets/logo.png" alt="Logo">
                     <div class="flex flex-col">
-                    <p class="text-2xl ">Lord of Large Language and Multimodal Systems</p>
+                    <p class="text-2xl ">LoLLMS</p>
                     <p class="text-gray-400 ">One tool to rule them all</p>
 
                     </div>

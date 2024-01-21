@@ -1276,7 +1276,7 @@
                                 Select binding first!
                             </div>
 
-                            <div v-if="!isModelSelected && configFile.binding_name"
+                            <div v-if="!configFile.model_name && configFile.binding_name"
                                 class="text-base text-red-600 flex gap-3 items-center mr-2">
                                 <i data-feather="alert-triangle" class="flex-shrink-0"></i>
                                 No model selected!
@@ -1387,8 +1387,7 @@
                                     <button ref="load_more_models" class="relative items-start p-4 hover:bg-primary-light rounded-lg mb-2 shadow-lg border-2 select-none" @click="load_more_models">Load more models</button>
                                 </TransitionGroup>
                             </div>
-                        </div>
-                    
+                        </div>                    
                     <!-- EXPAND / COLLAPSE BUTTON -->
                     <button v-if="mzl_collapsed"
                         class="text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
@@ -1400,139 +1399,105 @@
                         title="Expand" type="button" @click="open_mzl">
                         <i data-feather="chevron-down"></i>
                     </button>
-                </div>
-
-            </div>
-            <!-- ADD MODELS -->
-            <div
-                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
-                <div class="flex flex-row p-3">
-                    <button @click.stop="mzdc_collapsed = !mzdc_collapsed"
-                        class="text-2xl hover:text-primary  p-2 -m-2 w-full text-left flex items-center">
-                        <div v-show="mzdc_collapsed" ><i data-feather='chevron-right'></i></div>
-                        <div v-show="!mzdc_collapsed" ><i data-feather='chevron-down'></i></div>
-                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
-                            Add models for binding</h3>
-                        <div v-if="!binding_name" class="text-base text-red-600 flex gap-3 items-center mr-2">
-                            <i data-feather="alert-triangle" class="flex-shrink-0"></i>
-                            No binding selected!
-                        </div>
-
-                        <div v-if="configFile.binding_name" class="mr-2">|</div>
-
-                        <div v-if="configFile.binding_name"
-                            class=" text-base font-semibold cursor-pointer select-none items-center">
-
-                            <div class="flex gap-1 items-center">
-                                <img :src="imgBinding" class="w-8 h-8 rounded-full object-fill text-blue-700">
-                                <h3 class="font-bold font-large text-lg line-clamp-1">
-                                    <!-- {{ configFile.binding_name }} -->
-                                    {{ binding_name }}
-                                </h3>
-                            </div>
-                        </div>
-                    </button>
-                </div>
-                <div :class="{ 'hidden': mzdc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
-
                     <div class="mb-2">
-                        <div class="p-2  ">
-                            <div>
-                                <div class="mb-3">
-                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Create a reference from local file path:</label>
-                                    <input type="text" v-model="reference_path"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="Enter Path ..." required>
-                                </div>
-
-                                <button type="button" @click.stop="onCreateReference()"
-                                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add reference</button>
+                    <div class="p-2  ">
+                        <div>
+                            <div class="mb-3">
+                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Create a reference from local file path:</label>
+                                <input type="text" v-model="reference_path"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    placeholder="Enter Path ..." required>
                             </div>
 
-                            <div v-if="!modelDownlaodInProgress">
-                                <div class="mb-3">
-                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Download
-                                        from web:</label>
-                                    <input type="text" v-model="addModel.url"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="Enter URL ..." required>
-                                </div>
-
-                                <button type="button" @click.stop="onInstallAddModel()"
-                                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Download</button>
-                            </div>
-                            <div v-if="modelDownlaodInProgress"
-                                class="relative flex flex-col items-center justify-center flex-grow h-full">
-                                <div role="status" class=" justify-center ">
-                                    <!-- SPINNER -->
-
-                                </div>
-                                <div class="relative flex flex-row flex-grow items-center w-full h-full bottom-0">
-                                    <!-- PROGRESS BAR -->
-                                    <div class="w-full p-2">
-
-
-                                        <div class="flex justify-between mb-1">
-                                            <span
-                                                class="flex flex-row items-center gap-2 text-base font-medium text-blue-700 dark:text-white">
-                                                Downloading
-                                                <svg aria-hidden="true"
-                                                    class="w-4 h-4 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-secondary"
-                                                    viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                                        fill="currentColor" />
-                                                    <path
-                                                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                                        fill="currentFill" />
-                                                </svg>
-                                                <span class="sr-only">Loading...</span>
-                                            </span>
-
-                                            <span class="text-sm font-medium text-blue-700 dark:text-white">{{
-                                                Math.floor(addModel.progress) }}%</span>
-                                        </div>
-                                        <div class="mx-1 opacity-80 line-clamp-1" :title="addModel.url">
-                                            {{ addModel.url }}
-
-                                        </div>
-                                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                                            <div class="bg-blue-600 h-2.5 rounded-full"
-                                                :style="{ width: addModel.progress + '%' }">
-                                            </div>
-                                        </div>
-                                        <div class="flex justify-between mb-1">
-                                            <span class="text-base font-medium text-blue-700 dark:text-white">Download
-                                                speed: {{ speed_computed }}/s</span>
-                                            <span class="text-sm font-medium text-blue-700 dark:text-white">{{
-                                                downloaded_size_computed }}/{{ total_size_computed }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex flex-grow">
-                                    <!-- CANCEL BUTTON -->
-
-                                    <div class="flex  flex-row flex-grow gap-3">
-                                        <div class="p-2 text-center grow">
-                                            <!-- <button @click.stop="hide(true)" type="button"
-                                class="mr-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm  sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                {{ ConfirmButtonText }}
-                            </button> -->
-                                            <button @click.stop="onCancelInstall" type="button" title="Cancel download"
-                                                class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
-                                                Cancel
-                                            </button>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-
+                            <button type="button" @click.stop="onCreateReference()"
+                                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add reference</button>
                         </div>
+
+                        <div v-if="!modelDownlaodInProgress">
+                            <div class="mb-3">
+                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Download
+                                    from web:</label>
+                                <input type="text" v-model="addModel.url"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    placeholder="Enter URL ..." required>
+                            </div>
+
+                            <button type="button" @click.stop="onInstallAddModel()"
+                                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Download</button>
+                        </div>
+                        <div v-if="modelDownlaodInProgress"
+                            class="relative flex flex-col items-center justify-center flex-grow h-full">
+                            <div role="status" class=" justify-center ">
+                                <!-- SPINNER -->
+
+                            </div>
+                            <div class="relative flex flex-row flex-grow items-center w-full h-full bottom-0">
+                                <!-- PROGRESS BAR -->
+                                <div class="w-full p-2">
+
+
+                                    <div class="flex justify-between mb-1">
+                                        <span
+                                            class="flex flex-row items-center gap-2 text-base font-medium text-blue-700 dark:text-white">
+                                            Downloading
+                                            <svg aria-hidden="true"
+                                                class="w-4 h-4 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-secondary"
+                                                viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                                    fill="currentColor" />
+                                                <path
+                                                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                                    fill="currentFill" />
+                                            </svg>
+                                            <span class="sr-only">Loading...</span>
+                                        </span>
+
+                                        <span class="text-sm font-medium text-blue-700 dark:text-white">{{
+                                            Math.floor(addModel.progress) }}%</span>
+                                    </div>
+                                    <div class="mx-1 opacity-80 line-clamp-1" :title="addModel.url">
+                                        {{ addModel.url }}
+
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                        <div class="bg-blue-600 h-2.5 rounded-full"
+                                            :style="{ width: addModel.progress + '%' }">
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-base font-medium text-blue-700 dark:text-white">Download
+                                            speed: {{ speed_computed }}/s</span>
+                                        <span class="text-sm font-medium text-blue-700 dark:text-white">{{
+                                            downloaded_size_computed }}/{{ total_size_computed }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-grow">
+                                <!-- CANCEL BUTTON -->
+
+                                <div class="flex  flex-row flex-grow gap-3">
+                                    <div class="p-2 text-center grow">
+                                        <!-- <button @click.stop="hide(true)" type="button"
+                            class="mr-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm  sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            {{ ConfirmButtonText }}
+                        </button> -->
+                                        <button @click.stop="onCancelInstall" type="button" title="Cancel download"
+                                            class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                                            Cancel
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
+                </div>
             </div>
+            <!-- ADD MODELS -->
             <!-- PERSONALITY ZOO -->
             <div
                 class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
@@ -3410,13 +3375,14 @@ export default {
             if(models_zoo.length==0)
                 return
             
+            /*
             let index = models_zoo.findIndex(item => item.name == this.configFile.model_name)
             if (index>0){
                 this.imgModel = models_zoo[index].icon
             }
             else{
                 this.imgModel = defaultModelImgPlaceholder
-            }
+            }*/
 
             console.log(`REFRESHING models using sorting ${this.sort_type}`)
             if(models_zoo.length>1){
@@ -4230,6 +4196,9 @@ export default {
                     let idx = this.$store.state.modelsZoo.findIndex(item => item.name == this.$store.state.selectedModel)
                     if(idx>=0){
                         return this.$store.state.modelsZoo[idx].avatar
+                    }
+                    else{
+                        return  defaultModelImgPlaceholder            
                     }
                 }
                 catch{
