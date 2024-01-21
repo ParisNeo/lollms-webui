@@ -36,7 +36,7 @@ async def get_lollms_webui_version():
 async def restart_program():
    """Restart the program."""
    # Stop the socketIO server
-   await lollmsElfServer.sio.shutdown()
+   run_async(lollmsElfServer.sio.shutdown)
    # Sleep for 1 second before rebooting
    time.sleep(1)
    # Reboot the program
