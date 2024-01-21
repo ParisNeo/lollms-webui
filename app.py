@@ -149,29 +149,31 @@ if __name__ == "__main__":
 
     lollmsElfServer.app = app
 
-
-    # if autoshow
-    if config.auto_show_browser:
-        if config['host']=="0.0.0.0":
-            webbrowser.open(f"http://localhost:{config['port']}")
-            #webbrowser.open(f"http://localhost:{6523}") # needed for debug (to be removed in production)
-        else:
-            webbrowser.open(f"http://{config['host']}:{config['port']}")
-            #webbrowser.open(f"http://{config['host']}:{6523}") # needed for debug (to be removed in production)
-
-
     try:
         sio.reboot = False
-        if config.enable_lollms_service:
-            #uvicorn.run(app, host=config.host, port=6523)
-            def run_lollms_server():
-                parts = config.lollms_base_url.split(":")
-                uvicorn.run(app, host=":".join(parts[0:2]), port=int(parts[2]))
+        # if config.enable_lollms_service:
+        #     ASCIIColors.yellow("Starting Lollms service")
+        #     #uvicorn.run(app, host=config.host, port=6523)
+        #     def run_lollms_server():
+        #         parts = config.lollms_base_url.split(":")
+        #         host = ":".join(parts[0:2])
+        #         port = int(parts[2])
+        #         uvicorn.run(app, host=host, port=port)
             # New thread
-            thread = threading.Thread(target=run_lollms_server)
+        #     thread = threading.Thread(target=run_lollms_server)
 
             # start thread
-            thread.start()
+        #   thread.start()
+
+        # if autoshow
+        if config.auto_show_browser:
+            if config['host']=="0.0.0.0":
+                webbrowser.open(f"http://localhost:{config['port']}")
+                #webbrowser.open(f"http://localhost:{6523}") # needed for debug (to be removed in production)
+            else:
+                webbrowser.open(f"http://{config['host']}:{config['port']}")
+                #webbrowser.open(f"http://{config['host']}:{6523}") # needed for debug (to be removed in production)
+
         uvicorn.run(app, host=config.host, port=config.port)
         if sio.reboot:
             ASCIIColors.info("")

@@ -21,6 +21,8 @@ from lollms.helpers import ASCIIColors, trace_exception
 from lollms.com import NotificationType, NotificationDisplayType, LoLLMsCom
 from lollms.app import LollmsApplication
 from lollms.utilities import File64BitsManager, PromptReshaper, PackageManager, find_first_available_file_index, run_async, is_asyncio_loop_running
+from lollms.generation import RECPTION_MANAGER, ROLE_CHANGE_DECISION, ROLE_CHANGE_OURTPUT
+
 import git
 import asyncio
 import os
@@ -200,6 +202,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 "schedule_for_deletion":False,
                 "continuing": False,
                 "first_chunk": True,
+                "reception_manager": RECPTION_MANAGER()
             }
         }
         if Media_on:
@@ -233,7 +236,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 "cancel_generation": False,          
                 "generation_thread": None,
                 "processing":False,
-                "schedule_for_deletion":False
+                "schedule_for_deletion":False,
+                "reception_manager":RECPTION_MANAGER()
             }
             await self.sio.emit('connected', to=sid) 
             ASCIIColors.success(f'Client {sid} connected')
@@ -1192,6 +1196,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             self.close_message(client_id)
 
         elif message_type == MSG_TYPE.MSG_TYPE_CHUNK:
+
             if self.nb_received_tokens==0:
                 self.start_time = datetime.now()
             dt =(datetime.now() - self.start_time).seconds
@@ -1202,6 +1207,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             sys.stdout = sys.__stdout__
             sys.stdout.flush()
             if chunk:
+                
                 self.connections[client_id]["generated_text"] += chunk
             antiprompt = self.personality.detect_antiprompt(self.connections[client_id]["generated_text"])
             if antiprompt:
