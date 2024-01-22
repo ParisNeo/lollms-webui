@@ -80,11 +80,11 @@ done < requirements.txt
 # Install the pip requirements
 python -m pip install -r requirements.txt --upgrade
 
-if [[ -e "../linux_run.sh" ]]; then
+if [[ -e "../linux_run_use_your_own_contact.sh" ]]; then
     echo "Linux run found"
 else
     pwd
-    cp scripts/linux/linux_run.sh ../
+    cp scripts/linux/linux_run_use_your_own_contact.sh ../
 fi
 
 if [[ -e "../linux_conda_session.sh" ]]; then
