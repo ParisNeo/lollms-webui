@@ -466,6 +466,7 @@ try:
                 self.ShowBlockingMessage("Installing SD api server\nPlease stand by")
                 from lollms.services.sd.lollms_sd import install_sd
                 install_sd()
+                ASCIIColors.success("Done")
                 self.HideBlockingMessage()
                 return jsonify({"status":True})
             except Exception as ex:

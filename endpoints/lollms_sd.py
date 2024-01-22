@@ -32,7 +32,8 @@ def install_sd():
     try:
         lollmsElfServer.ShowBlockingMessage("Installing SD api server\nPlease stand by")
         from lollms.services.sd.lollms_sd import install_sd
-        install_sd()
+        install_sd(lollmsElfServer.lollms_paths)
+        ASCIIColors.success("Done")
         lollmsElfServer.HideBlockingMessage()
         return {"status":True}
     except Exception as ex:
