@@ -767,7 +767,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         if generation_type != "simple_question":
             if self.personality.persona_data_vectorizer:
                 if documentation=="":
-                    documentation="!@>Documentation:\n"
+                    documentation="\n!@>important information: Use the documentation data to answer the user questions. If the data is not present in the documentation, please tell the user that the information he is asking for does not exist in the documentation section. It is strictly forbidden to give the user an answer without having actual proof from the documentation.\n!@>Documentation:\n"
 
                 if self.config.data_vectorization_build_keys_words:
                     discussion = self.recover_discussion(client_id)[-512:]
@@ -784,7 +784,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             
             if len(self.personality.text_files) > 0 and self.personality.vectorizer:
                 if documentation=="":
-                    documentation="!@>Documentation:\n"
+                    documentation="\n!@>important information: Use the documentation data to answer the user questions. If the data is not present in the documentation, please tell the user that the information he is asking for does not exist in the documentation section. It is strictly forbidden to give the user an answer without having actual proof from the documentation.\n!@>Documentation:\n"
 
                 if self.config.data_vectorization_build_keys_words:
                     discussion = self.recover_discussion(client_id)[-512:]
