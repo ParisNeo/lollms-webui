@@ -5,7 +5,7 @@ read choice
 if [[ "$choice" =~ [yY] ]]; then
     # Download Python installer
     printf "Removing lollms conda environment"
-
+    conda remove --name lollms --all
     echo "OK"
     read -p "Press [Enter] to continue..."
 else
