@@ -27,7 +27,7 @@ lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
 # ----------------------- voice ------------------------------
 
-@router.get("/install_xtts")
+@router.get("/install_sd")
 def install_sd():
     try:
         lollmsElfServer.ShowBlockingMessage("Installing SD api server\nPlease stand by")
