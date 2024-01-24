@@ -61,6 +61,7 @@ if __name__ == "__main__":
 
     LOLLMSWebUI.build_instance(config=config, lollms_paths=lollms_paths, args=args, sio=sio)
     lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
+    lollmsElfServer.verbose = True
     # Import all endpoints
     from lollms.server.endpoints.lollms_binding_files_server import router as lollms_binding_files_server_router
     from lollms.server.endpoints.lollms_infos import router as lollms_infos_router

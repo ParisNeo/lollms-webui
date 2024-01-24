@@ -996,9 +996,11 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 duration:int=4, 
                 client_id=None, 
                 display_type:NotificationDisplayType=NotificationDisplayType.TOAST,
-                verbose=True,
+                verbose:bool|None=None,
             ):
-        
+        if verbose is None:
+            verbose = self.verbose
+
         run_async(partial(self.sio.emit,'notification', {
                                 'content': content,# self.connections[client_id]["generated_text"], 
                                 'notification_type': notification_type.value,
