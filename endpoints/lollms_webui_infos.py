@@ -34,36 +34,47 @@ async def get_lollms_webui_version():
 
 @router.get("/restart_program")
 async def restart_program():
-   """Restart the program."""
-   # Stop the socketIO server
-   run_async(lollmsElfServer.sio.shutdown)
-   # Sleep for 1 second before rebooting
-   time.sleep(1)
-   # Reboot the program
-   lollmsElfServer.sio.reboot = True
-
+    """Restart the program."""
+    lollmsElfServer.ShowBlockingMessage("Restarting program.\nPlease stand by...")
+    # Stop the socketIO server
+    run_async(lollmsElfServer.sio.shutdown)
+    # Sleep for 1 second before rebooting
+    time.sleep(1)
+    lollmsElfServer.HideBlockingMessage()
+    # Reboot the program
+    ASCIIColors.info("")
+    ASCIIColors.info("")
+    ASCIIColors.info("")
+    ASCIIColors.info(" ╔══════════════════════════════════════════════════╗")
+    ASCIIColors.info(" ║              Restarting backend                  ║")
+    ASCIIColors.info(" ╚══════════════════════════════════════════════════╝")
+    ASCIIColors.info("")
+    ASCIIColors.info("")
+    ASCIIColors.info("")
+    lollmsElfServer.run_restart_script(lollmsElfServer.args)
+    
 @router.get("/update_software")
 async def update_software():
-   """Update the software."""
-   # Display an informative message
-   ASCIIColors.info("")
-   ASCIIColors.info("")
-   ASCIIColors.info("")
-   ASCIIColors.info("╔══════════════════════════════════════════════════╗")
-   ASCIIColors.info("║                Updating backend                  ║")
-   ASCIIColors.info("╚══════════════════════════════════════════════════╝")
-   ASCIIColors.info("")
-   ASCIIColors.info("")
-   ASCIIColors.info("")
-   # Stop the socketIO server
-   await lollmsElfServer.sio.shutdown()
-   # Sleep for 1 second before rebooting
-   time.sleep(1)
+    """Update the software."""
+    # Display an informative message
+    ASCIIColors.info("")
+    ASCIIColors.info("")
+    ASCIIColors.info("")
+    ASCIIColors.info("╔══════════════════════════════════════════════════╗")
+    ASCIIColors.info("║                Updating backend                  ║")
+    ASCIIColors.info("╚══════════════════════════════════════════════════╝")
+    ASCIIColors.info("")
+    ASCIIColors.info("")
+    ASCIIColors.info("")
+    # Stop the socketIO server
+    await lollmsElfServer.sio.shutdown()
+    # Sleep for 1 second before rebooting
+    time.sleep(1) 
 
-   # Run the update script using the provided arguments
-   lollmsElfServer.run_update_script(lollmsElfServer.args)
-   # Exit the program after successful update
-   sys.exit()
+    # Run the update script using the provided arguments
+    lollmsElfServer.run_update_script(lollmsElfServer.args)
+    # Exit the program after successful update
+    sys.exit()
 
 
 @router.get("/check_update")

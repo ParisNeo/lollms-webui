@@ -106,8 +106,9 @@ async def text2Audio(request: Request):
 @router.get("/install_xtts")
 def install_xtts():
     try:
+        from lollms.services.xtts.lollms_xtts import install_xtts
         lollmsElfServer.ShowBlockingMessage("Installing xTTS api server\nPlease stand by")
-        PackageManager.install_package("xtts-api-server")
+        install_xtts(lollmsElfServer)
         lollmsElfServer.HideBlockingMessage()
         return {"status":True}
     except Exception as ex:

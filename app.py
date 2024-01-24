@@ -175,18 +175,7 @@ if __name__ == "__main__":
                 #webbrowser.open(f"http://{config['host']}:{6523}") # needed for debug (to be removed in production)
 
         uvicorn.run(app, host=config.host, port=config.port)
-        if sio.reboot:
-            ASCIIColors.info("")
-            ASCIIColors.info("")
-            ASCIIColors.info("")
-            ASCIIColors.info(" ╔══════════════════════════════════════════════════╗")
-            ASCIIColors.info(" ║              Restarting backend                  ║")
-            ASCIIColors.info(" ╚══════════════════════════════════════════════════╝")
-            ASCIIColors.info("")
-            ASCIIColors.info("")
-            ASCIIColors.info("")
-            lollmsElfServer.run_restart_script(args)
-            
+           
     except Exception as ex:
         trace_exception(ex)
 
