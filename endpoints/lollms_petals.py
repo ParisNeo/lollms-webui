@@ -3,8 +3,7 @@ project: lollms_webui
 file: lollms_xtts.py 
 author: ParisNeo
 description: 
-    This module contains a set of FastAPI routes that provide information about the Lord of Large Language and Multimodal Systems (LoLLMs) Web UI
-    application. These routes allow users to 
+    This module contains a set of FastAPI routes that concerns petals service
 
 """
 from fastapi import APIRouter, Request
@@ -27,15 +26,17 @@ lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
 # ----------------------- voice ------------------------------
 
-@router.get("/install_sd")
-def install_sd():
+@router.get("/install_petals")
+def install_petals():
     try:
-        lollmsElfServer.ShowBlockingMessage("Installing SD api server\nPlease stand by")
-        from lollms.services.sd.lollms_sd import install_sd
-        install_sd(lollmsElfServer)
-        ASCIIColors.success("Done")
-        lollmsElfServer.HideBlockingMessage()
-        return {"status":True}
+        lollmsElfServer.ShowBlockingMessage("Installing ollama server\nPlease stand by")
+        from lollms.services.ollama.lollms_ollama import install_ollama
+        if install_ollama(lollmsElfServer):
+            lollmsElfServer.HideBlockingMessage()
+            return {"status":True}
+        else:
+            return {"status":False, 'error':str(ex)}            
     except Exception as ex:
+        trace_exception(ex)
         lollmsElfServer.HideBlockingMessage()
         return {"status":False, 'error':str(ex)}

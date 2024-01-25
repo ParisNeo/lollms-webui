@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Models Configuration file =========================== 
-version: 46
+version: 48
 binding_name: null
 model_name: null
 
@@ -78,6 +78,16 @@ petals_base_url: http://0.0.0.0:8010
 # lollms service
 enable_lollms_service: false
 lollms_base_url: http://0.0.0.0:1234
+
+# elastic search service
+elastic_search_service: false
+elastic_search_url: http://0.0.0.0:9606
+
+# vll service
+vllm_service: false
+vllm_url: http://0.0.0.0:8000
+vllm_model_path: mistralai/Mistral-7B-v0.1
+
 
 # Audio
 media_on: false

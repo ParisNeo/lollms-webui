@@ -1034,6 +1034,77 @@
                             </tr> 
                         </table>                                
                     </Card>
+                    <Card title="vLLM service" :is_subcard="true" class="pb-2  m-2">
+                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="enable_vllm_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable vLLM service:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="checkbox"
+                                id="enable_vllm_service"
+                                required
+                                v-model="configFile.enable_vllm_service"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            <td>
+                                <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates ollama service. The service will be automatically loaded at startup alowing you to use the ollama binding.\nIf you are using windows, this uses wsl which requires you to have it installed or at least activated.\nIf You are using windows, this will install wsl so you need to activate it.\n<a href=\'https://techcommunity.microsoft.com/t5/windows-11/how-to-install-the-linux-windows-subsystem-in-windows-11/m-p/2701207\' target=\'_blank\'>Here is how you can do that</a>')">
+                                    <i data-feather="help-circle" class="w-5 h-5 "></i>
+                                </div>
+                            </td>
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="vllm_url" class="text-sm font-bold" style="margin-right: 1rem;">Install cLLM service:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallvLLMService">install vLLM service</button>
+                                </div>
+                            </td>
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="vllm_url" class="text-sm font-bold" style="margin-right: 1rem;">vllm base url:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="text"
+                                id="vllm_url"
+                                required
+                                v-model="configFile.vllm_url"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="vllm_model_path" class="text-sm font-bold" style="margin-right: 1rem;">vllm model path:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="text"
+                                id="vllm_model_path"
+                                required
+                                v-model="configFile.vllm_model_path"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>                            
+                            
+                        </table>                                
+                    </Card>                    
                     <Card title="Petals service" :is_subcard="true" class="pb-2  m-2">
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <tr>
@@ -1088,6 +1159,56 @@
                             </tr> 
                         </table>                                
                     </Card>
+                    <Card title="Elastic search Service (under construction)" :is_subcard="true" class="pb-2  m-2">
+                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="enable_voice_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable elastic search service:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="checkbox"
+                                id="elastic_search_service"
+                                required
+                                v-model="configFile.elastic_search_service"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="install_elastic_search_service" class="text-sm font-bold" style="margin-right: 1rem;">Reinstall Elastic Search service:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallElasticSearchService">install ElasticSearch service</button>
+                                </div>
+                            </td>
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="elastic_search_url" class="text-sm font-bold" style="margin-right: 1rem;">elastic search base url:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="text"
+                                id="elastic_search_url"
+                                required
+                                v-model="configFile.elastic_search_url"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr> 
+         
+                        </table>
+
+                    </Card>                    
                     <Card title="XTTS service" :is_subcard="true" class="pb-2  m-2">
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <tr>
@@ -2277,6 +2398,26 @@ export default {
             });
 
         },
+        reinstallvLLMService(){
+            axios.get('install_vllm')
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+
+        },
+        reinstallPetalsService(){
+            axios.get('install_vllm')
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+
+        },
         reinstallOLLAMAService(){
         axios.get('install_ollama')
             .then(response => {
@@ -2296,6 +2437,17 @@ export default {
             console.error(error);
             });
         },
+        reinstallElasticSearchService(){
+            axios.get('install_vllm')
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+
+        },
+
         getSeviceVoices() {
         axios.get('list_voices')
             .then(response => {
