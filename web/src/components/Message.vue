@@ -163,7 +163,7 @@
                                     <i data-feather="volume-2"></i>
                                 </div>
                             </div>    
-                            <div v-if="this.$store.state.config.enable_voice_service" class="flex flex-row items-center">
+                            <div class="flex flex-row items-center">
                                 <div v-if="!isSynthesizingVoice" class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2 cursor-pointer" 
                                     title="read"
                                     @click.stop="read()"
@@ -430,8 +430,8 @@ export default {
         },
         read(){
             if(this.isSynthesizingVoice){
-                this.$refs.audio_player.pause()
                 this.isSynthesizingVoice=false
+                this.$refs.audio_player.pause()
             }
             else{
                 this.isSynthesizingVoice=true

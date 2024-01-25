@@ -157,8 +157,12 @@ export default {
     watch:{
         isConnected(){
             if (!this.isConnected){
-                this.disconnected_audio.play()
+                this.connection_lost_audio.play()
                 this.$store.state.toast.showToast("Server suddenly disconnected. Please reboot the server", 410, false)
+            }
+            else{
+                this.connection_recovered_audio.play()
+                this.$store.state.toast.showToast("Server connected.", 410, true)
             }
             nextTick(() => {
                 feather.replace()
@@ -170,8 +174,9 @@ export default {
         return {
             discord:discord,
             FastAPI:FastAPI,
-            rebooting_the_tool_audio: new Audio("rebooting.mp3"),            
-            disconnected_audio: new Audio("disconnected.mp3"),
+            rebooting_audio: new Audio("rebooting.wav"),            
+            connection_lost_audio: new Audio("connection_lost.wav"),
+            connection_recovered_audio: new Audio("connection_recovered.wav"),
             database_selectorDialogVisible:false,
             progress_visibility:false,
             progress_value:0,
@@ -210,7 +215,7 @@ export default {
         restartProgram(event) {
             event.preventDefault();
             this.$store.state.api_get_req('restart_program')
-            this.rebooting_the_tool_audio.play()
+            this.rebooting_audio.play()
             this.$store.state.toast.showToast("Rebooting the app. Please wait...", 410, false)
             //self.$store.state.toast.showToast("Rebooting the app. Please wait...", 50, true);
             console.log("this.$store.state.api_get_req",this.$store.state.api_get_req)

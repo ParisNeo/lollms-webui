@@ -3363,7 +3363,7 @@ export default {
             }
         },
         onReloadBinding(binding_object){
-            
+            console.log("Reloading binding")
             this.isLoading = true
             axios.post('/reload_binding', { name: binding_object.binding.folder }).then((res) => {
 
@@ -3373,7 +3373,7 @@ export default {
                     if (res.data.status) {
                         this.$store.state.toast.showToast("Binding reloaded successfully!", 4, true)
                     } else {
-                        this.$store.state.toast.showToast("Could not reinstall binding", 4, false)
+                        this.$store.state.toast.showToast("Could not reload binding", 4, false)
                     }
                     return res.data;
                 }
@@ -3383,7 +3383,7 @@ export default {
 
                 .catch(error => {
                     this.isLoading = false
-                    this.$store.state.toast.showToast("Could not reinstall binding\n" + error.message, 4, false)
+                    this.$store.state.toast.showToast("Could not reload binding\n" + error.message, 4, false)
                     return { 'status': false }
                 });
         },
