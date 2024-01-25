@@ -82,6 +82,9 @@ if __name__ == "__main__":
     from endpoints.lollms_xtts import router as lollms_xtts_add_router
     from endpoints.lollms_sd import router as lollms_sd_router    
     from endpoints.lollms_ollama import router as lollms_ollama_router    
+    from endpoints.lollms_petals import router as lollms_petals_router    
+    from endpoints.lollms_vllm import router as lollms_vllm_router    
+    
     from endpoints.lollms_playground import router as lollms_playground_router    
     
 
@@ -121,7 +124,10 @@ if __name__ == "__main__":
     app.include_router(lollms_xtts_add_router)
     
     app.include_router(lollms_sd_router)   
-    app.include_router(lollms_ollama_router)   
+    app.include_router(lollms_ollama_router)  
+    app.include_router(lollms_petals_router)  
+    app.include_router(lollms_vllm_router)  
+     
     app.include_router(lollms_playground_router)   
     
 

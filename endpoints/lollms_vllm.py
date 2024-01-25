@@ -26,12 +26,12 @@ lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
 # ----------------------- voice ------------------------------
 
-@router.get("/install_petals")
+@router.get("/install_vllm")
 def install_petals():
     try:
-        lollmsElfServer.ShowBlockingMessage("Installing petals server\nPlease stand by")
-        from lollms.services.petals.lollms_petals import install_petals
-        if install_petals(lollmsElfServer):
+        lollmsElfServer.ShowBlockingMessage("Installing ollama server\nPlease stand by")
+        from lollms.services.vllm.lollms_vllm import install_vllm
+        if install_vllm(lollmsElfServer):
             lollmsElfServer.HideBlockingMessage()
             return {"status":True}
         else:
