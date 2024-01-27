@@ -22,6 +22,8 @@ import argparse
 from socketio import ASGIApp
 import webbrowser
 import threading
+
+
 app = FastAPI()
 
 # Create a Socket.IO server
@@ -54,6 +56,9 @@ if __name__ == "__main__":
     root_path = Path(__file__).parent
     lollms_paths = LollmsPaths.find_paths(force_local=True, custom_default_cfg_path="configs/config.yaml")
     config = LOLLMSConfig.autoload(lollms_paths)
+
+    if config.debug_log_file_path!="":
+        ASCIIColors.log_path = config.debug_log_file_path
     if args.host:
         config.host=args.host
     if args.port:

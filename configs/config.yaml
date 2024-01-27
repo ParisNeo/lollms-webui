@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 49
+version: 50
 binding_name: null
 model_name: null
 
@@ -41,6 +41,7 @@ db_path: database.db
 
 # Automatic updates
 debug: False
+debug_log_file_path: ""
 auto_update: true
 auto_sync_personalities: true
 auto_sync_extensions: true

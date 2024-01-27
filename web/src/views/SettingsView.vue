@@ -301,6 +301,23 @@
                                             </div>
                                         </td>
                                         </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="debug_log_file_path" class="text-sm font-bold" style="margin-right: 1rem;">Debug file path:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                                <input
+                                            type="text"
+                                            id="debug_log_file_path"
+                                            required
+                                            v-model="configFile.debug_log_file_path"
+                                            @change="settingsChanged=true"
+                                            class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600 "
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>
                                         
                                         <tr>
                                             
