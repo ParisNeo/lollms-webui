@@ -1,7 +1,7 @@
 <template>
     <div v-if="show" class="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div class="pl-10 pr-10 bg-bg-light dark:bg-bg-dark p-8 rounded-lg shadow-lg">
-        <div class="container overflow-y-auto">
+        <div class="container max-h-500 overflow-y-auto">
           <div class="text-lg font-medium">
             <MarkdownRenderer ref="mdRender" :host="''" :markdown-text="message" :message_id="0" :discussion_id="0">
             </MarkdownRenderer>

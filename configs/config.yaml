@@ -1,5 +1,5 @@
-# =================== Lord Of Large Language Models Configuration file =========================== 
-version: 48
+# =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
+version: 49
 binding_name: null
 model_name: null
 
@@ -124,3 +124,8 @@ positive_boost: null
 negative_boost: null
 force_output_language_to_be: null
 fun_mode: False
+
+
+# webui configurations
+show_code_of_conduct: true
+activate_audio_infos: true

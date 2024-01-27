@@ -1462,10 +1462,10 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     d.rename(title)
                     asyncio.run(
                         self.sio.emit('disucssion_renamed',{
-                                                    'status': True,
-                                                    'discussion_id':d.discussion_id,
-                                                    'title':title
-                                                    }, to=client_id) 
+                                        'status': True,
+                                        'discussion_id':d.discussion_id,
+                                        'title':title
+                                        }, to=client_id) 
                     )
             self.busy=False
 

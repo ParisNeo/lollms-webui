@@ -157,12 +157,22 @@ export default {
     watch:{
         isConnected(){
             if (!this.isConnected){
-                this.connection_lost_audio.play()
-                this.$store.state.toast.showToast("Server suddenly disconnected. Please reboot the server", 410, false)
+                this.$store.state.messageBox.showBlockingMessage("Server suddenly disconnected. Please reboot the server to recover the connection")
+                this.is_first_connection = false
+                console.log("this.is_first_connection set to false")
+                console.log(this.is_first_connection)
+                if(this.$store.state.config.activate_audio_infos)
+                    this.connection_lost_audio.play()
             }
             else{
-                this.connection_recovered_audio.play()
-                this.$store.state.toast.showToast("Server connected.", 410, true)
+                console.log("this.is_first_connection")
+                console.log(this.is_first_connection)
+                if(!this.is_first_connection){
+                    this.$store.state.messageBox.hideMessage()
+                    this.$store.state.messageBox.showMessage("Server connected.")
+                    if(this.$store.state.config.activate_audio_infos)
+                        this.connection_recovered_audio.play()
+                }
             }
             nextTick(() => {
                 feather.replace()
@@ -172,6 +182,7 @@ export default {
     },
     data() {
         return {
+            is_first_connection:true,
             discord:discord,
             FastAPI:FastAPI,
             rebooting_audio: new Audio("rebooting.wav"),            
