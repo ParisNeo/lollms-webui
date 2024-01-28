@@ -445,7 +445,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         try:
                             from lollms.services.xtts.lollms_xtts import LollmsXTTS
                             if self.tts is None:
-                                self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent.parent/"voices")
+                                self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent.parent/"voices", xtts_base_url= self.config.xtts_base_url)
                         except:
                             self.warning(f"Personality {personality.name} request using custom voice but couldn't load XTTS")
                 except Exception as ex:
@@ -1387,7 +1387,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         self.process_chunk("Generating voice output",MSG_TYPE.MSG_TYPE_STEP_START,client_id=client_id)
                         from lollms.services.xtts.lollms_xtts import LollmsXTTS
                         if self.tts is None:
-                            self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent.parent/"voices")
+                            self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent.parent/"voices", xtts_base_url= self.config.xtts_base_url)
                         language = convert_language_name(self.personality.language)
                         self.tts.set_speaker_folder(Path(self.personality.audio_samples[0]).parent)
                         fn = self.personality.name.lower().replace(' ',"_").replace('.','')    

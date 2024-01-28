@@ -744,7 +744,7 @@ try:
             try:
                 from lollms.services.xtts.lollms_xtts import LollmsXTTS
                 if self.tts is None:
-                    self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent/"voices")
+                    self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent/"voices", xtts_base_url= self.config.xtts_base_url)
             except:
                 return jsonify({"url": None})
                 
@@ -1600,7 +1600,7 @@ try:
         def post_to_personality(self):
             data = request.get_json()
             if hasattr(self.personality.processor,'handle_request'):
-                return self.personality.processor.handle_request(data)
+                return await self.personality.processor.handle_request(data)
             else:
                 return jsonify({})
 

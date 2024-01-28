@@ -2182,7 +2182,7 @@
       @choice-selected="onVariantChoiceSelected"
       @close-dialog="oncloseVariantChoiceDialog"
       @choice-validated="onvalidateVariantChoice"
-    />    
+    />
 </template>
 <style scoped>
 

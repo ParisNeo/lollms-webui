@@ -70,7 +70,7 @@ async def text2Audio(request: Request):
         try:
             from lollms.services.xtts.lollms_xtts import LollmsXTTS
             if lollmsElfServer.tts is None:
-                lollmsElfServer.tts = LollmsXTTS(lollmsElfServer, voice_samples_path=Path(__file__).parent/"voices")
+                lollmsElfServer.tts = LollmsXTTS(lollmsElfServer, voice_samples_path=Path(__file__).parent/"voices", xtts_base_url= lollmsElfServer.config.xtts_base_url)
         except:
             return {"url": None}
             
@@ -83,7 +83,7 @@ async def text2Audio(request: Request):
         try:
             from lollms.services.xtts.lollms_xtts import LollmsXTTS
             if lollmsElfServer.tts is None:
-                lollmsElfServer.tts = LollmsXTTS(lollmsElfServer, voice_samples_path=Path(__file__).parent/"voices")
+                lollmsElfServer.tts = LollmsXTTS(lollmsElfServer, voice_samples_path=Path(__file__).parent/"voices", xtts_base_url= lollmsElfServer.config.xtts_base_url)
             language = lollmsElfServer.config.current_language# convert_language_name()
             if voice!="main_voice":
                 voices_folder = lollmsElfServer.lollms_paths.custom_voices_path
