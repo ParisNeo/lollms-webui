@@ -78,17 +78,18 @@ if __name__ == "__main__":
     from lollms.server.endpoints.lollms_generator import router as lollms_generator_router
     from lollms.server.endpoints.lollms_configuration_infos import router as lollms_configuration_infos_router
 
+    from lollms.server.endpoints.lollms_user import router as lollms_user_router
+    from lollms.server.endpoints.lollms_xtts import router as lollms_xtts_add_router
+    from lollms.server.endpoints.lollms_sd import router as lollms_sd_router    
+    from lollms.server.endpoints.lollms_ollama import router as lollms_ollama_router    
+    from lollms.server.endpoints.lollms_vllm import router as lollms_vllm_router    
+
     from endpoints.lollms_webui_infos import router as lollms_webui_infos_router
     from endpoints.lollms_discussion import router as lollms_discussion_router
     from endpoints.lollms_message import router as lollms_message_router
-    from endpoints.lollms_user import router as lollms_user_router
     from endpoints.lollms_advanced import router as lollms_advanced_router
     from endpoints.chat_bar import router as chat_bar_router
-    from endpoints.lollms_xtts import router as lollms_xtts_add_router
-    from endpoints.lollms_sd import router as lollms_sd_router    
-    from endpoints.lollms_ollama import router as lollms_ollama_router    
-    from endpoints.lollms_petals import router as lollms_petals_router    
-    from endpoints.lollms_vllm import router as lollms_vllm_router    
+    from lollms.server.endpoints.lollms_petals import router as lollms_petals_router    
     
     from endpoints.lollms_playground import router as lollms_playground_router    
     

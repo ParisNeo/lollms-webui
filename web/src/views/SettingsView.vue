@@ -1095,11 +1095,12 @@
                             </tr>                                        
                             <tr>
                             <td style="min-width: 200px;">
-                                <label for="vllm_url" class="text-sm font-bold" style="margin-right: 1rem;">Install cLLM service:</label>
+                                <label for="vllm_url" class="text-sm font-bold" style="margin-right: 1rem;">Install vLLM service:</label>
                             </td>
                             <td>
                                 <div class="flex flex-row">
                                 <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallvLLMService">install vLLM service</button>
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startvLLMService">starrt vLLM service</button>
                                 </div>
                             </td>
                             </tr>                                        
@@ -2443,8 +2444,18 @@ export default {
             });
 
         },
+        startvLLMService(){
+            axios.get('start_vllm')
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+
+        },
         reinstallPetalsService(){
-            axios.get('install_vllm')
+            axios.get('install_petals')
             .then(response => {
 
             })

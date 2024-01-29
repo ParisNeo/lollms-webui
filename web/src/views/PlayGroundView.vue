@@ -16,6 +16,14 @@
             <i data-feather="mic"></i>
             </button>
             <button
+                type="button"
+                @click="startRecording"
+                :class="{ 'text-green-500': isLesteningToVoice }"
+                class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer text-red-500"
+            >   
+            <i data-feather="mic"></i>
+            </button>            
+            <button
                     title="speak"
                     @click.stop="speak()"
                     :class="{ 'text-red-500': isTalking }"
@@ -808,6 +816,16 @@ export default {
         }).catch(ex=>{
           this.$refs.toast.showToast(`Error: ${ex}`,4,false)
         });
+    },
+    startRecording(){
+      axios.get('./get_presets').then(response => {
+          console.log(response.data)
+          this.presets=response.data
+          this.selectedPreset = this.presets[0]
+        }).catch(ex=>{
+          this.$refs.toast.showToast(`Error: ${ex}`,4,false)
+        });
+
     },
     startSpeechRecognition() {
         if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
