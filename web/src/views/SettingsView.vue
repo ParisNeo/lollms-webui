@@ -1100,7 +1100,7 @@
                             <td>
                                 <div class="flex flex-row">
                                 <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallvLLMService">install vLLM service</button>
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startvLLMService">starrt vLLM service</button>
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startvLLMService">start vLLM service</button>
                                 </div>
                             </td>
                             </tr>                                        
