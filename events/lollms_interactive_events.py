@@ -40,7 +40,12 @@ def add_events(sio:socketio):
     @sio.on('start_webcam_video_stream')
     def start_webcam_video_stream(sid):
         lollmsElfServer.info("Starting video capture")
-        lollmsElfServer.webcam.start_capture()
+        try:
+            from lollms.media import WebcamImageSender
+            lollmsElfServer.webcam = WebcamImageSender(sio,lollmsCom=lollmsElfServer)
+            lollmsElfServer.webcam.start_capture()
+        except:
+            lollmsElfServer.InfoMessage("Couldn't load media library.\nYou will not be able to perform any of the media linked operations. please verify the logs and install any required installations")
 
     @sio.on('stop_webcam_video_stream')
     def stop_webcam_video_stream(sid):
@@ -50,7 +55,16 @@ def add_events(sio:socketio):
     @sio.on('start_audio_stream')
     def start_audio_stream(sid):
         lollmsElfServer.info("Starting audio capture")
-        lollmsElfServer.audio_cap.start_recording()
+        try:
+            from lollms.media import AudioRecorder
+            lollmsElfServer.rec_output_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"audio_rec"
+            lollmsElfServer.rec_output_folder.mkdir(exist_ok=True, parents=True)
+            lollmsElfServer.summoned = False
+            lollmsElfServer.audio_cap = AudioRecorder(sio,lollmsElfServer.rec_output_folder/"rt.wav", callback=lollmsElfServer.audio_callback,lollmsCom=lollmsElfServer)
+            lollmsElfServer.audio_cap.start_recording()
+        except:
+            lollmsElfServer.InfoMessage("Couldn't load media library.\nYou will not be able to perform any of the media linked operations. please verify the logs and install any required installations")
+
 
     @sio.on('stop_audio_stream')
     def stop_audio_stream(sid):
