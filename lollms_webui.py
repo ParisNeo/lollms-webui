@@ -7,7 +7,6 @@ This class provides a singleton instance of the LoLLMS web UI, allowing access t
 """
 
 from lollms.server.elf_server import LOLLMSElfServer
-from flask import request
 from datetime import datetime
 from api.db import DiscussionsDB, Discussion
 from pathlib import Path

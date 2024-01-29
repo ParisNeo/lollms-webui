@@ -6,34 +6,6 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default async ({ mode }) => {
-  /*
-  async function getFlaskServerURL() {
-    try {
-      console.log("Loading")
-      const response = await fetch('/get_server_address'); // Replace with the actual endpoint on your Flask server
-      const serverAddress = await response.text();
-      if(serverAddress.includes('<') || !serverAddress.startsWith("http")){
-        console.log(`Server address not found`)
-        return process.env.VITE_LOLLMS_API
-        
-      }
-      console.log(`Server address: ${serverAddress}`)
-      return `${serverAddress}`; // Construct the full server address dynamically
-    } catch (error) {
-      // console.error('Error fetching server address:', error);
-      // Handle error if necessary
-      return process.env.VITE_LOLLMS_API
-    }
-  }
-  let serverURL = undefined;
-  try{
-    serverURL = await getFlaskServerURL() 
-    console.log(serverURL)
-  }catch{
-    serverURL = process.env.VITE_LOLLMS_API
-    console.log(`Server address: ${serverAddress}`)
-  }
-  */
   // Load app-level env vars to node-level env vars.
   process.env = {...process.env, ...loadEnv(mode, process.cwd())};
   

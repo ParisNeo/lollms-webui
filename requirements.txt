@@ -1,9 +1,6 @@
 setuptools
 pyyaml
 numpy
-flask
-flask_socketio
-flask_compress
 gevent-websocket
 websocket-client
 eventlet
