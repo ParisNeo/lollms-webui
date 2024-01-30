@@ -818,7 +818,7 @@ export default {
         });
     },
     startRecording(){
-      axios.get('./get_presets').then(response => {
+      axios.get('./start_audio_stream').then(response => {
           console.log(response.data)
           this.presets=response.data
           this.selectedPreset = this.presets[0]
