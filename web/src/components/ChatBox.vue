@@ -632,7 +632,7 @@ export default {
             axios.get('/clear_personality_files_list').then(res=>{
                 console.log(res)
                 if(res.data.state){
-                    this.$store.state.toast.showToast("File uploaded successfully",4,true);
+                    this.$store.state.toast.showToast("File removed successfully",4,true);
                     this.filesList.length = 0;
                     this.isFileSentList.length = 0;
                 }
@@ -670,7 +670,6 @@ export default {
                     this.isFileSentList[this.filesList.length-1]=true;
                     console.log(this.isFileSentList)
                     this.$store.state.toast.showToast("File uploaded successfully",4,true);
-                    this.loading = false         
                     next();
                 }
             };
@@ -769,7 +768,6 @@ export default {
             // console.log(this.filesList)
         },
         sendMessageEvent(msg) {
-            this.filesList.length = 0;
             this.$emit('messageSentEvent', msg)
 
         },

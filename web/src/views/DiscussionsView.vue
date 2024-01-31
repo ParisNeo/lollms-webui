@@ -679,10 +679,7 @@ export default {
                         this.selectDiscussion(discussionItem)
                         this.load_discussion(data.id,()=>{
                             this.loading = false
-                            axios.get('/get_current_personality_files_list').then(res=>{
-                                console.log("Files recovered")
-                                this.fileList = res.files
-                            });
+                            this.recoverFiles();
                             nextTick(() => {
                                 const selectedDisElement = document.getElementById('dis-' + data.id)
                                 this.scrollToElement(selectedDisElement)
