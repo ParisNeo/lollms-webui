@@ -80,6 +80,8 @@ if not exist "%INSTALL_ENV_DIR%\python.exe" ( echo. && echo Conda environment is
 @rem activate installer env
 call conda activate "%INSTALL_ENV_DIR%" || ( echo. && echo Conda environment activation failed. && goto end )
 
+@rem install conda library
+call conda install conda -y
 
 
 @rem clone the repository

@@ -10,6 +10,7 @@ from ascii_colors import ASCIIColors, trace_exception
 def run_git_pull():
     try:
         print("----------------> Updating the code <-----------------------")
+        
         repo = git.Repo(Path(__file__).parent)
         origin = repo.remotes.origin
         origin.pull()

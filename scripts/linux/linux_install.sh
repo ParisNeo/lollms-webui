@@ -89,6 +89,9 @@ fi
 # Activate installer environment
 source activate "$INSTALL_ENV_DIR" || ( echo && echo "Conda environment activation failed." && exit 1 )
 
+# install conda
+conda install conda -y
+
 # Set default cuda toolkit to the one in the environment
 export CUDA_PATH="$INSTALL_ENV_DIR"
 
