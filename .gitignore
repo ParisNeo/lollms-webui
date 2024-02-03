@@ -184,7 +184,7 @@ shared/*
 
 
 uploads
-global_paths_cfg.yaml
+*global_paths_cfg.yaml
 
 .vscode
 
