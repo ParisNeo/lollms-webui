@@ -209,3 +209,24 @@ async def open_code_folder(request: Request):
         trace_exception(ex)
         lollmsElfServer.error(ex)
         return {"status":False,"error":str(ex)}
+    
+
+@router.get("/start_recording")
+def start_recording():
+    lollmsElfServer.info("Starting audio capture")
+    try:
+        from lollms.media import AudioRecorder
+        lollmsElfServer.rec_output_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"audio_rec"
+        lollmsElfServer.rec_output_folder.mkdir(exist_ok=True, parents=True)
+        lollmsElfServer.summoned = False
+        lollmsElfServer.audio_cap = AudioRecorder(lollmsElfServer.sio,lollmsElfServer.rec_output_folder/"rt.wav", callback=lollmsElfServer.audio_callback,lollmsCom=lollmsElfServer)
+        lollmsElfServer.audio_cap.start_recording()
+    except:
+        lollmsElfServer.InfoMessage("Couldn't load media library.\nYou will not be able to perform any of the media linked operations. please verify the logs and install any required installations")
+
+
+@router.get("/stop_recording")
+def stop_recording():
+    lollmsElfServer.info("Stopping audio capture")
+    text = lollmsElfServer.audio_cap.stop_recording()
+    return text

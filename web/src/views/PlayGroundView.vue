@@ -21,7 +21,7 @@
                 :class="{ 'text-green-500': isLesteningToVoice }"
                 class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer text-red-500"
             >   
-            <i data-feather="mic"></i>
+            <img :src="is_recording?rec_on:rec_off" height="25">
             </button>            
             <button
                     title="speak"
@@ -229,6 +229,9 @@ import html5_block from '@/assets/html5_block.png';
 import LaTeX_block from '@/assets/LaTeX_block.png';
 import bash_block from '@/assets/bash_block.png';
 
+import rec_on from '@/assets/rec_on.svg';
+import rec_off from '@/assets/rec_off.svg';
+
 
 async function showInputPanel(name, default_value="", options=[]) {
     return new Promise((resolve, reject) => {
@@ -378,6 +381,8 @@ export default {
   data() {
     return {
 
+      is_recording:false,
+      
       cpp_block:cpp_block,
       html5_block:html5_block,
       LaTeX_block:LaTeX_block,
@@ -385,6 +390,9 @@ export default {
       json_block:json_block,
       python_block:python_block,
       bash_block:bash_block,
+
+      rec_off:rec_off,
+      rec_on:rec_on,
 
       isSynthesizingVoice:false,
       audio_url:null,
@@ -468,6 +476,8 @@ export default {
             this.generating=false
             console.log("Generation canceled OK")
         });
+
+
 
       //console.log('chatbox mnt',this.$refs)
       this.$nextTick(() => {
@@ -818,13 +828,30 @@ export default {
         });
     },
     startRecording(){
-      axios.get('./start_audio_stream').then(response => {
+      if(!this.is_recording){
+        axios.get('/start_recording').then(response => {
+          this.is_recording = true;
           console.log(response.data)
           this.presets=response.data
           this.selectedPreset = this.presets[0]
         }).catch(ex=>{
           this.$refs.toast.showToast(`Error: ${ex}`,4,false)
         });
+      }
+      else{
+        axios.get('/stop_recording').then(response => {
+          this.is_recording = false;
+          console.log(response)
+          this.text += response.data
+
+          console.log(response.data)
+          this.presets=response.data
+          this.selectedPreset = this.presets[0]
+        }).catch(ex=>{
+          this.$refs.toast.showToast(`Error: ${ex}`,4,false)
+        });
+
+      }
 
     },
     startSpeechRecognition() {

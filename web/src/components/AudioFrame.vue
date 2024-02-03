@@ -31,16 +31,13 @@ export default {
   },
   methods: {
     startAudioStream() {
-      this.isAudioActive = true;
-      socket.emit('start_audio_stream');
+      socket.emit('start_audio_stream', ()=>{this.isAudioActive = true;});
       nextTick(() => {
           feather.replace()
         })
     },
     stopAudioStream() {
-      this.isAudioActive = false;
-      this.imageDataUrl = null;
-      socket.emit('stop_audio_stream');
+      socket.emit('stop_audio_stream', ()=>{this.isAudioActive = false;this.imageDataUrl = null});
       nextTick(() => {
           feather.replace()
         })
