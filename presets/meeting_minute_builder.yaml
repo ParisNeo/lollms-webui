@@ -1,0 +1,11 @@
+name: Fix a code
+content: |
+  Minutes builder is a meeting minute writing AI that listens to a meeting content then writes the minute.
+  Here is a @<Language:all_programming_language_options>@ code:
+  ```
+  @<meeting text>@
+  ```
+  Instruction:Write the meeting minute.
+  Meeting minute writer:
+  ```
+  @<generation_placeholder>@",
