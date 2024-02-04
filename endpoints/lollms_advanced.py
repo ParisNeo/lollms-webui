@@ -107,21 +107,29 @@ async def open_code_folder_in_vs_code(request: Request):
     """
 
     try:
-        data = (await request.json())
-        code = data["code"]
-        discussion_id = data.get("discussion_id","unknown_discussion")
-        message_id = data.get("message_id","unknown_message")
-        language = data.get("language","python")
+        if "discussion_id" in data:        
+            data = (await request.json())
+            code = data["code"]
+            discussion_id = data.get("discussion_id","unknown_discussion")
+            message_id = data.get("message_id","unknown_message")
+            language = data.get("language","python")
 
-        ASCIIColors.info("Opening folder:")
-        # Create a temporary file.
-        root_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
-        root_folder.mkdir(parents=True,exist_ok=True)
-        tmp_file = root_folder/f"ai_code_{message_id}.py"
-        with open(tmp_file,"w") as f:
-            f.write(code)
-        
-        os.system('code ' + str(root_folder))
+            ASCIIColors.info("Opening folder:")
+            # Create a temporary file.
+            root_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
+            root_folder.mkdir(parents=True,exist_ok=True)
+            tmp_file = root_folder/f"ai_code_{message_id}.py"
+            with open(tmp_file,"w") as f:
+                f.write(code)
+            
+            os.system('code ' + str(root_folder))
+        elif "folder_path" in data:
+            ASCIIColors.info("Opening folder:")
+            # Create a temporary file.
+            root_folder = data["folder_path"]
+            root_folder.mkdir(parents=True,exist_ok=True)
+            os.system('code ' + str(root_folder))
+
         return {"output": "OK", "execution_time": 0}
     except Exception as ex:
         trace_exception(ex)
@@ -192,19 +200,33 @@ async def open_code_folder(request: Request):
 
     try:
         data = (await request.json())
-        discussion_id = data.get("discussion_id","unknown_discussion")
+        if "discussion_id" in data:
+            discussion_id = data.get("discussion_id","unknown_discussion")
 
-        ASCIIColors.info("Opening folder:")
-        # Create a temporary file.
-        root_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
-        root_folder.mkdir(parents=True,exist_ok=True)
-        if platform.system() == 'Windows':
-            os.startfile(str(root_folder))
-        elif platform.system() == 'Linux':
-            os.system('xdg-open ' + str(root_folder))
-        elif platform.system() == 'Darwin':
-            os.system('open ' + str(root_folder))
-        return {"output": "OK", "execution_time": 0}
+            ASCIIColors.info("Opening folder:")
+            # Create a temporary file.
+            root_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
+            root_folder.mkdir(parents=True,exist_ok=True)
+            if platform.system() == 'Windows':
+                os.startfile(str(root_folder))
+            elif platform.system() == 'Linux':
+                os.system('xdg-open ' + str(root_folder))
+            elif platform.system() == 'Darwin':
+                os.system('open ' + str(root_folder))
+            return {"output": "OK", "execution_time": 0}
+        elif "folder_path" in data:
+            ASCIIColors.info("Opening folder:")
+            # Create a temporary file.
+            root_folder = data["folder_path"]
+            root_folder.mkdir(parents=True,exist_ok=True)
+            if platform.system() == 'Windows':
+                os.startfile(str(root_folder))
+            elif platform.system() == 'Linux':
+                os.system('xdg-open ' + str(root_folder))
+            elif platform.system() == 'Darwin':
+                os.system('open ' + str(root_folder))
+            return {"output": "OK", "execution_time": 0}
+
     except Exception as ex:
         trace_exception(ex)
         lollmsElfServer.error(ex)
