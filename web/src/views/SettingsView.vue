@@ -772,8 +772,40 @@
                                         </tr>                                                                                                                     
                                     </table>
                                 </Card>
+                                <Card title="Whisper audio transcription" :is_subcard="true" class="pb-2  m-2">
+                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="whisper_model" class="text-sm font-bold" style="margin-right: 1rem;">Whisper model:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <select
+                                                id="whisper_model"
+                                                v-model="configFile.audio_in_language"
+                                                @change="settingsChanged=true"
+                                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                                <!-- Options with language codes and corresponding language names -->
+                                                <option v-for="whispermodel in whisperModels" :key="whispermodel" :value="whispermodel">
+                                                {{ whispermodel }}
+                                                </option>
+                                            </select>
 
+                                            <input
+                                            type="checkbox"
+                                            id="activate_audio_infos"
+                                            required
+                                            v-model="configFile.whisper_model"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>
 
+                                    </table>
+                                </Card>
                                 <Card title="Browser Audio" :is_subcard="true" class="pb-2  m-2">
                                     <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <tr>
@@ -4427,7 +4459,26 @@ export default {
                 this.$store.state.config.audio_out_voice = value;
             },
         },
-
+        whisperModels(){
+            return [
+                "base",
+                "base.en",
+                "base.fr",
+                "base.es",
+                "small",
+                "small.en",
+                "small.fr",
+                "small.es",
+                "medium",
+                "medium.en",
+                "medium.fr",
+                "medium.es",
+                "large",
+                "large.en",
+                "large.fr",
+                "large.es",
+            ]
+        },
         audioLanguages() {
         // Replace this with your own list of language codes and names
         // Example data structure: [{ code: 'en-US', name: 'English (US)' }, ...]
