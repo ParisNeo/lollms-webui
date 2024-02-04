@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 50
+version: 51
 binding_name: null
 model_name: null
 
@@ -130,3 +130,7 @@ fun_mode: False
 # webui configurations
 show_code_of_conduct: true
 activate_audio_infos: true
+
+
+# whisper configuration
+whisper_model: base

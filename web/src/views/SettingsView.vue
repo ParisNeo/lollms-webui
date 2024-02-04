@@ -782,7 +782,7 @@
                                             <div class="flex flex-row">
                                             <select
                                                 id="whisper_model"
-                                                v-model="configFile.audio_in_language"
+                                                v-model="configFile.whisper_model"
                                                 @change="settingsChanged=true"
                                                 class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
@@ -791,15 +791,6 @@
                                                 {{ whispermodel }}
                                                 </option>
                                             </select>
-
-                                            <input
-                                            type="checkbox"
-                                            id="activate_audio_infos"
-                                            required
-                                            v-model="configFile.whisper_model"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
                                             </div>
                                         </td>
                                         </tr>
