@@ -147,10 +147,6 @@ goto endend
 
 echo Creating a bin dir (required for llamacpp binding)
 md ../installer_files/lollms_env/bin
-
-@rem cd scripts\python\lollms_installer
-@rem call python main.py
-@rem cd ..
 echo Installation complete.
 :endend
 pause
