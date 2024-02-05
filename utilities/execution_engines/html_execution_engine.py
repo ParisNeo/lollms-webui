@@ -14,7 +14,7 @@ import json
 
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()          
 
-def build_javascript_output(code, ifram_name="unnamed"):
+def build_html_output(code, ifram_name="unnamed"):
     """
     This function creates an HTML5 iframe with the given HTML content and iframe name.
 
@@ -29,16 +29,14 @@ def build_javascript_output(code, ifram_name="unnamed"):
     start_time = time.time()    
     rendered =  "\n".join([
         '<div style="width: 100%; margin: 0 auto;">',
-        f'<iframe id="{ifram_name}" srcdoc="',
-        '<script>',
-        code,
-        '</script>',
-        '" style="width: 100%; height: 600px; border: none;"></iframe>',
+        f'<iframe id="{ifram_name}" srcdoc=\'',
+        code.replace("'","\""),
+        '\' style="width: 100%; height: 600px; border: none;"></iframe>',
         '</div>'
         ]
     )
     execution_time = time.time() - start_time
     return {"output": rendered, "execution_time": execution_time}
 
-def execute_javascript(code, discussion_id, message_id):
-    return build_javascript_output(code)
+def execute_html(code, discussion_id, message_id):
+    return build_html_output(code)

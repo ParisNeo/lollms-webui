@@ -28,6 +28,8 @@ from utilities.execution_engines.python_execution_engine import execute_python
 from utilities.execution_engines.latex_execution_engine import execute_latex
 from utilities.execution_engines.shell_execution_engine import execute_bash
 from utilities.execution_engines.javascript_execution_engine import execute_javascript
+from utilities.execution_engines.html_execution_engine import execute_html
+
 from utilities.execution_engines.mermaid_execution_engine import execute_mermaid
 from utilities.execution_engines.graphviz_execution_engine import execute_graphviz
 
@@ -64,6 +66,11 @@ async def execute_code(request: Request):
             ASCIIColors.info("Executing javascript code:")
             ASCIIColors.yellow(code)
             return execute_javascript(code, discussion_id, message_id)
+        if language in ["html","html5"]:
+            ASCIIColors.info("Executing javascript code:")
+            ASCIIColors.yellow(code)
+            return execute_html(code, discussion_id, message_id)
+        
         elif language=="latex":
             ASCIIColors.info("Executing latex code:")
             ASCIIColors.yellow(code)
