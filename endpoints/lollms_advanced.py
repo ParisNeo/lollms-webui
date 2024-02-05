@@ -27,6 +27,11 @@ import platform
 from utilities.execution_engines.python_execution_engine import execute_python
 from utilities.execution_engines.latex_execution_engine import execute_latex
 from utilities.execution_engines.shell_execution_engine import execute_bash
+from utilities.execution_engines.javascript_execution_engine import execute_javascript
+from utilities.execution_engines.mermaid_execution_engine import execute_mermaid
+from utilities.execution_engines.graphviz_execution_engine import execute_graphviz
+
+
 
 # ----------------------- Defining router and main class ------------------------------
 
@@ -50,15 +55,31 @@ async def execute_code(request: Request):
         language = data.get("language","python")
         
 
-        ASCIIColors.info("Executing python code:")
-        ASCIIColors.yellow(code)
 
         if language=="python":
+            ASCIIColors.info("Executing python code:")
+            ASCIIColors.yellow(code)
             return execute_python(code, discussion_id, message_id)
+        if language=="javascript":
+            ASCIIColors.info("Executing javascript code:")
+            ASCIIColors.yellow(code)
+            return execute_javascript(code, discussion_id, message_id)
         elif language=="latex":
+            ASCIIColors.info("Executing latex code:")
+            ASCIIColors.yellow(code)
             return execute_latex(code, discussion_id, message_id)
         elif language in ["bash","shell","cmd","powershell"]:
+            ASCIIColors.info("Executing shell code:")
+            ASCIIColors.yellow(code)
             return execute_bash(code, discussion_id, message_id)
+        elif language in ["mermaid"]:
+            ASCIIColors.info("Executing mermaid code:")
+            ASCIIColors.yellow(code)
+            return execute_mermaid(code, discussion_id, message_id)
+        elif language in ["graphviz","dot"]:
+            ASCIIColors.info("Executing graphviz code:")
+            ASCIIColors.yellow(code)
+            return execute_graphviz(code, discussion_id, message_id)
         return {"output": "Unsupported language", "execution_time": 0}
     except Exception as ex:
         trace_exception(ex)
@@ -252,3 +273,4 @@ def stop_recording():
     lollmsElfServer.info("Stopping audio capture")
     text = lollmsElfServer.audio_cap.stop_recording()
     return text
+
