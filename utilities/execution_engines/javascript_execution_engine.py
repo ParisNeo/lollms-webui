@@ -34,7 +34,7 @@ def build_javascript_output(code, ifram_name="unnamed"):
         code,
         '</script>',
         '<div style=\'text-align: center;\'>',
-        '</div>,',
+        '</div>',
         '" style="width: 100%; height: 600px; border: none;"></iframe>',
         '</div>'
         ]
