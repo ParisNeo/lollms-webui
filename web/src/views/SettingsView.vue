@@ -1828,6 +1828,7 @@
                                         :on-mount="mountPersonality" 
                                         :on-un-mount="unmountPersonality"  
                                         :on-remount="remountPersonality"
+                                        :on-edit="editPersonality"
                                         :on-reinstall="onPersonalityReinstall"
                                         :on-settings="onSettingsPersonality"
                                         :on-copy-personality-name="onCopyPersonalityName"
@@ -2207,6 +2208,7 @@
       @close-dialog="oncloseVariantChoiceDialog"
       @choice-validated="onvalidateVariantChoice"
     />
+    <PersonalityEditor :show="showPersonalityEditor" :config="currentPersonConfig" :personality="selectedPersonality" ></PersonalityEditor>
 </template>
 <style scoped>
 
@@ -2312,6 +2314,9 @@ import Card from "@/components/Card.vue"
 import RadioOptions from '../components/RadioOptions.vue';
 import ExtensionEntry from "@/components/ExtensionEntry.vue"
 
+import PersonalityEditor from "@/components/PersonalityEditor.vue"
+
+
 import {refreshHardwareUsage} from "../main"
 import SVGGPU from '@/assets/gpu.svg';
 
@@ -2329,7 +2334,8 @@ export default {
         ChoiceDialog,
         Card,
         RadioOptions,
-        ExtensionEntry
+        ExtensionEntry,
+        PersonalityEditor
     },
     data() {
 
@@ -2355,6 +2361,18 @@ export default {
                             "Hungarian": "hu",
                             "Hindi": "hi"
                         },
+            showPersonalityEditor: false,
+            selectedPersonality:null,
+            currentPersonConfig: {
+                ai_name: '',
+                ai_author: '',
+                ai_category: '',
+                ai_language: '',
+                ai_description: '',
+                ai_conditionning: '',
+                ai_disclaimer: '',
+                ai_icon: null,
+            },                        
             binding_changed:false,
             SVGGPU:SVGGPU,
             models_zoo:[],
@@ -4215,6 +4233,31 @@ export default {
             }
 
             this.isLoading = false
+        },
+        editPersonality(pers) {
+            pers=pers.personality;
+            // Make a POST request to the '/get_personality_config' endpoint using Axios
+            axios.post('/get_personality_config', {
+                category: pers.category,
+                name: pers.folder,
+            })
+            .then(response => {
+            const data = response.data;
+            console.log("Done")
+            if (data.status) {
+                // Update the currentPersonConfig with the received data
+                this.currentPersonConfig = data.config;
+                this.showPersonalityEditor = true;
+                this.selectedPersonality = pers
+            } else {
+                // Handle the error
+                console.error(data.error);
+            }
+            })
+            .catch(error => {
+            // Handle the error
+            console.error(error);
+            });
         },
         async remountPersonality(pers){
             await this.unmountPersonality(pers);

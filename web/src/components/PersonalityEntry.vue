@@ -114,6 +114,7 @@ export default {
     onMount: Function,
     onUnMount: Function,
     onRemount: Function,
+    onEdit: Function,
     onReinstall: Function,
     onSettings: Function,
     onCopyPersonalityName: Function
@@ -133,6 +134,10 @@ export default {
                 {name:this.isMounted?"unmount":"mount", icon: "feather:settings", is_file:false, value:this.isMounted?this.unmount:this.mount},
                 {name:"reinstall", icon: "feather:terminal", is_file:false, value:this.toggleReinstall},
               ];
+        console.log("this.category",this.personality.category)
+        if(this.personality.category=="custom_personalities"){
+          main_menu.push({name:"edit", icon: "feather:settings", is_file:false, value:this.edit})
+        }
         if(this.isMounted){
           main_menu.push({name:"remount", icon: "feather:refresh-ccw", is_file:false, value:this.reMount})
         }
@@ -173,6 +178,9 @@ export default {
       if(this.isMounted){
         this.onSelected(this)
       }
+    },
+    edit(){
+      this.onEdit(this)
     },
     reMount(){
       this.onRemount(this)

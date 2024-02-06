@@ -1,126 +1,160 @@
 <template>
-    <div class="mx-auto max-w-xl">
-      <dialog :open="showDialog" @close="hideForm" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <header class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold text-gray-800">{{ title }}</h2>
-          <button @click="hideForm" class="text-gray-500 hover:text-gray-700 font-bold py-2 px-4 rounded">
-            X
-          </button>
-        </header>
-  
-        <form class="mb-4">
-          <div class="mb-4">
-            <label for="ai_name" class="block text-gray-700 font-bold mb-2">
-              AI Name:
-            </label>
-            <input type="text" id="ai_name" name="ai_name" required v-model="ai_name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-          </div>
-  
-          <div class="mb-4">
-            <label for="ai_author" class="block text-gray-700 font-bold mb-2">
-              AI Author:
-            </label>
-            <input type="text" id="ai_author" name="ai_author" required v-model="ai_author" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-          </div>
-  
-          <div class="mb-4">
-            <label for="ai_category" class="block text-gray-700 font-bold mb-2">
-              AI Category:
-            </label>
-            <input type="text" id="ai_category" name="ai_category" required v-model="ai_category" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-          </div>
-  
-          <div class="mb-4">
-            <label for="ai_language" class="block text-gray-700 font-bold mb-2">
-              AI Language:
-            </label>
-            <input type="text" id="ai_language" name="ai_language" required v-model="ai_language" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-          </div>
-  
-          <div class="mb-4">
-            <label for="ai_description" class="block text-gray-700 font-bold mb-2">
-              AI Description:
-            </label>
-            <textarea id="ai_description" name="ai_description" required v-model="ai_description" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
-          </div>
-  
-          <div class="mb-4">
-            <label for="ai_conditionning" class="block text-gray-700 font-bold mb-2">
-              AI Conditionning:
-            </label>
-            <textarea id="ai_conditionning" name="ai_conditionning" required v-model="ai_conditionning" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
-          </div>
-  
-          <div class="mb-4">
-            <label for="ai_disclaimer" class="block text-gray-700 font-bold mb-2">
-              AI Disclaimer:
-            </label>
-            <textarea id="ai_disclaimer" name="ai_disclaimer" required v-model="ai_disclaimer" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
-          </div>
-  
-          <div class="mb-4">
-            <label for="ai_icon" class="block text-gray-700 font-bold mb-2">
-              AI Icon:
-            </label>
-            <div class="flex items-center">
-              <img :src="iconUrl" @click="selectIcon" class="w-16 h-16 object-cover mr-4">
-              <input type="file" id="ai_icon" @change="selectIcon" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
-          </div>
-  
+  <div v-if="show"  class="fixed top-50 left-0 right-0 bottom-50 flex items-center justify-center bg-black bg-opacity-50 z-20">
+    <div class="relative w-full max-h-full ">
+      <button type="button" @click="hide()"
+        class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white">
+        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd"
+            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+            clip-rule="evenodd"></path>
+        </svg>
+        <span class="sr-only">Close modal</span>
+      </button>
+      <form class="mb-4">
+        <div class="container relative bg-white rounded-lg shadow dark:bg-gray-700 overflow-y-scroll">
+          <table>
+          <tr>
+            <td><label for="personalityConditioning">Personality Conditioning:</label></td><td><textarea id="personalityConditioning" v-model="config.personality_conditioning"></textarea></td>
+          </tr>
+          <tr>
+            <td><label for="userMessagePrefix">User Message Prefix:</label></td><td><input type="text" id="userMessagePrefix" v-model="config.user_message_prefix"></td>
+          </tr>
+          <tr>
+            <td><label for="aiMessagePrefix">AI Message Prefix:</label></td><td><input type="text" id="aiMessagePrefix" v-model="config.ai_message_prefix"></td>
+          </tr>
+
+          <tr>
+            <td><label for="linkText">Link Text:</label></td><td><input type="text" id="linkText" v-model="config.link_text"></td>
+          </tr>
+          <tr>
+            <td><label for="welcomeMessage">Welcome Message:</label></td><td><textarea id="welcomeMessage" v-model="config.welcome_message"></textarea></td>
+          </tr>
+          <tr>
+            <td><label for="modelTemperature">Model Temperature:</label></td><td><input type="number" id="modelTemperature" v-model="config.model_temperature"></td>
+          </tr>
+          <tr>
+            <td><label for="modelNPredicts">Model N Predicts:</label></td>
+            <td><input type="number" id="modelNPredicts" v-model="config.model_n_predicts"></td>
+          </tr>   
+          <tr>
+            <td><label for="modelNPredicts">Model N Predicts:</label></td>
+            <td><input type="number" id="modelNPredicts" v-model="config.model_n_predicts"></td>
+          </tr>
+          <tr>
+            <td><label for="modelTopK">Model Top K:</label></td>
+            <td><input type="number" id="modelTopK" v-model="config.model_top_k"></td>
+          </tr>
+          <tr>
+            <td><label for="modelTopP">Model Top P:</label></td>
+            <td><input type="number" id="modelTopP" v-model="config.model_top_p"></td>
+          </tr>
+          <tr>
+            <td><label for="modelRepeatPenalty">Model Repeat Penalty:</label></td>
+            <td><input type="number" id="modelRepeatPenalty" v-model="config.model_repeat_penalty"></td>
+          </tr>
+          <tr>
+            <td><label for="modelRepeatLastN">Model Repeat Last N:</label></td>
+            <td><input type="number" id="modelRepeatLastN" v-model="config.model_repeat_last_n"></td>
+          </tr>
+          <tr>
+            <td><label for="recommendedBinding">Recommended Binding:</label></td>
+            <td><input type="text" id="recommendedBinding" v-model="config.recommended_binding"></td>
+          </tr>
+          <tr>
+            <td><label for="recommendedModel">Recommended Model:</label></td>
+            <td><input type="text" id="recommendedModel" v-model="config.recommended_model"></td>
+          </tr>
+          <tr>
+            <td><label for="dependencies">Dependencies:</label></td>
+            <td><textarea id="dependencies" v-model="config.dependencies"></textarea></td>
+          </tr>
+          <tr>
+            <td><label for="antiPrompts">Anti Prompts:</label></td>
+            <td><textarea id="antiPrompts" v-model="config.anti_prompts"></textarea></td>
+          </tr>                 
+          </table>
+        </div>        
+        <div class="flex flex-row">
           <button type="submit" @click.prevent="submitForm" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             Commit AI to Server
           </button>
-        </form>
-      </dialog>
+          <button @click.prevent="hide()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Close
+          </button>
+
+        </div>
+      </form>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        showDialog: false,
-        title: 'Add AI Agent',
-        ai_name: '',
-        ai_author: '',
-        ai_category: '',
-        ai_language: '',
-        ai_description: '',
-        ai_conditionning: '',
-        ai_disclaimer: '',
-        iconUrl: '',
-        file: null,
-      };
+  </div>
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  props: {
+    personality: {
+      type: Object,
+      required: true
     },
-    methods: {
-      showForm() {
-        this.showDialog = true;
-      },
-      hideForm() {
-        this.showDialog = false;
-      },
-      selectIcon(event) {
-        if (event.target.files) {
-          this.file = event.target.files[0];
-          this.iconUrl = URL.createObjectURL(this.file);
-        }
-      },
-      submitForm() {
-        const data = {
-          ai_name: this.ai_name,
-          ai_author: this.ai_author,
-          ai_category: this.ai_category,
-          ai_language: this.ai_language,
-          ai_description: this.ai_description,
-          ai_conditionning: this.ai_conditionning,
-          ai_disclaimer: this.ai_disclaimer,
-          ai_icon: this.file,
-        };
-  
-        // Code to handle form submission goes here
-      },
+    config: {
+      type: Object,
+      required: true
     },
-  };
-  </script>
-  
+    show:{
+      type: Boolean,
+      required: true
+    },
+  },
+  data() {
+    return {
+      title: 'Add AI Agent',
+      iconUrl: '',
+      file: null,
+      tempConfig: {} // Create a temporary copy of the 'config' prop
+    };
+  },
+  methods: {
+    showForm() {
+      this.showDialog = true;
+    },
+    hideForm() {
+      this.showDialog = false;
+    },
+    selectIcon(event) {
+      if (event.target.files) {
+        this.file = event.target.files[0];
+        this.iconUrl = URL.createObjectURL(this.file);
+      }
+    },
+    hide(){
+      self.show = false;
+    },
+    submitForm() {
+      axios.post('/set_personality_config', {
+                category: this.personality.category,
+                name: this.personality.folder,
+                config: this.config
+            })
+            .then(response => {
+            const data = response.data;
+            console.log("Done")
+            if (data.status) {
+                // Update the currentPersonConfig with the received data
+                this.currentPersonConfig = data.config;
+                this.showPersonalityEditor = true;
+            } else {
+                // Handle the error
+                console.error(data.error);
+            }
+            })
+            .catch(error => {
+            // Handle the error
+            console.error(error);
+            });
+
+    },
+  },
+};
+</script>
