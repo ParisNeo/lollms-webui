@@ -15,63 +15,63 @@
         <div class="container relative bg-white rounded-lg shadow dark:bg-gray-700 overflow-y-scroll">
           <table>
           <tr>
-            <td><label for="personalityConditioning">Personality Conditioning:</label></td><td><textarea id="personalityConditioning" v-model="config.personality_conditioning"></textarea></td>
+            <td><label for="personalityConditioning">Personality Conditioning:</label></td><td><textarea id="personalityConditioning" class="w-full" v-model="config.personality_conditioning"></textarea></td>
           </tr>
           <tr>
-            <td><label for="userMessagePrefix">User Message Prefix:</label></td><td><input type="text" id="userMessagePrefix" v-model="config.user_message_prefix"></td>
+            <td><label for="userMessagePrefix">User Message Prefix:</label></td><td><input type="text" id="userMessagePrefix" class="w-full" v-model="config.user_message_prefix"></td>
           </tr>
           <tr>
-            <td><label for="aiMessagePrefix">AI Message Prefix:</label></td><td><input type="text" id="aiMessagePrefix" v-model="config.ai_message_prefix"></td>
+            <td><label for="aiMessagePrefix">AI Message Prefix:</label></td><td><input type="text" id="aiMessagePrefix" class="w-full" v-model="config.ai_message_prefix"></td>
           </tr>
 
           <tr>
-            <td><label for="linkText">Link Text:</label></td><td><input type="text" id="linkText" v-model="config.link_text"></td>
+            <td><label for="linkText">Link Text:</label></td><td><input type="text" id="linkText" class="w-full" v-model="config.link_text"></td>
           </tr>
           <tr>
-            <td><label for="welcomeMessage">Welcome Message:</label></td><td><textarea id="welcomeMessage" v-model="config.welcome_message"></textarea></td>
+            <td><label for="welcomeMessage">Welcome Message:</label></td><td><textarea id="welcomeMessage" class="w-full" v-model="config.welcome_message"></textarea></td>
           </tr>
           <tr>
-            <td><label for="modelTemperature">Model Temperature:</label></td><td><input type="number" id="modelTemperature" v-model="config.model_temperature"></td>
+            <td><label for="modelTemperature">Model Temperature:</label></td><td><input type="number" id="modelTemperature" class="w-full" v-model="config.model_temperature"></td>
           </tr>
           <tr>
             <td><label for="modelNPredicts">Model N Predicts:</label></td>
-            <td><input type="number" id="modelNPredicts" v-model="config.model_n_predicts"></td>
+            <td><input type="number" id="modelNPredicts" class="w-full" v-model="config.model_n_predicts"></td>
           </tr>   
           <tr>
             <td><label for="modelNPredicts">Model N Predicts:</label></td>
-            <td><input type="number" id="modelNPredicts" v-model="config.model_n_predicts"></td>
+            <td><input type="number" id="modelNPredicts" class="w-full" v-model="config.model_n_predicts"></td>
           </tr>
           <tr>
             <td><label for="modelTopK">Model Top K:</label></td>
-            <td><input type="number" id="modelTopK" v-model="config.model_top_k"></td>
+            <td><input type="number" id="modelTopK" class="w-full" v-model="config.model_top_k"></td>
           </tr>
           <tr>
             <td><label for="modelTopP">Model Top P:</label></td>
-            <td><input type="number" id="modelTopP" v-model="config.model_top_p"></td>
+            <td><input type="number" id="modelTopP" class="w-full" v-model="config.model_top_p"></td>
           </tr>
           <tr>
             <td><label for="modelRepeatPenalty">Model Repeat Penalty:</label></td>
-            <td><input type="number" id="modelRepeatPenalty" v-model="config.model_repeat_penalty"></td>
+            <td><input type="number" id="modelRepeatPenalty" class="w-full" v-model="config.model_repeat_penalty"></td>
           </tr>
           <tr>
             <td><label for="modelRepeatLastN">Model Repeat Last N:</label></td>
-            <td><input type="number" id="modelRepeatLastN" v-model="config.model_repeat_last_n"></td>
+            <td><input type="number" id="modelRepeatLastN" class="w-full" v-model="config.model_repeat_last_n"></td>
           </tr>
           <tr>
             <td><label for="recommendedBinding">Recommended Binding:</label></td>
-            <td><input type="text" id="recommendedBinding" v-model="config.recommended_binding"></td>
+            <td><input type="text" id="recommendedBinding" class="w-full" v-model="config.recommended_binding"></td>
           </tr>
           <tr>
             <td><label for="recommendedModel">Recommended Model:</label></td>
-            <td><input type="text" id="recommendedModel" v-model="config.recommended_model"></td>
+            <td><input type="text" id="recommendedModel" class="w-full" v-model="config.recommended_model"></td>
           </tr>
           <tr>
             <td><label for="dependencies">Dependencies:</label></td>
-            <td><textarea id="dependencies" v-model="config.dependencies"></textarea></td>
+            <td><textarea id="dependencies" class="w-full" v-model="config.dependencies"></textarea></td>
           </tr>
           <tr>
             <td><label for="antiPrompts">Anti Prompts:</label></td>
-            <td><textarea id="antiPrompts" v-model="config.anti_prompts"></textarea></td>
+            <td><textarea id="antiPrompts" class="w-full" v-model="config.anti_prompts"></textarea></td>
           </tr>                 
           </table>
         </div>        
@@ -102,13 +102,10 @@ export default {
       type: Object,
       required: true
     },
-    show:{
-      type: Boolean,
-      required: true
-    },
   },
   data() {
     return {
+      show:false,
       title: 'Add AI Agent',
       iconUrl: '',
       file: null,
@@ -127,6 +124,9 @@ export default {
         this.file = event.target.files[0];
         this.iconUrl = URL.createObjectURL(this.file);
       }
+    },
+    showPanel(){
+      this.show = true;
     },
     hide(){
       self.show = false;

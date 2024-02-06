@@ -2208,7 +2208,7 @@
       @close-dialog="oncloseVariantChoiceDialog"
       @choice-validated="onvalidateVariantChoice"
     />
-    <PersonalityEditor :show="showPersonalityEditor" :config="currentPersonConfig" :personality="selectedPersonality" ></PersonalityEditor>
+    <PersonalityEditor ref="personality_editor" :config="currentPersonConfig" :personality="selectedPersonality" ></PersonalityEditor>
 </template>
 <style scoped>
 
@@ -4248,6 +4248,7 @@ export default {
                 // Update the currentPersonConfig with the received data
                 this.currentPersonConfig = data.config;
                 this.showPersonalityEditor = true;
+                this.$refs.personality_editor.showPanel()
                 this.selectedPersonality = pers
             } else {
                 // Handle the error
