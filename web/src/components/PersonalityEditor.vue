@@ -13,7 +13,7 @@
       </button>
       <form class="mb-4">
         <div class="container relative bg-white rounded-lg shadow dark:bg-gray-700 overflow-y-scroll">
-          <table>
+          <table class="w-full">
           <tr>
             <td><label for="personalityConditioning">Personality Conditioning:</label></td><td><textarea id="personalityConditioning" class="w-full" v-model="config.personality_conditioning"></textarea></td>
           </tr>
