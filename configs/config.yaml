@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 51
+version: 52
 binding_name: null
 model_name: null
 
@@ -100,7 +100,7 @@ audio_auto_send_input: true
 audio_silenceTimer: 5000
 
 # Data vectorization
-use_discussions_history: false # Activate vectorizing previous conversations
+activate_ltm: false # Activate vectorizing previous conversations
 summerize_discussion: false # activate discussion summary (better but adds computation time)
 max_summary_size: 512 # in tokens
 data_vectorization_visualize_on_vectorization: false

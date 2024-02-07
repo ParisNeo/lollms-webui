@@ -491,15 +491,15 @@
                                         </tr>
                                         <tr>
                                         <td style="min-width: 200px;">
-                                            <label for="use_discussions_history" class="text-sm font-bold" style="margin-right: 1rem;">Activate discussion vectorization:</label>
+                                            <label for="activate_ltm" class="text-sm font-bold" style="margin-right: 1rem;">Activate Long term memory:</label>
                                         </td>
                                         <td>
                                             <div class="flex flex-row">
                                             <input
                                             type="checkbox"
-                                            id="use_discussions_history"
+                                            id="activate_ltm"
                                             required
-                                            v-model="configFile.use_discussions_history"
+                                            v-model="configFile.activate_ltm"
                                             @change="settingsChanged=true"
                                             class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >

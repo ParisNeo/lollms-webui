@@ -73,7 +73,7 @@ def select_database(data:DatabaseSelectionParameters):
     if lollmsElfServer.config.auto_save:
         lollmsElfServer.config.save_config()
     
-    if lollmsElfServer.config.data_vectorization_activate and lollmsElfServer.config.use_discussions_history:
+    if lollmsElfServer.config.data_vectorization_activate and lollmsElfServer.config.activate_ltm:
         try:
             ASCIIColors.yellow("0- Detected discussion vectorization request")
             folder = lollmsElfServer.lollms_paths.personal_databases_path/"vectorized_dbs"

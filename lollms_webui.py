@@ -169,7 +169,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         ASCIIColors.success("ok")
 
         # prepare vectorization
-        if self.config.data_vectorization_activate and self.config.use_discussions_history:
+        if self.config.data_vectorization_activate and self.config.activate_ltm:
             try:
                 ASCIIColors.yellow("Loading long term memory")
                 folder = self.lollms_paths.personal_databases_path/"vectorized_dbs"
@@ -777,7 +777,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 except:
                     self.warning("Couldn't add documentation to the context. Please verify the vector database")
             # Check if there is discussion knowledge to add to the prompt
-            if self.config.use_discussions_history and self.long_term_memory is not None:
+            if self.config.activate_ltm and self.long_term_memory is not None:
                 if knowledge=="":
                     knowledge="!@>knowledge:\n"
 

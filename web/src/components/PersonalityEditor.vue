@@ -129,7 +129,7 @@ export default {
       this.show = true;
     },
     hide(){
-      self.show = false;
+      this.show = false;
     },
     submitForm() {
       axios.post('/set_personality_config', {

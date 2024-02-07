@@ -94,12 +94,6 @@
                             <i data-feather="check"></i>
                         </button>
                     </div>       
-                    <button  v-if="!showBrainConfirmation" title="Activate Long term Memory" class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                        @click="toggleLTM()">
-                        <img v-if="loading" :src="SVGOrangeBrain" width="25" height="25" class="animate-pulse" title="Applying config, please stand by...">
-                        <img v-else-if="UseDiscussionHistory" :src="SVGGreenBrain" width="25" height="25">
-                        <img v-else :src="SVGRedBrain" width="25" height="25">
-                    </button>
                     <div v-if="loading" title="Loading.." class="flex flex-row flex-grow justify-end">
                         <!-- SPINNER -->
                         <div role="status">
@@ -542,7 +536,7 @@ export default {
         
         },
         async toggleLTM(){
-            this.$store.state.config.use_discussions_history =! this.$store.state.config.use_discussions_history;
+            this.$store.state.config.activate_ltm =! this.$store.state.config.activate_ltm;
             await this.applyConfiguration();
             socket.emit('upgrade_vectorization');
         },
@@ -2049,7 +2043,7 @@ export default {
             return trimmed_name;
         },
         UseDiscussionHistory() {
-            return this.$store.state.config.use_discussions_history;
+            return this.$store.state.config.activate_ltm;
         }, 
         isReady:{
             
