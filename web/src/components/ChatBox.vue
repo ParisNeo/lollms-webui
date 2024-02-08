@@ -413,7 +413,7 @@ export default {
                 console.log('dis conputer pers', this.discussionList)
                 return persArray
             }
-
+            return null;
         }
     },
     methods: {   
@@ -746,7 +746,7 @@ export default {
         onMountFun(comp) {
             console.log('Mounting personality')
             this.$refs.mountedPers.constructor()
-        },
+        },     
         onUnmountFun(comp) {
             console.log('Unmounting personality')
             this.$refs.mountedPers.constructor()

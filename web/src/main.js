@@ -23,6 +23,19 @@ function copyObject(obj) {
 export const store = createStore({
     state () {
       return {
+        personality_editor:null,
+        showPersonalityEditor: false,
+        selectedPersonality:null,
+        currentPersonConfig: {
+          ai_name: '',
+          ai_author: '',
+          ai_category: '',
+          ai_language: '',
+          ai_description: '',
+          ai_conditionning: '',
+          ai_disclaimer: '',
+          ai_icon: null,
+        },         
         // count: 0,
         yesNoDialog:null,
         universalForm:null,

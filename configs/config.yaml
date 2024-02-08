@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 52
+version: 53
 binding_name: null
 model_name: null
 
@@ -56,6 +56,9 @@ auto_title: false
 hardware_mode: nvidia-tensorcores
 # Automatically open the browser
 auto_show_browser: true
+
+# copy to clipboard 
+copy_to_clipboard_add_all_details: false
 
 # Voice service
 enable_voice_service: false

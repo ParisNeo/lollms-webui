@@ -41,6 +41,7 @@
                             :selected="configFile.personalities[configFile.active_personality_id] === pers.full_path  || configFile.personalities[configFile.active_personality_id] === pers.full_path+':'+pers.language"
                             :on-selected="onPersonalitySelected" 
                             :on-mount="onPersonalityMounted" 
+                            :on-edit="editPersonality"
                             :on-un-mount="onPersonalityUnMounted"  
                             :on-remount="onPersonalityRemount"
                             :on-settings="onSettingsPersonality"  
@@ -208,6 +209,32 @@ export default {
                     return { 'status': false }
                 });
         },
+        editPersonality(pers) {
+            pers=pers.personality;
+            // Make a POST request to the '/get_personality_config' endpoint using Axios
+            axios.post('/get_personality_config', {
+                category: pers.category,
+                name: pers.folder,
+            })
+            .then(response => {
+            const data = response.data;
+            console.log("Done")
+            if (data.status) {
+                // Update the currentPersonConfig with the received data
+                this.$store.state.currentPersonConfig = data.config;
+                this.$store.state.showPersonalityEditor = true;
+                this.$store.state.personality_editor.showPanel()
+                this.$store.state.selectedPersonality = pers
+            } else {
+                // Handle the error
+                console.error(data.error);
+            }
+            })
+            .catch(error => {
+            // Handle the error
+            console.error(error);
+            });
+        },   
         onPersonalityMounted(persItem) {
             //persItem.ismounted = true
             this.mountPersonality(persItem)

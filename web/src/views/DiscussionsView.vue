@@ -1003,7 +1003,8 @@ export default {
                 sender: msgObj.user,
                 created_at: msgObj.created_at,
                 steps: [],
-                html_js_s: []
+                html_js_s: [],
+                status_message: "Warming up"
 
             }
             this.discussionArr.push(usrMessage)
@@ -1084,6 +1085,7 @@ export default {
 
                 open                    : msgObj.open
             }
+            responseMessage.status_message = "Warming up"
             console.log(responseMessage)
             this.discussionArr.push(responseMessage)
             // nextTick(() => {
@@ -1252,6 +1254,7 @@ export default {
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP){
                     messageItem.steps.push({"message":msgObj.content,"done":true, "status":true })
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_START){
+                    messageItem.status_message = msgObj.content
                     messageItem.steps.push({"message":msgObj.content,"done":false, "status":true })
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_END) {
                     // Find the step with the matching message and update its 'done' property to true
@@ -1262,8 +1265,10 @@ export default {
                         try {
                             console.log(msgObj.parameters)
                             const parameters = msgObj.parameters;
-                            matchingStep.status=parameters.status
-                            console.log(parameters);
+                            if(parameters!=undefined){
+                                matchingStep.status=parameters.status
+                                console.log(parameters);
+                            }
                             
                         } catch (error) {
                             console.error('Error parsing JSON:', error.message);
@@ -1552,7 +1557,6 @@ export default {
             console.log("final", msgObj)
 
             // Last message contains halucination suppression so we need to update the message content too
-            const parent_id = msgObj.parent_id
             this.discussion_id = msgObj.discussion_id
             if (this.currentDiscussion.id == this.discussion_id) {
                 const index = this.discussionArr.findIndex((x) => x.id == msgObj.id)
@@ -1573,44 +1577,56 @@ export default {
             this.isGenerating = false
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
             this.chime.play()
+            const index = this.discussionArr.findIndex((x) => x.id == msgObj.id)
+            const messageItem = this.discussionArr[index]            
+            messageItem.status_message = "Done"
+
         },
         copyToClipBoard(messageEntry) {
-            this.$store.state.toast.showToast("Copied to clipboard successfully", 4, true)
-
-            let binding = ""
-            if (messageEntry.message.binding) {
-                binding = `Binding: ${messageEntry.message.binding}`
-            }
-            let personality = ""
-            if (messageEntry.message.personality) {
-                personality = `\nPersonality: ${messageEntry.message.personality}`
-            }
-            let time = ""
-            if (messageEntry.created_at_parsed) {
-                time = `\nCreated: ${messageEntry.created_at_parsed}`
-            }
             let content = ""
             if (messageEntry.message.content) {
                 content = messageEntry.message.content
             }
-            let model = ""
-            if (messageEntry.message.model) {
-                model = `Model: ${messageEntry.message.model}`
-            }
-            let seed = ""
-            if (messageEntry.message.seed) {
-                seed = `Seed: ${messageEntry.message.seed}`
-            }
-            let time_spent = ""
-            if (messageEntry.time_spent) {
-                time_spent = `\nTime spent: ${messageEntry.time_spent}`
-            }
-            let bottomRow = ''
-            bottomRow = `${binding} ${model} ${seed} ${time_spent}`.trim()
-            const result = `${messageEntry.message.sender}${personality}${time}\n\n${content}\n\n${bottomRow}`
 
 
-            navigator.clipboard.writeText(result);
+            if(this.$store.state.config.copy_to_clipboard_add_all_details){
+                let binding = ""
+                if (messageEntry.message.binding) {
+                    binding = `Binding: ${messageEntry.message.binding}`
+                }
+                let personality = ""
+                if (messageEntry.message.personality) {
+                    personality = `\nPersonality: ${messageEntry.message.personality}`
+                }
+                let time = ""
+                if (messageEntry.created_at_parsed) {
+                    time = `\nCreated: ${messageEntry.created_at_parsed}`
+                }
+                let model = ""
+                if (messageEntry.message.model) {
+                    model = `Model: ${messageEntry.message.model}`
+                }
+                let seed = ""
+                if (messageEntry.message.seed) {
+                    seed = `Seed: ${messageEntry.message.seed}`
+                }
+                let time_spent = ""
+                if (messageEntry.time_spent) {
+                    time_spent = `\nTime spent: ${messageEntry.time_spent}`
+                }                
+                let bottomRow = ''
+                bottomRow = `${binding} ${model} ${seed} ${time_spent}`.trim()
+                const result = `${messageEntry.message.sender}${personality}${time}\n\n${content}\n\n${bottomRow}`
+
+                navigator.clipboard.writeText(result);
+            }
+            else{
+                navigator.clipboard.writeText(content);
+            }
+
+
+
+            this.$store.state.toast.showToast("Copied to clipboard successfully", 4, true)
 
             nextTick(() => {
                 feather.replace()

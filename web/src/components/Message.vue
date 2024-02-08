@@ -73,6 +73,10 @@
                                 <i data-feather="edit"></i>
                             </div>
                             <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
+                                title="Add generic block" @click.stop="addBlock('')">
+                                <img :src="code_block" width="25" height="25">
+                            </div>                            
+                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
                                 title="Add python block" @click.stop="addBlock('python')">
                                 <img :src="python_block" width="25" height="25">
                             </div>
@@ -187,10 +191,29 @@
 
                 <div class="overflow-x-auto w-full ">
                     <!-- MESSAGE CONTENT -->
-                    <div class="flex flex-col items-start w-full">
-                        <div v-for="(step, index) in message.steps" :key="'step-' + message.id + '-' + index" class="step font-bold" :style="{ backgroundColor: step.done ? 'transparent' : 'inherit' }">
-                            <Step :done="step.done" :message="step.message" :status="step.status" />
+                    <details v-show="message != undefined && message.steps != undefined && message.steps.length>0" class="flex w-full rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 mb-3.5 max-w-full svelte-1escu1z">
+                        <summary class="grid min-w-72 select-none grid-cols-[40px,1fr] items-center gap-2.5 p-2 svelte-1escu1z">
+                            <div class="relative grid aspect-square place-content-center overflow-hidden rounded-lg bg-gray-300 dark:bg-gray-200">
+                                <svg class="absolute inset-0 text-gray-300 transition-opacity dark:text-gray-700 opacity-0" width="40" height="40" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="loading-path svelte-1escu1z" d="M8 2.5H30C30 2.5 35.5 2.5 35.5 8V30C35.5 30 35.5 35.5 30 35.5H8C8 35.5 2.5 35.5 2.5 30V8C2.5 8 2.5 2.5 8 2.5Z" stroke="currentColor" stroke-width="1" stroke-linecap="round" id="shape">                                        
+                                    </path>
+                                </svg> 
+                                <img :src="process_svg" class="absolute inset-0 text-gray-100 transition-opacity dark:text-gray-800 opacity-100">
+                            </div> 
+                            <dl class="leading-4">
+                                <dd class="text-sm">Processing infos</dd>
+                                <dt class="flex items-center gap-1 truncate whitespace-nowrap text-[.82rem] text-gray-400">{{ message==undefined?"":message.status_message }}</dt>
+                            </dl>
+                        </summary> 
+                        <div class="content px-5 pb-5 pt-4">
+                            <ol>
+                                <li v-for="(step, index) in message.steps" :key="'step-' + message.id + '-' + index" class="group border-l pb-6 last:!border-transparent last:pb-0 dark:border-gray-800" :style="{ backgroundColor: step.done ? 'transparent' : 'inherit' }">
+                                    <Step :done="step.done" :message="step.message" :status="step.status" />
+                                </li>
+                            </ol>
                         </div>
+                    </details>
+                    <div class="flex flex-col items-start w-full">
                     </div>
                     <div class="flex flex-col items-start w-full">
                         <div v-for="(html_js, index) in message.html_js_s" :key="'htmljs-' + message.id + '-' + index" class="htmljs font-bold" :style="{ backgroundColor: step.done ? 'transparent' : 'inherit' }">
@@ -270,6 +293,7 @@ import JsonViewer from "./JsonViewer.vue";
 import Step from './Step.vue';
 import axios from 'axios';
 
+import code_block from '@/assets/code_block.svg';
 import python_block from '@/assets/python_block.png';
 import javascript_block from '@/assets/javascript_block.svg';
 import json_block from '@/assets/json_block.png';
@@ -277,6 +301,8 @@ import cpp_block from '@/assets/cpp_block.png';
 import html5_block from '@/assets/html5_block.png';
 import LaTeX_block from '@/assets/LaTeX_block.png';
 import bash_block from '@/assets/bash_block.png';
+
+import process_svg from '@/assets/process.svg';
 
 export default {
     // eslint-disable-next-line vue/multi-word-component-names
@@ -296,7 +322,9 @@ export default {
             default: "http://localhost:9600",
         },            
         message: Object,
-        avatar: ''
+        avatar: {
+            default: ''
+        }
     },
     data() {
         return {
@@ -306,6 +334,8 @@ export default {
             LaTeX_block:LaTeX_block,
             json_block:json_block,
             javascript_block:javascript_block,
+            process_svg:process_svg,
+            code_block:code_block,
             python_block:python_block,
             bash_block:bash_block,
             audio_url: null,

@@ -19,7 +19,7 @@ def build_mermaid_output(code, ifram_name="unnamed"):
     This function creates an HTML5 iframe with the given HTML content and iframe name.
 
     Args:
-    html (str): The HTML content to be displayed in the iframe.
+    code (str): The mermaid code
     ifram_name (str, optional): The name of the iframe. Defaults to "unnamed".
 
     Returns:
@@ -44,10 +44,23 @@ def build_mermaid_output(code, ifram_name="unnamed"):
         '<div class=\'mermaid\'>',
         "\n".join([c for c in code.split("\n") if c.strip()!=""]),
         '</div>',
+        '<button onclick="saveSVG()">Save SVG</button>',
         '<script src=\'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js\'></script>',
         '<script>',
         '// Initialize the mermaid library and render our diagram',
         'mermaid.initialize({ startOnLoad: true });',
+        '// Function to save SVG content to a file',
+        'function saveSVG() {',
+        'var svg = document.querySelector(".mermaid > svg");',
+        'var serializer = new XMLSerializer();',
+        'var source = serializer.serializeToString(svg);',
+        'var blob = new Blob([source], {type: "image/svg+xml;charset=utf-8"});',
+        'var url = URL.createObjectURL(blob);',
+        'var a = document.createElement("a");',
+        'a.href = url;',
+        'a.download = "diagram.svg";',
+        'a.click();',
+        '}',
         '</script>',
         '<div style=\'text-align: center;\'>',
         '</div>',
@@ -57,6 +70,7 @@ def build_mermaid_output(code, ifram_name="unnamed"):
     )
     execution_time = time.time() - start_time
     return {"output": rendered, "execution_time": execution_time}
+
 
 def execute_mermaid(code, discussion_id, message_id):
 

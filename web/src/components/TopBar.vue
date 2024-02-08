@@ -106,6 +106,7 @@
         </div>     
         <UniversalForm ref="universalForm" class="z-20" />
         <YesNoDialog ref="yesNoDialog" class="z-20" />
+        <PersonalityEditor ref="personality_editor" :config="currentPersonConfig" :personality="selectedPersonality" ></PersonalityEditor>
 
     </header>
 
@@ -115,11 +116,12 @@
 </template>
 
 <script setup>
-import Toast from '../components/Toast.vue'
+import Toast from '@/components/Toast.vue'
 import MessageBox from "@/components/MessageBox.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
 import UniversalForm from '../components/UniversalForm.vue';
 import YesNoDialog from './YesNoDialog.vue';
+import PersonalityEditor from "@/components/PersonalityEditor.vue"
 
 import FastAPI from '@/assets/fastapi.png';
 import discord from '@/assets/discord.svg';
@@ -133,6 +135,25 @@ import feather from 'feather-icons'
 export default {
     name: 'TopBar',
     computed:{
+        currentPersonConfig (){
+            try{
+                return this.$store.state.currentPersonConfig
+            }
+            catch{
+                console.log("Error finding current personality configuration")
+                return undefined
+            }
+        },        
+        selectedPersonality (){
+            try{
+                return this.$store.state.selectedPersonality
+            }
+            catch{
+                console.log("Error finding current personality configuration")
+                return undefined
+            }
+        },        
+        
         loading_infos(){
             return this.$store.state.loading_infos;
         },        
@@ -153,6 +174,7 @@ export default {
         UniversalForm,
         YesNoDialog,
         Navigation,
+        PersonalityEditor
     },
     watch:{
         isConnected(){
@@ -182,6 +204,7 @@ export default {
     },
     data() {
         return {
+             
             is_first_connection:true,
             discord:discord,
             FastAPI:FastAPI,
@@ -203,6 +226,8 @@ export default {
         this.$store.state.messageBox = this.$refs.messageBox
         this.$store.state.universalForm = this.$refs.universalForm
         this.$store.state.yesNoDialog = this.$refs.yesNoDialog
+        this.$store.state.personality_editor = this.$refs.personality_editor
+
         
         this.sunIcon = document.querySelector(".sun");
         this.moonIcon = document.querySelector(".moon");

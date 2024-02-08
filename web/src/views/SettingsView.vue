@@ -104,8 +104,6 @@
                                 <div>
 
                                     <div v-if="vramUsage&&vramUsage.gpus && vramUsage.gpus.length == 1">
-
-
                                         <div class="flex gap-2 items-center " v-for="item in vramUsage.gpus">
                                             <!-- GPU IMAGE  -->
                                             <img :src="SVGGPU"  width="25" height="25">
@@ -266,7 +264,26 @@
                                             class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
                                             >
                                         </td>
-                                        </tr>                                   
+                                        </tr>      
+                                        
+                                        
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="copy_to_clipboard_add_all_details" class="text-sm font-bold" style="margin-right: 1rem;">Add details to messages copied to clipboard:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                                <input
+                                            type="checkbox"
+                                            id="copy_to_clipboard_add_all_details"
+                                            required
+                                            v-model="configFile.copy_to_clipboard_add_all_details"
+                                            @change="settingsChanged=true"
+                                            class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600 "
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>
                                         <tr>
                                         <td style="min-width: 200px;">
                                             <label for="auto_show_browser" class="text-sm font-bold" style="margin-right: 1rem;">Auto show browser:</label>
@@ -2208,7 +2225,6 @@
       @close-dialog="oncloseVariantChoiceDialog"
       @choice-validated="onvalidateVariantChoice"
     />
-    <PersonalityEditor ref="personality_editor" :config="currentPersonConfig" :personality="selectedPersonality" ></PersonalityEditor>
 </template>
 <style scoped>
 
@@ -2314,7 +2330,6 @@ import Card from "@/components/Card.vue"
 import RadioOptions from '../components/RadioOptions.vue';
 import ExtensionEntry from "@/components/ExtensionEntry.vue"
 
-import PersonalityEditor from "@/components/PersonalityEditor.vue"
 
 
 import {refreshHardwareUsage} from "../main"
@@ -2334,8 +2349,7 @@ export default {
         ChoiceDialog,
         Card,
         RadioOptions,
-        ExtensionEntry,
-        PersonalityEditor
+        ExtensionEntry
     },
     data() {
 
@@ -2361,18 +2375,8 @@ export default {
                             "Hungarian": "hu",
                             "Hindi": "hi"
                         },
-            showPersonalityEditor: false,
-            selectedPersonality:null,
-            currentPersonConfig: {
-                ai_name: '',
-                ai_author: '',
-                ai_category: '',
-                ai_language: '',
-                ai_description: '',
-                ai_conditionning: '',
-                ai_disclaimer: '',
-                ai_icon: null,
-            },                        
+            
+                     
             binding_changed:false,
             SVGGPU:SVGGPU,
             models_zoo:[],
@@ -4246,10 +4250,10 @@ export default {
             console.log("Done")
             if (data.status) {
                 // Update the currentPersonConfig with the received data
-                this.currentPersonConfig = data.config;
-                this.showPersonalityEditor = true;
-                this.$refs.personality_editor.showPanel()
-                this.selectedPersonality = pers
+                this.$store.state.currentPersonConfig = data.config;
+                this.$store.state.showPersonalityEditor = true;
+                this.$store.state.personality_editor.showPanel()
+                this.$store.state.selectedPersonality = pers
             } else {
                 // Handle the error
                 console.error(data.error);
