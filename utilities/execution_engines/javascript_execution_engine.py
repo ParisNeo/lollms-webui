@@ -30,6 +30,13 @@ def build_javascript_output(code, ifram_name="unnamed"):
     rendered =  "\n".join([
         '<div style="width: 100%; margin: 0 auto;">',
         f'<iframe id="{ifram_name}" srcdoc="',
+        '<style>',
+        'iframe {',
+        'width: 100%;',
+        'height: 100%;',
+        'border: none;',
+        '}',
+        '</style>',
         '<script>',
         code,
         '</script>',

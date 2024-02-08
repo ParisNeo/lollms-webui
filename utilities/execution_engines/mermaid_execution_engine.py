@@ -29,8 +29,13 @@ def build_mermaid_output(code, ifram_name="unnamed"):
     start_time = time.time()    
     rendered =  "\n".join([
         '<div style="width: 100%; margin: 0 auto;">',
-        f'<iframe id="{ifram_name}" srcdoc="',
+        f'<iframe id="{ifram_name}" style="width: 100%" srcdoc="',
         '<style>',
+        'iframe {',
+        'width: 100%;',
+        'height: 100%;',
+        'border: none;',
+        '}',
         '.mermaid {',
         'background-color: transparent;',
         'padding: 20px;',
@@ -44,7 +49,6 @@ def build_mermaid_output(code, ifram_name="unnamed"):
         '<div class=\'mermaid\'>',
         "\n".join([c for c in code.split("\n") if c.strip()!=""]),
         '</div>',
-        '<button onclick="saveSVG()">Save SVG</button>',
         '<script src=\'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js\'></script>',
         '<script>',
         '// Initialize the mermaid library and render our diagram',
@@ -60,16 +64,20 @@ def build_mermaid_output(code, ifram_name="unnamed"):
         'a.href = url;',
         'a.download = "diagram.svg";',
         'a.click();',
-        '}',
+        '}',        
         '</script>',
         '<div style=\'text-align: center;\'>',
         '</div>',
+        '<button onclick="saveSVG()">Save SVG</button>',
         '" style="width: 100%; height: 600px; border: none;"></iframe>',
         '</div>'
         ]
     )
     execution_time = time.time() - start_time
     return {"output": rendered, "execution_time": execution_time}
+
+
+
 
 
 def execute_mermaid(code, discussion_id, message_id):
