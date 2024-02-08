@@ -1007,7 +1007,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                             sender_type:SENDER_TYPES=SENDER_TYPES.SENDER_TYPES_AI,
                             open=False
                         ):
-        
+        self.close_message(client_id)
         mtdt = metadata if metadata is None or type(metadata) == str else json.dumps(metadata, indent=4)
         if sender==None:
             sender= self.personality.name
