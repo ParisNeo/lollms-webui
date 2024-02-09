@@ -204,14 +204,33 @@
                                 ref="personalityCMD"
                             ></PersonalitiesCommands>
                         </div>
-
                         <div class="relative grow">
                             <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"
                                 class="inline-block  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 placeholder="Send message..." @keydown.enter.exact="submitOnEnter($event)">
-
-
                             </textarea>
+                        </div>
+                        <button v-if="!loading" type="button" @click="submit" title="Send"
+                                class=" w-6 hover:text-secondary duration-75 active:scale-90">
+
+                                <i data-feather="send"></i>
+
+                                <span class="sr-only">Send message</span>
+                        </button>                        
+                        <div class="flex w-fit pb-3">
+                            <div class="flex h-8 cursor-pointer select-none items-center gap-2 rounded-lg border bg-white p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-900" aria-checked="true" aria-label="web search toggle" role="switch" tabindex="0">
+                                <input type="checkbox" name="useSearch" v-bind="config.activate_internet_search" class="peer pointer-events-none absolute opacity-0"> 
+                                <div :aria-checked="config.activate_internet_search" aria-roledescription="switch" aria-label="switch" role="switch" tabindex="0" class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full bg-gray-300 p-1 shadow-inner ring-gray-400 transition-all peer-checked:bg-blue-600 peer-focus-visible:ring peer-focus-visible:ring-offset-1 hover:bg-gray-400 dark:bg-gray-600 peer-checked:[&amp;>div]:translate-x-3.5">
+                                    <div class="h-3.5 w-3.5 rounded-full bg-white shadow-sm transition-all"></div>
+                                </div> 
+                                <div class="whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">Search web</div> 
+                                <div class="group relative w-max">
+                                    <svg viewBox="0 0 32 32" width="1.2em" height="1.2em" class="text-xs text-gray-500"><path fill="currentColor" d="M17 22v-8h-4v2h2v6h-3v2h8v-2h-3zM16 8a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 16 8z"></path><path fill="currentColor" d="M16 30a14 14 0 1 1 14-14a14 14 0 0 1-14 14Zm0-26a12 12 0 1 0 12 12A12 12 0 0 0 16 4Z"></path></svg> 
+                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">When enabled, the model will try to complement its answer with information queried from the web.</p></div>
+                                </div>
+                            </div> 
+                            <div class="ml-auto gap-2"> 
+                            </div>
                         </div>
                         <!-- BUTTONS -->
                         <div class="inline-flex justify-center  rounded-full ">
@@ -259,13 +278,7 @@
 
                                 <span class="sr-only">New empty message</span>
                             </button>
-                            <button v-if="!loading" type="button" @click="submit" title="Send"
-                                class=" w-6 hover:text-secondary duration-75 active:scale-90">
 
-                                <i data-feather="send"></i>
-
-                                <span class="sr-only">Send message</span>
-                            </button>
                             <div v-if="loading" title="Waiting for reply">
                                 <!-- SPINNER -->
                                 <div role="status">

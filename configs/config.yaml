@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 53
+version: 54
 binding_name: null
 model_name: null
 
@@ -119,6 +119,8 @@ data_vectorization_build_keys_words: false # If true, when querrying the databas
 data_vectorization_force_first_chunk: false # If true, the first chunk of the document will systematically be used
 data_vectorization_make_persistance: false # If true, the data will be persistant webween runs
 
+# Activate internet search
+activate_internet_search: false
 
 # Helpers
 pdf_latex_path: null

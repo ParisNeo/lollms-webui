@@ -775,6 +775,11 @@ export default {
         
         async stop_gen() {
             try {
+                if (this.discussionArr.length>0)
+                {
+                    const messageItem = this.discussionArr[this.discussionArr.length-1]            
+                    messageItem.status_message = "Generation canceled"
+                }
                 socket.emit('cancel_generation');
                 //const res = await axios.get('/stop_gen')
 
@@ -1057,6 +1062,7 @@ export default {
             return true
         },
         new_message(msgObj) {
+            this.isGenerating = true
             console.log("Making a new message")
             console.log('New message', msgObj);
 
