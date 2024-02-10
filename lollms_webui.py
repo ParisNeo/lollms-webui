@@ -365,7 +365,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             else:
                 self.error("I am busy. Come back later.", client_id=client_id)
         else:
-            if output["text"].lower()=="lollms":
+            if "lollms" in text.lower():
                 self.summoned = True
 
     def scrape_and_save(self, url, file_path):
