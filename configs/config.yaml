@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 54
+version: 55
 binding_name: null
 model_name: null
 
@@ -121,6 +121,10 @@ data_vectorization_make_persistance: false # If true, the data will be persistan
 
 # Activate internet search
 activate_internet_search: false
+internet_vectorization_chunk_size: 512 # chunk size
+internet_vectorization_overlap_size: 128 # overlap between chunks size
+internet_vectorization_nb_chunks: 2 # number of chunks to use
+internet_nb_search_pages: 3 # number of pages to select
 
 # Helpers
 pdf_latex_path: null

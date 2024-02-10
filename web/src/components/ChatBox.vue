@@ -205,9 +205,17 @@
                                         placeholder="Send message..." @keydown.enter.exact="submitOnEnter($event)">
                                     </textarea>
                                 </div>
-                                <div class="group relative w-max">
+                                <div class="group relative w-12">
+                                    <button @click.prevent="toggleSwitch">
+                                        <svg width="100" height="50">
+                                            <rect x="10" y="15" width="40" height="20" rx="12" ry="12" :fill="config.activate_internet_search ? 'green' : 'red'" />
+                                            <circle cx="20" cy="25" r="7" :visibility="config.activate_internet_search ? 'hidden' : 'visible'" />
+                                            <circle cx="38" cy="25" r="7" :visibility="config.activate_internet_search ? 'visible' : 'hidden'" />
+                                        </svg>                                        
+                                    </button>
                                     <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">When enabled, the model will try to complement its answer with information queried from the web.</p></div>
                                 </div>
+
                                 <div class="group relative w-max">
                                     <button v-if="!loading" type="button" @click="submit" title="Send"
                                     class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
@@ -410,6 +418,32 @@ export default {
         }
     },
     methods: {   
+        toggleSwitch() {
+            this.$store.state.config.activate_internet_search = !this.$store.state.config.activate_internet_search;
+            this.isLoading = true;
+            axios.post('/apply_settings', {"config":this.$store.state.config}).then((res) => {
+                this.isLoading = false;
+                //console.log('apply-res',res)
+                if (res.data.status) {
+                    if(this.$store.state.config.activate_internet_search){
+                        this.$store.state.toast.showToast("Websearch activated.", 4, true)
+                    }
+                    else{
+                        this.$store.state.toast.showToast("Websearch deactivated.", 4, true)
+                    }
+                    this.settingsChanged = false
+                    //this.save_configuration()
+                } else {
+
+                    this.$store.state.toast.showToast("Configuration change failed.", 4, false)
+
+                }
+                nextTick(() => {
+                    feather.replace()
+
+                })
+            })
+        },
         showModelConfig(){
             try {
                 this.isLoading = true
@@ -588,27 +622,6 @@ export default {
         },    
         emitloaded(){
             this.$emit('loaded')
-        },
-        applyConfiguration() {
-            this.isLoading = true;
-            axios.post('/apply_settings', {"config":this.configFile}).then((res) => {
-                this.isLoading = false;
-                //console.log('apply-res',res)
-                if (res.data.status) {
-
-                    this.$store.state.toast.showToast("Configuration changed successfully.", 4, true)
-                    this.settingsChanged = false
-                    //this.save_configuration()
-                } else {
-
-                    this.$store.state.toast.showToast("Configuration change failed.", 4, false)
-
-                }
-                nextTick(() => {
-                    feather.replace()
-
-                })
-            })
         },
         showModels(event){
             // Prevent the default button behavior

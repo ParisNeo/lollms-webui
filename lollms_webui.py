@@ -706,6 +706,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
         conditionning = self.personality.personality_conditioning
 
         # Check if there are document files to add to the prompt
+        internet_search_rsults = ""
+        internet_search_sources = []
         documentation = ""
         knowledge = ""
 
@@ -739,14 +741,31 @@ class LOLLMSWebUI(LOLLMSElfServer):
             fun_mode=""
             n_fun_mode = 0
 
-
+        discussion = None
         if generation_type != "simple_question":
+
+            if self.config.activate_internet_search:
+                self.personality.callback = partial(self.process_chunk, client_id=client_id)
+                if discussion is None:
+                    discussion = self.recover_discussion(client_id)[-512:]
+                self.personality.step_start("Crafting internet search query")
+                internet_search_rsults="!@>important information: Use the internet search results data to answer the user query. If the data is not present in the search, please tell the user that the information he is asking for was not found and he may need to increase the number of search pages from the settings. It is strictly forbidden to give the user an answer without having actual proof from the documentation.\n!@>Search results:\n"
+                query = self.personality.fast_gen(f"\n!@>instruction: Read the discussion and craft a web search query suited to recover needed information to answer the user.\nDo not answer the prompt. Do not add explanations.\n!@>discussion:\n{discussion}\n!@>websearch query: ", max_generation_size=256, show_progress=True)
+                self.personality.step_end("Crafting internet search query")
+                self.personality.step_start("Performing Internet search")
+                docs, sorted_similarities = self.personality.internet_search(query)
+                for doc, infos in zip(docs, sorted_similarities):
+                    internet_search_sources.append(infos[0])
+                    internet_search_rsults += f"search result chunk:\n{doc}"
+                self.personality.step_end("Performing INternet search")
+
             if self.personality.persona_data_vectorizer:
                 if documentation=="":
                     documentation="\n!@>important information: Use the documentation data to answer the user questions. If the data is not present in the documentation, please tell the user that the information he is asking for does not exist in the documentation section. It is strictly forbidden to give the user an answer without having actual proof from the documentation.\n!@>Documentation:\n"
 
                 if self.config.data_vectorization_build_keys_words:
-                    discussion = self.recover_discussion(client_id)[-512:]
+                    if discussion is None:
+                        discussion = self.recover_discussion(client_id)[-512:]
                     query = self.personality.fast_gen(f"\n!@>instruction: Read the discussion and rewrite the last prompt for someone who didn't read the entire discussion.\nDo not answer the prompt. Do not add explanations.\n!@>discussion:\n{discussion}\n!@>enhanced query: ", max_generation_size=256, show_progress=True)
                     ASCIIColors.cyan(f"Query:{query}")
                 else:
@@ -796,6 +815,16 @@ class LOLLMSWebUI(LOLLMSElfServer):
         tokens_conditionning = self.model.tokenize(conditionning)
         n_cond_tk = len(tokens_conditionning)
 
+
+        # Tokenize the internet search results text and calculate its number of tokens
+        if len(internet_search_rsults)>0:
+            tokens_internet_search_rsults = self.model.tokenize(internet_search_rsults)
+            n_isearch_tk = len(tokens_internet_search_rsults)
+        else:
+            tokens_internet_search_rsults = []
+            n_isearch_tk = 0
+
+
         # Tokenize the documentation text and calculate its number of tokens
         if len(documentation)>0:
             tokens_documentation = self.model.tokenize(documentation)
@@ -823,13 +852,13 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
 
         # Calculate the total number of tokens between conditionning, documentation, and knowledge
-        total_tokens = n_cond_tk + n_doc_tk + n_history_tk + n_user_description_tk + n_positive_boost + n_negative_boost + n_force_language + n_fun_mode
+        total_tokens = n_cond_tk + n_isearch_tk + n_doc_tk + n_history_tk + n_user_description_tk + n_positive_boost + n_negative_boost + n_force_language + n_fun_mode
 
         # Calculate the available space for the messages
         available_space = self.config.ctx_size - n_tokens - total_tokens
 
         if self.config.debug:
-            self.info(f"Tokens summary:\nConditionning:{n_cond_tk}\ndoc:{n_doc_tk}\nhistory:{n_history_tk}\nuser description:{n_user_description_tk}\nAvailable space:{available_space}",10)
+            self.info(f"Tokens summary:\nConditionning:{n_cond_tk}\nn_isearch_tk:{n_isearch_tk}\ndoc:{n_doc_tk}\nhistory:{n_history_tk}\nuser description:{n_user_description_tk}\nAvailable space:{available_space}",10)
 
         # Raise an error if the available space is 0 or less
         if available_space<1:
@@ -902,7 +931,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         else:
             ai_prefix = ""
         # Build the final prompt by concatenating the conditionning and discussion messages
-        prompt_data = conditionning + documentation + knowledge + user_description + discussion_messages + positive_boost + negative_boost + force_language + fun_mode + ai_prefix
+        prompt_data = conditionning + internet_search_rsults + documentation + knowledge + user_description + discussion_messages + positive_boost + negative_boost + force_language + fun_mode + ai_prefix
 
         # Tokenize the prompt data
         tokens = self.model.tokenize(prompt_data)
@@ -911,6 +940,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
         if self.config["debug"]:
             ASCIIColors.bold("CONDITIONNING")
             ASCIIColors.yellow(conditionning)
+            ASCIIColors.bold("INTERNET SEARCH")
+            ASCIIColors.yellow(internet_search_rsults)
             ASCIIColors.bold("DOC")
             ASCIIColors.yellow(documentation)
             ASCIIColors.bold("HISTORY")
@@ -927,6 +958,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
         # Details
         context_details = {
             "conditionning":conditionning,
+            "internet_search_sources":internet_search_sources,
+            "internet_search_rsults":internet_search_rsults,
             "documentation":documentation,
             "knowledge":knowledge,
             "user_description":user_description,
@@ -940,7 +973,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         }    
 
         # Return the prepared query, original message content, and tokenized query
-        return prompt_data, current_message.content, tokens, context_details
+        return prompt_data, current_message.content, tokens, context_details, internet_search_sources
 
 
     def get_discussion_to(self, client_id,  message_id=-1):
@@ -1345,7 +1378,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 self.update_message(client_id, "✍ warming up ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_START)
 
             # prepare query and reception
-            self.discussion_messages, self.current_message, tokens, context_details = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type)
+            self.discussion_messages, self.current_message, tokens, context_details, internet_search_sources = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type)
             self.prepare_reception(client_id)
             self.generating = True
             self.connections[client_id]["processing"]=True
@@ -1422,7 +1455,27 @@ class LOLLMSWebUI(LOLLMSElfServer):
             self.cancel_gen = False
 
             # Send final message
+            if self.config.activate_internet_search:
+                from lollms.internet import get_favicon_url, get_root_url
+                sources_text = '<div class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm ">'
+                sources_text += '<div class="text-gray-400 mr-10px">Sources:</div>'
+                for source in internet_search_sources:
+                    url = "/".join(source.split("/")[:-1])
+                    favicon_url = get_favicon_url(url)
+                    if favicon_url is None:
+                        favicon_url ="/personalities/internet/loi/assets/logo.png"
+                    root_url = get_root_url(url)                        
+                    sources_text += "\n".join([
+                    f'<a class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none hover:border-gray-300 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700" target="_blank" href="{url}">',
+                    f'<img class="h-3.5 w-3.5 rounded" src="{favicon_url}">'
+                    f'<div>{root_url}</div>'
+                    f'</a>',
+                    ])
+                sources_text += '</div>'
+                self.connections[client_id]["generated_text"]=self.connections[client_id]["generated_text"].split("!@>")[0] + "\n" + sources_text
+                self.personality.full(self.connections[client_id]["generated_text"])
             self.close_message(client_id)
+
             self.connections[client_id]["processing"]=False
             if self.connections[client_id]["schedule_for_deletion"]:
                 del self.connections[client_id]

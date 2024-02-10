@@ -68,6 +68,11 @@
           <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4" :class="{ 'border-red-500': generating }">
             <div  v-if="tab_id === 'source'">
                 <div class="flex flex-row justify-end mx-2">
+                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
+                                title="Add generic block" @click.stop="addBlock('')">
+                                <img :src="code_block" width="25" height="25">
+                            </div>                            
+
                             <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
                                 title="Add python block" @click.stop="addBlock('python')">
                                 <img :src="python_block" width="25" height="25">
@@ -222,6 +227,7 @@ import Card from "@/components/Card.vue"
 import { nextTick, TransitionGroup } from 'vue'
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 
+import code_block from '@/assets/code_block.svg';
 import python_block from '@/assets/python_block.png';
 import javascript_block from '@/assets/javascript_block.svg';
 import json_block from '@/assets/json_block.png';
@@ -391,6 +397,7 @@ export default {
       LaTeX_block:LaTeX_block,
       javascript_block:javascript_block,
       json_block:json_block,
+      code_block:code_block,
       python_block:python_block,
       bash_block:bash_block,
 

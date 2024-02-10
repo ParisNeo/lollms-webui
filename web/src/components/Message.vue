@@ -194,7 +194,8 @@
                     <details v-show="message != undefined && message.steps != undefined && message.steps.length>0" class="flex w-full cursor-pointer rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 mb-3.5 max-w-full svelte-1escu1z">
                         <summary class="grid min-w-72 select-none grid-cols-[40px,1fr] items-center gap-2.5 p-2 svelte-1escu1z">
                             <div class="relative grid aspect-square place-content-center overflow-hidden rounded-lg bg-gray-300 dark:bg-gray-200">
-                                <img v-if="message.status_message!='Done'" :src="loading_svg" class="absolute inset-0 text-gray-100 transition-opacity dark:text-gray-800 opacity-100">
+                                <img v-if="message.status_message!='Done' & message.status_message!= 'Generation canceled'" :src="loading_svg" class="absolute inset-0 text-gray-100 transition-opacity dark:text-gray-800 opacity-100">
+                                <img v-if="message.status_message== 'Generation canceled'" :src="failed_svg" class="absolute inset-0 text-gray-100 transition-opacity dark:text-gray-800 opacity-100">
                                 <img v-if="message.status_message=='Done'" :src="ok_svg" class="absolute m-2 w-6 inset-0 text-geen-100 transition-opacity dark:text-gray-800 opacity-100">
                             </div> 
                             <dl class="leading-4">
@@ -301,6 +302,8 @@ import bash_block from '@/assets/bash_block.png';
 
 import process_svg from '@/assets/process.svg';
 import ok_svg from '@/assets/ok.svg';
+import failed_svg from '@/assets/failed.svg';
+
 import loading_svg from '@/assets/loading.svg';
 
 
@@ -336,6 +339,7 @@ export default {
             javascript_block:javascript_block,
             process_svg:process_svg,
             ok_svg:ok_svg,
+            failed_svg:failed_svg,
             loading_svg:loading_svg,
             code_block:code_block,
             python_block:python_block,
