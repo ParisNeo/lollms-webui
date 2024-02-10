@@ -94,6 +94,11 @@
                             @click="clear_files">
                             <i data-feather="trash" class="w-5 h-5 "></i>
                         </button>
+                        <button type="button" title="Clear all"
+                            class="flex items-center p-0.5 text-sm rounded-sm hover:text-red-600 active:scale-75"
+                            @click="download_database">
+                            <i data-feather="download-cloud" class="w-5 h-5 "></i>
+                        </button>                        
                     </div>
                     <div v-if="showPersonalities" class="mx-1">
                         <MountedPersonalitiesList ref="mountedPersList" 
@@ -655,6 +660,14 @@ export default {
                 });
         
         },
+        download_database(){
+            axios.get('/download_database')
+        },
+        remove_file(file){
+            axios.get('/remove_file',{name: file}).then(res=>{
+                console.log(res)
+            })
+        },
         clear_files(){
             axios.get('/clear_personality_files_list').then(res=>{
                 console.log(res)
@@ -662,6 +675,7 @@ export default {
                     this.$store.state.toast.showToast("File removed successfully",4,true);
                     this.filesList.length = 0;
                     this.isFileSentList.length = 0;
+                    this.totalSize = 0;
                 }
                 else{
                     this.$store.state.toast.showToast("Files couldn't be removed",4,false);

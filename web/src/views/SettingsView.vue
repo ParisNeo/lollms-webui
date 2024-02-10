@@ -716,6 +716,40 @@
                                         </tr>                                        
                                         <tr>
                                         <td style="min-width: 200px;">
+                                            <label for="internet_quick_search" class="text-sm font-bold" style="margin-right: 1rem;">Activate quick search:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <input
+                                            type="checkbox"
+                                            id="internet_quick_search"
+                                            required
+                                            v-model="configFile.internet_quick_search"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>                                        
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="internet_activate_search_decision" class="text-sm font-bold" style="margin-right: 1rem;">Activate search decision:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <input
+                                            type="checkbox"
+                                            id="internet_activate_search_decision"
+                                            required
+                                            v-model="configFile.internet_activate_search_decision"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>                                        
+                                        <tr>
+                                        <td style="min-width: 200px;">
                                             <label for="internet_vectorization_chunk_size" class="text-sm font-bold" style="margin-right: 1rem;">Internet vectorization chunk size:</label>
                                         </td>
                                         <td>
@@ -741,7 +775,7 @@
                                             <div class="flex flex-col">
                                                 <input id="internet_vectorization_overlap_size" v-model="configFile.internet_vectorization_overlap_size"
                                                 @change="settingsChanged=true"
-                                                type="range" min="0" max="64000" step="1"
+                                                type="range" min="0" max="1000" step="1"
                                                 class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                                                 <input v-model="configFile.internet_vectorization_overlap_size"
@@ -760,7 +794,7 @@
                                             <div class="flex flex-col">
                                                 <input id="internet_vectorization_nb_chunks" v-model="configFile.internet_vectorization_nb_chunks"
                                                 @change="settingsChanged=true"
-                                                type="range" min="0" max="64000" step="1"
+                                                type="range" min="0" max="100" step="1"
                                                 class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                                                 <input v-model="configFile.internet_vectorization_nb_chunks"
@@ -779,7 +813,7 @@
                                             <div class="flex flex-col">
                                                 <input id="internet_nb_search_pages" v-model="configFile.internet_nb_search_pages"
                                                 @change="settingsChanged=true"
-                                                type="range" min="0" max="64000" step="1"
+                                                type="range" min="1" max="100" step="1"
                                                 class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                                                 <input v-model="configFile.internet_nb_search_pages"

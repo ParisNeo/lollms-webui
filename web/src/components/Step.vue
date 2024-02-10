@@ -1,7 +1,5 @@
 <template>
   <div class="flex items-start">
-    <div class="-ml-1.5 h-3 w-3 flex-none rounded-full bg-gray-200 dark:bg-gray-600 ">
-    </div>                                
     <div class="step flex items-center mb-4">
       <div class="flex items-center justify-center w-6 h-6 mr-2">
         <div v-if="!done">
@@ -34,7 +32,7 @@
                   fill="currentFill" />
           </svg>
       </div>
-      <h3 class="text-md -mt-1.5 pl-2.5 text-gray-800 dark:text-gray-100" :class="{'text-green-500': done, 'text-yellow-500': !done}">{{ message }}</h3>
+      <h3 class="text-sm" >{{ message }}</h3>
     </div>
   </div>
 </template>

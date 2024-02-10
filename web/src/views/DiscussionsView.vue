@@ -1258,11 +1258,15 @@ export default {
                 else if(messageItem && msgObj.message_type==this.msgTypes.MSG_TYPE_CHUNK){
                     messageItem.content += msgObj.content
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP){
+                    console.log("received step")
+                    messageItem.status_message = msgObj.content
                     messageItem.steps.push({"message":msgObj.content,"done":true, "status":true })
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_START){
+                    console.log("received step start")
                     messageItem.status_message = msgObj.content
                     messageItem.steps.push({"message":msgObj.content,"done":false, "status":true })
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_END) {
+                    console.log("received step end")
                     // Find the step with the matching message and update its 'done' property to true
                     const matchingStep = messageItem.steps.find(step => step.message === msgObj.content);
 
