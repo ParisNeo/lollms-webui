@@ -750,15 +750,17 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     discussion = self.recover_discussion(client_id)
                 if self.config.internet_activate_search_decision:
                     self.personality.step_start(f"Requesting if {self.personality.name} needs to search internet to answer the user")
-                    need = not self.personality.yes_no(f"Are you able to fulfill {self.config.user_name}'s request without internet search?\nIf he is asking for information that can be found on internet please answer 0 (no).", discussion)
+                    need = not self.personality.yes_no(f"Do you have enough information to give a satisfactory answer to {self.config.user_name}'s request without internet search? (If you do not know or you can't answer 0 (no)", discussion)
                     self.personality.step_end(f"Requesting if {self.personality.name} needs to search internet to answer the user")
                     self.personality.step("Yes" if need else "No")
                 else:
                     need=True
                 if need:
                     self.personality.step_start("Crafting internet search query")
-                    query = self.personality.fast_gen(f"!@>discussion:\n{discussion[-2048:]}\n!@>instruction: Read the discussion and craft a web search query suited to recover needed information to reply to last {self.config.user_name} message.\nDo not answer the prompt. Do not add explanations.\n!@>websearch query: ", max_generation_size=256, show_progress=True)
+                    query = self.personality.fast_gen(f"!@>discussion:\n{discussion[-2048:]}\n!@>instruction: Read the discussion and craft a web search query suited to recover needed information to reply to last {self.config.user_name} message.\nDo not answer the prompt. Do not add explanations.\n!@>websearch query: ", max_generation_size=256, show_progress=True, callback=self.personality.sink)
                     self.personality.step_end("Crafting internet search query")
+                    self.personality.step(f"query:{query}")
+
                     self.personality.step_start("Performing Internet search")
 
                     internet_search_results=f"!@>important information: Use the internet search results data to answer {self.config.user_name}'s last message. It is strictly forbidden to give the user an answer without having actual proof from the documentation.\n!@>Web search results:\n"

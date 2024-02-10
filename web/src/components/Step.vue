@@ -2,26 +2,26 @@
   <div class="flex items-start">
     <div class="step flex items-center mb-4">
       <div class="flex items-center justify-center w-6 h-6 mr-2">
-        <div v-if="!done">
+        <div v-if="!done && type=='start_end'">
           <i
           data-feather="square"
           class="text-gray-400 w-4 h-4"
         ></i>
         </div>
-        <div v-if="done && status">
+        <div v-if="done && status  && type=='start_end'">
           <i
           data-feather="check-square"
           class="text-green-500 w-4 h-4"
         ></i>
         </div>
-        <div v-if="done && !status">
+        <div v-if="done && !status  && type=='start_end'">
           <i
           data-feather="x-square"
           class="text-red-500 w-4 h-4"
         ></i>
         </div>
       </div>
-      <div v-if="!done" role="status">
+      <div v-if="!done" role="status" class="m-15">
           <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101"
               fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -56,7 +56,11 @@
         type: Boolean,
         required: true
       },
-      
+      type: {
+        type: String,
+        required: false,
+        default: 'start_end'
+      }
     }
   };
   </script>
