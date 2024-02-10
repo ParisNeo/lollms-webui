@@ -66,7 +66,7 @@ async def execute_code(request: Request):
             ASCIIColors.info("Executing javascript code:")
             ASCIIColors.yellow(code)
             return execute_javascript(code, discussion_id, message_id)
-        if language in ["html","html5"]:
+        if language in ["html","html5","svg"]:
             ASCIIColors.info("Executing javascript code:")
             ASCIIColors.yellow(code)
             return execute_html(code, discussion_id, message_id)

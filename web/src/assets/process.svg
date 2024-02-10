@@ -37,4 +37,5 @@
 		</g>
 	</g>
 </g>
+<animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 240 240" to="360 240 240" dur="10s" repeatCount="indefinite" />
 </svg>

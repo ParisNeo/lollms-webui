@@ -21,7 +21,9 @@
                 :class="{ 'text-green-500': isLesteningToVoice }"
                 class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer text-red-500"
             >   
-            <img :src="is_recording?rec_on:rec_off" height="25">
+            <img v-if="!pending" :src="is_recording?rec_on:rec_off" height="25">
+            <img v-if="pending" :src="loading_icon" height="25">
+                        
             </button>            
             <button
                     title="speak"
@@ -231,6 +233,7 @@ import bash_block from '@/assets/bash_block.png';
 
 import rec_on from '@/assets/rec_on.svg';
 import rec_off from '@/assets/rec_off.svg';
+import loading_icon from '@/assets/loading.svg';
 
 
 async function showInputPanel(name, default_value="", options=[]) {
@@ -380,7 +383,7 @@ export default {
   name: 'PlayGroundView',
   data() {
     return {
-
+      pending:false,
       is_recording:false,
       
       cpp_block:cpp_block,
@@ -393,6 +396,7 @@ export default {
 
       rec_off:rec_off,
       rec_on:rec_on,
+      loading_icon:loading_icon,
 
       isSynthesizingVoice:false,
       audio_url:null,
@@ -828,9 +832,11 @@ export default {
         });
     },
     startRecording(){
+      this.pending = true;
       if(!this.is_recording){
         axios.get('/start_recording').then(response => {
           this.is_recording = true;
+          this.pending = false;
           console.log(response.data)
           this.presets=response.data
           this.selectedPreset = this.presets[0]
@@ -841,6 +847,7 @@ export default {
       else{
         axios.get('/stop_recording').then(response => {
           this.is_recording = false;
+          this.pending = false;
           console.log(response)
           this.text += response.data
 

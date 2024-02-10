@@ -1,28 +1,14 @@
 <template>
-    <div class="absolute bottom-0 min-w-96  w-full  justify-center text-center p-4 ">
-        <div v-if="loading" class="flex items-center justify-center w-full">
-            <div class="flex flex-row p-2 rounded-t-lg ">
-
-                <button type="button"
-                    class="bg-red-500 dark:bg-red-800 hover:bg-red-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:hover:bg-bg-dark-tone focus:outline-none dark:focus:ring-blue-800"
-                    @click.stop="stopGenerating">
-                    Stop generating
-                </button>
-            </div>
-        </div>
 
         <form>
-            <label for="chat" class="sr-only">Send message</label>
-            <div class="px-3 py-3 rounded-lg bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel shadow-lg  ">
-
-                <div class="flex flex-col gap-2">
+            <div class="absolute bottom-0 left-0 w-fit min-w-96  w-full justify-center text-center p-4">
+                <div class="items-center gap-2 rounded-lg border bg-white p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-900  w-fit">
                     <!-- EXPAND / COLLAPSE BUTTON -->
                     <div class="flex">
                         <button v-if="filesList.length > 0"
                             class="mx-1 w-full text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
                             :title="showfilesList ? 'Hide file list' : 'Show file list'" type="button"
                             @click.stop=" showfilesList = !showfilesList">
-
                             <i data-feather="list"></i>
                         </button>
                     </div>                 
@@ -35,7 +21,7 @@
                                     <div class="  m-1" :title="file.name">
 
                                         <div
-                                            class="flex flex-row items-center gap-1 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary">
+                                            class="flex flex-row items-center gap-1 text-left p-2 text-sm font-medium items-center gap-2 rounded-lg border bg-gray-100 p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-700 hover:bg-primary dark:hover:bg-primary">
                                             <div v-if="!isFileSentList[index]" filesList role="status">
                                                 <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary"
                                                     viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -54,9 +40,8 @@
                                             </div>
 
 
-                                            <div class="line-clamp-1 w-3/5" :class="isFileSentList[index]?'text-green-200':'text-red-200'">
+                                            <div class="line-clamp-1 w-3/5" :class="isFileSentList[index]?'text-green-500':'text-red-200'">
                                                 {{ file.name }}
-
                                             </div>
                                             <div class="grow">
 
@@ -86,7 +71,7 @@
 
                         </div>
                     </div>
-                    <div v-if="filesList.length > 0" class="flex items-center mx-1">
+                    <div v-if="filesList.length > 0" class="flex mx-1 w-500">
 
                         <!-- ADDITIONAL INFO PANEL -->
 
@@ -119,188 +104,180 @@
                             :on-talk="handleOnTalk"
                             :discussionPersonalities="allDiscussionPersonalities" />
                     </div>
+                </div>
+
                     <!-- CHAT BOX -->
-                    <div class="flex flex-row flex-grow items-center gap-2 overflow-visible">
                         <div v-if="selecting_model" title="Selecting model" class="flex flex-row flex-grow justify-end">
                             <!-- SPINNER -->
                             <div role="status">
-                                <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101"
-                                    fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                        fill="currentColor" />
-                                    <path
-                                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                        fill="currentFill" />
-                                </svg>
+                                <img :src="loader_v0" class="w-50 h-50">
                                 <span class="sr-only">Selecting model...</span>
                             </div>
                         </div>
-                        <div class="w-fit group relative" v-if="!loading" >
-                            <!-- :onShowPersList="onShowPersListFun" -->
-                            <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-10 group-hover:translate-x-15 transition-all duration-300">
-                                <div class="w-full"
-                                    v-for="(item, index) in installedModels" :key="index + '-' + item.name"
-                                    ref="installedModels">
-                                    <div v-if="item.name!=model_name" class="group items-center flex flex-row">
-                                        <button @click.prevent="setModel(item)" class="w-8 h-8">
-                                            <img :src="item.icon?item.icon:modelImgPlaceholder"
+            
+                        <button v-if="loading" type="button"   
+                            class="bg-red-500 dark:bg-red-800 hover:bg-red-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:hover:bg-bg-dark-tone focus:outline-none dark:focus:ring-blue-800"
+                            @click.stop="stopGenerating">
+                            Stop generating
+                        </button>
+
+
+
+                        <div class="flex w-fit pb-3 relative grow   w-full">
+                            <div class="relative grow flex h-15 cursor-pointer select-none items-center gap-2 rounded-lg border bg-white p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-900" tabindex="0">
+                                <div v-if="loading" title="Waiting for reply">
+                                    <img :src="loader_v0">
+                                    <!-- SPINNER -->
+                                    <div role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                                <div class="w-fit group relative" v-if="!loading" >
+                                    <!-- :onShowPersList="onShowPersListFun" -->
+                                    <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-10 group-hover:translate-x-15 transition-all duration-300">
+                                        <div class="w-full"
+                                            v-for="(item, index) in installedModels" :key="index + '-' + item.name"
+                                            ref="installedModels">
+                                            <div v-if="item.name!=model_name" class="group items-center flex flex-row">
+                                                <button @click.prevent="setModel(item)" class="w-8 h-8">
+                                                    <img :src="item.icon?item.icon:modelImgPlaceholder"
+                                                        class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                                        :title="item.name">
+                                                </button>
+                                            </div>
+                                        </div>             
+                                    </div>
+                                    <div class="group items-center flex flex-row">
+                                        <button @click.prevent="showModelConfig()" class="w-8 h-8">
+                                            <img :src="currentModel.icon?currentModel.icon:modelImgPlaceholder"
                                                 class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
-                                                :title="item.name">
+                                                :title="currentModel?currentModel.name:'unknown'">
                                         </button>
                                     </div>
-                                </div>             
-                            </div>
-                            <div class="group items-center flex flex-row">
-                                <button @click.prevent="showModelConfig()" class="w-8 h-8">
-                                    <img :src="currentModel.icon?currentModel.icon:modelImgPlaceholder"
-                                        class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
-                                        :title="currentModel?currentModel.name:'unknown'">
-                                </button>
-                            </div>
 
-                        </div>                
-                        <div class="w-fit group relative" >
-                            <!-- :onShowPersList="onShowPersListFun" -->
-                            <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-10 group-hover:translate-x-15 transition-all duration-300">
-                                <div class="w-full"
-                                    v-for="(item, index) in this.$store.state.mountedPersArr" :key="index + '-' + item.name"
-                                    ref="mountedPersonalities">
-                                    <div v-if="index!=this.$store.state.config.active_personality_id" class="group items-center flex flex-row">
-                                        <button @click.prevent="onPersonalitySelected(item)" class="w-8 h-8">
-                                            <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
-                                                class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
-                                                :class="this.$store.state.active_personality_id == this.$store.state.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
-                                                :title="item.name">
-                                        </button>
-                                        <button @click.prevent="unmountPersonality (item)">
-                                            <span
-                                                class="hidden hover:block top-3 left-9 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
-                                                title="Unmount personality">
-                                                <svg aria-hidden="true" class="w-4 h-4 text-red-600 hover:text-red-500 "
-                                                    fill="currentColor" viewBox="0 0 20 20"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill-rule="evenodd"
-                                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                        clip-rule="evenodd"></path>
-                                                </svg>
+                                </div>    
+                                <div class="w-fit group relative" >
+                                    <!-- :onShowPersList="onShowPersListFun" -->
+                                    <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-10 group-hover:translate-x-15 transition-all duration-300">
+                                        <div class="w-full"
+                                            v-for="(item, index) in this.$store.state.mountedPersArr" :key="index + '-' + item.name"
+                                            ref="mountedPersonalities">
+                                            <div v-if="index!=this.$store.state.config.active_personality_id" class="group items-center flex flex-row">
+                                                <button @click.prevent="onPersonalitySelected(item)" class="w-8 h-8">
+                                                    <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
+                                                        class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                                        :class="this.$store.state.active_personality_id == this.$store.state.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
+                                                        :title="item.name">
+                                                </button>
+                                                <button @click.prevent="unmountPersonality (item)">
+                                                    <span
+                                                        class="hidden hover:block top-3 left-9 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
+                                                        title="Unmount personality">
+                                                        <svg aria-hidden="true" class="w-4 h-4 text-red-600 hover:text-red-500 "
+                                                            fill="currentColor" viewBox="0 0 20 20"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path fill-rule="evenodd"
+                                                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                clip-rule="evenodd"></path>
+                                                        </svg>
 
-                                            </span>
-                                        </button>
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </div>             
                                     </div>
-                                </div>             
-                            </div>
-           
-                            <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
+                
+                                    <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
 
-                        </div>
-
-                        <div class="w-fit">
-                            <PersonalitiesCommands
-                                v-if="personalities_ready && this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands!=''" 
-                                :commandsList="this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands"
-                                :sendCommand="sendCMDEvent"
-                                :on-show-toast-message="onShowToastMessage"
-                                ref="personalityCMD"
-                            ></PersonalitiesCommands>
-                        </div>
-                        <div class="relative grow">
-                            <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"
-                                class="inline-block  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                placeholder="Send message..." @keydown.enter.exact="submitOnEnter($event)">
-                            </textarea>
-                        </div>
-                        <button v-if="!loading" type="button" @click="submit" title="Send"
-                                class=" w-6 hover:text-secondary duration-75 active:scale-90">
-
-                                <i data-feather="send"></i>
-
-                                <span class="sr-only">Send message</span>
-                        </button>                        
-                        <div class="flex w-fit pb-3">
-                            <div class="flex h-8 cursor-pointer select-none items-center gap-2 rounded-lg border bg-white p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-900" aria-checked="true" aria-label="web search toggle" role="switch" tabindex="0">
-                                <input type="checkbox" name="useSearch" v-bind="config.activate_internet_search" class="peer pointer-events-none absolute opacity-0"> 
-                                <div :aria-checked="config.activate_internet_search" aria-roledescription="switch" aria-label="switch" role="switch" tabindex="0" class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full bg-gray-300 p-1 shadow-inner ring-gray-400 transition-all peer-checked:bg-blue-600 peer-focus-visible:ring peer-focus-visible:ring-offset-1 hover:bg-gray-400 dark:bg-gray-600 peer-checked:[&amp;>div]:translate-x-3.5">
-                                    <div class="h-3.5 w-3.5 rounded-full bg-white shadow-sm transition-all"></div>
-                                </div> 
-                                <div class="whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">Search web</div> 
+                                </div>                                
+                                <div class="w-fit">
+                                    <PersonalitiesCommands
+                                        v-if="personalities_ready && this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands!=''" 
+                                        :commandsList="this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands"
+                                        :sendCommand="sendCMDEvent"
+                                        :on-show-toast-message="onShowToastMessage"
+                                        ref="personalityCMD"
+                                    ></PersonalitiesCommands>
+                                </div>                                
+                                <div class="relative grow">
+                                    <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"
+                                        class="inline-block  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="Send message..." @keydown.enter.exact="submitOnEnter($event)">
+                                    </textarea>
+                                </div>
                                 <div class="group relative w-max">
-                                    <svg viewBox="0 0 32 32" width="1.2em" height="1.2em" class="text-xs text-gray-500"><path fill="currentColor" d="M17 22v-8h-4v2h2v6h-3v2h8v-2h-3zM16 8a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 16 8z"></path><path fill="currentColor" d="M16 30a14 14 0 1 1 14-14a14 14 0 0 1-14 14Zm0-26a12 12 0 1 0 12 12A12 12 0 0 0 16 4Z"></path></svg> 
                                     <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">When enabled, the model will try to complement its answer with information queried from the web.</p></div>
+                                </div>
+                                <div class="group relative w-max">
+                                    <button v-if="!loading" type="button" @click="submit" title="Send"
+                                    class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
+                                            <i data-feather="send"></i>
+                                    </button>                        
+                                    <div class="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Sends your message to the AI.</p></div>
+                                </div>
+                                <div class="group relative w-max">
+                                    <button v-if="!loading" 
+                                        type="button"
+                                        @click="startSpeechRecognition"
+                                        :class="{ 'text-red-500': isLesteningToVoice }"
+                                        class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90"
+                                    >
+                                    <i data-feather="mic"></i>
+                                    </button>                      
+                                    <div class="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Press and talk.</p></div>
+                                </div>
+                                <div class="group relative w-max">
+                                    <input type="file" ref="fileDialog" style="display: none" @change="addFiles" multiple />
+                                    <button type="button" @click.stop="$refs.fileDialog.click()"
+                                        class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
+                                        <i data-feather="file-plus"></i>
+                                    </button>                    
+                                    <div class="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Send File to the AI.</p></div>
+                                </div>
+
+                                <div class="group relative w-max">
+                                    <button type="button" @click.stop="takePicture"
+                                        class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
+                                        <i data-feather="camera"></i>
+                                    </button>                 
+                                    <div class="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Take a shot from webcam.</p></div>
+                                </div>
+
+                                <div class="group relative w-max">
+                                    <button type="button" @click.stop="addWebLink" 
+                                        class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
+                                        <i data-feather="globe"></i>
+                                    </button>               
+                                    <div class="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Add a weblink to the discussion.</p></div>
+                                </div>
+
+                                <div class="group relative w-max">
+                                    <button v-if="!loading" type="button" @click="makeAnEmptyUserMessage"
+                                        class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
+                                        <i data-feather="message-square"></i>
+                                    </button>
+         
+                                    <div class="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">New empty User message.</p></div>
+                                </div>
+
+                                <div class="group relative w-max">
+                                    <button v-if="!loading" type="button" @click="makeAnEmptyAIMessage"
+                                        class=" w-6 text-red-400 hover:text-secondary duration-75 active:scale-90">
+                                        <i data-feather="message-square"></i>
+                                    </button>  
+
+         
+                                    <div class="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">New empty ai message.</p></div>
                                 </div>
                             </div> 
                             <div class="ml-auto gap-2"> 
+                                
                             </div>
                         </div>
-                        <!-- BUTTONS -->
-                        <div class="inline-flex justify-center  rounded-full ">
-                            <button v-if="!loading" 
-                                type="button"
-                                @click="startSpeechRecognition"
-                                title="Press and talk"
-                                :class="{ 'text-red-500': isLesteningToVoice }"
-                                class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer"
-                            >
-                            <i data-feather="mic"></i>
-                            </button>
 
-                            <input type="file" ref="fileDialog" style="display: none" @change="addFiles" multiple />
-                            <button type="button" @click.stop="$refs.fileDialog.click()" title="Add files"
-                                class="m-1 w-6 hover:text-secondary duration-75 active:scale-90">
 
-                                <i data-feather="file-plus"></i>
-
-                            </button>
-                            <button type="button" @click.stop="takePicture" title="take a shot from camera"
-                                class="m-1 w-6 hover:text-secondary duration-75 active:scale-90">
-
-                                <i data-feather="camera"></i>
-
-                            </button>
-                            <button type="button" @click.stop="addWebLink" title="add web link"
-                                class="m-1 w-6 hover:text-secondary duration-75 active:scale-90">
-
-                                <i data-feather="globe"></i>
-
-                            </button>                            
-                            <button v-if="!loading" type="button" @click="makeAnEmptyUserMessage" title="New empty user message"
-                                class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
-
-                                <i data-feather="message-square"></i>
-
-                                <span class="sr-only">New empty User message</span>
-                            </button>
-                                                     
-                            <button v-if="!loading" type="button" @click="makeAnEmptyAIMessage" title="New empty ai message"
-                                class=" w-6 text-red-400 hover:text-secondary duration-75 active:scale-90">
-
-                                <i data-feather="message-square"></i>
-
-                                <span class="sr-only">New empty message</span>
-                            </button>
-
-                            <div v-if="loading" title="Waiting for reply">
-                                <!-- SPINNER -->
-                                <div role="status">
-                                    <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary"
-                                        viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                            fill="currentColor" />
-                                        <path
-                                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                            fill="currentFill" />
-                                    </svg>
-                                    <span class="sr-only">Loading...</span>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
             </div>
         </form>
-    </div>
     <UniversalForm ref="universalForm" class="z-20" />
 </template>
 <style scoped>
@@ -340,11 +317,12 @@ import MountedPersonalities from '@/components/MountedPersonalities.vue'
 import MountedPersonalitiesList from '@/components/MountedPersonalitiesList.vue'
 import PersonalitiesCommands from '@/components/PersonalitiesCommands.vue';
 import InteractiveMenu from '@/components/InteractiveMenu.vue';
-import { useStore } from 'vuex'; // Import the useStore function
 import { inject } from 'vue';
 import socket from '@/services/websocket.js'
 import UniversalForm from '../components/UniversalForm.vue';
 import modelImgPlaceholder from "../assets/default_model.png"
+import loader_v0 from "../assets/loader_v0.svg"
+
 console.log("modelImgPlaceholder:",modelImgPlaceholder)
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
@@ -362,7 +340,8 @@ export default {
         MountedPersonalities,
         MountedPersonalitiesList,
         PersonalitiesCommands,
-        InteractiveMenu
+        InteractiveMenu,
+        
     },
     setup() {
 
@@ -371,6 +350,7 @@ export default {
     },
     data() {
         return {
+            loader_v0:loader_v0,
             modelImgPlaceholder:modelImgPlaceholder,
             bUrl:bUrl,
             message: "",
@@ -608,6 +588,27 @@ export default {
         },    
         emitloaded(){
             this.$emit('loaded')
+        },
+        applyConfiguration() {
+            this.isLoading = true;
+            axios.post('/apply_settings', {"config":this.configFile}).then((res) => {
+                this.isLoading = false;
+                //console.log('apply-res',res)
+                if (res.data.status) {
+
+                    this.$store.state.toast.showToast("Configuration changed successfully.", 4, true)
+                    this.settingsChanged = false
+                    //this.save_configuration()
+                } else {
+
+                    this.$store.state.toast.showToast("Configuration change failed.", 4, false)
+
+                }
+                nextTick(() => {
+                    feather.replace()
+
+                })
+            })
         },
         showModels(event){
             // Prevent the default button behavior
