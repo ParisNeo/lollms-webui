@@ -2,16 +2,21 @@
 
         <form>
             <div class="absolute bottom-0 left-0 w-fit min-w-96  w-full justify-center text-center p-4">
-                <div class="items-center gap-2 rounded-lg border bg-white p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-900  w-fit">
+                <div v-if="filesList.length > 0 || showPersonalities" class="items-center gap-2 rounded-lg border bg-white p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-900  w-fit">
                     <!-- EXPAND / COLLAPSE BUTTON -->
                     <div class="flex">
-                        <button v-if="filesList.length > 0"
+                        <button 
                             class="mx-1 w-full text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
                             :title="showfilesList ? 'Hide file list' : 'Show file list'" type="button"
                             @click.stop=" showfilesList = !showfilesList">
                             <i data-feather="list"></i>
                         </button>
                     </div>                 
+                    <button v-if="loading" type="button"   
+                            class="bg-red-500 dark:bg-red-800 hover:bg-red-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:hover:bg-bg-dark-tone focus:outline-none dark:focus:ring-blue-800"
+                            @click.stop="stopGenerating">
+                            Stop generating
+                    </button>
                     <!-- FILES     -->
                     <div v-if="filesList.length > 0 && showfilesList ==true">
                         <div class="flex flex-col max-h-64  ">
@@ -94,7 +99,7 @@
                             @click="clear_files">
                             <i data-feather="trash" class="w-5 h-5 "></i>
                         </button>
-                        <button type="button" title="Clear all"
+                        <button type="button" title="Download database"
                             class="flex items-center p-0.5 text-sm rounded-sm hover:text-red-600 active:scale-75"
                             @click="download_database">
                             <i data-feather="download-cloud" class="w-5 h-5 "></i>
@@ -119,15 +124,6 @@
                                 <span class="sr-only">Selecting model...</span>
                             </div>
                         </div>
-            
-                        <button v-if="loading" type="button"   
-                            class="bg-red-500 dark:bg-red-800 hover:bg-red-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:hover:bg-bg-dark-tone focus:outline-none dark:focus:ring-blue-800"
-                            @click.stop="stopGenerating">
-                            Stop generating
-                        </button>
-
-
-
                         <div class="flex w-fit pb-3 relative grow   w-full">
                             <div class="relative grow flex h-15 cursor-pointer select-none items-center gap-2 rounded-lg border bg-white p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-900" tabindex="0">
                                 <div v-if="loading" title="Waiting for reply">
@@ -805,8 +801,12 @@ export default {
         },
 
         removeItem(file) {
-            this.filesList = this.filesList.filter((item) => item != file)
-            // console.log(this.filesList)
+            console.log(file)
+            axios.post('/remove_file',{file}).then(()=>{
+                    this.filesList = this.filesList.filter((item) => item != file)
+                })            
+
+            console.log(this.filesList)
         },
         sendMessageEvent(msg) {
             this.$emit('messageSentEvent', msg)

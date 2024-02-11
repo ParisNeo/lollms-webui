@@ -759,7 +759,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     self.personality.step_start("Crafting internet search query")
                     query = self.personality.fast_gen(f"!@>discussion:\n{discussion[-2048:]}\n!@>instruction: Read the discussion and craft a web search query suited to recover needed information to reply to last {self.config.user_name} message.\nDo not answer the prompt. Do not add explanations.\n!@>websearch query: ", max_generation_size=256, show_progress=True, callback=self.personality.sink)
                     self.personality.step_end("Crafting internet search query")
-                    self.personality.step(f"query:{query}")
+                    self.personality.step(f"web search query: {query}")
 
                     self.personality.step_start("Performing Internet search")
 
@@ -874,7 +874,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
         # Raise an error if the available space is 0 or less
         if available_space<1:
-            self.error("Not enough space in context!!")
+            self.error(f"Not enough space in context!!\nVerify that your vectorization settings for documents or internet search are realistic compared to your context size.\nYou are {available_space} short of context!")
             raise Exception("Not enough space in context!!")
 
         # Accumulate messages until the cumulative number of tokens exceeds available_space
@@ -1381,114 +1381,119 @@ class LOLLMSWebUI(LOLLMSElfServer):
         # send the message to the bot
         print(f"Received message : {message.content}")
         if self.connections[client_id]["current_discussion"]:
-            if not self.model:
-                self.error("No model selected. Please make sure you select a model before starting generation", client_id=client_id)
-                return          
-            # First we need to send the new message ID to the client
-            if is_continue:
-                self.connections[client_id]["current_discussion"].load_message(message_id)
-                self.connections[client_id]["generated_text"] = message.content
-            else:
-                self.new_message(client_id, self.personality.name, "")
-                self.update_message(client_id, "✍ warming up ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_START)
-
-            # prepare query and reception
-            self.discussion_messages, self.current_message, tokens, context_details, internet_search_infos = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type)
-            self.prepare_reception(client_id)
-            self.generating = True
-            self.connections[client_id]["processing"]=True
             try:
-                self.generate(
-                                self.discussion_messages, 
-                                self.current_message,
-                                context_details=context_details,
-                                n_predict = self.config.ctx_size-len(tokens)-1,
-                                client_id=client_id,
-                                callback=partial(self.process_chunk,client_id = client_id)
-                            )
-                if self.config.enable_voice_service and self.config.auto_read and len(self.personality.audio_samples)>0:
-                    try:
-                        self.process_chunk("Generating voice output",MSG_TYPE.MSG_TYPE_STEP_START,client_id=client_id)
-                        from lollms.services.xtts.lollms_xtts import LollmsXTTS
-                        if self.tts is None:
-                            self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent.parent/"voices", xtts_base_url= self.config.xtts_base_url)
-                        language = convert_language_name(self.personality.language)
-                        self.tts.set_speaker_folder(Path(self.personality.audio_samples[0]).parent)
-                        fn = self.personality.name.lower().replace(' ',"_").replace('.','')    
-                        fn = f"{fn}_{message_id}.wav"
-                        url = f"audio/{fn}"
-                        self.tts.tts_to_file(self.connections[client_id]["generated_text"], Path(self.personality.audio_samples[0]).name, f"{fn}", language=language)
-                        fl = f"""
-<audio controls>
-    <source src="{url}" type="audio/wav">
-    Your browser does not support the audio element.
-</audio>
-"""
-                        self.process_chunk("Generating voice output", MSG_TYPE.MSG_TYPE_STEP_END, {'status':True},client_id=client_id)
-                        self.process_chunk(fl,MSG_TYPE.MSG_TYPE_UI, client_id=client_id)
-                        
-                        """
-                        self.info("Creating audio output",10)
-                        self.personality.step_start("Creating audio output")
-                        if not PackageManager.check_package_installed("tortoise"):
-                            PackageManager.install_package("tortoise-tts")
-                        from tortoise import utils, api
-                        import sounddevice as sd
-                        if self.tts is None:
-                            self.tts = api.TextToSpeech( kv_cache=True, half=True)
-                        reference_clips = [utils.audio.load_audio(str(p), 22050) for p in self.personality.audio_samples]
-                        tk = self.model.tokenize(self.connections[client_id]["generated_text"])
-                        if len(tk)>100:
-                            chunk_size = 100
+                if not self.model:
+                    self.error("No model selected. Please make sure you select a model before starting generation", client_id=client_id)
+                    return          
+                # First we need to send the new message ID to the client
+                if is_continue:
+                    self.connections[client_id]["current_discussion"].load_message(message_id)
+                    self.connections[client_id]["generated_text"] = message.content
+                else:
+                    self.new_message(client_id, self.personality.name, "")
+                    self.update_message(client_id, "✍ warming up ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_START)
+
+                # prepare query and reception
+                self.discussion_messages, self.current_message, tokens, context_details, internet_search_infos = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type)
+                self.prepare_reception(client_id)
+                self.generating = True
+                self.connections[client_id]["processing"]=True
+                try:
+                    self.generate(
+                                    self.discussion_messages, 
+                                    self.current_message,
+                                    context_details=context_details,
+                                    n_predict = self.config.ctx_size-len(tokens)-1,
+                                    client_id=client_id,
+                                    callback=partial(self.process_chunk,client_id = client_id)
+                                )
+                    if self.config.enable_voice_service and self.config.auto_read and len(self.personality.audio_samples)>0:
+                        try:
+                            self.process_chunk("Generating voice output",MSG_TYPE.MSG_TYPE_STEP_START,client_id=client_id)
+                            from lollms.services.xtts.lollms_xtts import LollmsXTTS
+                            if self.tts is None:
+                                self.tts = LollmsXTTS(self, voice_samples_path=Path(__file__).parent.parent/"voices", xtts_base_url= self.config.xtts_base_url)
+                            language = convert_language_name(self.personality.language)
+                            self.tts.set_speaker_folder(Path(self.personality.audio_samples[0]).parent)
+                            fn = self.personality.name.lower().replace(' ',"_").replace('.','')    
+                            fn = f"{fn}_{message_id}.wav"
+                            url = f"audio/{fn}"
+                            self.tts.tts_to_file(self.connections[client_id]["generated_text"], Path(self.personality.audio_samples[0]).name, f"{fn}", language=language)
+                            fl = f"\n".join([
+                            f"<audio controls>",
+                            f'    <source src="{url}" type="audio/wav">',
+                            f'    Your browser does not support the audio element.',
+                            f'</audio>'                        
+                            ])
+                            self.process_chunk("Generating voice output", MSG_TYPE.MSG_TYPE_STEP_END, {'status':True},client_id=client_id)
+                            self.process_chunk(fl,MSG_TYPE.MSG_TYPE_UI, client_id=client_id)
                             
-                            for i in range(0, len(tk), chunk_size):
-                                chunk = self.model.detokenize(tk[i:i+chunk_size])
-                                if i==0:
-                                    pcm_audio = self.tts.tts_with_preset(chunk, voice_samples=reference_clips, preset='fast').numpy().flatten()
-                                else:
-                                    pcm_audio = np.concatenate([pcm_audio, self.tts.tts_with_preset(chunk, voice_samples=reference_clips, preset='ultra_fast').numpy().flatten()])
-                        else:
-                            pcm_audio = self.tts.tts_with_preset(self.connections[client_id]["generated_text"], voice_samples=reference_clips, preset='fast').numpy().flatten()
-                        sd.play(pcm_audio, 22050)
-                        self.personality.step_end("Creating audio output")                        
-                        """
+                            """
+                            self.info("Creating audio output",10)
+                            self.personality.step_start("Creating audio output")
+                            if not PackageManager.check_package_installed("tortoise"):
+                                PackageManager.install_package("tortoise-tts")
+                            from tortoise import utils, api
+                            import sounddevice as sd
+                            if self.tts is None:
+                                self.tts = api.TextToSpeech( kv_cache=True, half=True)
+                            reference_clips = [utils.audio.load_audio(str(p), 22050) for p in self.personality.audio_samples]
+                            tk = self.model.tokenize(self.connections[client_id]["generated_text"])
+                            if len(tk)>100:
+                                chunk_size = 100
+                                
+                                for i in range(0, len(tk), chunk_size):
+                                    chunk = self.model.detokenize(tk[i:i+chunk_size])
+                                    if i==0:
+                                        pcm_audio = self.tts.tts_with_preset(chunk, voice_samples=reference_clips, preset='fast').numpy().flatten()
+                                    else:
+                                        pcm_audio = np.concatenate([pcm_audio, self.tts.tts_with_preset(chunk, voice_samples=reference_clips, preset='ultra_fast').numpy().flatten()])
+                            else:
+                                pcm_audio = self.tts.tts_with_preset(self.connections[client_id]["generated_text"], voice_samples=reference_clips, preset='fast').numpy().flatten()
+                            sd.play(pcm_audio, 22050)
+                            self.personality.step_end("Creating audio output")                        
+                            """
 
 
 
-                    except Exception as ex:
-                        ASCIIColors.error("Couldn't read")
-                        trace_exception(ex)
-                print()
-                ASCIIColors.success("## Done Generation ##")
-                print()
-            except Exception as ex:
-                trace_exception(ex)
-                print()
-                ASCIIColors.error("## Generation Error ##")
-                print()
+                        except Exception as ex:
+                            ASCIIColors.error("Couldn't read")
+                            trace_exception(ex)
+                    print()
+                    ASCIIColors.success("## Done Generation ##")
+                    print()
+                except Exception as ex:
+                    trace_exception(ex)
+                    print()
+                    ASCIIColors.error("## Generation Error ##")
+                    print()
 
-            self.cancel_gen = False
+                self.cancel_gen = False
 
-            # Send final message
-            if self.config.activate_internet_search:
-                from lollms.internet import get_favicon_url, get_root_url
-                sources_text = '<div class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm ">'
-                sources_text += '<div class="text-gray-400 mr-10px">Sources:</div>'
-                for source in internet_search_infos:
-                    url = source["url"]
-                    favicon_url = get_favicon_url(url)
-                    if favicon_url is None:
-                        favicon_url ="/personalities/internet/loi/assets/logo.png"
-                    root_url = get_root_url(url)                        
-                    sources_text += "\n".join([
-                    f'<a class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none hover:border-gray-300 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700" target="_blank" href="{url}">',
-                    f'  <img class="h-3.5 w-3.5 rounded" src="{favicon_url}">',
-                    f'  <div>{root_url}</div>',
-                    f'</a>',
-                    ])
-                sources_text += '</div>'
-                self.connections[client_id]["generated_text"]=self.connections[client_id]["generated_text"].split("!@>")[0] + "\n" + sources_text
-                self.personality.full(self.connections[client_id]["generated_text"])
+                # Send final message
+                if self.config.activate_internet_search:
+                    from lollms.internet import get_favicon_url, get_root_url
+                    sources_text = '<div class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm ">'
+                    sources_text += '<div class="text-gray-400 mr-10px">Sources:</div>'
+                    for source in internet_search_infos:
+                        url = source["url"]
+                        title = source["title"]
+                        brief = source["brief"]
+                        favicon_url = get_favicon_url(url)
+                        if favicon_url is None:
+                            favicon_url ="/personalities/internet/loi/assets/logo.png"
+                        root_url = get_root_url(url)                        
+                        sources_text += "\n".join([
+                        f'<a class="relative flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none hover:border-gray-300 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700" target="_blank" href="{url}" title="{brief}">',
+                        f'  <img class="h-3.5 w-3.5 rounded" src="{favicon_url}">',
+                        f'  <div>{root_url}</div>',
+                        f'</a>',
+                        ])
+                    sources_text += '</div>'
+                    self.connections[client_id]["generated_text"]=self.connections[client_id]["generated_text"].split("!@>")[0] + "\n" + sources_text
+                    self.personality.full(self.connections[client_id]["generated_text"])
+            except:
+                pass
             self.close_message(client_id)
             self.update_message(client_id, "Generating ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_END)
 

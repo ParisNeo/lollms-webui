@@ -1,20 +1,20 @@
 <template>
   <div class="flex items-start">
     <div class="step flex items-center mb-4">
-      <div class="flex items-center justify-center w-6 h-6 mr-2">
-        <div v-if="!done && type=='start_end'">
+      <div v-if="step_type=='start_end'" class="flex items-center justify-center w-6 h-6 mr-2">
+        <div v-if="!done">
           <i
           data-feather="square"
           class="text-gray-400 w-4 h-4"
         ></i>
         </div>
-        <div v-if="done && status  && type=='start_end'">
+        <div v-if="done && status">
           <i
           data-feather="check-square"
           class="text-green-500 w-4 h-4"
         ></i>
         </div>
-        <div v-if="done && !status  && type=='start_end'">
+        <div v-if="done && !status">
           <i
           data-feather="x-square"
           class="text-red-500 w-4 h-4"
@@ -56,7 +56,7 @@
         type: Boolean,
         required: true
       },
-      type: {
+      step_type: {
         type: String,
         required: false,
         default: 'start_end'
