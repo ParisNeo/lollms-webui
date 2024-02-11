@@ -237,7 +237,7 @@
                                 </div>
                                 <div class="group relative w-max">
                                     <input type="file" ref="fileDialog" style="display: none" @change="addFiles" multiple />
-                                    <button type="button" @click.stop="$refs.fileDialog.click()"
+                                    <button type="button" @click.prevent="add_file"
                                         class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
                                         <i data-feather="file-plus"></i>
                                     </button>                    
@@ -680,6 +680,7 @@ export default {
 
         },
         send_file(file, next) {
+            console.log("Send file triggered")
             const fileReader = new FileReader();
             const chunkSize = 24 * 1024; // Chunk size in bytes (e.g., 1MB)
             let offset = 0;
@@ -819,6 +820,28 @@ export default {
             console.log("Emitting addWebLink")
             this.$emit('addWebLink')
         },
+        add_file(){
+            // Create a new hidden input element
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.style.display = 'none';
+            input.multiple = true;
+
+            // Append the input to the body
+            document.body.appendChild(input);
+
+            // Listen for the change event
+            input.addEventListener('change', () => {
+                // Call the add file function
+                console.log("Calling Add file...")
+                this.addFiles(input.files);
+
+                // Remove the input element from the DOM
+                document.body.removeChild(input);
+            });            
+            // Trigger the file dialog
+            input.click();
+       },
         takePicture(){
             socket.emit('take_picture')
             socket.on('picture_taken',()=>{
@@ -855,9 +878,9 @@ export default {
         stopGenerating() {
             this.$emit('stopGenerating')
         },
-        addFiles(event) {
+        addFiles(files) {
             console.log("Adding files");
-            const newFiles = [...event.target.files];
+            const newFiles = [...files];
             let index = 0;
             const sendNextFile = () => {
                 if (index >= newFiles.length) {

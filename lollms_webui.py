@@ -416,6 +416,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                                 app=self,
                                                 selected_language=personality.split(":")[1] if ":" in personality else None,
                                                 run_scripts=True)
+
                     mounted_personalities.append(personality)
                     if self.config.enable_voice_service and self.config.auto_read and len(personality.audio_samples)>0:
                         try:
@@ -657,15 +658,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
         ASCIIColors.info(title[0])
         return title[0]
    
-
-    def prepare_reception(self, client_id):
-        if not self.connections[client_id]["continuing"]:
-            self.connections[client_id]["generated_text"] = ""
-            
-        self.connections[client_id]["first_chunk"]=True
-            
-        self.nb_received_tokens = 0
-        self.start_time = datetime.now()
 
     def recover_discussion(self,client_id, message_index=-1):
         messages = self.connections[client_id]["current_discussion"].get_messages()
@@ -1222,9 +1214,11 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
             if self.nb_received_tokens==0:
                 self.start_time = datetime.now()
-                self.update_message(client_id, "✍ warming up ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_END, parameters= {'status':True})
-                self.update_message(client_id, "Generating ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_START)
-
+                try:
+                    self.update_message(client_id, "✍ warming up ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_END, parameters= {'status':True})
+                    self.update_message(client_id, "Generating ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_START)
+                except Exception as ex:
+                    ASCIIColors.warning("Couldn't send status update to client")
             dt =(datetime.now() - self.start_time).seconds
             if dt==0:
                 dt=1

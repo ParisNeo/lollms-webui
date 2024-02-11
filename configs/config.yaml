@@ -85,7 +85,7 @@ lollms_base_url: http://0.0.0.0:1234
 
 # elastic search service
 elastic_search_service: false
-elastic_search_url: http://0.0.0.0:9606
+elastic_search_url: http://0.0.0.0:9200
 
 # vll service
 vllm_service: false

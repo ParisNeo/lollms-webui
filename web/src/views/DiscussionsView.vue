@@ -1264,23 +1264,28 @@ export default {
                     messageItem.status_message = msgObj.content
                     messageItem.steps.push({"message":msgObj.content,"done":false, "status":true, "type": "start_end" })
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_END) {
-                    console.log("received step end")
-                    // Find the step with the matching message and update its 'done' property to true
-                    const matchingStep = messageItem.steps.find(step => step.message === msgObj.content);
+                    console.log("received step end", msgObj)
+                    try{
+                        // Find the step with the matching message and update its 'done' property to true
+                        const matchingStep = messageItem.steps.find(step => step.message === msgObj.content);
 
-                    if (matchingStep) {
-                        matchingStep.done = true;
-                        try {
-                            console.log(msgObj.parameters)
-                            const parameters = msgObj.parameters;
-                            if(parameters!=undefined){
-                                matchingStep.status=parameters.status
-                                console.log(parameters);
+                        if (matchingStep) {
+                            matchingStep.done = true;
+                            try {
+                                console.log(msgObj.parameters)
+                                const parameters = msgObj.parameters;
+                                if(parameters!=undefined){
+                                    matchingStep.status=parameters.status
+                                    console.log(parameters);
+                                }
+                                
+                            } catch (error) {
+                                console.error('Error parsing JSON:', error.message);
                             }
-                            
-                        } catch (error) {
-                            console.error('Error parsing JSON:', error.message);
                         }
+                    }
+                    catch{
+                        console.log("error")
                     }
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_JSON_INFOS) {
                     console.log("JSON message")

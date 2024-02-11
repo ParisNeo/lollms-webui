@@ -410,7 +410,7 @@ export default {
 
         },
         async select_personality(pers) {
-            if (!pers) { return { 'status': false, 'error': 'no personality - select_personality' } }
+            if (!pers || !pers.personality) { return { 'status': false, 'error': 'no personality - select_personality' } }
             let id = -1
             console.log("Personality full path : ",pers.full_path)
             console.log("Personality language : ",pers.personality.language)
