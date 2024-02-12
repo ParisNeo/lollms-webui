@@ -114,6 +114,7 @@ export default {
     onMount: Function,
     onUnMount: Function,
     onRemount: Function,
+    onCopyToCustom: Function,
     onEdit: Function,
     onReinstall: Function,
     onSettings: Function,
@@ -137,6 +138,9 @@ export default {
         console.log("this.category",this.personality.category)
         if(this.personality.category=="custom_personalities"){
           main_menu.push({name:"edit", icon: "feather:settings", is_file:false, value:this.edit})
+        }
+        else{
+          main_menu.push({name:"Copy to custom personas folder for editing", icon: "feather:copy", is_file:false, value:this.copyToCustom})
         }
         if(this.isMounted){
           main_menu.push({name:"remount", icon: "feather:refresh-ccw", is_file:false, value:this.reMount})
@@ -181,6 +185,9 @@ export default {
     },
     edit(){
       this.onEdit(this)
+    },
+    copyToCustom(){
+      this.onCopyToCustom(this)
     },
     reMount(){
       this.onRemount(this)

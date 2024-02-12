@@ -12,11 +12,6 @@
                             <i data-feather="list"></i>
                         </button>
                     </div>                 
-                    <button v-if="loading" type="button"   
-                            class="bg-red-500 dark:bg-red-800 hover:bg-red-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:hover:bg-bg-dark-tone focus:outline-none dark:focus:ring-blue-800"
-                            @click.stop="stopGenerating">
-                            Stop generating
-                    </button>
                     <!-- FILES     -->
                     <div v-if="filesList.length > 0 && showfilesList ==true">
                         <div class="flex flex-col max-h-64  ">
@@ -216,6 +211,11 @@
                                     </button>
                                     <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">When enabled, the model will try to complement its answer with information queried from the web.</p></div>
                                 </div>
+                                <button v-if="loading" type="button"   
+                                        class="bg-red-500 dark:bg-red-800 hover:bg-red-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:hover:bg-bg-dark-tone focus:outline-none dark:focus:ring-blue-800"
+                                        @click.stop="stopGenerating">
+                                        Stop generating
+                                </button>
 
                                 <div class="group relative w-max">
                                     <button v-if="!loading" type="button" @click="submit" title="Send"

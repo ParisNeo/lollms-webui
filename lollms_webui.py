@@ -861,8 +861,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
         # Calculate the available space for the messages
         available_space = self.config.ctx_size - n_tokens - total_tokens
 
-        if self.config.debug:
-            self.info(f"Tokens summary:\nConditionning:{n_cond_tk}\nn_isearch_tk:{n_isearch_tk}\ndoc:{n_doc_tk}\nhistory:{n_history_tk}\nuser description:{n_user_description_tk}\nAvailable space:{available_space}",10)
+        # if self.config.debug:
+        #     self.info(f"Tokens summary:\nConditionning:{n_cond_tk}\nn_isearch_tk:{n_isearch_tk}\ndoc:{n_doc_tk}\nhistory:{n_history_tk}\nuser description:{n_user_description_tk}\nAvailable space:{available_space}",10)
 
         # Raise an error if the available space is 0 or less
         if available_space<1:
@@ -957,7 +957,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             ASCIIColors.info(f"prompt size:{len(tokens)} tokens") 
             ASCIIColors.info(f"available space after doc and knowledge:{available_space} tokens") 
 
-            self.info(f"Tokens summary:\nPrompt size:{len(tokens)}\nTo generate:{available_space}",10)
+            # self.info(f"Tokens summary:\nPrompt size:{len(tokens)}\nTo generate:{available_space}",10)
 
         # Details
         context_details = {

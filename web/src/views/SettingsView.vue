@@ -1976,6 +1976,7 @@
                                         :on-un-mount="unmountPersonality"  
                                         :on-remount="remountPersonality"
                                         :on-edit="editPersonality"
+                                        :on-copy-to-custom="copyToCustom"
                                         :on-reinstall="onPersonalityReinstall"
                                         :on-settings="onSettingsPersonality"
                                         :on-copy-personality-name="onCopyPersonalityName"
@@ -4392,6 +4393,28 @@ export default {
             .catch(error => {
             // Handle the error
             console.error(error);
+            });
+        },
+        copyToCustom(pers) {
+            pers=pers.personality;
+            // Make a POST request to the '/get_personality_config' endpoint using Axios
+            axios.post('/copy_to_custom_personas', {
+                category: pers.category,
+                name: pers.folder,
+            })
+            .then(response => {
+                if (response.status){
+                    this.$store.state.messageBox.showMessage("Personality copied to the custom personalities folder :\n")
+                    this.$store.dispatch('refreshPersonalitiesZoo')
+                }
+                else{
+                    this.$store.state.toast.showToast("Personality couldn't be copied to the custom personalities folder:\n", 4, false)
+                }
+            })
+            .catch(error => {
+            // Handle the error
+                this.$store.state.toast.showToast("Personality couldn't be copied to the custom personalities folder:\n", 4, false)
+                console.error(error);
             });
         },
         async remountPersonality(pers){
