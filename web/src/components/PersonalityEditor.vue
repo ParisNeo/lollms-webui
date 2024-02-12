@@ -12,7 +12,7 @@
       </button>
     <div class="relative w-full max-h-full ">
       <form class="mb-4">
-        <div class="container relative bg-white rounded-lg shadow dark:bg-gray-700" style="height:500px; overflow-y: auto;">
+        <div class="container relative items-center gap-2 rounded-lg border bg-white p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-900" style="height:500px; overflow-y: auto;">
           <table class="w-full">
           <tr>
             <td><label for="personalityConditioning">Personality Conditioning:</label></td><td><textarea id="personalityConditioning" class="w-full" v-model="config.personality_conditioning"></textarea></td>
@@ -76,7 +76,7 @@
         </table>
         </div>        
       </form>
-      <div class="flex flex-row mt-4">
+      <div class="flex flex-row mt-4 text-center">
         <button type="submit" @click.prevent="submitForm" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
           Commit AI to Server
         </button>
