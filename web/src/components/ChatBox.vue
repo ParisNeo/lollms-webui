@@ -194,13 +194,7 @@
                                         :on-show-toast-message="onShowToastMessage"
                                         ref="personalityCMD"
                                     ></PersonalitiesCommands>
-                                </div>                                
-                                <div class="relative grow">
-                                    <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"
-                                        class="inline-block  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="Send message..." @keydown.enter.exact="submitOnEnter($event)">
-                                    </textarea>
-                                </div>
+                                </div>        
                                 <div class="group relative w-12">
                                     <button @click.prevent="toggleSwitch">
                                         <svg width="100" height="50">
@@ -210,6 +204,12 @@
                                         </svg>                                        
                                     </button>
                                     <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">When enabled, the model will try to complement its answer with information queried from the web.</p></div>
+                                </div>
+                                <div class="relative grow">
+                                    <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"
+                                        class="inline-block  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="Send message..." @keydown.enter.exact="submitOnEnter($event)">
+                                    </textarea>
                                 </div>
                                 <button v-if="loading" type="button"   
                                         class="bg-red-500 dark:bg-red-800 hover:bg-red-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:hover:bg-bg-dark-tone focus:outline-none dark:focus:ring-blue-800"
