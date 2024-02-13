@@ -749,7 +749,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     need=True
                 if need:
                     self.personality.step_start("Crafting internet search query")
-                    query = self.personality.fast_gen(f"!@>discussion:\n{discussion[-2048:]}\n!@>instruction: Read the discussion and craft a web search query suited to recover needed information to reply to last {self.config.user_name} message.\nDo not answer the prompt. Do not add explanations.\n!@>websearch query: ", max_generation_size=256, show_progress=True, callback=self.personality.sink)
+                    query = self.personality.fast_gen(f"!@>discussion:\n{discussion[-2048:]}\n!@>system: Read the discussion and craft a web search query suited to recover needed information to reply to last {self.config.user_name} message.\nDo not answer the prompt. Do not add explanations.\n!@>websearch query: ", max_generation_size=256, show_progress=True, callback=self.personality.sink)
                     self.personality.step_end("Crafting internet search query")
                     self.personality.step(f"web search query: {query}")
 
@@ -788,7 +788,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 if self.config.data_vectorization_build_keys_words:
                     discussion = self.recover_discussion(client_id)
                     query = self.personality.fast_gen(f"\n!@>instruction: Read the discussion and rewrite the last prompt for someone who didn't read the entire discussion.\nDo not answer the prompt. Do not add explanations.\n!@>discussion:\n{discussion[-2048:]}\n!@>enhanced query: ", max_generation_size=256, show_progress=True)
-                    ASCIIColors.cyan(f"Query:{query}")
+                    ASCIIColors.cyan(f"Query: {query}")
                 else:
                     query = current_message.content
 
