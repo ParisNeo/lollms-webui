@@ -2815,6 +2815,7 @@ export default {
             axios.post('/upload_avatar', formData)
                 .then(response => {
                     console.log("Avatar uploaded successfully")
+                    
                     this.$store.state.toast.showToast("Avatar uploaded successfully!", 4, true)
                     // Assuming the server responds with the file name after successful upload
                     const fileName = response.data.fileName;

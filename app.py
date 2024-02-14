@@ -22,23 +22,10 @@ import argparse
 from socketio import ASGIApp
 import webbrowser
 import threading
-
+import os
 
 app = FastAPI()
 
-# Create a Socket.IO server
-sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*", ping_timeout=1200, ping_interval=30)  # Enable CORS for all origins
-
-
-
-@sio.event
-async def disconnect(sid):
-    ASCIIColors.yellow(f"Disconnected: {sid}")
-
-@sio.event
-async def message(sid, data):
-    ASCIIColors.yellow(f"Message from {sid}: {data}")
-    await sio.send(sid, "Message received!")
 
 
 #app.mount("/socket.io", StaticFiles(directory="path/to/socketio.js"))
@@ -64,9 +51,21 @@ if __name__ == "__main__":
     if args.port:
         config.port=args.port
 
+    cert_file_path = lollms_paths.personal_certificates/"cert.pem"
+    key_file_path = lollms_paths.personal_certificates/"key.pem"
+    if os.path.exists(cert_file_path) and os.path.exists(key_file_path):
+        is_https = True
+    else:
+        is_https = False        
+
+    # Create a Socket.IO server
+    sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=config.allowed_origins+[f"https://localhost:{config['port']}" if is_https else f"http://localhost:{config['port']}"], ping_timeout=1200, ping_interval=30)  # Enable CORS for selected origins
+
     LOLLMSWebUI.build_instance(config=config, lollms_paths=lollms_paths, args=args, sio=sio)
     lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
     lollmsElfServer.verbose = True
+
+
     # Import all endpoints
     from lollms.server.endpoints.lollms_binding_files_server import router as lollms_binding_files_server_router
     from lollms.server.endpoints.lollms_infos import router as lollms_infos_router
@@ -140,6 +139,18 @@ if __name__ == "__main__":
     
     
     app.include_router(lollms_configuration_infos_router)
+    
+
+
+
+    @sio.event
+    async def disconnect(sid):
+        ASCIIColors.yellow(f"Disconnected: {sid}")
+
+    @sio.event
+    async def message(sid, data):
+        ASCIIColors.yellow(f"Message from {sid}: {data}")
+        await sio.send(sid, "Message received!")
 
 
     lollms_generation_events_add(sio)
@@ -158,6 +169,9 @@ if __name__ == "__main__":
     app.mount("/playground", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="playground")
     app.mount("/settings", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="settings")
     app.mount("/", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="static")
+
+
+
     app = ASGIApp(socketio_server=sio, other_asgi_app=app)
 
     lollmsElfServer.app = app
@@ -179,15 +193,20 @@ if __name__ == "__main__":
         #   thread.start()
 
         # if autoshow
-        if config.auto_show_browser:
+
+
+        if config.auto_show_browser and not config.headless_server_mode:
             if config['host']=="0.0.0.0":
-                webbrowser.open(f"http://localhost:{config['port']}")
+                webbrowser.open(f"https://localhost:{config['port']}" if is_https else f"http://localhost:{config['port']}")
                 #webbrowser.open(f"http://localhost:{6523}") # needed for debug (to be removed in production)
             else:
-                webbrowser.open(f"http://{config['host']}:{config['port']}")
+                webbrowser.open(f"https://{config['host']}:{config['port']}" if is_https else f"http://{config['host']}:{config['port']}")
                 #webbrowser.open(f"http://{config['host']}:{6523}") # needed for debug (to be removed in production)
-
-        uvicorn.run(app, host=config.host, port=config.port)
+                
+        if is_https:
+            uvicorn.run(app, host=config.host, port=config.port, ssl_certfile=cert_file_path, ssl_keyfile=key_file_path)
+        else:
+            uvicorn.run(app, host=config.host, port=config.port)
            
     except Exception as ex:
         trace_exception(ex)

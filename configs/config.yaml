@@ -1,9 +1,10 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 56
+version: 58
 binding_name: null
 model_name: null
 
-
+headless_server_mode: False
+allowed_origins: []
 
 # Host information
 host: localhost
