@@ -70,8 +70,14 @@ def show_yes_no_dialog(title, text):
 
     return result
 
+class CodeRequest(BaseModel):
+    code: str = Field(..., description="Code to be executed")
+    discussion_id: int = Field(..., description="Discussion ID")
+    message_id: int = Field(..., description="Message ID")
+    language: str = Field(..., description="Programming language of the code")
+
 @router.post("/execute_code")
-async def execute_code(request: Request):
+async def execute_code(request: CodeRequest):
     """
     Executes Python code and returns the output.
 
@@ -83,7 +89,7 @@ async def execute_code(request: Request):
         return {"status":False,"error":"Code execution is blocked when in headless mode for obvious security reasons!"}
 
     if lollmsElfServer.config.host=="0.0.0.0":
-        return {"status":False,"error":"Code execution is blocked when the server is exposed outside for very obvipous reasons!"}
+        return {"status":False,"error":"Code execution is blocked when the server is exposed outside for very obvious reasons!"}
 
     if not lollmsElfServer.config.turn_on_code_execution:
         return {"status":False,"error":"Code execution is blocked by the configuration!"}
@@ -92,15 +98,11 @@ async def execute_code(request: Request):
         if not show_yes_no_dialog("Validation","Do you validate the execution of the code?"):
             return {"status":False,"error":"User refused the execution!"}
 
-
     try:
-        data = (await request.json())
-        code = data["code"]
-        discussion_id = int(data.get("discussion_id","unknown_discussion"))
-        message_id = int(data.get("message_id","unknown_message"))
-        language = data.get("language","python")
-        
-
+        code = request.code
+        discussion_id = request.discussion_id
+        message_id = request.message_id
+        language = request.language
 
         if language=="python":
             ASCIIColors.info("Executing python code:")
@@ -114,7 +116,7 @@ async def execute_code(request: Request):
             ASCIIColors.info("Executing javascript code:")
             ASCIIColors.yellow(code)
             return execute_html(code, discussion_id, message_id)
-        
+
         elif language=="latex":
             ASCIIColors.info("Executing latex code:")
             ASCIIColors.yellow(code)
