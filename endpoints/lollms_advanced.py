@@ -51,6 +51,22 @@ from utilities.execution_engines.graphviz_execution_engine import execute_graphv
 router = APIRouter()
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
+
+def show_yes_no_dialog(title, text):
+    import tkinter as tk
+    from tkinter import messagebox
+    # Create a new Tkinter root window and hide it
+    root = tk.Tk()
+    root.withdraw()
+
+    # Show the dialog box
+    result = messagebox.askyesno(title, text)
+
+    # Destroy the root window
+    root.destroy()
+
+    return result
+
 @router.post("/execute_code")
 async def execute_code(request: Request):
     """
@@ -59,11 +75,20 @@ async def execute_code(request: Request):
     :param request: The HTTP request object.
     :return: A JSON response with the status of the operation.
     """
+
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Code execution is blocked when in headless mode for obvious security reasons!"}
 
     if lollmsElfServer.config.host=="0.0.0.0":
         return {"status":False,"error":"Code execution is blocked when the server is exposed outside for very obvipous reasons!"}
+
+    if not lollmsElfServer.config.turn_on_code_execution:
+        return {"status":False,"error":"Code execution is blocked by the configuration!"}
+
+    if lollmsElfServer.config.turn_on_code_validation:
+        if not show_yes_no_dialog("Validation","Do you validate the execution of the code?"):
+            return {"status":False,"error":"User refused the execution!"}
+
 
     try:
         data = (await request.json())
