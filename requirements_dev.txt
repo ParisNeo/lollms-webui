@@ -30,5 +30,5 @@ python-socketio
 python-socketio[client]
 python-socketio[asyncio_client]
 
-
+pydantic
 selenium

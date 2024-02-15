@@ -1130,6 +1130,21 @@
                                             >
                                         </td>
                                         </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="db_path" class="text-sm font-bold" style="margin-right: 1rem;">Activate headless server mode (deactivates all code exectuion to protect the PC from attacks):</label>
+                                        </td>
+                                        <td style="width: 100%;">
+                                            <input
+                                            type="checkbox"
+                                            id="headless_server_mode"
+                                            required
+                                            v-model="configFile.headless_server_mode"
+                                            @change="settingsChanged=true"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>
                         </table>                                
                     </Card>                    
 
