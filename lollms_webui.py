@@ -71,7 +71,8 @@ def terminate_thread(thread):
             raise SystemError("Failed to terminate the thread.")
         else:
             ASCIIColors.yellow("Canceled successfully")# The current version of the webui
-lollms_webui_version="9.0"
+
+lollms_webui_version="9.1"
 
 
 
