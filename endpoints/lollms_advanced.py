@@ -155,6 +155,11 @@ async def open_code_folder_in_vs_code(request: OpenCodeFolderInVsCodeRequestMode
     :param request: The HTTP request object.
     :return: A JSON response with the status of the operation.
     """
+    if lollmsElfServer.config.headless_server_mode:
+        return {"status":False,"error":"Open code folder in vscode is blocked when in headless mode for obvious security reasons!"}
+
+    if lollmsElfServer.config.host=="0.0.0.0":
+        return {"status":False,"error":"Open code folder in vscode is blocked when the server is exposed outside for very obvious reasons!"}
 
     try:
         if request.discussion_id:        
@@ -192,6 +197,11 @@ async def open_file(file_path: FilePath):
     :param file_path: The file path object.
     :return: A JSON response with the status of the operation.
     """
+    if lollmsElfServer.config.headless_server_mode:
+        return {"status":False,"error":"Open file is blocked when in headless mode for obvious security reasons!"}
+
+    if lollmsElfServer.config.host=="0.0.0.0":
+        return {"status":False,"error":"Open file is blocked when the server is exposed outside for very obvious reasons!"}
 
     try:
         # Validate the 'path' parameter
@@ -225,6 +235,11 @@ async def open_code_in_vs_code(vs_code_data: VSCodeData):
     :param vs_code_data: The data object.
     :return: A JSON response with the status of the operation.
     """
+    if lollmsElfServer.config.headless_server_mode:
+        return {"status":False,"error":"Open code in vs code is blocked when in headless mode for obvious security reasons!"}
+
+    if lollmsElfServer.config.host=="0.0.0.0":
+        return {"status":False,"error":"Open code in vs code is blocked when the server is exposed outside for very obvious reasons!"}
 
     try:
         discussion_id = vs_code_data.discussion_id
@@ -260,6 +275,11 @@ async def open_code_folder(request: FolderRequest):
     :param request: The HTTP request object.
     :return: A JSON response with the status of the operation.
     """
+    if lollmsElfServer.config.headless_server_mode:
+        return {"status":False,"error":"Open code folder is blocked when in headless mode for obvious security reasons!"}
+
+    if lollmsElfServer.config.host=="0.0.0.0":
+        return {"status":False,"error":"Open code folder is blocked when the server is exposed outside for very obvious reasons!"}
     
     try:
         if request.discussion_id:
@@ -303,6 +323,12 @@ async def open_code_folder(request: FolderRequest):
 
 @router.get("/start_recording")
 def start_recording():
+    if lollmsElfServer.config.headless_server_mode:
+        return {"status":False,"error":"Start recording is blocked when in headless mode for obvious security reasons!"}
+
+    if lollmsElfServer.config.host=="0.0.0.0":
+        return {"status":False,"error":"Start recording is blocked when the server is exposed outside for very obvious reasons!"}
+
     lollmsElfServer.info("Starting audio capture")
     try:
         from lollms.media import AudioRecorder
@@ -317,6 +343,12 @@ def start_recording():
 
 @router.get("/stop_recording")
 def stop_recording():
+    if lollmsElfServer.config.headless_server_mode:
+        return {"status":False,"error":"Stop recording is blocked when in headless mode for obvious security reasons!"}
+
+    if lollmsElfServer.config.host=="0.0.0.0":
+        return {"status":False,"error":"Stop recording is blocked when the server is exposed outside for very obvious reasons!"}
+
     lollmsElfServer.info("Stopping audio capture")
     text = lollmsElfServer.audio_cap.stop_recording()
     return text
