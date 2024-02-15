@@ -201,7 +201,7 @@ async def open_file(file_path: FilePath):
         path = os.path.realpath(path)
         
         # Use subprocess.Popen to safely open the file
-        subprocess.Popen(["start", path], shell=True)
+        subprocess.Popen(["start", path])
         
         return {"status": True, "execution_time": 0}
     
@@ -238,7 +238,7 @@ async def open_code_in_vs_code(vs_code_data: VSCodeData):
             f.write(code)
         
         # Use subprocess.Popen to safely open the file
-        subprocess.Popen(["code", str(root_folder)], shell=True)
+        subprocess.Popen(["code", str(root_folder)])
         
         return {"status": True, "execution_time": 0}
     except Exception as ex:
@@ -268,7 +268,7 @@ async def open_code_folder(request: FolderRequest):
             root_folder = lollmsElfServer.lollms_paths.personal_outputs_path / "discussions" / f"d_{discussion_id}"
             root_folder.mkdir(parents=True, exist_ok=True)
             if platform.system() == 'Windows':
-                subprocess.run(['start', str(root_folder)], check=True, shell=True)
+                subprocess.run(['start', str(root_folder)], check=True)
             elif platform.system() == 'Linux':
                 subprocess.run(['xdg-open', str(root_folder)], check=True)
             elif platform.system() == 'Darwin':
@@ -287,7 +287,7 @@ async def open_code_folder(request: FolderRequest):
             # Create a temporary file.
             root_folder.mkdir(parents=True, exist_ok=True)
             if platform.system() == 'Windows':
-                subprocess.run(['start', str(root_folder)], check=True, shell=True)
+                subprocess.run(['start', str(root_folder)], check=True)
             elif platform.system() == 'Linux':
                 subprocess.run(['xdg-open', str(root_folder)], check=True)
             elif platform.system() == 'Darwin':
