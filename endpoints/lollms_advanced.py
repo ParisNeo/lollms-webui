@@ -59,6 +59,9 @@ def show_yes_no_dialog(title, text):
     root = tk.Tk()
     root.withdraw()
 
+    # Make the window appear on top
+    root.attributes('-topmost', True)
+    
     # Show the dialog box
     result = messagebox.askyesno(title, text)
 
