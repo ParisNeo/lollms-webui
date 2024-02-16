@@ -235,7 +235,7 @@
                                     </button>                      
                                     <div class="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Press and talk.</p></div>
                                 </div>
-                                <div class="group relative w-max">
+                                <div v-if="!loading" class="group relative w-max">
                                     <input type="file" ref="fileDialog" style="display: none" @change="addFiles" multiple />
                                     <button type="button" @click.prevent="add_file"
                                         class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
@@ -245,7 +245,7 @@
                                 </div>
 
                                 <div class="group relative w-max">
-                                    <button type="button" @click.stop="takePicture"
+                                    <button v-if="!loading" type="button" @click.stop="takePicture"
                                         class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
                                         <i data-feather="camera"></i>
                                     </button>                 
@@ -253,7 +253,7 @@
                                 </div>
 
                                 <div class="group relative w-max">
-                                    <button type="button" @click.stop="addWebLink" 
+                                    <button v-if="!loading" type="button" @click.stop="addWebLink" 
                                         class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
                                         <i data-feather="globe"></i>
                                     </button>               
@@ -261,7 +261,7 @@
                                 </div>
 
                                 <div class="group relative w-max">
-                                    <button v-if="!loading" type="button" @click="makeAnEmptyUserMessage"
+                                    <button v-if="!loading" type="button" @click.stop="makeAnEmptyUserMessage"
                                         class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
                                         <i data-feather="message-square"></i>
                                     </button>
@@ -270,7 +270,7 @@
                                 </div>
 
                                 <div class="group relative w-max">
-                                    <button v-if="!loading" type="button" @click="makeAnEmptyAIMessage"
+                                    <button v-if="!loading" type="button" @click.stop="makeAnEmptyAIMessage"
                                         class=" w-6 text-red-400 hover:text-secondary duration-75 active:scale-90">
                                         <i data-feather="message-square"></i>
                                     </button>  
@@ -325,8 +325,6 @@ import filesize from '../plugins/filesize'
 import MountedPersonalities from '@/components/MountedPersonalities.vue'
 import MountedPersonalitiesList from '@/components/MountedPersonalitiesList.vue'
 import PersonalitiesCommands from '@/components/PersonalitiesCommands.vue';
-import InteractiveMenu from '@/components/InteractiveMenu.vue';
-import { inject } from 'vue';
 import socket from '@/services/websocket.js'
 import UniversalForm from '../components/UniversalForm.vue';
 import modelImgPlaceholder from "../assets/default_model.png"
@@ -340,7 +338,9 @@ export default {
     props: {
         onTalk: Function,
         discussionList: Array,
-        loading: false,
+        loading: {
+            default:false
+        },
         onShowToastMessage: Function
 
     },
@@ -349,8 +349,6 @@ export default {
         MountedPersonalities,
         MountedPersonalitiesList,
         PersonalitiesCommands,
-        InteractiveMenu,
-        
     },
     setup() {
 

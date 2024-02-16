@@ -856,7 +856,7 @@ export default {
           this.is_recording = false;
           this.pending = false;
           console.log(response)
-          this.text += response.data
+          this.text += response.data.text
 
           console.log(response.data)
           this.presets=response.data

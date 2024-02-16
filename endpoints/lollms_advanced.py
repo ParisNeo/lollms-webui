@@ -149,12 +149,6 @@ class OpenCodeFolderInVsCodeRequestModel(BaseModel):
 
 @router.post("/open_code_folder_in_vs_code")
 async def open_code_folder_in_vs_code(request: OpenCodeFolderInVsCodeRequestModel):
-    """
-    Opens code folder.
-
-    :param request: The HTTP request object.
-    :return: A JSON response with the status of the operation.
-    """
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Open code folder in vscode is blocked when in headless mode for obvious security reasons!"}
 

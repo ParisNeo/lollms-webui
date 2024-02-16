@@ -1062,10 +1062,12 @@ export default {
             return true
         },
         new_message(msgObj) {
-            this.isGenerating = true
+            if(msgObj.sender_type==this.SENDER_TYPES_AI){
+                this.isGenerating = true
+            }
             console.log("Making a new message")
             console.log('New message', msgObj);
-
+            
             let responseMessage = {
                 sender:                 msgObj.sender,
                 message_type:           msgObj.message_type,
@@ -1091,6 +1093,7 @@ export default {
 
                 open                    : msgObj.open
             }
+            
             responseMessage.status_message = "Warming up"
             console.log(responseMessage)
             this.discussionArr.push(responseMessage)

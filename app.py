@@ -24,7 +24,7 @@ import webbrowser
 import threading
 import os
 
-app = FastAPI()
+app = FastAPI(title="LoLLMS", description="This is the LoLLMS-Webui API documentation")
 
 
 

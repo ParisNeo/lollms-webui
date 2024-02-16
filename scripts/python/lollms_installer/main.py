@@ -44,7 +44,7 @@ ASCIIColors.red(" LoLLMS configuratoin tool")
 ASCIIColors.yellow(f"Root dir : {root_path}")
 
 sio = socketio.AsyncServer(async_mode='asgi')
-app = FastAPI(debug=True)
+app = FastAPI(title="LoLLMS", description="This is the LoLLMS-Webui documentation")
 
 lollms_app = LollmsApplication(
                                     "lollms_installer",

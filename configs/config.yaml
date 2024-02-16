@@ -1,11 +1,15 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 60
+version: 61
 binding_name: null
 model_name: null
 
+show_news_panel: True
+
+# Execution protection
 turn_on_code_execution: True
 turn_on_code_validation: False
 
+# Server information
 headless_server_mode: False
 allowed_origins: []
 
