@@ -369,6 +369,10 @@ export default {
     
     data() {
         return {
+            posts_headers : {
+                'accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
             host:"",
             progress_visibility_val         : true,
             progress_value                  : 0,
@@ -521,7 +525,7 @@ export default {
         onclosedatabase_selectorDialog(){this.database_selectorDialogVisible=false;},
         async onvalidatedatabase_selectorChoice(choice){
             this.database_selectorDialogVisible=false;
-            const res = await axios.post("/select_database",{"name": choice});
+            const res = await axios.post("/select_database", {"name": choice}, {headers: this.posts_headers});
             if(res.status){
                 console.log("Selected database")
                 this.$store.state.config = await axios.get("/get_config");
@@ -697,7 +701,7 @@ export default {
                     await axios.post('/delete_discussion', {
                         client_id: this.client_id,
                         id: id
-                    })
+                    }, {headers: this.posts_headers})
                     this.loading = false
                     this.setDiscussionLoading(id, this.loading)
                 }
@@ -716,7 +720,7 @@ export default {
                         client_id: this.client_id,
                         id: id,
                         title: new_title
-                    })
+                    }, {headers: this.posts_headers})
                     this.loading = false
                     this.setDiscussionLoading(id, this.loading)
                     if (res.status == 200) {
@@ -740,7 +744,7 @@ export default {
                     const res = await axios.post('/make_title', {
                         client_id: this.client_id,
                         id: id,
-                    })
+                    }, {headers: this.posts_headers})
                     console.log("Making title:",res)
 
                     this.loading = false
@@ -761,7 +765,11 @@ export default {
         },        
         async delete_message(id) {
             try {
-                const res = await axios.get('/delete_message', { params: { client_id: this.client_id, id: id } })
+                console.log(typeof id)
+                console.log(typeof this.client_id)
+                console.log(id)
+                console.log(this.client_id)
+                const res = await axios.post('/delete_message', { client_id: this.client_id, id: id }, {headers: this.posts_headers})
 
                 if (res) {
                     return res.data
@@ -793,7 +801,7 @@ export default {
         },
         async message_rank_up(id) {
             try {
-                const res = await axios.get('/message_rank_up', { params: { client_id: this.client_id, id: id } })
+                const res = await axios.post('/message_rank_up', { params: { client_id: this.client_id, id: id } }, {headers: this.posts_headers})
 
                 if (res) {
                     return res.data
@@ -805,7 +813,7 @@ export default {
         },
         async message_rank_down(id) {
             try {
-                const res = await axios.get('/message_rank_down', { params: { client_id: this.client_id, id: id } })
+                const res = await axios.post('/message_rank_down', { params: { client_id: this.client_id, id: id } }, {headers: this.posts_headers})
 
                 if (res) {
                     return res.data
@@ -817,7 +825,7 @@ export default {
         },
         async edit_message(id, message, audio_url) {
             try {
-                const res = await axios.get('/edit_message', { params: { client_id: this.client_id, id: id, message: message, metadata: {audio_url:audio_url} } })
+                const res = await axios.post('/edit_message', { params: { client_id: this.client_id, id: id, message: message, metadata: {audio_url:audio_url} } }, {headers: this.posts_headers})
 
                 if (res) {
                     return res.data
@@ -2118,6 +2126,7 @@ export default {
 </script>
 
 <script setup>
+
 import Discussion from '../components/Discussion.vue'
 import ChoiceDialog from '@/components/ChoiceDialog.vue'
 import ProgressBar from "@/components/ProgressBar.vue";

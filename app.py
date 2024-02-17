@@ -24,6 +24,11 @@ import webbrowser
 import threading
 import os
 
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, ValidationError
+from fastapi.encoders import jsonable_encoder
+
 app = FastAPI(title="LoLLMS", description="This is the LoLLMS-Webui API documentation")
 
 
@@ -106,39 +111,35 @@ if __name__ == "__main__":
     from events.lollms_chatbox_events import add_events as lollms_chatbox_events_add
     from events.lollms_interactive_events import add_events as lollms_interactive_events_add
 
-    
 
-    app.include_router(lollms_infos_router)
-    app.include_router(lollms_binding_files_server_router)
-    app.include_router(lollms_hardware_infos_router)    
-    app.include_router(lollms_binding_infos_router)    
-    app.include_router(lollms_models_infos_router)   
-    app.include_router(lollms_personalities_infos_router)   
-    app.include_router(lollms_extensions_infos_router)   
-    
-    
-    
-
-    app.include_router(lollms_webui_infos_router)
+    # endpoints for remote access
     app.include_router(lollms_generator_router)
-    app.include_router(lollms_discussion_router)
-    app.include_router(lollms_message_router)
-    app.include_router(lollms_user_router)
-    app.include_router(lollms_advanced_router)
-    app.include_router(chat_bar_router)
-    app.include_router(lollms_xtts_add_router)
-    
-    app.include_router(lollms_sd_router)   
-    app.include_router(lollms_ollama_router)  
-    app.include_router(lollms_petals_router)  
-    app.include_router(lollms_vllm_router)  
-     
-    app.include_router(lollms_playground_router)   
-    
 
-    
-    
-    app.include_router(lollms_configuration_infos_router)
+    # Endpoints reserved for local access    
+    if (not config.headless_server_mode) or config.force_accept_remote_access:
+        app.include_router(lollms_infos_router)
+        app.include_router(lollms_binding_files_server_router)
+        app.include_router(lollms_hardware_infos_router)    
+        app.include_router(lollms_binding_infos_router)
+        app.include_router(lollms_models_infos_router)   
+        app.include_router(lollms_personalities_infos_router)   
+        app.include_router(lollms_extensions_infos_router)   
+        
+        app.include_router(lollms_webui_infos_router)
+        app.include_router(lollms_discussion_router)
+        app.include_router(lollms_message_router)
+        app.include_router(lollms_user_router)
+        app.include_router(lollms_advanced_router)
+        app.include_router(chat_bar_router)
+        app.include_router(lollms_xtts_add_router)
+        
+        app.include_router(lollms_sd_router)   
+        app.include_router(lollms_ollama_router)  
+        app.include_router(lollms_petals_router)  
+        app.include_router(lollms_vllm_router)  
+        
+        app.include_router(lollms_playground_router)   
+        app.include_router(lollms_configuration_infos_router)
     
 
 
@@ -171,8 +172,17 @@ if __name__ == "__main__":
     app.mount("/", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="static")
 
 
+    @app.exception_handler(ValidationError)
+    async def validation_exception_handler(request: Request, exc: ValidationError):
+        print(f"Error: {exc.errors()}")  # Print the validation error details
+        return JSONResponse(
+            status_code=422,
+            content=jsonable_encoder({"detail": exc.errors(), "body": await exc.body}),  # Send the error details and the original request body
+        )
 
     app = ASGIApp(socketio_server=sio, other_asgi_app=app)
+
+
 
     lollmsElfServer.app = app
 

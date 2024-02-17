@@ -30,6 +30,9 @@ import 'highlight.js/styles/tokyo-night-dark.css';
 import attrs from 'markdown-it-attrs';
 import CodeBlock from './CodeBlock.vue';
 import hljs from 'highlight.js';
+import DOMPurify from 'dompurify';
+
+
 function escapeHtml(unsafe) {
   return unsafe
     .replace(/&/g, "&amp;")

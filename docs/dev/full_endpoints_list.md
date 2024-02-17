@@ -268,7 +268,7 @@ The Flask backend API exposes various endpoints to interact with the application
 
 ---
 
-### Endpoint: /delete_message (GET)
+### Endpoint: /delete_message (post)
 
 **Description**: Deletes a message.
 

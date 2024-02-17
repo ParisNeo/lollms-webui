@@ -35,6 +35,12 @@ async def get_lollms_webui_version():
 @router.get("/restart_program")
 async def restart_program():
     """Restart the program."""
+    if lollmsElfServer.config.headless_server_mode:
+        return {"status":False,"error":"Restarting app is blocked when in headless mode for obvious security reasons!"}
+
+    if lollmsElfServer.config.host=="0.0.0.0":
+        return {"status":False,"error":"Restarting app is blocked when the server is exposed outside for very obvious reasons!"}
+
     lollmsElfServer.ShowBlockingMessage("Restarting program.\nPlease stand by...")
     # Stop the socketIO server
     run_async(lollmsElfServer.sio.shutdown)
@@ -56,6 +62,12 @@ async def restart_program():
 @router.get("/update_software")
 async def update_software():
     """Update the software."""
+    if lollmsElfServer.config.headless_server_mode:
+        return {"status":False,"error":"Restarting app is blocked when in headless mode for obvious security reasons!"}
+
+    if lollmsElfServer.config.host=="0.0.0.0":
+        return {"status":False,"error":"Restarting app is blocked when the server is exposed outside for very obvious reasons!"}
+
     # Display an informative message
     ASCIIColors.info("")
     ASCIIColors.info("")
@@ -80,6 +92,12 @@ async def update_software():
 @router.get("/check_update")
 def check_update():
     """Checks if an update is available"""
+    if lollmsElfServer.config.headless_server_mode:
+        return {"status":False,"error":"Restarting app is blocked when in headless mode for obvious security reasons!"}
+
+    if lollmsElfServer.config.host=="0.0.0.0":
+        return {"status":False,"error":"Restarting app is blocked when the server is exposed outside for very obvious reasons!"}
+    
     if lollmsElfServer.config.auto_update:
         res = lollmsElfServer.check_update_()
         return {'update_availability':res}
