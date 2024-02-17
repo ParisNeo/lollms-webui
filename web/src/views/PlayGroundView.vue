@@ -17,7 +17,8 @@
             </button>
             <button
                 type="button"
-                @click="startRecording"
+                title="Start audio to audio"
+                @click="startRecordingAndTranscribing"
                 :class="{ 'text-green-500': isLesteningToVoice }"
                 class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer text-red-500"
             >   
@@ -639,7 +640,8 @@ export default {
       // This event will be triggered when the voices are loaded
       this.voices = this.speechSynthesis.getVoices();
       },
-      read(){
+    read(){
+        console.log("READING...")
         this.isSynthesizingVoice=true
         let ss =this.$refs.mdTextarea.selectionStart
         let se =this.$refs.mdTextarea.selectionEnd
@@ -864,8 +866,6 @@ export default {
           this.is_recording = true;
           this.pending = false;
           console.log(response.data)
-          this.presets=response.data
-          this.selectedPreset = this.presets[0]
         }).catch(ex=>{
           this.$refs.toast.showToast(`Error: ${ex}`,4,false)
         });
@@ -889,7 +889,7 @@ export default {
     },
     startRecordingAndTranscribing(){
       this.pending = true;
-      if(!this.is_recording){
+      if(!this.is_deaf_transcribing){
         axios.get('/start_recording').then(response => {
           this.is_deaf_transcribing = true;
           this.pending = false;

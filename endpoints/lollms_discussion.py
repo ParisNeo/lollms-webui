@@ -60,11 +60,14 @@ async def list_databases():
 
 @router.post("/select_database")
 def select_database(data:DatabaseSelectionParameters):
+    if(".." in data.name):
+        raise "Detected an attempt of path traversal. Are you kidding me?"
+    
     if not data.name.endswith(".db"):
         data.name += ".db"
     print(f'Selecting database {data.name}')
     # Create database object
-    lollmsElfServer.db = DiscussionsDB(lollmsElfServer.lollms_paths.personal_databases_path/data.name)
+    lollmsElfServer.db = DiscussionsDB((lollmsElfServer.lollms_paths.personal_databases_path/data.name).resolve())
     ASCIIColors.info("Checking discussions database... ",end="")
     lollmsElfServer.db.create_tables()
     lollmsElfServer.db.add_missing_columns()

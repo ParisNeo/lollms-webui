@@ -13,7 +13,7 @@ from pydantic import BaseModel, Field
 from starlette.responses import StreamingResponse
 from lollms.types import MSG_TYPE
 from lollms.main_config import BaseConfig
-from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception
+from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception, show_yes_no_dialog
 from ascii_colors import ASCIIColors
 from api.db import DiscussionsDB
 from pathlib import Path
@@ -51,24 +51,6 @@ from utilities.execution_engines.graphviz_execution_engine import execute_graphv
 router = APIRouter()
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
-
-def show_yes_no_dialog(title, text):
-    import tkinter as tk
-    from tkinter import messagebox
-    # Create a new Tkinter root window and hide it
-    root = tk.Tk()
-    root.withdraw()
-
-    # Make the window appear on top
-    root.attributes('-topmost', True)
-    
-    # Show the dialog box
-    result = messagebox.askyesno(title, text)
-
-    # Destroy the root window
-    root.destroy()
-
-    return result
 
 class CodeRequest(BaseModel):
     code: str = Field(..., description="Code to be executed")
@@ -155,6 +137,10 @@ async def open_code_folder_in_vs_code(request: OpenCodeFolderInVsCodeRequestMode
     if lollmsElfServer.config.host=="0.0.0.0":
         return {"status":False,"error":"Open code folder in vscode is blocked when the server is exposed outside for very obvious reasons!"}
 
+    if lollmsElfServer.config.turn_on_open_file_validation:
+        if not show_yes_no_dialog("Validation","Do you validate the opening of folder in vscode?"):
+            return {"status":False,"error":"User refused the execution!"}
+
     try:
         if request.discussion_id:        
             ASCIIColors.info("Opening folder:")
@@ -197,6 +183,13 @@ async def open_file(file_path: FilePath):
     if lollmsElfServer.config.host=="0.0.0.0":
         return {"status":False,"error":"Open file is blocked when the server is exposed outside for very obvious reasons!"}
 
+    if lollmsElfServer.config.turn_on_open_file_validation:
+        if not show_yes_no_dialog("Validation","Do you validate the opening of a file?"):
+            return {"status":False,"error":"User refused the opeining file!"}
+
+    if(".." in path):
+        raise "Detected an attempt of path traversal. Are you kidding me?"
+
     try:
         # Validate the 'path' parameter
         path = file_path.path
@@ -234,6 +227,10 @@ async def open_code_in_vs_code(vs_code_data: VSCodeData):
 
     if lollmsElfServer.config.host=="0.0.0.0":
         return {"status":False,"error":"Open code in vs code is blocked when the server is exposed outside for very obvious reasons!"}
+
+    if lollmsElfServer.config.turn_on_open_file_validation:
+        if not show_yes_no_dialog("Validation","Do you validate the opening of a code in vscode?"):
+            return {"status":False,"error":"User refused the opeining file!"}
 
     try:
         discussion_id = vs_code_data.discussion_id
@@ -275,6 +272,10 @@ async def open_code_folder(request: FolderRequest):
     if lollmsElfServer.config.host=="0.0.0.0":
         return {"status":False,"error":"Open code folder is blocked when the server is exposed outside for very obvious reasons!"}
     
+    if lollmsElfServer.config.turn_on_open_file_validation:
+        if not show_yes_no_dialog("Validation","Do you validate the opening of a folder?"):
+            return {"status":False,"error":"User refused the opeining folder!"}
+
     try:
         if request.discussion_id:
             discussion_id = request.discussion_id

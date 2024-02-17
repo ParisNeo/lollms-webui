@@ -8,8 +8,9 @@ description:
 
 """
 from fastapi import APIRouter, Request
+from fastapi import HTTPException
 from lollms_webui import LOLLMSWebUI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from starlette.responses import StreamingResponse
 from lollms.types import MSG_TYPE
 from lollms.main_config import BaseConfig
@@ -44,55 +45,75 @@ def get_presets():
                 presets.append(preset)
     return presets
 
+class PresetData(BaseModel):
+    name: str = Field(..., min_length=1)
+
 @router.post("/add_preset")
-async def add_preset(request: Request):
+async def add_preset(preset_data: PresetData):
     """
     Changes current voice
 
     :param request: The HTTP request object.
     :return: A JSON response with the status of the operation.
     """
-    # Get the JSON data from the POST request.
-    preset_data = request.get_json()
-    presets_folder = lollmsElfServer.lollms_paths.personal_databases_path/"lollms_playground_presets"
-    if not presets_folder.exists():
-        presets_folder.mkdir(exist_ok=True, parents=True)
+    try:
 
-    fn = preset_data["name"].lower().replace(" ","_")
-    filename = presets_folder/f"{fn}.yaml"
-    with open(filename, 'w', encoding='utf-8') as file:
-        yaml.dump(preset_data, file)
-    return {"status": True}
+        presets_folder = lollmsElfServer.lollms_paths.personal_databases_path/"lollms_playground_presets"
+        if not presets_folder.exists():
+            presets_folder.mkdir(exist_ok=True, parents=True)
+
+        # Ensure the name doesn't contain any path manipulation characters
+        if ".." in preset_data.name or "/" in preset_data.name:
+            raise HTTPException(status_code=400, detail="Invalid preset name")
+
+        fn = preset_data.name.lower().replace(" ","_")
+        filename = presets_folder/f"{fn}.yaml"
+        with open(filename, 'w', encoding='utf-8') as file:
+            yaml.dump(preset_data, file)
+        return {"status": True}
+    except Exception as ex:
+        trace_exception(ex)  # Assuming 'trace_exception' function logs the error
+        return {"status": False, "error": "There was an error adding the preset"}
 
 @router.post("/del_preset")
-async def del_preset(request: Request):
+async def del_preset(preset_data: PresetData):
     """
     Saves a preset to a file.
 
-    :param request: The HTTP request object.
+    :param preset_data: The data of the preset.
     :return: A JSON response with the status of the operation.
     """
     # Get the JSON data from the POST request.
-    preset_data = request.get_json()    
-    presets_folder = lollmsElfServer.lollms_paths.personal_databases_path/"lollms_playground_presets"
-    # TODO : process
-    return {"status":True}
+    if preset_data.name is None:
+        raise HTTPException(status_code=400, detail="Preset name is missing in the request")
+    
+    # Ensure the name doesn't contain any path manipulation characters
+    if ".." in preset_data.name or "/" in preset_data.name:
+        raise HTTPException(status_code=400, detail="Invalid preset name")
+
+    presets_file = lollmsElfServer.lollms_paths.personal_databases_path/"lollms_playground_presets"/preset_data.name
+    try:
+        presets_file.unlink()
+        return {"status":True}
+    except:
+        return {"status":False}
 
 
 @router.post("/save_presets")
-async def save_presets(request: Request):
+async def save_presets(preset_data: PresetData):
     """
     Saves a preset to a file.
 
-    :param request: The HTTP request object.
+    :param preset_data: The data of the preset.
     :return: A JSON response with the status of the operation.
     """
     # Get the JSON data from the POST request.
-    preset_data = request.get_json()    
+    if preset_data.preset is None:
+        raise HTTPException(status_code=400, detail="Preset data is missing in the request")
 
     presets_file = lollmsElfServer.lollms_paths.personal_databases_path/"presets.json"
     # Save the JSON data to a file.
     with open(presets_file, "w") as f:
-        json.dump(preset_data, f, indent=4)
+        json.dump(preset_data.preset, f, indent=4)
 
     return {"status":True,"message":"Preset saved successfully!"}
