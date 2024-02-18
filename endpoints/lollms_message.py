@@ -7,7 +7,7 @@ description:
     application. These routes allow users to manipulate the message elements.
 
 """
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Request
 from pydantic import Field
 from lollms_webui import LOLLMSWebUI
 from pydantic import BaseModel
@@ -21,6 +21,8 @@ from safe_store.text_vectorizer import TextVectorizer, VectorizationMethod, Visu
 import tqdm
 from typing import Any, Optional
 from pydantic import BaseModel, ValidationError
+import json
+
 # ----------------------- Defining router and main class ------------------------------
 
 router = APIRouter()
@@ -28,16 +30,16 @@ lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
 class EditMessageParameters(BaseModel):
     client_id: str = Field(..., min_length=1)
-    id: int = Field(..., gt=0)
-    message: str = Field(..., min_length=1)
-    metadata: dict = Field(default={})
+    id: int = Field(...)
+    message: str = Field(...)
+    metadata: list = Field(default=[])
 
 @router.post("/edit_message")
 async def edit_message(edit_params: EditMessageParameters):
     client_id = edit_params.client_id
     message_id = edit_params.id
     new_message = edit_params.message
-    metadata = edit_params.metadata
+    metadata = json.dumps(edit_params.metadata,indent=4)
     try:
         lollmsElfServer.connections[client_id]["current_discussion"].edit_message(message_id, new_message, new_metadata=metadata)
         return {"status": True}
@@ -49,7 +51,7 @@ async def edit_message(edit_params: EditMessageParameters):
 
 class MessageRankParameters(BaseModel):
     client_id: str = Field(..., min_length=1)
-    id: int = Field(..., gt=0)
+    id: int = Field(...)
 
 @router.post("/message_rank_up")
 async def message_rank_up(rank_params: MessageRankParameters):
@@ -76,7 +78,7 @@ def message_rank_down(rank_params: MessageRankParameters):
 
 class MessageDeleteParameters(BaseModel):
     client_id: str = Field(..., min_length=1)
-    id: int = Field(..., gt=0)
+    id: int = Field(...)
 
 @router.post("/delete_message")
 async def delete_message(delete_params: MessageDeleteParameters):

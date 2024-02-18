@@ -63,10 +63,10 @@ async def restart_program():
 async def update_software():
     """Update the software."""
     if lollmsElfServer.config.headless_server_mode:
-        return {"status":False,"error":"Restarting app is blocked when in headless mode for obvious security reasons!"}
+        return {"status":False,"error":"Updating app is blocked when in headless mode for obvious security reasons!"}
 
     if lollmsElfServer.config.host=="0.0.0.0":
-        return {"status":False,"error":"Restarting app is blocked when the server is exposed outside for very obvious reasons!"}
+        return {"status":False,"error":"Updating app is blocked when the server is exposed outside for very obvious reasons!"}
 
     # Display an informative message
     ASCIIColors.info("")
@@ -93,10 +93,10 @@ async def update_software():
 def check_update():
     """Checks if an update is available"""
     if lollmsElfServer.config.headless_server_mode:
-        return {"status":False,"error":"Restarting app is blocked when in headless mode for obvious security reasons!"}
+        return {"status":False,"error":"Checking updates is blocked when in headless mode for obvious security reasons!"}
 
     if lollmsElfServer.config.host=="0.0.0.0":
-        return {"status":False,"error":"Restarting app is blocked when the server is exposed outside for very obvious reasons!"}
+        return {"status":False,"error":"Checking updates is blocked when the server is exposed outside for very obvious reasons!"}
     
     if lollmsElfServer.config.auto_update:
         res = lollmsElfServer.check_update_()

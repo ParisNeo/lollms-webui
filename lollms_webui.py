@@ -19,7 +19,7 @@ from lollms.paths import LollmsPaths
 from lollms.helpers import ASCIIColors, trace_exception
 from lollms.com import NotificationType, NotificationDisplayType, LoLLMsCom
 from lollms.app import LollmsApplication
-from lollms.utilities import File64BitsManager, PromptReshaper, PackageManager, find_first_available_file_index, run_async, is_asyncio_loop_running
+from lollms.utilities import File64BitsManager, PromptReshaper, PackageManager, find_first_available_file_index, run_async, is_asyncio_loop_running, yes_or_no_input
 from lollms.generation import RECPTION_MANAGER, ROLE_CHANGE_DECISION, ROLE_CHANGE_OURTPUT
 
 import git
@@ -127,8 +127,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
             lollms_paths,
             load_binding=load_binding,
             load_model=load_model,
-            load_sd_service=load_sd_service,
-            load_voice_service=load_voice_service,
             try_select_binding=try_select_binding,
             try_select_model=try_select_model,
             callback=callback,
@@ -155,13 +153,40 @@ class LOLLMSWebUI(LOLLMSElfServer):
         self._current_ai_message_id = 0
         self._message_id = 0
 
-        self.db_path = config["db_path"]
-        if Path(self.db_path).is_absolute():
-            # Create database object
-            self.db = DiscussionsDB(self.db_path)
-        else:
-            # Create database object
-            self.db = DiscussionsDB(self.lollms_paths.personal_databases_path/self.db_path)
+
+
+        # migrate old databases to new ones:
+        databases_path = self.lollms_paths.personal_path/"databases"
+        if databases_path.exists() and len([f for f in databases_path.iterdir() if f.suffix==".db"])>0:
+            if yes_or_no_input("Old databases have been spotted on your system. Do you want me to migrate them to the new format?"):
+                databases_found = False
+                for database_path in databases_path.iterdir():
+                    if database_path.suffix==".db":
+                        ASCIIColors.red(f"Found old discussion database format : {database_path}")
+                        ASCIIColors.red(f"Migrating to new format... ",end="")
+                        new_db_path = self.lollms_paths.personal_discussions_path/database_path.stem
+                        new_db_path.mkdir(exist_ok=True, parents=True)
+                        try:
+                            shutil.copy(database_path,new_db_path/"database.db")
+                            ASCIIColors.green("ok")
+                            databases_found = True
+                        except Exception as ex:
+                            ASCIIColors.warning(ex)
+                if databases_found:
+                    ASCIIColors.green(f"Databases are migrated from {databases_path} to the new {self.lollms_paths.personal_discussions_path} path")
+                    if yes_or_no_input("Databases are migrated to the new format. Do you want me to delete the previous version?"):
+                        for database_path in databases_path.iterdir():
+                            if database_path.suffix==".db":
+                                ASCIIColors.red(f"Deleting {database_path}")
+                                database_path.unlink()
+        if config["discussion_db_name"].endswith(".db"):
+            config["discussion_db_name"]=config["discussion_db_name"].replace(".db","")
+            config.save_config()
+
+        self.discussion_db_name = config["discussion_db_name"]
+
+        # Create database object
+        self.db = DiscussionsDB(self.lollms_paths, self.discussion_db_name)
 
         # If the database is empty, populate it with tables
         ASCIIColors.info("Checking discussions database... ",end="")
@@ -173,7 +198,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         if self.config.data_vectorization_activate and self.config.activate_ltm:
             try:
                 ASCIIColors.yellow("Loading long term memory")
-                folder = self.lollms_paths.personal_databases_path/"vectorized_dbs"
+                folder = self.lollms_paths.personal_discussions_path/"vectorized_dbs"
                 folder.mkdir(parents=True, exist_ok=True)
                 self.build_long_term_skills_memory()
                 ASCIIColors.yellow("Ready")
@@ -236,7 +261,13 @@ class LOLLMSWebUI(LOLLMSElfServer):
         ASCIIColors.blue(f"Your personal data is stored here :",end="")
         ASCIIColors.green(f"{self.lollms_paths.personal_path}")
 
+        self.start_servers(
+            load_sd_service=load_sd_service,
+            load_voice_service=load_voice_service
+        )
 
+    def get_uploads_path(self, client_id):
+        return self.db.discussion_db_path/f'{self.connections[client_id]["current_discussion"].discussion_id}'
     # Other methods and properties of the LoLLMSWebUI singleton class
     def check_module_update_(self, repo_path, branch_name="main"):
         try:

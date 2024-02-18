@@ -222,12 +222,13 @@
                         </textarea>
                     </div>
                     
-                    
-                        <div  v-if="message.metadata !== null">
-                        <div v-for="(metadata, index) in message.metadata" :key="'json-' + message.id + '-' + index" class="json font-bold">
+                    <!--
+                    <div  v-if="message.metadata !== null">
+                        <div v-for="(metadata, index) in message.metadata.filter(metadata => metadata!=null && metadata.hasOwnProperty('title') && metadata.hasOwnProperty('content') )" :key="'json-' + message.id + '-' + index" class="json font-bold">
                             <JsonViewer :jsonFormText="metadata.title" :jsonData="metadata.content" />
                         </div>
                     </div>
+                    -->
 
                     <DynamicUIRenderer v-if="message.ui !== null && message.ui !== undefined && message.ui !== ''" class="w-full h-full" :code="message.ui"></DynamicUIRenderer>
                     <audio controls autoplay v-if="audio_url!=null" :key="audio_url">
@@ -370,10 +371,25 @@ export default {
             feather.replace()
             this.mdRenderHeight = this.$refs.mdRender.$el.offsetHeight
         })
-
-        if (this.message.hasOwnProperty("metadata")){
+        console.log("Checking metadata")
+        console.log(this.message)
+        
+        if (Object.prototype.hasOwnProperty.call(this.message,"metadata")){
             if(this.message.metadata!=null){
-                this.audio_url = this.message.metadata.hasOwnProperty("audio_url") ? this.message.metadata.audio_url : null
+                console.log("Metadata found!")
+                if (!Array.isArray(this.message.metadata)) {
+                    this.message.metadata = [];
+                }                
+                console.log(typeof this.message.metadata)
+                console.log(this.message.metadata)
+                for(let metadata_entry of this.message.metadata){
+                    if (Object.prototype.hasOwnProperty.call(metadata_entry, "audio_url")){
+                        if(metadata_entry.audio_url!=null){
+                            this.audio_url =  metadata_entry.audio_url
+                            console.log("Audio URL:", this.audio_url)
+                        }
+                    }
+                }
             }
         }
 
@@ -468,6 +484,22 @@ export default {
                     let url = response.data.url
                     console.log(url)
                     this.audio_url = url
+                    if(!this.message.metadata) {
+                        this.message.metadata = [];
+                    }
+
+                    let found = false;
+
+                    for(let metadata_entry of this.message.metadata){
+                        if (Object.prototype.hasOwnProperty.call(metadata_entry, "audio_url")){
+                            metadata_entry.audio_url = this.audio_url;
+                            found = true;
+                        }
+                    }
+
+                    if (!found) {
+                        this.message.metadata.push({audio_url: this.audio_url});
+                    }
                     this.$emit('updateMessage', this.message.id, this.message.content, this.audio_url)
                 }).catch(ex=>{
                     this.$store.state.toast.showToast(`Error: ${ex}`,4,false)

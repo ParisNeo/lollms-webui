@@ -25,6 +25,6 @@ CMD ["/bin/bash", "-c", " \
   python app.py \
   --host 0.0.0.0 \
   --port 9600 \
-  --db_path /data/Documents/databases/database.db \
+  --discussion_db_name /data/Documents/databases/database.db \
   --config /configs/config.yaml \
   "]

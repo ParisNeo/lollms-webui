@@ -3,6 +3,7 @@ import sqlite3
 from pathlib import Path
 from datetime import datetime
 from lollms.helpers import ASCIIColors
+from lollms.paths import LollmsPaths
 import json
 
 __author__ = "parisneo"
@@ -14,14 +15,22 @@ __license__ = "Apache 2.0"
 # =================================== Database ==================================================================
 class DiscussionsDB:
     
-    def __init__(self, db_path="database.db"):
-        self.db_path = Path(db_path)
-        self.db_path .parent.mkdir(exist_ok=True, parents= True)
+    def __init__(self, lollms_paths:LollmsPaths, discussion_db_name="default"):
+        self.lollms_paths = lollms_paths
+        if Path(discussion_db_name).is_absolute():
+            self.discussion_db_path = Path(discussion_db_name)
+            self.discussion_db_name = Path(discussion_db_name).name
+        else:
+            self.discussion_db_name = discussion_db_name
+            self.discussion_db_path = self.lollms_paths.personal_discussions_path/discussion_db_name
+
+        self.discussion_db_path.mkdir(exist_ok=True, parents= True)
+        self.discussion_db_file_path = self.discussion_db_path/"database.db"
 
 
     def create_tables(self):
         db_version = 10
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.discussion_db_file_path) as conn:
             cursor = conn.cursor()
 
             cursor.execute("""
@@ -72,7 +81,7 @@ class DiscussionsDB:
             conn.commit()
 
     def add_missing_columns(self):
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.discussion_db_file_path) as conn:
             cursor = conn.cursor()
 
             table_columns = {
@@ -130,7 +139,7 @@ class DiscussionsDB:
         with optional parameters.
         Returns the cursor object for further processing.
         """
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.discussion_db_file_path) as conn:
             if params is None:
                 cursor = conn.execute(query)
             else:
@@ -147,7 +156,7 @@ class DiscussionsDB:
         with optional parameters.
         Returns the cursor object for further processing.
         """
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.discussion_db_file_path) as conn:
             cursor = conn.cursor()
             if params is None:
                 cursor.execute(query)
@@ -162,7 +171,7 @@ class DiscussionsDB:
         Returns the ID of the newly inserted row.
         """
         
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.discussion_db_file_path) as conn:
             cursor = conn.execute(query, params)
             rowid = cursor.lastrowid
             conn.commit()
@@ -176,7 +185,7 @@ class DiscussionsDB:
         Returns the ID of the newly inserted row.
         """
         
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.discussion_db_file_path) as conn:
             conn.execute(query, params)
             conn.commit()
     
@@ -580,6 +589,8 @@ class Discussion:
     def __init__(self, discussion_id, discussions_db:DiscussionsDB):
         self.discussion_id = discussion_id
         self.discussions_db = discussions_db
+        self.discussion_folder = self.discussions_db.discussion_db_path/f"{discussion_id}"
+        self.discussion_folder.mkdir(exist_ok=True)
         self.messages = self.get_messages()
         if len(self.messages)>0:
             self.current_message = self.messages[-1]

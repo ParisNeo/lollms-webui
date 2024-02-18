@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 65
+version: 66
 binding_name: null
 model_name: null
 
@@ -49,7 +49,7 @@ user_avatar: default_user.svg
 use_user_informations_in_discussion: false
 
 # UI parameters
-db_path: database.db
+discussion_db_name: default
 
 # Automatic updates
 debug: False

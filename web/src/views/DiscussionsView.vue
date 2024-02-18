@@ -630,6 +630,7 @@ export default {
 
 
                 socket.on('discussion', (data)=>{
+                    console.log("Discussion recovered")
                     this.loading = false
                     this.setDiscussionLoading(id, this.loading)
                     if (data) {
@@ -653,6 +654,7 @@ export default {
                 })
 
                 socket.emit('load_discussion',{"id":id});
+                console.log("here")
 
             }
         },
@@ -801,7 +803,7 @@ export default {
         },
         async message_rank_up(id) {
             try {
-                const res = await axios.post('/message_rank_up', { params: { client_id: this.client_id, id: id } }, {headers: this.posts_headers})
+                const res = await axios.post('/message_rank_up', { client_id: this.client_id, id: id }, {headers: this.posts_headers})
 
                 if (res) {
                     return res.data
@@ -813,7 +815,7 @@ export default {
         },
         async message_rank_down(id) {
             try {
-                const res = await axios.post('/message_rank_down', { params: { client_id: this.client_id, id: id } }, {headers: this.posts_headers})
+                const res = await axios.post('/message_rank_down', { client_id: this.client_id, id: id } , {headers: this.posts_headers})
 
                 if (res) {
                     return res.data
@@ -825,7 +827,17 @@ export default {
         },
         async edit_message(id, message, audio_url) {
             try {
-                const res = await axios.post('/edit_message', { params: { client_id: this.client_id, id: id, message: message, metadata: {audio_url:audio_url} } }, {headers: this.posts_headers})
+                console.log(typeof this.client_id)
+                console.log(typeof id)
+                console.log(typeof message)
+                console.log(typeof {audio_url:audio_url})
+                const res = await axios.post('/edit_message', {
+                                                            client_id: this.client_id, 
+                                                            id: id, 
+                                                            message: message,
+                                                            metadata: [{audio_url:audio_url}]
+                                                    }, {headers: this.posts_headers}
+                )
 
                 if (res) {
                     return res.data
@@ -841,7 +853,7 @@ export default {
                     const res = await axios.post('/export_multiple_discussions', {
                         discussion_ids: discussionIdArr,
                         export_format: export_format
-                    })
+                    }, {headers: this.posts_headers})
 
                     if (res) {
                         return res.data
@@ -859,7 +871,7 @@ export default {
                     console.log('sending import', jArray)
                     const res = await axios.post('/import_multiple_discussions', {
                         jArray
-                    })
+                    }, {headers: this.posts_headers})
 
                     if (res) {
                         console.log('import response', res.data)
@@ -974,7 +986,7 @@ export default {
 
             }
             catch{
-
+                console.log("error")
             }
 
         },
@@ -1189,16 +1201,16 @@ export default {
                             message_type:           this.msgTypes.MSG_TYPE_FULL,
                             sender_type:            this.senderTypes.SENDER_TYPES_USER,
                             content:                msg,
-                            id:             lastmsgid,
-                            discussion_id:  this.discussion_id,
-                            parent_id:      lastmsgid,
+                            id:                     lastmsgid,
+                            discussion_id:          this.discussion_id,
+                            parent_id:              lastmsgid,
 
                             binding:                "",
                             model:                  "",
                             personality:            "",
 
                             created_at:             new Date().toLocaleString(),
-                            finished_generating_at:  new Date().toLocaleString(),
+                            finished_generating_at: new Date().toLocaleString(),
                             rank:                   0,
 
                             steps:                  [],
@@ -2078,7 +2090,7 @@ export default {
             }
         },
         formatted_database_name() {
-            const db_name = this.$store.state.config.db_path;
+            const db_name = this.$store.state.config.discussion_db_name;
             const trimmed_name = db_name.slice(0, db_name.length - 3);
             return trimmed_name;
         },

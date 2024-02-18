@@ -252,14 +252,14 @@
                                         </tr>                                        
                                         <tr>
                                         <td style="min-width: 200px;">
-                                            <label for="db_path" class="text-sm font-bold" style="margin-right: 1rem;">Database path:</label>
+                                            <label for="discussion_db_name" class="text-sm font-bold" style="margin-right: 1rem;">Database path:</label>
                                         </td>
                                         <td style="width: 100%;">
                                             <input
                                             type="text"
-                                            id="db_path"
+                                            id="discussion_db_name"
                                             required
-                                            v-model="configFile.db_path"
+                                            v-model="configFile.discussion_db_name"
                                             @change="settingsChanged=true"
                                             class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
                                             >
@@ -1137,7 +1137,7 @@
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <tr>
                                         <td style="min-width: 200px;">
-                                            <label for="db_path" class="text-sm font-bold" style="margin-right: 1rem;">Host:</label>
+                                            <label for="discussion_db_name" class="text-sm font-bold" style="margin-right: 1rem;">Host:</label>
                                         </td>
                                         <td style="width: 100%;">
                                             <input
@@ -1152,7 +1152,7 @@
                                         </tr>                                        
                                         <tr>
                                         <td style="min-width: 200px;">
-                                            <label for="db_path" class="text-sm font-bold" style="margin-right: 1rem;">Port:</label>
+                                            <label for="discussion_db_name" class="text-sm font-bold" style="margin-right: 1rem;">Port:</label>
                                         </td>
                                         <td style="width: 100%;">
                                             <input
@@ -1168,7 +1168,7 @@
                                         </tr>
                                         <tr>
                                         <td style="min-width: 200px;">
-                                            <label for="db_path" class="text-sm font-bold" style="margin-right: 1rem;">Activate headless server mode (deactivates all code exectuion to protect the PC from attacks):</label>
+                                            <label for="discussion_db_name" class="text-sm font-bold" style="margin-right: 1rem;">Activate headless server mode (deactivates all code exectuion to protect the PC from attacks):</label>
                                         </td>
                                         <td style="width: 100%;">
                                             <input
@@ -2536,6 +2536,10 @@ export default {
     data() {
 
         return {
+            posts_headers : {
+                'accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
             defaultModelImgPlaceholder:defaultModelImgPlaceholder,
             voices: [],
             voice_languages:{
@@ -3589,6 +3593,7 @@ export default {
             try {
                 this.isLoading = true
                 axios.get('/get_active_binding_settings').then(res => {
+                    console.log(res)
                     this.isLoading = false
                     if (res) {
 
@@ -3602,7 +3607,7 @@ export default {
                                 // send new data
                                 try {
                                     axios.post('/set_active_binding_settings',
-                                        res).then(response => {
+                                        res, {headers: this.posts_headers}).then(response => {
                                             if (response && response.data) {
                                                 console.log('binding set with new settings', response.data)
                                                 this.$store.state.toast.showToast("Binding settings updated successfully!", 4, true)
@@ -3639,7 +3644,7 @@ export default {
         onReloadBinding(binding_object){
             console.log("Reloading binding")
             this.isLoading = true
-            axios.post('/reload_binding', { name: binding_object.binding.folder }).then((res) => {
+            axios.post('/reload_binding', { name: binding_object.binding.folder }, {headers: this.posts_headers}).then((res) => {
 
                 if (res) {
                     this.isLoading = false
@@ -4914,13 +4919,13 @@ export default {
                 this.$store.state.config.use_user_name_in_discussions = value
             },
         },
-        db_path: {
+        discussion_db_name: {
             get() {
-                return this.$store.state.config.db_path;
+                return this.$store.state.config.discussion_db_name;
             },
             set(value) {
                 // You should not set the value directly here; use the updateSetting method instead
-                this.$store.state.config.db_path = value
+                this.$store.state.config.discussion_db_name = value
             },
         },
             

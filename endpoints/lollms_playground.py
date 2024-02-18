@@ -36,7 +36,7 @@ def get_presets():
             preset = yaml.safe_load(file)
             if preset is not None:
                 presets.append(preset)
-    presets_folder = lollmsElfServer.lollms_paths.personal_databases_path/"lollms_playground_presets"
+    presets_folder = lollmsElfServer.lollms_paths.personal_discussions_path/"lollms_playground_presets"
     presets_folder.mkdir(exist_ok=True, parents=True)
     for filename in presets_folder.glob('*.yaml'):
         with open(filename, 'r', encoding='utf-8') as file:
@@ -58,7 +58,7 @@ async def add_preset(preset_data: PresetData):
     """
     try:
 
-        presets_folder = lollmsElfServer.lollms_paths.personal_databases_path/"lollms_playground_presets"
+        presets_folder = lollmsElfServer.lollms_paths.personal_discussions_path/"lollms_playground_presets"
         if not presets_folder.exists():
             presets_folder.mkdir(exist_ok=True, parents=True)
 
@@ -91,7 +91,7 @@ async def del_preset(preset_data: PresetData):
     if ".." in preset_data.name or "/" in preset_data.name:
         raise HTTPException(status_code=400, detail="Invalid preset name")
 
-    presets_file = lollmsElfServer.lollms_paths.personal_databases_path/"lollms_playground_presets"/preset_data.name
+    presets_file = lollmsElfServer.lollms_paths.personal_discussions_path/"lollms_playground_presets"/preset_data.name
     try:
         presets_file.unlink()
         return {"status":True}
@@ -99,8 +99,12 @@ async def del_preset(preset_data: PresetData):
         return {"status":False}
 
 
+class PresetDataWithValue(BaseModel):
+    name: str = Field(..., min_length=1)
+    preset: str
+    
 @router.post("/save_presets")
-async def save_presets(preset_data: PresetData):
+async def save_presets(preset_data: PresetDataWithValue):
     """
     Saves a preset to a file.
 
@@ -111,7 +115,7 @@ async def save_presets(preset_data: PresetData):
     if preset_data.preset is None:
         raise HTTPException(status_code=400, detail="Preset data is missing in the request")
 
-    presets_file = lollmsElfServer.lollms_paths.personal_databases_path/"presets.json"
+    presets_file = lollmsElfServer.lollms_paths.personal_discussions_path/"presets.json"
     # Save the JSON data to a file.
     with open(presets_file, "w") as f:
         json.dump(preset_data.preset, f, indent=4)

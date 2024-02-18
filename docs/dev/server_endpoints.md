@@ -169,7 +169,7 @@ This Flask server provides various endpoints to manage and interact with the cha
   "binding": "llama_cpp",
   "config": "local_config.yaml",
   "ctx_size": 4096,
-  "db_path": "databases/database.db",
+  "discussion_db_name": "databases/database.db",
   "debug": false,
   "host": "localhost",
   "language": "en-US",

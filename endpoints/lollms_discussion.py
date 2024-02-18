@@ -54,7 +54,7 @@ def list_discussions():
 async def list_databases():
    """List all the personal databases in the LoLLMs server."""
    # Retrieve the list of database names
-   databases = [f.name for f in lollmsElfServer.lollms_paths.personal_databases_path.iterdir() if f.suffix == ".db"]
+   databases = [f.name for f in lollmsElfServer.lollms_paths.personal_discussions_path.iterdir() if f.is_dir() and (f/"database.db").exists()]
    # Return the list of database names
    return databases
 
@@ -62,16 +62,13 @@ async def list_databases():
 def select_database(data:DatabaseSelectionParameters):
     if(".." in data.name):
         raise "Detected an attempt of path traversal. Are you kidding me?"
-    
-    if not data.name.endswith(".db"):
-        data.name += ".db"
     print(f'Selecting database {data.name}')
     # Create database object
-    lollmsElfServer.db = DiscussionsDB((lollmsElfServer.lollms_paths.personal_databases_path/data.name).resolve())
+    lollmsElfServer.db = DiscussionsDB(lollmsElfServer.lollms_paths, data.name)
     ASCIIColors.info("Checking discussions database... ",end="")
     lollmsElfServer.db.create_tables()
     lollmsElfServer.db.add_missing_columns()
-    lollmsElfServer.config.db_path = data.name
+    lollmsElfServer.config.discussion_db_name = data.name
     ASCIIColors.success("ok")
 
     if lollmsElfServer.config.auto_save:
@@ -80,11 +77,11 @@ def select_database(data:DatabaseSelectionParameters):
     if lollmsElfServer.config.data_vectorization_activate and lollmsElfServer.config.activate_ltm:
         try:
             ASCIIColors.yellow("0- Detected discussion vectorization request")
-            folder = lollmsElfServer.lollms_paths.personal_databases_path/"vectorized_dbs"
+            folder = lollmsElfServer.lollms_paths.personal_discussions_path/"vectorized_dbs"
             folder.mkdir(parents=True, exist_ok=True)
             lollmsElfServer.long_term_memory = TextVectorizer(
                 vectorization_method=VectorizationMethod.TFIDF_VECTORIZER,#=VectorizationMethod.BM25_VECTORIZER,
-                database_path=folder/lollmsElfServer.config.db_path,
+                database_path=folder/lollmsElfServer.config.discussion_db_name,
                 data_visualization_method=VisualizationMethod.PCA,#VisualizationMethod.PCA,
                 save_db=True
             )
@@ -212,12 +209,12 @@ async def export_multiple_discussions(discussion_export: DiscussionExport):
         return {"status":False,"error":str(ex)}
 
 
-class Discussion(BaseModel):
+class DiscussionInfo(BaseModel):
     id: int
     content: str
 
 class DiscussionImport(BaseModel):
-    jArray: List[Discussion]
+    jArray: List[DiscussionInfo]
 
 @router.post("/import_multiple_discussions")
 async def import_multiple_discussions(discussion_import: DiscussionImport):
