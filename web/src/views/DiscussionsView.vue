@@ -1279,6 +1279,7 @@ export default {
                     messageItem.finished_generating_at = msgObj.finished_generating_at
                 }
                 else if(messageItem && msgObj.message_type==this.msgTypes.MSG_TYPE_CHUNK){
+                    this.isGenerating = true;
                     messageItem.content += msgObj.content
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP){
                     messageItem.status_message = msgObj.content
