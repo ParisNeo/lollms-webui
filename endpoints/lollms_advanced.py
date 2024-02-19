@@ -70,7 +70,7 @@ async def execute_code(request: CodeRequest):
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Code execution is blocked when in headless mode for obvious security reasons!"}
 
-    if lollmsElfServer.config.host!="localhost":
+    if lollmsElfServer.config.host!="localhost" and lollmsElfServer.config.host!="127.0.0.1":
         return {"status":False,"error":"Code execution is blocked when the server is exposed outside for very obvious reasons!"}
 
     if not lollmsElfServer.config.turn_on_code_execution:
@@ -134,7 +134,7 @@ async def open_code_folder_in_vs_code(request: OpenCodeFolderInVsCodeRequestMode
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Open code folder in vscode is blocked when in headless mode for obvious security reasons!"}
 
-    if lollmsElfServer.config.host!="localhost":
+    if lollmsElfServer.config.host!="localhost" and lollmsElfServer.config.host!="127.0.0.1":
         return {"status":False,"error":"Open code folder in vscode is blocked when the server is exposed outside for very obvious reasons!"}
 
     if lollmsElfServer.config.turn_on_open_file_validation:
@@ -180,7 +180,7 @@ async def open_file(file_path: FilePath):
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Open file is blocked when in headless mode for obvious security reasons!"}
 
-    if lollmsElfServer.config.host!="localhost":
+    if lollmsElfServer.config.host!="localhost" and lollmsElfServer.config.host!="127.0.0.1":
         return {"status":False,"error":"Open file is blocked when the server is exposed outside for very obvious reasons!"}
 
     if lollmsElfServer.config.turn_on_open_file_validation:
@@ -225,7 +225,7 @@ async def open_code_in_vs_code(vs_code_data: VSCodeData):
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Open code in vs code is blocked when in headless mode for obvious security reasons!"}
 
-    if lollmsElfServer.config.host!="localhost":
+    if lollmsElfServer.config.host!="localhost" and lollmsElfServer.config.host!="127.0.0.1":
         return {"status":False,"error":"Open code in vs code is blocked when the server is exposed outside for very obvious reasons!"}
 
     if lollmsElfServer.config.turn_on_open_file_validation:
@@ -269,7 +269,7 @@ async def open_code_folder(request: FolderRequest):
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Open code folder is blocked when in headless mode for obvious security reasons!"}
 
-    if lollmsElfServer.config.host!="localhost":
+    if lollmsElfServer.config.host!="localhost" and lollmsElfServer.config.host!="127.0.0.1":
         return {"status":False,"error":"Open code folder is blocked when the server is exposed outside for very obvious reasons!"}
     
     if lollmsElfServer.config.turn_on_open_file_validation:
@@ -321,7 +321,7 @@ def start_recording():
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Start recording is blocked when in headless mode for obvious security reasons!"}
 
-    if lollmsElfServer.config.host!="localhost":
+    if lollmsElfServer.config.host!="localhost" and lollmsElfServer.config.host!="127.0.0.1":
         return {"status":False,"error":"Start recording is blocked when the server is exposed outside for very obvious reasons!"}
 
     lollmsElfServer.info("Starting audio capture")
@@ -341,7 +341,7 @@ def stop_recording():
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Stop recording is blocked when in headless mode for obvious security reasons!"}
 
-    if lollmsElfServer.config.host!="localhost":
+    if lollmsElfServer.config.host!="localhost" and lollmsElfServer.config.host!="127.0.0.1":
         return {"status":False,"error":"Stop recording is blocked when the server is exposed outside for very obvious reasons!"}
 
     lollmsElfServer.info("Stopping audio capture")
