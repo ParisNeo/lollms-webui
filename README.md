@@ -20,13 +20,10 @@
 [![Downloads](https://img.shields.io/github/downloads/ParisNeo/lollms-webui/total?style=flat-square)](https://github.com/ParisNeo/lollms-webui/releases)
 [![Downloads](https://img.shields.io/github/downloads/ParisNeo/lollms-webui/latest/total?style=flat-square)](https://github.com/ParisNeo/lollms-webui/releases)
 
-<a href="https://www.youtube.com/watch?v=4HoRd4-k4Jg">
-  <img src="https://pbs.twimg.com/media/GCySsZPWwAAhrsV?format=jpg&name=medium" alt="Video Thumbnail">
-</a>
 
 Welcome to LoLLMS WebUI (Lord of Large Language Multimodal Systems: One tool to rule them all), the hub for LLM (Large Language Models) and multimodal intelligence systems. This project aims to provide a user-friendly interface to access and utilize various LLM and other AI models for a wide range of tasks. Whether you need help with writing, coding, organizing data, analyzing images, generating images, generating music or seeking answers to your questions, LoLLMS WebUI has got you covered.
 
-As an all-encompassing tool with access to over 300 AI expert conditionning across diverse domains and more than 500 fine tuned models over multiple domains, you now have an immediate resource for any problem. Whether your car needs repair or if you need coding assistance in Python, C++ or JavaScript; feeling down about life decisions that were made wrongly yet unable see how? Ask Lollms. Need guidance on what lies ahead healthwise based on current symptoms presented, our medical assistance AI can help you get a potential diagnosis and guide you to seek the right medical care. If stuck with legal matters such contract interpretation feel free reach out to Lawyer personality, to get some insight at hand -all without leaving comfort home. Not only does it aid students struggling through those lengthy lectors but provides them extra support during assessments too, so they are able grasp concepts properly rather then just reading along lines which could leave many confused afterward. Want some entertainment? Then engage Laughter Botand let yourself go enjoy hysterical laughs until tears roll from eyes while playing Dungeons&Dragonsor make up crazy stories together thanks to Creative Story Generator. Need illustration work done? No worries, Artbot got us covered there! And last but definitely not least LordOfMusic here for music generation according to individual specifications. So essentially say goodbye boring nights alone because everything possible can be achieved within one single platform called Lollms...
+As an all-encompassing tool with access to over 500 AI expert conditionning across diverse domains and more than 2500 fine tuned models over multiple domains, you now have an immediate resource for any problem. Whether your car needs repair or if you need coding assistance in Python, C++ or JavaScript; feeling down about life decisions that were made wrongly yet unable see how? Ask Lollms. Need guidance on what lies ahead healthwise based on current symptoms presented, our medical assistance AI can help you get a potential diagnosis and guide you to seek the right medical care. If stuck with legal matters such contract interpretation feel free reach out to Lawyer personality, to get some insight at hand -all without leaving comfort home. Not only does it aid students struggling through those lengthy lectors but provides them extra support during assessments too, so they are able grasp concepts properly rather then just reading along lines which could leave many confused afterward. Want some entertainment? Then engage Laughter Botand let yourself go enjoy hysterical laughs until tears roll from eyes while playing Dungeons&Dragonsor make up crazy stories together thanks to Creative Story Generator. Need illustration work done? No worries, Artbot got us covered there! And last but definitely not least LordOfMusic here for music generation according to individual specifications. So essentially say goodbye boring nights alone because everything possible can be achieved within one single platform called Lollms...
 
 ## Features
 
@@ -75,9 +72,9 @@ Make sure to add it to your path so that you can run it easily from a terminal.
 If you don't have git installed, please install it:
 [Install git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 Make sure to add it to your path so that you can run it easily from a terminal.
-- Run a terminal and create a new environment called `lollms` with python 3.10:
+- Run a terminal and create a new environment called `lollms` with python 3.11:
 ```bash
-conda create --name lollms python=3.10
+conda create --name lollms python=3.11
 ```
 - Activate the environment
 ```bash
@@ -124,8 +121,8 @@ pip install --upgrade -r requirements.txt
 python app.py
 ```
 ### Manual install with virtual env:
-Make sure you install python 3.10, and git:
-[Install python](https://www.python.org/downloads/release/python-31013/)
+Make sure you install python 3.11, and git:
+[Install python](https://www.python.org/downloads/release/python-31103/)
 Make sure to add it to your path so that you can run it easily from a terminal.
 If you don't have git installed, please install it:
 [Install git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
