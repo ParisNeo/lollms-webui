@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 66
+version: 67
 binding_name: null
 model_name: null
 
@@ -89,20 +89,22 @@ ollama_base_url: http://0.0.0.0:11434
 
 # petals service
 enable_petals_service: false
-petals_base_url: http://0.0.0.0:8010
+petals_base_url: http://localhost:8064
+petals_model_path: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+petals_device: cuda0
 
 # lollms service
 enable_lollms_service: false
-lollms_base_url: http://0.0.0.0:1234
+lollms_base_url: http://localhost:1234
 
 # elastic search service
 elastic_search_service: false
-elastic_search_url: http://0.0.0.0:9200
+elastic_search_url: http://localhost:9200
 
 # vll service
 vllm_service: false
-vllm_url: http://0.0.0.0:8000
-vllm_model_path: mistralai/Mistral-7B-v0.1
+vllm_url: http://localhost:8000
+vllm_model_path: TinyLlama/TinyLlama-1.1B-Chat-v1.0
 
 
 # Audio
