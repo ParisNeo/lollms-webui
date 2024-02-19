@@ -55,7 +55,7 @@ set "PACKAGES_TO_INSTALL=python=3.11 git pip"
 if not exist "%MINICONDA_DIR%\Scripts\conda.exe" (
   @rem download miniconda
   echo Downloading Miniconda installer from %MINICONDA_DOWNLOAD_URL%
-  call curl -LOk "%MINICONDA_DOWNLOAD_URL%"
+  call curl -LO "%MINICONDA_DOWNLOAD_URL%"
 
   @rem install miniconda
   echo. && echo Installing Miniconda To "%MINICONDA_DIR%" && echo Please Wait... && echo.
