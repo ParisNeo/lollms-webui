@@ -1237,6 +1237,59 @@
                             </tr> 
                         </table>                                
                     </Card>
+                    <Card title="Motion Ctrl service" :is_subcard="true" class="pb-2  m-2">
+                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="enable_sd_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable Motion Ctrl service:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="checkbox"
+                                id="enable_motion_ctrl_service"
+                                required
+                                v-model="configFile.enable_motion_ctrl_service"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            <td>
+                                <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates Motion ctrl service. The service will be automatically loaded at startup alowing you to use the motoin control endpoint to generate videos')">
+                                    <i data-feather="help-circle" class="w-5 h-5 "></i>
+                                </div>
+                            </td>                            
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="install_sd_service" class="text-sm font-bold" style="margin-right: 1rem;">Install Motion Ctrl service:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallMotionCtrlService">install Motion Ctrl service</button>
+                                </div>
+                            </td>
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="sd_base_url" class="text-sm font-bold" style="margin-right: 1rem;">sd base url:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="text"
+                                id="sd_base_url"
+                                required
+                                v-model="configFile.sd_base_url"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr> 
+                        </table>                                
+                    </Card>                    
                     <Card title="Ollama service" :is_subcard="true" class="pb-2  m-2">
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <tr>
@@ -1268,6 +1321,7 @@
                             <td>
                                 <div class="flex flex-row">
                                 <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallOLLAMAService">install olama service</button>
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startvLLMService">start vLLM service</button>
                                 </div>
                             </td>
                             </tr>                                        
@@ -1321,7 +1375,7 @@
                             <td>
                                 <div class="flex flex-row">
                                 <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallvLLMService">install vLLM service</button>
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startvLLMService">start vLLM service</button>
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startollamaService">start ollama service</button>
                                 </div>
                             </td>
                             </tr>                                        
@@ -2665,6 +2719,15 @@ export default {
             });
 
         },
+        reinstallMotionCtrlService(){
+            axios.get('install_motion_ctrl')
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+        },
         reinstallvLLMService(){
             axios.get('install_vllm')
             .then(response => {
@@ -2677,6 +2740,16 @@ export default {
         },
         startvLLMService(){
             axios.get('start_vllm')
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+
+        },
+        startollamaService(){
+            axios.get('start_ollama')
             .then(response => {
 
             })

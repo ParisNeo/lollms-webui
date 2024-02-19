@@ -261,10 +261,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         ASCIIColors.blue(f"Your personal data is stored here :",end="")
         ASCIIColors.green(f"{self.lollms_paths.personal_path}")
 
-        self.start_servers(
-            load_sd_service=load_sd_service,
-            load_voice_service=load_voice_service
-        )
+        self.start_servers()
 
     def get_uploads_path(self, client_id):
         return self.db.discussion_db_path/f'{self.connections[client_id]["current_discussion"].discussion_id}'
