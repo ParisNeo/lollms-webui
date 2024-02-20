@@ -2092,7 +2092,7 @@ export default {
         },
         formatted_database_name() {
             const db_name = this.$store.state.config.discussion_db_name;
-            const trimmed_name = db_name.slice(0, db_name.length - 3);
+            const trimmed_name = db_name;
             return trimmed_name;
         },
         UseDiscussionHistory() {
