@@ -1320,8 +1320,8 @@
                             </td>
                             <td>
                                 <div class="flex flex-row">
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallOLLAMAService">install olama service</button>
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startvLLMService">start vLLM service</button>
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallOLLAMAService">install ollama service</button>
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startollamaService">start ollama service</button>
                                 </div>
                             </td>
                             </tr>                                        
@@ -1375,7 +1375,7 @@
                             <td>
                                 <div class="flex flex-row">
                                 <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallvLLMService">install vLLM service</button>
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startollamaService">start ollama service</button>
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startvLLMService">start vllm service</button>
                                 </div>
                             </td>
                             </tr>                                        
