@@ -1363,7 +1363,7 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates ollama service. The service will be automatically loaded at startup alowing you to use the ollama binding.\nIf you are using windows, this uses wsl which requires you to have it installed or at least activated.\nIf You are using windows, this will install wsl so you need to activate it.\n<a href=\'https://techcommunity.microsoft.com/t5/windows-11/how-to-install-the-linux-windows-subsystem-in-windows-11/m-p/2701207\' target=\'_blank\'>Here is how you can do that</a>')">
+                                <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates vllm service. The service will be automatically loaded at startup alowing you to use the elf binding.\nIf you are using windows, this uses wsl which requires you to have it installed or at least activated.\nIf You are using windows, this will install wsl so you need to activate it.\n<a href=\'https://techcommunity.microsoft.com/t5/windows-11/how-to-install-the-linux-windows-subsystem-in-windows-11/m-p/2701207\' target=\'_blank\'>Here is how you can do that</a>')">
                                     <i data-feather="help-circle" class="w-5 h-5 "></i>
                                 </div>
                             </td>
@@ -1396,6 +1396,73 @@
                                 </div>
                             </td>
                             </tr>
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="vllm_gpu_memory_utilization" class="text-sm font-bold" style="margin-right: 1rem;">gpu memory utilization:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-col align-bottom ">
+                                <div class="relative">
+                                    <p class="absolute left-0 mt-6">
+                                        <label for="vllm_gpu_memory_utilization" class=" text-sm font-medium">
+                                            vllm gpu memory utilization:
+                                        </label>
+                                    </p>
+                                    <p class="absolute right-0">
+
+                                        <input type="text" id="temp-val" v-model="configFile.vllm_gpu_memory_utilization"
+                                            @change="settingsChanged=true"
+                                            class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    </p>
+
+                                </div>
+
+                                <input id="vllm_gpu_memory_utilization"
+                                    @change="settingsChanged=true"
+                                    type="range" v-model="configFile.vllm_gpu_memory_utilization" min="0.10" max="1" step="0.01"
+                                    class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            </div> 
+                            </td>
+                            </tr>
+                            
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="vllm_max_num_seqs" class="text-sm font-bold" style="margin-right: 1rem;">vllm max num seqs:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="number"
+                                id="vllm_max_num_seqs"
+                                min=64
+                                max=2048
+                                required
+                                v-model="configFile.vllm_max_num_seqs"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>                            
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="vllm_max_model_len" class="text-sm font-bold" style="margin-right: 1rem;">max model len:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="number"
+                                id="vllm_max_model_len"
+                                min=2048
+                                max=1000000
+                                required
+                                v-model="configFile.vllm_max_model_len"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>                            
                             <tr>
                             <td style="min-width: 200px;">
                                 <label for="vllm_model_path" class="text-sm font-bold" style="margin-right: 1rem;">vllm model path:</label>
