@@ -112,7 +112,7 @@ git checkout main
 pip install -e .
 cd ../..
 ```
-- install dependancies
+- install dependencies
 ```bash
 pip install --upgrade -r requirements.txt
 ```
@@ -172,7 +172,7 @@ git checkout main
 pip install -e .
 cd ../..
 ```
-- install dependancies
+- install dependencies
 ```bash
 pip install --upgrade -r requirements.txt
 ```
