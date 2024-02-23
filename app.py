@@ -117,7 +117,7 @@ if __name__ == "__main__":
     app.include_router(lollms_generator_router)
 
     # Endpoints reserved for local access    
-    if (not config.headless_server_mode) or config.force_accept_remote_access:
+    if (not config.headless_server_mode) or config.force_accept_remote_access: # Be aware that forcing force_accept_remote_access can expose the server to attacks 
         app.include_router(lollms_infos_router)
         app.include_router(lollms_binding_files_server_router)
         app.include_router(lollms_hardware_infos_router)    

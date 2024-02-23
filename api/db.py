@@ -17,12 +17,9 @@ class DiscussionsDB:
     
     def __init__(self, lollms_paths:LollmsPaths, discussion_db_name="default"):
         self.lollms_paths = lollms_paths
-        if Path(discussion_db_name).is_absolute():
-            self.discussion_db_path = Path(discussion_db_name)
-            self.discussion_db_name = Path(discussion_db_name).name
-        else:
-            self.discussion_db_name = discussion_db_name
-            self.discussion_db_path = self.lollms_paths.personal_discussions_path/discussion_db_name
+        
+        self.discussion_db_name = discussion_db_name
+        self.discussion_db_path = self.lollms_paths.personal_discussions_path/discussion_db_name
 
         self.discussion_db_path.mkdir(exist_ok=True, parents= True)
         self.discussion_db_file_path = self.discussion_db_path/"database.db"

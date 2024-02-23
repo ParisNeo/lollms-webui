@@ -15,6 +15,7 @@ from starlette.responses import StreamingResponse
 from lollms.types import MSG_TYPE
 from lollms.main_config import BaseConfig
 from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception, find_first_available_file_index, add_period, PackageManager
+from lollms.security import sanitize_path_from_endpoint
 from pathlib import Path
 from ascii_colors import ASCIIColors
 import os
@@ -114,6 +115,10 @@ async def save_presets(preset_data: PresetDataWithValue):
     # Get the JSON data from the POST request.
     if preset_data.preset is None:
         raise HTTPException(status_code=400, detail="Preset data is missing in the request")
+
+    # Ensure the name doesn't contain any path manipulation characters
+    if ".." in preset_data.name or "/" in preset_data.name:
+        raise HTTPException(status_code=400, detail="Invalid preset name")
 
     presets_file = lollmsElfServer.lollms_paths.personal_discussions_path/"presets.json"
     # Save the JSON data to a file.

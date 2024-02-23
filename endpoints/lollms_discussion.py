@@ -13,13 +13,14 @@ from pydantic import BaseModel
 from starlette.responses import StreamingResponse
 from lollms.types import MSG_TYPE
 from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception
+from lollms.security import sanitize_path
 from ascii_colors import ASCIIColors
 from api.db import DiscussionsDB, Discussion
 from typing import List
 
 from safe_store.text_vectorizer import TextVectorizer, VectorizationMethod, VisualizationMethod
 import tqdm
-
+from pathlib import Path
 class GenerateRequest(BaseModel):
     text: str
 
@@ -58,10 +59,10 @@ async def list_databases():
    # Return the list of database names
    return databases
 
+
 @router.post("/select_database")
 def select_database(data:DatabaseSelectionParameters):
-    if(".." in data.name):
-        raise "Detected an attempt of path traversal. Are you kidding me?"
+    sanitize_path(data.name)
     print(f'Selecting database {data.name}')
     # Create database object
     lollmsElfServer.db = DiscussionsDB(lollmsElfServer.lollms_paths, data.name)

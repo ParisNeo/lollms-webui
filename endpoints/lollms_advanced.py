@@ -14,6 +14,7 @@ from starlette.responses import StreamingResponse
 from lollms.types import MSG_TYPE
 from lollms.main_config import BaseConfig
 from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception, show_yes_no_dialog
+from lollms.security import sanitize_path
 from ascii_colors import ASCIIColors
 from api.db import DiscussionsDB
 from pathlib import Path
@@ -187,8 +188,7 @@ async def open_file(file_path: FilePath):
         if not show_yes_no_dialog("Validation","Do you validate the opening of a file?"):
             return {"status":False,"error":"User refused the opeining file!"}
 
-    if(".." in path):
-        raise "Detected an attempt of path traversal. Are you kidding me?"
+    sanitize_path(path)
 
     try:
         # Validate the 'path' parameter
