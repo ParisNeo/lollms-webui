@@ -3,7 +3,7 @@
     class="relative items-start p-4 hover:bg-primary-light  rounded-lg mb-2 shadow-lg border-2 select-none"
     :class="computed_classes" 
     :title="model.name"
-    @click.prevent="toggleSelected()">
+    @click.prevent="toggleSelected($event)">
     <!-- CUSTOM MODEL VIEW -->
     <div class="flex flex-row" v-if="model.isCustomModel">
       <div class="max-w-[300px] overflow-x-auto">
@@ -316,8 +316,12 @@ export default {
         this.onInstall(this);
       }
     },
-    toggleSelected(force=false) {
-      this.onSelected(this,force)
+    toggleSelected(event) {
+      if (event.target.classList.contains('child-element')) {
+        event.stopPropagation();
+        return;
+      }
+      this.onSelected(this)
       this.model.selected = true;
       nextTick(() => {
         feather.replace()

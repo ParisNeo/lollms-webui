@@ -1,7 +1,9 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 71
+version: 72
 binding_name: null
 model_name: null
+model_variant: null
+model_type: null
 
 show_news_panel: True
 

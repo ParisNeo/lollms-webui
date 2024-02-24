@@ -3300,7 +3300,7 @@ export default {
 
         },
    
-        onModelSelected(model_object, force=false) {
+        onModelSelected(model_object) {
             // eslint-disable-next-line no-unused-vars
             if (this.isLoading) {
                 this.$store.state.toast.showToast("Loading... please wait", 4, false)
@@ -3308,30 +3308,29 @@ export default {
             }
             if (model_object) {
                 if (model_object.isInstalled) {
-                    if (this.configFile.model_name != model_object.model.name || force) {
-                        this.update_model(model_object.model.name).then((res)=>{
-                            console.log("update_model",res)
-                            this.configFile.model_name = model_object.model.name
-                            if(res.status){
-                                this.$store.state.toast.showToast("Selected model:\n" + model_object.name, 4, true)
-                                nextTick(() => {
-                                    feather.replace()
-                                    this.is_loading_zoo = false
-                                })
-                                self.updateModelsZoo()
-                                this.api_get_req("get_model_status").then((res)=>{
-                                    this.$store.commit('setIsModelOk', res);
-                                })
-                            }else{
-                                this.$store.state.toast.showToast("Couldn't select model:\n" + model_object.name, 4, false)
-                                nextTick(() => {
-                                    feather.replace()
-                                })
-                            }
-                            this.settingsChanged = true
-                            this.isModelSelected = true
-                        });
-                    }
+                    
+                    this.update_model(model_object.model.name).then((res)=>{
+                        console.log("update_model",res)
+                        this.configFile.model_name = model_object.model.name
+                        if(res.status){
+                            this.$store.state.toast.showToast("Selected model:\n" + model_object.name, 4, true)
+                            nextTick(() => {
+                                feather.replace()
+                                this.is_loading_zoo = false
+                            })
+                            this.updateModelsZoo()
+                            this.api_get_req("get_model_status").then((res)=>{
+                                this.$store.commit('setIsModelOk', res);
+                            })
+                        }else{
+                            this.$store.state.toast.showToast("Couldn't select model:\n" + model_object.name, 4, false)
+                            nextTick(() => {
+                                feather.replace()
+                            })
+                        }
+                        this.settingsChanged = true
+                        this.isModelSelected = true
+                    });
 
                 } else {
                     this.$store.state.toast.showToast("Model:\n" + model_object.model.name + "\nis not installed", 4, false)
