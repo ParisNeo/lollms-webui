@@ -64,8 +64,7 @@ async def add_preset(preset_data: PresetData):
             presets_folder.mkdir(exist_ok=True, parents=True)
 
         # Ensure the name doesn't contain any path manipulation characters
-        if ".." in preset_data.name or "/" in preset_data.name:
-            raise HTTPException(status_code=400, detail="Invalid preset name")
+        sanitize_path_from_endpoint(preset_data.name,exception_text="Invalid preset name")
 
         fn = preset_data.name.lower().replace(" ","_")
         filename = presets_folder/f"{fn}.yaml"
@@ -89,8 +88,7 @@ async def del_preset(preset_data: PresetData):
         raise HTTPException(status_code=400, detail="Preset name is missing in the request")
     
     # Ensure the name doesn't contain any path manipulation characters
-    if ".." in preset_data.name or "/" in preset_data.name:
-        raise HTTPException(status_code=400, detail="Invalid preset name")
+    sanitize_path_from_endpoint(preset_data.name,exception_text="Invalid preset name")
 
     presets_file = lollmsElfServer.lollms_paths.personal_discussions_path/"lollms_playground_presets"/preset_data.name
     try:
@@ -116,9 +114,9 @@ async def save_presets(preset_data: PresetDataWithValue):
     if preset_data.preset is None:
         raise HTTPException(status_code=400, detail="Preset data is missing in the request")
 
+
     # Ensure the name doesn't contain any path manipulation characters
-    if ".." in preset_data.name or "/" in preset_data.name:
-        raise HTTPException(status_code=400, detail="Invalid preset name")
+    sanitize_path_from_endpoint(preset_data.name,exception_text="Invalid preset name")
 
     presets_file = lollmsElfServer.lollms_paths.personal_discussions_path/"presets.json"
     # Save the JSON data to a file.
