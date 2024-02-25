@@ -317,7 +317,9 @@ export default {
       }
     },
     toggleSelected(event) {
-      if (event.target.classList.contains('child-element')) {
+      console.log("event.target.tagName.toLowerCase()")
+      console.log(event.target.tagName.toLowerCase())
+      if (event.target.tagName.toLowerCase() === 'button' || event.target.tagName.toLowerCase() === 'svg') {
         event.stopPropagation();
         return;
       }
