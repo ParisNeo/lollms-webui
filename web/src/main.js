@@ -40,6 +40,7 @@ export const store = createStore({
         yesNoDialog:null,
         universalForm:null,
         toast:null,
+        news:null,
         messageBox:null,
         api_get_req:null,
         startSpeechRecognition:null,

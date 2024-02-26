@@ -82,16 +82,22 @@
                         <img :src="discord" width="25" height="25">
                     </div>
                 </a>
-               <div class="sun text-2xl w-6  hover:text-primary duration-150" title="Swith to Light theme"
+               <div class="sun text-2xl w-6  hover:text-primary duration-150 cursor-pointer" title="Swith to Light theme"
                     @click="themeSwitch()">
                     <i data-feather="sun"></i>
                 </div>
 
 
-                <div class="moon text-2xl w-6  hover:text-primary duration-150" title="Swith to Dark theme"
+                <div class="moon text-2xl w-6  hover:text-primary duration-150 cursor-pointer" title="Swith to Dark theme"
                     @click="themeSwitch()">
                     <i data-feather="moon"></i>
                 </div>
+
+                <div class="moon text-2xl w-6  hover:text-primary duration-150 cursor-pointer" title="Lollms News"
+                    @click="showNews()">
+                    <img :src="static_info">
+                </div>
+                
 
             </div>
 
@@ -107,6 +113,10 @@
         <UniversalForm ref="universalForm" class="z-20" />
         <YesNoDialog ref="yesNoDialog" class="z-20" />
         <PersonalityEditor ref="personality_editor" :config="currentPersonConfig" :personality="selectedPersonality" ></PersonalityEditor>
+        <div id="app">
+            <!-- Your other components... -->
+            <PopupViewer ref="news"/>
+        </div>
 
     </header>
 
@@ -122,13 +132,17 @@ import ProgressBar from "@/components/ProgressBar.vue";
 import UniversalForm from '../components/UniversalForm.vue';
 import YesNoDialog from './YesNoDialog.vue';
 import PersonalityEditor from "@/components/PersonalityEditor.vue"
-
+import PopupViewer from '@/components/PopupViewer.vue';
 import FastAPI from '@/assets/fastapi.png';
 import discord from '@/assets/discord.svg';
 import { RouterLink } from 'vue-router'
 import Navigation from './Navigation.vue'
 import { nextTick } from 'vue'
 import feather from 'feather-icons'
+
+import static_info from "../assets/static_info.svg"
+import animated_info from "../assets/animated_info.svg"
+
 </script>
 <script>
 
@@ -174,7 +188,8 @@ export default {
         UniversalForm,
         YesNoDialog,
         Navigation,
-        PersonalityEditor
+        PersonalityEditor,
+        PopupViewer
     },
     watch:{
         isConnected(){
@@ -204,6 +219,8 @@ export default {
     },
     data() {
         return {
+            static_info: static_info,
+            animated_info: animated_info,
              
             is_first_connection:true,
             discord:discord,
@@ -223,6 +240,7 @@ export default {
     },
     mounted() {
         this.$store.state.toast = this.$refs.toast
+        this.$store.state.news = this.$refs.news
         this.$store.state.messageBox = this.$refs.messageBox
         this.$store.state.universalForm = this.$refs.universalForm
         this.$store.state.yesNoDialog = this.$refs.yesNoDialog
@@ -283,6 +301,9 @@ export default {
         //    }
             
         // },
+        showNews(){
+            this.$store.state.news.show()
+        },
         themeCheck() {
 
             if (this.userTheme == "dark" || (!this.userTheme && this.systemTheme)) {

@@ -2011,6 +2011,7 @@ export default {
 
             })
         }
+        
     },
     components: {
         Discussion,
@@ -2149,6 +2150,7 @@ export default {
 </script>
 
 <script setup>
+
 
 import Discussion from '../components/Discussion.vue'
 import ChoiceDialog from '@/components/ChoiceDialog.vue'
