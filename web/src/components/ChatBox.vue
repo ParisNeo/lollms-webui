@@ -360,7 +360,6 @@ export default {
     data() {
         return {
             loader_v0:loader_v0,
-            memory_icon:memory_icon,
             modelImgPlaceholder:modelImgPlaceholder,
             bUrl:bUrl,
             message: "",

@@ -94,12 +94,10 @@
                             <i data-feather="check"></i>
                         </button>
                     </div>
-                    <div class="group relative w-max">
-                        <button v-if="!loading" type="button" @click.stop="addToMemory" title="Add this discussion content to skills database"
-                            class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
-                            <img :src="memory_icon">
-                        </button>
-                    </div>
+                    <button v-if="!loading" type="button" @click.stop="addToMemory" title="Add this discussion content to skills database"
+                        class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
+                        <img :src="memory_icon">
+                    </button>
    
                     <div v-if="loading" title="Loading.." class="flex flex-row flex-grow justify-end">
                         <!-- SPINNER -->
@@ -377,7 +375,7 @@ export default {
     
     data() {
         return {
-            memory_icon:memory_icon,
+            memory_icon: memory_icon,
             posts_headers : {
                 'accept': 'application/json',
                 'Content-Type': 'application/json'

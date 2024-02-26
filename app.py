@@ -82,8 +82,8 @@ if __name__ == "__main__":
             config.allowed_origins += config["host"]
         else:
             config.allowed_origins += get_ip_addresses()
-
-    sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=config.allowed_origins+[f"https://localhost:{config['port']}" if is_https else f"http://localhost:{config['port']}"], ping_timeout=1200, ping_interval=30)  # Enable CORS for selected origins
+    allowed_origins = config.allowed_origins+[f"https://localhost:{config['port']}" if is_https else f"http://localhost:{config['port']}"]
+    sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=allowed_origins, ping_timeout=1200, ping_interval=30)  # Enable CORS for selected origins
 
     LOLLMSWebUI.build_instance(config=config, lollms_paths=lollms_paths, args=args, sio=sio)
     lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
