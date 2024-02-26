@@ -278,6 +278,7 @@
          
                                     <div class="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">New empty ai message.</p></div>
                                 </div>
+
                             </div> 
                             <div class="ml-auto gap-2"> 
                                 
@@ -326,8 +327,9 @@ import MountedPersonalities from '@/components/MountedPersonalities.vue'
 import MountedPersonalitiesList from '@/components/MountedPersonalitiesList.vue'
 import PersonalitiesCommands from '@/components/PersonalitiesCommands.vue';
 import socket from '@/services/websocket.js'
-import UniversalForm from '../components/UniversalForm.vue';
+import UniversalForm from '@/components/UniversalForm.vue';
 import modelImgPlaceholder from "../assets/default_model.png"
+
 import loader_v0 from "../assets/loader_v0.svg"
 
 console.log("modelImgPlaceholder:",modelImgPlaceholder)
@@ -358,6 +360,7 @@ export default {
     data() {
         return {
             loader_v0:loader_v0,
+            memory_icon:memory_icon,
             modelImgPlaceholder:modelImgPlaceholder,
             bUrl:bUrl,
             message: "",

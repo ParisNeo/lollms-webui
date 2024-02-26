@@ -93,7 +93,14 @@
                             type="button" @click.stop="save_configuration()">
                             <i data-feather="check"></i>
                         </button>
-                    </div>       
+                    </div>
+                    <div class="group relative w-max">
+                        <button v-if="!loading" type="button" @click.stop="addToMemory" title="Add this discussion content to skills database"
+                            class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
+                            <img :src="memory_icon">
+                        </button>
+                    </div>
+   
                     <div v-if="loading" title="Loading.." class="flex flex-row flex-grow justify-end">
                         <!-- SPINNER -->
                         <div role="status">
@@ -361,6 +368,7 @@
 import SVGRedBrain from '@/assets/brain_red.svg';
 import SVGOrangeBrain from '@/assets/brain_orange.svg';
 import SVGGreenBrain from '@/assets/brain_green.svg';
+import memory_icon from "../assets/memory_icon.svg"
 
 
 export default {
@@ -369,6 +377,7 @@ export default {
     
     data() {
         return {
+            memory_icon:memory_icon,
             posts_headers : {
                 'accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -440,6 +449,9 @@ export default {
         }
     },
     methods: { 
+        addToMemory(){
+            this.$store.state.messageBox.showMessage("This functionality is being developed. Please be patient")
+        },
         add_webpage(){
             console.log("addWebLink received")
             this.$refs.web_url_input_box.showPanel();

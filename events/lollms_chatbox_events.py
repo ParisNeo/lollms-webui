@@ -89,6 +89,7 @@ def add_events(sio:socketio):
     @sio.on('take_picture')
     def take_picture(sid):
         try:
+            client = lollmsElfServer.session.get_client(sid)
             lollmsElfServer.info("Loading camera")
             if not PackageManager.check_package_installed("cv2"):
                 PackageManager.install_package("opencv-python")
@@ -101,7 +102,7 @@ def add_events(sio:socketio):
             _, frame = cap.read()
             cap.release()
             lollmsElfServer.info("Shot taken")
-            cam_shot_path = lollmsElfServer.lollms_paths.personal_uploads_path/"camera_shots"
+            cam_shot_path = client.discussion.discussion_images_folder
             cam_shot_path.mkdir(parents=True, exist_ok=True)
             filename = find_first_available_file_index(cam_shot_path, "cam_shot_", extension=".png")
             save_path = cam_shot_path/f"cam_shot_{filename}.png"  # Specify the desired folder path
@@ -110,13 +111,13 @@ def add_events(sio:socketio):
                 cv2.imwrite(str(save_path), frame)
                 if not lollmsElfServer.personality.processor is None:
                     lollmsElfServer.info("Sending file to scripted persona")
-                    lollmsElfServer.personality.processor.add_file(save_path, partial(lollmsElfServer.process_chunk, client_id = sid))
+                    lollmsElfServer.personality.processor.add_file(save_path, client, partial(lollmsElfServer.process_chunk, client_id = sid))
                     # File saved successfully
                     run_async(partial(sio.emit,'picture_taken', {'status':True, 'progress': 100}))
                     lollmsElfServer.info("File sent to scripted persona")
                 else:
                     lollmsElfServer.info("Sending file to persona")
-                    lollmsElfServer.personality.add_file(save_path, partial(lollmsElfServer.process_chunk, client_id = sid))
+                    lollmsElfServer.personality.add_file(save_path, client, partial(lollmsElfServer.process_chunk, client_id = sid))
                     # File saved successfully
                     run_async(partial(sio.emit,'picture_taken', {'status':True, 'progress': 100}))
                     lollmsElfServer.info("File sent to persona")
