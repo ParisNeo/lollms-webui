@@ -28,7 +28,7 @@ import threading
 import os
 import time
 
-from api.db import Discussion
+from lollms.databases.discussions_database import Discussion
 from datetime import datetime
 
 router = APIRouter()

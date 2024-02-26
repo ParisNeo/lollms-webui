@@ -28,7 +28,7 @@ import threading
 import os
 import time
 
-from api.db import Discussion
+from lollms.databases.discussions_database import Discussion
 from datetime import datetime
 
 router = APIRouter()
@@ -46,7 +46,7 @@ def add_events(sio:socketio):
             ASCIIColors.info(f"Building empty User message requested by : {client_id}")
             # send the message to the bot
             print(f"Creating an empty message for AI answer orientation")
-            if lollmsElfServer.connections[client_id]["current_discussion"]:
+            if lollmsElfServer.session.get_client(client_id).discussion:
                 if not lollmsElfServer.model:
                     lollmsElfServer.error("No model selected. Please make sure you select a model before starting generation", client_id = client_id)
                     return          
@@ -58,7 +58,7 @@ def add_events(sio:socketio):
             ASCIIColors.info(f"Building empty AI message requested by : {client_id}")
             # send the message to the bot
             print(f"Creating an empty message for AI answer orientation")
-            if lollmsElfServer.connections[client_id]["current_discussion"]:
+            if lollmsElfServer.session.get_client(client_id).discussion:
                 if not lollmsElfServer.model:
                     lollmsElfServer.error("No model selected. Please make sure you select a model before starting generation", client_id=client_id)
                     return          

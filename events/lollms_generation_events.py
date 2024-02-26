@@ -36,10 +36,12 @@ def add_events(sio:socketio):
     def handle_generate_msg(sid, data):        
         client_id = sid
         lollmsElfServer.cancel_gen = False
-        lollmsElfServer.connections[client_id]["generated_text"]=""
-        lollmsElfServer.connections[client_id]["cancel_generation"]=False
-        lollmsElfServer.connections[client_id]["continuing"]=False
-        lollmsElfServer.connections[client_id]["first_chunk"]=True
+        client = lollmsElfServer.session.get_client(client_id)
+
+        client.generated_text=""
+        client.cancel_generation=False
+        client.continuing=False
+        client.first_chunk=True
         
 
         
@@ -49,15 +51,15 @@ def add_events(sio:socketio):
             return
 
         if not lollmsElfServer.busy:
-            if lollmsElfServer.connections[client_id]["current_discussion"] is None:
+            if lollmsElfServer.session.get_client(client_id).discussion is None:
                 if lollmsElfServer.db.does_last_discussion_have_messages():
-                    lollmsElfServer.connections[client_id]["current_discussion"] = lollmsElfServer.db.create_discussion()
+                    lollmsElfServer.session.get_client(client_id).discussion = lollmsElfServer.db.create_discussion()
                 else:
-                    lollmsElfServer.connections[client_id]["current_discussion"] = lollmsElfServer.db.load_last_discussion()
+                    lollmsElfServer.session.get_client(client_id).discussion = lollmsElfServer.db.load_last_discussion()
 
             prompt = data["prompt"]
             ump = lollmsElfServer.config.discussion_prompt_separator +lollmsElfServer.config.user_name.strip() if lollmsElfServer.config.use_user_name_in_discussions else lollmsElfServer.personality.user_message_prefix
-            message = lollmsElfServer.connections[client_id]["current_discussion"].add_message(
+            message = lollmsElfServer.session.get_client(client_id).discussion.add_message(
                 message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
                 sender_type     = SENDER_TYPES.SENDER_TYPES_USER.value,
                 sender          = ump.replace(lollmsElfServer.config.discussion_prompt_separator,"").replace(":",""),
@@ -67,8 +69,8 @@ def add_events(sio:socketio):
             )
 
             ASCIIColors.green("Starting message generation by "+lollmsElfServer.personality.name)
-            lollmsElfServer.connections[client_id]['generation_thread'] = threading.Thread(target=lollmsElfServer.start_message_generation, args=(message, message.id, client_id))
-            lollmsElfServer.connections[client_id]['generation_thread'].start()
+            client.generation_thread = threading.Thread(target=lollmsElfServer.start_message_generation, args=(message, message.id, client_id))
+            client.generation_thread.start()
             
             # lollmsElfServer.sio.sleep(0.01)
             ASCIIColors.info("Started generation task")
@@ -81,43 +83,45 @@ def add_events(sio:socketio):
     @sio.on('generate_msg_from')
     def handle_generate_msg_from(sid, data):
         client_id = sid
+        client = lollmsElfServer.session.get_client(client_id)
         lollmsElfServer.cancel_gen = False
-        lollmsElfServer.connections[client_id]["continuing"]=False
-        lollmsElfServer.connections[client_id]["first_chunk"]=True
+        client.continuing=False
+        client.first_chunk=True
         
-        if lollmsElfServer.connections[client_id]["current_discussion"] is None:
+        if lollmsElfServer.session.get_client(client_id).discussion is None:
             ASCIIColors.warning("Please select a discussion")
             lollmsElfServer.error("Please select a discussion first", client_id=client_id)
             return
         id_ = data['id']
         generation_type = data.get('msg_type',None)
         if id_==-1:
-            message = lollmsElfServer.connections[client_id]["current_discussion"].current_message
+            message = lollmsElfServer.session.get_client(client_id).discussion.current_message
         else:
-            message = lollmsElfServer.connections[client_id]["current_discussion"].load_message(id_)
+            message = lollmsElfServer.session.get_client(client_id).discussion.load_message(id_)
         if message is None:
             return            
-        lollmsElfServer.connections[client_id]['generation_thread'] = threading.Thread(target=lollmsElfServer.start_message_generation, args=(message, message.id, client_id, False, generation_type))
-        lollmsElfServer.connections[client_id]['generation_thread'].start()
+        client.generation_thread = threading.Thread(target=lollmsElfServer.start_message_generation, args=(message, message.id, client_id, False, generation_type))
+        client.generation_thread.start()
 
     @sio.on('continue_generate_msg_from')
     def handle_continue_generate_msg_from(sid, data):
         client_id = sid
+        client = lollmsElfServer.session.get_client(client_id)
         lollmsElfServer.cancel_gen = False
-        lollmsElfServer.connections[client_id]["continuing"]=True
-        lollmsElfServer.connections[client_id]["first_chunk"]=True
+        client.continuing=True
+        client.first_chunk=True
         
-        if lollmsElfServer.connections[client_id]["current_discussion"] is None:
+        if lollmsElfServer.session.get_client(client_id).discussion is None:
             ASCIIColors.yellow("Please select a discussion")
             lollmsElfServer.error("Please select a discussion", client_id=client_id)
             return
         id_ = data['id']
         if id_==-1:
-            message = lollmsElfServer.connections[client_id]["current_discussion"].current_message
+            message = lollmsElfServer.session.get_client(client_id).discussion.current_message
         else:
-            message = lollmsElfServer.connections[client_id]["current_discussion"].load_message(id_)
+            message = lollmsElfServer.session.get_client(client_id).discussion.load_message(id_)
 
-        lollmsElfServer.connections[client_id]["generated_text"]=message.content
-        lollmsElfServer.connections[client_id]['generation_thread'] = threading.Thread(target=lollmsElfServer.start_message_generation, args=(message, message.id, client_id, True))
-        lollmsElfServer.connections[client_id]['generation_thread'].start()
+        client.generated_text=message.content
+        client.generation_thread = threading.Thread(target=lollmsElfServer.start_message_generation, args=(message, message.id, client_id, True))
+        client.generation_thread.start()
 

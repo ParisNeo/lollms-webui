@@ -15,7 +15,7 @@ from lollms.types import MSG_TYPE
 from lollms.main_config import BaseConfig
 from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception
 from ascii_colors import ASCIIColors
-from api.db import DiscussionsDB
+from lollms.databases.discussions_database import DiscussionsDB
 from pathlib import Path
 from safe_store.text_vectorizer import TextVectorizer, VectorizationMethod, VisualizationMethod
 import tqdm

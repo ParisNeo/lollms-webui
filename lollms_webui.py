@@ -8,7 +8,7 @@ This class provides a singleton instance of the LoLLMS web UI, allowing access t
 
 from lollms.server.elf_server import LOLLMSElfServer
 from datetime import datetime
-from api.db import DiscussionsDB, Discussion
+from lollms.databases.discussions_database import DiscussionsDB, Discussion
 from pathlib import Path
 from lollms.config import InstallOption
 from lollms.types import MSG_TYPE, SENDER_TYPES
@@ -20,7 +20,7 @@ from lollms.helpers import ASCIIColors, trace_exception
 from lollms.com import NotificationType, NotificationDisplayType, LoLLMsCom
 from lollms.app import LollmsApplication
 from lollms.utilities import File64BitsManager, PromptReshaper, PackageManager, find_first_available_file_index, run_async, is_asyncio_loop_running, yes_or_no_input
-from lollms.generation import RECPTION_MANAGER, ROLE_CHANGE_DECISION, ROLE_CHANGE_OURTPUT
+from lollms.generation import RECEPTION_MANAGER, ROLE_CHANGE_DECISION, ROLE_CHANGE_OURTPUT
 
 import git
 import asyncio
@@ -211,46 +211,22 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
         # This is used to keep track of messages 
         self.download_infos={}
-        
-        self.connections = {
-            0:{
-                "current_discussion":None,
-                "generated_text":"",
-                "cancel_generation": False,          
-                "generation_thread": None,
-                "processing":False,
-                "schedule_for_deletion":False,
-                "continuing": False,
-                "first_chunk": True,
-                "reception_manager": RECPTION_MANAGER()
-            }
-        }
 
         # Define a WebSocket event handler
         @sio.event
         async def connect(sid, environ):
-            #Create a new connection information
-            self.connections[sid] = {
-                "current_discussion":self.db.load_last_discussion(),
-                "generated_text":"",
-                "continuing": False,
-                "first_chunk": True,
-                "cancel_generation": False,          
-                "generation_thread": None,
-                "processing":False,
-                "schedule_for_deletion":False,
-                "reception_manager":RECPTION_MANAGER()
-            }
+            self.session.add_client(sid, sid, self.db.load_last_discussion(), self.db)
             await self.sio.emit('connected', to=sid) 
             ASCIIColors.success(f'Client {sid} connected')
 
         @sio.event
         def disconnect(sid):
             try:
-                if self.connections[sid]["processing"]:
-                    self.connections[sid]["schedule_for_deletion"]=True
-                # else:
-                #    del self.connections[sid]
+                self.session.add_client(sid, sid, self.db.load_last_discussion(), self.db)
+                if self.session.get_client(sid).processing:
+                    self.session.get_client(sid).schedule_for_deletion=True
+                else:
+                   self.session.remove_client(sid, sid)
             except Exception as ex:
                 pass
             
@@ -264,7 +240,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         self.start_servers()
 
     def get_uploads_path(self, client_id):
-        return self.db.discussion_db_path/f'{self.connections[client_id]["current_discussion"].discussion_id}'
+        return self.session.get_client(client_id).discussion_path # self.db.discussion_db_path/f'{["discussion"].discussion_id}'
     # Other methods and properties of the LoLLMSWebUI singleton class
     def check_module_update_(self, repo_path, branch_name="main"):
         try:
@@ -354,10 +330,11 @@ class LOLLMSWebUI(LOLLMSElfServer):
         if self.summoned:
             client_id = 0
             self.cancel_gen = False
-            self.connections[client_id]["generated_text"]=""
-            self.connections[client_id]["cancel_generation"]=False
-            self.connections[client_id]["continuing"]=False
-            self.connections[client_id]["first_chunk"]=True
+            client = self.session.get_client(client_id)
+            client.generated_text=""
+            client.cancel_generation=False
+            client.continuing=False
+            client.first_chunk=True
             
             if not self.model:
                 ASCIIColors.error("Model not selected. Please select a model")
@@ -365,15 +342,15 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 return
  
             if not self.busy:
-                if self.connections[client_id]["current_discussion"] is None:
+                if client.discussion is None:
                     if self.db.does_last_discussion_have_messages():
-                        self.connections[client_id]["current_discussion"] = self.db.create_discussion()
+                        client.discussion = self.db.create_discussion()
                     else:
-                        self.connections[client_id]["current_discussion"] = self.db.load_last_discussion()
+                        client.discussion = self.db.load_last_discussion()
 
                 prompt = text
                 ump = self.config.discussion_prompt_separator +self.config.user_name.strip() if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
-                message = self.connections[client_id]["current_discussion"].add_message(
+                message = client.discussion.add_message(
                     message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
                     sender_type     = SENDER_TYPES.SENDER_TYPES_USER.value,
                     sender          = ump.replace(self.config.discussion_prompt_separator,"").replace(":",""),
@@ -383,8 +360,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 )
 
                 ASCIIColors.green("Starting message generation by "+self.personality.name)
-                self.connections[client_id]['generation_thread'] = threading.Thread(target=self.start_message_generation, args=(message, message.id, client_id))
-                self.connections[client_id]['generation_thread'].start()
+                client.generation_thread = threading.Thread(target=self.start_message_generation, args=(message, message.id, client_id))
+                client.generation_thread.start()
                 
                 self.sio.sleep(0.01)
                 ASCIIColors.info("Started generation task")
@@ -689,328 +666,17 @@ class LOLLMSWebUI(LOLLMSElfServer):
    
 
     def recover_discussion(self,client_id, message_index=-1):
-        messages = self.connections[client_id]["current_discussion"].get_messages()
+        messages = self.session.get_client(client_id).discussion.get_messages()
         discussion=""
         for msg in messages:
             if message_index!=-1 and msg>message_index:
                 break
             discussion += "\n" + self.config.discussion_prompt_separator + msg.sender + ": " + msg.content.strip()
         return discussion
-    def prepare_query(self, client_id: str, message_id: int = -1, is_continue: bool = False, n_tokens: int = 0, generation_type = None) -> Tuple[str, str, List[str]]:
-        """
-        Prepares the query for the model.
-
-        Args:
-            client_id (str): The client ID.
-            message_id (int): The message ID. Default is -1.
-            is_continue (bool): Whether the query is a continuation. Default is False.
-            n_tokens (int): The number of tokens. Default is 0.
-
-        Returns:
-            Tuple[str, str, List[str]]: The prepared query, original message content, and tokenized query.
-        """
-        if self.personality.callback is None:
-            self.personality.callback = partial(self.process_chunk, client_id=client_id)
-        # Get the list of messages
-        messages = self.connections[client_id]["current_discussion"].get_messages()
-
-        # Find the index of the message with the specified message_id
-        message_index = -1
-        for i, message in enumerate(messages):
-            if message.id == message_id:
-                message_index = i
-                break
-        
-        # Define current message
-        current_message = messages[message_index]
-
-        # Build the conditionning text block
-        conditionning = self.personality.personality_conditioning
-
-        # Check if there are document files to add to the prompt
-        internet_search_results = ""
-        internet_search_infos = []
-        documentation = ""
-        knowledge = ""
-
-
-        # boosting information
-        if self.config.positive_boost:
-            positive_boost="\n!@>important information: "+self.config.positive_boost+"\n"
-            n_positive_boost = len(self.model.tokenize(positive_boost))
-        else:
-            positive_boost=""
-            n_positive_boost = 0
-
-        if self.config.negative_boost:
-            negative_boost="\n!@>important information: "+self.config.negative_boost+"\n"
-            n_negative_boost = len(self.model.tokenize(negative_boost))
-        else:
-            negative_boost=""
-            n_negative_boost = 0
-
-        if self.config.force_output_language_to_be:
-            force_language="\n!@>important information: Answer the user in this language :"+self.config.force_output_language_to_be+"\n"
-            n_force_language = len(self.model.tokenize(force_language))
-        else:
-            force_language=""
-            n_force_language = 0
-
-        if self.config.fun_mode:
-            fun_mode="\n!@>important information: Fun mode activated. In this mode you must answer in a funny playful way. Do not be serious in your answers. Each answer needs to make the user laugh.\n"
-            n_fun_mode = len(self.model.tokenize(positive_boost))
-        else:
-            fun_mode=""
-            n_fun_mode = 0
-
-        discussion = None
-        if generation_type != "simple_question":
-
-            if self.config.activate_internet_search:
-                if discussion is None:
-                    discussion = self.recover_discussion(client_id)
-                if self.config.internet_activate_search_decision:
-                    self.personality.step_start(f"Requesting if {self.personality.name} needs to search internet to answer the user")
-                    need = not self.personality.yes_no(f"Do you have enough information to give a satisfactory answer to {self.config.user_name}'s request without internet search? (If you do not know or you can't answer 0 (no)", discussion)
-                    self.personality.step_end(f"Requesting if {self.personality.name} needs to search internet to answer the user")
-                    self.personality.step("Yes" if need else "No")
-                else:
-                    need=True
-                if need:
-                    self.personality.step_start("Crafting internet search query")
-                    query = self.personality.fast_gen(f"!@>discussion:\n{discussion[-2048:]}\n!@>system: Read the discussion and craft a web search query suited to recover needed information to reply to last {self.config.user_name} message.\nDo not answer the prompt. Do not add explanations.\n!@>websearch query: ", max_generation_size=256, show_progress=True, callback=self.personality.sink)
-                    self.personality.step_end("Crafting internet search query")
-                    self.personality.step(f"web search query: {query}")
-
-                    self.personality.step_start("Performing Internet search")
-
-                    internet_search_results=f"!@>important information: Use the internet search results data to answer {self.config.user_name}'s last message. It is strictly forbidden to give the user an answer without having actual proof from the documentation.\n!@>Web search results:\n"
-
-                    docs, sorted_similarities, document_ids = self.personality.internet_search(query, self.config.internet_quick_search)
-                    for doc, infos,document_id in zip(docs, sorted_similarities, document_ids):
-                        internet_search_infos.append(document_id)
-                        internet_search_results += f"search result chunk:\nchunk_infos:{document_id['url']}\nchunk_title:{document_id['title']}\ncontent:{doc}"
-                    self.personality.step_end("Performing Internet search")
-
-            if self.personality.persona_data_vectorizer:
-                if documentation=="":
-                    documentation="\n!@>important information: Use the documentation data to answer the user questions. If the data is not present in the documentation, please tell the user that the information he is asking for does not exist in the documentation section. It is strictly forbidden to give the user an answer without having actual proof from the documentation.\n!@>Documentation:\n"
-
-                if self.config.data_vectorization_build_keys_words:
-                    if discussion is None:
-                        discussion = self.recover_discussion(client_id)
-                    query = self.personality.fast_gen(f"\n!@>instruction: Read the discussion and rewrite the last prompt for someone who didn't read the entire discussion.\nDo not answer the prompt. Do not add explanations.\n!@>discussion:\n{discussion[-2048:]}\n!@>enhanced query: ", max_generation_size=256, show_progress=True)
-                    ASCIIColors.cyan(f"Query:{query}")
-                else:
-                    query = current_message.content
-                try:
-                    docs, sorted_similarities, document_ids = self.personality.persona_data_vectorizer.recover_text(query, top_k=self.config.data_vectorization_nb_chunks)
-                    for doc, infos, doc_id in zip(docs, sorted_similarities, document_ids):
-                        documentation += f"document chunk:\nchunk_infos:{infos}\ncontent:{doc}"
-                except:
-                    self.warning("Couldn't add documentation to the context. Please verify the vector database")
-            
-            if len(self.personality.text_files) > 0 and self.personality.vectorizer:
-                if documentation=="":
-                    documentation="\n!@>important information: Use the documentation data to answer the user questions. If the data is not present in the documentation, please tell the user that the information he is asking for does not exist in the documentation section. It is strictly forbidden to give the user an answer without having actual proof from the documentation.\n!@>Documentation:\n"
-
-                if self.config.data_vectorization_build_keys_words:
-                    discussion = self.recover_discussion(client_id)
-                    query = self.personality.fast_gen(f"\n!@>instruction: Read the discussion and rewrite the last prompt for someone who didn't read the entire discussion.\nDo not answer the prompt. Do not add explanations.\n!@>discussion:\n{discussion[-2048:]}\n!@>enhanced query: ", max_generation_size=256, show_progress=True)
-                    ASCIIColors.cyan(f"Query: {query}")
-                else:
-                    query = current_message.content
-
-                try:
-                    docs, sorted_similarities, document_ids = self.personality.vectorizer.recover_text(query, top_k=self.config.data_vectorization_nb_chunks)
-                    for doc, infos in zip(docs, sorted_similarities):
-                        documentation += f"document chunk:\nchunk path: {infos[0]}\nchunk content:{doc}"
-                    documentation += "\n!@>important information: Use the documentation data to answer the user questions. If the data is not present in the documentation, please tell the user that the information he is asking for does not exist in the documentation section. It is strictly forbidden to give the user an answer without having actual proof from the documentation."
-                except:
-                    self.warning("Couldn't add documentation to the context. Please verify the vector database")
-            # Check if there is discussion knowledge to add to the prompt
-            if self.config.activate_ltm and self.long_term_memory is not None:
-                if knowledge=="":
-                    knowledge="!@>knowledge:\n"
-
-                try:
-                    docs, sorted_similarities, document_ids = self.long_term_memory.recover_text(current_message.content, top_k=self.config.data_vectorization_nb_chunks)
-                    for i,(doc, infos) in enumerate(zip(docs, sorted_similarities)):
-                        knowledge += f"!@>knowledge {i}:\n!@>title:\n{infos[0]}\ncontent:\n{doc}"
-                except:
-                    self.warning("Couldn't add long term memory information to the context. Please verify the vector database")        # Add information about the user
-        user_description=""
-        if self.config.use_user_name_in_discussions:
-            user_description="!@>User description:\n"+self.config.user_description+"\n"
-
-
-        # Tokenize the conditionning text and calculate its number of tokens
-        tokens_conditionning = self.model.tokenize(conditionning)
-        n_cond_tk = len(tokens_conditionning)
-
-
-        # Tokenize the internet search results text and calculate its number of tokens
-        if len(internet_search_results)>0:
-            tokens_internet_search_results = self.model.tokenize(internet_search_results)
-            n_isearch_tk = len(tokens_internet_search_results)
-        else:
-            tokens_internet_search_results = []
-            n_isearch_tk = 0
-
-
-        # Tokenize the documentation text and calculate its number of tokens
-        if len(documentation)>0:
-            tokens_documentation = self.model.tokenize(documentation)
-            n_doc_tk = len(tokens_documentation)
-        else:
-            tokens_documentation = []
-            n_doc_tk = 0
-
-        # Tokenize the knowledge text and calculate its number of tokens
-        if len(knowledge)>0:
-            tokens_history = self.model.tokenize(knowledge)
-            n_history_tk = len(tokens_history)
-        else:
-            tokens_history = []
-            n_history_tk = 0
-
-
-        # Tokenize user description
-        if len(user_description)>0:
-            tokens_user_description = self.model.tokenize(user_description)
-            n_user_description_tk = len(tokens_user_description)
-        else:
-            tokens_user_description = []
-            n_user_description_tk = 0
-
-
-        # Calculate the total number of tokens between conditionning, documentation, and knowledge
-        total_tokens = n_cond_tk + n_isearch_tk + n_doc_tk + n_history_tk + n_user_description_tk + n_positive_boost + n_negative_boost + n_force_language + n_fun_mode
-
-        # Calculate the available space for the messages
-        available_space = self.config.ctx_size - n_tokens - total_tokens
-
-        # if self.config.debug:
-        #     self.info(f"Tokens summary:\nConditionning:{n_cond_tk}\nn_isearch_tk:{n_isearch_tk}\ndoc:{n_doc_tk}\nhistory:{n_history_tk}\nuser description:{n_user_description_tk}\nAvailable space:{available_space}",10)
-
-        # Raise an error if the available space is 0 or less
-        if available_space<1:
-            self.error(f"Not enough space in context!!\nVerify that your vectorization settings for documents or internet search are realistic compared to your context size.\nYou are {available_space} short of context!")
-            raise Exception("Not enough space in context!!")
-
-        # Accumulate messages until the cumulative number of tokens exceeds available_space
-        tokens_accumulated = 0
-
-
-        # Initialize a list to store the full messages
-        full_message_list = []
-        # If this is not a continue request, we add the AI prompt
-        if not is_continue:
-            message_tokenized = self.model.tokenize(
-                "\n" +self.personality.ai_message_prefix.strip()
-            )
-            full_message_list.append(message_tokenized)
-            # Update the cumulative number of tokens
-            tokens_accumulated += len(message_tokenized)
-
-
-        if generation_type != "simple_question":
-            # Accumulate messages starting from message_index
-            for i in range(message_index, -1, -1):
-                message = messages[i]
-
-                # Check if the message content is not empty and visible to the AI
-                if message.content != '' and (
-                        message.message_type <= MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER.value and message.message_type != MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value):
-
-                    # Tokenize the message content
-                    message_tokenized = self.model.tokenize(
-                        "\n" + self.config.discussion_prompt_separator + message.sender + ": " + message.content.strip())
-
-                    # Check if adding the message will exceed the available space
-                    if tokens_accumulated + len(message_tokenized) > available_space:
-                        break
-
-                    # Add the tokenized message to the full_message_list
-                    full_message_list.insert(0, message_tokenized)
-
-                    # Update the cumulative number of tokens
-                    tokens_accumulated += len(message_tokenized)
-        else:
-            message = messages[message_index]
-
-            # Check if the message content is not empty and visible to the AI
-            if message.content != '' and (
-                    message.message_type <= MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER.value and message.message_type != MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value):
-
-                # Tokenize the message content
-                message_tokenized = self.model.tokenize(
-                    "\n" + self.config.discussion_prompt_separator + message.sender + ": " + message.content.strip())
-
-                # Add the tokenized message to the full_message_list
-                full_message_list.insert(0, message_tokenized)
-
-                # Update the cumulative number of tokens
-                tokens_accumulated += len(message_tokenized)
-
-        # Build the final discussion messages by detokenizing the full_message_list
-        discussion_messages = ""
-        for i in range(len(full_message_list)-1):
-            message_tokens = full_message_list[i]
-            discussion_messages += self.model.detokenize(message_tokens)
-        
-        if len(full_message_list)>0:
-            ai_prefix = self.model.detokenize(full_message_list[-1])
-        else:
-            ai_prefix = ""
-        # Build the final prompt by concatenating the conditionning and discussion messages
-        prompt_data = conditionning + internet_search_results + documentation + knowledge + user_description + discussion_messages + positive_boost + negative_boost + force_language + fun_mode + ai_prefix
-
-        # Tokenize the prompt data
-        tokens = self.model.tokenize(prompt_data)
-
-        # if this is a debug then show prompt construction details
-        if self.config["debug"]:
-            ASCIIColors.bold("CONDITIONNING")
-            ASCIIColors.yellow(conditionning)
-            ASCIIColors.bold("INTERNET SEARCH")
-            ASCIIColors.yellow(internet_search_results)
-            ASCIIColors.bold("DOC")
-            ASCIIColors.yellow(documentation)
-            ASCIIColors.bold("HISTORY")
-            ASCIIColors.yellow(knowledge)
-            ASCIIColors.bold("DISCUSSION")
-            ASCIIColors.hilight(discussion_messages,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
-            ASCIIColors.bold("Final prompt")
-            ASCIIColors.hilight(prompt_data,"!@>",ASCIIColors.color_yellow,ASCIIColors.color_bright_red,False)
-            ASCIIColors.info(f"prompt size:{len(tokens)} tokens") 
-            ASCIIColors.info(f"available space after doc and knowledge:{available_space} tokens") 
-
-            # self.info(f"Tokens summary:\nPrompt size:{len(tokens)}\nTo generate:{available_space}",10)
-
-        # Details
-        context_details = {
-            "conditionning":conditionning,
-            "internet_search_infos":internet_search_infos,
-            "internet_search_results":internet_search_results,
-            "documentation":documentation,
-            "knowledge":knowledge,
-            "user_description":user_description,
-            "discussion_messages":discussion_messages,
-            "positive_boost":positive_boost,
-            "negative_boost":negative_boost,
-            "force_language":force_language,
-            "fun_mode":fun_mode,
-            "ai_prefix":ai_prefix
-
-        }    
-
-        # Return the prepared query, original message content, and tokenized query
-        return prompt_data, current_message.content, tokens, context_details, internet_search_infos
-
+    
 
     def get_discussion_to(self, client_id,  message_id=-1):
-        messages = self.connections[client_id]["current_discussion"].get_messages()
+        messages = self.session.get_client(client_id).discussion.get_messages()
         full_message_list = []
         ump = self.config.discussion_prompt_separator +self.config.user_name.strip() if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
 
@@ -1044,7 +710,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             verbose = self.verbose
 
         run_async(partial(self.sio.emit,'notification', {
-                                'content': content,# self.connections[client_id]["generated_text"], 
+                                'content': content,
                                 'notification_type': notification_type.value,
                                 "duration": duration,
                                 'display_type':display_type.value
@@ -1073,11 +739,12 @@ class LOLLMSWebUI(LOLLMSElfServer):
                             sender_type:SENDER_TYPES=SENDER_TYPES.SENDER_TYPES_AI,
                             open=False
                         ):
+        client = self.session.get_client(client_id)
         self.close_message(client_id)
         mtdt = metadata if metadata is None or type(metadata) == str else json.dumps(metadata, indent=4)
         if sender==None:
             sender= self.personality.name
-        msg = self.connections[client_id]["current_discussion"].add_message(
+        msg = client.discussion.add_message(
             message_type        = message_type.value,
             sender_type         = sender_type.value,
             sender              = sender,
@@ -1085,7 +752,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             metadata            = mtdt,
             ui                  = ui,
             rank                = 0,
-            parent_message_id   = self.connections[client_id]["current_discussion"].current_message.id,
+            parent_message_id   = client.discussion.current_message.id,
             binding             = self.config["binding_name"],
             model               = self.config["model_name"], 
             personality         = self.config["personalities"][self.config["active_personality_id"]],
@@ -1107,8 +774,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
                             'model' :                   self.config["model_name"], 
                             'personality':              self.config["personalities"][self.config["active_personality_id"]],
 
-                            'created_at':               self.connections[client_id]["current_discussion"].current_message.created_at,
-                            'finished_generating_at':   self.connections[client_id]["current_discussion"].current_message.finished_generating_at,
+                            'created_at':               client.discussion.current_message.created_at,
+                            'finished_generating_at':   client.discussion.current_message.finished_generating_at,
 
                             'open':                     open
                         }, to=client_id
@@ -1121,18 +788,19 @@ class LOLLMSWebUI(LOLLMSElfServer):
                             ui=None,
                             msg_type:MSG_TYPE=None
                         ):
-        self.connections[client_id]["current_discussion"].current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        client = self.session.get_client(client_id)
+        client.discussion.current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         mtdt = json.dumps(metadata, indent=4) if metadata is not None and type(metadata)== list else metadata
         if self.nb_received_tokens==1:
             run_async(
                 partial(self.sio.emit,'update_message', {
                                                 "sender": self.personality.name,
-                                                'id':self.connections[client_id]["current_discussion"].current_message.id, 
-                                                'content': "✍ warming up ...",# self.connections[client_id]["generated_text"],
+                                                'id':client.discussion.current_message.id, 
+                                                'content': "✍ warming up ...",
                                                 'ui': ui,
-                                                'discussion_id':self.connections[client_id]["current_discussion"].discussion_id,
+                                                'discussion_id':client.discussion.discussion_id,
                                                 'message_type': MSG_TYPE.MSG_TYPE_STEP_END.value,
-                                                'finished_generating_at': self.connections[client_id]["current_discussion"].current_message.finished_generating_at,
+                                                'finished_generating_at': client.discussion.current_message.finished_generating_at,
                                                 'parameters':parameters,
                                                 'metadata':metadata
                                             }, to=client_id
@@ -1142,41 +810,42 @@ class LOLLMSWebUI(LOLLMSElfServer):
         run_async(
             partial(self.sio.emit,'update_message', {
                                             "sender": self.personality.name,
-                                            'id':self.connections[client_id]["current_discussion"].current_message.id, 
-                                            'content': chunk,# self.connections[client_id]["generated_text"],
+                                            'id':client.discussion.current_message.id, 
+                                            'content': chunk,
                                             'ui': ui,
-                                            'discussion_id':self.connections[client_id]["current_discussion"].discussion_id,
+                                            'discussion_id':client.discussion.discussion_id,
                                             'message_type': msg_type.value if msg_type is not None else MSG_TYPE.MSG_TYPE_CHUNK.value if self.nb_received_tokens>1 else MSG_TYPE.MSG_TYPE_FULL.value,
-                                            'finished_generating_at': self.connections[client_id]["current_discussion"].current_message.finished_generating_at,
+                                            'finished_generating_at': client.discussion.current_message.finished_generating_at,
                                             'parameters':parameters,
                                             'metadata':metadata
                                         }, to=client_id
                                 )
         )
         if msg_type != MSG_TYPE.MSG_TYPE_INFO:
-            self.connections[client_id]["current_discussion"].update_message(self.connections[client_id]["generated_text"], new_metadata=mtdt, new_ui=ui)
+            client.discussion.update_message(client.generated_text, new_metadata=mtdt, new_ui=ui)
 
 
 
     def close_message(self, client_id):
-        if not self.connections[client_id]["current_discussion"]:
+        client = self.session.get_client(client_id)
+        if not client.discussion:
             return
         #fix halucination
-        self.connections[client_id]["generated_text"]=self.connections[client_id]["generated_text"].split("!@>")[0]
+        client.generated_text=client.generated_text.split("!@>")[0]
         # Send final message
-        self.connections[client_id]["current_discussion"].current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        client.discussion.current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         run_async(
             partial(self.sio.emit,'close_message', {
                                             "sender": self.personality.name,
-                                            "id": self.connections[client_id]["current_discussion"].current_message.id,
-                                            "content":self.connections[client_id]["generated_text"],
+                                            "id": client.discussion.current_message.id,
+                                            "content":client.generated_text,
 
                                             'binding': self.config["binding_name"],
                                             'model' : self.config["model_name"], 
                                             'personality':self.config["personalities"][self.config["active_personality_id"]],
 
-                                            'created_at': self.connections[client_id]["current_discussion"].current_message.created_at,
-                                            'finished_generating_at': self.connections[client_id]["current_discussion"].current_message.finished_generating_at,
+                                            'created_at': client.discussion.current_message.created_at,
+                                            'finished_generating_at': client.discussion.current_message.finished_generating_at,
 
                                         }, to=client_id
                                 )
@@ -1194,9 +863,10 @@ class LOLLMSWebUI(LOLLMSElfServer):
         """
         Processes a chunk of generated text
         """
+        client = self.session.get_client(client_id)
         if chunk is None:
             return True
-        if not client_id in list(self.connections.keys()):
+        if not client_id in list(self.session.clients.keys()):
             self.error("Connection lost", client_id=client_id)
             return
         if message_type == MSG_TYPE.MSG_TYPE_STEP:
@@ -1257,20 +927,20 @@ class LOLLMSWebUI(LOLLMSElfServer):
             sys.stdout.flush()
             if chunk:
                 
-                self.connections[client_id]["generated_text"] += chunk
-            antiprompt = self.personality.detect_antiprompt(self.connections[client_id]["generated_text"])
+                client.generated_text += chunk
+            antiprompt = self.personality.detect_antiprompt(client.generated_text)
             if antiprompt:
                 ASCIIColors.warning(f"\nDetected hallucination with antiprompt: {antiprompt}")
-                self.connections[client_id]["generated_text"] = self.remove_text_from_string(self.connections[client_id]["generated_text"],antiprompt)
-                self.update_message(client_id, self.connections[client_id]["generated_text"], parameters, metadata, None, MSG_TYPE.MSG_TYPE_FULL)
+                client.generated_text = self.remove_text_from_string(client.generated_text,antiprompt)
+                self.update_message(client_id, client.generated_text, parameters, metadata, None, MSG_TYPE.MSG_TYPE_FULL)
                 return False
             else:
                 self.nb_received_tokens += 1
-                if self.connections[client_id]["continuing"] and self.connections[client_id]["first_chunk"]:
-                    self.update_message(client_id, self.connections[client_id]["generated_text"], parameters, metadata)
+                if client.continuing and client.first_chunk:
+                    self.update_message(client_id, client.generated_text, parameters, metadata)
                 else:
                     self.update_message(client_id, chunk, parameters, metadata, msg_type=MSG_TYPE.MSG_TYPE_CHUNK)
-                self.connections[client_id]["first_chunk"]=False
+                client.first_chunk=False
                 # if stop generation is detected then stop
                 if not self.cancel_gen:
                     return True
@@ -1281,18 +951,18 @@ class LOLLMSWebUI(LOLLMSElfServer):
  
         # Stream the generated text to the main process
         elif message_type == MSG_TYPE.MSG_TYPE_FULL:
-            self.connections[client_id]["generated_text"] = chunk
+            client.generated_text = chunk
             self.nb_received_tokens += 1
             dt =(datetime.now() - self.start_time).seconds
             if dt==0:
                 dt=1
             spd = self.nb_received_tokens/dt
             ASCIIColors.green(f"Received {self.nb_received_tokens} tokens (speed: {spd:.2f}t/s)              ",end="\r",flush=True) 
-            antiprompt = self.personality.detect_antiprompt(self.connections[client_id]["generated_text"])
+            antiprompt = self.personality.detect_antiprompt(client.generated_text)
             if antiprompt:
                 ASCIIColors.warning(f"\nDetected hallucination with antiprompt: {antiprompt}")
-                self.connections[client_id]["generated_text"] = self.remove_text_from_string(self.connections[client_id]["generated_text"],antiprompt)
-                self.update_message(client_id, self.connections[client_id]["generated_text"], parameters, metadata, None, MSG_TYPE.MSG_TYPE_FULL)
+                client.generated_text = self.remove_text_from_string(client.generated_text,antiprompt)
+                self.update_message(client_id, client.generated_text, parameters, metadata, None, MSG_TYPE.MSG_TYPE_FULL)
                 return False
 
             self.update_message(client_id, chunk,  parameters, metadata, ui=None, msg_type=message_type)
@@ -1397,21 +1067,22 @@ class LOLLMSWebUI(LOLLMSElfServer):
         return output
 
     def start_message_generation(self, message, message_id, client_id, is_continue=False, generation_type=None):
+        client = self.session.get_client(client_id)
         if self.personality is None:
             self.warning("Select a personality")
             return
         ASCIIColors.info(f"Text generation requested by client: {client_id}")
         # send the message to the bot
         print(f"Received message : {message.content}")
-        if self.connections[client_id]["current_discussion"]:
+        if client.discussion:
             try:
                 if not self.model:
                     self.error("No model selected. Please make sure you select a model before starting generation", client_id=client_id)
                     return          
                 # First we need to send the new message ID to the client
                 if is_continue:
-                    self.connections[client_id]["current_discussion"].load_message(message_id)
-                    self.connections[client_id]["generated_text"] = message.content
+                    client.discussion.load_message(message_id)
+                    client.generated_text = message.content
                 else:
                     self.new_message(client_id, self.personality.name, "")
                     self.update_message(client_id, "✍ warming up ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_START)
@@ -1420,7 +1091,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 self.discussion_messages, self.current_message, tokens, context_details, internet_search_infos = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type)
                 self.prepare_reception(client_id)
                 self.generating = True
-                self.connections[client_id]["processing"]=True
+                client.processing=True
                 try:
                     self.generate(
                                     self.discussion_messages, 
@@ -1441,7 +1112,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                             fn = self.personality.name.lower().replace(' ',"_").replace('.','')    
                             fn = f"{fn}_{message_id}.wav"
                             url = f"audio/{fn}"
-                            self.tts.tts_to_file(self.connections[client_id]["generated_text"], Path(self.personality.audio_samples[0]).name, f"{fn}", language=language)
+                            self.tts.tts_to_file(client.generated_text, Path(self.personality.audio_samples[0]).name, f"{fn}", language=language)
                             fl = f"\n".join([
                             f"<audio controls>",
                             f'    <source src="{url}" type="audio/wav">',
@@ -1461,7 +1132,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                             if self.tts is None:
                                 self.tts = api.TextToSpeech( kv_cache=True, half=True)
                             reference_clips = [utils.audio.load_audio(str(p), 22050) for p in self.personality.audio_samples]
-                            tk = self.model.tokenize(self.connections[client_id]["generated_text"])
+                            tk = self.model.tokenize(client.generated_text)
                             if len(tk)>100:
                                 chunk_size = 100
                                 
@@ -1472,7 +1143,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                     else:
                                         pcm_audio = np.concatenate([pcm_audio, self.tts.tts_with_preset(chunk, voice_samples=reference_clips, preset='ultra_fast').numpy().flatten()])
                             else:
-                                pcm_audio = self.tts.tts_with_preset(self.connections[client_id]["generated_text"], voice_samples=reference_clips, preset='fast').numpy().flatten()
+                                pcm_audio = self.tts.tts_with_preset(client.generated_text, voice_samples=reference_clips, preset='fast').numpy().flatten()
                             sd.play(pcm_audio, 22050)
                             self.personality.step_end("Creating audio output")                        
                             """
@@ -1513,22 +1184,22 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         f'</a>',
                         ])
                     sources_text += '</div>'
-                    self.connections[client_id]["generated_text"]=self.connections[client_id]["generated_text"].split("!@>")[0] + "\n" + sources_text
-                    self.personality.full(self.connections[client_id]["generated_text"])
-            except:
-                pass
+                    client.generated_text=client.generated_text.split("!@>")[0] + "\n" + sources_text
+                    self.personality.full(client.generated_text)
+            except Exception as ex:
+                trace_exception(ex)
             self.close_message(client_id)
             self.update_message(client_id, "Generating ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_END)
 
-            self.connections[client_id]["processing"]=False
-            if self.connections[client_id]["schedule_for_deletion"]:
-                del self.connections[client_id]
+            client.processing=False
+            if client.schedule_for_deletion:
+                self.session.remove_client(client.client_id, client.client_id)
 
             ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
             ASCIIColors.success(f" ║                        Done                      ║ ")
             ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
             if self.config.auto_title:
-                d = self.connections[client_id]["current_discussion"]
+                d = client.discussion
                 ttl = d.title()
                 if ttl is None or ttl=="" or ttl=="untitled":
                     title = self.make_discussion_title(d, client_id=client_id)

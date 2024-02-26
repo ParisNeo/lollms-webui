@@ -15,7 +15,7 @@ from starlette.responses import StreamingResponse
 from lollms.types import MSG_TYPE
 from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception
 from ascii_colors import ASCIIColors
-from api.db import DiscussionsDB
+from lollms.databases.discussions_database import DiscussionsDB
 
 from safe_store.text_vectorizer import TextVectorizer, VectorizationMethod, VisualizationMethod
 import tqdm
@@ -41,7 +41,7 @@ async def edit_message(edit_params: EditMessageParameters):
     new_message = edit_params.message
     metadata = json.dumps(edit_params.metadata,indent=4)
     try:
-        lollmsElfServer.connections[client_id]["current_discussion"].edit_message(message_id, new_message, new_metadata=metadata)
+        lollmsElfServer.session.get_client(client_id).discussion.edit_message(message_id, new_message, new_metadata=metadata)
         return {"status": True}
     except Exception as ex:
         trace_exception(ex)  # Assuming 'trace_exception' function logs the error
@@ -59,7 +59,7 @@ async def message_rank_up(rank_params: MessageRankParameters):
     message_id = rank_params.id
 
     try:
-        new_rank = lollmsElfServer.connections[client_id]["current_discussion"].message_rank_up(message_id)
+        new_rank = lollmsElfServer.session.get_client(client_id).discussion.message_rank_up(message_id)
         return {"status": True, "new_rank": new_rank}
     except Exception as ex:
         trace_exception(ex)  # Assuming 'trace_exception' function logs the error
@@ -71,7 +71,7 @@ def message_rank_down(rank_params: MessageRankParameters):
     client_id = rank_params.client_id
     message_id = rank_params.id
     try:
-        new_rank = lollmsElfServer.connections[client_id]["current_discussion"].message_rank_down(message_id)
+        new_rank = lollmsElfServer.session.get_client(client_id).discussion.message_rank_down(message_id)
         return {"status": True, "new_rank": new_rank}
     except Exception as ex:
         return {"status": False, "error":str(ex)}
@@ -85,11 +85,11 @@ async def delete_message(delete_params: MessageDeleteParameters):
     client_id = delete_params.client_id
     message_id = delete_params.id
 
-    if lollmsElfServer.connections[client_id]["current_discussion"] is None:
+    if lollmsElfServer.session.get_client(client_id).discussion is None:
         return {"status": False,"message":"No discussion is selected"}
     else:
         try:
-            new_rank = lollmsElfServer.connections[client_id]["current_discussion"].delete_message(message_id)
+            new_rank = lollmsElfServer.session.get_client(client_id).discussion.delete_message(message_id)
             ASCIIColors.yellow("Message deleted")
             return {"status":True,"new_rank": new_rank}
         except Exception as ex:
