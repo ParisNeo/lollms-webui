@@ -195,7 +195,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         ASCIIColors.success("ok")
 
         # prepare vectorization
-        if self.config.data_vectorization_activate and self.config.activate_ltm:
+        if self.config.data_vectorization_activate and self.config.activate_skills_lib:
             try:
                 ASCIIColors.yellow("Loading long term memory")
                 folder = self.lollms_paths.personal_discussions_path/"vectorized_dbs"

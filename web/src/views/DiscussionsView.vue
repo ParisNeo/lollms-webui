@@ -550,7 +550,7 @@ export default {
         
         },
         async toggleLTM(){
-            this.$store.state.config.activate_ltm =! this.$store.state.config.activate_ltm;
+            this.$store.state.config.activate_skills_lib =! this.$store.state.config.activate_skills_lib;
             await this.applyConfiguration();
             socket.emit('upgrade_vectorization');
         },
@@ -2106,7 +2106,7 @@ export default {
             return trimmed_name;
         },
         UseDiscussionHistory() {
-            return this.$store.state.config.activate_ltm;
+            return this.$store.state.config.activate_skills_lib;
         }, 
         isReady:{
             
