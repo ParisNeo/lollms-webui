@@ -195,7 +195,9 @@ export const store = createStore({
         try{
           let res = await axios.get('/get_lollms_webui_version', {});
           if (res) {
-              this.state.version = res.data.version
+              this.state.version = res.data
+              console.log("version res:", res)
+              console.log("version :", this.state.version)
           }
   
         }
@@ -522,6 +524,17 @@ app.mixin({
       this.$store.state.api_get_req = api_get_req
       actionsExecuted = true;
       console.log("Calling")
+      
+      try{
+        this.$store.state.loading_infos = "Getting version"
+        this.$store.state.loading_progress = 30
+        await this.$store.dispatch('getVersion');
+      }
+      catch (ex){
+        console.log("Error cought:", ex)
+      }
+
+
       try{
         this.$store.state.loading_infos = "Loading Configuration"
         this.$store.state.loading_progress = 10
@@ -535,15 +548,6 @@ app.mixin({
         this.$store.state.loading_infos = "Loading Database"
         this.$store.state.loading_progress = 20
         await this.$store.dispatch('refreshDatabase');
-      }
-      catch (ex){
-        console.log("Error cought:", ex)
-      }
-      
-      try{
-        this.$store.state.loading_infos = "Getting version"
-        this.$store.state.loading_progress = 30
-        await this.$store.dispatch('getVersion');
       }
       catch (ex){
         console.log("Error cought:", ex)
