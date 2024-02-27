@@ -4813,8 +4813,8 @@ export default {
                 try{
                     let idx = this.$store.state.modelsZoo.findIndex(item => item.name == this.$store.state.selectedModel)
                     if(idx>=0){
-                        console.log(`model avatar : ${this.$store.state.modelsZoo[idx].avatar}`)
-                        return this.$store.state.modelsZoo[idx].avatar
+                        console.log(`model avatar : ${this.$store.state.modelsZoo[idx].icon}`)
+                        return this.$store.state.modelsZoo[idx].icon
                     }
                     else{
                         return  defaultModelImgPlaceholder            
