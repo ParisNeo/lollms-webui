@@ -1082,6 +1082,7 @@ export default {
         socketIOConnected() {
             console.log("socketIOConnected")
             this.$store.state.isConnected=true;
+            this.$store.state.client_id = socket.id
             return true
         },
         socketIODisconnected() {

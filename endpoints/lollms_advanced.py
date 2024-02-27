@@ -124,49 +124,6 @@ async def execute_code(request: CodeRequest):
     
 
 
-class OpenCodeFolderInVsCodeRequestModel(BaseModel):
-    discussion_id: Optional[int] = Field(None, gt=0)
-    message_id: Optional[int] = Field(None, gt=0)
-    code: Optional[str]
-    folder_path: Optional[str]
-
-@router.post("/open_code_folder_in_vs_code")
-async def open_code_folder_in_vs_code(request: OpenCodeFolderInVsCodeRequestModel):
-    if lollmsElfServer.config.headless_server_mode:
-        return {"status":False,"error":"Open code folder in vscode is blocked when in headless mode for obvious security reasons!"}
-
-    if lollmsElfServer.config.host!="localhost" and lollmsElfServer.config.host!="127.0.0.1":
-        return {"status":False,"error":"Open code folder in vscode is blocked when the server is exposed outside for very obvious reasons!"}
-
-    if lollmsElfServer.config.turn_on_open_file_validation:
-        if not show_yes_no_dialog("Validation","Do you validate the opening of folder in vscode?"):
-            return {"status":False,"error":"User refused the execution!"}
-
-    try:
-        if request.discussion_id:        
-            ASCIIColors.info("Opening folder:")
-            root_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"discussions"/f"d_{request.discussion_id}"
-            root_folder.mkdir(parents=True,exist_ok=True)
-            tmp_file = root_folder/f"ai_code_{request.message_id}.py"
-            with open(tmp_file,"w") as f:
-                f.write(request.code)
-            
-            if os.path.isdir(root_folder):
-                subprocess.run(['code', root_folder], check=True)
-        elif request.folder_path:
-            ASCIIColors.info("Opening folder:")
-            root_folder = request.folder_path
-            root_folder.mkdir(parents=True,exist_ok=True)
-
-            if os.path.isdir(root_folder):
-                subprocess.run(['code', root_folder], check=True)
-
-        return {"status": True, "execution_time": 0}
-    except Exception as ex:
-        trace_exception(ex)
-        lollmsElfServer.error(ex)
-        return {"status":False,"error":"An error occurred during processing."}
-    
 class FilePath(BaseModel):
     path: Optional[str] = Field(None, max_length=500)
 
@@ -209,7 +166,49 @@ async def open_file(file_path: FilePath):
         lollmsElfServer.error(ex)
         return {"status":False,"error":str(ex)}
 
+
+class OpenCodeFolderInVsCodeRequestModel(BaseModel):
+    client_id: str = Field(...)
+    discussion_id: Optional[int] = Field(None, gt=0)
+    message_id: Optional[int] = Field(None, gt=0)
+    code: Optional[str]
+
+@router.post("/open_code_folder_in_vs_code")
+async def open_code_folder_in_vs_code(request: OpenCodeFolderInVsCodeRequestModel):
+
+    client = lollmsElfServer.session.get_client(request.client_id)
+
+    if lollmsElfServer.config.headless_server_mode:
+        return {"status":False,"error":"Open code folder in vscode is blocked when in headless mode for obvious security reasons!"}
+
+    if lollmsElfServer.config.host!="localhost" and lollmsElfServer.config.host!="127.0.0.1":
+        return {"status":False,"error":"Open code folder in vscode is blocked when the server is exposed outside for very obvious reasons!"}
+
+    if lollmsElfServer.config.turn_on_open_file_validation:
+        if not show_yes_no_dialog("Validation","Do you validate the opening of folder in vscode?"):
+            return {"status":False,"error":"User refused the execution!"}
+
+    try:
+        if request.discussion_id:        
+            ASCIIColors.info("Opening folder:")
+            root_folder = client.discussion.discussion_folder
+            root_folder.mkdir(parents=True,exist_ok=True)
+            tmp_file = root_folder/f"ai_code_{request.message_id}.py"
+            with open(tmp_file,"w") as f:
+                f.write(request.code)
+            
+            if os.path.isdir(root_folder):
+                subprocess.run(['code', root_folder], check=True)
+
+
+        return {"status": True, "execution_time": 0}
+    except Exception as ex:
+        trace_exception(ex)
+        lollmsElfServer.error(ex)
+        return {"status":False,"error":"An error occurred during processing."}
+    
 class VSCodeData(BaseModel):
+    client_id: str = Field(...)
     discussion_id: Optional[int] = Field(None, ge=0)
     message_id: Optional[int] = Field(None, ge=0)
     code: str = Field(...)
@@ -222,6 +221,7 @@ async def open_code_in_vs_code(vs_code_data: VSCodeData):
     :param vs_code_data: The data object.
     :return: A JSON response with the status of the operation.
     """
+    client = lollmsElfServer.session.get_client(vs_code_data.client_id)
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Open code in vs code is blocked when in headless mode for obvious security reasons!"}
 
@@ -239,14 +239,15 @@ async def open_code_in_vs_code(vs_code_data: VSCodeData):
 
         ASCIIColors.info("Opening folder:")
         # Create a temporary file.
-        root_folder = Path(os.path.realpath(lollmsElfServer.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"/f"{message_id}.py"))
+        root_folder = client.discussion.discussion_folder
+
         root_folder.mkdir(parents=True,exist_ok=True)
         tmp_file = root_folder/f"ai_code_{message_id}.py"
         with open(tmp_file,"w") as f:
             f.write(code)
         
         # Use subprocess.Popen to safely open the file
-        subprocess.Popen(["code", str(root_folder)])
+        subprocess.Popen(["code", str(root_folder)], shell=True)
         
         return {"status": True, "execution_time": 0}
     except Exception as ex:
@@ -255,6 +256,7 @@ async def open_code_in_vs_code(vs_code_data: VSCodeData):
         return {"status":False,"error":str(ex)}
     
 class FolderRequest(BaseModel):
+    client_id: str = Field(...)
     discussion_id: Optional[int] = Field(None, title="The discussion ID")
     folder_path: Optional[str] = Field(None, title="The folder path")
 
@@ -266,6 +268,7 @@ async def open_code_folder(request: FolderRequest):
     :param request: The HTTP request object.
     :return: A JSON response with the status of the operation.
     """
+    client = lollmsElfServer.session.get_client(request.client_id)
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Open code folder is blocked when in headless mode for obvious security reasons!"}
 
@@ -282,7 +285,7 @@ async def open_code_folder(request: FolderRequest):
 
             ASCIIColors.info("Opening folder:")
             # Create a temporary file.
-            root_folder = lollmsElfServer.lollms_paths.personal_outputs_path / "discussions" / f"d_{discussion_id}"
+            root_folder = client.discussion.discussion_folder
             root_folder.mkdir(parents=True, exist_ok=True)
             if platform.system() == 'Windows':
                 subprocess.run(['start', str(root_folder)], check=True)

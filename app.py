@@ -100,13 +100,14 @@ if __name__ == "__main__":
     from lollms.server.endpoints.lollms_extensions_infos import router as lollms_extensions_infos_router
     from lollms.server.endpoints.lollms_generator import router as lollms_generator_router
     from lollms.server.endpoints.lollms_configuration_infos import router as lollms_configuration_infos_router
+    from lollms.server.endpoints.lollms_skills_library import router as lollms_skills_library_router
 
     from lollms.server.endpoints.lollms_user import router as lollms_user_router
     from lollms.server.endpoints.lollms_xtts import router as lollms_xtts_add_router
     from lollms.server.endpoints.lollms_sd import router as lollms_sd_router    
     from lollms.server.endpoints.lollms_ollama import router as lollms_ollama_router    
     from lollms.server.endpoints.lollms_vllm import router as lollms_vllm_router    
-    from lollms.server.endpoints.lollms_motion_ctrl import router as lollms_motion_ctrl
+    from lollms.server.endpoints.lollms_motion_ctrl import router as lollms_motion_ctrl_router
 
     from endpoints.lollms_webui_infos import router as lollms_webui_infos_router
     from lollms.server.endpoints.lollms_discussion import router as lollms_discussion_router
@@ -124,6 +125,7 @@ if __name__ == "__main__":
     from lollms.server.events.lollms_files_events import add_events as lollms_files_events_add
     from lollms.server.events.lollms_model_events import add_events as lollms_model_events_add
     from lollms.server.events.lollms_rag_events import add_events as lollms_rag_events_add
+    
 
 
     from events.lollms_generation_events import add_events as lollms_webui_generation_events_add
@@ -144,6 +146,7 @@ if __name__ == "__main__":
         app.include_router(lollms_models_infos_router)   
         app.include_router(lollms_personalities_infos_router)   
         app.include_router(lollms_extensions_infos_router)   
+        app.include_router(lollms_skills_library_router)   
         
         app.include_router(lollms_webui_infos_router)
         app.include_router(lollms_discussion_router)
@@ -157,7 +160,7 @@ if __name__ == "__main__":
         app.include_router(lollms_ollama_router)  
         app.include_router(lollms_petals_router)  
         app.include_router(lollms_vllm_router)  
-        app.include_router(lollms_motion_ctrl)  
+        app.include_router(lollms_motion_ctrl_router)  
         
         
         app.include_router(lollms_playground_router)   

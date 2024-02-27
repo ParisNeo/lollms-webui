@@ -9,6 +9,7 @@
           :code="item.code"
           :discussion_id="discussion_id"
           :message_id="message_id"
+          :client_id="client_id"
         ></code-block>
         <div v-else v-html="item.html"></div>
       </div>
@@ -48,7 +49,11 @@ export default {
       type: String,
       required: false,
       default: "http://localhost:9600",
-    },    
+    },   
+    client_id: {
+      type: String,
+      required: true,
+    }, 
     markdownText: {
       type: String,
       required: true,

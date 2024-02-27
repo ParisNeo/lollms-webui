@@ -7,27 +7,6 @@
                 <div class="group/avatar " >
                     <img :src="getImgUrl()" @error="defaultImg($event)" :data-popover-target="'avatar' + message.id" data-popover-placement="bottom"
                         class="w-10 h-10 rounded-full object-fill text-red-700">
-                        
-                        <!-- ADDITIONAL INFO -->
-                    <!-- <div data-popper :id="'avatar' + message.id"   role="tooltip"
-                        class=" -mx-2 absolute invisible rounded-lg bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel block  m-2 p-1 opacity-0 z-10  transition-opacity ease-in-out  duration-500 group-hover/avatar:visible group-hover/avatar:opacity-100 ">
-                        
-                        <div class="relative flex flex-row items-start">
-                            
-                            <img :src="getImgUrl()" @error="defaultImg($event)" class=" border-2 border-primary p-1 rounded-lg w-60 h-60" />
-
-                            <div class="flex flex-col justify-between p-4 leading-normal">
-                                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Noteworthy
-                                    technology acquisitions 2021</h5>
-                                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise
-                                    technology acquisitions of 2021 so far, in reverse chronological order.</p>
-                            </div>
-                            
-                        </div>
-                     
-                    </div> -->
-                    
-                    
                 </div>
                 
             </div>
@@ -211,7 +190,7 @@
                         </div>
                     </div>
                     
-                    <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :host="host" :markdown-text="message.content" :message_id="message.id" :discussion_id="message.discussion_id">
+                    <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :host="host" :markdown-text="message.content" :message_id="message.id" :discussion_id="message.discussion_id" :client_id="this.$store.state.client_id">
                     </MarkdownRenderer>
                     <div >
                         <textarea v-if="message.open" ref="mdTextarea" @keydown.tab.prevent="insertTab"

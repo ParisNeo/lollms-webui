@@ -62,6 +62,10 @@ export default {
       type: String,
       required: true,
     },
+    client_id: {
+      type: String,
+      required: true,
+    },
     code: {
       type: String,
       required: true,
@@ -135,7 +139,8 @@ export default {
     },
     executeCode() {
       this.isExecuting=true;
-      const json = JSON.stringify({ 
+      const json = JSON.stringify({
+                                    'client_id': this.client_id, 
                                     'code': this.code, 
                                     'discussion_id': this.discussion_id, 
                                     'message_id': this.message_id, 
@@ -163,7 +168,7 @@ export default {
       });
     },
     openFolderVsCode(){
-      const json = JSON.stringify({ 'code': this.code, 'discussion_id': this.discussion_id, 'message_id': this.message_id, 'language': this.language})   
+      const json = JSON.stringify({'client_id': this.client_id, 'code': this.code, 'discussion_id': this.discussion_id, 'message_id': this.message_id})   
       console.log(json)     
       fetch(`${this.host}/open_code_in_vs_code`, {
         method: 'POST',
@@ -183,7 +188,7 @@ export default {
       });      
     },
     openVsCode() {
-      const json = JSON.stringify({ 'code': this.code, 'discussion_id': this.discussion_id, 'message_id': this.message_id, 'language': this.language })   
+      const json = JSON.stringify({ 'client_id': this.client_id, 'code': this.code, 'discussion_id': this.discussion_id, 'message_id': this.message_id})   
       console.log(json)     
       fetch(`${this.host}/open_code_folder_in_vs_code`, {
         method: 'POST',
@@ -203,7 +208,7 @@ export default {
       });
     },
     openFolder() {
-      const json = JSON.stringify({ 'discussion_id': this.discussion_id })   
+      const json = JSON.stringify({ 'client_id': this.client_id, 'discussion_id': this.discussion_id })   
       console.log(json)     
       fetch(`${this.host}/open_code_folder`, {
         method: 'POST',
