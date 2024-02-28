@@ -4600,11 +4600,19 @@ export default {
             })
             .then(response => {
                 if (response.status){
-                    this.$store.state.messageBox.showMessage("Personality copied to the custom personalities folder :\n")
+                    this.$store.state.messageBox.showMessage(
+                        "Personality copied to the custom personalities folder:\n"+
+                        "Now it's up to you to modify it, enhance it, and maybe even share it.\n"+
+                        "Feel free to add your name as an author, but please remember to keep the original creator's name as well.\n"+
+                        "You have the freedom to give, sell, or keep the personas you create for yourself.\n"+
+                        "The possibilities are endless, they are now yours to mold and customize as you see fit."
+                    
+                    )
+
                     this.$store.dispatch('refreshPersonalitiesZoo')
                 }
                 else{
-                    this.$store.state.toast.showToast("Personality couldn't be copied to the custom personalities folder:\n", 4, false)
+                    this.$store.state.toast.showToast("Personality couldn't be copied to the custom personalities folder:\nVerify that the personality is not already copied there.", 4, false)
                 }
             })
             .catch(error => {
