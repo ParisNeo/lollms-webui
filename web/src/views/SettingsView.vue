@@ -425,14 +425,14 @@
                                         </tr>
                                         <tr>
                                         <td style="min-width: 200px;">
-                                            <label for="user_description" class="text-sm font-bold" style="margin-right: 1rem;">Use user description in discussion:</label>
+                                            <label for="use_user_informations_in_discussion" class="text-sm font-bold" style="margin-right: 1rem;">Use user description in discussion:</label>
                                         </td>
                                         <td style="width: 100%;">
                                             <input
                                             type="checkbox"
-                                            id="override_personality_model_parameters"
+                                            id="use_user_informations_in_discussion"
                                             required
-                                            v-model="configFile.override_personality_model_parameters"
+                                            v-model="configFile.use_user_informations_in_discussion"
                                             @change="settingsChanged=true"
                                             class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >

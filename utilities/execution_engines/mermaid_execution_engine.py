@@ -82,6 +82,6 @@ def build_mermaid_output(code, ifram_name="unnamed"):
 
 
 
-def execute_mermaid(code, discussion_id, message_id):
+def execute_mermaid(code):
 
     return build_mermaid_output(code)

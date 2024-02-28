@@ -40,5 +40,5 @@ def build_html_output(code, ifram_name="unnamed"):
     execution_time = time.time() - start_time
     return {"output": rendered, "execution_time": execution_time}
 
-def execute_html(code, discussion_id, message_id):
+def execute_html(code):
     return build_html_output(code)

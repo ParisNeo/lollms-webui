@@ -622,7 +622,6 @@ export default {
         },
         getImgUrl() {
             if (this.avatar) {
-                console.log("Avatar:",bUrl + this.avatar)
                 return bUrl + this.avatar
             }
             console.log("No avatar found")

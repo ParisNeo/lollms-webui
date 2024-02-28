@@ -95,28 +95,28 @@ async def execute_code(request: CodeRequest):
         if language=="javascript":
             ASCIIColors.info("Executing javascript code:")
             ASCIIColors.yellow(code)
-            return execute_javascript(code, discussion_id, message_id)
+            return execute_javascript(code)
         if language in ["html","html5","svg"]:
             ASCIIColors.info("Executing javascript code:")
             ASCIIColors.yellow(code)
-            return execute_html(code, discussion_id, message_id)
+            return execute_html(code)
 
         elif language=="latex":
             ASCIIColors.info("Executing latex code:")
             ASCIIColors.yellow(code)
-            return execute_latex(code, discussion_id, message_id)
+            return execute_latex(code, client, message_id)
         elif language in ["bash","shell","cmd","powershell"]:
             ASCIIColors.info("Executing shell code:")
             ASCIIColors.yellow(code)
-            return execute_bash(code, discussion_id, message_id)
+            return execute_bash(code, client)
         elif language in ["mermaid"]:
             ASCIIColors.info("Executing mermaid code:")
             ASCIIColors.yellow(code)
-            return execute_mermaid(code, discussion_id, message_id)
+            return execute_mermaid(code)
         elif language in ["graphviz","dot"]:
             ASCIIColors.info("Executing graphviz code:")
             ASCIIColors.yellow(code)
-            return execute_graphviz(code, discussion_id, message_id)
+            return execute_graphviz(code)
         return {"status": False, "error": "Unsupported language", "execution_time": 0}
     except Exception as ex:
         trace_exception(ex)

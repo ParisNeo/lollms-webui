@@ -4,11 +4,23 @@
         <span :style="{ backgroundColor: colors[index % colors.length] }">{{ token[0] }}</span>
     </span>
     </div>
+    <div>
+    <span v-for="(token, index) in namedTokens" :key="index">
+        <span :style="{ backgroundColor: colors[index % colors.length] }">{{ token[1] }}</span>
+    </span>
+    </div>
 </template>
 <script>
 
 export default {
-    props: ['namedTokens'],
+    name: "TokensHilighter",
+
+    props: {
+        namedTokens: {
+        type: Object,
+        required: true
+        }
+    },
     data() {
       return {
         colors: [

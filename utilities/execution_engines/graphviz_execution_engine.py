@@ -68,6 +68,6 @@ def build_graphviz_output(code, ifram_name="unnamed"):
     execution_time = time.time() - start_time
     return {"output": rendered, "execution_time": execution_time}
 
-def execute_graphviz(code, discussion_id, message_id):
+def execute_graphviz(code):
 
     return build_graphviz_output(code)

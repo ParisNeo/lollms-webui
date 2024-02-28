@@ -142,6 +142,7 @@ import feather from 'feather-icons'
 
 import static_info from "../assets/static_info.svg"
 import animated_info from "../assets/animated_info.svg"
+import { useRouter } from 'vue-router'
 
 </script>
 <script>
@@ -276,9 +277,16 @@ export default {
             setTimeout(()=>{
                 window.close();
             },2000)
-        },
+        },   
         refreshPage() {
-            window.location.href = "/";
+            const hostnameParts = window.location.href.split('/');
+
+            if(hostnameParts.length > 4){
+                window.location.href='/'
+            }
+            else{
+                window.location.reload(true);
+            }
         },
         handleOk(inputText) {
             console.log("Input text:", inputText);

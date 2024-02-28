@@ -3,18 +3,28 @@
     <div class="container flex flex-row m-2">
       <div class="flex-grow m-2">
         <div class="flex gap-3 flex-1 items-center flex-grow flex-row m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
-            <button v-show="!generating" id="generate-button" @click="generate" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="pen-tool"></i></button>
-            <button v-show="!generating" id="generate-next-button" @click="generate_in_placeholder" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="archive"></i></button>
+            <button v-show="!generating" id="generate-button" title="Generate from current cursor position" @click="generate" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="pen-tool"></i></button>
+            <button v-show="!generating" id="generate-next-button" title="Generate from next place holder" @click="generate_in_placeholder" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="archive"></i></button>
+            <button v-show="!generating" id="tokenize" title="Tokenize text" @click="tokenize_text" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><img width="25" height="25" :src="tokenize_icon"></button>
+            
             <span class="w-80"></span>
             <button v-show="generating" id="stop-button" @click="stopGeneration" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="x"></i></button>
             <button
                 type="button"
+                title="Dictate (using your browser for transcription)"
                 @click="startSpeechRecognition"
                 :class="{ 'text-red-500': isLesteningToVoice }"
                 class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer"
             >   
             <i data-feather="mic"></i>
             </button>
+            <button
+                    title="convert text to audio (not saved and uses your browser tts service)"
+                    @click.stop="speak()"
+                    :class="{ 'text-red-500': isTalking }"
+                    class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer">
+              <i data-feather="volume-2"></i>
+            </button>   
             <button
                 type="button"
                 title="Start audio to audio"
@@ -28,6 +38,7 @@
 
             <button
                 type="button"
+                title="Start recording audio"
                 @click="startRecording"
                 :class="{ 'text-green-500': isLesteningToVoice }"
                 class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer text-red-500"
@@ -36,15 +47,8 @@
             <img v-if="pending" :src="loading_icon" height="25">
                         
             </button>            
-            <button
-                    title="speak"
-                    @click.stop="speak()"
-                    :class="{ 'text-red-500': isTalking }"
-                    class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer">
-              <i data-feather="volume-2"></i>
-            </button>
             <button v-if="!isSynthesizingVoice"
-                    title="read"
+                    title="generate audio from the text"
                     @click.stop="read()"
                     class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer">
               <i data-feather="voicemail"></i>
@@ -79,41 +83,40 @@
           <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4" :class="{ 'border-red-500': generating }">
             <div  v-if="tab_id === 'source'">
                 <div class="flex flex-row justify-end mx-2">
-                            <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
                                 title="Add generic block" @click.stop="addBlock('')">
                                 <img :src="code_block" width="25" height="25">
-                            </div>                            
-
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                            </div>            
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
                                 title="Add python block" @click.stop="addBlock('python')">
                                 <img :src="python_block" width="25" height="25">
                             </div>
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
                                 title="Add javascript block" @click.stop="addBlock('javascript')">
                                 <img :src="javascript_block" width="25" height="25">
                             </div>
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
                                 title="Add json block" @click.stop="addBlock('json')">
                                 <img :src="json_block" width="25" height="25">
                             </div>                            
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
                                 title="Add c++ block" @click.stop="addBlock('c++')">
                                 <img :src="cpp_block" width="25" height="25">
                             </div>
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
                                 title="Add html block" @click.stop="addBlock('html')">
                                 <img :src="html5_block" width="25" height="25">
                             </div>
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
                                 title="Add LaTex block" @click.stop="addBlock('latex')">
                                 <img :src="LaTeX_block" width="25" height="25">
                             </div>
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
                                 title="Add bash block" @click.stop="addBlock('bash')">
                                 <img :src="bash_block" width="25" height="25">
                             </div>
                             
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
+                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
                                 title="Copy message to clipboard" @click.stop="copyContentToClipboard()">
                                 <i data-feather="copy"></i>
                             </div>
@@ -134,7 +137,9 @@
                 <source :src="audio_url" type="audio/wav"  ref="audio_player">
                 Your browser does not support the audio element.
             </audio>  
+            <tokens-hilighter :namedTokens="namedTokens">
 
+            </tokens-hilighter>
             <div  v-if="tab_id === 'render'">
               <MarkdownRenderer ref="mdRender" :markdown-text="text" class="mt-4 p-2 rounded shadow-lg dark:bg-bg-dark">
               </MarkdownRenderer>          
@@ -234,6 +239,7 @@ import socket from '@/services/websocket.js'
 import Toast from '../components/Toast.vue'
 import MarkdownRenderer from '../components/MarkdownRenderer.vue';
 import ClipBoardTextInput from "@/components/ClipBoardTextInput.vue";
+import TokensHilighter from "@/components/TokensHilighter.vue"
 import Card from "@/components/Card.vue"
 import { nextTick, TransitionGroup } from 'vue'
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
@@ -243,10 +249,13 @@ import python_block from '@/assets/python_block.png';
 import javascript_block from '@/assets/javascript_block.svg';
 import json_block from '@/assets/json_block.png';
 
+
 import cpp_block from '@/assets/cpp_block.png';
 import html5_block from '@/assets/html5_block.png';
 import LaTeX_block from '@/assets/LaTeX_block.png';
 import bash_block from '@/assets/bash_block.png';
+
+import tokenize_icon from '@/assets/tokenize_icon.svg';
 
 
 
@@ -405,6 +414,10 @@ export default {
   name: 'PlayGroundView',
   data() {
     return {
+      posts_headers : {
+                'accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
       pending:false,
       is_recording:false,
       is_deaf_transcribing:false,
@@ -417,6 +430,8 @@ export default {
       code_block:code_block,
       python_block:python_block,
       bash_block:bash_block,
+
+      tokenize_icon:tokenize_icon,
 
       deaf_off:deaf_off,
       deaf_on:deaf_on,
@@ -436,7 +451,8 @@ export default {
       isLesteningToVoice:false,
       presets:[],
       selectedPreset: '',
-      cursorPosition:0,  
+      cursorPosition:0,
+      namedTokens:[],
       text:"",
       pre_text:"",
       post_text:"",
@@ -456,6 +472,7 @@ export default {
     Toast,
     MarkdownRenderer,
     ClipBoardTextInput,
+    TokensHilighter,
     Card
   },
   mounted() {
@@ -767,6 +784,11 @@ export default {
 
       // Toggle button visibility
       this.generating=true
+    },
+    async tokenize_text(){
+      const output = await axios.post("/lollms_tokenize", {"prompt": this.text}, {headers: this.posts_headers});
+      console.log(output.data.named_tokens)
+      this.namedTokens = output.data.named_tokens
     },
     generate(){
       console.log("Finding cursor position")
