@@ -199,13 +199,14 @@ async def open_code_folder_in_vs_code(request: OpenCodeFolderInVsCodeRequestMode
                 f.write(request.code)
             
             if os.path.isdir(root_folder):
-                subprocess.run(['code', root_folder], check=True)
+                path = '"'+str(root_folder)+'"'.replace("\\","/")
+                subprocess.run(['code', path], shell=True)
 
 
         return {"status": True, "execution_time": 0}
     except Exception as ex:
         trace_exception(ex)
-        lollmsElfServer.error(ex)
+        lollmsElfServer.error(str(ex))
         return {"status":False,"error":"An error occurred during processing."}
     
 class VSCodeData(BaseModel):
