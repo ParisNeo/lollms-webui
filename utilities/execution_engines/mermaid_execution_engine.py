@@ -11,6 +11,8 @@ from ascii_colors import get_trace_exception, trace_exception
 import time
 import subprocess
 import json
+from lollms.client_session import Client
+
 
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()          
 

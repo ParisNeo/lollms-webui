@@ -54,6 +54,7 @@ lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
 
 class CodeRequest(BaseModel):
+    client_id: str  = Field(...)
     code: str = Field(..., description="Code to be executed")
     discussion_id: int = Field(..., description="Discussion ID")
     message_id: int = Field(..., description="Message ID")
@@ -67,7 +68,7 @@ async def execute_code(request: CodeRequest):
     :param request: The HTTP request object.
     :return: A JSON response with the status of the operation.
     """
-
+    client = lollmsElfServer.session.get_client(request.client_id)
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Code execution is blocked when in headless mode for obvious security reasons!"}
 
@@ -90,7 +91,7 @@ async def execute_code(request: CodeRequest):
         if language=="python":
             ASCIIColors.info("Executing python code:")
             ASCIIColors.yellow(code)
-            return execute_python(code, discussion_id, message_id)
+            return execute_python(code, client, message_id)
         if language=="javascript":
             ASCIIColors.info("Executing javascript code:")
             ASCIIColors.yellow(code)
@@ -247,7 +248,7 @@ async def open_code_in_vs_code(vs_code_data: VSCodeData):
             f.write(code)
         
         # Use subprocess.Popen to safely open the file
-        subprocess.Popen(["code", str(root_folder)], shell=True)
+        subprocess.Popen(["code", str(tmp_file)], shell=True)
         
         return {"status": True, "execution_time": 0}
     except Exception as ex:
@@ -280,39 +281,17 @@ async def open_code_folder(request: FolderRequest):
             return {"status":False,"error":"User refused the opeining folder!"}
 
     try:
-        if request.discussion_id:
-            discussion_id = request.discussion_id
-
-            ASCIIColors.info("Opening folder:")
-            # Create a temporary file.
-            root_folder = client.discussion.discussion_folder
-            root_folder.mkdir(parents=True, exist_ok=True)
-            if platform.system() == 'Windows':
-                subprocess.run(['start', str(root_folder)], check=True)
-            elif platform.system() == 'Linux':
-                subprocess.run(['xdg-open', str(root_folder)], check=True)
-            elif platform.system() == 'Darwin':
-                subprocess.run(['open', str(root_folder)], check=True)
-            return {"status": True, "execution_time": 0}
-        elif request.folder_path:
-            folder_path = os.path.realpath(request.folder_path)
-            # Verify that this is a file and not an executable
-            root_folder = Path(folder_path)
-            is_valid_folder_path = root_folder.is_dir()
-
-            if not is_valid_folder_path:
-                return {"status":False, "error":"Invalid folder path"}
-
-            ASCIIColors.info("Opening folder:")
-            # Create a temporary file.
-            root_folder.mkdir(parents=True, exist_ok=True)
-            if platform.system() == 'Windows':
-                subprocess.run(['start', str(root_folder)], check=True)
-            elif platform.system() == 'Linux':
-                subprocess.run(['xdg-open', str(root_folder)], check=True)
-            elif platform.system() == 'Darwin':
-                subprocess.run(['open', str(root_folder)], check=True)
-            return {"status": True, "execution_time": 0}
+        ASCIIColors.info("Opening folder:")
+        # Create a temporary file.
+        root_folder = client.discussion.discussion_folder
+        root_folder.mkdir(parents=True, exist_ok=True)
+        if platform.system() == 'Windows':
+            subprocess.run(['start', '"'+str(root_folder)+'"'], check=True)
+        elif platform.system() == 'Linux':
+            subprocess.run(['xdg-open', str(root_folder)], check=True)
+        elif platform.system() == 'Darwin':
+            subprocess.run(['open', str(root_folder)], check=True)
+        return {"status": True, "execution_time": 0}
 
     except Exception as ex:
         trace_exception(ex)

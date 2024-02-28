@@ -23,10 +23,13 @@ import shutil
 import time
 import subprocess
 import json
+from lollms.client_session import Client
+from lollms.utilities import discussion_path_2_url
+
 
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()           
 
-def execute_latex(code, discussion_id, message_id):
+def execute_latex(code, client:Client, message_id):
     def spawn_process(code):
         """Executes Python code and returns the output as JSON."""
 
@@ -34,7 +37,7 @@ def execute_latex(code, discussion_id, message_id):
         start_time = time.time()
 
         # Create a temporary file.
-        root_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
+        root_folder = client.discussion.discussion_folder
         root_folder.mkdir(parents=True,exist_ok=True)
         tmp_file = root_folder/f"latex_file_{message_id}.tex"
         with open(tmp_file,"w",encoding="utf8") as f:
@@ -70,11 +73,12 @@ def execute_latex(code, discussion_id, message_id):
 
         # The child process was successful.
         pdf_file=str(pdf_file).replace("\\","/")
-        if not "http" in lollmsElfServer.config.host:
+        if not "http" in lollmsElfServer.config.host and not "https" in lollmsElfServer.config.host:
             host = "http://"+lollmsElfServer.config.host
         else:
             host = lollmsElfServer.config.host
-        url = f"{host}:{lollmsElfServer.config.port}/{pdf_file[pdf_file.index('outputs'):]}"
+        
+        url = f"{host}:{lollmsElfServer.config.port}/{discussion_path_2_url(pdf_file)}"
         output_json = {"output": f"Pdf file generated at: {pdf_file}\n<a href='{url}'>Click here to show</a>", "execution_time": execution_time}
         return output_json
     return spawn_process(code)

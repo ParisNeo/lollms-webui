@@ -168,7 +168,12 @@ export default {
       });
     },
     openFolderVsCode(){
-      const json = JSON.stringify({'client_id': this.client_id, 'code': this.code, 'discussion_id': this.discussion_id, 'message_id': this.message_id})   
+      const json = JSON.stringify({
+                                      'client_id': this.client_id, 
+                                      'code': this.code, 
+                                      'discussion_id': this.discussion_id, 
+                                      'message_id': this.message_id
+                                    })   
       console.log(json)     
       fetch(`${this.host}/open_code_in_vs_code`, {
         method: 'POST',
@@ -188,7 +193,12 @@ export default {
       });      
     },
     openVsCode() {
-      const json = JSON.stringify({ 'client_id': this.client_id, 'code': this.code, 'discussion_id': this.discussion_id, 'message_id': this.message_id})   
+      const json = JSON.stringify({ 
+                          'client_id': this.client_id, 
+                          'discussion_id': this.discussion_id, 
+                          'message_id': this.message_id,
+                          'code': this.code
+                          })   
       console.log(json)     
       fetch(`${this.host}/open_code_folder_in_vs_code`, {
         method: 'POST',

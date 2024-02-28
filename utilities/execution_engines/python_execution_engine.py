@@ -12,10 +12,11 @@ from ascii_colors import get_trace_exception, trace_exception
 import time
 import subprocess
 import json
+from lollms.client_session import Client
 
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()           
 
-def execute_python(code, discussion_id, message_id):
+def execute_python(code, client:Client, message_id):
     def spawn_process(code):
         """Executes Python code and returns the output as JSON."""
 
@@ -23,7 +24,7 @@ def execute_python(code, discussion_id, message_id):
         start_time = time.time()
 
         # Create a temporary file.
-        root_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"discussions"/f"d_{discussion_id}"
+        root_folder = client.discussion.discussion_folder
         root_folder.mkdir(parents=True,exist_ok=True)
         tmp_file = root_folder/f"ai_code_{message_id}.py"
         with open(tmp_file,"w",encoding="utf8") as f:
