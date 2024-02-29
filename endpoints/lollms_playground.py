@@ -15,7 +15,7 @@ from starlette.responses import StreamingResponse
 from lollms.types import MSG_TYPE
 from lollms.main_config import BaseConfig
 from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception, find_first_available_file_index, add_period, PackageManager
-from lollms.security import sanitize_path_from_endpoint
+from lollms.security import sanitize_path_from_endpoint, validate_path
 from pathlib import Path
 from ascii_colors import ASCIIColors
 import os
