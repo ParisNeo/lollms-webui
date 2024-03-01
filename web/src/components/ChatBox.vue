@@ -96,7 +96,7 @@
                         </button>
                         <button type="button" title="Download database"
                             class="flex items-center p-0.5 text-sm rounded-sm hover:text-red-600 active:scale-75"
-                            @click="download_database">
+                            @click="download_files">
                             <i data-feather="download-cloud" class="w-5 h-5 "></i>
                         </button>                        
                     </div>
@@ -656,8 +656,8 @@ export default {
                 });
         
         },
-        download_database(){
-            axios.get('/download_database')
+        download_files(){
+            axios.get('/download_files')
         },
         remove_file(file){
             axios.get('/remove_file',{name: file}).then(res=>{

@@ -11,78 +11,82 @@
         <span class="sr-only">Close modal</span>
       </button>
     <div class="relative w-full max-h-full ">
-      <form class="mb-4">
-        <div class="container relative items-center gap-2 rounded-lg border bg-white p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-900" style="height:500px; overflow-y: auto;">
-          <table class="w-full">
-          <tr>
-            <td><label for="personalityConditioning">Personality Conditioning:</label></td><td><textarea id="personalityConditioning" class="w-full" v-model="config.personality_conditioning"></textarea></td>
-          </tr>
-          <tr>
-            <td><label for="userMessagePrefix">User Message Prefix:</label></td><td><input type="text" id="userMessagePrefix" class="w-full" v-model="config.user_message_prefix"></td>
-          </tr>
-          <tr>
-            <td><label for="aiMessagePrefix">AI Message Prefix:</label></td><td><input type="text" id="aiMessagePrefix" class="w-full" v-model="config.ai_message_prefix"></td>
-          </tr>
-
-          <tr>
-            <td><label for="linkText">Link Text:</label></td><td><input type="text" id="linkText" class="w-full" v-model="config.link_text"></td>
-          </tr>
-          <tr>
-            <td><label for="welcomeMessage">Welcome Message:</label></td><td><textarea id="welcomeMessage" class="w-full" v-model="config.welcome_message"></textarea></td>
-          </tr>
-          <tr>
-            <td><label for="modelTemperature">Model Temperature:</label></td><td><input type="number" id="modelTemperature" class="w-full" v-model="config.model_temperature"></td>
-          </tr>
-          <tr>
-            <td><label for="modelNPredicts">Model N Predicts:</label></td>
-            <td><input type="number" id="modelNPredicts" class="w-full" v-model="config.model_n_predicts"></td>
-          </tr>   
-          <tr>
-            <td><label for="modelNPredicts">Model N Predicts:</label></td>
-            <td><input type="number" id="modelNPredicts" class="w-full" v-model="config.model_n_predicts"></td>
-          </tr>
-          <tr>
-            <td><label for="modelTopK">Model Top K:</label></td>
-            <td><input type="number" id="modelTopK" class="w-full" v-model="config.model_top_k"></td>
-          </tr>
-          <tr>
-            <td><label for="modelTopP">Model Top P:</label></td>
-            <td><input type="number" id="modelTopP" class="w-full" v-model="config.model_top_p"></td>
-          </tr>
-          <tr>
-            <td><label for="modelRepeatPenalty">Model Repeat Penalty:</label></td>
-            <td><input type="number" id="modelRepeatPenalty" class="w-full" v-model="config.model_repeat_penalty"></td>
-          </tr>
-          <tr>
-            <td><label for="modelRepeatLastN">Model Repeat Last N:</label></td>
-            <td><input type="number" id="modelRepeatLastN" class="w-full" v-model="config.model_repeat_last_n"></td>
-          </tr>
-          <tr>
-            <td><label for="recommendedBinding">Recommended Binding:</label></td>
-            <td><input type="text" id="recommendedBinding" class="w-full" v-model="config.recommended_binding"></td>
-          </tr>
-          <tr>
-            <td><label for="recommendedModel">Recommended Model:</label></td>
-            <td><input type="text" id="recommendedModel" class="w-full" v-model="config.recommended_model"></td>
-          </tr>
-          <tr>
-            <td><label for="dependencies">Dependencies:</label></td>
-            <td><textarea id="dependencies" class="w-full" v-model="config.dependencies"></textarea></td>
-          </tr>
-          <tr>
-            <td><label for="antiPrompts">Anti Prompts:</label></td>
-            <td><textarea id="antiPrompts" class="w-full" v-model="config.anti_prompts"></textarea></td>
-          </tr>                 
-        </table>
+      <div class="w-full h-full relative items-center gap-2 rounded-lg border bg-white p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-900" style="height:500px; overflow-y: auto;">
+        <div class="justify-center text-center items-center w-full bg-gray-800">
+          <div class="w-full flex flex-row mt-4 text-center justify-center">
+          <button type="submit" @click.prevent="submitForm" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Commit AI to Server
+          </button>
+          <button @click.prevent="hide()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Close
+          </button>
         </div>        
-      </form>
-      <div class="flex flex-row mt-4 text-center">
-        <button type="submit" @click.prevent="submitForm" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Commit AI to Server
-        </button>
-        <button @click.prevent="hide()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Close
-        </button>
+        <div class="w-full max-h-full container bg-gray-100">
+          <form class="mb-4 w-full">
+            <table class="w-full bg-gray-200">
+            <tr>
+              <td><label for="personalityConditioning">Personality Conditioning:</label></td><td><textarea id="personalityConditioning" class="w-full" v-model="config.personality_conditioning"></textarea></td>
+            </tr>
+            <tr>
+              <td><label for="userMessagePrefix">User Message Prefix:</label></td><td><input type="text" id="userMessagePrefix" class="w-full" v-model="config.user_message_prefix"></td>
+            </tr>
+            <tr>
+              <td><label for="aiMessagePrefix">AI Message Prefix:</label></td><td><input type="text" id="aiMessagePrefix" class="w-full" v-model="config.ai_message_prefix"></td>
+            </tr>
+
+            <tr>
+              <td><label for="linkText">Link Text:</label></td><td><input type="text" id="linkText" class="w-full" v-model="config.link_text"></td>
+            </tr>
+            <tr>
+              <td><label for="welcomeMessage">Welcome Message:</label></td><td><textarea id="welcomeMessage" class="w-full" v-model="config.welcome_message"></textarea></td>
+            </tr>
+            <tr>
+              <td><label for="modelTemperature">Model Temperature:</label></td><td><input type="number" id="modelTemperature" class="w-full" v-model="config.model_temperature"></td>
+            </tr>
+            <tr>
+              <td><label for="modelNPredicts">Model N Predicts:</label></td>
+              <td><input type="number" id="modelNPredicts" class="w-full" v-model="config.model_n_predicts"></td>
+            </tr>   
+            <tr>
+              <td><label for="modelNPredicts">Model N Predicts:</label></td>
+              <td><input type="number" id="modelNPredicts" class="w-full" v-model="config.model_n_predicts"></td>
+            </tr>
+            <tr>
+              <td><label for="modelTopK">Model Top K:</label></td>
+              <td><input type="number" id="modelTopK" class="w-full" v-model="config.model_top_k"></td>
+            </tr>
+            <tr>
+              <td><label for="modelTopP">Model Top P:</label></td>
+              <td><input type="number" id="modelTopP" class="w-full" v-model="config.model_top_p"></td>
+            </tr>
+            <tr>
+              <td><label for="modelRepeatPenalty">Model Repeat Penalty:</label></td>
+              <td><input type="number" id="modelRepeatPenalty" class="w-full" v-model="config.model_repeat_penalty"></td>
+            </tr>
+            <tr>
+              <td><label for="modelRepeatLastN">Model Repeat Last N:</label></td>
+              <td><input type="number" id="modelRepeatLastN" class="w-full" v-model="config.model_repeat_last_n"></td>
+            </tr>
+            <tr>
+              <td><label for="recommendedBinding">Recommended Binding:</label></td>
+              <td><input type="text" id="recommendedBinding" class="w-full" v-model="config.recommended_binding"></td>
+            </tr>
+            <tr>
+              <td><label for="recommendedModel">Recommended Model:</label></td>
+              <td><input type="text" id="recommendedModel" class="w-full" v-model="config.recommended_model"></td>
+            </tr>
+            <tr>
+              <td><label for="dependencies">Dependencies:</label></td>
+              <td><textarea id="dependencies" class="w-full" v-model="config.dependencies"></textarea></td>
+            </tr>
+            <tr>
+              <td><label for="antiPrompts">Anti Prompts:</label></td>
+              <td><textarea id="antiPrompts" class="w-full" v-model="config.anti_prompts"></textarea></td>
+            </tr>                 
+          </table>
+        </form>
+        </div>
+      </div>        
       </div>
     </div>
   </div>
