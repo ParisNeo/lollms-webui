@@ -10,22 +10,22 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'primary': '#0e8ef0',
-        'primary-light': '#3dabff',
-        'secondary': '#0fd974',
-        'accent': '#f0700e',
-        'bg-dark': '#132e59',
-        'bg-dark-tone': '#25477d',
-        'bg-dark-tone-panel': '#4367a3',
-        'bg-dark-code-block': '#2254a7',
-        'bg-light': '#e2edff',
-        'bg-light-tone': '#b9d2f7',
-        'bg-light-code-block': '#cad7ed',
-        'bg-light-tone-panel': '#8fb5ef',
-        'bg-dark-discussion': '#435E8A',
-        'bg-dark-discussion-odd': '#284471',
-        'bg-light-discussion': '#c5d8f8',
-        'bg-light-discussion-odd': '#d6e7ff'
+        'primary': 'var(--color-primary)',
+        'primary-light': 'var(--color-primary-light)',
+        'secondary': 'var(--color-secondary)',
+        'accent': 'var(--color-accent)',
+        'bg-dark': 'var(--color-bg-dark)',
+        'bg-dark-tone': 'var(--color-bg-dark-tone)',
+        'bg-dark-tone-panel': 'var(--color-bg-dark-tone-panel)',
+        'bg-dark-code-block': 'var(--color-bg-dark-code-block)',
+        'bg-light': 'var(--color-bg-light)',
+        'bg-light-tone': 'var(--color-bg-light-tone)',
+        'bg-light-code-block': 'var(--color-bg-light-code-block)',
+        'bg-light-tone-panel': 'var(--color-bg-light-tone-panel)',
+        'bg-dark-discussion': 'var(--color-bg-dark-discussion)',
+        'bg-dark-discussion-odd': 'var(--color-bg-dark-discussion-odd)',
+        'bg-light-discussion': 'var(--color-bg-light-discussion)',
+        'bg-light-discussion-odd': 'var(--color-bg-light-discussion-odd)'
     },
       fontFamily: {
         sans: ['PTSans', 'Roboto', 'sans-serif']

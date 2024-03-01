@@ -32,6 +32,7 @@ def execute_bash(code, client:Client):
                 shell=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
+                cwd=client.discussion.discussion_folder
             )
 
             # Get the output and error from the process.

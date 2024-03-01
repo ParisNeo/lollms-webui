@@ -2,7 +2,7 @@
 
         <form>
             <div class="absolute bottom-0 left-0 w-fit min-w-96  w-full justify-center text-center p-4">
-                <div v-if="filesList.length > 0 || showPersonalities" class="items-center gap-2 rounded-lg border bg-light-tone dark:bg-bg-dark-tone p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-900  w-fit">
+                <div v-if="filesList.length > 0 || showPersonalities" class="items-center gap-2 rounded-lg border bg-bg-light-tone dark:bg-bg-dark-tone p-1.5 shadow-sm hover:shadow-none dark:border-gray-800  w-fit">
                     <!-- EXPAND / COLLAPSE BUTTON -->
                     <div class="flex">
                         <button 
@@ -112,7 +112,7 @@
                 </div>
 
                     <!-- CHAT BOX -->
-                        <div v-if="selecting_model" title="Selecting model" class="flex flex-row flex-grow justify-end">
+                        <div v-if="selecting_model" title="Selecting model" class="flex flex-row flex-grow justify-end bg-primary">
                             <!-- SPINNER -->
                             <div role="status">
                                 <img :src="loader_v0" class="w-50 h-50">
@@ -120,7 +120,7 @@
                             </div>
                         </div>
                         <div class="flex w-fit pb-3 relative grow   w-full">
-                            <div class="relative grow flex h-15 cursor-pointer select-none items-center gap-2 rounded-lg border bg-primary dark:bg-bg-dark-tone p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-900" tabindex="0">
+                            <div class="relative grow flex h-12.5 cursor-pointer select-none items-center gap-2 rounded-lg border bg-bg-light-tone dark:bg-bg-dark-tone p-1 shadow-sm hover:shadow-none dark:border-gray-800" tabindex="0">
                                 <div v-if="loading" title="Waiting for reply">
                                     <img :src="loader_v0">
                                     <!-- SPINNER -->
@@ -222,7 +222,7 @@
                                     class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
                                             <i data-feather="send"></i>
                                     </button>                        
-                                    <div class="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Sends your message to the AI.</p></div>
+                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Sends your message to the AI.</p></div>
                                 </div>
                                 <div class="group relative w-max">
                                     <button v-if="!loading" 
@@ -233,7 +233,7 @@
                                     >
                                     <i data-feather="mic"></i>
                                     </button>                      
-                                    <div class="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Press and talk.</p></div>
+                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Press and talk.</p></div>
                                 </div>
                                 <div v-if="!loading" class="group relative w-max">
                                     <input type="file" ref="fileDialog" style="display: none" @change="addFiles" multiple />
@@ -241,7 +241,7 @@
                                         class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
                                         <i data-feather="file-plus"></i>
                                     </button>                    
-                                    <div class="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Send File to the AI.</p></div>
+                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Send File to the AI.</p></div>
                                 </div>
 
                                 <div class="group relative w-max">
@@ -249,7 +249,7 @@
                                         class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
                                         <i data-feather="camera"></i>
                                     </button>                 
-                                    <div class="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Take a shot from webcam.</p></div>
+                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Take a shot from webcam.</p></div>
                                 </div>
 
                                 <div class="group relative w-max">
@@ -257,7 +257,7 @@
                                         class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
                                         <i data-feather="globe"></i>
                                     </button>               
-                                    <div class="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Add a weblink to the discussion.</p></div>
+                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Add a weblink to the discussion.</p></div>
                                 </div>
 
                                 <div class="group relative w-max">
@@ -266,7 +266,7 @@
                                         <i data-feather="message-square"></i>
                                     </button>
          
-                                    <div class="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">New empty User message.</p></div>
+                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">New empty User message.</p></div>
                                 </div>
 
                                 <div class="group relative w-max">
@@ -276,7 +276,7 @@
                                     </button>  
 
          
-                                    <div class="pointer-events-none absolute -top-10 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">New empty ai message.</p></div>
+                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">New empty ai message.</p></div>
                                 </div>
 
                             </div> 

@@ -23,6 +23,7 @@ function copyObject(obj) {
 export const store = createStore({
     state () {
       return {
+        currentTheme: '',
         personality_editor:null,
         showPersonalityEditor: false,
         selectedPersonality:null,
@@ -134,7 +135,10 @@ export const store = createStore({
       
       // increment (state) {
       //   state.count++
-      // }    
+      // }
+      setTheme(theme) {
+        this.currentTheme = theme;
+      }      
     },
     getters: {
       getIsConnected(state) {
@@ -671,4 +675,4 @@ app.use(router)
 app.use(store)
 app.mount('#app')
 
-export{logObjectProperties, copyObject, flattenObject, refreshHardwareUsage}
+export{logObjectProperties, copyObject, flattenObject, refreshHardwareUsage }
