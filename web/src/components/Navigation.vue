@@ -2,13 +2,13 @@
     <div v-if="$store.state.ready" class="container flex flex-col sm:flex-row items-center">
       <div class="w-full">
         <div class="flex flex-row font-medium nav-ul">
-            <RouterLink :to="{ name: 'discussions' }" class="link-item dark:link-item-dark">
+            <RouterLink :to="{ name: 'discussions' }" class="link-item dark:link-item-dark bg-light hover:bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone">
               Discussions
             </RouterLink>
-            <RouterLink :to="{ name: 'playground' }" class="link-item dark:link-item-dark">
+            <RouterLink :to="{ name: 'playground' }" class="link-item dark:link-item-dark bg-light hover:bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone">
               Playground
             </RouterLink>
-            <RouterLink v-if="$store.state.config.enable_voice_service" :to="{ name: 'interactive' }" class="link-item dark:link-item-dark">
+            <RouterLink v-if="$store.state.config.enable_voice_service" :to="{ name: 'interactive' }" class="link-item dark:link-item-dark bg-light hover:bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone">
               interactive
             </RouterLink>
             <!--
@@ -26,10 +26,10 @@
             </RouterLink>
 
             -->
-            <RouterLink :to="{ name: 'settings' }" class="link-item dark:link-item-dark">
+            <RouterLink :to="{ name: 'settings' }" class="link-item dark:link-item-dark bg-light hover:bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone">
               Settings
             </RouterLink>
-            <RouterLink :to="{ name: 'help' }" class="link-item dark:link-item-dark">
+            <RouterLink :to="{ name: 'help' }" class="link-item dark:link-item-dark bg-light hover:bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone">
               Help
             </RouterLink>
           </div>
@@ -63,11 +63,6 @@
     border: 1px solid transparent; /* Ensure all links have the same height */
     border-radius: 5px 5px 0 0; /* Rounded corners on the top */
     font-weight: bold; /* Optional: Add font-weight for emphasis */
-  
-    /* Use different colors for dark and light modes */
-    background-color: #82a1d4; /* Use your theme's 'bg-light-tone' color for light mode */
-    color: #000; /* Use your theme's 'primary' color for light mode */
-  
  
     /* Animate the links when hovered */
     transition: duration-300 ease-in-out transform;
@@ -75,21 +70,6 @@
 
   }
   
-  .link-item:hover {
-    background-color: #3dabff; /* Use your theme's 'primary-light' color for the hover effect */
-    animation-timing-function: ease-in-out;    
-    
-  }
-  
-  /* Optional: Change the color when the link is active */
-  .link-item.router-link-active {
-    height: 30px;
-    margin-top: 0px;
-    background-color:  #b9d2f7; /* Use your theme's 'bg-dark-tone' color for active link in dark mode */
-  }
-
-
-
   .link-item-dark {
     /* Thin out the links */
     padding: 0px 20px;
@@ -101,10 +81,6 @@
     border: 1px solid transparent; /* Ensure all links have the same height */
     border-radius: 5px 5px 0 0; /* Rounded corners on the top */
     font-weight: bold; /* Optional: Add font-weight for emphasis */
-  
-    /* Use different colors for dark and light modes */
-    background-color: #000000; /* Use your theme's 'bg-light-tone' color for light mode */
-  
  
     /* Animate the links when hovered */
     transition: duration-300 ease-in-out transform;
@@ -112,17 +88,6 @@
 
   }
   
-  .link-item-dark:hover {
-    background-color: #0cc96a; /* Use your theme's 'primary-light' color for the hover effect */
-    animation-timing-function: ease-in-out;    
-    
-  }
-  
-  .link-item-dark.router-link-active {
-    height: 30px;
-    margin-top: 0px;
-    background-color:  #2b74e2; /* Use your theme's 'bg-dark-tone' color for active link in dark mode */
-  }
 
   /* Ensure each li extends to the bottom of its container */
 

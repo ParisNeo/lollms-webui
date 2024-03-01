@@ -2,7 +2,7 @@
 
         <form>
             <div class="absolute bottom-0 left-0 w-fit min-w-96  w-full justify-center text-center p-4">
-                <div v-if="filesList.length > 0 || showPersonalities" class="items-center gap-2 rounded-lg border bg-white p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-900  w-fit">
+                <div v-if="filesList.length > 0 || showPersonalities" class="items-center gap-2 rounded-lg border bg-primary dark:bg-bg-dark-tone p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-900  w-fit">
                     <!-- EXPAND / COLLAPSE BUTTON -->
                     <div class="flex">
                         <button 
@@ -120,7 +120,7 @@
                             </div>
                         </div>
                         <div class="flex w-fit pb-3 relative grow   w-full">
-                            <div class="relative grow flex h-15 cursor-pointer select-none items-center gap-2 rounded-lg border bg-white p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-900" tabindex="0">
+                            <div class="relative grow flex h-15 cursor-pointer select-none items-center gap-2 rounded-lg border bg-primary dark:bg-bg-dark-tone p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-900" tabindex="0">
                                 <div v-if="loading" title="Waiting for reply">
                                     <img :src="loader_v0">
                                     <!-- SPINNER -->

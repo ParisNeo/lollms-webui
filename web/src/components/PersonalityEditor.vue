@@ -1,18 +1,18 @@
 <template>
   <div v-if="show"  class="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
-    <button type="button" @click="hide()"
-        class="absolute top-1 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white">
-        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-          xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd"
-            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-            clip-rule="evenodd"></path>
-        </svg>
-        <span class="sr-only">Close modal</span>
-      </button>
-    <div class="relative w-full max-h-full ">
-      <div class="w-full h-full relative items-center gap-2 rounded-lg border bg-white p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-900" style="height:500px; overflow-y: auto;">
-        <div class="justify-center text-center items-center w-full bg-gray-800">
+    <div class="relative w-full max-h-full bg-bg-light dark:bg-bg-dark">
+      <div class="w-full h-full relative items-center gap-2 rounded-lg border  bg-bg-light dark:bg-bg-dark p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-900" >
+        <button type="button" @click="hide()"
+          class="absolute top-1 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white">
+          <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"></path>
+          </svg>
+          <span class="sr-only">Close modal</span>
+        </button>        
+        <div class="justify-center text-center items-center w-full  bg-bg-light dark:bg-bg-dark">
           <div class="w-full flex flex-row mt-4 text-center justify-center">
           <button type="submit" @click.prevent="submitForm" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             Commit AI to Server
@@ -21,67 +21,67 @@
             Close
           </button>
         </div>        
-        <div class="w-full max-h-full container bg-gray-100">
+        <div class="w-full max-h-full container  bg-bg-light dark:bg-bg-dark">
           <form class="mb-4 w-full">
-            <table class="w-full bg-gray-200">
+            <table class="w-full  bg-bg-light dark:bg-bg-dark">
             <tr>
-              <td><label for="personalityConditioning">Personality Conditioning:</label></td><td><textarea id="personalityConditioning" class="w-full" v-model="config.personality_conditioning"></textarea></td>
+              <td><label for="personalityConditioning">Personality Conditioning:</label></td><td><textarea class="dark:bg-black dark:text-primary w-full" id="personalityConditioning" v-model="config.personality_conditioning"></textarea></td>
             </tr>
             <tr>
-              <td><label for="userMessagePrefix">User Message Prefix:</label></td><td><input type="text" id="userMessagePrefix" class="w-full" v-model="config.user_message_prefix"></td>
+              <td><label for="userMessagePrefix">User Message Prefix:</label></td><td><input class="dark:bg-black dark:text-primary w-full" type="text" id="userMessagePrefix" v-model="config.user_message_prefix"></td>
             </tr>
             <tr>
-              <td><label for="aiMessagePrefix">AI Message Prefix:</label></td><td><input type="text" id="aiMessagePrefix" class="w-full" v-model="config.ai_message_prefix"></td>
+              <td><label for="aiMessagePrefix">AI Message Prefix:</label></td><td><input class="dark:bg-black dark:text-primary w-full" type="text" id="aiMessagePrefix" v-model="config.ai_message_prefix"></td>
             </tr>
 
             <tr>
-              <td><label for="linkText">Link Text:</label></td><td><input type="text" id="linkText" class="w-full" v-model="config.link_text"></td>
+              <td><label for="linkText">Link Text:</label></td><td><input class="dark:bg-black dark:text-primary w-full" type="text" id="linkText" v-model="config.link_text"></td>
             </tr>
             <tr>
-              <td><label for="welcomeMessage">Welcome Message:</label></td><td><textarea id="welcomeMessage" class="w-full" v-model="config.welcome_message"></textarea></td>
+              <td><label for="welcomeMessage">Welcome Message:</label></td><td><textarea class="dark:bg-black dark:text-primary w-full" id="welcomeMessage" v-model="config.welcome_message"></textarea></td>
             </tr>
             <tr>
-              <td><label for="modelTemperature">Model Temperature:</label></td><td><input type="number" id="modelTemperature" class="w-full" v-model="config.model_temperature"></td>
+              <td><label for="modelTemperature">Model Temperature:</label></td><td><input type="number" id="modelTemperature" v-model="config.model_temperature"></td>
             </tr>
             <tr>
               <td><label for="modelNPredicts">Model N Predicts:</label></td>
-              <td><input type="number" id="modelNPredicts" class="w-full" v-model="config.model_n_predicts"></td>
+              <td><input class="dark:bg-black dark:text-primary w-full" type="number" id="modelNPredicts" v-model="config.model_n_predicts"></td>
             </tr>   
             <tr>
               <td><label for="modelNPredicts">Model N Predicts:</label></td>
-              <td><input type="number" id="modelNPredicts" class="w-full" v-model="config.model_n_predicts"></td>
+              <td><input class="dark:bg-black dark:text-primary w-full" type="number" id="modelNPredicts" v-model="config.model_n_predicts"></td>
             </tr>
             <tr>
               <td><label for="modelTopK">Model Top K:</label></td>
-              <td><input type="number" id="modelTopK" class="w-full" v-model="config.model_top_k"></td>
+              <td><input class="dark:bg-black dark:text-primary w-full" type="number" id="modelTopK" v-model="config.model_top_k"></td>
             </tr>
             <tr>
               <td><label for="modelTopP">Model Top P:</label></td>
-              <td><input type="number" id="modelTopP" class="w-full" v-model="config.model_top_p"></td>
+              <td><input class="dark:bg-black dark:text-primary w-full" type="number" id="modelTopP" v-model="config.model_top_p"></td>
             </tr>
             <tr>
               <td><label for="modelRepeatPenalty">Model Repeat Penalty:</label></td>
-              <td><input type="number" id="modelRepeatPenalty" class="w-full" v-model="config.model_repeat_penalty"></td>
+              <td><input class="dark:bg-black dark:text-primary w-full" type="number" id="modelRepeatPenalty" v-model="config.model_repeat_penalty"></td>
             </tr>
             <tr>
               <td><label for="modelRepeatLastN">Model Repeat Last N:</label></td>
-              <td><input type="number" id="modelRepeatLastN" class="w-full" v-model="config.model_repeat_last_n"></td>
+              <td><input class="dark:bg-black dark:text-primary w-full" type="number" id="modelRepeatLastN" v-model="config.model_repeat_last_n"></td>
             </tr>
             <tr>
               <td><label for="recommendedBinding">Recommended Binding:</label></td>
-              <td><input type="text" id="recommendedBinding" class="w-full" v-model="config.recommended_binding"></td>
+              <td><input class="dark:bg-black dark:text-primary w-full" type="text" id="recommendedBinding" v-model="config.recommended_binding"></td>
             </tr>
             <tr>
               <td><label for="recommendedModel">Recommended Model:</label></td>
-              <td><input type="text" id="recommendedModel" class="w-full" v-model="config.recommended_model"></td>
+              <td><input class="dark:bg-black dark:text-primary w-full" type="text" id="recommendedModel" v-model="config.recommended_model"></td>
             </tr>
             <tr>
-              <td><label for="dependencies">Dependencies:</label></td>
-              <td><textarea id="dependencies" class="w-full" v-model="config.dependencies"></textarea></td>
+              <td><label class="dark:bg-black dark:text-primary w-full" for="dependencies">Dependencies:</label></td>
+              <td><textarea class="dark:bg-black dark:text-primary w-full" id="dependencies" v-model="config.dependencies"></textarea></td>
             </tr>
             <tr>
               <td><label for="antiPrompts">Anti Prompts:</label></td>
-              <td><textarea id="antiPrompts" class="w-full" v-model="config.anti_prompts"></textarea></td>
+              <td><textarea class="dark:bg-black dark:text-primary w-full" id="antiPrompts" v-model="config.anti_prompts"></textarea></td>
             </tr>                 
           </table>
         </form>
@@ -90,6 +90,8 @@
       </div>
     </div>
   </div>
+
+
 </template>
 
 <script>

@@ -10,10 +10,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#0e8ef0',
+        'primary': '#0e8ef0',
         'primary-light': '#3dabff',
-        secondary: '#0fd974',
-        accent: '#f0700e',
+        'secondary': '#0fd974',
+        'accent': '#f0700e',
         'bg-dark': '#132e59',
         'bg-dark-tone': '#25477d',
         'bg-dark-tone-panel': '#4367a3',
@@ -26,7 +26,7 @@ module.exports = {
         'bg-dark-discussion-odd': '#284471',
         'bg-light-discussion': '#c5d8f8',
         'bg-light-discussion-odd': '#d6e7ff'
-      },
+    },
       fontFamily: {
         sans: ['PTSans', 'Roboto', 'sans-serif']
       },
