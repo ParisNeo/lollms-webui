@@ -32,3 +32,4 @@ python-socketio[asyncio_client]
 
 pydantic
 selenium
+tiktoken

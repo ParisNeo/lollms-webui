@@ -23,6 +23,8 @@ from socketio import ASGIApp
 import webbrowser
 import threading
 import os
+import sys
+
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
@@ -49,6 +51,11 @@ app = FastAPI(title="LoLLMS", description="This is the LoLLMS-Webui API document
 #app.mount("/socket.io", StaticFiles(directory="path/to/socketio.js"))
 
 if __name__ == "__main__":
+    desired_version = (3, 11)
+
+    if not sys.version_info >= desired_version:
+        ASCIIColors.error(f"Your Python version is {sys.version_info.major}.{sys.version_info.minor}, but version {desired_version[0]}.{desired_version[1]} or higher is required.")
+        sys.exit(1)
     # Parsong parameters
     parser = argparse.ArgumentParser(description="Start the chatbot FastAPI app.")
     

@@ -398,7 +398,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             self.mounted_personalities=[]
 
         loaded = self.mounted_personalities
-        loaded_names = [f"{p.category}/{p.personality_folder_name}:{p.selected_language}" if p.selected_language else f"{p.category}/{p.personality_folder_name}" for p in loaded]
+        loaded_names = [f"{p.category}/{p.personality_folder_name}:{p.selected_language}" if p.selected_language else f"{p.category}/{p.personality_folder_name}" for p in loaded if p is not None]
         mounted_personalities=[]
         ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
         ASCIIColors.success(f" ║           Building mounted Personalities         ║ ")
