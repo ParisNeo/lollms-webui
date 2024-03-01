@@ -287,7 +287,7 @@ async def open_code_folder(request: FolderRequest):
         root_folder = client.discussion.discussion_folder
         root_folder.mkdir(parents=True, exist_ok=True)
         if platform.system() == 'Windows':
-            subprocess.run(['start', '"'+str(root_folder)+'"'], check=True)
+            subprocess.Popen(f'explorer "{root_folder}"')
         elif platform.system() == 'Linux':
             subprocess.run(['xdg-open', str(root_folder)], check=True)
         elif platform.system() == 'Darwin':
