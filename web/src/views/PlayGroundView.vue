@@ -148,7 +148,7 @@
       </div>
       <Card title="settings"  class="slider-container ml-0 mr-0 max-width"  :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
         <Card  title="Model" class="slider-container ml-0 mr-0" :is_subcard="true" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
-          <select v-model="selectedModel" @change="setModel" class="bg-white dark:bg-black m-0 border-2 rounded-md shadow-sm w-full">
+          <select v-model="this.$store.state.selectedModel" @change="setModel" class="bg-white dark:bg-black m-0 border-2 rounded-md shadow-sm w-full">
             <option v-for="model in models" :key="model" :value="model">
               {{ model }}
             </option>
