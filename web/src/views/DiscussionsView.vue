@@ -535,7 +535,7 @@ export default {
         onclosedatabase_selectorDialog(){this.database_selectorDialogVisible=false;},
         async onvalidatedatabase_selectorChoice(choice){
             this.database_selectorDialogVisible=false;
-            const res = await axios.post("/select_database", {"name": choice}, {headers: this.posts_headers});
+            const res = await axios.post("/select_database", {"client_id":this.client_id, "name": choice}, {headers: this.posts_headers});
             if(res.status){
                 console.log("Selected database")
                 this.$store.state.config = await axios.get("/get_config");
@@ -2012,7 +2012,8 @@ export default {
 
             })
         }
-        
+        if (this.$store.state.config.show_news_panel)
+            this.$store.state.news.show()
     },
     components: {
         Discussion,
