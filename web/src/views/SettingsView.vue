@@ -335,7 +335,24 @@
                                             </div>
                                         </td>
                                         </tr>
-                                        
+                                        <tr>
+                                            
+                                            <td style="min-width: 200px;">
+                                                <label for="show_news_panel" class="text-sm font-bold" style="margin-right: 1rem;">Show news panel:</label>
+                                            </td>
+                                            <td>
+                                                <div class="flex flex-row">
+                                                    <input
+                                                    type="checkbox"
+                                                    id="show_news_panel"
+                                                    required
+                                                    v-model="configFile.show_news_panel"
+                                                    @change="settingsChanged=true"
+                                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                                    >
+                                                </div>
+                                            </td>
+                                            </tr>
                                         <tr>
                                             
                                         <td style="min-width: 200px;">
@@ -3147,11 +3164,24 @@ export default {
                             modelEntry.installing = false
                             modelEntry.isInstalled = true
                         }
+                        else{
+                            modelEntry.installing = true
+                            modelEntry.isInstalled = true
+                        }
+
                     }
                 }
             } else if (response.status === 'succeeded') {
                 console.log("Received succeeded")
-
+                // FInd model
+                if (this.$refs.modelZoo) {
+                    const index = this.$refs.modelZoo.findIndex(item => item.model.name == response.model_name && this.configFile.binding_name == response.binding_folder)
+                    const modelEntry = this.models_zoo[index]
+                    if (response.progress >= 100) {
+                            modelEntry.installing = false
+                            modelEntry.isInstalled = true
+                    }
+                }
                 console.log("Installed successfully")
 
                 if (this.$refs.modelZoo) {
