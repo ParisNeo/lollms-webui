@@ -79,7 +79,7 @@ def add_events(sio:socketio):
                 # File saved successfully
                 run_async(partial(sio.emit,'web_page_added', {'status':True,}))
             else:
-                lollmsElfServer.personality.add_file(file_path, partial(lollmsElfServer.process_chunk, client_id = sid))
+                lollmsElfServer.personality.add_file(file_path, client, partial(lollmsElfServer.process_chunk, client_id = sid))
                 # File saved successfully
                 run_async(partial(sio.emit,'web_page_added', {'status':True}))
         except Exception as e:
