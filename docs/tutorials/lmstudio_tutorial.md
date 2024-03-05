@@ -1,14 +1,14 @@
 # Integrating LM Studio with LoLLMs Web UI
 
-1. Install LM Studio for your OS.
+1. Install [LM Studio](https://lmstudio.ai/) for your OS.
 
 2. Open LM Studio, browse / search for a model of your choosing and download it. 
 
-3. Download LoLLMs Web UI latest release for your OS.  Move to a folder of your choosing and run the install file - follow prompts as needed.
+3. Download [LoLLMs Web UI latest release](https://github.com/ParisNeo/lollms-webui/releases) for your OS.  Move to a folder of your choosing and run the install file - follow prompts as needed.
 
-4. Run LoLLMs.  Choose ‘Settings’ tab. 
+4. Run LoLLMs.  Choose the ‘Settings’ tab in the LoLLMs Web UI. 
 
-5. Choose ‘Binding Zoo’ subsection, scroll down to ‘Elf’ and select ‘Install’ button. 
+5. Choose the ‘Binding Zoo’ subsection, scroll down to ‘Elf’ and select the ‘Install’ button. 
 
 6. After install, restart LoLLMs by closing the terminal application (Windows) and relaunching LoLLMs. 
 
