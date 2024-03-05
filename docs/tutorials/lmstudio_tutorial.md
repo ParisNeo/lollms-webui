@@ -6,6 +6,8 @@
 
 3. Download [LoLLMs Web UI latest release](https://github.com/ParisNeo/lollms-webui/releases) for your OS.  Move to a folder of your choosing and run the install file - follow prompts as needed.
 
+![Latest Releases](/assets/releases.png)
+
 4. Run LoLLMs.  Choose the ‘Settings’ tab in the LoLLMs Web UI. 
 
 5. Choose the ‘Binding Zoo’ subsection, scroll down to ‘Elf’ and select the ‘Install’ button. 
