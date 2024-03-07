@@ -41,6 +41,7 @@ As an all-encompassing tool with access to over 500 AI expert conditionning acro
 - Support for music generation based on musicgen
 - Support for multi generation peer to peer network through Lollms Nodes and Petals.
 - Support for Docker, conda, and manual virtual environment setups
+- Support for LM Studio as a backend 
 
 ## Star History
 
