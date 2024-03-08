@@ -50,7 +50,7 @@ def execute_bash(code, client:Client):
         # Check if the process was successful.
         if process.returncode != 0:
             # The child process threw an exception.
-            error_message = f"Error executing Python code: {error.decode('utf8')}"
+            error_message = f"Error executing Python code: {error.decode('utf8','ignore')}"
             error_json = {"output": "<div class='text-red-500'>"+error_message+"</div>", "execution_time": execution_time}
             return error_json
 
