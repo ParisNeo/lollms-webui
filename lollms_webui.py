@@ -612,7 +612,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         """
         # Get the list of messages
         messages = discussion.get_messages()
-        discussion_messages = "!@>instruction: Create a short title to this discussion\n"
+        discussion_messages = "!@>instruction: Create a short title to this discussion\nYour response should only contain the title without any comments.\n"
         discussion_title = "\n!@>Discussion title:"
 
         available_space = self.config.ctx_size - 150 - len(self.model.tokenize(discussion_messages))- len(self.model.tokenize(discussion_title))
