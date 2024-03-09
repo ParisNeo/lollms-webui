@@ -1625,11 +1625,12 @@
                             </tr>                                        
                             <tr>
                             <td style="min-width: 200px;">
-                                <label for="install_xtts_service" class="text-sm font-bold" style="margin-right: 1rem;">Reinstall xTTS service:</label>
+                                <label for="install_xtts_service" class="text-sm font-bold" style="margin-right: 1rem;">xTTS service:</label>
                             </td>
                             <td>
                                 <div class="flex flex-row">
                                 <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallAudioService">install xtts service</button>
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startAudioService">start xtts service</button>
                                 </div>
                             </td>
                             </tr>                                        
@@ -2864,6 +2865,15 @@ export default {
         },
         reinstallAudioService(){
             axios.get('install_xtts')
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+        },
+        startAudioService(){
+            axios.get('start_xtts')
             .then(response => {
 
             })
