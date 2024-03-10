@@ -19,7 +19,7 @@ from lollms.paths import LollmsPaths
 from lollms.helpers import ASCIIColors, trace_exception
 from lollms.com import NotificationType, NotificationDisplayType, LoLLMsCom
 from lollms.app import LollmsApplication
-from lollms.utilities import File64BitsManager, PromptReshaper, PackageManager, find_first_available_file_index, run_async, is_asyncio_loop_running, yes_or_no_input
+from lollms.utilities import File64BitsManager, PromptReshaper, PackageManager, find_first_available_file_index, run_async, is_asyncio_loop_running, yes_or_no_input, process_ai_output
 from lollms.generation import RECEPTION_MANAGER, ROLE_CHANGE_DECISION, ROLE_CHANGE_OURTPUT
 
 import git
@@ -997,6 +997,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         ASCIIColors.success("\nFinished executing the generation")
 
     def _generate(self, prompt, n_predict, client_id, callback=None):
+        client = self.session.get_client(client_id)
         self.nb_received_tokens = 0
         self.start_time = datetime.now()
         if self.model is not None:
@@ -1017,6 +1018,18 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         n_threads=self.config['n_threads']
                     )
                 else:
+                    prompt = "\n".join([
+                        "!@>system: I am an AI assistant that can converse and analyze images. When asked to locate something in an image you send, I will reply with:",
+                        "boundingbox(image_index, label, left, top, width, height)",
+                        "Where:",
+                        "image_index: 0-based index of the image",
+                        "label: brief description of what is located",
+                        "left, top: x,y coordinates of top-left box corner (0-1 scale)",
+                        "width, height: box dimensions as fraction of image size",
+                        "Coordinates have origin (0,0) at top-left, (1,1) at bottom-right.",
+                        "For other queries, I will respond conversationally to the best of my abilities.",
+                        prompt
+                    ])
                     output = self.model.generate_with_images(
                         prompt,
                         self.personality.image_files,
@@ -1029,7 +1042,13 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         repeat_last_n = self.personality.model_repeat_last_n,
                         seed=self.config['seed'],
                         n_threads=self.config['n_threads']
-                    )                
+                    )
+                    try:
+                        post_processed_output = process_ai_output(output, self.personality.image_files, client.discussion.discussion_folder)
+                        if len(post_processed_output)!=output:
+                            self.process_chunk(post_processed_output, MSG_TYPE.MSG_TYPE_FULL,client_id=client_id)
+                    except Exception as ex:
+                        ASCIIColors.error(str(ex))                                 
             else:
                 ASCIIColors.info(f"warmup for generating up to {n_predict} tokens")
                 if self.config["override_personality_model_parameters"]:
