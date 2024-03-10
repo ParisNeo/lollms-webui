@@ -94,7 +94,7 @@
                             <i data-feather="check"></i>
                         </button>
                     </div>
-                    <button v-if="!loading" type="button" @click.stop="addToMemory" title="Add this discussion content to skills database"
+                    <button v-if="!loading" type="button" @click.stop="addDiscussion2SkillsLibrary" title="Add this discussion content to skills database"
                         class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
                         <img :src="memory_icon">
                     </button>
@@ -446,10 +446,7 @@ export default {
             discussion_id: 0,
         }
     },
-    methods: { 
-        addToMemory(){
-            this.$store.state.messageBox.showMessage("This functionality is being developed. Please be patient")
-        },
+    methods: {
         add_webpage(){
             console.log("addWebLink received")
             this.$refs.web_url_input_box.showPanel();
@@ -548,6 +545,12 @@ export default {
                 location.reload();
             }
         
+        },
+        async addDiscussion2SkillsLibrary(){
+            let result = await axios.post("/add_discussion_to_skills_library");
+            if(result.status){
+                console.log("done")
+            }
         },
         async toggleLTM(){
             this.$store.state.config.activate_skills_lib =! this.$store.state.config.activate_skills_lib;
