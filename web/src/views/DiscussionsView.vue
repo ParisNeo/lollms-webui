@@ -547,7 +547,9 @@ export default {
         
         },
         async addDiscussion2SkillsLibrary(){
-            let result = await axios.post("/add_discussion_to_skills_library");
+            let result = await axios.post("/add_discussion_to_skills_library", {
+                        client_id: this.client_id
+                    }, {headers: this.posts_headers});
             if(result.status){
                 console.log("done")
             }
