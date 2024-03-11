@@ -117,6 +117,11 @@ cd ../..
 ```bash
 pip install --upgrade -r requirements.txt
 ```
+- install conda library
+```bash
+conda install conda -y
+```
+
 - run the application
 ```bash
 python app.py
