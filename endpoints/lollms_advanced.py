@@ -146,11 +146,9 @@ async def open_file(file_path: FilePath):
         if not show_yes_no_dialog("Validation","Do you validate the opening of a file?"):
             return {"status":False,"error":"User refused the opeining file!"}
 
-    sanitize_path(path)
-
     try:
         # Validate the 'path' parameter
-        path = file_path.path
+        path = sanitize_path(file_path.path)
         if not validate_file_path(path):
             return {"status":False,"error":"Invalid file path"}
         

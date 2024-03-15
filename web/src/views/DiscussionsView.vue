@@ -106,6 +106,10 @@
                         class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
                         <img :src="inactive_skills">
                     </button>
+                    <button v-if="!loading && $store.state.config.activate_skills_lib" type="button" @click.stop="showSkillsLib" title="Skills database is deactivated"
+                        class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
+                        <img :src="skillsRegistry">
+                    </button>
    
                     <div v-if="loading" title="Loading.." class="flex flex-row flex-grow justify-end">
                         <!-- SPINNER -->
@@ -377,6 +381,7 @@ import SVGGreenBrain from '@/assets/brain_green.svg';
 import memory_icon from "../assets/memory_icon.svg"
 import active_skills from "../assets/active.svg"
 import inactive_skills from "../assets/inactive.svg"
+import skillsRegistry from "../assets/registry.svg"
 
 export default {
     
@@ -387,6 +392,7 @@ export default {
             memory_icon: memory_icon,
             active_skills:active_skills,
             inactive_skills:inactive_skills,
+            skillsRegistry:skillsRegistry,
             posts_headers : {
                 'accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -570,6 +576,15 @@ export default {
             await this.applyConfiguration();
             socket.emit('upgrade_vectorization');
         },
+        async showSkillsLib(){
+            let result = await axios.post("/get_skills_lib", {
+                        client_id: this.client_id
+                    }, {headers: this.posts_headers});
+            if(result.status){
+                console.log("done")
+            }
+        },
+        
         async applyConfiguration() {
             this.loading = true;
             const res = await axios.post('/apply_settings', {"config":this.$store.state.config})
