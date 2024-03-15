@@ -97,6 +97,13 @@
                             </div>
                             <div v-if="!editMsgMode && message.sender!=this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer" 
                                 title="Resend message without the full context"
+                                @click.stop="resendMessage('full_context_with_internet')" 
+                                :class="{ 'text-5xl': editMsgMode }">
+                                <img :src="sendGlobe" width="25" height="25">
+                            </div>
+
+                            <div v-if="!editMsgMode && message.sender!=this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer" 
+                                title="Resend message without the full context"
                                 @click.stop="resendMessage('simple_question')" 
                                 :class="{ 'text-5xl': editMsgMode }">
                                 <i data-feather="send"></i>
@@ -277,7 +284,7 @@ import ok_svg from '@/assets/ok.svg';
 import failed_svg from '@/assets/failed.svg';
 
 import loading_svg from '@/assets/loading.svg';
-
+import sendGlobe from "../assets/send_globe.svg"
 
 export default {
     // eslint-disable-next-line vue/multi-word-component-names
@@ -313,6 +320,7 @@ export default {
             ok_svg:ok_svg,
             failed_svg:failed_svg,
             loading_svg:loading_svg,
+            sendGlobe:sendGlobe,
             code_block:code_block,
             python_block:python_block,
             bash_block:bash_block,

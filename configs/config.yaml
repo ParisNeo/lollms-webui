@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 74
+version: 75
 binding_name: null
 model_name: null
 model_variant: null
@@ -26,8 +26,8 @@ port: 9600
 # Genreration parameters 
 discussion_prompt_separator: "!@>"
 seed: -1
-n_predict: 1024
 ctx_size: 4084
+max_n_predict: 4096
 min_n_predict: 512
 temperature: 0.9
 top_k: 50

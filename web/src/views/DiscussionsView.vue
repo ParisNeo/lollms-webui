@@ -98,6 +98,14 @@
                         class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
                         <img :src="memory_icon">
                     </button>
+                    <button v-if="!loading && $store.state.config.activate_skills_lib" type="button" @click.stop="toggleSkillsLib" title="Skills database is activated"
+                        class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
+                        <img :src="active_skills">
+                    </button>
+                    <button v-if="!loading && !$store.state.config.activate_skills_lib" type="button" @click.stop="toggleSkillsLib" title="Skills database is deactivated"
+                        class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
+                        <img :src="inactive_skills">
+                    </button>
    
                     <div v-if="loading" title="Loading.." class="flex flex-row flex-grow justify-end">
                         <!-- SPINNER -->
@@ -367,7 +375,8 @@ import SVGRedBrain from '@/assets/brain_red.svg';
 import SVGOrangeBrain from '@/assets/brain_orange.svg';
 import SVGGreenBrain from '@/assets/brain_green.svg';
 import memory_icon from "../assets/memory_icon.svg"
-
+import active_skills from "../assets/active.svg"
+import inactive_skills from "../assets/inactive.svg"
 
 export default {
     
@@ -376,6 +385,8 @@ export default {
     data() {
         return {
             memory_icon: memory_icon,
+            active_skills:active_skills,
+            inactive_skills:inactive_skills,
             posts_headers : {
                 'accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -554,7 +565,7 @@ export default {
                 console.log("done")
             }
         },
-        async toggleLTM(){
+        async toggleSkillsLib(){
             this.$store.state.config.activate_skills_lib =! this.$store.state.config.activate_skills_lib;
             await this.applyConfiguration();
             socket.emit('upgrade_vectorization');
@@ -1183,7 +1194,7 @@ export default {
         createEmptyAIMessage(){
             socket.emit('create_empty_message', {"type":1}); // 0 for user and 1 for AI
         },
-        sendMsg(msg) {
+        sendMsg(msg,type) {
             // Sends message to binding
             if (!msg) {
                 this.$store.state.toast.showToast("Message contains no content!", 4, false)
@@ -1195,7 +1206,12 @@ export default {
                 if (res) {
                     //console.log(res.data.status);
                     if (!res.data.status) {
-                        socket.emit('generate_msg', { prompt: msg });
+                        if(type=="internet"){
+                            socket.emit('generate_msg_with_internet', { prompt: msg });
+                        }
+                        else{
+                            socket.emit('generate_msg', { prompt: msg });
+                        }
 
                         // Create new User message
                         // Temp data

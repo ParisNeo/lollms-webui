@@ -1085,7 +1085,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             output = ""
         return output
 
-    def start_message_generation(self, message, message_id, client_id, is_continue=False, generation_type=None):
+    def start_message_generation(self, message, message_id, client_id, is_continue=False, generation_type=None, force_using_internet=False):
         client = self.session.get_client(client_id)
         if self.personality is None:
             self.warning("Select a personality")
@@ -1107,7 +1107,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     self.update_message(client_id, "✍ warming up ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_START)
 
                 # prepare query and reception
-                self.discussion_messages, self.current_message, tokens, context_details, internet_search_infos = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type)
+                self.discussion_messages, self.current_message, tokens, context_details, internet_search_infos = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type, force_using_internet=force_using_internet)
                 self.prepare_reception(client_id)
                 self.generating = True
                 client.processing=True

@@ -43,13 +43,6 @@ def add_events(sio:socketio):
             ASCIIColors.yellow("New descussion requested")
             client_id = sid
             title = data["title"]
-            if lollmsElfServer.session.get_client(client_id).discussion is not None:
-                if lollmsElfServer.long_term_memory is not None:
-                    title, content = lollmsElfServer.session.get_client(client_id).discussion.export_for_vectorization()
-                    skill = lollmsElfServer.learn_from_discussion(title, content)
-                    lollmsElfServer.long_term_memory.add_document(title, skill, chunk_size=lollmsElfServer.config.data_vectorization_chunk_size, overlap_size=lollmsElfServer.config.data_vectorization_overlap_size, force_vectorize=False, add_as_a_bloc=False, add_to_index=True)
-                    ASCIIColors.yellow("4- Saving database")
-                    lollmsElfServer.long_term_memory.save_to_json()
             lollmsElfServer.session.get_client(client_id).discussion = lollmsElfServer.db.create_discussion(title)
             # Get the current timestamp
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

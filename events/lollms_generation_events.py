@@ -79,6 +79,57 @@ def add_events(sio:socketio):
             #tpe.start()
         else:
             lollmsElfServer.error("I am busy. Come back later.", client_id=client_id)
+    @sio.on('generate_msg_with_internet')
+    def generate_msg_with_internet(sid, data):        
+        client_id = sid
+        lollmsElfServer.cancel_gen = False
+        client = lollmsElfServer.session.get_client(client_id)
+
+        client.generated_text=""
+        client.cancel_generation=False
+        client.continuing=False
+        client.first_chunk=True
+        
+
+        
+        if not lollmsElfServer.model:
+            ASCIIColors.error("Model not selected. Please select a model")
+            lollmsElfServer.error("Model not selected. Please select a model", client_id=client_id)
+            return
+
+        if not lollmsElfServer.busy:
+            if lollmsElfServer.session.get_client(client_id).discussion is None:
+                if lollmsElfServer.db.does_last_discussion_have_messages():
+                    lollmsElfServer.session.get_client(client_id).discussion = lollmsElfServer.db.create_discussion()
+                else:
+                    lollmsElfServer.session.get_client(client_id).discussion = lollmsElfServer.db.load_last_discussion()
+
+            prompt = data["prompt"]
+            ump = lollmsElfServer.config.discussion_prompt_separator +lollmsElfServer.config.user_name.strip() if lollmsElfServer.config.use_user_name_in_discussions else lollmsElfServer.personality.user_message_prefix
+            message = lollmsElfServer.session.get_client(client_id).discussion.add_message(
+                message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
+                sender_type     = SENDER_TYPES.SENDER_TYPES_USER.value,
+                sender          = ump.replace(lollmsElfServer.config.discussion_prompt_separator,"").replace(":",""),
+                content=prompt,
+                metadata=None,
+                parent_message_id=lollmsElfServer.message_id
+            )
+
+            ASCIIColors.green("Starting message generation by "+lollmsElfServer.personality.name)
+            
+            client.generation_thread = threading.Thread(target=lollmsElfServer.start_message_generation, args=(message, message.id, client_id, False, None, True))
+            client.generation_thread.start()
+            
+            # lollmsElfServer.sio.sleep(0.01)
+            ASCIIColors.info("Started generation task")
+            lollmsElfServer.busy=True
+            #tpe = threading.Thread(target=lollmsElfServer.start_message_generation, args=(message, message_id, client_id))
+            #tpe.start()
+        else:
+            lollmsElfServer.error("I am busy. Come back later.", client_id=client_id)
+
+
+
 
     @sio.on('generate_msg_from')
     def handle_generate_msg_from(sid, data):

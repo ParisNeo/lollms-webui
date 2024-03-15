@@ -195,16 +195,6 @@
                                         ref="personalityCMD"
                                     ></PersonalitiesCommands>
                                 </div>        
-                                <div class="group relative w-12">
-                                    <button @click.prevent="toggleSwitch">
-                                        <svg width="100" height="50">
-                                            <rect x="10" y="15" width="40" height="20" rx="12" ry="12" :fill="config.activate_internet_search ? 'green' : 'red'" />
-                                            <circle cx="20" cy="25" r="7" :visibility="config.activate_internet_search ? 'hidden' : 'visible'" />
-                                            <circle cx="38" cy="25" r="7" :visibility="config.activate_internet_search ? 'visible' : 'hidden'" />
-                                        </svg>                                        
-                                    </button>
-                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">When enabled, the model will try to complement its answer with information queried from the web.</p></div>
-                                </div>
                                 <div class="relative grow">
                                     <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"
                                         class="inline-block  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -216,13 +206,20 @@
                                         @click.stop="stopGenerating">
                                         Stop generating
                                 </button>
-
+                                
                                 <div class="group relative w-max">
                                     <button v-if="!loading" type="button" @click="submit" title="Send"
                                     class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
                                             <i data-feather="send"></i>
                                     </button>                        
                                     <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Sends your message to the AI.</p></div>
+                                </div>
+                                <div class="group relative w-max">
+                                    <button v-if="!loading" type="button" @click="submitWithInternetSearch" title="Send With internet"
+                                    class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
+                                            <img :src="sendGlobe" width="50" height="50">
+                                    </button>                        
+                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Sends your message to the AI with internet search.</p></div>
                                 </div>
                                 <div class="group relative w-max">
                                     <button v-if="!loading" 
@@ -329,7 +326,7 @@ import PersonalitiesCommands from '@/components/PersonalitiesCommands.vue';
 import socket from '@/services/websocket.js'
 import UniversalForm from '@/components/UniversalForm.vue';
 import modelImgPlaceholder from "../assets/default_model.png"
-
+import sendGlobe from "../assets/send_globe.svg"
 import loader_v0 from "../assets/loader_v0.svg"
 
 console.log("modelImgPlaceholder:",modelImgPlaceholder)
@@ -360,6 +357,7 @@ export default {
     data() {
         return {
             loader_v0:loader_v0,
+            sendGlobe:sendGlobe,
             modelImgPlaceholder:modelImgPlaceholder,
             bUrl:bUrl,
             message: "",
@@ -809,8 +807,8 @@ export default {
 
             console.log(this.filesList)
         },
-        sendMessageEvent(msg) {
-            this.$emit('messageSentEvent', msg)
+        sendMessageEvent(msg, type="no_internet") {
+            this.$emit('messageSentEvent', msg, type)
 
         },
         sendCMDEvent(cmd){
@@ -871,6 +869,13 @@ export default {
         submit() {
             if (this.message) {
                 this.sendMessageEvent(this.message)
+                this.message = ""
+            }
+
+        },
+        submitWithInternetSearch(){
+            if (this.message) {
+                this.sendMessageEvent(this.message, "internet")
                 this.message = ""
             }
 

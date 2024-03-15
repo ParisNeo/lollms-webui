@@ -489,6 +489,21 @@
                                         </tr>  
                                         <tr>
                                             <td style="min-width: 200px;">
+                                                <label for="max_n_predict" class="text-sm font-bold" style="margin-right: 1rem;">Maximum number of output tokens space (forces the model to have more space to speak):</label>
+                                            </td>
+                                            <td style="width: 100%;">
+                                                <input
+                                                type="number"
+                                                id="max_n_predict"
+                                                required
+                                                v-model="configFile.min_n_predict"
+                                                @change="settingsChanged=true"
+                                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                                >
+                                            </td>
+                                        </tr>                                        
+                                        <tr>
+                                            <td style="min-width: 200px;">
                                                 <label for="min_n_predict" class="text-sm font-bold" style="margin-right: 1rem;">Minimum number of output tokens space (forces the model to have more space to speak):</label>
                                             </td>
                                             <td style="width: 100%;">
@@ -539,7 +554,43 @@
                                         </td>
                                         </tr>                                        
                                     </table>
-                                </Card>                                    
+                                </Card>         
+                                <Card title="Knowledge database" :is_subcard="true" class="pb-2  m-2">
+                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="activate_skills_lib" class="text-sm font-bold" style="margin-right: 1rem;">Activate Skills library:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <input
+                                            type="checkbox"
+                                            id="activate_skills_lib"
+                                            required
+                                            v-model="configFile.activate_skills_lib"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="discussion_db_name" class="text-sm font-bold" style="margin-right: 1rem;">Skills library database name:</label>
+                                        </td>
+                                        <td style="width: 100%;">
+                                            <input
+                                            type="text"
+                                            id="skills_lib_database_name"
+                                            required
+                                            v-model="configFile.skills_lib_database_name"
+                                            @change="settingsChanged=true"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>      
+                                    </table>
+                                </Card>         
                                 <Card title="Data Vectorization" :is_subcard="true" class="pb-2  m-2">
                                     <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <tr>
