@@ -145,8 +145,6 @@ echo Install failed
 goto endend
 :end
 
-echo Creating a bin dir (required for llamacpp binding)
-md ../installer_files/lollms_env/bin
 echo Installation complete.
 :endend
 pause
