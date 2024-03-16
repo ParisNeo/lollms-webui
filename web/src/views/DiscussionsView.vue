@@ -203,11 +203,8 @@
 
             </div>
             <div class="relative flex flex-row flex-grow mb-10 z-0  w-full">
-
                 <!-- DISCUSSION LIST -->
                 <div class="mx-4 flex flex-col flex-grow  w-full " :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
-
-
                     <div id="dis-list" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''"
                         class="flex flex-col flex-grow  w-full">
                         <TransitionGroup v-if="list.length > 0" name="list">
@@ -300,7 +297,7 @@
         <p class="text-2xl animate-pulse mt-2 text-white">{{ loading_infos }} ...</p>
     </div>
     <InputBox prompt-text="Enter the url to the page to use as discussion support" @ok="handleOk" ref="web_url_input_box"></InputBox>   
-
+    <SkillsLibraryViewer ref="skills_lib"></SkillsLibraryViewer>
 </template>
 
 
@@ -577,12 +574,7 @@ export default {
             socket.emit('upgrade_vectorization');
         },
         async showSkillsLib(){
-            let result = await axios.post("/get_skills_lib", {
-                        client_id: this.client_id
-                    }, {headers: this.posts_headers});
-            if(result.status){
-                console.log("done")
-            }
+            this.$refs.skills_lib.showSkillsLibrary()
         },
         
         async applyConfiguration() {
@@ -2058,7 +2050,8 @@ export default {
         WelcomeComponent,
         ChoiceDialog,
         ProgressBar,
-        InputBox    
+        InputBox,
+        SkillsLibraryViewer 
     },
     watch: {  
         progress_visibility_val(newVal) {
@@ -2194,7 +2187,7 @@ import Discussion from '../components/Discussion.vue'
 import ChoiceDialog from '@/components/ChoiceDialog.vue'
 import ProgressBar from "@/components/ProgressBar.vue";
 import InputBox from "@/components/input_box.vue";
-
+import SkillsLibraryViewer from "@/components/SkillsViewer.vue"
 
 import Message from '../components/Message.vue'
 import ChatBox from '../components/ChatBox.vue'
