@@ -7,7 +7,7 @@
           <button @click="searchSkills" class="bg-blue-500 text-white rounded px-4 py-1">Search</button>
         </div>
 
-        <div class="w-1/4 p-4 max-h-64">
+        <div class="w-1/4 p-4 ">
           <h2 class="text-xl font-bold m-4">Categories</h2>
           <TransitionGroup v-if="categories.length > 0" name="list">
               <Discussion v-for="category in categories" :key="category" :id="category" :title="category"
