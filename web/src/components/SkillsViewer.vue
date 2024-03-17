@@ -38,7 +38,7 @@
 
       <div class="w-full z-0 flex flex-col  flex-grow  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
         <h2 class="text-xl font-bold m-4">Content</h2>
-        <p class="m-4">{{ content }}</p>
+        <MarkdownRenderer  :host="host" :markdown-text="content" :message_id="id" :discussion_id="id" :client_id="this.$store.state.client_id"></MarkdownRenderer>
       </div>
     </div>
 
@@ -49,11 +49,13 @@
 <script>
 import axios from 'axios';
 import Discussion from '../components/Discussion.vue'
+import MarkdownRenderer from '../components/MarkdownRenderer.vue'
 
 
 export default {
   data() {
     return {
+      id: 0,
       loading: false,
       isCheckbox: false,
       isVisible: false,
@@ -64,8 +66,16 @@ export default {
     };
   },
   components:{
-    Discussion
+    Discussion,
+    MarkdownRenderer
   },
+    props: {
+        host: {
+            type: String,
+            required: false,
+            default: "http://localhost:9600",
+        },            
+    },
   methods: {
     showSkillsLibrary() {
       this.isVisible = true;
@@ -97,6 +107,7 @@ export default {
       axios.post('/get_skills_library_content', { client_id: this.$store.state.client_id, skill_id: skillId })
         .then(response => {
           const skill = response.data.contents[0];
+          this.id = skill.id
           this.content = skill.content;
         })
         .catch(error => {
