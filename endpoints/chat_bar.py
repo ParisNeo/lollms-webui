@@ -8,6 +8,7 @@ description:
 
 """
 from fastapi import APIRouter, Request
+from fastapi import HTTPException
 from pydantic import BaseModel, Field
 from lollms_webui import LOLLMSWebUI
 from pydantic import BaseModel
@@ -32,6 +33,8 @@ from utilities.execution_engines.python_execution_engine import execute_python
 from utilities.execution_engines.latex_execution_engine import execute_latex
 from utilities.execution_engines.shell_execution_engine import execute_bash
 
+from lollms.internet import scrape_and_save
+import threading
 # ----------------------- Defining router and main class ------------------------------
 
 router = APIRouter()
@@ -46,6 +49,9 @@ class CmdExecutionRequest(BaseModel):
     command: str = Field(..., description="Url to be used")
     parameters: List
 
+
+
+"""
 @router.post("/execute_personality_command")
 async def execute_personality_command(request: CmdExecutionRequest):
     client_id = request.client_id
@@ -100,26 +106,38 @@ async def execute_personality_command(request: CmdExecutionRequest):
 
     lollmsElfServer.busy=False
     return {'status':True,}
+"""
+
 
 @router.post("/add_webpage")
 async def add_webpage(request: AddWebPageRequest):
-    lollmsElfServer.ShowBlockingMessage("Scraping web page\nPlease wait...")
-    ASCIIColors.yellow("Scaping web page")
     client = lollmsElfServer.session.get_client(request.client_id)
-    url = request.url
-    index =  find_first_available_file_index(lollmsElfServer.lollms_paths.personal_uploads_path,"web_",".txt")
-    file_path=lollmsElfServer.lollms_paths.personal_uploads_path/f"web_{index}.txt"
-    lollmsElfServer.scrape_and_save(url=url, file_path=file_path)
-    try:
-        if not lollmsElfServer.personality.processor is None:
-            lollmsElfServer.personality.processor.add_file(file_path, client, partial(lollmsElfServer.process_chunk, client_id = request.client_id))
-            # File saved successfully
-        else:
-            lollmsElfServer.personality.add_file(file_path, client, partial(lollmsElfServer.process_chunk, client_id = request.client_id))
-            # File saved successfully
-        lollmsElfServer.HideBlockingMessage()
-        return {'status':True,}
-    except Exception as e:
-        # Error occurred while saving the file
-        lollmsElfServer.HideBlockingMessage()
-        return {'status':False,"error":str(e)}
+    if client is None:
+        raise HTTPException(status_code=400, detail="Unknown client. This service only accepts lollms webui requests")
+        
+    def do_scraping():
+        lollmsElfServer.ShowBlockingMessage("Scraping web page\nPlease wait...")
+        ASCIIColors.yellow("Scaping web page")
+        client = lollmsElfServer.session.get_client(request.client_id)
+        url = request.url
+        index =  find_first_available_file_index(lollmsElfServer.lollms_paths.personal_uploads_path,"web_",".txt")
+        file_path=lollmsElfServer.lollms_paths.personal_uploads_path/f"web_{index}.txt"
+        scrape_and_save(url=url, file_path=file_path)
+        try:
+            if not lollmsElfServer.personality.processor is None:
+                lollmsElfServer.personality.processor.add_file(file_path, client, partial(lollmsElfServer.process_chunk, client_id = request.client_id))
+                # File saved successfully
+            else:
+                lollmsElfServer.personality.add_file(file_path, client, partial(lollmsElfServer.process_chunk, client_id = request.client_id))
+                # File saved successfully
+            lollmsElfServer.HideBlockingMessage()
+            lollmsElfServer.refresh_files()
+        except Exception as e:
+            # Error occurred while saving the file
+            lollmsElfServer.HideBlockingMessage()
+            lollmsElfServer.refresh_files()
+            return {'status':False,"error":str(e)}
+    client.generation_thread = threading.Thread(target=do_scraping)
+    client.generation_thread.start()
+        
+    return {'status':True}

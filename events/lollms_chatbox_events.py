@@ -28,6 +28,7 @@ import threading
 import os
 import time
 
+from lollms.internet import scrape_and_save
 from lollms.databases.discussions_database import Discussion
 from datetime import datetime
 
@@ -73,7 +74,7 @@ def add_events(sio:socketio):
         url = data['url']
         index =  find_first_available_file_index(lollmsElfServer.lollms_paths.personal_uploads_path,"web_",".txt")
         file_path=lollmsElfServer.lollms_paths.personal_uploads_path/f"web_{index}.txt"
-        lollmsElfServer.scrape_and_save(url=url, file_path=file_path)
+        scrape_and_save(url=url, file_path=file_path)
         try:
             if not lollmsElfServer.personality.processor is None:
                 lollmsElfServer.personality.processor.add_file(file_path, client, partial(lollmsElfServer.process_chunk, client_id = sid))

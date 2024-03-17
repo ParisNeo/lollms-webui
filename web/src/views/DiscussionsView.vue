@@ -2044,6 +2044,9 @@ export default {
         // this.host = `${serverAddress}`; // Construct the full server address dynamically
         // axios.defaults.baseURL = serverAddress
         //console.log('chatbox mnt',this.$refs)
+        socket.on('refresh_files',()=>{
+            this.recoverFiles()
+        })
         this.$nextTick(() => {
             feather.replace();
         });

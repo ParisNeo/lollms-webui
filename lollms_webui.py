@@ -51,8 +51,8 @@ if not PackageManager.check_package_installed("requests"):
 if not PackageManager.check_package_installed("bs4"):
     PackageManager.install_package("beautifulsoup4")
 import requests
-from bs4 import BeautifulSoup
 
+from lollms.internet import scrape_and_save
 
 
 def terminate_thread(thread):
@@ -374,24 +374,28 @@ class LOLLMSWebUI(LOLLMSElfServer):
             if "lollms" in text.lower():
                 self.summoned = True
 
-    def scrape_and_save(self, url, file_path):
-        # Send a GET request to the URL
-        response = requests.get(url)
+    # def scrape_and_save(self, url, file_path):
+    #     # Send a GET request to the URL
+    #     response = requests.get(url)
         
-        # Parse the HTML content using BeautifulSoup
-        soup = BeautifulSoup(response.content, 'html.parser')
+    #     # Parse the HTML content using BeautifulSoup
+    #     soup = BeautifulSoup(response.content, 'html.parser')
         
-        # Find all the text content in the webpage
-        text_content = soup.get_text()
+    #     # Find all the text content in the webpage
+    #     text_content = soup.get_text()
         
-        # Remove extra returns and spaces
-        text_content = ' '.join(text_content.split())
+    #     # Remove extra returns and spaces
+    #     text_content = ' '.join(text_content.split())
         
-        # Save the text content as a text file
-        with open(file_path, 'w', encoding="utf-8") as file:
-            file.write(text_content)
+    #     # Save the text content as a text file
+    #     with open(file_path, 'w', encoding="utf-8") as file:
+    #         file.write(text_content)
         
-        self.info(f"Webpage content saved to {file_path}")
+    #     self.info(f"Webpage content saved to {file_path}")
+
+
+
+
 
     def rebuild_personalities(self, reload_all=False):
         if reload_all:
@@ -726,6 +730,11 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 ASCIIColors.warning(content)
             else:
                 ASCIIColors.red(content)
+                
+    def refresh_files(self, client_id=None):
+        run_async(partial(self.sio.emit,'refresh_files', to=client_id
+                            )
+        )
 
 
     def new_message(self, 
