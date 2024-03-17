@@ -6,23 +6,9 @@
           <input type="text" v-model="searchQuery" placeholder="Search skills" class="border border-gray-300 rounded px-2 py-1 mr-2">
           <button @click="searchSkills" class="bg-blue-500 text-white rounded px-4 py-1">Search</button>
         </div>
-
-        <div class="w-1/4 p-4 ">
-          <h2 class="text-xl font-bold m-4">Categories</h2>
-          <TransitionGroup v-if="categories.length > 0" name="list">
-              <Discussion v-for="category in categories" :key="category" :id="category" :title="category"
-                  :selected="fetchTitles(category)" :loading="loading" :isCheckbox="isCheckbox"
-                  :checkBoxValue="false" 
-                  @select="fetchTitles(category)"
-                  @delete="deleteCategory(category)" 
-                  @editTitle="editCategory" 
-                  @makeTitle="makeCategory"
-                  @checked="checkUncheckCategory" />
-          </TransitionGroup>
-        </div>
         <div class="w-1/4 p-4">
           <h2 class="text-xl font-bold m-4">Titles</h2>
-          <TransitionGroup v-if="categories.length > 0" name="list">
+          <TransitionGroup v-if="titles.length > 0" name="list">
               <Discussion v-for="title in titles" :key="title.id" :id="title.id" :title="title.title"
                   :selected="fetchTitles(title)" :loading="loading" :isCheckbox="isCheckbox"
                   :checkBoxValue="false" 
@@ -79,7 +65,7 @@ export default {
   methods: {
     showSkillsLibrary() {
       this.isVisible = true;
-      this.fetchCategories();
+      this.fetchTitles();
     },
     closeComponent() {
       this.isVisible = false;
@@ -93,9 +79,9 @@ export default {
           console.error('Error fetching categories:', error);
         });
     },
-    fetchTitles(category) {
+    fetchTitles() {
       console.log("Fetching categories")
-      axios.post('/get_skills_library_titles', { client_id: this.$store.state.client_id, category: category })
+      axios.post('/get_skills_library_titles', { client_id: this.$store.state.client_id })
         .then(response => {
           this.titles = response.data.titles;
         })
