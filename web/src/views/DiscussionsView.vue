@@ -296,7 +296,7 @@
         <ProgressBar ref="progress" :progress="progress_value" class="w-full h-4"></ProgressBar>
         <p class="text-2xl animate-pulse mt-2 text-white">{{ loading_infos }} ...</p>
     </div>
-    <InputBox prompt-text="Enter the url to the page to use as discussion support" @ok="handleOk" ref="web_url_input_box"></InputBox>   
+    <InputBox prompt-text="Enter the url to the page to use as discussion support" @ok="addWebpage" ref="web_url_input_box"></InputBox>   
     <SkillsLibraryViewer ref="skills_lib"></SkillsLibraryViewer>
 </template>
 
@@ -465,7 +465,15 @@ export default {
             console.log("addWebLink received")
             this.$refs.web_url_input_box.showPanel();
         },
-        handleOk(){
+        addWebpage(){
+
+            axios.post('/add_webpage', {"client_id":this.client_id, "url": this.$refs.web_url_input_box.inputText}, {headers: this.posts_headers}).then(response => {
+                if (response && response.status){
+                    console.log("Done")
+                    this.recoverFiles()
+                }
+            });
+            /*
             console.log("OK")
             socket.on('web_page_added',()=>{
                 axios.get('/get_current_personality_files_list').then(res=>{
@@ -478,6 +486,7 @@ export default {
                 })
             });
             socket.emit('add_webpage',{'url':this.$refs.web_url_input_box.inputText})
+            */
         },
         show_progress(data){
             this.progress_visibility_val = true;
@@ -1271,6 +1280,23 @@ export default {
         },
         sendCmd(cmd){
             this.isGenerating = true;
+            // axios.post('/execute_personality_command', {command: cmd, parameters:[]})
+            //     .then((res) => {
+            //         if (res) {
+            //             if (res.status) {
+            //                 this.$store.state.toast.showToast("Command executed",4,true)
+            //             }
+            //             else
+            //                 this.$store.state.messageBox.showMessage("Error: Couldn't execute command!")
+            //             return res.data;
+            //         }
+            //     })
+            //     .catch(error => {
+            //         console.log(error.message, 'save_configuration')
+            //         this.$store.state.messageBox.showMessage("Couldn't save settings!")
+                    
+            //     });
+            
             socket.emit('execute_command', { command: cmd, parameters: [] });            
         },
         notify(notif){

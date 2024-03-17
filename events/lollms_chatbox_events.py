@@ -67,6 +67,7 @@ def add_events(sio:socketio):
 
     @sio.on('add_webpage')
     def add_webpage(sid, data):
+        lollmsElfServer.ShowBlockingMessage("Scraping web page\nPlease wait...")
         ASCIIColors.yellow("Scaping web page")
         client = lollmsElfServer.session.get_client(sid)
         url = data['url']
@@ -82,9 +83,11 @@ def add_events(sio:socketio):
                 lollmsElfServer.personality.add_file(file_path, client, partial(lollmsElfServer.process_chunk, client_id = sid))
                 # File saved successfully
                 run_async(partial(sio.emit,'web_page_added', {'status':True}))
+            lollmsElfServer.HideBlockingMessage()
         except Exception as e:
             # Error occurred while saving the file
             run_async(partial(sio.emit,'web_page_added', {'status':False}))
+            lollmsElfServer.HideBlockingMessage()
 
     @sio.on('take_picture')
     def take_picture(sid):
