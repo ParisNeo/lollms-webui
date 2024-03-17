@@ -1284,6 +1284,7 @@
                                 <div class="flex flex-row">
                                 <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallSDService">install sd service</button>
                                 <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startSDService">start sd service</button>
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="showSD">show sd ui</button>
                                 </div>
                             </td>
                             </tr>                                        
@@ -1306,6 +1307,61 @@
                             </tr> 
                         </table>                                
                     </Card>
+                    <Card title="ComfyUI service" :is_subcard="true" class="pb-2  m-2">
+                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="enable_comfyui_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable comfyui service:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="checkbox"
+                                id="enable_comfyui_service"
+                                required
+                                v-model="configFile.enable_comfyui_service"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            <td>
+                                <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates Stable diffusion service. The service will be automatically loaded at startup alowing you to use the stable diffusion endpoint to generate images')">
+                                    <i data-feather="help-circle" class="w-5 h-5 "></i>
+                                </div>
+                            </td>                            
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="install_comfyui_service" class="text-sm font-bold" style="margin-right: 1rem;">Install ComfyUI service:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallComfyUIService">install comfyui service</button>
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startComfyUIService">start comfyui service</button>
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="showComfyui">show comfyui</button>
+                                </div>
+                            </td>
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="comfyui_base_url" class="text-sm font-bold" style="margin-right: 1rem;">comfyui base url:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="text"
+                                id="comfyui_base_url"
+                                required
+                                v-model="configFile.comfyui_base_url"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr> 
+                        </table>                                
+                    </Card>                    
                     <Card title="Motion Ctrl service" :is_subcard="true" class="pb-2  m-2">
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <tr>
@@ -2866,6 +2922,47 @@ export default {
             });
 
         },
+        showSD(){
+            axios.get('show_sd')
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+
+        },
+        reinstallComfyUIService(){
+            axios.get('install_comfyui')
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+
+        },
+        startComfyUIService(){
+            axios.get('start_comfyui')
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+
+        },        
+        showComfyui(){
+            axios.get('show_comfyui')
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+        },
+
+        
         reinstallMotionCtrlService(){
             axios.get('install_motion_ctrl')
             .then(response => {

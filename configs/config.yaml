@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 75
+version: 76
 binding_name: null
 model_name: null
 model_variant: null
@@ -84,6 +84,10 @@ current_language: en
 # Image generation service
 enable_sd_service: false
 sd_base_url: http://localhost:7860
+
+# Image generation service comfyui
+enable_comfyui_service: false
+comfyui_base_url: http://127.0.0.1:8188/
 
 # Motion control service
 enable_motion_ctrl_service: false

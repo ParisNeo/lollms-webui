@@ -1,16 +1,17 @@
 <template>
-  <div :class="{ 'hidden': !isVisible }" class="absolute top-20 left-20 bottom-20 right-20 bg-bg-light shadow-lg rounded">
-    <div id="leftPanel" class="flex flex-row flex-grow overflow-y-scroll no-scrollbar shadow-lg rounded">
-      <div class=" sticky z-10 top-0  bg-bg-light-tone dark:bg-bg-dark-tone shadow-md ">
+  <div :class="{ 'hidden': !isVisible }" class="absolute flex flex-col no-scrollbar shadow-lg bg-bg-light dark:bg-bg-dark top-20 left-20 bottom-20 right-20 shadow-lg rounded">
+    
+    <div id="leftPanel" class="flex flex-row h-full flex-grow shadow-lg rounded">
+      <div class="z-10 top-0 w-96  bg-bg-light-tone dark:bg-bg-dark-tone shadow-md overflow-y-scroll  no-scrollbar">
         <div class="search p-4">
           <input type="text" v-model="searchQuery" placeholder="Search skills" class="border border-gray-300 rounded px-2 py-1 mr-2">
           <button @click="searchSkills" class="bg-blue-500 text-white rounded px-4 py-1">Search</button>
         </div>
-        <div class="w-1/4 p-4">
+        <div classclass="absolute flex flex-col no-scrollbar shadow-lg min-w-[24rem] max-w-[24rem] bg-bg-light-tone dark:bg-bg-dark-tone top-20 left-20 bottom-20 right-20 bg-bg-light shadow-lg rounded">
           <h2 class="text-xl font-bold m-4">Titles</h2>
           <TransitionGroup v-if="titles.length > 0" name="list">
               <Discussion v-for="title in titles" :key="title.id" :id="title.id" :title="title.title"
-                  :selected="fetchTitles(title)" :loading="loading" :isCheckbox="isCheckbox"
+                  :selected="fetchContent(title.id)" :loading="loading" :isCheckbox="isCheckbox"
                   :checkBoxValue="false" 
                   @select="fetchContent(title.id)"
                   @delete="deleteSkill(title.id)" 
@@ -28,7 +29,7 @@
       </div>
     </div>
 
-    <button @click="closeComponent" class="absolute top-2 right-2 bg-red-500 text-white rounded px-2 py-1">Close</button>
+    <button @click="closeComponent" class="absolute top-2 right-2 bg-red-500 text-white rounded px-2 py-1 hover:bg-red-300">Close</button>
   </div>
 </template>
 
