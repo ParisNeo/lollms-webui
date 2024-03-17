@@ -730,7 +730,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 ASCIIColors.warning(content)
             else:
                 ASCIIColors.red(content)
-                
+
     def refresh_files(self, client_id=None):
         run_async(partial(self.sio.emit,'refresh_files', to=client_id
                             )
@@ -1193,7 +1193,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 self.cancel_gen = False
 
                 # Send final message
-                if self.config.activate_internet_search:
+                if self.config.activate_internet_search or force_using_internet or generation_type == "full_context_with_internet":
                     from lollms.internet import get_favicon_url, get_root_url
                     sources_text = '<div class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm ">'
                     sources_text += '<div class="text-gray-400 mr-10px">Sources:</div>'
