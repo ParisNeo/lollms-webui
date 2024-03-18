@@ -2,7 +2,7 @@
   <div :class="{ 'hidden': !isVisible }" class="absolute flex flex-col no-scrollbar shadow-lg bg-bg-light dark:bg-bg-dark top-20 left-20 bottom-20 right-20 shadow-lg rounded">
     
     <div id="leftPanel" class="flex flex-row h-full flex-grow shadow-lg rounded">
-      <div class="z-10 top-0 w-96  bg-bg-light-tone dark:bg-bg-dark-tone shadow-md overflow-y-scroll  no-scrollbar">
+      <div class="min-w-[23rem] max-w-[23rem] z-10 top-0 bg-bg-light-tone dark:bg-bg-dark-tone shadow-md overflow-y-scroll  no-scrollbar">
         <div class="search p-4">
           <input type="text" v-model="searchQuery" placeholder="Search skills" class="border border-gray-300 rounded px-2 py-1 mr-2">
           <button @click="searchSkills" class="bg-blue-500 text-white rounded px-4 py-1">Search</button>
@@ -23,7 +23,7 @@
 
       </div>
 
-      <div class="w-full z-0 flex flex-col  flex-grow  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+      <div class="z-0 flex flex-col  flex-grow  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
         <h2 class="text-xl font-bold m-4">Content</h2>
         <MarkdownRenderer  :host="host" :markdown-text="content" :message_id="id" :discussion_id="id" :client_id="this.$store.state.client_id"></MarkdownRenderer>
       </div>
@@ -114,10 +114,12 @@ export default {
 
     },
     deleteSkill(id){
-      console.log("Delete skill")
+      console.log("Delete skill ",id)
+      axios.post("/delete_skill",{"client_id":this.$store.state.client_id,"skill_id":id})
     },
 
     editTitle(id){
+      axios.post("/edit_skill_title",{"client_id":this.$store.state.client_id,"skill_id":id,"title":id})
       console.log("Edit title")
     },
     makeTitle(id){

@@ -638,7 +638,8 @@ export default {
     },    
     setModel(){
       this.selecting_model=true
-      axios.post("/update_setting", {                
+      axios.post("/update_setting", {        
+                client_id: this.$store.state.client_id,        
                 setting_name: "model_name",
                 setting_value: this.selectedModel
               }).then((response) => {

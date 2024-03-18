@@ -25,6 +25,13 @@ import time
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
 router = APIRouter()
 
+
+@router.get("/get_versionID")
+async def get_lollms_webui_version():
+   """Get the version of the LoLLMs Web UI application."""
+   # Return the version string
+   return {"id":2}
+
 @router.get("/get_lollms_webui_version")
 async def get_lollms_webui_version():
    """Get the version of the LoLLMs Web UI application."""

@@ -4103,6 +4103,7 @@ export default {
         async update_setting(setting_name_val, setting_value_val, next) {
             this.isLoading = true
             const obj = {
+                client_id: this.$store.state.client_id,
                 setting_name: setting_name_val,
                 setting_value: setting_value_val
             }
