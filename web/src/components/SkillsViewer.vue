@@ -85,6 +85,7 @@ export default {
       axios.post('/get_skills_library_titles', { client_id: this.$store.state.client_id })
         .then(response => {
           this.titles = response.data.titles;
+          console.log("titles recovered")
         })
         .catch(error => {
           console.error('Error fetching titles:', error);
@@ -115,11 +116,19 @@ export default {
     },
     deleteSkill(id){
       console.log("Delete skill ",id)
-      axios.post("/delete_skill",{"client_id":this.$store.state.client_id,"skill_id":id})
+      axios.post("/delete_skill",{"client_id":this.$store.state.client_id,"skill_id":id}).then(
+        ()=>{
+          this.fetchTitles();
+        }
+      )
     },
 
     editTitle(id){
-      axios.post("/edit_skill_title",{"client_id":this.$store.state.client_id,"skill_id":id,"title":id})
+      axios.post("/edit_skill_title",{"client_id":this.$store.state.client_id,"skill_id":id,"title":id}).then(
+        ()=>{
+          this.fetchTitles();
+        }
+      )
       console.log("Edit title")
     },
     makeTitle(id){
