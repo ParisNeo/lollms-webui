@@ -106,7 +106,7 @@
                         class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
                         <img :src="inactive_skills">
                     </button>
-                    <button v-if="!loading && $store.state.config.activate_skills_lib" type="button" @click.stop="showSkillsLib" title="Skills database is deactivated"
+                    <button v-if="!loading" type="button" @click.stop="showSkillsLib" title="Skills database is deactivated"
                         class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
                         <img :src="skillsRegistry">
                     </button>
@@ -581,7 +581,6 @@ export default {
         async toggleSkillsLib(){
             this.$store.state.config.activate_skills_lib =! this.$store.state.config.activate_skills_lib;
             await this.applyConfiguration();
-            socket.emit('upgrade_vectorization');
         },
         async showSkillsLib(){
             this.$refs.skills_lib.showSkillsLibrary()
