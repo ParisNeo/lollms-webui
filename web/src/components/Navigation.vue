@@ -8,6 +8,9 @@
             <RouterLink :to="{ name: 'playground' }" class="link-item dark:link-item-dark bg-light hover:bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone">
               Playground
             </RouterLink>
+            <RouterLink v-if="$store.state.config.enable_comfyui_service" :to="{ name: 'ComfyUI' }" class="link-item dark:link-item-dark bg-light hover:bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone">
+              ComfyUI
+            </RouterLink>
             <RouterLink v-if="$store.state.config.enable_voice_service" :to="{ name: 'interactive' }" class="link-item dark:link-item-dark bg-light hover:bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone">
               interactive
             </RouterLink>

@@ -8,10 +8,16 @@ import QuantizingView from '../views/QuantizingView.vue'
 import DiscussionsView from '../views/DiscussionsView.vue'
 import InteractiveView from '../views/InteractiveView.vue'
 import NodesView from '../views/NodesView.vue'
+import ComfyuiView from '../views/ComfyuiView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/comfyui_view/',
+      name: 'ComfyUI',
+      component: ComfyuiView
+    },
     {
       path: '/playground/',
       name: 'playground',
