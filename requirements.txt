@@ -1,5 +1,5 @@
 colorama
-numpy==1.24.*
+numpy==1.26.*
 pandas
 Pillow>=9.5.0
 pyyaml
