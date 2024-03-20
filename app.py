@@ -21,14 +21,13 @@ import uvicorn
 import argparse
 from socketio import ASGIApp
 import webbrowser
-import threading
 import os
 import sys
 
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, ValidationError
+from pydantic import ValidationError
 from fastapi.encoders import jsonable_encoder
 import socket
 import psutil
