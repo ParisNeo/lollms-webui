@@ -1283,6 +1283,8 @@
                             <td>
                                 <div class="flex flex-row">
                                 <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallSDService">install sd service</button>
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="upgradeSDService">upgrade sd service</button>
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" click="https://github.com/ParisNeo/stable-diffusion-webui/blob/master/LICENSE.txt" target="_blank">automatic1111's sd licence</button>
                                 <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startSDService">start sd service</button>
                                 <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="showSD">show sd ui</button>
                                 </div>
@@ -1333,16 +1335,18 @@
                             </tr>                                        
                             <tr>
                             <td style="min-width: 200px;">
-                                <label for="install_comfyui_service" class="text-sm font-bold" style="margin-right: 1rem;">Install ComfyUI service:</label>
                             </td>
                             <td>
                                 <div class="flex flex-row">
                                 <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallComfyUIService">install comfyui service</button>
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="upgradeComfyUIService">upgrade comfyui service</button>
                                 <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startComfyUIService">start comfyui service</button>
                                 <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="showComfyui">show comfyui</button>
+                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" click="https://github.com/ParisNeo/ComfyUI/blob/master/LICENSE" target="_blank">comfyui licence</button>
+                                
                                 </div>
                             </td>
-                            </tr>                                        
+                            </tr>                                                                    
                             <tr>
                             <td style="min-width: 200px;">
                                 <label for="comfyui_base_url" class="text-sm font-bold" style="margin-right: 1rem;">comfyui base url:</label>
@@ -2912,6 +2916,16 @@ export default {
             });
 
         },
+        upgradeSDService(){
+            axios.get('upgrade_sd')
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+
+        },
         startSDService(){
             axios.get('start_sd')
             .then(response => {
@@ -2942,6 +2956,16 @@ export default {
             });
 
         },
+        upgradeComfyUIService(){
+            axios.get('upgrade_comfyui')
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+
+        },
         startComfyUIService(){
             axios.get('start_comfyui')
             .then(response => {
@@ -2961,8 +2985,6 @@ export default {
             console.error(error);
             });
         },
-
-        
         reinstallMotionCtrlService(){
             axios.get('install_motion_ctrl')
             .then(response => {
