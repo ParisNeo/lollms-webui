@@ -961,12 +961,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
         # Stream the generated text to the main process
         elif message_type == MSG_TYPE.MSG_TYPE_FULL:
             client.generated_text = chunk
-            self.nb_received_tokens += 1
-            dt =(datetime.now() - self.start_time).seconds
-            if dt==0:
-                dt=1
-            spd = self.nb_received_tokens/dt
-            ASCIIColors.green(f"Received {self.nb_received_tokens} tokens (speed: {spd:.2f}t/s)              ",end="\r",flush=True) 
             antiprompt = self.personality.detect_antiprompt(client.generated_text)
             if antiprompt:
                 ASCIIColors.warning(f"\nDetected hallucination with antiprompt: {antiprompt}")
