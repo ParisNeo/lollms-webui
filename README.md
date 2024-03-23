@@ -66,128 +66,8 @@ The installation scripts are:
 - `linux_install.sh`for Linux.
 - `mac_install.sh`for Mac.
 
-### Manual install with Anaconda/Miniconda:
-If you don't have anaconda or miniconda installed, please install it:
-[Install miniconda](https://docs.conda.io/projects/miniconda/en/latest/miniconda-install.html)
-Make sure to add it to your path so that you can run it easily from a terminal.
-If you don't have git installed, please install it:
-[Install git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-Make sure to add it to your path so that you can run it easily from a terminal.
-- Run a terminal and create a new environment called `lollms` with python 3.11:
-```bash
-conda create --name lollms python=3.11
-```
-- Activate the environment
-```bash
-conda activate lollms
-```
-- If you want to use an nVidia GPU, install cuda toolkit 12.1
-```bash
-conda install -c "nvidia/label/cuda-12.1.1" cuda-toolkit
-```
-- Clone the project
-```bash
-git clone https://github.com/ParisNeo/lollms-webui.git
-```
-- enter the lollms-webui folder
-```bash
-cd lollms-webui
-```
-- download submodules (lollms_core, zoos and safe_store library)
-```bash
-git submodule init
-git submodule update
-cd zoos/bindings_zoo
-git checkout main
-cd ../personalities_zoo
-git checkout main
-cd ../extensions_zoo
-git checkout main
-cd ../models_zoo
-git checkout main
-cd ../../lollms_core
-git checkout main
-pip install -e .
-cd ../utilities/safe_store
-git checkout main
-pip install -e .
-cd ../..
-```
-- install dependencies
-```bash
-pip install --upgrade -r requirements.txt
-```
-- install conda library
-```bash
-conda install conda -y
-```
-
-- run the application
-```bash
-python app.py
-```
-### Manual install with virtual env:
-Make sure you install python 3.11, and git:
-[Install python](https://www.python.org/downloads/release/python-31103/)
-Make sure to add it to your path so that you can run it easily from a terminal.
-If you don't have git installed, please install it:
-[Install git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-Make sure to add it to your path so that you can run it easily from a terminal.
-- To use your GPU, you may need to install [nVidia cuda toolkit](https://developer.nvidia.com/cuda-toolkit)
-- Run a terminal and install pip:
-```bash
-python -m ensurepip --upgrade
-```
-- Install virtual environment:
-```bash
-pip install venv
-```
-- Clone the project
-```bash
-git clone https://github.com/ParisNeo/lollms-webui.git
-```
-- enter the lollms-webui folder
-```bash
-cd lollms-webui
-```
-- Create a virtual environment
-```bash
-python -m venv ./env
-```
-- Activate the virtual environment:
-- On windows: `./env/Scripts/activate`
-- On linux: `source ./env/bin/activate`
-- On macos: `./env/bin/activate`
-- download submodules (lollms_core, zoos and safe_store library)
-```bash
-git submodule init
-git submodule update
-cd zoos/bindings_zoo
-git checkout main
-cd ../personalities_zoo
-git checkout main
-cd ../extensions_zoo
-git checkout main
-cd ../models_zoo
-git checkout main
-cd ../../lollms_core
-git checkout main
-pip install -e .
-cd ../../utilities/safe_store
-git checkout main
-pip install -e .
-cd ../..
-```
-- install dependencies
-```bash
-pip install --upgrade -r requirements.txt
-```
-- run the application
-```bash
-python app.py
-```
-
-Once installed, you need to activate the environment then run the app.
+### Manual install:
+Since v 9.4, it is not advised to do manual install as many services require the creation of a separate environment and lollms needs to have complete control on the environments. So If you install it using your own conda setup, you will not be able to install any service and reduce the use of lollms to the chat interface (no xtts, no comfyui, no fast generation through vllm or petals or soever)
 
 # Code of conduct
 
@@ -197,6 +77,31 @@ By using this tool, users agree to follow these guidelines :
 - You can use lollms in your own project free of charge if you agree to respect the Apache 2.0 licenseterms. Please refer to https://www.apache.org/licenses/LICENSE-2.0 .
 - You are not allowed to use lollms to harm others directly or indirectly. This tool is meant for peacefull purposes and should be used for good never for bad.
 - Users must comply with local laws when accessing content provided by third parties like OpenAI API etc., including copyright restrictions where applicable.
+
+# ⚠️ Security Warning
+
+Please be aware that LoLLMs WebUI does not have built-in user authentication and is primarily designed for local use. Exposing the WebUI to external access without proper security measures could lead to potential vulnerabilities.
+
+If you require remote access to LoLLMs, it is strongly recommended to follow these security guidelines:
+
+1. **Activate Headless Mode**: Enabling headless mode will expose only the generation API while turning off other potentially vulnerable endpoints. This helps to minimize the attack surface.
+
+2. **Set Up a Secure Tunnel**: Establish a secure tunnel between the localhost running LoLLMs and the remote PC that needs access. This ensures that the communication between the two devices is encrypted and protected.
+
+3. **Modify Configuration Settings**: After setting up the secure tunnel, edit the `/configs/local_config.yaml` file and adjust the following settings:
+   ```yaml
+   host: 0.0.0.0  # Allow remote connections
+   port: 9600  # Change the port number if desired (default is 9600)
+   force_accept_remote_access: true  # Force accepting remote connections
+   headless_server_mode: true  # Set to true for API-only access, or false if the WebUI is needed
+   ```
+
+By following these security practices, you can help protect your LoLLMs instance and its users from potential security risks when enabling remote access.
+
+Remember, it is crucial to prioritize security and take necessary precautions to safeguard your system and sensitive information. If you have any further questions or concerns regarding the security of LoLLMs, please consult the documentation or reach out to the community for assistance.
+
+Stay safe and enjoy using LoLLMs responsibly!
+
 
 # Disclaimer
 Large Language Models are amazing tools that can be used for diverse purposes. Lollms was built to harness this power to help the user inhance its productivity. But you need to keep in mind that these models have their limitations and should not replace human intelligence or creativity, but rather augment it by providing suggestions based on patterns found within large amounts of data. It is up to each individual how they choose use them responsibly!
