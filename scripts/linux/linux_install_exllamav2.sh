@@ -149,7 +149,7 @@ fi
 # python main.py
 # cd ..
 echo "Creating a bin dir (required for llamacpp binding)"
-mkdir ../installer_files/lollms_env/bin
+mkdir -p $INSTALL_ENV_DIR/bin
 
 python zoos/bindings_zoo/bs_exllamav2/__init__.py
 

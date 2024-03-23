@@ -173,7 +173,7 @@ fi
 # cd ..
 
 echo "Creating a bin dir (required for llamacpp binding)"
-mkdir ../installer_files/lollms_env/bin
+mkdir -p $INSTALL_ENV_DIR/bin
 
 echo "Don't forget to select Apple silicon (if you are using M1, M2, M3) or apple intel (if you use old intel mac) in the settings before installing any binding"
 
