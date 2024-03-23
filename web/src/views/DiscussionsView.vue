@@ -893,6 +893,7 @@ export default {
             try {
                 if (discussionIdArr.length > 0) {
                     const res = await axios.post('/export_multiple_discussions', {
+                        client_id:this.$store.state.client_id,
                         discussion_ids: discussionIdArr,
                         export_format: export_format
                     }, {headers: this.posts_headers})
@@ -907,12 +908,13 @@ export default {
                 return {}
             }
         },
-        async import_multiple_discussions(jArray) {
+        async import_multiple_discussions(jArray_) {
             try {
-                if (jArray.length > 0) {
-                    console.log('sending import', jArray)
+                if (jArray_.length > 0) {
+                    console.log('sending import', jArray_)
                     const res = await axios.post('/import_multiple_discussions', {
-                        jArray
+                        client_id: this.$store.state.client_id,
+                        jArray: jArray_
                     }, {headers: this.posts_headers})
 
                     if (res) {
