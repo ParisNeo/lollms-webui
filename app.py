@@ -190,15 +190,17 @@ if __name__ == "__main__":
 
 
     lollms_generation_events_add(sio)
-    lollms_personality_events_add(sio)
-    lollms_files_events_add(sio)
-    lollms_model_events_add(sio)
-    #lollms_rag_events_add(sio)
 
-    lollms_webui_generation_events_add(sio)
-    lollms_webui_discussion_events_add(sio)
-    lollms_chatbox_events_add(sio)
-    lollms_interactive_events_add(sio)
+    if (not config.headless_server_mode) or config.force_accept_remote_access: # Be aware that forcing force_accept_remote_access can expose the server to attacks 
+        lollms_personality_events_add(sio)
+        lollms_files_events_add(sio)
+        lollms_model_events_add(sio)
+        #lollms_rag_events_add(sio)
+
+        lollms_webui_generation_events_add(sio)
+        lollms_webui_discussion_events_add(sio)
+        lollms_chatbox_events_add(sio)
+        lollms_interactive_events_add(sio)
 
 
     app.mount("/extensions", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="extensions")
