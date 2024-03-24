@@ -609,9 +609,9 @@ export default {
                 if (this.$store.state.config.personalities.includes(pers_path)) {
 
                     const res = await this.select_personality(pers)
-                    console.log('pers is mounted', res)
-                    this.$store.dispatch('refreshMountedPersonalities');
+                    await this.$store.dispatch('refreshMountedPersonalities');
                     await this.$store.dispatch('refreshConfig');    
+                    console.log('pers is mounted', res)
 
                     if (res && res.status && res.active_personality_id > -1) {
                         this.$store.state.toast.showToast("Selected personality:\n" + pers.name, 4, true)
