@@ -454,6 +454,21 @@
                                             >
                                         </td>
                                         </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="use_model_name_in_discussions" class="text-sm font-bold" style="margin-right: 1rem;">Use model name in discussion:</label>
+                                        </td>
+                                        <td style="width: 100%;">
+                                            <input
+                                            type="checkbox"
+                                            id="use_model_name_in_discussions"
+                                            required
+                                            v-model="configFile.use_model_name_in_discussions"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>
                                         
                                         
                                         <!-- Row 3 -->

@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 76
+version: 77
 binding_name: null
 model_name: null
 model_variant: null
@@ -47,6 +47,7 @@ extensions: []
 user_name: user
 user_description: ""
 use_user_name_in_discussions: false
+use_model_name_in_discussions: false
 user_avatar: default_user.svg
 use_user_informations_in_discussion: false
 
