@@ -385,7 +385,6 @@ export const store = createStore({
         console.log("setModelsArr",modelsArr)
         console.log("this.state.modelsZoo",this.state.modelsZoo)
         this.state.modelsZoo.map((item)=>{
-          console.log("model found")
           item.isInstalled=modelsArr.includes(item.name)
         })
         this.state.installedModels = this.state.modelsZoo.filter(item=> item.isInstalled)
