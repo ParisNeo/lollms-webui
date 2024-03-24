@@ -102,7 +102,6 @@
 
                             <div class="flex gap-2 items-center ">
                                 <div>
-
                                     <div v-if="vramUsage&&vramUsage.gpus && vramUsage.gpus.length == 1">
                                         <div class="flex gap-2 items-center " v-for="item in vramUsage.gpus">
                                             <!-- GPU IMAGE  -->

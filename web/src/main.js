@@ -67,7 +67,9 @@ export const store = createStore({
         vramUsage:null,
         modelsZoo:[],
         installedModels:[],
+        installedBindings:[],
         currentModel:null,
+        currentBinding:null,
         extensionsZoo:[],
         databases:[],
       }
@@ -122,6 +124,9 @@ export const store = createStore({
       setModelsZoo(state, modelsZoo) {
         state.modelsZoo = modelsZoo;
       },   
+      setCurrentBinding(state, currentBinding){
+        state.currentBinding = currentBinding
+      },
       setCurrentModel(state, currentModel) {
         state.currentModel = currentModel;
       },   
@@ -188,6 +193,9 @@ export const store = createStore({
       },
       getModelsZoo(state) {
         return state.modelsZoo;
+      },
+      getCyrrentBinding(state){
+        return state.currentBinding
       },
       getCurrentModel(state) {
         return state.currentModel;
@@ -343,6 +351,14 @@ export const store = createStore({
       },
       async refreshBindings({ commit }) {
           let bindingsZoo = await api_get_req("list_bindings")
+          console.log("Loaded bindings zoo :",bindingsZoo)
+          this.state.installedBindings = bindingsZoo.filter(item=> item.installed)
+          const index = bindingsZoo.findIndex(item=>item.name == this.state.config.binding_name)
+          if (index!=-1){
+            commit('setCurrentBinding',bindingsZoo[index])
+          }
+  
+          console.log("Loaded bindings zoo ", this.state.installedBindings)
           commit('setbindingsZoo',bindingsZoo)
       },
       async refreshModelsZoo({ commit }) {

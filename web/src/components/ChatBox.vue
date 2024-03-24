@@ -112,7 +112,7 @@
                 </div>
 
                     <!-- CHAT BOX -->
-                        <div v-if="selecting_model" title="Selecting model" class="flex flex-row flex-grow justify-end bg-primary">
+                        <div v-if="selecting_model||selecting_binding" title="Selecting model" class="flex flex-row flex-grow justify-end bg-primary">
                             <!-- SPINNER -->
                             <div role="status">
                                 <img :src="loader_v0" class="w-50 h-50">
@@ -121,6 +121,37 @@
                         </div>
                         <div class="flex w-fit pb-3 relative grow   w-full">
                             <div class="relative grow flex h-12.5 cursor-pointer select-none items-center gap-2 rounded-lg border bg-bg-light-tone dark:bg-bg-dark-tone p-1 shadow-sm hover:shadow-none dark:border-gray-800" tabindex="0">
+                                <div v-if="loading" title="Waiting for reply">
+                                    <img :src="loader_v0">
+                                    <!-- SPINNER -->
+                                    <div role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                                <div class="w-fit group relative" v-if="!loading" >
+                                    <!-- :onShowPersList="onShowPersListFun" -->
+                                    <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-10 group-hover:translate-x-15 transition-all duration-300">
+                                        <div class="w-full"
+                                            v-for="(item, index) in installedBindings" :key="index + '-' + item.name"
+                                            ref="installedBindings">
+                                            <div v-if="item.name!=binding_name" class="group items-center flex flex-row">
+                                                <button @click.prevent="setBinding(item)" class="w-8 h-8">
+                                                    <img :src="item.icon?item.icon:modelImgPlaceholder"
+                                                        class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                                        :title="item.name">
+                                                </button>
+                                            </div>
+                                        </div>             
+                                    </div>
+                                    <div class="group items-center flex flex-row">
+                                        <button @click.prevent="showModelConfig()" class="w-8 h-8">
+                                            <img :src="currentBindingIcon"
+                                                class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                                :title="currentBinding?currentBinding.name:'unknown'">
+                                        </button>
+                                    </div>
+
+                                </div>   
                                 <div v-if="loading" title="Waiting for reply">
                                     <img :src="loader_v0">
                                     <!-- SPINNER -->
@@ -145,7 +176,7 @@
                                     </div>
                                     <div class="group items-center flex flex-row">
                                         <button @click.prevent="showModelConfig()" class="w-8 h-8">
-                                            <img :src="currentModel.icon?currentModel.icon:modelImgPlaceholder"
+                                            <img :src="currentModelIcon"
                                                 class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
                                                 :title="currentModel?currentModel.name:'unknown'">
                                         </button>
@@ -361,6 +392,7 @@ export default {
             modelImgPlaceholder:modelImgPlaceholder,
             bUrl:bUrl,
             message: "",
+            selecting_binding:false,
             selecting_model:false,
             selectedModel:'',
             isLesteningToVoice:false,
@@ -374,21 +406,26 @@ export default {
         }
     },
     computed: {
+        currentBindingIcon(){
+            return this.currentBinding.icon || this.modelImgPlaceholder;
+        },
+        currentBinding(){
+            return this.$store.state.currentBinding || {};
+        },
         currentModel() {
-            if(this.$store.state.currentModel!=undefined){
-                console.log("Model found")
-                return this.$store.state.currentModel;
-            }
-            else{
-                console.log("No model found")
-                let obj = {}
-                obj.name="unknown"
-                return obj;
-
-            }
+            return this.$store.state.currentModel || {};
+        },
+        currentModelIcon() {
+            return this.currentModel.icon || this.modelImgPlaceholder;
+        },
+        installedBindings() {
+            return this.$store.state.installedBindings;
         },
         installedModels() {
             return this.$store.state.installedModels;
+        },
+        binding_name(){
+            return this.$store.state.config.binding_name    
         },
         model_name(){
             return this.$store.state.config.model_name    
@@ -634,11 +671,33 @@ export default {
 
             selectElement.dispatchEvent(event_);
         }, 
+        setBinding(selectedBinding){
+            console.log("Setting binding to "+selectedBinding.name);
+            this.selecting_binding=true
+            this.selectedModel = selectedBinding
+            axios.post("/update_setting", {    
+                        client_id: this.$store.state.client_id,
+                        setting_name: "binding_name",
+                        setting_value: selectedBinding.name
+                    }).then(async (response) => {
+                console.log("UPDATED");
+                console.log(response);
+                await this.$store.dispatch('refreshConfig');    
+                await this.$store.dispatch('refreshBindings');
+                await this.$store.dispatch('refreshModels');
+                this.$store.state.toast.showToast(`Binding changed to ${this.currentBinding.name}`,4,true)
+                this.selecting_binding=false
+                }).catch(err=>{
+                this.$store.state.toast.showToast(`Error ${err}`,4,true)
+                this.selecting_binding=false
+                });            
+        },
         setModel(selectedModel){
             console.log("Setting model to "+selectedModel.name);
             this.selecting_model=true
             this.selectedModel = selectedModel
-            axios.post("/update_setting", {                
+            axios.post("/update_setting", {     
+                        client_id: this.$store.state.client_id,           
                         setting_name: "model_name",
                         setting_value: selectedModel.name
                     }).then(async (response) => {
