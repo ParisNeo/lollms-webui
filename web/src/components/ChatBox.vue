@@ -675,19 +675,25 @@ export default {
             console.log("Setting binding to "+selectedBinding.name);
             this.selecting_binding=true
             this.selectedModel = selectedBinding
+            this.$store.state.messa
+            this.$store.state.messageBox.showBlockingMessage("Loading binding")
+
             axios.post("/update_setting", {    
                         client_id: this.$store.state.client_id,
                         setting_name: "binding_name",
                         setting_value: selectedBinding.name
                     }).then(async (response) => {
+                this.$store.state.messageBox.hideBlockingMessage()
                 console.log("UPDATED");
                 console.log(response);
-                await this.$store.dispatch('refreshConfig');    
                 await this.$store.dispatch('refreshBindings');
+                await this.$store.dispatch('refreshModelsZoo');
                 await this.$store.dispatch('refreshModels');
+                await this.$store.dispatch('refreshConfig');    
                 this.$store.state.toast.showToast(`Binding changed to ${this.currentBinding.name}`,4,true)
                 this.selecting_binding=false
                 }).catch(err=>{
+                this.$store.state.messageBox.hideBlockingMessage()
                 this.$store.state.toast.showToast(`Error ${err}`,4,true)
                 this.selecting_binding=false
                 });            
@@ -696,11 +702,13 @@ export default {
             console.log("Setting model to "+selectedModel.name);
             this.selecting_model=true
             this.selectedModel = selectedModel
+            this.$store.state.messageBox.showBlockingMessage("Loading model")
             axios.post("/update_setting", {     
                         client_id: this.$store.state.client_id,           
                         setting_name: "model_name",
                         setting_value: selectedModel.name
                     }).then(async (response) => {
+                this.$store.state.messageBox.hideBlockingMessage()
                 console.log("UPDATED");
                 console.log(response);
                 await this.$store.dispatch('refreshConfig');    
@@ -708,6 +716,7 @@ export default {
                 this.$store.state.toast.showToast(`Model changed to ${this.currentModel.name}`,4,true)
                 this.selecting_model=false
                 }).catch(err=>{
+                this.$store.state.messageBox.hideBlockingMessage()
                 this.$store.state.toast.showToast(`Error ${err}`,4,true)
                 this.selecting_model=false
                 });
