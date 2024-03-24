@@ -683,7 +683,7 @@ export default {
                         setting_name: "binding_name",
                         setting_value: selectedBinding.name
                     }).then(async (response) => {
-                this.$store.state.messageBox.hideBlockingMessage()
+                this.$store.state.messageBox.hideMessage()
                 console.log("UPDATED");
                 console.log(response);
                 await this.$store.dispatch('refreshBindings');
@@ -693,7 +693,7 @@ export default {
                 this.$store.state.toast.showToast(`Binding changed to ${this.currentBinding.name}`,4,true)
                 this.selecting_binding=false
                 }).catch(err=>{
-                this.$store.state.messageBox.hideBlockingMessage()
+                this.$store.state.messageBox.hideMessage()
                 this.$store.state.toast.showToast(`Error ${err}`,4,true)
                 this.selecting_binding=false
                 });            
@@ -708,7 +708,7 @@ export default {
                         setting_name: "model_name",
                         setting_value: selectedModel.name
                     }).then(async (response) => {
-                this.$store.state.messageBox.hideBlockingMessage()
+                this.$store.state.messageBox.hideMessage()
                 console.log("UPDATED");
                 console.log(response);
                 await this.$store.dispatch('refreshConfig');    
@@ -716,7 +716,7 @@ export default {
                 this.$store.state.toast.showToast(`Model changed to ${this.currentModel.name}`,4,true)
                 this.selecting_model=false
                 }).catch(err=>{
-                this.$store.state.messageBox.hideBlockingMessage()
+                this.$store.state.messageBox.hideMessage()
                 this.$store.state.toast.showToast(`Error ${err}`,4,true)
                 this.selecting_model=false
                 });

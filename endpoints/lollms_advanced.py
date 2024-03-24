@@ -167,6 +167,52 @@ async def open_file(file_path: FilePath):
         return {"status":False,"error":str(ex)}
 
 
+
+class FilePath(BaseModel):
+    path: Optional[str] = Field(None, max_length=500)
+
+@router.post("/open_folder")
+async def open_folder(file_path: FilePath):
+    """
+    Opens a folder
+
+    :param file_path: The file path object.
+    :return: A JSON response with the status of the operation.
+    """
+    if lollmsElfServer.config.headless_server_mode:
+        return {"status":False,"error":"Open file is blocked when in headless mode for obvious security reasons!"}
+
+    if lollmsElfServer.config.host!="localhost" and lollmsElfServer.config.host!="127.0.0.1":
+        return {"status":False,"error":"Open file is blocked when the server is exposed outside for very obvious reasons!"}
+
+    if lollmsElfServer.config.turn_on_open_file_validation:
+        if not show_yes_no_dialog("Validation","Do you validate the opening of a file?"):
+            return {"status":False,"error":"User refused the opeining file!"}
+
+    forbid_remote_access(lollmsElfServer)
+    try:
+        # Validate the 'path' parameter
+        path = file_path.path
+       
+        # Sanitize the 'path' parameter
+        path = os.path.realpath(path)
+        
+        # Use subprocess.Popen to safely open the file
+        if platform.system() == 'Windows':
+            subprocess.Popen(f'explorer "{path}"')
+        elif platform.system() == 'Linux':
+            subprocess.run(['xdg-open', str(path)], check=True)
+        elif platform.system() == 'Darwin':
+            subprocess.run(['open', str(path)], check=True)
+
+        
+        return {"status": True, "execution_time": 0}
+    
+    except Exception as ex:
+        trace_exception(ex)
+        lollmsElfServer.error(ex)
+        return {"status":False,"error":str(ex)}
+
 class OpenCodeFolderInVsCodeRequestModel(BaseModel):
     client_id: str = Field(...)
     discussion_id: Optional[int] = Field(None, gt=0)
