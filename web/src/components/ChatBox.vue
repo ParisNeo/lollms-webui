@@ -187,9 +187,9 @@
                                     <!-- :onShowPersList="onShowPersListFun" -->
                                     <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-10 group-hover:translate-x-15 transition-all duration-300">
                                         <div class="w-full"
-                                            v-for="(item, index) in this.$store.state.mountedPersArr" :key="index + '-' + item.name"
+                                            v-for="(item, index) in mountedPersonalities" :key="index + '-' + item.name"
                                             ref="mountedPersonalities">
-                                            <div v-if="index!=this.$store.state.config.active_personality_id" class="group items-center flex flex-row">
+                                            <div v-if="index!=personality_name" class="group items-center flex flex-row">
                                                 <button @click.prevent="onPersonalitySelected(item)" class="w-8 h-8">
                                                     <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
                                                         class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
@@ -424,11 +424,17 @@ export default {
         installedModels() {
             return this.$store.state.installedModels;
         },
+        mountedPersonalities() {
+            return this.$store.state.mountedPersArr;
+        },
         binding_name(){
             return this.$store.state.config.binding_name    
         },
         model_name(){
             return this.$store.state.config.model_name    
+        },
+        personality_name(){
+            return this.$store.state.config.active_personality_id
         },
         config() {
             return this.$store.state.config;
@@ -604,6 +610,9 @@ export default {
 
                     const res = await this.select_personality(pers)
                     console.log('pers is mounted', res)
+                    this.$store.dispatch('refreshMountedPersonalities');
+                    await this.$store.dispatch('refreshConfig');    
+
                     if (res && res.status && res.active_personality_id > -1) {
                         this.$store.state.toast.showToast("Selected personality:\n" + pers.name, 4, true)
 
