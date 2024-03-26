@@ -25,6 +25,8 @@
                     class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer">
               <i data-feather="volume-2"></i>
             </button>   
+            <input type="file" ref="fileInput" @change="handleFileUpload"  style="display: none;" accept=".wav, .mp3" />
+            <button title="Upload a voice" @click="triggerFileUpload"><i data-feather="speaker"></i></button>
             <button
                 type="button"
                 title="Start audio to audio"
@@ -581,6 +583,31 @@ export default {
     },
   },
   methods:{
+    triggerFileUpload() {
+      this.$refs.fileInput.click();
+    },
+    handleFileUpload(event) {
+      this.file = this.$refs.fileInput.files[0];
+      this.buttonText = this.file.name;
+      this.uploadFile()
+    },
+    uploadFile() {
+      const formData = new FormData();
+      formData.append('file', this.file);
+
+      axios.post('http://localhost:8000/upload_voice/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(response => {
+        console.log(response);
+        this.buttonText = 'Upload a voice';
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    },
     addBlock(bloc_name){
             let ss =this.$refs.mdTextarea.selectionStart
             let se =this.$refs.mdTextarea.selectionEnd

@@ -18,7 +18,7 @@ from ascii_colors import ASCIIColors
 from lollms.personality import MSG_TYPE, AIPersonality
 from lollms.types import MSG_TYPE, SENDER_TYPES
 from lollms.utilities import load_config, trace_exception, gc
-from lollms.utilities import find_first_available_file_index, convert_language_name
+from lollms.utilities import find_first_available_file_index, convert_language_name, PackageManager
 from lollms_webui import LOLLMSWebUI
 from pathlib import Path
 from typing import List
@@ -52,6 +52,18 @@ def add_events(sio:socketio):
                 lollmsElfServer.session.get_client(client_id).discussion = lollmsElfServer.db.load_last_discussion()
         
             if lollmsElfServer.personality.welcome_message!="":
+                if lollmsElfServer.personality.welcome_audio_path.exists():
+                    for voice in lollmsElfServer.personality.welcome_audio_path.iterdir():
+                        if voice.suffix.lower() in [".wav",".mp3"]:
+                                try:
+                                    if not PackageManager.check_package_installed("pygame"):
+                                        PackageManager.install_package("pygame")
+                                    import pygame
+                                    pygame.mixer.init()
+                                    pygame.mixer.music.load(voice)
+                                    pygame.mixer.music.play()
+                                except Exception as ex:
+                                    pass
                 if lollmsElfServer.config.force_output_language_to_be and lollmsElfServer.config.force_output_language_to_be.lower().strip() !="english":
                     welcome_message = lollmsElfServer.personality.fast_gen(f"!@>instruction: Translate the following text to {lollmsElfServer.config.force_output_language_to_be.lower()}:\n{lollmsElfServer.personality.welcome_message}\n!@>translation:")
                 else:
