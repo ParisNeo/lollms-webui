@@ -30,6 +30,7 @@ import time
 
 from lollms.internet import scrape_and_save
 from lollms.databases.discussions_database import Discussion
+from lollms.security import forbid_remote_access
 from datetime import datetime
 
 router = APIRouter()
@@ -38,6 +39,7 @@ lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
 # ----------------------------------- events -----------------------------------------
 def add_events(sio:socketio):
+    forbid_remote_access(lollmsElfServer)
     @sio.on('create_empty_message')
     def create_empty_message(sid, data):
         client_id = sid

@@ -19,6 +19,7 @@ from lollms.personality import MSG_TYPE, AIPersonality
 from lollms.types import MSG_TYPE, SENDER_TYPES
 from lollms.utilities import load_config, trace_exception, gc
 from lollms.utilities import find_first_available_file_index, convert_language_name
+from lollms.security import forbid_remote_access
 from lollms_webui import LOLLMSWebUI
 from pathlib import Path
 from typing import List
@@ -32,6 +33,7 @@ lollmsElfServer = LOLLMSWebUI.get_instance()
 
 # ----------------------------------- events -----------------------------------------
 def add_events(sio:socketio):
+    forbid_remote_access(lollmsElfServer)
     @sio.on('generate_msg')
     def handle_generate_msg(sid, data):        
         client_id = sid

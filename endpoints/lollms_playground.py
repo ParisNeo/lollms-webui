@@ -15,7 +15,7 @@ from starlette.responses import StreamingResponse
 from lollms.types import MSG_TYPE
 from lollms.main_config import BaseConfig
 from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception, find_first_available_file_index, add_period, PackageManager
-from lollms.security import sanitize_path_from_endpoint, validate_path
+from lollms.security import sanitize_path_from_endpoint, validate_path, forbid_remote_access
 from pathlib import Path
 from ascii_colors import ASCIIColors
 import os
@@ -57,6 +57,7 @@ async def add_preset(preset_data: PresetData):
     :param request: The HTTP request object.
     :return: A JSON response with the status of the operation.
     """
+    forbid_remote_access(lollmsElfServer)
     try:
 
         presets_folder = lollmsElfServer.lollms_paths.personal_discussions_path/"lollms_playground_presets"
@@ -83,6 +84,7 @@ async def del_preset(preset_data: PresetData):
     :param preset_data: The data of the preset.
     :return: A JSON response with the status of the operation.
     """
+    forbid_remote_access(lollmsElfServer)
     # Get the JSON data from the POST request.
     if preset_data.name is None:
         raise HTTPException(status_code=400, detail="Preset name is missing in the request")
@@ -110,6 +112,7 @@ async def save_presets(preset_data: PresetDataWithValue):
     :param preset_data: The data of the preset.
     :return: A JSON response with the status of the operation.
     """
+    forbid_remote_access(lollmsElfServer)
     # Get the JSON data from the POST request.
     if preset_data.preset is None:
         raise HTTPException(status_code=400, detail="Preset data is missing in the request")

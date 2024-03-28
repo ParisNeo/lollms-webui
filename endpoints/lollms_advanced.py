@@ -29,12 +29,15 @@ import re
 import subprocess   
 from typing import Optional
 
-# Regular expression pattern to validate file paths
-FILE_PATH_REGEX = r'^[a-zA-Z0-9_\-\\\/]+$'
+from lollms.security import sanitize_path
 
-# Function to validate file paths using the regex pattern
 def validate_file_path(path):
-    return re.match(FILE_PATH_REGEX, path)
+    try:
+        sanitized_path = sanitize_path(path, allow_absolute_path=False)
+        return sanitized_path is not None
+    except Exception as e:
+        print(f"Path validation error: {str(e)}")
+        return False
 
 from utilities.execution_engines.python_execution_engine import execute_python
 from utilities.execution_engines.latex_execution_engine import execute_latex
@@ -72,9 +75,7 @@ async def execute_code(request: CodeRequest):
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Code execution is blocked when in headless mode for obvious security reasons!"}
 
-    if lollmsElfServer.config.host!="localhost" and lollmsElfServer.config.host!="127.0.0.1":
-        return {"status":False,"error":"Code execution is blocked when the server is exposed outside for very obvious reasons!"}
-
+    forbid_remote_access(lollmsElfServer, "Code execution is blocked when the server is exposed outside for very obvious reasons!")
     if not lollmsElfServer.config.turn_on_code_execution:
         return {"status":False,"error":"Code execution is blocked by the configuration!"}
 

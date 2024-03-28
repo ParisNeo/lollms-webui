@@ -27,13 +27,15 @@ from fastapi import FastAPI, UploadFile, File
 import shutil
 import os
 import platform
+from urllib.parse import urlparse
 from functools import partial
 from datetime import datetime
 from utilities.execution_engines.python_execution_engine import execute_python
 from utilities.execution_engines.latex_execution_engine import execute_latex
 from utilities.execution_engines.shell_execution_engine import execute_bash
-
+from lollms.security import sanitize_path, forbid_remote_access
 from lollms.internet import scrape_and_save
+from urllib.parse import urlparse
 import threading
 # ----------------------- Defining router and main class ------------------------------
 
@@ -47,7 +49,7 @@ class AddWebPageRequest(BaseModel):
 class CmdExecutionRequest(BaseModel):
     client_id: str  = Field(...)
     command: str = Field(..., description="Url to be used")
-    parameters: List
+    parameters: List[str] = Field(..., description="Command parameters")
 
 
 
@@ -107,10 +109,11 @@ async def execute_personality_command(request: CmdExecutionRequest):
     lollmsElfServer.busy=False
     return {'status':True,}
 """
-
+MAX_PAGE_SIZE = 10000000
 
 @router.post("/add_webpage")
 async def add_webpage(request: AddWebPageRequest):
+    forbid_remote_access(lollmsElfServer)
     client = lollmsElfServer.session.get_client(request.client_id)
     if client is None:
         raise HTTPException(status_code=400, detail="Unknown client. This service only accepts lollms webui requests")
@@ -121,8 +124,17 @@ async def add_webpage(request: AddWebPageRequest):
         client = lollmsElfServer.session.get_client(request.client_id)
         url = request.url
         index =  find_first_available_file_index(lollmsElfServer.lollms_paths.personal_uploads_path,"web_",".txt")
-        file_path=lollmsElfServer.lollms_paths.personal_uploads_path/f"web_{index}.txt"
-        scrape_and_save(url=url, file_path=file_path)
+        file_path=sanitize_path(lollmsElfServer.lollms_paths.personal_uploads_path/f"web_{index}.txt",True)
+        try:
+            result = urlparse(url)
+            if all([result.scheme, result.netloc]):  # valid URL
+                if scrape_and_save(url=url, file_path=file_path,max_size=MAX_PAGE_SIZE):
+                    raise HTTPException(status_code=400, detail="Web page too large")
+            else:
+                raise HTTPException(status_code=400, detail="Invalid URL")
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Exception : {e}")
+        
         try:
             if not lollmsElfServer.personality.processor is None:
                 lollmsElfServer.personality.processor.add_file(file_path, client, partial(lollmsElfServer.process_chunk, client_id = request.client_id))

@@ -14,6 +14,7 @@ import pkg_resources
 from lollms_webui import LOLLMSWebUI
 from ascii_colors import ASCIIColors
 from lollms.utilities import load_config, run_async
+from lollms.security import sanitize_path, forbid_remote_access
 from pathlib import Path
 from typing import List
 import sys
@@ -42,6 +43,7 @@ async def get_lollms_webui_version():
 @router.get("/restart_program")
 async def restart_program():
     """Restart the program."""
+    forbid_remote_access(lollmsElfServer)
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Restarting app is blocked when in headless mode for obvious security reasons!"}
 
@@ -69,6 +71,7 @@ async def restart_program():
 @router.get("/update_software")
 async def update_software():
     """Update the software."""
+    forbid_remote_access(lollmsElfServer)
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Updating app is blocked when in headless mode for obvious security reasons!"}
 
@@ -99,6 +102,7 @@ async def update_software():
 @router.get("/check_update")
 def check_update():
     """Checks if an update is available"""
+    forbid_remote_access(lollmsElfServer)
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Checking updates is blocked when in headless mode for obvious security reasons!"}
 

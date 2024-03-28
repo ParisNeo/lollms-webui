@@ -16,7 +16,7 @@ from lollms.types import MSG_TYPE
 from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception
 from ascii_colors import ASCIIColors
 from lollms.databases.discussions_database import DiscussionsDB
-
+from lollms.security import forbid_remote_access
 from safe_store.text_vectorizer import TextVectorizer, VectorizationMethod, VisualizationMethod
 import tqdm
 from typing import Any, Optional
@@ -36,6 +36,7 @@ class EditMessageParameters(BaseModel):
 
 @router.post("/edit_message")
 async def edit_message(edit_params: EditMessageParameters):
+    forbid_remote_access(lollmsElfServer)
     client_id = edit_params.client_id
     message_id = edit_params.id
     new_message = edit_params.message
@@ -55,6 +56,7 @@ class MessageRankParameters(BaseModel):
 
 @router.post("/message_rank_up")
 async def message_rank_up(rank_params: MessageRankParameters):
+    forbid_remote_access(lollmsElfServer)
     client_id = rank_params.client_id
     message_id = rank_params.id
 
@@ -68,6 +70,7 @@ async def message_rank_up(rank_params: MessageRankParameters):
 
 @router.post("/message_rank_down")
 def message_rank_down(rank_params: MessageRankParameters):
+    forbid_remote_access(lollmsElfServer)
     client_id = rank_params.client_id
     message_id = rank_params.id
     try:
@@ -82,6 +85,7 @@ class MessageDeleteParameters(BaseModel):
 
 @router.post("/delete_message")
 async def delete_message(delete_params: MessageDeleteParameters):
+    forbid_remote_access(lollmsElfServer)
     client_id = delete_params.client_id
     message_id = delete_params.id
 
