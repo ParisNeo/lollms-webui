@@ -1,19 +1,81 @@
 <template>
   <transition name="fade">
-    <div v-if="showPopup" class="fixed inset-0 flex items-center justify-center z-50 m-15 p-15">
-      <div class="bg-white dark:bg-gray-800 rounded shadow p-6 m-4 w-full h-full text-center overflow-auto relative">
-        <button @click="hide" class="absolute top-0 right-0 m-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+    <div v-if="showPopup" class="fixed inset-0 flex items-center justify-center z-50">
+      <div class="popup-container">
+        <button @click="hide" class="close-button">
           X
         </button>
-        <iframe :src="webpageUrl" class="m-4 p-5 w-full h-full"></iframe>
-      </div>
-      <div class="absolute bottom-0 mb-4 w-full text-center">
-          <input type="checkbox" id="startup" v-model="this.$store.state.config.show_news_panel" @change="save_configuration">
-          <label for="startup" class="m-5">Show at startup</label>
+        <iframe :src="webpageUrl" class="iframe-content"></iframe>
+        <div class="checkbox-container">
+          <input type="checkbox" id="startup" class="styled-checkbox" v-model="this.$store.state.config.show_news_panel" @change="save_configuration">
+          <label for="startup" class="checkbox-label">Show at startup</label>
         </div>
+      </div>
     </div>
   </transition>
 </template>
+
+<style scoped>
+.popup-container {
+  background-color: #fff;
+  color: #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background-color: #3490dc;
+  color: white;
+  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.close-button:hover {
+  background-color: #2779bd;
+}
+
+.iframe-content {
+  width: 100%;
+  height: 80%;
+  border: none;
+  margin-bottom: 16px;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.styled-checkbox {
+  width: 24px;
+  height: 24px;
+  accent-color: #3490dc;
+  cursor: pointer;
+}
+
+.checkbox-label {
+  margin-left: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  user-select: none;
+}
+</style>
+
 
 
 
@@ -35,7 +97,7 @@ export default {
       this.showPopup = false;
     },
     save_configuration() {
-      axios.post('/apply_settings', {"config":this.$store.state.config}).then((res) => {
+      axios.post('/apply_settings', {"client_id":this.$store.state.client_id, "config":this.$store.state.config}).then((res) => {
           this.isLoading = false;
           if (res.data.status) {
 
