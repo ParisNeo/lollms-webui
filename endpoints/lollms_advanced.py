@@ -29,8 +29,6 @@ import re
 import subprocess   
 from typing import Optional
 
-from lollms.security import sanitize_path
-
 def validate_file_path(path):
     try:
         sanitized_path = sanitize_path(path, allow_absolute_path=False)
@@ -180,11 +178,10 @@ async def open_folder(file_path: FilePath):
     :param file_path: The file path object.
     :return: A JSON response with the status of the operation.
     """
+    forbid_remote_access(lollmsElfServer, "Open file is blocked when the server is exposed outside for very obvious reasons!")
+
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Open file is blocked when in headless mode for obvious security reasons!"}
-
-    if lollmsElfServer.config.host!="localhost" and lollmsElfServer.config.host!="127.0.0.1":
-        return {"status":False,"error":"Open file is blocked when the server is exposed outside for very obvious reasons!"}
 
     if lollmsElfServer.config.turn_on_open_file_validation:
         if not show_yes_no_dialog("Validation","Do you validate the opening of a file?"):
