@@ -4643,6 +4643,7 @@ export default {
             const id = this.configFile.personalities.findIndex(item => item === pth)
 
             const obj = {
+                client_id: this.$store.state.client_id,
                 id: id
             }
 
@@ -4671,6 +4672,7 @@ export default {
 
             try {
                 const obj = {
+                    client_id: this.$store.state.client_id,
                     category: ext.category,
                     folder: ext.folder,
                 }
@@ -4691,6 +4693,7 @@ export default {
             if (!ext) { return { 'status': false, 'error': 'no extension - unmount_extension' } }
 
             const obj = {
+                client_id: this.$store.state.client_id,
                 language: ext.language,
                 category: ext.category,
                 folder: ext.folder
@@ -4749,7 +4752,7 @@ export default {
 
         },
         async unmountAll(){
-            await axios.get('/unmount_all_personalities');
+            await axios.post('/unmount_all_personalities', {client_id: this.$store.state.client_id,});
             this.$store.dispatch('refreshMountedPersonalities');
             this.$store.dispatch('refreshConfig');
             this.$store.state.toast.showToast("All personas unmounted", 4, true)

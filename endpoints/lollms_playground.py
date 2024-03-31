@@ -15,7 +15,7 @@ from starlette.responses import StreamingResponse
 from lollms.types import MSG_TYPE
 from lollms.main_config import BaseConfig
 from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception, find_first_available_file_index, add_period, PackageManager
-from lollms.security import sanitize_path_from_endpoint, validate_path, forbid_remote_access
+from lollms.security import sanitize_path_from_endpoint, validate_path, forbid_remote_access, check_access
 from pathlib import Path
 from ascii_colors import ASCIIColors
 import os
@@ -47,6 +47,7 @@ def get_presets():
     return presets
 
 class PresetData(BaseModel):
+    client_id: str
     name: str = Field(..., min_length=1)
 
 @router.post("/add_preset")
@@ -58,6 +59,7 @@ async def add_preset(preset_data: PresetData):
     :return: A JSON response with the status of the operation.
     """
     forbid_remote_access(lollmsElfServer)
+    check_access(lollmsElfServer, preset_data.client_id)
     try:
 
         presets_folder = lollmsElfServer.lollms_paths.personal_discussions_path/"lollms_playground_presets"
@@ -85,6 +87,7 @@ async def del_preset(preset_data: PresetData):
     :return: A JSON response with the status of the operation.
     """
     forbid_remote_access(lollmsElfServer)
+    check_access(lollmsElfServer, preset_data.client_id)
     # Get the JSON data from the POST request.
     if preset_data.name is None:
         raise HTTPException(status_code=400, detail="Preset name is missing in the request")
@@ -101,6 +104,7 @@ async def del_preset(preset_data: PresetData):
 
 
 class PresetDataWithValue(BaseModel):
+    client_id: str
     name: str = Field(..., min_length=1)
     preset: str
     
@@ -113,6 +117,7 @@ async def save_presets(preset_data: PresetDataWithValue):
     :return: A JSON response with the status of the operation.
     """
     forbid_remote_access(lollmsElfServer)
+    check_access(lollmsElfServer, preset_data.client_id)
     # Get the JSON data from the POST request.
     if preset_data.preset is None:
         raise HTTPException(status_code=400, detail="Preset data is missing in the request")
