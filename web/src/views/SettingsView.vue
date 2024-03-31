@@ -1219,7 +1219,7 @@
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <tr>
                                         <td style="min-width: 200px;">
-                                            <label for="discussion_db_name" class="text-sm font-bold" style="margin-right: 1rem;">Host:</label>
+                                            <label for="host" class="text-sm font-bold" style="margin-right: 1rem;">Host:</label>
                                         </td>
                                         <td style="width: 100%;">
                                             <input
@@ -4593,6 +4593,7 @@ export default {
 
             try {
                 const obj = {
+                    client_id: this.$store.state.client_id,
                     language: pers.language?pers.language:"",
                     category: pers.category?pers.category:"",
                     folder: pers.folder?pers.folder:"",
@@ -4614,6 +4615,7 @@ export default {
             if (!pers) { return { 'status': false, 'error': 'no personality - unmount_personality' } }
 
             const obj = {
+                client_id: this.$store.state.client_id,
                 language: pers.language,
                 category: pers.category,
                 folder: pers.folder
@@ -4965,7 +4967,7 @@ export default {
             console.log('on reinstall ', persItem)
             this.isLoading = true
             console.log("Personality path:",persItem.personality.path)
-            axios.post('/reinstall_personality', { name: persItem.personality.path }).then((res) => {
+            axios.post('/reinstall_personality', { client_id:this.$store.state.client_id, name: persItem.personality.path }).then((res) => {
 
                 if (res) {
                     this.isLoading = false
