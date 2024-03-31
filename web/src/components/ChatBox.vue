@@ -642,6 +642,7 @@ export default {
             const id = this.$store.state.config.personalities.findIndex(item => item === pers_path)
 
             const obj = {
+                client_id:this.$store.state.client_id,
                 id: id
             }
 

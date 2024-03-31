@@ -4145,7 +4145,7 @@ export default {
             }
 
             console.log("Updating setting", setting_name_val, ":", setting_value_val)
-            let res = await axios.post('/update_setting', obj)
+            let res = await axios.post('/update_setting', obj, {headers: this.posts_headers})
 
             if (res) {
                 this.isLoading = false
@@ -4337,7 +4337,7 @@ export default {
         },
         applyConfiguration() {
             this.isLoading = true;
-            axios.post('/apply_settings', {"client_id":this.$store.state.client_id, "config":this.configFile}).then((res) => {
+            axios.post('/apply_settings', {"client_id":this.$store.state.client_id, "config":this.configFile}, {headers: this.posts_headers}).then((res) => {
                 this.isLoading = false;
                 //console.log('apply-res',res)
                 if (res.data.status) {
@@ -4358,7 +4358,7 @@ export default {
         },
         save_configuration() {
             this.showConfirmation = false
-            axios.post('/save_settings', {})
+            axios.post('/save_settings', {}, {headers: this.posts_headers})
                 .then((res) => {
                     if (res) {
                         if (res.status) {
@@ -4380,7 +4380,7 @@ export default {
             this.$store.state.yesNoDialog.askQuestion("Are you sure?\nThis will delete all your configurations and get back to default configuration.").then(response => {
                 if (response) {
                     // User clicked Yes
-                    axios.post('/reset_settings', {})
+                    axios.post('/reset_settings', {}, {headers: this.posts_headers})
                         .then((res) => {
                             if (res) {
                                 if (res.status)
@@ -4598,7 +4598,7 @@ export default {
                     category: pers.category?pers.category:"",
                     folder: pers.folder?pers.folder:"",
                 }
-                const res = await axios.post('/mount_personality', obj);
+                const res = await axios.post('/mount_personality', obj, {headers: this.posts_headers});
 
                 if (res) {
 
@@ -4623,7 +4623,7 @@ export default {
 
 
             try {
-                const res = await axios.post('/unmount_personality', obj);
+                const res = await axios.post('/unmount_personality', obj, {headers: this.posts_headers});
 
                 if (res) {
                     return res.data
@@ -4649,7 +4649,7 @@ export default {
 
 
             try {
-                const res = await axios.post('/select_personality', obj);
+                const res = await axios.post('/select_personality', obj, {headers: this.posts_headers});
 
                 if (res) {
 
@@ -4676,7 +4676,7 @@ export default {
                     category: ext.category,
                     folder: ext.folder,
                 }
-                const res = await axios.post('/mount_extension', obj);
+                const res = await axios.post('/mount_extension', obj, {headers: this.posts_headers});
 
                 if (res) {
 
@@ -4701,7 +4701,7 @@ export default {
 
 
             try {
-                const res = await axios.post('/unmount_extension', obj);
+                const res = await axios.post('/unmount_extension', obj, {headers: this.posts_headers});
 
                 if (res) {
                     return res.data
@@ -4752,7 +4752,7 @@ export default {
 
         },
         async unmountAll(){
-            await axios.post('/unmount_all_personalities', {client_id: this.$store.state.client_id,});
+            await axios.post('/unmount_all_personalities', {client_id: this.$store.state.client_id,}, {headers: this.posts_headers});
             this.$store.dispatch('refreshMountedPersonalities');
             this.$store.dispatch('refreshConfig');
             this.$store.state.toast.showToast("All personas unmounted", 4, true)
@@ -4970,7 +4970,7 @@ export default {
             console.log('on reinstall ', persItem)
             this.isLoading = true
             console.log("Personality path:",persItem.personality.path)
-            axios.post('/reinstall_personality', { client_id:this.$store.state.client_id, name: persItem.personality.path }).then((res) => {
+            axios.post('/reinstall_personality', { client_id:this.$store.state.client_id, name: persItem.personality.path }, {headers: this.posts_headers}).then((res) => {
 
                 if (res) {
                     this.isLoading = false
