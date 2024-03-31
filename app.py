@@ -29,8 +29,10 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 from fastapi.encoders import jsonable_encoder
+from fastapi.middleware.cors import CORSMiddleware
 import socket
 import psutil
+
 
 def get_ip_addresses():
     hostname = socket.gethostname()    
@@ -89,6 +91,15 @@ if __name__ == "__main__":
         else:
             config.allowed_origins += [f"https://{ip}:{config['port']}" if is_https else f"http://{ip}:{config['port']}" for ip in get_ip_addresses()]
     allowed_origins = config.allowed_origins+[f"https://localhost:{config['port']}" if is_https else f"http://localhost:{config['port']}"]
+    
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=allowed_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    
     sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=allowed_origins, ping_timeout=1200, ping_interval=30)  # Enable CORS for selected origins
 
     LOLLMSWebUI.build_instance(config=config, lollms_paths=lollms_paths, args=args, sio=sio)

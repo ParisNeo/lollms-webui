@@ -4964,6 +4964,7 @@ export default {
         onPersonalityReinstall(persItem){
             console.log('on reinstall ', persItem)
             this.isLoading = true
+            console.log("Personality path:",persItem.personality.path)
             axios.post('/reinstall_personality', { name: persItem.personality.path }).then((res) => {
 
                 if (res) {

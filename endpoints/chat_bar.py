@@ -124,15 +124,23 @@ async def add_webpage(request: AddWebPageRequest):
         client = lollmsElfServer.session.get_client(request.client_id)
         url = request.url
         index =  find_first_available_file_index(lollmsElfServer.lollms_paths.personal_uploads_path,"web_",".txt")
-        file_path=sanitize_path(lollmsElfServer.lollms_paths.personal_uploads_path/f"web_{index}.txt",True)
+        try:
+            file_path=sanitize_path(lollmsElfServer.lollms_paths.personal_uploads_path/f"web_{index}.txt",True)
+        except Exception as ex:
+            lollmsElfServer.HideBlockingMessage()
+            raise ex
         try:
             result = urlparse(url)
             if all([result.scheme, result.netloc]):  # valid URL
-                if scrape_and_save(url=url, file_path=file_path,max_size=MAX_PAGE_SIZE):
+                if not scrape_and_save(url=url, file_path=file_path,max_size=MAX_PAGE_SIZE):
+                    lollmsElfServer.HideBlockingMessage()
                     raise HTTPException(status_code=400, detail="Web page too large")
             else:
+                lollmsElfServer.HideBlockingMessage()
                 raise HTTPException(status_code=400, detail="Invalid URL")
         except Exception as e:
+            trace_exception(e)
+            lollmsElfServer.HideBlockingMessage()
             raise HTTPException(status_code=400, detail=f"Exception : {e}")
         
         try:
