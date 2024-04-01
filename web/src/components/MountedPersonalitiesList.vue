@@ -367,6 +367,7 @@ export default {
 
             try {
                 const obj = {
+                    client_id: self.$store.state.client_id,
                     category: pers.category,
                     folder: pers.folder,
                     language: pers.language
