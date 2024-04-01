@@ -195,7 +195,7 @@ export default {
     openVsCode() {
       const json = JSON.stringify({ 
                           'client_id': this.client_id, 
-                          'discussion_id': this.discussion_id, 
+                          'discussion_id': typeof this.discussion_id === 'string' ? parseInt(this.discussion_id) : this.discussion_id , 
                           'message_id': this.message_id,
                           'code': this.code
                           })   
