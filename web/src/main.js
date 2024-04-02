@@ -4,8 +4,8 @@ import axios from "axios";
 import App from './App.vue'
 import router from './router'
 
-//import './assets/tailwind.css'
-import './assets/tailwind_april_fool.css'
+import './assets/tailwind.css'
+//import './assets/tailwind_april_fool.css'
 
 const app = createApp(App)
 console.log("Loaded main.js")
