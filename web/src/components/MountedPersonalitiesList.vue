@@ -363,21 +363,28 @@ export default {
 
         },
         async remount_personality(pers) {
+            console.log("Remounting personality ", pers)
             if (!pers) { return { 'status': false, 'error': 'no personality - mount_personality' } }
-
             try {
+                console.log("before")
                 const obj = {
-                    client_id: self.$store.state.client_id,
+                    client_id: this.$store.state.client_id,
                     category: pers.category,
                     folder: pers.folder,
                     language: pers.language
                 }
+                console.log("after")
                 const res = await axios.post('/remount_personality', obj);
+                console.log("Remounting personality executed:",res)
 
                 if (res) {
+                    console.log("Remounting personality res")
 
                     return res.data
 
+                }
+                else{
+                    console.log("failed remount_personality")
                 }
             } catch (error) {
                 console.log(error.message, 'remount_personality - settings')

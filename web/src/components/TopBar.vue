@@ -272,7 +272,7 @@ export default {
             this.$store.state.api_get_req('restart_program')
             this.rebooting_audio.play()
             this.$store.state.toast.showToast("Rebooting the app. Please wait...", 410, false)
-            //self.$store.state.toast.showToast("Rebooting the app. Please wait...", 50, true);
+            //this.$store.state.toast.showToast("Rebooting the app. Please wait...", 50, true);
             console.log("this.$store.state.api_get_req",this.$store.state.api_get_req)
             setTimeout(()=>{
                 window.close();
