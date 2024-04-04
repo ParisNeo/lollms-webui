@@ -1342,6 +1342,7 @@ export default {
                     messageItem && (msgObj.message_type==this.msgTypes.MSG_TYPE_FULL ||
                     msgObj.message_type==this.msgTypes.MSG_TYPE_FULL_INVISIBLE_TO_AI)
                 ) {
+                    this.isGenerating = true;
                     messageItem.content = msgObj.content
                     messageItem.finished_generating_at = msgObj.finished_generating_at
                 }
