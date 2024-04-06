@@ -45,6 +45,6 @@
     "prettier": "^2.8.4",
     "tailwind-scrollbar": "^3.0.1",
     "tailwindcss": "^3.3.1",
-    "vite": "^4.5.2"
+    "vite": "^4.5.3"
   }
 }
