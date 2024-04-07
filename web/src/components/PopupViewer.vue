@@ -86,7 +86,7 @@ export default {
   data() {
     return {
       showPopup: false,
-      webpageUrl: 'https://lollms.com/index.php/news/',
+      webpageUrl: 'https://lollms.com/',
     };
   },
   methods: {
