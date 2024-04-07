@@ -1,5 +1,5 @@
 <template>
-  <div class="break-all m-4">
+  <div class="break-all container w-full" >
     <div ref="mdRender" class="markdown-content">
       <div v-for="(item, index) in markdownItems" :key="index">
         <code-block

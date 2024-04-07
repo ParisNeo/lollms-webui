@@ -402,7 +402,11 @@ export default {
             showfilesList: true,
             showPersonalities: false,
             personalities_ready: false,
-            models_menu_icon:""
+            models_menu_icon:"",
+            posts_headers : {
+                'accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
         }
     },
     computed: {
@@ -736,7 +740,7 @@ export default {
             axios.get('/download_files')
         },
         remove_file(file){
-            axios.get('/remove_file',{name: file}).then(res=>{
+            axios.get('/remove_file',{client_id:this.$store.state.client_id, name: file}).then(res=>{
                 console.log(res)
             })
         },
@@ -878,8 +882,13 @@ export default {
         },
 
         removeItem(file) {
-            console.log(file)
-            axios.post('/remove_file',{file}).then(()=>{
+            console.log("Réemoving ",file.name)
+            axios.post('/remove_file',{
+                                        client_id:this.$store.state.client_id, 
+                                        name:file.name
+                                    },
+                                    {headers: this.posts_headers}
+                                ).then(()=>{
                     this.filesList = this.filesList.filter((item) => item != file)
                 })            
 

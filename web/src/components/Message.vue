@@ -167,10 +167,10 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto w-full ">
+                <div class="overflow-x-auto w-full">
                     <!-- MESSAGE CONTENT -->
-                    <details v-show="message != undefined && message.steps != undefined && message.steps.length>0" class="flex w-full cursor-pointer rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 mb-3.5 max-w-full svelte-1escu1z">
-                        <summary class="grid min-w-72 select-none grid-cols-[40px,1fr] items-center gap-2.5 p-2 svelte-1escu1z">
+                    <details v-show="message != undefined && message.steps != undefined && message.steps.length>0" class="flex w-full cursor-pointer rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 mb-3.5 max-w-full">
+                        <summary class="grid min-w-72 select-none grid-cols-[40px,1fr] items-center gap-2.5 p-2">
                             <div class="relative grid aspect-square place-content-center overflow-hidden rounded-lg bg-gray-300 dark:bg-gray-200">
                                 <img v-if="message.status_message!='Done' & message.status_message!= 'Generation canceled'" :src="loading_svg" class="absolute inset-0 text-gray-100 transition-opacity dark:text-gray-800 opacity-100">
                                 <img v-if="message.status_message== 'Generation canceled'" :src="failed_svg" class="absolute inset-0 text-gray-100 transition-opacity dark:text-gray-800 opacity-100">
@@ -203,18 +203,15 @@
                         <textarea v-if="message.open" ref="mdTextarea" @keydown.tab.prevent="insertTab"
                         class="block min-h-[900px] p-2.5 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 overflow-y-scroll flex flex-col shadow-lg p-10 pt-0 overflow-y-scroll dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
                         :rows="4" 
-                        :style="{ minHeight: mdRenderHeight + `px` }" placeholder="Enter message here..."
-                            v-model="message.content">
+                        placeholder="Enter message here..."
+                        v-model="message.content">
                         </textarea>
                     </div>
-                    
-                    <!--
                     <div  v-if="message.metadata !== null">
-                        <div v-for="(metadata, index) in message.metadata.filter(metadata => metadata!=null && metadata.hasOwnProperty('title') && metadata.hasOwnProperty('content') )" :key="'json-' + message.id + '-' + index" class="json font-bold">
+                        <div v-for="(metadata, index) in (message.metadata?.filter(metadata => metadata!=null && metadata.hasOwnProperty('title') && metadata.hasOwnProperty('content')) || [])" :key="'json-' + message.id + '-' + index" class="json font-bold">
                             <JsonViewer :jsonFormText="metadata.title" :jsonData="metadata.content" />
                         </div>
                     </div>
-                    -->
 
                     <DynamicUIRenderer v-if="message.ui !== null && message.ui !== undefined && message.ui !== ''" class="w-full h-full" :code="message.ui"></DynamicUIRenderer>
                     <audio controls autoplay v-if="audio_url!=null" :key="audio_url">
@@ -340,16 +337,17 @@ export default {
     }, mounted() {
         // Check if speech synthesis is supported by the browser
         if ('speechSynthesis' in window) {
-        this.speechSynthesis = window.speechSynthesis;
+            this.speechSynthesis = window.speechSynthesis;
 
-        // Load the available voices
-        this.voices = this.speechSynthesis.getVoices();
+            // Load the available voices
+            this.voices = this.speechSynthesis.getVoices();
 
-        // Make sure the voices are loaded before starting speech synthesis
-        if (this.voices.length === 0) {
-            this.speechSynthesis.addEventListener('voiceschanged', this.onVoicesChanged);
-        } else {
-        }
+            // Make sure the voices are loaded before starting speech synthesis
+            if (this.voices.length === 0) {
+                this.speechSynthesis.addEventListener('voiceschanged', this.onVoicesChanged);
+            } else {
+                console.log("No voices found")
+            }
         } else {
         console.error('Speech synthesis is not supported in this browser.');
         }
