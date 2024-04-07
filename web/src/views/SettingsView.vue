@@ -553,6 +553,21 @@
                                         
                                         <tr>
                                         <td style="min-width: 200px;">
+                                            <label for="turn_on_open_file_validation" class="text-sm font-bold" style="margin-right: 1rem;">turn on code validation:</label>
+                                        </td>
+                                        <td style="width: 100%;">
+                                            <input
+                                            type="checkbox"
+                                            id="turn_on_open_file_validation"
+                                            required
+                                            v-model="configFile.turn_on_open_file_validation"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>                                        
+                                        <tr>
+                                        <td style="min-width: 200px;">
                                             <label for="turn_on_code_validation" class="text-sm font-bold" style="margin-right: 1rem;">turn on code validation:</label>
                                         </td>
 

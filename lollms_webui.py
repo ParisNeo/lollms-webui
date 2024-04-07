@@ -981,7 +981,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             ASCIIColors.info("Running workflow")
             try:
                 self.personality.callback = callback
-                self.personality.processor.run_workflow(prompt, full_prompt, callback, context_details)
+                self.personality.processor.run_workflow(prompt, full_prompt, callback, context_details,client=self.session.get_client(client_id))
             except Exception as ex:
                 trace_exception(ex)
                 # Catch the exception and get the traceback as a list of strings

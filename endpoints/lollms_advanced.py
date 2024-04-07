@@ -14,7 +14,7 @@ from starlette.responses import StreamingResponse
 from lollms.types import MSG_TYPE
 from lollms.main_config import BaseConfig
 from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception, show_yes_no_dialog
-from lollms.security import sanitize_path, forbid_remote_access
+from lollms.security import sanitize_path, forbid_remote_access, check_access
 from ascii_colors import ASCIIColors
 from lollms.databases.discussions_database import DiscussionsDB
 from pathlib import Path
@@ -69,7 +69,7 @@ async def execute_code(request: CodeRequest):
     :param request: The HTTP request object.
     :return: A JSON response with the status of the operation.
     """
-    client = lollmsElfServer.session.get_client(request.client_id)
+    client = check_access(lollmsElfServer, request.client_id)
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Code execution is blocked when in headless mode for obvious security reasons!"}
 
@@ -146,17 +146,18 @@ async def open_file(file_path: FilePath):
             return {"status":False,"error":"User refused the opeining file!"}
 
     forbid_remote_access(lollmsElfServer)
+
     try:
         # Validate the 'path' parameter
-        path = sanitize_path(file_path.path)
-        if not validate_file_path(path):
-            return {"status":False,"error":"Invalid file path"}
+        path = sanitize_path(file_path.path, allow_absolute_path=True)
         
-        # Sanitize the 'path' parameter
-        path = os.path.realpath(path)
-        
-        # Use subprocess.Popen to safely open the file
-        subprocess.Popen(["start", path])
+        if Path(path).exists():
+            # Use subprocess.Popen to safely open the file
+            ASCIIColors.yellow(f"Starting file : {path}")
+            if os.name == "nt": # if the operating system is Windows
+                subprocess.Popen(f'start {path}', shell=True)
+            else: # for other operating systems
+                subprocess.Popen([path], shell=True)
         
         return {"status": True, "execution_time": 0}
     
@@ -184,24 +185,22 @@ async def open_folder(file_path: FilePath):
         return {"status":False,"error":"Open file is blocked when in headless mode for obvious security reasons!"}
 
     if lollmsElfServer.config.turn_on_open_file_validation:
-        if not show_yes_no_dialog("Validation","Do you validate the opening of a file?"):
-            return {"status":False,"error":"User refused the opeining file!"}
+        if not show_yes_no_dialog("Validation","Do you validate the opening of a folder?"):
+            return {"status":False,"error":"User refused the opening folder!"}
 
     forbid_remote_access(lollmsElfServer)
     try:
         # Validate the 'path' parameter
-        path = file_path.path
-       
-        # Sanitize the 'path' parameter
-        path = os.path.realpath(path)
-        
-        # Use subprocess.Popen to safely open the file
-        if platform.system() == 'Windows':
-            subprocess.Popen(f'explorer "{path}"')
-        elif platform.system() == 'Linux':
-            subprocess.run(['xdg-open', str(path)], check=True)
-        elif platform.system() == 'Darwin':
-            subprocess.run(['open', str(path)], check=True)
+        path = sanitize_path(file_path.path, allow_absolute_path=True)
+        ASCIIColors.yellow(f"Opening folder : {path}")
+        if Path(path).exists():
+            # Use subprocess.Popen to safely open the file
+            if platform.system() == 'Windows':
+                subprocess.Popen(f'explorer "{path}"', shell=True)
+            elif platform.system() == 'Linux':
+                subprocess.run(['xdg-open', str(path)], check=True, shell=True)
+            elif platform.system() == 'Darwin':
+                subprocess.run(['open', str(path)], check=True, shell=True)
 
         
         return {"status": True, "execution_time": 0}
@@ -220,7 +219,7 @@ class OpenCodeFolderInVsCodeRequestModel(BaseModel):
 @router.post("/open_code_folder_in_vs_code")
 async def open_code_folder_in_vs_code(request: OpenCodeFolderInVsCodeRequestModel):
 
-    client = lollmsElfServer.session.get_client(request.client_id)
+    client = check_access(lollmsElfServer, request.client_id)
 
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Open code folder in vscode is blocked when in headless mode for obvious security reasons!"}
@@ -266,7 +265,8 @@ async def open_code_in_vs_code(vs_code_data: VSCodeData):
     :param vs_code_data: The data object.
     :return: A JSON response with the status of the operation.
     """
-    client = lollmsElfServer.session.get_client(vs_code_data.client_id)
+    client = check_access(lollmsElfServer, vs_code_data.client_id)
+
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Open code in vs code is blocked when in headless mode for obvious security reasons!"}
 
@@ -313,7 +313,8 @@ async def open_code_folder(request: FolderRequest):
     :param request: The HTTP request object.
     :return: A JSON response with the status of the operation.
     """
-    client = lollmsElfServer.session.get_client(request.client_id)
+    client = check_access(lollmsElfServer, request.client_id)
+
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Open code folder is blocked when in headless mode for obvious security reasons!"}
 
