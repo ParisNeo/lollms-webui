@@ -32,7 +32,7 @@
                   fill="currentFill" />
           </svg>
       </div>
-      <h3 class="text-sm" >{{ message }}</h3>
+      <h3 class="text-sm ml-6" >{{ message }}</h3>
     </div>
   </div>
 </template>
