@@ -33,6 +33,9 @@ from fastapi.middleware.cors import CORSMiddleware
 import socket
 import psutil
 
+import mimetypes
+mimetypes.add_type('application/javascript', '.js')
+mimetypes.add_type('text/css', '.css')
 
 def get_ip_addresses():
     hostname = socket.gethostname()    
