@@ -55,9 +55,9 @@ def execute_python(code, client:Client, message_id):
         if process.returncode != 0:
             # The child process threw an exception.
             try:
-                error_message = f"Error executing Python code: {error.decode('utf8')}"
+                error_message = f"Output:{output.decode('utf-8', errors="ignore")}\nError executing Python code:\n{error.decode('utf-8', errors="ignore")}"
             except:
-                error_message = f"Error executing Python code: {error}"
+                error_message = f"Error executing Python code:\n{error}"
             error_json = {"output": "<div class='text-red-500'>"+error_message+"</div>", "execution_time": execution_time}
             return error_json
 

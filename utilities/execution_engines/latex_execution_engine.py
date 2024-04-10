@@ -55,8 +55,9 @@ def execute_latex(code, client:Client, message_id):
             # Check the return code of the pdflatex command
             if result.returncode != 0:
                 error_message = result.stderr.strip()
+                std_mesasge = result.stdout.strip()
                 execution_time = time.time() - start_time
-                error_json = {"output": f"Error occurred while compiling LaTeX: {error_message}", "execution_time": execution_time}
+                error_json = {"output": f"Output:{std_mesasge}\nError occurred while compiling LaTeX:\n{error_message}", "execution_time": execution_time}
                 return error_json
             # If the compilation is successful, you will get a PDF file
             pdf_file = tmp_file.with_suffix('.pdf')
