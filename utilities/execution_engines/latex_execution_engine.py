@@ -37,7 +37,7 @@ def execute_latex(code, client:Client, message_id):
     root_folder = client.discussion.discussion_folder
     root_folder.mkdir(parents=True,exist_ok=True)
     tmp_file = root_folder/f"latex_file_{message_id}.tex"
-    with open(tmp_file,"w",encoding="utf8") as f:
+    with open(tmp_file,"w", encoding="utf-8") as f:
         f.write(code)
 
     try:
@@ -72,14 +72,32 @@ def execute_latex(code, client:Client, message_id):
     # Check if the process was successful.
     if process.returncode != 0:
         # The child process threw an exception.
+        pdf_file = tmp_file.with_suffix('.pdf')
+        print(f"PDF file generated: {pdf_file}")
         try:
-            error_message = f"Output:{output.decode('utf-8', errors='ignore')}\nError executing Python code:\n{error.decode('utf-8', errors='ignore')}"
+            error_message = f"Error executing Python code:\n{error.decode('utf-8', errors='ignore')}"
         except:
             error_message = f"Error executing Python code:\n{error}"
-        error_json = {"output": "<div class='text-red-500'>"+error_message+"</div>", "execution_time": execution_time}
+        if pdf_file.exists():
+            # The child process was successful.
+            pdf_file=str(pdf_file).replace("\\","/")
+            if not "http" in lollmsElfServer.config.host and not "https" in lollmsElfServer.config.host:
+                host = "http://"+lollmsElfServer.config.host
+            else:
+                host = lollmsElfServer.config.host
+
+            url = f"{host}:{lollmsElfServer.config.port}/{discussion_path_2_url(pdf_file)}"
+            error_json = {"output": f"<div>Pdf file generated at: {pdf_file}\n<a href='{url}' target='_blank'>Click here to show</a></div><div>Output:{output.decode('utf-8', errors='ignore')}\n</div><div class='text-red-500'>"+error_message+"</div>", "execution_time": execution_time}
+
+        else:            
+            error_json = {"output": f"<div>Output:{output.decode('utf-8', errors='ignore')}\n</div><div class='text-red-500'>"+error_message+"</div>", "execution_time": execution_time}
         return error_json
 
     # The child process was successful.
+    # If the compilation is successful, you will get a PDF file
+    pdf_file = tmp_file.with_suffix('.pdf')
+    print(f"PDF file generated: {pdf_file}")
+
     # The child process was successful.
     pdf_file=str(pdf_file).replace("\\","/")
     if not "http" in lollmsElfServer.config.host and not "https" in lollmsElfServer.config.host:
