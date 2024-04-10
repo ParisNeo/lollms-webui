@@ -96,6 +96,9 @@ def add_events(sio:socketio):
     def take_picture(sid):
         try:
             client = lollmsElfServer.session.get_client(sid)
+            if client is None:
+                lollmsElfServer.error("Client not recognized.\nTry refreshing the page")
+                return
             lollmsElfServer.info("Loading camera")
             if not PackageManager.check_package_installed("cv2"):
                 PackageManager.install_package("opencv-python")
