@@ -30,56 +30,63 @@ from lollms.utilities import discussion_path_2_url
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()           
 
 def execute_latex(code, client:Client, message_id):
-    def spawn_process(code):
-        """Executes Python code and returns the output as JSON."""
+    # Start the timer.
+    start_time = time.time()
 
-        # Start the timer.
-        start_time = time.time()
+    # Create a temporary file.
+    root_folder = client.discussion.discussion_folder
+    root_folder.mkdir(parents=True,exist_ok=True)
+    tmp_file = root_folder/f"latex_file_{message_id}.tex"
+    with open(tmp_file,"w",encoding="utf8") as f:
+        f.write(code)
 
-        # Create a temporary file.
-        root_folder = client.discussion.discussion_folder
-        root_folder.mkdir(parents=True,exist_ok=True)
-        tmp_file = root_folder/f"latex_file_{message_id}.tex"
-        with open(tmp_file,"w",encoding="utf8") as f:
-            f.write(code)
-        try:
-            # Determine the pdflatex command based on the provided or default path
-            if lollmsElfServer.config.pdf_latex_path:
-                pdflatex_command = lollmsElfServer.config.pdf_latex_path
-            else:
-                pdflatex_command = 'pdflatex'
-            # Set the execution path to the folder containing the tmp_file
-            execution_path = tmp_file.parent
-            # Run the pdflatex command with the file path
-            result = subprocess.run([pdflatex_command, "-interaction=nonstopmode", tmp_file], check=True, capture_output=True, text=True, cwd=execution_path)
-            # Check the return code of the pdflatex command
-            if result.returncode != 0:
-                error_message = result.stderr.strip()
-                std_mesasge = result.stdout.strip()
-                execution_time = time.time() - start_time
-                error_json = {"output": f"Output:{std_mesasge}\nError occurred while compiling LaTeX:\n{error_message}", "execution_time": execution_time}
-                return error_json
-            # If the compilation is successful, you will get a PDF file
-            pdf_file = tmp_file.with_suffix('.pdf')
-            print(f"PDF file generated: {pdf_file}")
+    try:
+        # Determine the pdflatex command based on the provided or default path
+        if lollmsElfServer.config.pdf_latex_path:
+            pdflatex_command = lollmsElfServer.config.pdf_latex_path
+        else:
+            pdflatex_command = 'pdflatex'
+        # Set the execution path to the folder containing the tmp_file
+        execution_path = tmp_file.parent
 
-        except subprocess.CalledProcessError as ex:
-            lollmsElfServer.error(f"Error occurred while compiling LaTeX: {ex}") 
-            execution_time = time.time() - start_time
-            error_json = {"output": "<div class='text-red-500'>"+str(ex)+"\n"+get_trace_exception(ex)+"</div>", "execution_time": execution_time}
-            return error_json
+        # Execute the Python code in a temporary file.
+        process = subprocess.Popen(
+            [pdflatex_command, "-interaction=nonstopmode", str(tmp_file)],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            cwd=execution_path
+        )
 
+        # Get the output and error from the process.
+        output, error = process.communicate()
+    except Exception as ex:
         # Stop the timer.
         execution_time = time.time() - start_time
+        error_message = f"Error executing Python code: {ex}"
+        error_json = {"output": "<div class='text-red-500'>"+ex+"\n"+get_trace_exception(ex)+"</div>", "execution_time": execution_time}
+        return error_json
 
-        # The child process was successful.
-        pdf_file=str(pdf_file).replace("\\","/")
-        if not "http" in lollmsElfServer.config.host and not "https" in lollmsElfServer.config.host:
-            host = "http://"+lollmsElfServer.config.host
-        else:
-            host = lollmsElfServer.config.host
-        
-        url = f"{host}:{lollmsElfServer.config.port}/{discussion_path_2_url(pdf_file)}"
-        output_json = {"output": f"Pdf file generated at: {pdf_file}\n<a href='{url}' target='_blank'>Click here to show</a>", "execution_time": execution_time}
-        return output_json
-    return spawn_process(code)
+    # Stop the timer.
+    execution_time = time.time() - start_time
+
+    # Check if the process was successful.
+    if process.returncode != 0:
+        # The child process threw an exception.
+        try:
+            error_message = f"Output:{output.decode('utf-8', errors='ignore')}\nError executing Python code:\n{error.decode('utf-8', errors='ignore')}"
+        except:
+            error_message = f"Error executing Python code:\n{error}"
+        error_json = {"output": "<div class='text-red-500'>"+error_message+"</div>", "execution_time": execution_time}
+        return error_json
+
+    # The child process was successful.
+    # The child process was successful.
+    pdf_file=str(pdf_file).replace("\\","/")
+    if not "http" in lollmsElfServer.config.host and not "https" in lollmsElfServer.config.host:
+        host = "http://"+lollmsElfServer.config.host
+    else:
+        host = lollmsElfServer.config.host
+
+    url = f"{host}:{lollmsElfServer.config.port}/{discussion_path_2_url(pdf_file)}"
+    output_json = {"output": f"Pdf file generated at: {pdf_file}\n<a href='{url}' target='_blank'>Click here to show</a>", "execution_time": execution_time}
+    return output_json
