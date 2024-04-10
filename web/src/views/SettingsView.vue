@@ -433,7 +433,7 @@
                                             required
                                             v-model="configFile.user_description"
                                             @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            class="min-h-[500px] w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             ></textarea>
                                         </td>
 

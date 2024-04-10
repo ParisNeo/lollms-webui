@@ -1,7 +1,7 @@
 <template>
   <div class="container bg-bg-light dark:bg-bg-dark shadow-lg overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
     <div class="container flex flex-row m-2">
-      <div class="flex-grow m-2">
+      <div class="flex-grow max-w-[900px] m-2">
         <div class="flex gap-3 flex-1 items-center flex-grow flex-row m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
             <button v-show="!generating" id="generate-button" title="Generate from current cursor position" @click="generate" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="pen-tool"></i></button>
             <button v-show="!generating" id="generate-next-button" title="Generate from next place holder" @click="generate_in_placeholder" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="archive"></i></button>
@@ -148,7 +148,7 @@
             </div>
           </div>
       </div>
-      <Card title="settings"  class="slider-container ml-0 mr-0 max-width"  :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
+      <Card title="settings"  class="slider-container ml-0 mr-0"  :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
         <Card  title="Model" class="slider-container ml-0 mr-0" :is_subcard="true" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
           <select v-model="this.$store.state.selectedModel" @change="setModel" class="bg-white dark:bg-black m-0 border-2 rounded-md shadow-sm w-full">
             <option v-for="model in models" :key="model" :value="model">
@@ -613,23 +613,23 @@ export default {
             let ss =this.$refs.mdTextarea.selectionStart
             let se =this.$refs.mdTextarea.selectionEnd
             if(ss==se){
-                if(speechSynthesis==0 || this.message.content[ss-1]=="\n"){
-                    this.message.content = this.message.content.slice(0, ss) + "```"+bloc_name+"\n\n```\n" + this.message.content.slice(ss)
+                if(speechSynthesis==0 || this.text[ss-1]=="\n"){
+                    this.text = this.text.slice(0, ss) + "```"+bloc_name+"\n\n```\n" + this.text.slice(ss)
                     ss = ss+4+bloc_name.length
                 }
                 else{
-                    this.message.content = this.message.content.slice(0, ss) + "\n```"+bloc_name+"\n\n```\n" + this.message.content.slice(ss)
+                    this.text = this.text.slice(0, ss) + "\n```"+bloc_name+"\n\n```\n" + this.text.slice(ss)
                     ss = ss+3+bloc_name.length
                 }
             }
             else{
-                if(speechSynthesis==0 || this.message.content[ss-1]=="\n"){
-                    this.message.content = this.message.content.slice(0, ss) + "```"+bloc_name+"\n"+this.message.content.slice(ss, se)+"\n```\n" + this.message.content.slice(se)
+                if(speechSynthesis==0 || this.text[ss-1]=="\n"){
+                    this.text = this.text.slice(0, ss) + "```"+bloc_name+"\n"+this.text.slice(ss, se)+"\n```\n" + this.text.slice(se)
                     ss = ss+4+bloc_name.length
                 }
                 else{
-                    this.message.content = this.message.content.slice(0, ss) + "\n```"+bloc_name+"\n"+this.message.content.slice(ss, se)+"\n```\n" + this.message.content.slice(se)
-                    p = p+3+bloc_name.length
+                    this.text = this.text.slice(0, ss) + "\n```"+bloc_name+"\n"+this.text.slice(ss, se)+"\n```\n" + this.text.slice(se)
+                    ss = ss+3+bloc_name.length
                 }
             }
 
