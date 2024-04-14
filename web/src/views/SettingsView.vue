@@ -620,214 +620,6 @@
                                         </tr>      
                                     </table>
                                 </Card>         
-                                <Card title="Data Vectorization" :is_subcard="true" class="pb-2  m-2">
-                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="use_files" class="text-sm font-bold" style="margin-right: 1rem;">Activate files support:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="use_files"
-                                            required
-                                            v-model="configFile.use_files"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="activate_ltm" class="text-sm font-bold" style="margin-right: 1rem;">Activate Long term memory:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="activate_ltm"
-                                            required
-                                            v-model="configFile.activate_ltm"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr> 
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="summerize_discussion" class="text-sm font-bold" style="margin-right: 1rem;">Activate Continuous Learning from discussions:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="summerize_discussion"
-                                            required
-                                            v-model="configFile.summerize_discussion"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>                                         
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="data_vectorization_visualize_on_vectorization" class="text-sm font-bold" style="margin-right: 1rem;">show vectorized data:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="data_vectorization_visualize_on_vectorization"
-                                            required
-                                            v-model="configFile.data_vectorization_visualize_on_vectorization"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>                                                                                                                         
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="data_vectorization_activate" class="text-sm font-bold" style="margin-right: 1rem;">Activate data Vectorization:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="data_vectorization_activate"
-                                            required
-                                            v-model="configFile.data_vectorization_activate"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="data_vectorization_build_keys_words" class="text-sm font-bold" style="margin-right: 1rem;">Build keywords when querying the vectorized database:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="data_vectorization_build_keys_words"
-                                            required
-                                            v-model="configFile.data_vectorization_build_keys_words"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>
-                                                                                
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="data_vectorization_method" class="text-sm font-bold" style="margin-right: 1rem;">Data vectorization method:</label>
-                                        </td>
-                                        <td>
-                                            <select
-                                            id="data_vectorization_method"
-                                            required
-                                            v-model="configFile.data_vectorization_method"
-                                            @change="settingsChanged=true"
-                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                                <option value="tfidf_vectorizer">tfidf Vectorizer</option>
-                                                <option value="model_embedding">Model Embedding</option>
-                                            </select>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="data_visualization_method" class="text-sm font-bold" style="margin-right: 1rem;">Data visualization method:</label>
-                                        </td>
-                                        <td>
-                                            <select
-                                            id="data_visualization_method"
-                                            required
-                                            v-model="configFile.data_visualization_method"
-                                            @change="settingsChanged=true"
-                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                                <option value="PCA">PCA</option>
-                                                <option value="TSNE">TSNE</option>
-                                            </select>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="data_vectorization_save_db" class="text-sm font-bold" style="margin-right: 1rem;">Save the new files to the database (The database wil always grow and continue to be the same over many sessions):</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="data_vectorization_save_db"
-                                            required
-                                            v-model="configFile.data_vectorization_save_db"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="data_vectorization_chunk_size" class="text-sm font-bold" style="margin-right: 1rem;">Data vectorization chunk size(tokens):</label>
-                                        </td>
-                                        <td>
-                                            <input id="data_vectorization_chunk_size" v-model="configFile.data_vectorization_chunk_size"
-                                            @change="settingsChanged=true"
-                                            type="range" min="0" max="64000" step="1"
-                                            class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                                            <input v-model="configFile.data_vectorization_chunk_size"
-                                            type="number"
-                                            @change="settingsChanged=true"
-                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>                                          
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="data_vectorization_overlap_size" class="text-sm font-bold" style="margin-right: 1rem;">Data vectorization overlap size(tokens):</label>
-                                        </td>
-                                        <td>
-                                            <input id="data_vectorization_overlap_size" v-model="configFile.data_vectorization_overlap_size"
-                                            @change="settingsChanged=true"
-                                            type="range" min="0" max="64000" step="1"
-                                            class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                            <input v-model="configFile.data_vectorization_overlap_size"
-                                            type="number"
-                                            @change="settingsChanged=true"
-                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>                                          
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="data_vectorization_overlap_size" class="text-sm font-bold" style="margin-right: 1rem;">Number of chunks to use for each message:</label>
-                                        </td>
-                                        <td>
-                                            <input id="data_vectorization_nb_chunks" v-model="configFile.data_vectorization_nb_chunks"
-                                            @change="settingsChanged=true"
-                                            type="range" min="0" max="1000" step="1"
-                                            class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                            <input v-model="configFile.data_vectorization_nb_chunks"
-                                            type="number"
-                                            @change="settingsChanged=true"
-                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>                                           
-                                                                                      
-                                    </table>
-                                </Card>
                                 <Card title="Internet search" :is_subcard="true" class="pb-2  m-2">
                                     <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <tr>
@@ -1215,6 +1007,235 @@
 
                 </div>
             </div>
+
+            <!-- Data settings-->
+
+            <div
+                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                <div class="flex flex-row p-3">
+                    <button @click.stop="data_conf_collapsed = !data_conf_collapsed"
+                        class="text-2xl hover:text-primary p-2 -m-2 w-full text-left flex flex-row items-center">
+                        <div v-show="data_conf_collapsed" ><i data-feather='chevron-right'></i></div>
+                        <div v-show="!data_conf_collapsed" ><i data-feather='chevron-down'></i></div>
+
+                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            Data management settings</h3>
+                    </button>
+                </div>
+                <div :class="{ 'hidden': data_conf_collapsed }" class="flex flex-col mb-2 px-3 pb-0"></div>
+
+
+
+            <Card title="Data Vectorization" :is_subcard="true" class="pb-2  m-2">
+                <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <tr>
+                    <td style="min-width: 200px;">
+                        <label for="use_files" class="text-sm font-bold" style="margin-right: 1rem;">Activate files support:</label>
+                    </td>
+                    <td>
+                        <div class="flex flex-row">
+                        <input
+                        type="checkbox"
+                        id="use_files"
+                        required
+                        v-model="configFile.use_files"
+                        @change="settingsChanged=true"
+                        class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                        >
+                        </div>
+                    </td>
+                    </tr>
+                    <tr>
+                    <td style="min-width: 200px;">
+                        <label for="activate_ltm" class="text-sm font-bold" style="margin-right: 1rem;">Activate Long term memory:</label>
+                    </td>
+                    <td>
+                        <div class="flex flex-row">
+                        <input
+                        type="checkbox"
+                        id="activate_ltm"
+                        required
+                        v-model="configFile.activate_ltm"
+                        @change="settingsChanged=true"
+                        class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                        >
+                        </div>
+                    </td>
+                    </tr> 
+                    <tr>
+                    <td style="min-width: 200px;">
+                        <label for="summerize_discussion" class="text-sm font-bold" style="margin-right: 1rem;">Activate Continuous Learning from discussions:</label>
+                    </td>
+                    <td>
+                        <div class="flex flex-row">
+                        <input
+                        type="checkbox"
+                        id="summerize_discussion"
+                        required
+                        v-model="configFile.summerize_discussion"
+                        @change="settingsChanged=true"
+                        class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                        >
+                        </div>
+                    </td>
+                    </tr>                                         
+                    <tr>
+                    <td style="min-width: 200px;">
+                        <label for="data_vectorization_visualize_on_vectorization" class="text-sm font-bold" style="margin-right: 1rem;">show vectorized data:</label>
+                    </td>
+                    <td>
+                        <div class="flex flex-row">
+                        <input
+                        type="checkbox"
+                        id="data_vectorization_visualize_on_vectorization"
+                        required
+                        v-model="configFile.data_vectorization_visualize_on_vectorization"
+                        @change="settingsChanged=true"
+                        class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                        >
+                        </div>
+                    </td>
+                    </tr>                                                                                                                         
+                    <tr>
+                    <td style="min-width: 200px;">
+                        <label for="data_vectorization_activate" class="text-sm font-bold" style="margin-right: 1rem;">Activate data Vectorization:</label>
+                    </td>
+                    <td>
+                        <div class="flex flex-row">
+                        <input
+                        type="checkbox"
+                        id="data_vectorization_activate"
+                        required
+                        v-model="configFile.data_vectorization_activate"
+                        @change="settingsChanged=true"
+                        class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                        >
+                        </div>
+                    </td>
+                    </tr>
+                    <tr>
+                    <td style="min-width: 200px;">
+                        <label for="data_vectorization_build_keys_words" class="text-sm font-bold" style="margin-right: 1rem;">Build keywords when querying the vectorized database:</label>
+                    </td>
+                    <td>
+                        <div class="flex flex-row">
+                        <input
+                        type="checkbox"
+                        id="data_vectorization_build_keys_words"
+                        required
+                        v-model="configFile.data_vectorization_build_keys_words"
+                        @change="settingsChanged=true"
+                        class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                        >
+                        </div>
+                    </td>
+                    </tr>
+                                                            
+                    <tr>
+                    <td style="min-width: 200px;">
+                        <label for="data_vectorization_method" class="text-sm font-bold" style="margin-right: 1rem;">Data vectorization method:</label>
+                    </td>
+                    <td>
+                        <select
+                        id="data_vectorization_method"
+                        required
+                        v-model="configFile.data_vectorization_method"
+                        @change="settingsChanged=true"
+                        class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                        >
+                            <option value="tfidf_vectorizer">tfidf Vectorizer</option>
+                            <option value="model_embedding">Model Embedding</option>
+                        </select>
+                    </td>
+                    </tr>
+                    <tr>
+                    <td style="min-width: 200px;">
+                        <label for="data_visualization_method" class="text-sm font-bold" style="margin-right: 1rem;">Data visualization method:</label>
+                    </td>
+                    <td>
+                        <select
+                        id="data_visualization_method"
+                        required
+                        v-model="configFile.data_visualization_method"
+                        @change="settingsChanged=true"
+                        class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                        >
+                            <option value="PCA">PCA</option>
+                            <option value="TSNE">TSNE</option>
+                        </select>
+                    </td>
+                    </tr>
+                    <tr>
+                    <td style="min-width: 200px;">
+                        <label for="data_vectorization_save_db" class="text-sm font-bold" style="margin-right: 1rem;">Save the new files to the database (The database wil always grow and continue to be the same over many sessions):</label>
+                    </td>
+                    <td>
+                        <div class="flex flex-row">
+                        <input
+                        type="checkbox"
+                        id="data_vectorization_save_db"
+                        required
+                        v-model="configFile.data_vectorization_save_db"
+                        @change="settingsChanged=true"
+                        class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                        >
+                        </div>
+                    </td>
+                    </tr>
+                    <tr>
+                    <td style="min-width: 200px;">
+                        <label for="data_vectorization_chunk_size" class="text-sm font-bold" style="margin-right: 1rem;">Data vectorization chunk size(tokens):</label>
+                    </td>
+                    <td>
+                        <input id="data_vectorization_chunk_size" v-model="configFile.data_vectorization_chunk_size"
+                        @change="settingsChanged=true"
+                        type="range" min="0" max="64000" step="1"
+                        class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                        <input v-model="configFile.data_vectorization_chunk_size"
+                        type="number"
+                        @change="settingsChanged=true"
+                        class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                        >
+                    </td>
+                    </tr>                                          
+                    <tr>
+                    <td style="min-width: 200px;">
+                        <label for="data_vectorization_overlap_size" class="text-sm font-bold" style="margin-right: 1rem;">Data vectorization overlap size(tokens):</label>
+                    </td>
+                    <td>
+                        <input id="data_vectorization_overlap_size" v-model="configFile.data_vectorization_overlap_size"
+                        @change="settingsChanged=true"
+                        type="range" min="0" max="64000" step="1"
+                        class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <input v-model="configFile.data_vectorization_overlap_size"
+                        type="number"
+                        @change="settingsChanged=true"
+                        class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                        >
+                    </td>
+                    </tr>                                          
+                    <tr>
+                    <td style="min-width: 200px;">
+                        <label for="data_vectorization_overlap_size" class="text-sm font-bold" style="margin-right: 1rem;">Number of chunks to use for each message:</label>
+                    </td>
+                    <td>
+                        <input id="data_vectorization_nb_chunks" v-model="configFile.data_vectorization_nb_chunks"
+                        @change="settingsChanged=true"
+                        type="range" min="0" max="1000" step="1"
+                        class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <input v-model="configFile.data_vectorization_nb_chunks"
+                        type="number"
+                        @change="settingsChanged=true"
+                        class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                        >
+                    </td>
+                    </tr>                                           
+                                                                    
+                </table>
+            </Card>
+            </div>
+
 
             <!-- Servers CONFIGS -->
             <div
@@ -2883,6 +2904,7 @@ export default {
             // Accordeon stuff 
             collapsedArr: [],
             all_collapsed: true,
+            data_conf_collapsed: true,
             servers_conf_collapsed: true, // Servers configuration
             minconf_collapsed: true, // Main configuration 
             bec_collapsed: true,

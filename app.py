@@ -6,6 +6,8 @@ Description: Singleton class for the LoLLMS web UI.
 This file is the entry point to the webui.
 """
 
+
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
@@ -32,7 +34,6 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 import socket
 import psutil
-
 
 def get_ip_addresses():
     hostname = socket.gethostname()    
