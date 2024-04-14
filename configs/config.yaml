@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 79
+version: 80
 binding_name: null
 model_name: null
 model_variant: null
@@ -143,11 +143,13 @@ use_files: true # Activate using files
 data_vectorization_activate: true # To activate/deactivate data vectorization
 data_vectorization_method: "tfidf_vectorizer" #"model_embedding" or "tfidf_vectorizer"
 data_visualization_method: "PCA" #"PCA" or "TSNE"
+data_vectorization_sentense_transformer_model: "all-MiniLM-L6-v2" # you can use another model by setting its name here or its path
+
 data_vectorization_save_db: False # For each new session, new files
 data_vectorization_chunk_size: 512 # chunk size
 data_vectorization_overlap_size: 128 # overlap between chunks size
 data_vectorization_nb_chunks: 2 # number of chunks to use
-data_vectorization_build_keys_words: false # If true, when querrying the database, we use keywords generated from the user prompt instead of the prompt itself.
+data_vectorization_build_keys_words: true # If true, when querrying the database, we use keywords generated from the user prompt instead of the prompt itself.
 data_vectorization_force_first_chunk: false # If true, the first chunk of the document will systematically be used
 data_vectorization_make_persistance: false # If true, the data will be persistant webween runs
 
