@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 80
+version: 81
 binding_name: null
 model_name: null
 model_variant: null
@@ -149,6 +149,7 @@ data_vectorization_save_db: False # For each new session, new files
 data_vectorization_chunk_size: 512 # chunk size
 data_vectorization_overlap_size: 128 # overlap between chunks size
 data_vectorization_nb_chunks: 2 # number of chunks to use
+data_vectorization_put_chunk_informations_into_context: false # if true then each chunk will be preceded by its information which may waste some context space but allow the ai to point where it found th einformation
 data_vectorization_build_keys_words: true # If true, when querrying the database, we use keywords generated from the user prompt instead of the prompt itself.
 data_vectorization_force_first_chunk: false # If true, the first chunk of the document will systematically be used
 data_vectorization_make_persistance: false # If true, the data will be persistant webween runs

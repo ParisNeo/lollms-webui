@@ -1094,7 +1094,24 @@
                                 </div>
                             </td>
                             </tr>
-
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="data_vectorization_put_chunk_informations_into_context" class="text-sm font-bold" style="margin-right: 1rem;">Put Chunk Information Into Context:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="checkbox"
+                                id="data_vectorization_put_chunk_informations_into_context"
+                                required
+                                v-model="configFile.data_vectorization_put_chunk_informations_into_context"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>
+                            
                                                        
                             <tr>
                             <td style="min-width: 200px;">
