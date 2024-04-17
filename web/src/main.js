@@ -354,13 +354,13 @@ export const store = createStore({
           let bindingsZoo = await api_get_req("list_bindings")
           console.log("Loaded bindings zoo :",bindingsZoo)
           this.state.installedBindings = bindingsZoo.filter(item=> item.installed)
+          console.log("Loaded bindings zoo ", this.state.installedBindings)
+          commit('setbindingsZoo',bindingsZoo)
           const index = bindingsZoo.findIndex(item=>item.name == this.state.config.binding_name)
           if (index!=-1){
             commit('setCurrentBinding',bindingsZoo[index])
           }
   
-          console.log("Loaded bindings zoo ", this.state.installedBindings)
-          commit('setbindingsZoo',bindingsZoo)
       },
       async refreshModelsZoo({ commit }) {
         console.log("Fetching models")

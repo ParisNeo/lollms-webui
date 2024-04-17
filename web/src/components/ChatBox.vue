@@ -152,13 +152,6 @@
                                     </div>
 
                                 </div>   
-                                <div v-if="loading" title="Waiting for reply">
-                                    <img :src="loader_v0">
-                                    <!-- SPINNER -->
-                                    <div role="status">
-                                        <span class="sr-only">Loading...</span>
-                                    </div>
-                                </div>
                                 <div class="w-fit group relative" v-if="!loading" >
                                     <!-- :onShowPersList="onShowPersListFun" -->
                                     <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-10 group-hover:translate-x-15 transition-all duration-300">
@@ -613,6 +606,10 @@ export default {
                 if (this.$store.state.config.personalities.includes(pers_path)) {
 
                     const res = await this.select_personality(pers)
+                    await this.$store.dispatch('refreshConfig');    
+                    await this.$store.dispatch('refreshBindings');
+                    await this.$store.dispatch('refreshModelsZoo');
+                    await this.$store.dispatch('refreshModels');
                     await this.$store.dispatch('refreshMountedPersonalities');
                     await this.$store.dispatch('refreshConfig');    
                     console.log('pers is mounted', res)
@@ -688,8 +685,7 @@ export default {
         setBinding(selectedBinding){
             console.log("Setting binding to "+selectedBinding.name);
             this.selecting_binding=true
-            this.selectedModel = selectedBinding
-            this.$store.state.messa
+            this.selectedBinding = selectedBinding
             this.$store.state.messageBox.showBlockingMessage("Loading binding")
 
             axios.post("/update_setting", {    
@@ -700,10 +696,11 @@ export default {
                 this.$store.state.messageBox.hideMessage()
                 console.log("UPDATED");
                 console.log(response);
+                await this.$store.dispatch('refreshConfig');    
                 await this.$store.dispatch('refreshBindings');
                 await this.$store.dispatch('refreshModelsZoo');
                 await this.$store.dispatch('refreshModels');
-                await this.$store.dispatch('refreshConfig');    
+                
                 this.$store.state.toast.showToast(`Binding changed to ${this.currentBinding.name}`,4,true)
                 this.selecting_binding=false
                 }).catch(err=>{
