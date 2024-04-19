@@ -658,7 +658,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 title[0] += chunk
             antiprompt = self.personality.detect_antiprompt(title[0])
             if antiprompt:
-                ASCIIColors.warning(f"\nDetected hallucination with antiprompt: {antiprompt}")
+                ASCIIColors.warning(f"\n{antiprompt} detected. Stopping generation")
                 title[0] = self.remove_text_from_string(title[0],antiprompt)
                 return False
             else:
@@ -939,7 +939,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 client.generated_text += chunk
             antiprompt = self.personality.detect_antiprompt(client.generated_text)
             if antiprompt:
-                ASCIIColors.warning(f"\nDetected hallucination with antiprompt: {antiprompt}")
+                ASCIIColors.warning(f"\n{antiprompt} detected. Stopping generation")
                 client.generated_text = self.remove_text_from_string(client.generated_text,antiprompt)
                 self.update_message(client_id, client.generated_text, parameters, metadata, None, MSG_TYPE.MSG_TYPE_FULL)
                 return False
@@ -963,7 +963,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             client.generated_text = chunk
             antiprompt = self.personality.detect_antiprompt(client.generated_text)
             if antiprompt:
-                ASCIIColors.warning(f"\nDetected hallucination with antiprompt: {antiprompt}")
+                ASCIIColors.warning(f"\n{antiprompt} detected. Stopping generation")
                 client.generated_text = self.remove_text_from_string(client.generated_text,antiprompt)
                 self.update_message(client_id, client.generated_text, parameters, metadata, None, MSG_TYPE.MSG_TYPE_FULL)
                 return False
