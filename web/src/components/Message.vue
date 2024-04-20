@@ -228,11 +228,11 @@
                         <p v-if="message.seed">Seed: <span class="font-thin">{{ message.seed }}</span></p>
                         <p v-if="message.nb_tokens">Number of tokens: <span class="font-thin"
                                 :title="'Number of Tokens: ' + message.nb_tokens">{{ message.nb_tokens }}</span></p>
-                        <p v-if="wait_duration">Wait duration: <span class="font-thin"
-                                :title="'Wait duration: ' + wait_duration">{{ wait_duration }}</span></p>
+                        <p v-if="warmup_duration">Warmup duration: <span class="font-thin"
+                                :title="'Warmup duration: ' + warmup_duration">{{ warmup_duration }}</span></p>
                         <p v-if="time_spent">Generation duration: <span class="font-thin"
                                 :title="'Finished generating: ' + time_spent">{{ time_spent }}</span></p>
-                        <p v-if="time_spent">Rate: <span class="font-thin"
+                        <p v-if="generation_rate">Rate: <span class="font-thin"
                                 :title="'Generation rate: ' + generation_rate">{{ generation_rate }}</span></p>
                     </div>
 
@@ -800,6 +800,8 @@ export default {
         time_spent() {
             const startTime = new Date(Date.parse(this.message.started_generating_at))
             const endTime = new Date(Date.parse(this.message.finished_generating_at))
+            console.log("Computing the generation duration, ", startTime," -> ", endTime)
+
             //const spentTime = new Date(endTime - startTime)
             const same = endTime.getTime() === startTime.getTime();
             if (same) {
@@ -830,13 +832,14 @@ export default {
 
 
         },
-        wait_duration() {
+        warmup_duration() {
             const createdTime = new Date(Date.parse(this.message.created_at))
-            const endTime = new Date(Date.parse(this.message.finished_generating_at))
+            const endTime = new Date(Date.parse(this.message.started_generating_at))
+            console.log("Computing the warmup duration, ",createdTime," -> ", endTime)
             //const spentTime = new Date(endTime - startTime)
             const same = endTime.getTime() === createdTime.getTime();
             if (same) {
-                return undefined
+                return 0
             }
 
             if (!createdTime.getTime() || !endTime.getTime()) {
@@ -868,6 +871,7 @@ export default {
             const startTime = new Date(Date.parse(this.message.started_generating_at))
             const endTime = new Date(Date.parse(this.message.finished_generating_at))
             const nb_tokens = this.message.nb_tokens
+            console.log("Computing the generation rate, ", nb_tokens, " in ", startTime," -> ", endTime)
             //const spentTime = new Date(endTime - startTime)
             const same = endTime.getTime() === startTime.getTime();
             if (same) {

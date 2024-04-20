@@ -770,6 +770,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             binding             = self.config["binding_name"],
             model               = self.config["model_name"], 
             personality         = self.config["personalities"][self.config["active_personality_id"]],
+            created_at          = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         )  # first the content is empty, but we'll fill it at the end  
         run_async(partial(
                     self.sio.emit,'new_message',
@@ -819,6 +820,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                                 'ui': ui,
                                                 'discussion_id':client.discussion.discussion_id,
                                                 'message_type': MSG_TYPE.MSG_TYPE_STEP_END.value,
+                                                'created_at':client.discussion.current_message.created_at,
                                                 'started_generating_at': client.discussion.current_message.started_generating_at,
                                                 'finished_generating_at': client.discussion.current_message.finished_generating_at,
                                                 'nb_tokens': client.discussion.current_message.nb_tokens,
@@ -836,6 +838,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                             'ui': ui,
                                             'discussion_id':client.discussion.discussion_id,
                                             'message_type': msg_type.value if msg_type is not None else MSG_TYPE.MSG_TYPE_CHUNK.value if self.nb_received_tokens>1 else MSG_TYPE.MSG_TYPE_FULL.value,
+                                            'created_at':client.discussion.current_message.created_at,
                                             'started_generating_at': client.discussion.current_message.started_generating_at,
                                             'finished_generating_at': client.discussion.current_message.finished_generating_at,
                                             'nb_tokens': client.discussion.current_message.nb_tokens,
@@ -845,7 +848,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                 )
         )
         if msg_type != MSG_TYPE.MSG_TYPE_INFO:
-            client.discussion.update_message(client.generated_text, new_metadata=mtdt, new_ui=ui, nb_tokens=client.discussion.current_message.nb_tokens)
+            client.discussion.update_message(client.generated_text, new_metadata=mtdt, new_ui=ui, started_generating_at=client.discussion.current_message.started_generating_at, nb_tokens=client.discussion.current_message.nb_tokens)
 
 
 
