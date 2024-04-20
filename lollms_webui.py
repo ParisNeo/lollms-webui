@@ -845,7 +845,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                 )
         )
         if msg_type != MSG_TYPE.MSG_TYPE_INFO:
-            client.discussion.update_message(client.generated_text, new_metadata=mtdt, new_ui=ui)
+            client.discussion.update_message(client.generated_text, new_metadata=mtdt, new_ui=ui, nb_tokens=client.discussion.current_message.nb_tokens)
 
 
 

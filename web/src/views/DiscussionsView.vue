@@ -1344,11 +1344,18 @@ export default {
                 ) {
                     this.isGenerating = true;
                     messageItem.content = msgObj.content
+                    messageItem.created_at = msgObj.created_at
+                    messageItem.started_generating_at = msgObj.started_generating_at
+                    messageItem.nb_tokens = msgObj.nb_tokens
                     messageItem.finished_generating_at = msgObj.finished_generating_at
                 }
                 else if(messageItem && msgObj.message_type==this.msgTypes.MSG_TYPE_CHUNK){
                     this.isGenerating = true;
                     messageItem.content += msgObj.content
+                    messageItem.created_at = msgObj.created_at
+                    messageItem.started_generating_at = msgObj.started_generating_at
+                    messageItem.nb_tokens = msgObj.nb_tokens
+                    messageItem.finished_generating_at = msgObj.finished_generating_at
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP){
                     messageItem.status_message = msgObj.content
                     messageItem.steps.push({"message":msgObj.content,"done":true, "status":true, "type": "instantanious" })

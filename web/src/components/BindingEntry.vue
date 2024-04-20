@@ -93,6 +93,12 @@
             <b>Folder:&nbsp;</b>
 
             {{ binding.folder }}
+            <div class="grow"></div>
+            <button
+              class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
+              title="Copy link to clipboard" @click.stop="copyToClipBoard(this.binding.folder)">
+              <i data-feather="clipboard" class="w-5"></i>
+            </button>
           </div>
           <div class="flex items-center">
             <i data-feather="git-merge" class="w-5 m-1"></i>
@@ -160,6 +166,10 @@ export default {
 
   },
   methods: {
+    copyToClipBoard(text){
+      console.log("Copying to clipboard :",text)
+      navigator.clipboard.writeText(text)
+    },
     getImgUrl() {
       return bUrl + this.binding.icon
     },
