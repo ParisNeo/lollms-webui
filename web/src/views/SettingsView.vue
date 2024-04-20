@@ -532,8 +532,8 @@
                                             </td>
                                         </tr>                                        
                                     </table>
-                                </Card>                           
-                                <Card  title="Code execution" :is_subcard="true" class="pb-2  m-2">
+                                </Card>  
+                                <Card  title="Security settings" :is_subcard="true" class="pb-2  m-2">
                                     <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <tr>
                                         <td style="min-width: 200px;">
@@ -553,7 +553,7 @@
                                         
                                         <tr>
                                         <td style="min-width: 200px;">
-                                            <label for="turn_on_code_validation" class="text-sm font-bold" style="margin-right: 1rem;">turn on code validation:</label>
+                                            <label for="turn_on_code_validation" class="text-sm font-bold" style="margin-right: 1rem;">turn on code validation (very recommended for security reasons):</label>
                                         </td>
 
                                         <td style="width: 100%;">
@@ -569,6 +569,22 @@
                                         </tr>                                        
                                         <tr>
                                         <td style="min-width: 200px;">
+                                            <label for="turn_on_setting_update_validation" class="text-sm font-bold" style="margin-right: 1rem;">turn on apply settings validation (very recommended for security reasons):</label>
+                                        </td>
+
+                                        <td style="width: 100%;">
+                                            <input
+                                            type="checkbox"
+                                            id="turn_on_setting_update_validation"
+                                            required
+                                            v-model="configFile.turn_on_setting_update_validation"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>                                           
+                                        <tr>
+                                        <td style="min-width: 200px;">
                                             <label for="turn_on_open_file_validation" class="text-sm font-bold" style="margin-right: 1rem;">turn on open file/folder validation:</label>
                                         </td>
                                         <td style="width: 100%;">
@@ -581,7 +597,22 @@
                                             class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >
                                         </td>
-                                        </tr>                                        
+                                        </tr>  
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="turn_on_send_file_validation" class="text-sm font-bold" style="margin-right: 1rem;">turn on send file validation:</label>
+                                        </td>
+                                        <td style="width: 100%;">
+                                            <input
+                                            type="checkbox"
+                                            id="turn_on_send_file_validation"
+                                            required
+                                            v-model="configFile.turn_on_send_file_validation"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>                                                                                
                                     </table>
                                 </Card>         
                                 <Card title="Knowledge database" :is_subcard="true" class="pb-2  m-2">
