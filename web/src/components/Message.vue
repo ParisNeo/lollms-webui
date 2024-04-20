@@ -226,6 +226,8 @@
                         <p v-if="message.binding">Binding: <span class="font-thin">{{ message.binding }}</span></p>
                         <p v-if="message.model">Model: <span class="font-thin">{{ message.model }}</span></p>
                         <p v-if="message.seed">Seed: <span class="font-thin">{{ message.seed }}</span></p>
+                        <p v-if="message.nb_tokens">Number of tokens: <span class="font-thin"
+                                :title="'Number of Tokens: ' + message.nb_tokens">{{ message.nb_tokens }}</span></p>
                         <p v-if="time_spent">Time spent: <span class="font-thin"
                                 :title="'Finished generating: ' + finished_generating_at_parsed">{{ time_spent }}</span></p>
                     </div>

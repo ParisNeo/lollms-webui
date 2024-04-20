@@ -349,14 +349,19 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         client.discussion = self.db.load_last_discussion()
 
                 prompt = text
+                try:
+                    nb_tokens = len(self.model.tokenize(prompt))
+                except:
+                    nb_tokens = None
                 ump = self.config.discussion_prompt_separator +self.config.user_name.strip() if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
                 message = client.discussion.add_message(
                     message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
                     sender_type     = SENDER_TYPES.SENDER_TYPES_USER.value,
                     sender          = ump.replace(self.config.discussion_prompt_separator,"").replace(":",""),
-                    content=prompt,
-                    metadata=None,
-                    parent_message_id=self.message_id
+                    content         = prompt,
+                    metadata        = None,
+                    parent_message_id=self.message_id,
+                    nb_tokens=nb_tokens
                 )
 
                 ASCIIColors.green("Starting message generation by "+self.personality.name)
@@ -784,7 +789,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
                             'personality':              self.config["personalities"][self.config["active_personality_id"]],
 
                             'created_at':               client.discussion.current_message.created_at,
-                            'finished_generating_at':   client.discussion.current_message.finished_generating_at,
+                            'started_generating_at': client.discussion.current_message.started_generating_at,
+                            'finished_generating_at': client.discussion.current_message.finished_generating_at,
+                            'nb_tokens': client.discussion.current_message.nb_tokens,
 
                             'open':                     open
                         }, to=client_id
@@ -799,8 +806,11 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         ):
         client = self.session.get_client(client_id)
         client.discussion.current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        client.discussion.current_message.nb_tokens = self.nb_received_tokens
         mtdt = json.dumps(metadata, indent=4) if metadata is not None and type(metadata)== list else metadata
         if self.nb_received_tokens==1:
+            client.discussion.current_message.started_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
             run_async(
                 partial(self.sio.emit,'update_message', {
                                                 "sender": self.personality.name,
@@ -809,7 +819,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                                 'ui': ui,
                                                 'discussion_id':client.discussion.discussion_id,
                                                 'message_type': MSG_TYPE.MSG_TYPE_STEP_END.value,
+                                                'started_generating_at': client.discussion.current_message.started_generating_at,
                                                 'finished_generating_at': client.discussion.current_message.finished_generating_at,
+                                                'nb_tokens': client.discussion.current_message.nb_tokens,
                                                 'parameters':parameters,
                                                 'metadata':metadata
                                             }, to=client_id
@@ -824,7 +836,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                             'ui': ui,
                                             'discussion_id':client.discussion.discussion_id,
                                             'message_type': msg_type.value if msg_type is not None else MSG_TYPE.MSG_TYPE_CHUNK.value if self.nb_received_tokens>1 else MSG_TYPE.MSG_TYPE_FULL.value,
+                                            'started_generating_at': client.discussion.current_message.started_generating_at,
                                             'finished_generating_at': client.discussion.current_message.finished_generating_at,
+                                            'nb_tokens': client.discussion.current_message.nb_tokens,
                                             'parameters':parameters,
                                             'metadata':metadata
                                         }, to=client_id
@@ -843,6 +857,10 @@ class LOLLMSWebUI(LOLLMSElfServer):
         client.generated_text=client.generated_text.split("!@>")[0]
         # Send final message
         client.discussion.current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        try:
+            client.discussion.current_message.nb_tokens = len(self.model.tokenize(client.generated_text))
+        except:
+            client.discussion.current_message.nb_tokens = None
         run_async(
             partial(self.sio.emit,'close_message', {
                                             "sender": self.personality.name,
@@ -854,7 +872,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                             'personality':self.config["personalities"][self.config["active_personality_id"]],
 
                                             'created_at': client.discussion.current_message.created_at,
+                                            'started_generating_at': client.discussion.current_message.started_generating_at,
                                             'finished_generating_at': client.discussion.current_message.finished_generating_at,
+                                            'nb_tokens': client.discussion.current_message.nb_tokens,
 
                                         }, to=client_id
                                 )
