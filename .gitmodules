@@ -22,3 +22,7 @@
 	path = utilities/safe_store
 	url = https://github.com/ParisNeo/safe_store.git
 	branch = main
+[submodule "utilities/pipmaster"]
+	path = utilities/pipmaster
+	url = https://github.com/ParisNeo/pipmaster.git
+	branch = main
