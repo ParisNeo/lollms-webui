@@ -97,7 +97,7 @@ def execute_mermaid(code, client:Client, message_id, build_file=False):
         root_folder.mkdir(parents=True,exist_ok=True)
         tmp_file = root_folder/f"ai_code_{message_id}.html"
         with open(tmp_file,"w",encoding="utf8") as f:
-            f.write(build_mermaid_output(code))
+            f.write(build_mermaid_output(code)["output"])
         link = f"{host}:{lollmsElfServer.config.port}/{discussion_path_2_url(tmp_file)}"
         # Stop the timer.
         execution_time = time.time() - start_time

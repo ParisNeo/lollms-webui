@@ -83,7 +83,7 @@ def execute_graphviz(code, client:Client, message_id, build_file=False):
         root_folder.mkdir(parents=True,exist_ok=True)
         tmp_file = root_folder/f"ai_code_{message_id}.html"
         with open(tmp_file,"w",encoding="utf8") as f:
-            f.write(build_graphviz_output(code))
+            f.write(build_graphviz_output(code)["output"])
         link = f"{host}:{lollmsElfServer.config.port}/{discussion_path_2_url(tmp_file)}"
         output_json = {"output": f'<b>Page built successfully</b><br><a href="{link}" target="_blank">Press here to view the page</a>', "execution_time": execution_time}
         return output_json
