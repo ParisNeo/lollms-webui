@@ -137,7 +137,7 @@
                                             <div v-if="item.name!=binding_name" class="group items-center flex flex-row">
                                                 <button @click.prevent="setBinding(item)" class="w-10 h-10">
                                                     <img :src="item.icon?item.icon:modelImgPlaceholder"
-                                                        class="w-10 h-10 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                                        class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
                                                         :title="item.name">
                                                 </button>
                                             </div>
@@ -161,7 +161,7 @@
                                             <div v-if="item.name!=model_name" class="group items-center flex flex-row">
                                                 <button @click.prevent="setModel(item)" class="w-10 h-10">
                                                     <img :src="item.icon?item.icon:modelImgPlaceholder"
-                                                        class="w-10 h-10 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                                        class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
                                                         :title="item.name">
                                                 </button>
                                             </div>
