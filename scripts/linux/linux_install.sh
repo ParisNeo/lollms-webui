@@ -107,6 +107,9 @@ if [ -d "lollms-webui" ]; then
   cd utilities/safe_store
   pip install -e .
   cd ../..
+  cd utilities/pipmaster
+  pip install -e .
+  cd ../..
 
 else
   git clone --depth 1  --recurse-submodules "$REPO_URL"

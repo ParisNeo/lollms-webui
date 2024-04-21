@@ -105,6 +105,9 @@ if exist lollms-webui\ (
   cd utilities\safe_store
   pip install -e .
   cd ..\..
+  cd utilities\pipmaster
+  pip install -e .
+  cd ..\..
 )
 
 pip install -r requirements.txt

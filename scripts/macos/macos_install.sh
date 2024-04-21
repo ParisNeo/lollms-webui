@@ -134,6 +134,9 @@ else
   cd utilities/safe_store
   pip install -e .
   cd ../../..
+  cd utilities/pipmaster
+  pip install -e .
+  cd ../../..
 
   cd lollms-webui || exit 1
 fi
