@@ -2,16 +2,45 @@
     <div v-if="$store.state.ready" class="container flex flex-col sm:flex-row items-center">
       <div class="w-full">
         <div class="flex flex-row font-medium nav-ul">
-            <RouterLink :to="{ name: 'discussions' }" class="link-item dark:link-item-dark bg-light hover:bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone">
+            <RouterLink 
+              :to="{ name: 'discussions' }" 
+              class="link-item dark:link-item-dark bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone" 
+              :class="{ 
+                'text-green-200 dark:text-green-100 font-bold bg-bg-light-panel': isRouteActive('discussions'),
+                'bounce-in': isRouteActive('discussions')
+                }">
               Discussions
             </RouterLink>
-            <RouterLink :to="{ name: 'playground' }" class="link-item dark:link-item-dark bg-light hover:bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone">
+            <RouterLink 
+              :to="{ name: 'playground' }" 
+              class="link-item dark:link-item-dark bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone"
+              :class="{ 
+                'text-green-200 dark:text-green-100 font-bold bg-bg-light-panel': isRouteActive('playground'),
+                'bounce-in': isRouteActive('playground')
+              }"
+              >
               Playground
             </RouterLink>
-            <RouterLink v-if="$store.state.config.enable_comfyui_service" :to="{ name: 'ComfyUI' }" class="link-item dark:link-item-dark bg-light hover:bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone">
+            <RouterLink 
+              v-if="$store.state.config.enable_comfyui_service" 
+              :to="{ name: 'ComfyUI' }" 
+              class="link-item dark:link-item-dark bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone"
+              :class="{ 
+                'text-green-200 dark:text-green-100 font-bold bg-bg-light-panel': isRouteActive('ComfyUI'),
+                'bounce-in': isRouteActive('ComfyUI')
+              }"
+              >
               ComfyUI
             </RouterLink>
-            <RouterLink v-if="$store.state.config.enable_voice_service" :to="{ name: 'interactive' }" class="link-item dark:link-item-dark bg-light hover:bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone">
+            <RouterLink 
+              v-if="$store.state.config.enable_voice_service" 
+              :to="{ name: 'interactive' }" 
+              class="link-item dark:link-item-dark bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone"
+              :class="{ 
+                'text-green-200 dark:text-green-100 font-bold bg-bg-light-panel': isRouteActive('interactive'),
+                'bounce-in': isRouteActive('interactive')
+              }"
+              >
               interactive
             </RouterLink>
             <!--
@@ -29,10 +58,24 @@
             </RouterLink>
 
             -->
-            <RouterLink :to="{ name: 'settings' }" class="link-item dark:link-item-dark bg-light hover:bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone">
+            <RouterLink 
+              :to="{ name: 'settings' }" 
+              class="link-item dark:link-item-dark bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone"
+              :class="{ 
+                'text-green-200 dark:text-green-100 font-bold bg-bg-light-panel': isRouteActive('settings'),
+                'bounce-in': isRouteActive('settings')
+              }"              
+              >
               Settings
             </RouterLink>
-            <RouterLink :to="{ name: 'help' }" class="link-item dark:link-item-dark bg-light hover:bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone">
+            <RouterLink 
+              :to="{ name: 'help' }" 
+              class="link-item dark:link-item-dark bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone"
+              :class="{ 
+                'text-green-200 dark:text-green-100 font-bold bg-bg-light-panel': isRouteActive('help'),
+                'bounce-in': isRouteActive('help')
+              }"
+              >
               Help
             </RouterLink>
           </div>
@@ -46,8 +89,32 @@
   import { RouterLink } from 'vue-router';
   import { store } from '../main';
 </script>
+<script>
+  export default {
+    name: 'Navigation',
+    data() {
+      return {
+        // component data
+      };
+    },
+    methods: {
+      isRouteActive(routeName) {
+        try{
+          return this.$route.name === routeName;
+        }
+        catch{
+          console.log("routeName not found")
+          return False;
+        }
+      }
+      // your methods
+    },
+    // other options
+  };
+</script>
   
 <style>
+
   .container {
     /* Remove margin and padding */
     margin: 0;
@@ -109,5 +176,35 @@
     align-items: center;
     padding: 5px;
   }
+
+  .fade-in {
+    animation: fadeInAnimation 0.5s;
+  }
+
+  @keyframes fadeInAnimation {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+
+  .bounce-in {
+    animation: bounceInAnimation 0.5s;
+  }
+
+  @keyframes bounceInAnimation {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }  
 </style>
   

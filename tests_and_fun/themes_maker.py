@@ -64,5 +64,22 @@ weird_palette_str = """
 --color-bg-light-discussion: #f4c2c2;
 --color-bg-light-discussion-odd: #fae7b5;
 """
-
+weird_palette_str = """
+--color-primary: #0e8ef0;
+--color-primary-light: #3dabff;
+--color-secondary: #0fd974;
+--color-accent: #f0700e;
+--color-bg-dark: #132e59;
+--color-bg-dark-tone: #25477d;
+--color-bg-dark-tone-panel: #4367a3;
+--color-bg-dark-code-block: #2254a7;
+--color-bg-light: #e2edff;
+--color-bg-light-tone: #b9d2f7;
+--color-bg-light-code-block: #cad7ed;
+--color-bg-light-tone-panel: #8fb5ef;
+--color-bg-dark-discussion: #435E8A;
+--color-bg-dark-discussion-odd: #284471;
+--color-bg-light-discussion: #c5d8f8;
+--color-bg-light-discussion-odd: #d6e7ff;
+"""
 parse_and_visualize_weird_palette(weird_palette_str)

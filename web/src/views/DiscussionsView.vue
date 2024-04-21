@@ -41,7 +41,7 @@
         <!-- LEFT SIDE PANEL -->
         <div id="leftPanel" class="flex flex-col flex-grow overflow-y-scroll no-scrollbar "
             @dragover.stop.prevent="setDropZoneDiscussion()">
-            <div class="text-white bg-primary-light sticky z-10 top-0  bg-bg-light-tone dark:bg-bg-dark-tone shadow-md ">
+            <div class="text-white bg-bg-light-panel sticky z-10 top-0 dark:bg-bg-dark-tone shadow-md ">
 
 
 
@@ -229,8 +229,8 @@
                 </div>
             </div>
         </div>
-        <div class="absolute bottom-0 left-0 w-full bg-primary-light dark:bg-bg-dark-tone text-white py-2 cursor-pointer hover:text-accent" @click="showDatabaseSelector">
-            <p class="ml-2 text-center shadow-lg">{{ formatted_database_name }}</p>
+        <div class="absolute bottom-0 left-0 w-full bg-bg-light-panel dark:bg-bg-dark-tone text-white py-2 cursor-pointer hover:text-accent" @click="showDatabaseSelector">
+            <p class="text-center text-shadow: 2px 2px 4px #000000;">{{ formatted_database_name.replace("_"," ") }}</p>
         </div>
     </div>
     </transition>
@@ -588,7 +588,7 @@ export default {
         
         async applyConfiguration() {
             this.loading = true;
-            const res = await axios.post('/apply_settings', {"config":this.$store.state.config})
+            const res = await axios.post('/apply_settings', {"client_id":this.$store.state.client_id, "config":this.$store.state.config})
             this.loading = false;
             //console.log('apply-res',res)
             if (res.data.status) {
