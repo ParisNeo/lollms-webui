@@ -25,7 +25,7 @@ miniconda_folder="./installer_files"
 TMP="./installer_files/temp"
 
 if  [ -e "$miniconda_folder" ]; then
-    INSTALL_ENV_DIR="./installer_files/lollms_env"
+    INSTALL_ENV_DIR="./installer_files/miniconda3/envs/lollms"
     MINICONDA_DIR="./installer_files/miniconda3"
     MINICONDA_CMD="$MINICONDA_DIR/bin/activate"
     if [ ! -f "$MINICONDA_DIR/bin/activate" ]; then
