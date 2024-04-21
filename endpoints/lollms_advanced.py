@@ -94,11 +94,11 @@ async def execute_code(request: CodeRequest):
         if language=="javascript":
             ASCIIColors.info("Executing javascript code:")
             ASCIIColors.yellow(code)
-            return execute_javascript(code)
+            return execute_javascript(code, client, message_id)
         if language in ["html","html5","svg"]:
             ASCIIColors.info("Executing javascript code:")
             ASCIIColors.yellow(code)
-            return execute_html(code)
+            return execute_html(code, client, message_id)
 
         elif language=="latex":
             ASCIIColors.info("Executing latex code:")
@@ -111,18 +111,78 @@ async def execute_code(request: CodeRequest):
         elif language in ["mermaid"]:
             ASCIIColors.info("Executing mermaid code:")
             ASCIIColors.yellow(code)
-            return execute_mermaid(code)
+            return execute_mermaid(code, client, message_id)
         elif language in ["graphviz","dot"]:
             ASCIIColors.info("Executing graphviz code:")
             ASCIIColors.yellow(code)
-            return execute_graphviz(code)
+            return execute_graphviz(code, client, message_id)
         return {"status": False, "error": "Unsupported language", "execution_time": 0}
     except Exception as ex:
         trace_exception(ex)
         lollmsElfServer.error(ex)
         return {"status":False,"error":str(ex)}
     
+@router.post("/execute_code_in_new_tab")
+async def execute_code_in_new_tab(request: CodeRequest):
+    """
+    Executes Python code and returns the output.
 
+    :param request: The HTTP request object.
+    :return: A JSON response with the status of the operation.
+    """
+    client = check_access(lollmsElfServer, request.client_id)
+    if lollmsElfServer.config.headless_server_mode:
+        return {"status":False,"error":"Code execution is blocked when in headless mode for obvious security reasons!"}
+
+    forbid_remote_access(lollmsElfServer, "Code execution is blocked when the server is exposed outside for very obvious reasons!")
+    if not lollmsElfServer.config.turn_on_code_execution:
+        return {"status":False,"error":"Code execution is blocked by the configuration!"}
+
+    if lollmsElfServer.config.turn_on_code_validation:
+        if not show_yes_no_dialog("Validation","Do you validate the execution of the code?"):
+            return {"status":False,"error":"User refused the execution!"}
+
+    try:
+        code = request.code
+        discussion_id = request.discussion_id
+        message_id = request.message_id
+        language = request.language
+
+        if language=="python":
+            ASCIIColors.info("Executing python code:")
+            ASCIIColors.yellow(code)
+            return execute_python(code, client, message_id, True)
+        if language=="javascript":
+            ASCIIColors.info("Executing javascript code:")
+            ASCIIColors.yellow(code)
+            return execute_javascript(code, client, message_id, True)
+        if language in ["html","html5","svg"]:
+            ASCIIColors.info("Executing javascript code:")
+            ASCIIColors.yellow(code)
+            return execute_html(code, client, message_id, True)
+
+        elif language=="latex":
+            ASCIIColors.info("Executing latex code:")
+            ASCIIColors.yellow(code)
+            return execute_latex(code, client, message_id, True)
+        elif language in ["bash","shell","cmd","powershell"]:
+            ASCIIColors.info("Executing shell code:")
+            ASCIIColors.yellow(code)
+            return execute_bash(code, client)
+        elif language in ["mermaid"]:
+            ASCIIColors.info("Executing mermaid code:")
+            ASCIIColors.yellow(code)
+            return execute_mermaid(code, client, message_id, True)
+        elif language in ["graphviz","dot"]:
+            ASCIIColors.info("Executing graphviz code:")
+            ASCIIColors.yellow(code)
+            return execute_graphviz(code, client, message_id, True)
+        return {"status": False, "error": "Unsupported language", "execution_time": 0}
+    except Exception as ex:
+        trace_exception(ex)
+        lollmsElfServer.error(ex)
+        return {"status":False,"error":str(ex)}
+    
 
 class FilePath(BaseModel):
     path: Optional[str] = Field(None, max_length=500)

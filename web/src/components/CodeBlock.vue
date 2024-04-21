@@ -12,15 +12,20 @@
               :class="isExecuting?'bg-green-500':''">
         <i data-feather="play-circle"></i>
       </button>
-      <button v-if="['python', 'latex'].includes(language)" @click="openFolder"  title="open code project folder"
+      <button v-if="['airplay', 'mermaid', 'graphviz', 'dot', 'javascript', 'html', 'html5', 'svg'].includes(language)" ref="btn_code_exec_in_new_tab" @click="executeCode_in_new_tab"  title="execute"
+              class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200"
+              :class="isExecuting?'bg-green-500':''">
+        <i data-feather="airplay"></i>
+      </button>
+      <button v-if="['python', 'latex', 'html'].includes(language)" @click="openFolder"  title="open code project folder"
               class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
         <i data-feather="folder"></i>
       </button>
-      <button v-if="['python'].includes(language)" @click="openFolderVsCode"  title="open code project folder in vscode"
+      <button v-if="['python', 'latex', 'html'].includes(language)" @click="openFolderVsCode"  title="open code project folder in vscode"
               class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
         <img src="@/assets/vscode_black.svg" width="25" height="25">
       </button>
-      <button v-if="['python'].includes(language)" @click="openVsCode"  title="open code in vscode"
+      <button v-if="['python', 'latex', 'html'].includes(language)" @click="openVsCode"  title="open code in vscode"
               class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
         <img src="@/assets/vscode.svg" width="25" height="25">
       </button>
@@ -148,6 +153,36 @@ export default {
                                   })   
       console.log(json)     
       fetch(`${this.host}/execute_code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: json
+      }).then(response=>{
+        this.isExecuting=false;
+        // Parse the JSON data from the response body
+        return response.json();
+      })
+      .then(jsonData => {
+        // Now you can work with the JSON data
+        console.log(jsonData);
+        this.executionOutput = jsonData.output;
+      })
+      .catch(error => {
+        this.isExecuting=false;
+        // Handle any errors that occurred during the fetch process
+        console.error('Fetch error:', error);
+      });
+    },
+    executeCode_in_new_tab(){
+      this.isExecuting=true;
+      const json = JSON.stringify({
+                                    'client_id': this.client_id, 
+                                    'code': this.code, 
+                                    'discussion_id': this.discussion_id, 
+                                    'message_id': this.message_id, 
+                                    'language': this.language
+                                  })   
+      console.log(json)     
+      fetch(`${this.host}/execute_code_in_new_tab`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: json

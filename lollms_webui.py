@@ -799,6 +799,22 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 )
             )
         
+    def send_refresh(self, client_id):
+        client = self.session.get_client(client_id)
+        run_async(
+            partial(self.sio.emit,'update_message', {
+                                            "sender": client.discussion.current_message.sender,
+                                            'id':client.discussion.current_message.id, 
+                                            'content': client.discussion.current_message.content,
+                                            'discussion_id':client.discussion.discussion_id,
+                                            'message_type': client.discussion.current_message.message_type,
+                                            'created_at':client.discussion.current_message.created_at,
+                                            'started_generating_at': client.discussion.current_message.started_generating_at,
+                                            'finished_generating_at': client.discussion.current_message.finished_generating_at,
+                                            'nb_tokens': client.discussion.current_message.nb_tokens,
+                                        }, to=client_id
+                                )
+        )
     def update_message(self, client_id, chunk,                             
                             parameters=None,
                             metadata=[], 
@@ -1129,6 +1145,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     client.discussion.load_message(message_id)
                     client.generated_text = message.content
                 else:
+                    self.send_refresh(client_id)
                     self.new_message(client_id, self.personality.name, "")
                     self.update_message(client_id, "✍ warming up ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_START)
 

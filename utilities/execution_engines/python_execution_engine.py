@@ -16,7 +16,7 @@ from lollms.client_session import Client
 
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()           
 
-def execute_python(code, client:Client, message_id):
+def execute_python(code, client:Client, message_id, build_file=True):
     def spawn_process(code):
         """Executes Python code and returns the output as JSON."""
 
