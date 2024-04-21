@@ -84,6 +84,8 @@ ol {
   --color-primary-light: #3dabff;
   --color-secondary: #0fd974;
   --color-accent: #f0700e;
+  --color-light-text-panel: #ffffff;
+  --color-dark-text-panel: #ffffff;
   --color-bg-light-panel: #7cb5ec;
   --color-bg-light: #e2edff;
   --color-bg-light-tone: #b9d2f7;

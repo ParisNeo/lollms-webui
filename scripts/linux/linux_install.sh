@@ -155,6 +155,45 @@ echo "Creating a bin dir (required for llamacpp binding)"
 mkdir -p $INSTALL_ENV_DIR/bin
 
 
+echo "Select the default binding to be installed:"
+options=("None (install the binding later)" "Local binding - ollama" "Local binding - python_llama_cpp" "Local binding - bs_exllamav2" "Remote binding - open_router" "Remote binding - open_ai" "Remote binding - mistral_ai")
+
+select opt in "${options[@]}"
+do
+    case $opt in
+        "None (install the binding later)")
+            echo "You selected None. No binding will be installed now."
+            break
+            ;;
+        "Local binding - ollama")
+            python zoos/bindings_zoo/ollama/__init__.py
+            break
+            ;;
+        "Local binding - python_llama_cpp")
+            python zoos/bindings_zoo/python_llama_cpp/__init__.py
+            break
+            ;;
+        "Local binding - bs_exllamav2")
+            python zoos/bindings_zoo/bs_exllamav2/__init__.py
+            break
+            ;;
+        "Remote binding - open_router")
+            python zoos/bindings_zoo/open_router/__init__.py
+            break
+            ;;
+        "Remote binding - open_ai")
+            python zoos/bindings_zoo/open_ai/__init__.py
+            break
+            ;;
+        "Remote binding - mistral_ai")
+            python zoos/bindings_zoo/mistral_ai/__init__.py
+            break
+            ;;
+        *) echo "Invalid option $REPLY";;
+    esac
+done
+
+
 PrintBigMessage() {
   echo
   echo "*******************************************************************"

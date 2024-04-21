@@ -127,11 +127,54 @@ if exist ..\win_conda_session.bat (
 )
 
 
-setlocal enabledelayedexpansion
+echo Select the default binding to be installed:
+echo 1) None (install the binding later)
+echo 2) Local binding - ollama
+echo 3) Local binding - python_llama_cpp
+echo 4) Local binding - bs_exllamav2
+echo 5) Remote binding - open_router
+echo 6) Remote binding - open_ai
+echo 7) Remote binding - mistral_ai
+echo.
+set /p choice="Type the number of your choice and press Enter: "
 
-endlocal
+if "%choice%"=="1" goto :none
+if "%choice%"=="2" goto :ollama
+if "%choice%"=="3" goto :python_llama_cpp
+if "%choice%"=="4" goto :bs_exllamav2
+if "%choice%"=="5" goto :open_router
+if "%choice%"=="6" goto :open_ai
+if "%choice%"=="7" goto :mistral_ai
+goto :end
 
-goto end
+:none
+echo You selected None. No binding will be installed now.
+goto :end
+
+:ollama
+call python zoos/bindings_zoo/ollama/__init__.py
+goto :end
+
+:python_llama_cpp
+call python zoos/bindings_zoo/python_llama_cpp/__init__.py
+goto :end
+
+:bs_exllamav2
+call python zoos/bindings_zoo/bs_exllamav2/__init__.py
+goto :end
+
+:open_router
+call python zoos/bindings_zoo/open_router/__init__.py
+goto :end
+
+:open_ai
+call python zoos/bindings_zoo/open_ai/__init__.py
+goto :end
+
+:mistral_ai
+call python zoos/bindings_zoo/mistral_ai/__init__.py
+goto :end
+
 
 :PrintBigMessage
 echo. && echo.

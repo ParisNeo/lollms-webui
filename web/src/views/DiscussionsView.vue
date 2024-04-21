@@ -10,14 +10,14 @@
                 
                     <img class="w-24 animate-bounce" title="LoLLMS WebUI" src="@/assets/logo.png" alt="Logo">
                         <div class="flex flex-col items-start">
-                        <p class="text-2xl ">LoLLMS {{ version_info }} </p>
+                        <p class="text-2xl font-bold text-5xl drop-shadow-md align-middle">LoLLMS {{ version_info }} </p>
                         <p class="text-gray-400 text-base">One tool to rule them all</p>
                         <p class="text-gray-400 text-base">by ParisNeo</p>
 
                         </div>
                 </div>
                 <hr class=" mt-1 w-96 h-1 mx-auto my-2 md:my-2 dark:bg-bg-dark-tone-panel bg-bg-light-tone-panel border-0 rounded ">
-                <p class="text-2xl mb-10">Welcome</p>
+                <p class="text-2xl mb-10 font-bold drop-shadow-md ">Welcome</p>
                 <div role="status" class="text-center w-full display: flex; flex-row align-items: center;">
                         <ProgressBar ref="loading_progress" :progress="loading_progress"></ProgressBar>
                         <p class="text-2xl animate-pulse mt-2"> {{ loading_infos }} ...</p>
@@ -41,10 +41,7 @@
         <!-- LEFT SIDE PANEL -->
         <div id="leftPanel" class="flex flex-col flex-grow overflow-y-scroll no-scrollbar "
             @dragover.stop.prevent="setDropZoneDiscussion()">
-            <div class="text-white bg-bg-light-panel sticky z-10 top-0 dark:bg-bg-dark-tone shadow-md ">
-
-
-
+            <div class="text-light-text-panel dark:text-dark-text-panel bg-bg-light-panel sticky z-10 top-0 dark:bg-bg-dark-tone shadow-md ">
 
                 <!-- CONTROL PANEL -->
                 <div class="flex-row p-4  flex items-center gap-3 flex-0">
@@ -229,41 +226,42 @@
                 </div>
             </div>
         </div>
-        <div class="absolute bottom-0 left-0 w-full bg-bg-light-panel dark:bg-bg-dark-tone text-white py-2 cursor-pointer hover:text-accent" @click="showDatabaseSelector">
-            <p class="text-center text-shadow: 2px 2px 4px #000000;">{{ formatted_database_name.replace("_"," ") }}</p>
+        <div class="absolute h-15 bottom-0 left-0 w-full bg-bg-light-panel dark:bg-bg-dark-tone light-text-panel py-4 cursor-pointer text-light-text-panel dark:text-dark-text-panel hover:text-secondary" @click="showDatabaseSelector">
+            <p class="text-center font-large font-bold text-l drop-shadow-md align-middle">{{ formatted_database_name.replace("_"," ") }}</p>
         </div>
     </div>
     </transition>
-    <div v-if="isReady" class="relative flex flex-col flex-grow w-full" >
-        <div id="messages-list"
-            class="w-full z-0 flex flex-col  flex-grow  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
-            :class="isDragOverChat ? 'pointer-events-none' : ''">
+        <div v-if="isReady" class="relative flex flex-col flex-grow w-full" >
+            <div id="messages-list"
+                class="w-full z-0 flex flex-col  flex-grow  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+                :class="isDragOverChat ? 'pointer-events-none' : ''">
 
-            <!-- CHAT AREA -->
-            <div class="container pt-4 pb-50 mb-50 w-full">
-                <TransitionGroup v-if="discussionArr.length > 0" name="list">
-                    <Message v-for="(msg, index) in discussionArr" 
-                        :key="msg.id" :message="msg"  :id="'msg-' + msg.id"
-                        :host="host"
-                        ref="messages"
-                        
-                        @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
-                        @rankDown="rankDownMessage" @updateMessage="updateMessage" @resendMessage="resendMessage" @continueMessage="continueMessage"
-                        :avatar="getAvatar(msg.sender)" />
+                <!-- CHAT AREA -->
+                <div class="container pt-4 pb-50 mb-50 w-full">
+                    <TransitionGroup v-if="discussionArr.length > 0" name="list">
+                        <Message v-for="(msg, index) in discussionArr" 
+                            :key="msg.id" :message="msg"  :id="'msg-' + msg.id"
+                            :host="host"
+                            ref="messages"
+                            
+                            @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
+                            @rankDown="rankDownMessage" @updateMessage="updateMessage" @resendMessage="resendMessage" @continueMessage="continueMessage"
+                            :avatar="getAvatar(msg.sender)" />
 
-                    <!-- REMOVED FOR NOW, NEED MORE TESTING -->
-                    <!-- @click="scrollToElementInContainer($event.target, 'messages-list')"  -->
+                        <!-- REMOVED FOR NOW, NEED MORE TESTING -->
+                        <!-- @click="scrollToElementInContainer($event.target, 'messages-list')"  -->
 
 
-                </TransitionGroup>
-                <WelcomeComponent v-if="!currentDiscussion.id" />
-                <div><br><br><br><br><br><br><br></div>
+                    </TransitionGroup>
+                    <WelcomeComponent v-if="!currentDiscussion.id" />
+                    <div><br><br><br><br><br><br><br></div>
+                </div>
+
+                <div
+                    class="absolute w-full bottom-0 bg-transparent p-10 pt-16 bg-gradient-to-t from-bg-light dark:from-bg-dark from-5% via-bg-light dark:via-bg-dark via-10% to-transparent to-100%">
+                </div>
             </div>
-
-            <div
-                class="absolute w-full bottom-0 bg-transparent p-10 pt-16 bg-gradient-to-t from-bg-light dark:from-bg-dark from-5% via-bg-light dark:via-bg-dark via-10% to-transparent to-100%">
-            </div>
-            <div class="bottom-0 flex flex-row items-center justify-center " v-if="currentDiscussion.id">
+            <div class="flex flex-row items-center justify-center h-10" v-if="currentDiscussion.id">
                 <ChatBox ref="chatBox" 
                     :loading="isGenerating" 
                     :discussionList="discussionArr" 
@@ -280,11 +278,8 @@
                     @loaded="recoverFiles"
                     >
                 </ChatBox>
-            </div>
-            <!-- CAN ADD FOOTER PANEL HERE -->
+            </div>        
         </div>
-
-    </div>
     <ChoiceDialog reference="database_selector" class="z-20"
       :show="database_selectorDialogVisible"
       :choices="databases"
@@ -294,7 +289,7 @@
     />      
     <div v-show="progress_visibility" role="status" class="fixed m-0 p-2 left-2 bottom-2  min-w-[24rem] max-w-[24rem] h-20 flex flex-col justify-center items-center pb-4 bg-blue-500 rounded-lg shadow-lg z-50 background-a">
         <ProgressBar ref="progress" :progress="progress_value" class="w-full h-4"></ProgressBar>
-        <p class="text-2xl animate-pulse mt-2 text-white">{{ loading_infos }} ...</p>
+        <p class="text-2xl animate-pulse mt-2 text-light-text-panel dark:text-dark-text-panel">{{ loading_infos }} ...</p>
     </div>
     <InputBox prompt-text="Enter the url to the page to use as discussion support" @ok="addWebpage" ref="web_url_input_box"></InputBox>   
     <SkillsLibraryViewer ref="skills_lib" ></SkillsLibraryViewer>

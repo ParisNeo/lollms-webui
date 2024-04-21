@@ -1,6 +1,6 @@
 <template>
-  <div class="container bg-bg-light dark:bg-bg-dark shadow-lg overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
-    <div class="container flex flex-row m-2">
+  <div class="container w-full bg-bg-light dark:bg-bg-dark shadow-lg overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+    <div class="container flex flex-row m-2 w-full ">
       <div class="flex-grow max-w-[900px] m-2">
         <div class="flex gap-3 flex-1 items-center flex-grow flex-row m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4">
             <button v-show="!generating" id="generate-button" title="Generate from current cursor position" @click="generate" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="pen-tool"></i></button>

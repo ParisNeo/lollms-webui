@@ -1,36 +1,35 @@
-<!-- ChoiceDialog.vue -->
 <template>
   <transition name="fade">
-    <div v-if="show" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-96">
-        <h2 class="text-xl font-semibold mb-4">{{ title }}</h2>
-        <div class="h-48 overflow-y-auto">
+    <div v-if="show" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
+      <div class="bg-bg-light dark:bg-bg-dark rounded-lg p-6 w-96">
+        <h2 class="text-xl font-bold text-5xl drop-shadow-md align-middle">{{ title }}</h2>
+        <div class="h-48 text-light-text-panel dark:text-dark-text-panel bg-bg-light-tone-panel dark:bg-dark-tone-panel  overflow-y-auto  rounded  drop-shadow-md overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
           <ul>
             <li
               v-for="(choice, index) in choices"
               :key="index"
               @click="selectChoice(choice)"
               :class="{'selected-choice': choice === selectedChoice}"
-              class="py-2 px-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+              class="py-2 px-4 cursor-pointer hover:bg-accent dark:hover:bg-secondary"
             >
-              <span class="font-bold">{{ displayName(choice) }}</span><br>
+              <span class="font-bold text-dark-text-panel dark:text-light-text-panel">{{ displayName(choice) }}</span><br>
               <span class="text-xs text-gray-500" v-if="choice.size">{{ formatSize(choice.size) }}</span>
-              <button v-if="can_remove" @click="removeChoice(choice, index)" class="ml-2 text-red-500 hover:text-red-600">
+              <button v-if="can_remove" @click.stop="removeChoice(choice, index)" class="ml-2 text-red-500 hover:text-red-600">
                 X
               </button>              
             </li>
           </ul>
         </div>
-        <div class="mt-4" v-if="showInput">
+        <div class="flex flex-row mt-4 bg-light-tone-panel dark:bg-dark-tone-panel" v-if="showInput">
           <input v-model="newFilename" placeholder="Enter a filename" class="border border-gray-300 p-2 rounded-lg w-full">
-          <button @click="addNewFilename" class="mt-2 py-2 px-4 bg-green-500 hover:bg-green-600 text-white rounded-lg transition duration-300">
+          <button @click="addNewFilename" class="ml-2 grow pl-2 pr-2 bg-primary hover:bg-primary-light text-white rounded-lg transition duration-300">
             Add
           </button>
         </div>
         <div class="flex justify-end mt-4">
           <button
             @click="closeDialog"
-            class="py-2 px-4 mr-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition duration-300"
+            class="py-2 px-4 mr-2 bg-secondary hover:bg-accent text-white rounded-lg transition duration-300"
           >
             Cancel
           </button>
@@ -38,7 +37,7 @@
             @click="validateChoice"
             :class="{
               'bg-gray-400 cursor-not-allowed': !selectedChoice,
-              'bg-blue-500 hover:bg-blue-600': selectedChoice,
+              'bg-primary hover:bg-primary-light': selectedChoice,
               'text-white': selectedChoice,
               'text-gray-500': !selectedChoice,
             }"
@@ -49,7 +48,7 @@
           </button>
           <button
             @click="toggleInput"
-            class="py-2 px-4 ml-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition duration-300"
+            class="py-2 px-4 ml-2 bg-accent hover:bg-secondary text-white rounded-lg transition duration-300"
           >
             Add New
           </button>

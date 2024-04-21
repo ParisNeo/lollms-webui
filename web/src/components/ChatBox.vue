@@ -1,8 +1,8 @@
 <template>
 
         <form>
-            <div class="absolute bottom-0 left-0 w-fit min-w-96  w-full justify-center text-center p-4">
-                <div v-if="filesList.length > 0 || showPersonalities" class="items-center gap-2 rounded-lg border bg-bg-light-tone dark:bg-bg-dark-tone p-1.5 shadow-sm hover:shadow-none dark:border-gray-800  w-fit">
+            <div class="absolute bottom-0 left-0 w-fit min-w-96  w-full justify-center text-center">
+                <div v-if="filesList.length > 0 || showPersonalities" class="items-center gap-2 bg-bg-light-panel dark:bg-bg-dark-tone shadow-sm hover:shadow-none dark:border-gray-800  w-fit">
                     <!-- EXPAND / COLLAPSE BUTTON -->
                     <div class="flex">
                         <button 
@@ -119,8 +119,8 @@
                                 <span class="sr-only">Selecting model...</span>
                             </div>
                         </div>
-                        <div class="flex w-fit pb-3 relative grow   w-full">
-                            <div class="relative grow flex h-12.5 cursor-pointer select-none items-center gap-2 rounded-lg border bg-bg-light-tone dark:bg-bg-dark-tone p-1 shadow-sm hover:shadow-none dark:border-gray-800" tabindex="0">
+                        <div class="flex w-fit relative grow w-full">
+                            <div class="relative text-light-text-panel dark:text-dark-text-panel grow flex h-12.5 cursor-pointer select-none items-center gap-2 bg-bg-light-panel dark:bg-bg-dark-tone p-1 shadow-sm hover:shadow-none dark:border-gray-800" tabindex="0">
                                 <div v-if="loading" title="Waiting for reply">
                                     <img :src="loader_v0">
                                     <!-- SPINNER -->
@@ -135,9 +135,9 @@
                                             v-for="(item, index) in installedBindings" :key="index + '-' + item.name"
                                             ref="installedBindings">
                                             <div v-if="item.name!=binding_name" class="group items-center flex flex-row">
-                                                <button @click.prevent="setBinding(item)" class="w-8 h-8">
+                                                <button @click.prevent="setBinding(item)" class="w-10 h-10">
                                                     <img :src="item.icon?item.icon:modelImgPlaceholder"
-                                                        class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                                        class="w-10 h-10 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
                                                         :title="item.name">
                                                 </button>
                                             </div>
@@ -159,9 +159,9 @@
                                             v-for="(item, index) in installedModels" :key="index + '-' + item.name"
                                             ref="installedModels">
                                             <div v-if="item.name!=model_name" class="group items-center flex flex-row">
-                                                <button @click.prevent="setModel(item)" class="w-8 h-8">
+                                                <button @click.prevent="setModel(item)" class="w-10 h-10">
                                                     <img :src="item.icon?item.icon:modelImgPlaceholder"
-                                                        class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                                        class="w-10 h-10 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
                                                         :title="item.name">
                                                 </button>
                                             </div>
@@ -178,14 +178,14 @@
                                 </div>    
                                 <div class="w-fit group relative" >
                                     <!-- :onShowPersList="onShowPersListFun" -->
-                                    <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-10 group-hover:translate-x-15 transition-all duration-300">
+                                    <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-12 group-hover:translate-x-15 transition-all duration-300">
                                         <div class="w-full"
                                             v-for="(item, index) in mountedPersonalities" :key="index + '-' + item.name"
                                             ref="mountedPersonalities">
                                             <div v-if="index!=personality_name" class="group items-center flex flex-row">
-                                                <button @click.prevent="onPersonalitySelected(item)" class="w-8 h-8">
+                                                <button @click.prevent="onPersonalitySelected(item)" class="w-10 h-10">
                                                     <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
-                                                        class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                                        class="w-10 h-10 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
                                                         :class="this.$store.state.active_personality_id == this.$store.state.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
                                                         :title="item.name">
                                                 </button>
@@ -221,7 +221,7 @@
                                 </div>        
                                 <div class="relative grow">
                                     <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"
-                                        class="inline-block  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        class="inline-block  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400  dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                         placeholder="Send message..." @keydown.enter.exact="submitOnEnter($event)">
                                     </textarea>
                                 </div>
@@ -233,7 +233,7 @@
                                 
                                 <div class="group relative w-max">
                                     <button v-if="!loading" type="button" @click="submit" title="Send"
-                                    class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
+                                    class="w-6 text-panel hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
                                             <i data-feather="send"></i>
                                     </button>                        
                                     <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Sends your message to the AI.</p></div>
@@ -241,7 +241,7 @@
                                 <div class="group relative w-max">
                                     <button v-if="!loading" type="button" @click="submitWithInternetSearch" title="Send With internet"
                                     class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
-                                            <img :src="sendGlobe" width="50" height="50">
+                                            <img :src="sendGlobe" width="50" height="50"  style="stroke: currentColor; fill: currentColor;">
                                     </button>                        
                                     <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Sends your message to the AI with internet search.</p></div>
                                 </div>
@@ -283,21 +283,21 @@
 
                                 <div class="group relative w-max">
                                     <button v-if="!loading" type="button" @click.stop="makeAnEmptyUserMessage"
-                                        class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
+                                        class=" w-6 text-gray-800 hover:text-secondary duration-75 active:scale-90  hover:translate-y-[-5px]">
                                         <i data-feather="message-square"></i>
                                     </button>
          
-                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">New empty User message.</p></div>
+                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm  text-gray-800 dark:text-gray-200">New empty User message.</p></div>
                                 </div>
 
                                 <div class="group relative w-max">
                                     <button v-if="!loading" type="button" @click.stop="makeAnEmptyAIMessage"
-                                        class=" w-6 text-red-400 hover:text-secondary duration-75 active:scale-90">
+                                        class=" w-6 text-red-400 hover:text-secondary duration-75 active:scale-90  hover:translate-y-[-5px]">
                                         <i data-feather="message-square"></i>
                                     </button>  
 
          
-                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">New empty ai message.</p></div>
+                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm  text-gray-800 dark:text-gray-200">New empty ai message.</p></div>
                                 </div>
 
                             </div> 
