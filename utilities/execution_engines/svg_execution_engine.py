@@ -17,7 +17,7 @@ from lollms.utilities import discussion_path_2_url
 
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()          
 
-def build_svg_output(code, ifram_name="unnamed"):
+def build_svg_output(code, ifram_name=None):
     """
     This function creates an HTML5 iframe with the given HTML content and iframe name.
 
@@ -29,53 +29,94 @@ def build_svg_output(code, ifram_name="unnamed"):
     str: The HTML string for the iframe.
     """
     # Start the timer.
-    start_time = time.time()    
-    rendered =  "\n".join([
-        '<div style="width: 100%; margin: 0 auto;">',
-        f'<iframe id="{ifram_name}" style="width: 100%" srcdoc="',
-        '<style>',
-        'iframe {',
-        'width: 100%;',
-        'height: 100%;',
-        'border: none;',
-        '}',
-        '.svg {',
-        'background-color: transparent;',
-        'padding: 20px;',
-        'border-radius: 10px;',
-        'display: flex;',
-        'justify-content: center;',
-        'align-items: center;',
-        'height: 100%;',
-        '}',
-        '</style>',
-        '<div class=\'svg\'>',
-        "\n".join([c for c in code.split("\n") if c.strip()!=""]),
-        '</div>',
-        '<script src=\'https://cdn.jsdelivr.net/npm/svg/dist/svg.min.js\'></script>',
-        '<script>',
-        '// Initialize the svg library and render our diagram',
-        'svg.initialize({ startOnLoad: true });',
-        '// Function to save SVG content to a file',
-        'function saveSVG() {',
-        'var svg = document.querySelector(".svg > svg");',
-        'var serializer = new XMLSerializer();',
-        'var source = serializer.serializeToString(svg);',
-        'var blob = new Blob([source], {type: "image/svg+xml;charset=utf-8"});',
-        'var url = URL.createObjectURL(blob);',
-        'var a = document.createElement("a");',
-        'a.href = url;',
-        'a.download = "diagram.svg";',
-        'a.click();',
-        '}',        
-        '</script>',
-        '<div style=\'text-align: center;\'>',
-        '</div>',
-        '<button onclick="saveSVG()">Save SVG</button>',
-        '" style="width: 100%; height: 600px; border: none;"></iframe>',
-        '</div>'
-        ]
-    )
+    start_time = time.time()
+    if ifram_name is not None:
+        rendered =  "\n".join([
+            '<div style="width: 100%; margin: 0 auto;">',
+            f'<iframe id="{ifram_name}" style="width: 100%" srcdoc="',
+            '<style>',
+            'iframe {',
+            'width: 100%;',
+            'height: 100%;',
+            'border: none;',
+            '}',
+            '.svg {',
+            'background-color: transparent;',
+            'padding: 20px;',
+            'border-radius: 10px;',
+            'display: flex;',
+            'justify-content: center;',
+            'align-items: center;',
+            'height: 100%;',
+            '}',
+            '</style>',
+            '<div class=\'svg\'>',
+            "\n".join([c for c in code.split("\n") if c.strip()!=""]),
+            '</div>',
+            '<script src=\'https://cdn.jsdelivr.net/npm/svg/dist/svg.min.js\'></script>',
+            '<script>',
+            '// Initialize the svg library and render our diagram',
+            'svg.initialize({ startOnLoad: true });',
+            '// Function to save SVG content to a file',
+            'function saveSVG() {',
+            'var svg = document.querySelector(".svg > svg");',
+            'var serializer = new XMLSerializer();',
+            'var source = serializer.serializeToString(svg);',
+            'var blob = new Blob([source], {type: "image/svg+xml;charset=utf-8"});',
+            'var url = URL.createObjectURL(blob);',
+            'var a = document.createElement("a");',
+            'a.href = url;',
+            'a.download = "diagram.svg";',
+            'a.click();',
+            '}',        
+            '</script>',
+            '<div style=\'text-align: center;\'>',
+            '</div>',
+            '<button onclick="saveSVG()">Save SVG</button>',
+            '" style="width: 100%; height: 600px; border: none;"></iframe>',
+            '</div>'
+            ]
+        )
+    else:
+        rendered =  "\n".join([
+            '<div style="width: 100%; margin: 0 auto;">',
+            '<style>',
+            '.svg {',
+            'background-color: transparent;',
+            'padding: 20px;',
+            'border-radius: 10px;',
+            'display: flex;',
+            'justify-content: center;',
+            'align-items: center;',
+            'height: 100%;',
+            '}',
+            '</style>',
+            '<div class=\'svg\'>',
+            "\n".join([c for c in code.split("\n") if c.strip()!=""]),
+            '</div>',
+            '<script src=\'https://cdn.jsdelivr.net/npm/svg/dist/svg.min.js\'></script>',
+            '<script>',
+            '// Initialize the svg library and render our diagram',
+            'svg.initialize({ startOnLoad: true });',
+            '// Function to save SVG content to a file',
+            'function saveSVG() {',
+            'var svg = document.querySelector(".svg > svg");',
+            'var serializer = new XMLSerializer();',
+            'var source = serializer.serializeToString(svg);',
+            'var blob = new Blob([source], {type: "image/svg+xml;charset=utf-8"});',
+            'var url = URL.createObjectURL(blob);',
+            'var a = document.createElement("a");',
+            'a.href = url;',
+            'a.download = "diagram.svg";',
+            'a.click();',
+            '}',        
+            '</script>',
+            '<div style=\'text-align: center;\'>',
+            '</div>',
+            '<button onclick="saveSVG()">Save SVG</button>',
+            '</div>'
+            ]
+        )
     execution_time = time.time() - start_time
     return {"output": rendered, "execution_time": execution_time}
 
@@ -95,13 +136,13 @@ def execute_svg(code, client:Client, message_id, build_file=False):
         # Create a temporary file.
         root_folder = client.discussion.discussion_folder
         root_folder.mkdir(parents=True,exist_ok=True)
-        tmp_file = root_folder/f"ai_code_{message_id}.html"
+        tmp_file = root_folder/f"ai_svg_{message_id}.svg"
         with open(tmp_file,"w",encoding="utf8") as f:
-            f.write(build_svg_output(code)["output"])
+            f.write(code)
         link = f"{host}:{lollmsElfServer.config.port}/{discussion_path_2_url(tmp_file)}"
         # Stop the timer.
         execution_time = time.time() - start_time
         output_json = {"output": f'<b>Page built successfully</b><br><a href="{link}" target="_blank">Press here to view the page</a>', "execution_time": execution_time}
         return output_json
     else:
-        return build_svg_output(code)
+        return build_svg_output(code, "app_iframe")

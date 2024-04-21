@@ -17,7 +17,7 @@ from lollms.utilities import discussion_path_2_url
 
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()          
 
-def build_javascript_output(code, ifram_name="unnamed"):
+def build_javascript_output(code, ifram_name=None):
     """
     This function creates an HTML5 iframe with the given HTML content and iframe name.
 
@@ -29,24 +29,34 @@ def build_javascript_output(code, ifram_name="unnamed"):
     str: The HTML string for the iframe.
     """
     # Start the timer.
-    start_time = time.time()    
-    rendered =  "\n".join([
-        '<div style="width: 100%; margin: 0 auto;">',
-        f'<iframe id="{ifram_name}" srcdoc="',
-        '<style>',
-        'iframe {',
-        'width: 100%;',
-        'height: 100%;',
-        'border: none;',
-        '}',
-        '</style>',
-        '<script>',
-        code,
-        '</script>',
-        '" style="width: 100%; height: 600px; border: none;"></iframe>',
-        '</div>'
-        ]
-    )
+    start_time = time.time()
+    if ifram_name is not None:
+        rendered =  "\n".join([
+            '<div style="width: 100%; margin: 0 auto;">',
+            f'<iframe id="{ifram_name}" srcdoc="',
+            '<style>',
+            'iframe {',
+            'width: 100%;',
+            'height: 100%;',
+            'border: none;',
+            '}',
+            '</style>',
+            '<script>',
+            code,
+            '</script>',
+            '" style="width: 100%; height: 600px; border: none;"></iframe>',
+            '</div>'
+            ]
+        )
+    else:
+        rendered =  "\n".join([
+            '<div style="width: 100%; margin: 0 auto;">',
+            '<script>',
+            code,
+            '</script>',
+            '</div>'
+            ]
+        )
     execution_time = time.time() - start_time
     return {"output": rendered, "execution_time": execution_time}
 

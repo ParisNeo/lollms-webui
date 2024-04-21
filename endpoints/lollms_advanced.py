@@ -45,6 +45,8 @@ from utilities.execution_engines.html_execution_engine import execute_html
 
 from utilities.execution_engines.mermaid_execution_engine import execute_mermaid
 from utilities.execution_engines.graphviz_execution_engine import execute_graphviz
+from utilities.execution_engines.svg_execution_engine import execute_svg
+
 
 
 
@@ -91,6 +93,10 @@ async def execute_code(request: CodeRequest):
             ASCIIColors.info("Executing python code:")
             ASCIIColors.yellow(code)
             return execute_python(code, client, message_id)
+        if language=="svg":
+            ASCIIColors.info("Executing svg code:")
+            ASCIIColors.yellow(code)
+            return execute_svg(code, client, message_id)
         if language=="javascript":
             ASCIIColors.info("Executing javascript code:")
             ASCIIColors.yellow(code)

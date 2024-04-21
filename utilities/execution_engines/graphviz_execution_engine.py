@@ -30,7 +30,7 @@ def build_graphviz_output(code, ifram_name=None):
     """
     # Start the timer.
     start_time = time.time()
-    if ifram_name!=None:
+    if ifram_name is not None:
         rendered =  "\n".join([
             '<div style="width: 100%; margin: 0 auto;">',
             f'<iframe id="{ifram_name}" srcdoc=\'',
@@ -120,4 +120,4 @@ def execute_graphviz(code, client:Client, message_id, build_file=False):
         output_json = {"output": f'<b>Page built successfully</b><br><a href="{link}" target="_blank">Press here to view the page</a>', "execution_time": execution_time}
         return output_json
     else:
-        return build_graphviz_output(code)
+        return build_graphviz_output(code, ifram_name="iframe")
