@@ -41,7 +41,7 @@
         <!-- LEFT SIDE PANEL -->
         <div id="leftPanel" class="flex flex-col flex-grow overflow-y-scroll no-scrollbar "
             @dragover.stop.prevent="setDropZoneDiscussion()">
-            <div class=" sticky z-10 top-0  bg-bg-light-tone dark:bg-bg-dark-tone shadow-md ">
+            <div class="text-white bg-primary-light sticky z-10 top-0  bg-bg-light-tone dark:bg-bg-dark-tone shadow-md ">
 
 
 
@@ -95,20 +95,20 @@
                         </button>
                     </div>
                     <button v-if="!loading" type="button" @click.stop="addDiscussion2SkillsLibrary" title="Add this discussion content to skills database"
-                        class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
-                        <img :src="memory_icon">
+                        class=" w-6 hover:text-secondary duration-75 active:scale-90">
+                        <i data-feather="hard-drive"></i>
                     </button>
                     <button v-if="!loading && $store.state.config.activate_skills_lib" type="button" @click.stop="toggleSkillsLib" title="Skills database is activated"
-                        class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
-                        <img :src="active_skills">
+                        class=" w-6 hover:text-secondary duration-75 active:scale-90">
+                        <i data-feather="check-circle"></i>
                     </button>
                     <button v-if="!loading && !$store.state.config.activate_skills_lib" type="button" @click.stop="toggleSkillsLib" title="Skills database is deactivated"
-                        class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
-                        <img :src="inactive_skills">
+                        class=" w-6 hover:text-secondary duration-75 active:scale-90">
+                        <i data-feather="x-octagon"></i>
                     </button>
                     <button v-if="!loading" type="button" @click.stop="showSkillsLib" title="Skills database is deactivated"
-                        class=" w-6 text-blue-400 hover:text-secondary duration-75 active:scale-90">
-                        <img :src="skillsRegistry">
+                        class=" w-6 hover:text-secondary duration-75 active:scale-90">
+                        <i data-feather="book"></i>
                     </button>
    
                     <div v-if="loading" title="Loading.." class="flex flex-row flex-grow justify-end">
@@ -229,8 +229,8 @@
                 </div>
             </div>
         </div>
-        <div class="absolute bottom-0 left-0 w-full bg-blue-200 dark:bg-blue-800 text-white py-2 cursor-pointer hover:text-green-500" @click="showDatabaseSelector">
-            <p class="ml-2">Current database: {{ formatted_database_name }}</p>
+        <div class="absolute bottom-0 left-0 w-full bg-primary-light dark:bg-bg-dark-tone text-white py-2 cursor-pointer hover:text-accent" @click="showDatabaseSelector">
+            <p class="ml-2 text-center shadow-lg">{{ formatted_database_name }}</p>
         </div>
     </div>
     </transition>
