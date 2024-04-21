@@ -130,7 +130,7 @@
                                 </div>
                                 <div class="w-fit group relative" v-if="!loading" >
                                     <!-- :onShowPersList="onShowPersListFun" -->
-                                    <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-10 group-hover:translate-x-15 transition-all duration-300">
+                                    <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-12 group-hover:translate-x-15 transition-all duration-300">
                                         <div class="w-full"
                                             v-for="(item, index) in installedBindings" :key="index + '-' + item.name"
                                             ref="installedBindings">
@@ -154,7 +154,7 @@
                                 </div>   
                                 <div class="w-fit group relative" v-if="!loading" >
                                     <!-- :onShowPersList="onShowPersListFun" -->
-                                    <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-10 group-hover:translate-x-15 transition-all duration-300">
+                                    <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-12 group-hover:translate-x-15 transition-all duration-300">
                                         <div class="w-full"
                                             v-for="(item, index) in installedModels" :key="index + '-' + item.name"
                                             ref="installedModels">
