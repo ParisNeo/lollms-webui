@@ -12,7 +12,7 @@
               :class="isExecuting?'bg-green-500':''">
         <i data-feather="play-circle"></i>
       </button>
-      <button v-if="['airplay', 'mermaid', 'graphviz', 'dot', 'javascript', 'html', 'html5', 'svg'].includes(language)" ref="btn_code_exec_in_new_tab" @click="executeCode_in_new_tab"  title="execute"
+      <button v-if="['airplay', 'mermaid', 'graphviz', 'dot', 'javascript', 'html', 'html5', 'svg', 'css'].includes(language)" ref="btn_code_exec_in_new_tab" @click="executeCode_in_new_tab"  title="execute"
               class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200"
               :class="isExecuting?'bg-green-500':''">
         <i data-feather="airplay"></i>
