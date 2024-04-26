@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#
 # This script will install Miniconda and git with all dependencies for this project.
 # This enables a user to install this project without manually installing Conda and git.
 
@@ -41,8 +41,38 @@ clear
 
 export PACKAGES_TO_INSTALL=python=3.11 git pip
 
-echo "Installing gcc..."
-brew install gcc
+
+# This will test if homebrew is installed on the mac.
+# If not installed it will install homebrew. 
+
+echo "*****************************************************"
+echo "*** Homebriew is required for LoLLMs Install      ***"
+echo "*** Checking if Homebrew is installed             ***"
+echo "***                                               ***"
+which -s brew
+if [[ $? != 0 ]] ; then
+    # Install Homebrew
+   echo "*** Please Install Homebrew - See https://brew.sh ***"
+   echo "*****************************************************"
+   exit 1
+else
+   echo "*** Homebrew is installed - Continuing            ***"
+   echo "***                                               ***"
+fi
+
+# This will test if GCC is installed.
+# If GCC is installed it will attempt an upgrade
+# if it is not installed it will install gcc using homebrew
+echo "*** Checking if GCC is installed                  ***"
+echo "***                                               ***"
+if brew list gcc &>/dev/null; then
+	echo "*** GCC is already installed - Upgrading          ***"
+	echo "*****************************************************"
+else
+	echo "*** GCC Not Installed - Installing                ***"
+	echo "*****************************************************"
+	brew install gcc
+fi
 
 # Better isolation for virtual environment
 unset CONDA_SHLVL
@@ -55,6 +85,7 @@ export TMP="$PWD/installer_files/temp"
 MINICONDA_DIR="$PWD/installer_files/miniconda3"
 INSTALL_ENV_DIR="$PWD/installer_files/lollms_env"
 ENV_NAME="lollms"
+INSTALL_DIR="$PWD"
 
 arch=$(uname -m)
 if [ "$arch" == "arm64" ]; then
@@ -68,7 +99,7 @@ REPO_URL="https://github.com/ParisNeo/lollms-webui.git"
 if [ ! -f "$MINICONDA_DIR/Scripts/conda" ]; then
   # Download Miniconda
   echo "Downloading Miniconda installer from $MINICONDA_DOWNLOAD_URL"
-  curl -LO "$MINICONDA_DOWNLOAD_URL"
+  curl -LOk "$MINICONDA_DOWNLOAD_URL"
 
   # Install Miniconda
   echo
@@ -114,31 +145,25 @@ echo "$ENV_NAME Activated"
 export CUDA_PATH="$INSTALL_ENV_DIR"
 
 # Clone the repository
+cd $INSTALL_DIR
 if [ -d "lollms-webui" ]; then
-  cd lollms-webui || exit 1
+  cd $INSTALL_DIR/lollms-webui || exit 1
   git pull
   git submodule update --init --recursive
-  cd lollms_core 
+  cd $INSTALL_DIR/lollms-webui/lollms_core 
   pip install -e .
-  cd ..
-  cd utilities/safe_store
+  cd $INSTALL_DIR/lollms-webuil/utilities/safe_store
   pip install -e .
-  cd ../..
 
 else
   git clone --depth 1  --recurse-submodules "$REPO_URL"
   git submodule update --init --recursive
-  cd lollms-webui/lollms_core
+  cd $INSTALL_DIR/lollms-webui/lollms_core
   pip install -e .
-  cd ..
-  cd utilities/safe_store
+  cd $INSTALL_DIR/lollms-webui/utilities/safe_store
   pip install -e .
-  cd ../../..
-  cd utilities/pipmaster
-  pip install -e .
-  cd ../../..
 
-  cd lollms-webui || exit 1
+  cd $INSTALL_DIR/lollms-webui || exit 1
 fi
 
 # Loop through each "git+" requirement and uninstall it (workaround for inconsistent git package updating)
@@ -155,67 +180,29 @@ python -m pip install -r requirements.txt --upgrade
 if [[ -e "../macos_run.sh" ]]; then
     echo "Macos run found"
 else
-    cp scripts/macos/macos_run.sh ../
+    cp scripts/macos/macos_run.sh $INSTALL_DIR/ 
 fi
 
 if [[ -e "../macos_update.sh" ]]; then
     echo "Macos update found"
 else
-    cp scripts/macos/macos_update.sh ../
+    cp scripts/macos/macos_update.sh $INSTALL_DIR/ 
 fi
 
 if [[ -e "../macos_conda_session.sh" ]]; then
     echo "Macos conda session found"
 else
-    cp scripts/macos/macos_conda_session.sh ../
+    cp scripts/macos/macos_conda_session.sh $INSTALL_DIR/ 
 fi
 
-echo "Select the default binding to be installed:"
-options=("None (install the binding later)" "Local binding - ollama" "Local binding - python_llama_cpp" "Local binding - bs_exllamav2" "Remote binding - open_router" "Remote binding - open_ai" "Remote binding - mistral_ai")
-
-select opt in "${options[@]}"
-do
-    case $opt in
-        "None (install the binding later)")
-            echo "You selected None. No binding will be installed now."
-            break
-            ;;
-        "Local binding - ollama")
-            python3 zoos/bindings_zoo/ollama/__init__.py
-            break
-            ;;
-        "Local binding - python_llama_cpp")
-            python3 zoos/bindings_zoo/python_llama_cpp/__init__.py
-            break
-            ;;
-        "Local binding - bs_exllamav2")
-            python3 zoos/bindings_zoo/bs_exllamav2/__init__.py
-            break
-            ;;
-        "Remote binding - open_router")
-            python3 zoos/bindings_zoo/open_router/__init__.py
-            break
-            ;;
-        "Remote binding - open_ai")
-            python3 zoos/bindings_zoo/open_ai/__init__.py
-            break
-            ;;
-        "Remote binding - mistral_ai")
-            python3 zoos/bindings_zoo/mistral_ai/__init__.py
-            break
-            ;;
-        *) echo "Invalid option $REPLY";;
-    esac
-done
 
 # cd scripts/python/lollms_installer
 # python main.py
 # cd ..
 
 echo "Creating a bin dir (required for llamacpp binding)"
-mkdir -p $INSTALL_ENV_DIR/bin
+mkdir -p $INSTALL_DIR/installer_files/lollms_env/bin
 
-echo "Don't forget to select Apple silicon (if you are using M1, M2, M3) or apple intel (if you use old intel mac) in the settings before installing any binding"
 
 PrintBigMessage() {
   echo
@@ -229,4 +216,4 @@ PrintBigMessage() {
 
 PrintBigMessage "$@"
 
-exit 0
+
