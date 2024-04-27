@@ -76,7 +76,7 @@ def add_events(sio:socketio):
             except:
                 nb_tokens = None
             message = lollmsElfServer.session.get_client(client_id).discussion.add_message(
-                message_type        = MSG_TYPE.MSG_TYPE_FULL.value if lollmsElfServer.personality.include_welcome_message_in_disucssion else MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value,
+                message_type        = MSG_TYPE.MSG_TYPE_FULL.value if lollmsElfServer.personality.include_welcome_message_in_discussion else MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value,
                 sender_type         = SENDER_TYPES.SENDER_TYPES_AI.value,
                 sender              = lollmsElfServer.personality.name,
                 content             = welcome_message,
