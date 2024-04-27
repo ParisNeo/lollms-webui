@@ -1330,7 +1330,7 @@
                                 required
                                 v-model="configFile.headless_server_mode"
                                 @change="settingsChanged=true"
-                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
                                 >
                             </td>
                             </tr>
@@ -1345,7 +1345,7 @@
                                 required
                                 v-model="configFile.activate_lollms_server"
                                 @change="settingsChanged=true"
-                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
                                 >
                             </td>
                             </tr>      
@@ -1360,7 +1360,7 @@
                                 required
                                 v-model="configFile.activate_ollama_emulator"
                                 @change="settingsChanged=true"
-                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
                                 >
                             </td>
                             </tr>
@@ -1375,7 +1375,7 @@
                                 required
                                 v-model="configFile.activate_openai_emulator"
                                 @change="settingsChanged=true"
-                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
                                 >
                             </td>
                             </tr>                                  
@@ -1390,7 +1390,7 @@
                                 required
                                 v-model="configFile.activate_mistralai_emulator"
                                 @change="settingsChanged=true"
-                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
                                 >
                             </td>
                             </tr>   
@@ -3723,7 +3723,7 @@ export default {
         },
         onCopyLink(modelEntry) {
             this.$store.state.toast.showToast("Copied link to clipboard!", 4, true)
-            navigator.clipboard.writeText('https://huggingface.co/'+modelEntry.model.quantizer+'/'+modelEntry.model.name);
+            navigator.clipboard.writeText(modelEntry.model.name);
         },
         onCopyPersonalityName(personality) {
             this.$store.state.toast.showToast("Copied name to clipboard!", 4, true)
