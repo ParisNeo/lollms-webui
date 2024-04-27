@@ -1305,6 +1305,21 @@
                             </tr>                                        
                             <tr>
                             <td style="min-width: 200px;">
+                                <label for="lollms_access_keys" class="text-sm font-bold" style="margin-right: 1rem;">Access keys (coma separated, if empty, anyone can use the server without authentication):</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <input
+                                type="text"
+                                id="lollms_access_keys"
+                                required
+                                v-model="configFile.lollms_access_keys"
+                                @change="settingsChanged=true"
+                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                >
+                            </td>
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
                                 <label for="discussion_db_name" class="text-sm font-bold" style="margin-right: 1rem;">Port:</label>
                             </td>
                             <td style="width: 100%;">
