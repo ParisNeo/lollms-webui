@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 81
+version: 82
 binding_name: null
 model_name: null
 model_variant: null
@@ -109,6 +109,10 @@ petals_device: cuda
 # lollms service
 enable_lollms_service: false
 lollms_base_url: http://localhost:1234
+activate_lollms_server: True
+activate_ollama_emulator: True
+activate_openai_emulator: True
+activate_mistralai_emulator: True
 
 # elastic search service
 elastic_search_service: false

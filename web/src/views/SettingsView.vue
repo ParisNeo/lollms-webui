@@ -1289,52 +1289,112 @@
                     <Card title="Lollms service" :is_subcard="true" class="pb-2  m-2">
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="host" class="text-sm font-bold" style="margin-right: 1rem;">Host:</label>
-                                        </td>
-                                        <td style="width: 100%;">
-                                            <input
-                                            type="text"
-                                            id="host"
-                                            required
-                                            v-model="configFile.host"
-                                            @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>                                        
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="discussion_db_name" class="text-sm font-bold" style="margin-right: 1rem;">Port:</label>
-                                        </td>
-                                        <td style="width: 100%;">
-                                            <input
-                                            type="number"
-                                            step="1"
-                                            id="port"
-                                            required
-                                            v-model="configFile.port"
-                                            @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="discussion_db_name" class="text-sm font-bold" style="margin-right: 1rem;">Activate headless server mode (deactivates all code exectuion to protect the PC from attacks):</label>
-                                        </td>
-                                        <td style="width: 100%;">
-                                            <input
-                                            type="checkbox"
-                                            id="headless_server_mode"
-                                            required
-                                            v-model="configFile.headless_server_mode"
-                                            @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>
-                        </table>                                
+                            <td style="min-width: 200px;">
+                                <label for="host" class="text-sm font-bold" style="margin-right: 1rem;">Host:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <input
+                                type="text"
+                                id="host"
+                                required
+                                v-model="configFile.host"
+                                @change="settingsChanged=true"
+                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                >
+                            </td>
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="discussion_db_name" class="text-sm font-bold" style="margin-right: 1rem;">Port:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <input
+                                type="number"
+                                step="1"
+                                id="port"
+                                required
+                                v-model="configFile.port"
+                                @change="settingsChanged=true"
+                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                >
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="discussion_db_name" class="text-sm font-bold" style="margin-right: 1rem;">Activate headless server mode (deactivates all code exectuion to protect the PC from attacks):</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <input
+                                type="checkbox"
+                                id="headless_server_mode"
+                                required
+                                v-model="configFile.headless_server_mode"
+                                @change="settingsChanged=true"
+                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                >
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="activate_lollms_server" class="text-sm font-bold" style="margin-right: 1rem;">Activate lollms server:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <input
+                                type="checkbox"
+                                id="activate_lollms_server"
+                                required
+                                v-model="configFile.activate_lollms_server"
+                                @change="settingsChanged=true"
+                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                >
+                            </td>
+                            </tr>      
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="activate_ollama_emulator" class="text-sm font-bold" style="margin-right: 1rem;">Activate ollama server emulator:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <input
+                                type="checkbox"
+                                id="activate_ollama_emulator"
+                                required
+                                v-model="configFile.activate_ollama_emulator"
+                                @change="settingsChanged=true"
+                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                >
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="activate_openai_emulator" class="text-sm font-bold" style="margin-right: 1rem;">Activate openai server emulator:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <input
+                                type="checkbox"
+                                id="activate_openai_emulator"
+                                required
+                                v-model="configFile.activate_openai_emulator"
+                                @change="settingsChanged=true"
+                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                >
+                            </td>
+                            </tr>                                  
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="activate_mistralai_emulator" class="text-sm font-bold" style="margin-right: 1rem;">Activate mistral ai server emulator:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <input
+                                type="checkbox"
+                                id="activate_mistralai_emulator"
+                                required
+                                v-model="configFile.activate_mistralai_emulator"
+                                @change="settingsChanged=true"
+                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                >
+                            </td>
+                            </tr>   
+                        </table>               
                     </Card>                    
 
                     <Card title="Stable diffusion service" :is_subcard="true" class="pb-2  m-2">
