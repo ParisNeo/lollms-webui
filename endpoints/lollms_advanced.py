@@ -113,7 +113,7 @@ async def execute_code(request: CodeRequest):
         elif language in ["bash","shell","cmd","powershell"]:
             ASCIIColors.info("Executing shell code:")
             ASCIIColors.yellow(code)
-            return execute_bash(code, client)
+            return execute_bash(code, client, message_id)
         elif language in ["mermaid"]:
             ASCIIColors.info("Executing mermaid code:")
             ASCIIColors.yellow(code)
