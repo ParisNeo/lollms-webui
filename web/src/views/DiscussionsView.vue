@@ -469,20 +469,7 @@ export default {
                     this.recoverFiles()
                 }
             });
-            /*
-            console.log("OK")
-            socket.on('web_page_added',()=>{
-                axios.get('/get_current_personality_files_list').then(res=>{
-                    this.filesList = res.data.files;
-                    console.log("this.filesList",this.filesList)
-                    this.isFileSentList= res.data.files.map(file => {
-                        return true;
-                    });
-                    console.log(`Files recovered: ${this.filesList}`)
-                })
-            });
-            socket.emit('add_webpage',{'url':this.$refs.web_url_input_box.inputText})
-            */
+
         },
         show_progress(data){
             this.progress_visibility_val = true;
@@ -697,7 +684,7 @@ export default {
         },
         recoverFiles(){
             console.log("Recovering files")
-            axios.get('/get_current_personality_files_list').then(res=>{
+            axios.post('/get_current_personality_files_list', {"client_id":this.$store.state.client_id}).then(res=>{
                 this.$refs.chatBox.filesList = res.data.files;
                 this.$refs.chatBox.isFileSentList= res.data.files.map(file => {
                     return true;
