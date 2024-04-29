@@ -1,23 +1,23 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 83
+version: 84
 binding_name: null
 model_name: null
 model_variant: null
 model_type: null
 
-show_news_panel: True
+show_news_panel: true
 
 # Security measures
-turn_on_setting_update_validation: True
-turn_on_code_execution: True
-turn_on_code_validation: True
-turn_on_open_file_validation: False
-turn_on_send_file_validation: False
+turn_on_setting_update_validation: true
+turn_on_code_execution: true
+turn_on_code_validation: true
+turn_on_open_file_validation: true
+turn_on_send_file_validation: true
 
 force_accept_remote_access: false
 
 # Server information
-headless_server_mode: False
+headless_server_mode: false
 allowed_origins: []
 
 # Host information
@@ -57,7 +57,7 @@ use_user_informations_in_discussion: false
 discussion_db_name: default
 
 # Automatic updates
-debug: False
+debug: false
 debug_log_file_path: ""
 auto_update: true
 auto_sync_personalities: true
@@ -110,10 +110,10 @@ petals_device: cuda
 enable_lollms_service: false
 lollms_base_url: http://localhost:1234
 lollms_access_keys : "" # set a list of keys separated by coma to restrict access
-activate_lollms_server: True
-activate_ollama_emulator: True
-activate_openai_emulator: True
-activate_mistralai_emulator: True
+activate_lollms_server: true
+activate_ollama_emulator: true
+activate_openai_emulator: true
+activate_mistralai_emulator: true
 
 # elastic search service
 elastic_search_service: false
@@ -150,7 +150,7 @@ data_vectorization_method: "tfidf_vectorizer" #"model_embedding" or "tfidf_vecto
 data_visualization_method: "PCA" #"PCA" or "TSNE"
 data_vectorization_sentense_transformer_model: "all-MiniLM-L6-v2" # you can use another model by setting its name here or its path
 
-data_vectorization_save_db: False # For each new session, new files
+data_vectorization_save_db: false # For each new session, new files
 data_vectorization_chunk_size: 512 # chunk size
 data_vectorization_overlap_size: 128 # overlap between chunks size
 data_vectorization_nb_chunks: 2 # number of chunks to use
@@ -165,8 +165,8 @@ internet_vectorization_chunk_size: 512 # chunk size
 internet_vectorization_overlap_size: 128 # overlap between chunks size
 internet_vectorization_nb_chunks: 2 # number of chunks to use
 internet_nb_search_pages: 3 # number of pages to select
-internet_quick_search: False # If active the search engine will not load and read the webpages
-internet_activate_search_decision: False # If active the ai decides by itself if it needs to do search
+internet_quick_search: false # If active the search engine will not load and read the webpages
+internet_activate_search_decision: false # If active the ai decides by itself if it needs to do search
 # Helpers
 pdf_latex_path: null
 
@@ -174,7 +174,7 @@ pdf_latex_path: null
 positive_boost: null
 negative_boost: null
 force_output_language_to_be: null
-fun_mode: False
+fun_mode: false
 
 
 # webui configurations

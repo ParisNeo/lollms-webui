@@ -212,11 +212,10 @@ async def open_file(file_path: FilePath):
             return {"status":False,"error":"User refused the opeining file!"}
 
     forbid_remote_access(lollmsElfServer)
+    # Validate the 'path' parameter
+    path = sanitize_path(file_path.path, allow_absolute_path=True)
 
-    try:
-        # Validate the 'path' parameter
-        path = sanitize_path(file_path.path, allow_absolute_path=True)
-        
+    try:        
         if Path(path).exists():
             # Use subprocess.Popen to safely open the file
             ASCIIColors.yellow(f"Starting file : {path}")
