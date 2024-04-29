@@ -25,7 +25,7 @@ from typing import List
 import socketio
 import threading
 import os
-
+import yaml
 from lollms.databases.discussions_database import Discussion
 from lollms.security import forbid_remote_access
 from datetime import datetime
@@ -66,8 +66,20 @@ def add_events(sio:socketio):
                             except Exception as ex:
                                 pass
             if lollmsElfServer.config.force_output_language_to_be and lollmsElfServer.config.force_output_language_to_be.lower().strip() !="english":
-                welcome_message = lollmsElfServer.personality.fast_gen(f"!@>instruction: Translate the following text to {lollmsElfServer.config.force_output_language_to_be.lower()}:\n{lollmsElfServer.personality.welcome_message}\n!@>translation:")
-
+                language = lollmsElfServer.config.force_output_language_to_be.lower().strip().split()[0]
+                language_path = lollmsElfServer.lollms_paths.personal_configuration_path/"personalities"/lollmsElfServer.personality.name/f"languages_{language}.yaml"
+                if not language_path.exists():
+                    lollmsElfServer.ShowBlockingMessage(f"This is the first time this personality seaks {language}\nLollms is reconditionning the persona in that language.\nThis will be done just once. Next time, the personality will speak {language} out of the box")
+                    language_path.parent.mkdir(exist_ok=True, parents=True)
+                    conditionning = "!@>system: "+lollmsElfServer.personality.fast_gen(f"!@>instruction: Translate the following text to {language}:\n{lollmsElfServer.personality.personality_conditioning.replace('!@>system:','')}\n!@>translation:\n")
+                    welcome_message = lollmsElfServer.personality.fast_gen(f"!@>instruction: Translate the following text to {language}:\n{lollmsElfServer.personality.welcome_message}\n!@>translation:\n")
+                    with open(language_path,"w",encoding="utf-8", errors="ignore") as f:
+                        yaml.safe_dump({"conditionning":conditionning,"welcome_message":welcome_message}, f)
+                    lollmsElfServer.HideBlockingMessage()
+                else:
+                    with open(language_path,"r",encoding="utf-8", errors="ignore") as f:
+                        language_pack = yaml.safe_load(f)
+                        welcome_message = language_pack["welcome_message"]
             else:
                 welcome_message = lollmsElfServer.personality.welcome_message
 

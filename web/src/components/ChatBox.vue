@@ -742,7 +742,7 @@ export default {
             })
         },
         clear_files(){
-            axios.get('/clear_personality_files_list').then(res=>{
+            axios.post('/clear_personality_files_list', {"client_id":this.$store.state.client_id}).then(res=>{
                 console.log(res)
                 if(res.data.state){
                     this.$store.state.toast.showToast("File removed successfully",4,true);
@@ -927,7 +927,7 @@ export default {
         takePicture(){
             socket.emit('take_picture')
             socket.on('picture_taken',()=>{
-                axios.get('/get_current_personality_files_list').then(res=>{
+                axios.post('/get_current_personality_files_list', {"client_id":this.$store.state.client_id}).then(res=>{
                     this.filesList = res.data.files;
                     this.isFileSentList= res.data.files.map(file => {
                         return true;
