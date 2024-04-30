@@ -612,6 +612,8 @@ export default {
                     await this.$store.dispatch('refreshModels');
                     await this.$store.dispatch('refreshMountedPersonalities');
                     await this.$store.dispatch('refreshConfig');    
+                    await this.$store.dispatch('fetchLanguages');
+                    await this.$store.dispatch('fetchLanguage');
                     console.log('pers is mounted', res)
 
                     if (res && res.status && res.active_personality_id > -1) {
