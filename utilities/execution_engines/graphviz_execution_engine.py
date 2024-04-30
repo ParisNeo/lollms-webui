@@ -117,6 +117,7 @@ def execute_graphviz(code, client:Client, message_id, build_file=False):
         with open(tmp_file,"w",encoding="utf8") as f:
             f.write(build_graphviz_output(code)["output"])
         link = f"{host}:{lollmsElfServer.config.port}/{discussion_path_2_url(tmp_file)}"
+        execution_time = time.time() - start_time
         output_json = {"output": f'<b>Page built successfully</b><br><a href="{link}" target="_blank">Press here to view the page</a>', "execution_time": execution_time}
         return output_json
     else:
