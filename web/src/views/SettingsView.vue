@@ -841,15 +841,15 @@
                                         </tr>   
                                         <tr>
                                         <td style="min-width: 200px;">
-                                            <label for="force_output_language_to_be" class="text-sm font-bold" style="margin-right: 1rem;">Force AI to answer in this language:</label>
+                                            <label for="current_language" class="text-sm font-bold" style="margin-right: 1rem;">Force AI to answer in this language:</label>
                                         </td>
                                         <td>
                                             <div class="flex flex-row">
                                             <input
                                             type="text"
-                                            id="force_output_language_to_be"
+                                            id="current_language"
                                             required
-                                            v-model="configFile.force_output_language_to_be"
+                                            v-model="configFile.current_language"
                                             @change="settingsChanged=true"
                                             class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                             >

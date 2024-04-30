@@ -97,7 +97,26 @@
                     @click="showNews()">
                     <img :src="static_info">
                 </div>
-                
+                <div class="language-selector relative" style="position: relative;"> 
+                    <button @click="toggleLanguageMenu" class="bg-transparent text-black dark:text-white py-1 px-1 rounded font-bold uppercase transition-colors duration-300 hover:bg-blue-500">
+                        {{ $store.state.language.slice(0, 2) }}
+                    </button>
+                    <div v-if="isLanguageMenuVisible" class="container language-menu absolute left-0 mt-1 bg-white rounded shadow-lg z-10" style="position: absolute; top: 100%; width: 200px;"> <!-- Adjusted width for a larger menu -->
+                        <ul style="list-style-type: none;"> <!-- Removed bullets -->
+                            <li v-for="language in languages" :key="language" @click="selectLanguage(language)" class="cursor-pointer hover:bg-blue-500 hover:text-white py-2 px-4 block whitespace-no-wrap">
+                                {{ language }}
+                            </li>
+                            <li  class="cursor-pointer hover:text-white py-0 px-0 block whitespace-no-wrap">
+                                <input type="text" v-model="customLanguage" @keyup.enter.prevent="addCustomLanguage" placeholder="Enter language..." class="bg-transparent border border-gray-300 rounded py-0 px-0 mx-0 my-1 w-full">
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+
+
+
+
 
             </div>
 
@@ -144,12 +163,25 @@ import static_info from "../assets/static_info.svg"
 import animated_info from "../assets/animated_info.svg"
 import { useRouter } from 'vue-router'
 
+import axios from 'axios';
 </script>
 <script>
 
 export default {
     name: 'TopBar',
     computed:{
+        languages: {
+            get(){
+                console.log("searching languages", this.$store.state.languages)
+                return this.$store.state.languages
+            }
+        },
+        language: {
+            get(){
+                console.log("searching language", this.$store.state.language)
+                return this.$store.state.language
+            }
+        },
         currentPersonConfig (){
             try{
                 return this.$store.state.currentPersonConfig
@@ -220,6 +252,9 @@ export default {
     },
     data() {
         return {
+            customLanguage: '', // Holds the value of the custom language input
+            selectedLanguage: '',
+            isLanguageMenuVisible: false,
             static_info: static_info,
             animated_info: animated_info,
              
@@ -239,7 +274,7 @@ export default {
             systemTheme: window.matchMedia("prefers-color-scheme: dark").matches,
         }
     },
-    mounted() {
+    async mounted() {
         this.$store.state.toast = this.$refs.toast
         this.$store.state.news = this.$refs.news
         this.$store.state.messageBox = this.$refs.messageBox
@@ -267,6 +302,21 @@ export default {
         this.systemTheme = window.matchMedia("prefers-color-scheme: dark").matches;
     },
     methods: {
+        addCustomLanguage() {
+            if (this.customLanguage.trim() !== '') {
+            this.selectLanguage(this.customLanguage);
+            this.customLanguage = ''; // Reset the input field after adding
+            }
+        },
+        async selectLanguage(language) {
+            await this.$store.dispatch('changeLanguage', language);
+            this.toggleLanguageMenu(); // Fermer le menu après le changement de langue
+            this.language = language
+        },
+        toggleLanguageMenu() {
+            console.log("Toggling language ",this.isLanguageMenuVisible)
+            this.isLanguageMenuVisible = !this.isLanguageMenuVisible;
+        },        
         restartProgram(event) {
             event.preventDefault();
             this.$store.state.api_get_req('restart_program')
@@ -374,4 +424,6 @@ export default {
 .dot-red {
   background-color: red;
 }
+
+
 </style>

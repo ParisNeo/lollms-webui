@@ -24,6 +24,8 @@ function copyObject(obj) {
 export const store = createStore({
     state () {
       return {
+        language: "english",
+        languages: [],
         currentTheme: '',
         personality_editor:null,
         showPersonalityEditor: false,
@@ -37,7 +39,11 @@ export const store = createStore({
           ai_conditionning: '',
           ai_disclaimer: '',
           ai_icon: null,
-        },     
+        },
+        posts_headers : {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },   
         client_id:"",    
         // count: 0,
         yesNoDialog:null,
@@ -75,7 +81,15 @@ export const store = createStore({
         databases:[],
       }
     },
-    mutations: {      
+    mutations: {    
+      setLanguages(state, languages) {
+        state.languages = languages;
+      },
+      setLanguage(state, language) {
+        state.language = language;
+      },
+      
+        
       setIsReady(state, ready) {
         state.ready = ready;
       },
@@ -147,6 +161,12 @@ export const store = createStore({
       }      
     },
     getters: {
+      getLanguages(state) {
+        return state.languages;
+      },      
+      getLanguage(state) {
+        return state.language;
+      },      
       getIsConnected(state) {
         return state.isConnected
       },
@@ -255,7 +275,58 @@ export const store = createStore({
         commit('setDatabases', databases);
       },
 
+      async fetchLanguages({ commit }) {
+        console.log("get_personality_languages_list", this.state.client_id)
+        const response = await axios.post(
+                    '/get_personality_languages_list',
+                    {client_id: this.state.client_id}
+                  );
+            
+        console.log("response", response)
+        const languages = response.data;
+        console.log("languages", languages)
+        commit('setLanguages', languages);
+      },
+      async fetchLanguage({ commit }) {
+        console.log("get_personality_language", this.state.client_id)
+        const response = await axios.post(
+                    '/get_personality_language',
+                    {client_id: this.state.client_id}
+                  );
+            
+        console.log("response", response)
+        const language = response.data;
+        console.log("language", language)
+        commit('setLanguage', language);
+      },
+      async changeLanguage({ commit }, new_language) {
+        console.log("Changing language to ", new_language)
+          let response = await axios.post('/set_personality_language', {
+            client_id: this.state.client_id,
+              language: new_language,
+          })
+          console.log("get_personality_languages_list", this.state.client_id)
+          response = await axios.post(
+                      '/get_personality_languages_list',
+                      {client_id: this.state.client_id}
+                    );
+              
+          console.log("response", response)
+          const languages = response.data;
+          console.log("languages", languages)
+          commit('setLanguages', languages);          
+          response = await axios.post(
+                      '/get_personality_language',
+                      {client_id: this.state.client_id}
+                    );
+              
+          console.log("response", response)
+          const language = response.data;
+          console.log("language", language)
+          commit('setLanguage', language);
 
+          console.log('Language changed successfully:', response.data.message);
+      },
       async refreshPersonalitiesZoo({ commit }) {
           let personalities = []
           const catdictionary = await api_get_req("get_all_personalities")
@@ -644,7 +715,14 @@ app.mixin({
         console.log("Error cought:", ex)
       }
     
-
+      try{
+        await this.$store.dispatch('fetchLanguages');
+        await this.$store.dispatch('fetchLanguage');
+      }
+      catch (ex){
+        console.log("Error cought:", ex)
+      }
+    
       this.$store.state.ready = true;
     }
 

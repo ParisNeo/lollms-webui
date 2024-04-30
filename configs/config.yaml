@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 84
+version: 85
 binding_name: null
 model_name: null
 model_variant: null
@@ -173,7 +173,7 @@ pdf_latex_path: null
 # boosting information
 positive_boost: null
 negative_boost: null
-force_output_language_to_be: null
+current_language: null
 fun_mode: false
 
 

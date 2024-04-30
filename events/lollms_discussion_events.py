@@ -65,8 +65,8 @@ def add_events(sio:socketio):
                                 pygame.mixer.music.play()
                             except Exception as ex:
                                 pass
-            if lollmsElfServer.config.force_output_language_to_be and lollmsElfServer.config.force_output_language_to_be.lower().strip() !="english":
-                language = lollmsElfServer.config.force_output_language_to_be.lower().strip().split()[0]
+            if lollmsElfServer.config.current_language and lollmsElfServer.config.current_language.lower().strip() !="english":
+                language = lollmsElfServer.config.current_language.lower().strip().split()[0]
                 language_path = lollmsElfServer.lollms_paths.personal_configuration_path/"personalities"/lollmsElfServer.personality.name/f"languages_{language}.yaml"
                 if not language_path.exists():
                     lollmsElfServer.ShowBlockingMessage(f"This is the first time this personality seaks {language}\nLollms is reconditionning the persona in that language.\nThis will be done just once. Next time, the personality will speak {language} out of the box")
