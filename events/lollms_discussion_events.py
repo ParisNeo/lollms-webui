@@ -65,14 +65,16 @@ def add_events(sio:socketio):
                                 pygame.mixer.music.play()
                             except Exception as ex:
                                 pass
-            if lollmsElfServer.config.current_language and lollmsElfServer.config.current_language.lower().strip() !="english":
-                language = lollmsElfServer.config.current_language.lower().strip().split()[0]
-                language_path = lollmsElfServer.lollms_paths.personal_configuration_path/"personalities"/lollmsElfServer.personality.name/f"languages_{language}.yaml"
+            default_language = lollmsElfServer.personality.language.lower().strip().split()[0]
+            current_language = lollmsElfServer.config.current_language.lower().strip().split()[0]
+
+            if lollmsElfServer.config.current_language and  current_language!= default_language:
+                language_path = lollmsElfServer.lollms_paths.personal_configuration_path/"personalities"/lollmsElfServer.personality.name/f"languages_{current_language}.yaml"
                 if not language_path.exists():
-                    lollmsElfServer.ShowBlockingMessage(f"This is the first time this personality seaks {language}\nLollms is reconditionning the persona in that language.\nThis will be done just once. Next time, the personality will speak {language} out of the box")
+                    lollmsElfServer.ShowBlockingMessage(f"This is the first time this personality seaks {current_language}\nLollms is reconditionning the persona in that language.\nThis will be done just once. Next time, the personality will speak {current_language} out of the box")
                     language_path.parent.mkdir(exist_ok=True, parents=True)
-                    conditionning = "!@>system: "+lollmsElfServer.personality.fast_gen(f"!@>instruction: Translate the following text to {language}:\n{lollmsElfServer.personality.personality_conditioning.replace('!@>system:','')}\n!@>translation:\n")
-                    welcome_message = lollmsElfServer.personality.fast_gen(f"!@>instruction: Translate the following text to {language}:\n{lollmsElfServer.personality.welcome_message}\n!@>translation:\n")
+                    conditionning = "!@>system: "+lollmsElfServer.personality.fast_gen(f"!@>instruction: Translate the following text to {current_language}:\n{lollmsElfServer.personality.personality_conditioning.replace('!@>system:','')}\n!@>translation:\n")
+                    welcome_message = lollmsElfServer.personality.fast_gen(f"!@>instruction: Translate the following text to {current_language}:\n{lollmsElfServer.personality.welcome_message}\n!@>translation:\n")
                     with open(language_path,"w",encoding="utf-8", errors="ignore") as f:
                         yaml.safe_dump({"conditionning":conditionning,"welcome_message":welcome_message}, f)
                     lollmsElfServer.HideBlockingMessage()
