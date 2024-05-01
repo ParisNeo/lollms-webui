@@ -52,6 +52,7 @@ export const store = createStore({
         news:null,
         messageBox:null,
         api_get_req:null,
+        api_post_req:null,
         startSpeechRecognition:null,
         ready:false,
         loading_infos: "",
@@ -635,6 +636,22 @@ async function api_get_req(endpoint) {
   }
 }
 
+async function api_post_req(endpoint, client_id) {
+  try {
+      const res = await axios.post("/" + endpoint, {client_id: client_id});
+
+      if (res) {
+
+          return res.data
+
+      }
+  } catch (error) {
+      console.log(error.message, 'api_post_req - settings')
+      return
+  }
+
+}
+
 async function refreshHardwareUsage(store) {
   await store.dispatch('refreshDiskUsage');
   await store.dispatch('refreshRamUsage');
@@ -646,6 +663,8 @@ app.mixin({
   async created() {
     if (!actionsExecuted) {
       this.$store.state.api_get_req = api_get_req
+      this.$store.state.api_post_req = api_post_req
+
       actionsExecuted = true;
       console.log("Calling")
       

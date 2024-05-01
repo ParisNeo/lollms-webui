@@ -331,7 +331,7 @@ export default {
         },        
         restartProgram(event) {
             event.preventDefault();
-            this.$store.state.api_get_req('restart_program')
+            this.$store.state.api_post_req('restart_program', this.$store.state.client_id)
             this.rebooting_audio.play()
             this.$store.state.toast.showToast("Rebooting the app. Please wait...", 410, false)
             //this.$store.state.toast.showToast("Rebooting the app. Please wait...", 50, true);

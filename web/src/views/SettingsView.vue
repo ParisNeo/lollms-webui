@@ -41,14 +41,14 @@
                     <button
                     title="Restart program"
                     class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                    @click="api_get_req('restart_program').then((res)=>{if(res.status){this.$store.state.toast.showToast('Success!', 4, true)}else{this.$store.state.toast.showToast(['failed!'], 4, false)}})"
+                    @click="api_post_req('restart_program').then((res)=>{if(res.status){this.$store.state.toast.showToast('Success!', 4, true)}else{this.$store.state.toast.showToast(['failed!'], 4, false)}})"
                     >
                     <i data-feather="refresh-ccw"></i>
                     </button>
                     <button
                     title="Upgrade program "
                     class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                    @click="api_get_req('update_software').then((res)=>{if(res.status){this.$store.state.toast.showToast('Success!', 4, true)}else{this.$store.state.toast.showToast('Success!', 4, true)}})"
+                    @click="api_post_req('update_software').then((res)=>{if(res.status){this.$store.state.toast.showToast('Success!', 4, true)}else{this.$store.state.toast.showToast('Success!', 4, true)}})"
                     >
                     <i data-feather="arrow-up-circle"></i>
                     
@@ -3429,7 +3429,7 @@ export default {
         },
         async update_software() {
             console.log("Posting")
-            const res =  await this.api_get_req('update_software')
+            const res =  await this.api_post_req('update_software')
             console.log("Posting done")
             if(res.status){
                 this.$store.state.toast.showToast("Success!", 4, true)
@@ -3441,7 +3441,7 @@ export default {
         },
         async restart_software() {
             console.log("Posting")
-            const res =  await this.api_get_req('restart_program')
+            const res =  await this.api_post_req('restart_program')
             console.log("Posting done")
             if(res.status){
                 this.$store.state.toast.showToast("Success!", 4, true)
@@ -4597,6 +4597,22 @@ export default {
                 }
             } catch (error) {
                 console.log(error.message, 'api_get_req - settings')
+                return
+            }
+
+
+        },
+        async api_post_req(endpoint) {
+            try {
+                const res = await axios.post("/" + endpoint, {client_id: this.$store.state.client_id});
+
+                if (res) {
+
+                    return res.data
+
+                }
+            } catch (error) {
+                console.log(error.message, 'api_post_req - settings')
                 return
             }
 

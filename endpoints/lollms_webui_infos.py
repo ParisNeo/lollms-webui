@@ -10,11 +10,12 @@ description:
 """
 
 from fastapi import APIRouter, Request
+from pydantic import BaseModel
 import pkg_resources
 from lollms_webui import LOLLMSWebUI
 from ascii_colors import ASCIIColors
-from lollms.utilities import load_config, run_async
-from lollms.security import sanitize_path, forbid_remote_access
+from lollms.utilities import load_config, run_async, show_yes_no_dialog
+from lollms.security import sanitize_path, forbid_remote_access, check_access
 from pathlib import Path
 from typing import List
 import sys
@@ -28,7 +29,7 @@ router = APIRouter()
 
 
 @router.get("/get_versionID")
-async def get_lollms_webui_version():
+async def get_lollms_version():
    """Get the version of the LoLLMs Web UI application."""
    # Return the version string
    return {"id":4}
@@ -39,9 +40,12 @@ async def get_lollms_webui_version():
    # Return the version string
    return lollmsElfServer.version
 
+class Identification(BaseModel):
+    client_id:str
 
-@router.get("/restart_program")
-async def restart_program():
+@router.post("/restart_program")
+async def restart_program(data:Identification):
+    check_access(lollmsElfServer, data.client_id)
     """Restart the program."""
     forbid_remote_access(lollmsElfServer)
     if lollmsElfServer.config.headless_server_mode:
@@ -49,6 +53,10 @@ async def restart_program():
 
     if lollmsElfServer.config.host!="localhost" and lollmsElfServer.config.host!="127.0.0.1":
         return {"status":False,"error":"Restarting app is blocked when the server is exposed outside for very obvious reasons!"}
+
+    if lollmsElfServer.config.turn_on_setting_update_validation:
+        if not show_yes_no_dialog("Validation","Reboot requested from client\nDo you validate rebooting the app?"):
+            return {"status":False,"error":"User refused the execution!"}
 
     lollmsElfServer.ShowBlockingMessage("Restarting program.\nPlease stand by...")
     # Stop the socketIO server
@@ -68,8 +76,9 @@ async def restart_program():
     ASCIIColors.info("")
     lollmsElfServer.run_restart_script(lollmsElfServer.args)
     
-@router.get("/update_software")
-async def update_software():
+@router.post("/update_software")
+async def update_software(data:Identification):
+    check_access(lollmsElfServer, data.client_id)
     """Update the software."""
     forbid_remote_access(lollmsElfServer)
     if lollmsElfServer.config.headless_server_mode:
@@ -77,7 +86,11 @@ async def update_software():
 
     if lollmsElfServer.config.host!="localhost" and lollmsElfServer.config.host!="127.0.0.1":
         return {"status":False,"error":"Updating app is blocked when the server is exposed outside for very obvious reasons!"}
-
+    
+    if lollmsElfServer.config.turn_on_setting_update_validation:
+        if not show_yes_no_dialog("Validation","App upgrade requested from client\nDo you validate rebooting the app?"):
+            return {"status":False,"error":"User refused the execution!"}
+        
     # Display an informative message
     ASCIIColors.info("")
     ASCIIColors.info("")
