@@ -1,21 +1,21 @@
 <template>
     <div v-if="$store.state.ready" class="container z-60 flex flex-col sm:flex-row items-center">
-      <div class="w-full  text-center">
-        <div class="w-full items-center justify-center  flex flex-row font-medium nav-ul text-center">
+      <div class="w-full text-center">
+        <div class="m-0 flex border-b w-full items-center justify-center  flex flex-row font-medium nav-ul text-center">
             <RouterLink 
               :to="{ name: 'discussions' }" 
-              class="link-item dark:link-item-dark bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone mr-2" 
+              class="inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold" 
               :class="{ 
-                'text-green-600 hover:text-green-500 dark:text-green-100 font-bold bg-bg-secondary': isRouteActive('discussions'),
+                'text-green-600 hover:text-green-500 dark:text-green-100 font-bold bg-bg-secondary shadow-no-bottom': isRouteActive('discussions'),
                 'bounce-in': isRouteActive('discussions'),
                 }">
               Discussions
             </RouterLink>
             <RouterLink 
               :to="{ name: 'playground' }" 
-              class="link-item dark:link-item-dark bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone mr-2"
+              class="inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold"
               :class="{ 
-                'text-green-600 hover:text-green-500 dark:text-green-100 font-bold bg-bg-light-panel': isRouteActive('playground'),
+                'text-green-600 hover:text-green-500 dark:text-green-100 font-bold bg-bg-secondary shadow-no-bottom': isRouteActive('playground'),
                 'bounce-in': isRouteActive('playground'),
               }"
               >
@@ -24,9 +24,9 @@
             <RouterLink 
               v-if="$store.state.config.enable_comfyui_service" 
               :to="{ name: 'ComfyUI' }" 
-              class="link-item dark:link-item-dark bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone mr-2"
+              class="inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold"
               :class="{ 
-                'text-green-600 hover:text-green-500 dark:text-green-100 font-bold bg-bg-light-panel': isRouteActive('ComfyUI'),
+                'text-green-600 hover:text-green-500 dark:text-green-100 font-bold bg-bg-secondary shadow-no-bottom': isRouteActive('ComfyUI'),
                 'bounce-in': isRouteActive('ComfyUI'),
               }"
               >
@@ -35,9 +35,9 @@
             <RouterLink 
               v-if="$store.state.config.enable_voice_service" 
               :to="{ name: 'interactive' }" 
-              class="link-item dark:link-item-dark bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone mr-2"
+              class="inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold"
               :class="{ 
-                'text-green-600 hover:text-green-500 dark:text-green-100 font-bold bg-bg-light-panel': isRouteActive('interactive'),
+                'text-green-600 hover:text-green-500 dark:text-green-100 font-bold bg-bg-secondary shadow-no-bottom': isRouteActive('interactive'),
                 'bounce-in': isRouteActive('interactive'),
               }"
               >
@@ -60,9 +60,9 @@
             -->
             <RouterLink 
               :to="{ name: 'settings' }" 
-              class="link-item dark:link-item-dark bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone mr-2"
+              class="inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold"
               :class="{ 
-                'text-green-600 hover:text-green-500 dark:text-green-100 font-bold bg-bg-light-panel': isRouteActive('settings'),
+                'text-green-600 hover:text-green-500 dark:text-green-100 font-bold bg-bg-secondary shadow-no-bottom': isRouteActive('settings'),
                 'bounce-in': isRouteActive('settings'),
               }"              
               >
@@ -70,9 +70,9 @@
             </RouterLink>
             <RouterLink 
               :to="{ name: 'help' }" 
-              class="link-item dark:link-item-dark bg-bg-light-tone dark:bg-bg-dark-tone hover:dark:bg-bg-light-tone mr-2"
+              class="inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold"
               :class="{ 
-                'text-green-600 hover:text-green-500 dark:text-green-100 font-bold bg-bg-light-panel': isRouteActive('help'),
+                'text-green-600 hover:text-green-500 dark:text-green-100 font-bold bg-bg-secondary shadow-no-bottom': isRouteActive('help'),
                 'bounce-in': isRouteActive('help'),
               }"
               >
@@ -209,6 +209,10 @@
     100% {
       transform: scale(1);
     }
-  }  
+  }
+  .shadow-no-bottom {
+    box-shadow: 0px -4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
 </style>
   

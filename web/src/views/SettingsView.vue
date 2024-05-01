@@ -1954,6 +1954,42 @@
                             </tr>                                        
                             <tr>
                             <td style="min-width: 200px;">
+                                <label for="xtts_use_deepspeed" class="text-sm font-bold" style="margin-right: 1rem;">Enable deepspeed:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                    <input
+                                        type="checkbox"
+                                        id="xtts_use_deepspeed"
+                                        required
+                                        v-model="configFile.xtts_use_deepspeed"
+                                        @change="settingsChanged=true"
+                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        :disabled="!enable_voice_service"
+                                    >
+                                </div>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="xtts_use_streaming_mode" class="text-sm font-bold" style="margin-right: 1rem;">Enable streaming mode:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                    <input
+                                        type="checkbox"
+                                        id="xtts_use_streaming_mode"
+                                        required
+                                        v-model="configFile.xtts_use_streaming_mode"
+                                        @change="settingsChanged=true"
+                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        :disabled="!enable_voice_service"
+                                    >
+                                </div>
+                            </td>
+                            </tr>                                                
+                            <tr>
+                            <td style="min-width: 200px;">
                                 <label for="auto_read" class="text-sm font-bold" style="margin-right: 1rem;">Enable auto read:</label>
                             </td>
                             <td>

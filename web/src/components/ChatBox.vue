@@ -221,6 +221,7 @@
                                 </div>        
                                 <div class="relative grow">
                                     <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"
+                                        @paste="handlePaste"
                                         class="inline-block  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400  dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                         placeholder="Send message..." @keydown.enter.exact="submitOnEnter($event)">
                                     </textarea>
@@ -456,7 +457,26 @@ export default {
             return null;
         }
     },
-    methods: {   
+    methods: { 
+        handlePaste(event) {
+            const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+            let filesToUpload = [];
+            for (let item of items) {
+                if (item.type.indexOf("image") !== -1) {
+                    const blob = item.getAsFile();
+                    // Instead of reading the file and setting it as an image URL,
+                    // call the addFiles method and pass the file
+                    this.addFiles([blob]); // Assuming addFiles accepts an array of files
+                }
+                else if (item.kind === 'file') {
+                    const file = item.getAsFile();
+                    filesToUpload.push(file);
+                }
+            }
+            if (filesToUpload.length > 0) {
+                this.addFiles(filesToUpload);
+            }            
+        },
         toggleSwitch() {
             this.$store.state.config.activate_internet_search = !this.$store.state.config.activate_internet_search;
             this.isLoading = true;

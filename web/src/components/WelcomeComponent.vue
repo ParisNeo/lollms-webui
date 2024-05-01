@@ -1,6 +1,6 @@
 <template>
     <!-- DEFAULT FIRST PAGE LOAD VIEW -->
-    <div class="flex flex-col text-center">
+    <div class="flex flex-col text-center w-full h-full">
         <div class="flex flex-col text-center items-center">
             
             <div class="flex items-center gap-3 text-5xl drop-shadow-md align-middle pt-24 ">

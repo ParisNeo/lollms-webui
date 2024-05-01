@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 85
+version: 87
 binding_name: null
 model_name: null
 model_variant: null
@@ -13,6 +13,7 @@ turn_on_code_execution: true
 turn_on_code_validation: true
 turn_on_open_file_validation: true
 turn_on_send_file_validation: true
+turn_on_language_validation: true
 
 force_accept_remote_access: false
 
@@ -23,6 +24,8 @@ allowed_origins: []
 # Host information
 host: localhost
 port: 9600
+
+app_custom_logo: ""
 
 # Genreration parameters 
 discussion_prompt_separator: "!@>"
@@ -80,6 +83,8 @@ copy_to_clipboard_add_all_details: false
 # Voice service
 enable_voice_service: false
 xtts_base_url: http://localhost:8020
+xtts_use_deepspeed: false
+xtts_use_streaming_mode: true
 auto_read: false
 current_voice: null
 current_language: en

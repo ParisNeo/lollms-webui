@@ -101,17 +101,23 @@
                     <button @click="toggleLanguageMenu" class="bg-transparent text-black dark:text-white py-1 px-1 rounded font-bold uppercase transition-colors duration-300 hover:bg-blue-500">
                         {{ $store.state.language.slice(0, 2) }}
                     </button>
-                    <div v-if="isLanguageMenuVisible" class="container language-menu absolute left-0 mt-1 bg-white rounded shadow-lg z-10" style="position: absolute; top: 100%; width: 200px;"> <!-- Adjusted width for a larger menu -->
-                        <ul style="list-style-type: none;"> <!-- Removed bullets -->
-                            <li v-for="language in languages" :key="language" @click="selectLanguage(language)" class="cursor-pointer hover:bg-blue-500 hover:text-white py-2 px-4 block whitespace-no-wrap">
-                                {{ language }}
+                    <div v-if="isLanguageMenuVisible" class="container language-menu absolute left-0 mt-1 bg-white dark:bg-bg-dark-tone rounded shadow-lg z-10 overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" style="position: absolute; top: 100%; width: 200px; max-height: 300px; overflow-y: auto;">
+                        <ul style="list-style-type: none; padding-left: 0; margin-left: 0;"> <!-- Set padding-left and margin-left to 0 -->
+                            <li v-for="language in languages" :key="language" class="relative flex items-center" style="padding-left: 0; margin-left: 0;"> <!-- Set padding-left and margin-left to 0 -->
+                                <button @click="deleteLanguage(language)" class="mr-2 text-red-500 hover:text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 rounded-full">✕</button>
+                                <div @click="selectLanguage(language)" 
+                                    :class="{'cursor-pointer hover:bg-blue-500 hover:text-white py-2 px-4 block whitespace-no-wrap': true, 'bg-blue-500 text-white': language === $store.state.language, 'flex-grow': true}" >
+                                    {{ language }}
+                                </div>
                             </li>
-                            <li  class="cursor-pointer hover:text-white py-0 px-0 block whitespace-no-wrap">
+                            <li class="cursor-pointer hover:text-white py-0 px-0 block whitespace-no-wrap">
                                 <input type="text" v-model="customLanguage" @keyup.enter.prevent="addCustomLanguage" placeholder="Enter language..." class="bg-transparent border border-gray-300 rounded py-0 px-0 mx-0 my-1 w-full">
                             </li>
                         </ul>
                     </div>
                 </div>
+
+
 
 
 
@@ -313,6 +319,12 @@ export default {
             this.toggleLanguageMenu(); // Fermer le menu après le changement de langue
             this.language = language
         },
+        async deleteLanguage(language) {
+            await this.$store.dispatch('deleteLanguage', language);
+            this.toggleLanguageMenu(); // Fermer le menu après le changement de langue
+            this.language = language
+        },
+        
         toggleLanguageMenu() {
             console.log("Toggling language ",this.isLanguageMenuVisible)
             this.isLanguageMenuVisible = !this.isLanguageMenuVisible;

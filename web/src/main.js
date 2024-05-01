@@ -299,9 +299,38 @@ export const store = createStore({
         console.log("language", language)
         commit('setLanguage', language);
       },
+      
       async changeLanguage({ commit }, new_language) {
         console.log("Changing language to ", new_language)
           let response = await axios.post('/set_personality_language', {
+            client_id: this.state.client_id,
+              language: new_language,
+          })
+          console.log("get_personality_languages_list", this.state.client_id)
+          response = await axios.post(
+                      '/get_personality_languages_list',
+                      {client_id: this.state.client_id}
+                    );
+              
+          console.log("response", response)
+          const languages = response.data;
+          console.log("languages", languages)
+          commit('setLanguages', languages);          
+          response = await axios.post(
+                      '/get_personality_language',
+                      {client_id: this.state.client_id}
+                    );
+              
+          console.log("response", response)
+          const language = response.data;
+          console.log("language", language)
+          commit('setLanguage', language);
+
+          console.log('Language changed successfully:', response.data.message);
+      },
+      async deleteLanguage({ commit }, new_language) {
+        console.log("Deleting ", new_language)
+          let response = await axios.post('/del_personality_language', {
             client_id: this.state.client_id,
               language: new_language,
           })
