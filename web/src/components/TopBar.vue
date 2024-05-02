@@ -5,7 +5,7 @@
             <!-- LOGO -->
             <RouterLink :to="{ name: 'discussions' }">
                 <div class="flex items-center gap-3 flex-1">
-                    <img class="w-12 hover:scale-95 duration-150" title="LoLLMS WebUI" :src="$store.state.config.app_custom_logo || storeLogo" alt="Logo">
+                    <img class="w-12 hover:scale-95 duration-150" title="LoLLMS WebUI" :src="$store.state.config.app_custom_logo!=''?'/user_infos/'+$store.state.config.app_custom_logo: storeLogo" alt="Logo">
                     <div class="flex flex-col">
                     <p class="text-2xl font-bold text-2xl drop-shadow-md align-middle">LoLLMS</p>
                     <p class="text-gray-400 ">One tool to rule them all</p>
@@ -177,6 +177,9 @@ import axios from 'axios';
 export default {
     name: 'TopBar',
     computed:{
+        storeLogo(){
+            return '/user_infos/'+this.$store.state.config.app_custom_logo || storeLogo
+        },        
         languages: {
             get(){
                 console.log("searching languages", this.$store.state.languages)
@@ -264,7 +267,6 @@ export default {
             isLanguageMenuVisible: false,
             static_info: static_info,
             animated_info: animated_info,
-            storeLogo:storeLogo, 
             is_first_connection:true,
             discord:discord,
             FastAPI:FastAPI,
@@ -308,6 +310,7 @@ export default {
         this.userTheme = localStorage.getItem("theme");
         this.systemTheme = window.matchMedia("prefers-color-scheme: dark").matches;
     },
+    
     methods: {
         addCustomLanguage() {
             if (this.customLanguage.trim() !== '') {

@@ -227,12 +227,19 @@
                                         <td style="min-width: 200px;">
                                             <label for="app_custom_logo" class="text-sm font-bold" style="margin-right: 1rem;">Application logo:</label>
                                         </td>
-                                        <td style="width: 100%;">
+                                        <td>
                                             <label for="avatar-upload">
                                                 <img :src="configFile.app_custom_logo!=''? '/user_infos/'+configFile.app_custom_logo:storeLogo" class="w-50 h-50 rounded-full" style="max-width: 50px; max-height: 50px; cursor: pointer;">
                                             </label>
                                             <input type="file" id="avatar-upload" style="display: none" @change="uploadLogo">
                                         </td>
+                                        <td style="width: 10%;">
+                                            <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Discard title changes"
+                                                type="button" @click.stop="resetLogo()">
+                                                <i data-feather="x"></i>
+                                            </button>
+                                        </td>
+                                        
                                         </tr>
 
                                         <tr>
@@ -487,12 +494,19 @@
                                         <td style="min-width: 200px;">
                                             <label for="user_name" class="text-sm font-bold" style="margin-right: 1rem;">User avatar:</label>
                                         </td>
-                                        <td style="width: 100%;">
+                                        <td>
                                             <label for="avatar-upload">
-                                                <img :src="'/user_infos/'+configFile.user_avatar || storeLogo" class="w-50 h-50 rounded-full" style="max-width: 50px; max-height: 50px; cursor: pointer;">
+                                                <img :src="configFile.user_avatar!=''?'/user_infos/'+configFile.user_avatar: storeLogo" class="w-50 h-50 rounded-full" style="max-width: 50px; max-height: 50px; cursor: pointer;">
                                             </label>
                                             <input type="file" id="avatar-upload" style="display: none" @change="uploadAvatar">
                                         </td>
+                                        <td style="width: 10%;">
+                                            <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Discard title changes"
+                                                type="button" @click.stop="resetAvatar()">
+                                                <i data-feather="x"></i>
+                                            </button>
+                                        </td>
+
                                         </tr>
                                         <!-- Row 4 -->
                                         <tr>
@@ -3416,6 +3430,14 @@ export default {
 
             socket.emit('install_model', { path: path, name: model_object.model.name, variant_name:this.selected_variant.name, type:model_object.model.type });
             console.log("Started installation, please wait");               
+        },
+        resetLogo(){
+            this.configFile.app_custom_logo='';
+            this.settingsChanged=true
+        },
+        resetAvatar(){
+            this.configFile.user_avatar='';
+            this.settingsChanged=true
         },
         uploadLogo(event){
             const file = event.target.files[0]; // Get the selected file
