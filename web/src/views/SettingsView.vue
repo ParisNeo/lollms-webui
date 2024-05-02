@@ -492,13 +492,13 @@
                                         <!-- Row 3 -->
                                         <tr>
                                         <td style="min-width: 200px;">
-                                            <label for="user_name" class="text-sm font-bold" style="margin-right: 1rem;">User avatar:</label>
+                                            <label for="user_avatar" class="text-sm font-bold" style="margin-right: 1rem;">User avatar:</label>
                                         </td>
                                         <td>
                                             <label for="avatar-upload">
                                                 <img :src="configFile.user_avatar!=''?'/user_infos/'+configFile.user_avatar: storeLogo" class="w-50 h-50 rounded-full" style="max-width: 50px; max-height: 50px; cursor: pointer;">
                                             </label>
-                                            <input type="file" id="avatar-upload" style="display: none" @change="uploadAvatar">
+                                            <input type="file" id="avatar-upload" style="display: none" @change="uploadAvatar()">
                                         </td>
                                         <td style="width: 10%;">
                                             <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Discard title changes"
@@ -3478,7 +3478,7 @@ export default {
                     this.update_setting("user_avatar", fileName, ()=>{}).then(()=>{})
                 })
                 .catch(error => {
-                console.error('Error uploading avatar:', error);
+                    console.error('Error uploading avatar:', error);
                 });            
         },
         async update_software() {
