@@ -5,7 +5,7 @@
             <!-- LOGO -->
             <RouterLink :to="{ name: 'discussions' }">
                 <div class="flex items-center gap-3 flex-1">
-                    <img class="w-12 hover:scale-95 duration-150" title="LoLLMS WebUI" :src="$store.state.config.app_custom_logo!=''?'/user_infos/'+$store.state.config.app_custom_logo: storeLogo" alt="Logo">
+                    <img class="w-12 hover:scale-95 duration-150" title="LoLLMS WebUI" :src="$store.state.config==null?storeLogo:$store.state.config.app_custom_logo!=''?'/user_infos/'+$store.state.config.app_custom_logo: storeLogo" alt="Logo">
                     <div class="flex flex-col">
                     <p class="text-2xl font-bold text-2xl drop-shadow-md align-middle">LoLLMS</p>
                     <p class="text-gray-400 ">One tool to rule them all</p>
@@ -178,6 +178,9 @@ export default {
     name: 'TopBar',
     computed:{
         storeLogo(){
+            if (this.$store.state.config){
+                return storeLogo
+            }
             return this.$store.state.config.app_custom_logo!=''?'/user_infos/'+this.$store.state.config.app_custom_logo:storeLogo
         },        
         languages: {

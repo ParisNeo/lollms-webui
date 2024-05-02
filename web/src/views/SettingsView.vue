@@ -3472,6 +3472,8 @@ export default {
                     const fileName = response.data.fileName;
                     console.log("response",response);
                     this.app_custom_logo = fileName; // Update the user_avatar value with the file name
+                    this.configFile.app_custom_logo=fileName;
+
                     this.update_setting("app_custom_logo", fileName, ()=>{}).then(()=>{})
                 })
                 .catch(error => {
@@ -3493,6 +3495,7 @@ export default {
                     const fileName = response.data.fileName;
                     console.log("response",response);
                     this.user_avatar = fileName; // Update the user_avatar value with the file name
+                    this.configFile.user_avatar=fileName;
                     this.update_setting("user_avatar", fileName, ()=>{}).then(()=>{})
                 })
                 .catch(error => {
