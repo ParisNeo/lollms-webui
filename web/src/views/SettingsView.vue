@@ -3465,7 +3465,7 @@ export default {
             // Make an API request to upload the avatar
             axios.post('/upload_avatar', formData)
                 .then(response => {
-                    console.log("Avatar uploaded successfully")
+                    console.log("Logo uploaded successfully")
                     
                     this.$store.state.toast.showToast("Avatar uploaded successfully!", 4, true)
                     // Assuming the server responds with the file name after successful upload
