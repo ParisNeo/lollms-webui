@@ -5446,7 +5446,7 @@ export default {
             },
         user_avatar:{
                 get() {
-                    return "/user_infos/"+this.$store.state.config.user_avatar;
+                    return this.$store.state.config.user_avatar!=''?"/user_infos/"+this.$store.state.config.user_avatar:storeLogo;
                 },
                 set(value) {
                     // You should not set the value directly here; use the updateSetting method instead

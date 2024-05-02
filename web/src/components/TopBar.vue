@@ -178,7 +178,7 @@ export default {
     name: 'TopBar',
     computed:{
         storeLogo(){
-            return '/user_infos/'+this.$store.state.config.app_custom_logo || storeLogo
+            return this.$store.state.config.app_custom_logo!=''?'/user_infos/'+this.$store.state.config.app_custom_logo:storeLogo
         },        
         languages: {
             get(){
