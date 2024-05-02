@@ -1082,6 +1082,24 @@
                 
                     <Card title="Data Vectorization" :is_subcard="true" class="pb-2  m-2">
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="data_vectorization_save_db" class="text-sm font-bold" style="margin-right: 1rem;">Save vectorized database:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="checkbox"
+                                id="data_vectorization_save_db"
+                                required
+                                v-model="configFile.data_vectorization_save_db"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>                                  
                             <tr>
                             <td style="min-width: 200px;">
                                 <label for="summerize_discussion" class="text-sm font-bold" style="margin-right: 1rem;">Activate Continuous Learning from discussions:</label>
