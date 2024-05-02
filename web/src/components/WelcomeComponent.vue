@@ -5,7 +5,7 @@
             
             <div class="flex items-center gap-3 text-5xl drop-shadow-md align-middle pt-24 ">
                
-                <img class="w-24 animate-bounce" title="LoLLMS WebUI" src="@/assets/logo.png" alt="Logo">
+                <img class="w-24 animate-bounce" title="LoLLMS WebUI" :src="$store.state.config.app_custom_logo || storeLogo" alt="Logo">
                     <div class="flex flex-col items-start">
                     <p class="text-2xl ">LoLLMS</p>
                     <p class="text-gray-400 text-base">One tool to rule them all</p>
@@ -23,8 +23,12 @@
 </template>
 
 <script>
+import storeLogo from '@/assets/logo.png'
 export default {
     name: 'WelcomeComponent',
+    data(){
+        storeLogo:storeLogo
+    },
     setup() {
 
 

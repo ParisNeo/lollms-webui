@@ -41,7 +41,7 @@ import re
 import string
 import requests
 from datetime import datetime
-from typing import List, Tuple
+from typing import List, Tuple,Callable
 import time
 import numpy as np
 from lollms.utilities import find_first_available_file_index, convert_language_name
@@ -72,7 +72,7 @@ def terminate_thread(thread):
         else:
             ASCIIColors.yellow("Canceled successfully")# The current version of the webui
 
-lollms_webui_version="9.6"
+lollms_webui_version="9.7"
 
 
 
@@ -186,7 +186,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         self.discussion_db_name = config["discussion_db_name"]
 
         # Create database object
-        self.db = DiscussionsDB(self.lollms_paths, self.discussion_db_name)
+        self.db = DiscussionsDB(self, self.lollms_paths, self.discussion_db_name)
 
         # If the database is empty, populate it with tables
         ASCIIColors.info("Checking discussions database... ",end="")
@@ -712,6 +712,19 @@ class LOLLMSWebUI(LOLLMSElfServer):
         
         return discussion_messages # Removes the last return
 
+    def full(self, full_text:str, callback: Callable[[str, MSG_TYPE, dict, list], bool]=None, client_id=0):
+        """This sends full text to front end
+
+        Args:
+            step_text (dict): The step text
+            callback (callable, optional): A callable with this signature (str, MSG_TYPE) to send the text to. Defaults to None.
+        """
+        if not callback:
+            callback = partial(self.process_chunk,client_id = client_id)
+
+        if callback:
+            callback(full_text, MSG_TYPE.MSG_TYPE_FULL)
+
     def notify(
                 self, 
                 content, 
@@ -760,7 +773,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                             open=False
                         ):
         client = self.session.get_client(client_id)
-        self.close_message(client_id)
+        #self.close_message(client_id)
         mtdt = metadata if metadata is None or type(metadata) == str else json.dumps(metadata, indent=4)
         if sender==None:
             sender= self.personality.name
@@ -918,11 +931,10 @@ class LOLLMSWebUI(LOLLMSElfServer):
         Processes a chunk of generated text
         """
         client = self.session.get_client(client_id)
-        if chunk is None:
-            return True
-        if not client_id in list(self.session.clients.keys()):
-            self.error("Connection lost", client_id=client_id)
-            return
+        if chunk is not None:
+            if not client_id in list(self.session.clients.keys()):
+                self.error("Connection lost", client_id=client_id)
+                return
         if message_type == MSG_TYPE.MSG_TYPE_STEP:
             ASCIIColors.info("--> Step:"+chunk)
         if message_type == MSG_TYPE.MSG_TYPE_STEP_START:

@@ -210,6 +210,7 @@
                                 :checkBoxValue="item.checkBoxValue" 
                                 @select="selectDiscussion(item)"
                                 @delete="deleteDiscussion(item.id)" 
+                                @openFolder="openFolder"
                                 @editTitle="editTitle" 
                                 @makeTitle="makeTitle"
                                 @checked="checkUncheckDiscussion" />
@@ -684,7 +685,7 @@ export default {
         },
         recoverFiles(){
             console.log("Recovering files")
-            axios.post('/get_current_personality_files_list', {"client_id":this.$store.state.client_id}).then(res=>{
+            axios.post('/get_discussion_files_list', {"client_id":this.$store.state.client_id}).then(res=>{
                 this.$refs.chatBox.filesList = res.data.files;
                 this.$refs.chatBox.isFileSentList= res.data.files.map(file => {
                     return true;
@@ -946,6 +947,7 @@ export default {
                         if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
                             this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
                         }
+                        this.recoverFiles()
                     }
                     })
 
@@ -967,6 +969,7 @@ export default {
                                     this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
                                 }
                             }
+                            this.recoverFiles()
                         });
 
                     }
@@ -1474,6 +1477,14 @@ export default {
                 console.log("Error: Could not delete message")
             })
 
+        },
+        async openFolder(id){
+            const json = JSON.stringify({ 'client_id': this.$store.state.client_id, 'discussion_id': id.id })   
+            console.log(json)     
+            await axios.post(`/open_discussion_folder`, json, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            })
         },
         async editTitle(newTitleObj) {
 

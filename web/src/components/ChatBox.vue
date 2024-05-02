@@ -464,9 +464,14 @@ export default {
             for (let item of items) {
                 if (item.type.indexOf("image") !== -1) {
                     const blob = item.getAsFile();
-                    // Instead of reading the file and setting it as an image URL,
-                    // call the addFiles method and pass the file
-                    this.addFiles([blob]); // Assuming addFiles accepts an array of files
+                    // Generate a unique identifier for the file
+                    const uniqueId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    const newFileName = `image_${uniqueId}.png`;
+                    console.log("newFileName",newFileName)
+                    // Create a new file with the unique name
+                    const newFile = new File([blob], newFileName, {type: blob.type});
+
+                    this.addFiles([newFile]); // Assuming addFiles accepts an array of files
                 }
                 else if (item.kind === 'file') {
                     const file = item.getAsFile();
@@ -475,7 +480,7 @@ export default {
             }
             if (filesToUpload.length > 0) {
                 this.addFiles(filesToUpload);
-            }            
+            }
         },
         toggleSwitch() {
             this.$store.state.config.activate_internet_search = !this.$store.state.config.activate_internet_search;
@@ -759,12 +764,12 @@ export default {
             axios.get('/download_files')
         },
         remove_file(file){
-            axios.get('/remove_file',{client_id:this.$store.state.client_id, name: file}).then(res=>{
+            axios.get('/remove_discussion_file',{client_id:this.$store.state.client_id, name: file}).then(res=>{
                 console.log(res)
             })
         },
         clear_files(){
-            axios.post('/clear_personality_files_list', {"client_id":this.$store.state.client_id}).then(res=>{
+            axios.post('/clear_discussion_files_list', {"client_id":this.$store.state.client_id}).then(res=>{
                 console.log(res)
                 if(res.data.state){
                     this.$store.state.toast.showToast("File removed successfully",4,true);
@@ -902,7 +907,7 @@ export default {
 
         removeItem(file) {
             console.log("Réemoving ",file.name)
-            axios.post('/remove_file',{
+            axios.post('/remove_discussion_file',{
                                         client_id:this.$store.state.client_id, 
                                         name:file.name
                                     },
@@ -949,7 +954,7 @@ export default {
         takePicture(){
             socket.emit('take_picture')
             socket.on('picture_taken',()=>{
-                axios.post('/get_current_personality_files_list', {"client_id":this.$store.state.client_id}).then(res=>{
+                axios.post('/get_discussion_files_list', {"client_id":this.$store.state.client_id}).then(res=>{
                     this.filesList = res.data.files;
                     this.isFileSentList= res.data.files.map(file => {
                         return true;

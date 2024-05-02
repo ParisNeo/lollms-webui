@@ -230,11 +230,7 @@ async def open_file(file_path: FilePath):
         trace_exception(ex)
         lollmsElfServer.error(ex)
         return {"status":False,"error":str(ex)}
-
-
-
-class FilePath(BaseModel):
-    path: Optional[str] = Field(None, max_length=500)
+    
 
 @router.post("/open_folder")
 async def open_folder(file_path: FilePath):
@@ -281,8 +277,8 @@ class OpenCodeFolderInVsCodeRequestModel(BaseModel):
     message_id: Optional[int] = Field(None, gt=0)
     code: Optional[str]
 
-@router.post("/open_code_folder_in_vs_code")
-async def open_code_folder_in_vs_code(request: OpenCodeFolderInVsCodeRequestModel):
+@router.post("/open_discussion_folder_in_vs_code")
+async def open_discussion_folder_in_vs_code(request: OpenCodeFolderInVsCodeRequestModel):
 
     client = check_access(lollmsElfServer, request.client_id)
 
@@ -367,11 +363,10 @@ async def open_code_in_vs_code(vs_code_data: VSCodeData):
     
 class FolderRequest(BaseModel):
     client_id: str = Field(...)
-    discussion_id: Optional[int] = Field(None, title="The discussion ID")
-    folder_path: Optional[str] = Field(None, title="The folder path")
+    discussion_id: int = Field(...)
 
-@router.post("/open_code_folder")
-async def open_code_folder(request: FolderRequest):
+@router.post("/open_discussion_folder")
+async def open_discussion_folder(request: FolderRequest):
     """
     Opens code folder.
 

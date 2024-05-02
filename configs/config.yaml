@@ -155,7 +155,7 @@ data_vectorization_method: "tfidf_vectorizer" #"model_embedding" or "tfidf_vecto
 data_visualization_method: "PCA" #"PCA" or "TSNE"
 data_vectorization_sentense_transformer_model: "all-MiniLM-L6-v2" # you can use another model by setting its name here or its path
 
-data_vectorization_save_db: false # For each new session, new files
+data_vectorization_save_db: true # For each new session, new files
 data_vectorization_chunk_size: 512 # chunk size
 data_vectorization_overlap_size: 128 # overlap between chunks size
 data_vectorization_nb_chunks: 2 # number of chunks to use

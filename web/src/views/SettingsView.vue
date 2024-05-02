@@ -223,6 +223,17 @@
                     <div class="flex flex-col mb-2 px-3 pb-2">
                                 <Card title="General" :is_subcard="true" class="pb-2 m-2">
                                     <table class="expand-to-fit bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="app_custom_logo" class="text-sm font-bold" style="margin-right: 1rem;">Application logo:</label>
+                                        </td>
+                                        <td style="width: 100%;">
+                                            <label for="avatar-upload">
+                                                <img :src="configFile.app_custom_logo!=''? '/user_infos/'+configFile.app_custom_logo:storeLogo" class="w-50 h-50 rounded-full" style="max-width: 50px; max-height: 50px; cursor: pointer;">
+                                            </label>
+                                            <input type="file" id="avatar-upload" style="display: none" @change="uploadLogo">
+                                        </td>
+                                        </tr>
 
                                         <tr>
                                         <td style="min-width: 200px;">
@@ -478,7 +489,7 @@
                                         </td>
                                         <td style="width: 100%;">
                                             <label for="avatar-upload">
-                                                <img :src="'/user_infos/'+configFile.user_avatar" class="w-50 h-50 rounded-full" style="max-width: 50px; max-height: 50px; cursor: pointer;">
+                                                <img :src="'/user_infos/'+configFile.user_avatar || storeLogo" class="w-50 h-50 rounded-full" style="max-width: 50px; max-height: 50px; cursor: pointer;">
                                             </label>
                                             <input type="file" id="avatar-upload" style="display: none" @change="uploadAvatar">
                                         </td>
@@ -2959,6 +2970,7 @@ import Card from "@/components/Card.vue"
 import RadioOptions from '../components/RadioOptions.vue';
 import ExtensionEntry from "@/components/ExtensionEntry.vue"
 
+import storeLogo from '@/assets/logo.png'
 
 
 import {refreshHardwareUsage} from "../main"
@@ -3009,7 +3021,7 @@ export default {
                             "Hindi": "hi"
                         },
             
-                     
+            storeLogo:storeLogo,
             binding_changed:false,
             SVGGPU:SVGGPU,
             models_zoo:[],
@@ -3405,7 +3417,27 @@ export default {
             socket.emit('install_model', { path: path, name: model_object.model.name, variant_name:this.selected_variant.name, type:model_object.model.type });
             console.log("Started installation, please wait");               
         },
-
+        uploadLogo(event){
+            const file = event.target.files[0]; // Get the selected file
+            const formData = new FormData(); // Create a FormData object
+            formData.append('avatar', file); // Add the file to the form data with the key 'avatar'
+            console.log("Uploading avatar")
+            // Make an API request to upload the avatar
+            axios.post('/upload_avatar', formData)
+                .then(response => {
+                    console.log("Avatar uploaded successfully")
+                    
+                    this.$store.state.toast.showToast("Avatar uploaded successfully!", 4, true)
+                    // Assuming the server responds with the file name after successful upload
+                    const fileName = response.data.fileName;
+                    console.log("response",response);
+                    this.app_custom_logo = fileName; // Update the user_avatar value with the file name
+                    this.update_setting("app_custom_logo", fileName, ()=>{}).then(()=>{})
+                })
+                .catch(error => {
+                console.error('Error uploading avatar:', error);
+                });            
+        },
         uploadAvatar(event){
             const file = event.target.files[0]; // Get the selected file
             const formData = new FormData(); // Create a FormData object

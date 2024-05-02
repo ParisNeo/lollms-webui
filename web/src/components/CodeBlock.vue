@@ -235,7 +235,7 @@ export default {
                           'code': this.code
                           })   
       console.log(json)     
-      fetch(`${this.host}/open_code_folder_in_vs_code`, {
+      fetch(`${this.host}/open_folder_in_vs_code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: json
@@ -255,7 +255,7 @@ export default {
     openFolder() {
       const json = JSON.stringify({ 'client_id': this.client_id, 'discussion_id': this.discussion_id })   
       console.log(json)     
-      fetch(`${this.host}/open_code_folder`, {
+      fetch(`${this.host}/open_discussion_folder`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: json

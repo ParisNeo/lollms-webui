@@ -19,46 +19,52 @@
                 :class="loading ? 'min-h-full w-2 rounded-xl self-stretch animate-bounce bg-accent ' : '  '"></div>
 
         </div>
-        <!-- TITLE -->
-        <p v-if="!editTitle" :title="title" class="line-clamp-1 w-4/6 ml-1 -mx-5 ">{{ title ? title === "untitled" ? "New discussion" :
-            title : "New discussion" }}</p>
+        <!-- CONTAINER FOR TITLE AND CONTROL BUTTONS -->
+        <div class="flex flex-row items-center w-full">
+            <!-- TITLE -->
+            <p v-if="!editTitle" :title="title" class="line-clamp-1 w-4/6 ml-1 -mx-5 ">{{ title ? title === "untitled" ? "New discussion" :
+                title : "New discussion" }}</p>
 
-        <input v-if="editTitle" type="text" id="title-box" ref="titleBox"
-            class="bg-bg-light dark:bg-bg-dark rounded-md border-0 w-full -m-1 p-1" :value="title" required
-            @keydown.enter.exact="editTitleEvent()" @keydown.esc.exact="editTitleMode = false"
-            @input="chnageTitle($event.target.value)" @click.stop>
+            <input v-if="editTitle" type="text" id="title-box" ref="titleBox"
+                class="bg-bg-light dark:bg-bg-dark rounded-md border-0 w-full -m-1 p-1" :value="title" required
+                @keydown.enter.exact="editTitleEvent()" @keydown.esc.exact="editTitleMode = false"
+                @input="chnageTitle($event.target.value)" @click.stop>
 
-        <!-- CONTROL BUTTONS -->
-        <div class="flex items-center flex-1 max-h-6">
-            <!-- EDIT TITLE CONFIRM -->
-            <div v-if="showConfirmation" class="flex gap-3 flex-1 items-center justify-end  duration-75">
-                <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Discard title changes"
-                    type="button" @click.stop="cancel()">
-                    <i data-feather="x"></i>
-                </button>
-                <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Confirm title changes"
-                    type="button" @click.stop="editTitleMode?editTitleEvent():deleteMode?deleteEvent():makeTitleEvent()">
-                    <i data-feather="check"></i>
-                </button>
-            </div>
-            <!-- EDIT AND REMOVE -->
-            <div v-if="!showConfirmation"
-                class="flex gap-3 flex-1 items-center justify-end invisible group-hover:visible duration-75">
-                <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Make a title" type="button"
-                    @click.stop="makeTitleMode = true">
-                    <i data-feather="type"></i>
-                </button>
-                <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Edit title" type="button"
-                    @click.stop="editTitleMode = true">
-                    <i data-feather="edit-2"></i>
-                </button>
-                <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Remove discussion" type="button"
-                    @click.stop="deleteMode = true">
-                    <i data-feather="trash"></i>
-                </button>
+            <!-- CONTROL BUTTONS -->
+            <div class="flex items-center flex-1 max-h-6">
+                <!-- EDIT TITLE CONFIRM -->
+                <div v-if="showConfirmation" class="flex gap-3 flex-1 items-center justify-end  duration-75">
+                    <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Discard title changes"
+                        type="button" @click.stop="cancel()">
+                        <i data-feather="x"></i>
+                    </button>
+                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Confirm title changes"
+                        type="button" @click.stop="editTitleMode?editTitleEvent():deleteMode?deleteEvent():makeTitleEvent()">
+                        <i data-feather="check"></i>
+                    </button>
+                </div>
+                <!-- EDIT AND REMOVE -->
+                <div v-if="!showConfirmation"
+                    class="flex gap-3 flex-1 items-center justify-end invisible group-hover:visible duration-75">
+                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Open folder" type="button"
+                        @click.stop="openFolderEvent()">
+                        <i data-feather="folder"></i>
+                    </button>
+                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Make a title" type="button"
+                        @click.stop="makeTitleMode = true">
+                        <i data-feather="type"></i>
+                    </button>
+                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Edit title" type="button"
+                        @click.stop="editTitleMode = true">
+                        <i data-feather="edit-2"></i>
+                    </button>
+                    <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Remove discussion" type="button"
+                        @click.stop="deleteMode = true">
+                        <i data-feather="trash"></i>
+                    </button>
+                </div>
             </div>
         </div>
-    
     </div>
 </template>
 
@@ -68,7 +74,7 @@ import feather from 'feather-icons'
 
 export default {
     name: 'Discussion',
-    emits: ['delete', 'select', 'editTitle', 'makeTitle', 'checked'],
+    emits: ['delete', 'select', 'openFolder', 'editTitle', 'makeTitle', 'checked'],
     props: {
         id: Number,
         title: String,
@@ -86,6 +92,7 @@ export default {
             editTitleMode: false,
             makeTitleMode: false,
             deleteMode:false,
+            openFolder:false,
             editTitle: false,
             newTitle: String,
             checkBoxValue_local: false
@@ -104,6 +111,12 @@ export default {
         },
         selectEvent() {
             this.$emit("select")
+        },
+        openFolderEvent() {
+            this.$emit("openFolder",
+                {
+                    id: this.id
+                })
         },
         editTitleEvent() {
             this.editTitle = false
@@ -174,7 +187,6 @@ export default {
         },
         makeTitleMode(newval) {
             this.showConfirmation = newval
-
         },
 
         checkBoxValue(newval, oldval) {

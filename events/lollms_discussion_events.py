@@ -122,11 +122,11 @@ def add_events(sio:socketio):
         ASCIIColors.yellow(f"Loading discussion for client {client_id} ... ", end="")
         if "id" in data:
             discussion_id = data["id"]
-            lollmsElfServer.session.get_client(client_id).discussion = Discussion(discussion_id, lollmsElfServer.db)
+            lollmsElfServer.session.get_client(client_id).discussion = Discussion(lollmsElfServer, discussion_id, lollmsElfServer.db)
         else:
             if lollmsElfServer.session.get_client(client_id).discussion is not None:
                 discussion_id = lollmsElfServer.session.get_client(client_id).discussion.discussion_id
-                lollmsElfServer.session.get_client(client_id).discussion = Discussion(discussion_id, lollmsElfServer.db)
+                lollmsElfServer.session.get_client(client_id).discussion = Discussion(lollmsElfServer, discussion_id, lollmsElfServer.db)
             else:
                 lollmsElfServer.session.get_client(client_id).discussion = lollmsElfServer.db.create_discussion()
         messages = lollmsElfServer.session.get_client(client_id).discussion.get_messages()
