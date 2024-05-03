@@ -1038,7 +1038,12 @@ class LOLLMSWebUI(LOLLMSElfServer):
             ASCIIColors.info("Running workflow")
             try:
                 self.personality.callback = callback
-                self.personality.processor.run_workflow(prompt, full_prompt, callback, context_details,client=self.session.get_client(client_id))
+                client = self.session.get_client(client_id)
+                self.personality.vectorizer = client.discussion.vectorizer
+                self.personality.text_files = client.discussion.text_files
+                self.personality.image_files = client.discussion.image_files
+                self.personality.audio_files = client.discussion.audio_files
+                self.personality.processor.run_workflow(prompt, full_prompt, callback, context_details,client=client)
             except Exception as ex:
                 trace_exception(ex)
                 # Catch the exception and get the traceback as a list of strings
