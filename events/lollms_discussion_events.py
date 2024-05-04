@@ -73,11 +73,9 @@ def add_events(sio:socketio):
                 if not language_path.exists():
                     lollmsElfServer.ShowBlockingMessage(f"This is the first time this personality speaks {current_language}\nLollms is reconditionning the persona in that language.\nThis will be done just once. Next time, the personality will speak {current_language} out of the box")
                     language_path.parent.mkdir(exist_ok=True, parents=True)
-
+                    # Translating
                     conditionning = lollmsElfServer.tasks_library.translate_conditionning(lollmsElfServer.personality._personality_conditioning, lollmsElfServer.personality.language, current_language)
                     welcome_message = lollmsElfServer.tasks_library.translate_message(lollmsElfServer.personality.welcome_message, lollmsElfServer.personality.language, current_language)
-
-                    
                     with open(language_path,"w",encoding="utf-8", errors="ignore") as f:
                         yaml.safe_dump({"conditionning":conditionning,"welcome_message":welcome_message}, f)
                     lollmsElfServer.HideBlockingMessage()
