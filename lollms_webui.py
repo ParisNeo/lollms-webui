@@ -444,6 +444,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                                         use_deep_speed=self.config.xtts_use_deepspeed,
                                                         use_streaming_mode=self.config.xtts_use_streaming_mode
                                                         )
+                            
                         except:
                             self.warning(f"Personality {personality.name} request using custom voice but couldn't load XTTS")
                 except Exception as ex:
@@ -1066,12 +1067,12 @@ class LOLLMSWebUI(LOLLMSElfServer):
         self.nb_received_tokens = 0
         self.start_time = datetime.now()
         if self.model is not None:
-            if self.model.binding_type==BindingType.TEXT_IMAGE and len(self.personality.image_files)>0:
+            if self.model.binding_type==BindingType.TEXT_IMAGE and len(client.discussion.image_files)>0:
                 ASCIIColors.info(f"warmup for generating up to {n_predict} tokens")
                 if self.config["override_personality_model_parameters"]:
                     output = self.model.generate_with_images(
                         prompt,
-                        self.personality.image_files,
+                        client.discussion.image_files,
                         callback=callback,
                         n_predict=n_predict,
                         temperature=self.config['temperature'],
@@ -1097,7 +1098,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     ])
                     output = self.model.generate_with_images(
                         prompt,
-                        self.personality.image_files,
+                        client.discussion.image_files,
                         callback=callback,
                         n_predict=min(n_predict,self.personality.model_n_predicts),
                         temperature=self.personality.model_temperature,
@@ -1109,7 +1110,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         n_threads=self.config['n_threads']
                     )
                     try:
-                        post_processed_output = process_ai_output(output, self.personality.image_files, client.discussion.discussion_folder)
+                        post_processed_output = process_ai_output(output, client.discussion.image_files, client.discussion.discussion_folder)
                         if len(post_processed_output)!=output:
                             self.process_chunk(post_processed_output, MSG_TYPE.MSG_TYPE_FULL,client_id=client_id)
                     except Exception as ex:
@@ -1198,48 +1199,23 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                                         use_deep_speed=self.config.xtts_use_deepspeed,
                                                         use_streaming_mode=self.config.xtts_use_streaming_mode                                                        
                                                     )
-                            language = convert_language_name(self.personality.language)
-                            self.tts.set_speaker_folder(Path(self.personality.audio_samples[0]).parent)
-                            fn = self.personality.name.lower().replace(' ',"_").replace('.','')    
-                            fn = f"{fn}_{message_id}.wav"
-                            url = f"audio/{fn}"
-                            self.tts.tts_to_file(client.generated_text, Path(self.personality.audio_samples[0]).name, f"{fn}", language=language)
-                            fl = f"\n".join([
-                            f"<audio controls>",
-                            f'    <source src="{url}" type="audio/wav">',
-                            f'    Your browser does not support the audio element.',
-                            f'</audio>'                        
-                            ])
-                            self.process_chunk("Generating voice output", MSG_TYPE.MSG_TYPE_STEP_END, {'status':True},client_id=client_id)
-                            self.process_chunk(fl,MSG_TYPE.MSG_TYPE_UI, client_id=client_id)
-                            
-                            """
-                            self.info("Creating audio output",10)
-                            self.personality.step_start("Creating audio output")
-                            if not PackageManager.check_package_installed("tortoise"):
-                                PackageManager.install_package("tortoise-tts")
-                            from tortoise import utils, api
-                            import sounddevice as sd
-                            if self.tts is None:
-                                self.tts = api.TextToSpeech( kv_cache=True, half=True)
-                            reference_clips = [utils.audio.load_audio(str(p), 22050) for p in self.personality.audio_samples]
-                            tk = self.model.tokenize(client.generated_text)
-                            if len(tk)>100:
-                                chunk_size = 100
-                                
-                                for i in range(0, len(tk), chunk_size):
-                                    chunk = self.model.detokenize(tk[i:i+chunk_size])
-                                    if i==0:
-                                        pcm_audio = self.tts.tts_with_preset(chunk, voice_samples=reference_clips, preset='fast').numpy().flatten()
-                                    else:
-                                        pcm_audio = np.concatenate([pcm_audio, self.tts.tts_with_preset(chunk, voice_samples=reference_clips, preset='ultra_fast').numpy().flatten()])
+                            if self.tts.ready:
+                                language = convert_language_name(self.personality.language)
+                                self.tts.set_speaker_folder(Path(self.personality.audio_samples[0]).parent)
+                                fn = self.personality.name.lower().replace(' ',"_").replace('.','')    
+                                fn = f"{fn}_{message_id}.wav"
+                                url = f"audio/{fn}"
+                                self.tts.tts_to_file(client.generated_text, Path(self.personality.audio_samples[0]).name, f"{fn}", language=language)
+                                fl = f"\n".join([
+                                f"<audio controls>",
+                                f'    <source src="{url}" type="audio/wav">',
+                                f'    Your browser does not support the audio element.',
+                                f'</audio>'                        
+                                ])
+                                self.process_chunk("Generating voice output", MSG_TYPE.MSG_TYPE_STEP_END, {'status':True},client_id=client_id)
+                                self.process_chunk(fl,MSG_TYPE.MSG_TYPE_UI, client_id=client_id)
                             else:
-                                pcm_audio = self.tts.tts_with_preset(client.generated_text, voice_samples=reference_clips, preset='fast').numpy().flatten()
-                            sd.play(pcm_audio, 22050)
-                            self.personality.step_end("Creating audio output")                        
-                            """
-
-
+                                self.InfoMessage("xtts is not up yet.\nPlease wait for it to load then try again. This may take some time.") 
 
                         except Exception as ex:
                             ASCIIColors.error("Couldn't read")

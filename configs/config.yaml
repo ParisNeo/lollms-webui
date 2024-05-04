@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 88
+version: 90
 binding_name: null
 model_name: null
 model_variant: null
@@ -86,8 +86,8 @@ xtts_base_url: http://localhost:8020
 xtts_use_deepspeed: false
 xtts_use_streaming_mode: true
 auto_read: false
-current_voice: null
-current_language: en
+xtts_current_voice: null
+xtts_current_language: en
 
 # Image generation service
 enable_sd_service: false
@@ -145,11 +145,9 @@ audio_silenceTimer: 5000
 # Data vectorization
 activate_skills_lib: false # Activate vectorizing previous conversations
 skills_lib_database_name: "default" # Default skills database
-summerize_discussion: false # activate discussion summary (better but adds computation time)
 
 max_summary_size: 512 # in tokens
 data_vectorization_visualize_on_vectorization: false
-use_files: true # Activate using files
 data_vectorization_activate: true # To activate/deactivate data vectorization
 data_vectorization_method: "tfidf_vectorizer" #"model_embedding" or "tfidf_vectorizer"
 data_visualization_method: "PCA" #"PCA" or "TSNE"

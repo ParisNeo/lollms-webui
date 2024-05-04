@@ -866,23 +866,6 @@
                                         </tr>   
                                         <tr>
                                         <td style="min-width: 200px;">
-                                            <label for="current_language" class="text-sm font-bold" style="margin-right: 1rem;">Force AI to answer in this language:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="text"
-                                            id="current_language"
-                                            required
-                                            v-model="configFile.current_language"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
                                             <label for="fun_mode" class="text-sm font-bold" style="margin-right: 1rem;">Fun mode:</label>
                                         </td>
                                         <td>
@@ -1100,23 +1083,6 @@
                                 </div>
                             </td>
                             </tr>                                  
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="summerize_discussion" class="text-sm font-bold" style="margin-right: 1rem;">Activate Continuous Learning from discussions:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="checkbox"
-                                id="summerize_discussion"
-                                required
-                                v-model="configFile.summerize_discussion"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr>                                         
                             <tr>
                             <td style="min-width: 200px;">
                                 <label for="data_vectorization_visualize_on_vectorization" class="text-sm font-bold" style="margin-right: 1rem;">show vectorized data:</label>
@@ -1983,11 +1949,11 @@
 
                             <tr>
                             <td style="min-width: 200px;">
-                                <label for="current_voice" class="text-sm font-bold" style="margin-right: 1rem;">Current voice:</label>
+                                <label for="xtts_current_voice" class="text-sm font-bold" style="margin-right: 1rem;">Current voice:</label>
                             </td>
                             <td>
                                 <div class="flex flex-row">
-                                    <select v-model="current_voice" @change="settingsChanged=true" :disabled="!enable_voice_service">
+                                    <select v-model="xtts_current_voice" @change="settingsChanged=true" :disabled="!enable_voice_service">
                                     <option v-for="voice in voices" :key="voice" :value="voice">
                                         {{ voice }}
                                     </option>
@@ -3460,10 +3426,10 @@ export default {
         uploadLogo(event){
             const file = event.target.files[0]; // Get the selected file
             const formData = new FormData(); // Create a FormData object
-            formData.append('avatar', file); // Add the file to the form data with the key 'avatar'
+            formData.append('logo', file); // Add the file to the form data with the key 'avatar'
             console.log("Uploading avatar")
             // Make an API request to upload the avatar
-            axios.post('/upload_avatar', formData)
+            axios.post('/upload_logo', formData)
                 .then(response => {
                     console.log("Logo uploaded successfully")
                     
@@ -3472,9 +3438,8 @@ export default {
                     const fileName = response.data.fileName;
                     console.log("response",response);
                     this.app_custom_logo = fileName; // Update the user_avatar value with the file name
-                    this.configFile.app_custom_logo=fileName;
-
-                    this.update_setting("app_custom_logo", fileName, ()=>{}).then(()=>{})
+                    this.$store.state.config.app_custom_logo=fileName;
+                    this.settingsChanged = true
                 })
                 .catch(error => {
                 console.error('Error uploading avatar:', error);
@@ -3495,8 +3460,8 @@ export default {
                     const fileName = response.data.fileName;
                     console.log("response",response);
                     this.user_avatar = fileName; // Update the user_avatar value with the file name
-                    this.configFile.user_avatar=fileName;
-                    this.update_setting("user_avatar", fileName, ()=>{}).then(()=>{})
+                    this.$store.state.config.user_avatar=fileName;
+                    this.settingsChanged = true
                 })
                 .catch(error => {
                     console.error('Error uploading avatar:', error);
@@ -5532,23 +5497,23 @@ export default {
                 this.$store.state.config.current_language = value
             },
         },
-        current_voice:{
+        xtts_current_voice:{
             get() {
-                if (this.$store.state.config.current_voice===null || this.$store.state.config.current_voice===undefined){
-                    console.log("current voice", this.$store.state.config.current_voice)
+                if (this.$store.state.config.xtts_current_voice===null || this.$store.state.config.xtts_current_voice===undefined){
+                    console.log("current voice", this.$store.state.config.xtts_current_voice)
                     return "main_voice";
                 }
-                return this.$store.state.config.current_voice;
+                return this.$store.state.config.xtts_current_voice;
             },
             set(value) {
                 // You should not set the value directly here; use the updateSetting method instead
                 if(value=="main_voice" || value===undefined){
                     console.log("Current voice set to None")
-                    this.$store.state.config.current_voice = null
+                    this.$store.state.config.xtts_current_voice = null
                 }
                 else{
                     console.log("Current voice set to ",value)
-                    this.$store.state.config.current_voice = value
+                    this.$store.state.config.xtts_current_voice = value
                 }
             },
         },
