@@ -1,0 +1,135 @@
+<div style="width: 100%; margin: 0 auto;">
+<style>
+.graph {
+background-color: transparent;
+padding: 20px;
+border-radius: 10px;
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100%;
+}
+#svg-container {
+    border: 1px solid black;
+    display: inline-block;
+}
+#controls {
+    margin-top: 10px;
+}
+</style>
+<div id="controls">
+    <button id="zoom-in">Zoom In</button>
+    <button id="zoom-out">Zoom Out</button>
+    <button id="save-svg">Save</button>
+    <button id="save-png">Save as PNG</button>
+</div>
+<div id="svg-container">
+    <div id="graph" class="graph"></div>
+</div>
+    
+<script src="https://github.com/mdaines/viz-js/releases/download/release-viz-3.2.4/viz-standalone.js"></script>
+<script>
+// Initialize the mermaid library and render our diagram
+Viz.instance().then(function(viz) {
+var svg = viz.renderSVGElement(`
+{{svg_data}}
+`);
+svg.setAttribute("id", "svg-viewer"); // Ensure your SVG has the correct ID
+document.getElementById("graph").appendChild(svg);
+});
+document.getElementById('zoom-in').addEventListener('click', function() {
+    zoomSVG(1.1); // Zoom in by 10%
+});
+
+document.getElementById('zoom-out').addEventListener('click', function() {
+    zoomSVG(0.9); // Zoom out by 10%
+});
+
+document.getElementById('save-svg').addEventListener('click', function() {
+    saveSVG();
+});
+
+function zoomSVG(factor) {
+    var svg = document.getElementById('svg-viewer');
+    var currentWidth = svg.getAttribute("width");
+    var currentHeight = svg.getAttribute("height");
+    svg.setAttribute("width", Math.round(currentWidth * factor));
+    svg.setAttribute("height", Math.round(currentHeight * factor));
+}
+
+function saveSVG() {
+    var svg = document.getElementById('svg-viewer');
+    var serializer = new XMLSerializer();
+    var source = serializer.serializeToString(svg);
+
+    // Add name spaces.
+    if(!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)){
+        source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+    }
+    if(!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)){
+        source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+    }
+
+    // Add xml declaration
+    source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+
+    // Convert SVG source to URI data scheme.
+    var url = "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(source);
+
+    // Create download link and click it to start download.
+    var downloadLink = document.createElement("a");
+    downloadLink.href = url;
+    downloadLink.download = "downloaded_svg.svg";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+}
+document.getElementById('save-png').addEventListener('click', function() {
+    saveSVGAsPNG();
+});
+
+function saveSVGAsPNG() {
+    var svg = document.getElementById('svg-viewer');
+    var serializer = new XMLSerializer();
+    var source = serializer.serializeToString(svg);
+
+    // Fix potential namespace issues
+    if(!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)){
+        source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+    }
+    if(!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)){
+        source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+    }
+    source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+
+    // Convert SVG source to a data URL
+    var url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+
+    // Create an Image to render the SVG
+    var img = new Image();
+    img.onload = function() {
+        // Once loaded, use the Image to render the SVG on a Canvas
+        var canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        var context = canvas.getContext('2d');
+        context.drawImage(img, 0, 0);
+
+        // Convert the Canvas to a data URL for PNG
+        var pngUrl = canvas.toDataURL("image/png");
+
+        // Create download link and click it to start download
+        var downloadLink = document.createElement("a");
+        downloadLink.href = pngUrl;
+        downloadLink.download = "downloaded_svg.png";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    };
+    img.src = url;
+}
+
+</script>
+<div style="text-align: center;">
+</div>
+</div>

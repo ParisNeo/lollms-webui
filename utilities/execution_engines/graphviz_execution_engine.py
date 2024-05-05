@@ -13,7 +13,7 @@ import subprocess
 import json
 from lollms.client_session import Client
 from lollms.utilities import discussion_path_2_url
-
+from pathlib import Path
 
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()          
 
@@ -39,7 +39,8 @@ def build_graphviz_output(code, ifram_name=None):
             'width: 100%;',
             'height: 100%;',
             'border: none;',
-            '}',        
+            '}',
+
             '.graph {',
             'background-color: transparent;',
             'padding: 20px;',
@@ -49,8 +50,22 @@ def build_graphviz_output(code, ifram_name=None):
             'align-items: center;',
             'height: 100%;',
             '}',
+            '#svg-container {',
+            '    border: 1px solid black;',
+            '    display: inline-block;',
+            '}',
+            '#controls {',
+            '    margin-top: 10px;',
+            '}',
             '</style>',
+            '<div id="controls">',
+            '    <button id="zoom-in">Zoom In</button>',
+            '    <button id="zoom-out">Zoom Out</button>',
+            '    <button id="save-svg">Save</button>',
+            '</div>',
+            '<div id="svg-container">',
             '<div id="graph" class="graph"></div>',
+            '</div>',
             '<script src="https://github.com/mdaines/viz-js/releases/download/release-viz-3.2.4/viz-standalone.js"></script>',
             '<script>',
             '// Initialize the mermaid library and render our diagram',
@@ -65,38 +80,13 @@ def build_graphviz_output(code, ifram_name=None):
             '</div>',
             '\' style="width: 100%; height: 600px; border: none;"></iframe>',
             '</div>'
+
             ]
         )
     else:
-        rendered =  "\n".join([
-            '<div style="width: 100%; margin: 0 auto;">',
-            '<style>',
-            '.graph {',
-            'background-color: transparent;',
-            'padding: 20px;',
-            'border-radius: 10px;',
-            'display: flex;',
-            'justify-content: center;',
-            'align-items: center;',
-            'height: 100%;',
-            '}',
-            '</style>',
-            '<div id="graph" class="graph"></div>',
-            '<script src="https://github.com/mdaines/viz-js/releases/download/release-viz-3.2.4/viz-standalone.js"></script>',
-            '<script>',
-            '// Initialize the mermaid library and render our diagram',
-            'Viz.instance().then(function(viz) {',
-            'var svg = viz.renderSVGElement(`',
-            "\n".join([c.replace("'","\"") for c in code.split("\n") if c.strip()!=""]),
-            '`);',
-            'document.getElementById("graph").appendChild(svg);',
-            '});',
-            '</script>',
-            '<div style="text-align: center;">',
-            '</div>',
-            '</div>'
-            ]
-        )
+        with open(Path(__file__).parent/"assets"/"graphviz_container.html","r",encoding="utf-8") as f:
+            data = f.read()
+        rendered =  data.replace("{{svg_data}}","\n".join([c.replace("'","\'") for c in code.split("\n") if c.strip()!=""]) )
         
     execution_time = time.time() - start_time
     return {"output": rendered, "execution_time": execution_time}

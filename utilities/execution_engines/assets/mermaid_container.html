@@ -1,0 +1,52 @@
+<div style="width: 100%; margin: 0 auto;">
+<style>
+.graph {
+background-color: transparent;
+padding: 20px;
+border-radius: 10px;
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100%;
+}
+#svg-container {
+    border: 1px solid black;
+    display: inline-block;
+}
+#controls {
+    margin-top: 10px;
+}
+</style>
+<div id="controls">
+    <button id="zoom-in">Zoom In</button>
+    <button id="zoom-out">Zoom Out</button>
+    <button id="save-svg">Save</button>
+    <button id="save-png">Save as PNG</button>
+</div>
+<div id="svg-container">
+    <div class='mermaid'>
+        {{mermaid}}
+    </div>
+</div>
+    
+<script src='https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js'></script>
+<script>
+// Initialize the mermaid library and render our diagram
+mermaid.initialize({ startOnLoad: true });
+// Function to save SVG content to a file
+function saveSVG() {
+var svg = document.querySelector(".mermaid > svg");
+var serializer = new XMLSerializer();
+var source = serializer.serializeToString(svg);
+var blob = new Blob([source], {type: "image/svg+xml;charset=utf-8"});
+var url = URL.createObjectURL(blob);
+var a = document.createElement("a");
+a.href = url;
+a.download = "diagram.svg";
+a.click();
+}        
+</script>
+<div style='text-align: center;'>
+</div>
+<button onclick="saveSVG()">Save SVG</button>
+</div>
