@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# This script will install Miniconda and git with all dependencies for this project.
-# This enables a user to install this project without manually installing Conda and git.
+# This script will install Miniconda and git with all dependencies for this 
+# project. This enables a user to install this project without manually 
+# installing Conda and git.
 
 echo "      ___       ___           ___       ___       ___           ___      "
 echo "     /\__\     /\  \         /\__\     /\__\     /\__\         /\  \     "
@@ -23,13 +24,16 @@ echo "-----------------"
 cd "$(dirname "$0")"
 
 if [[ "$PWD" == *" "* ]]; then
+  echo ""
   echo "This script relies on Miniconda, which cannot be silently installed under a path with spaces."
   exit 1
 fi
 
+echo ""
 echo "WARNING: This script relies on Miniconda, which will fail to install if the path is too long."
 
 if [[ "$PWD" =~ [^#\$\%\&\(\)\*\+\] ]]; then
+  echo ""
   echo "WARNING: Special characters were detected in the installation path!"
   echo "         This can cause the installation to fail!"
 fi
@@ -41,8 +45,37 @@ clear
 
 export PACKAGES_TO_INSTALL=python=3.11 git pip
 
-echo "Installing gcc..."
-brew install gcc
+# This will test if homebrew is installed on the mac.
+# If not installed it will install homebrew.
+
+echo "*****************************************************"
+echo "*** Homebriew is required for LoLLMs Install      ***"
+echo "*** Checking if Homebrew is installed             ***"
+echo "***                                               ***"
+which -s brew
+if [[ $? != 0 ]] ; then
+    # Install Homebrew
+   echo "*** Please Install Homebrew - See https://brew.sh ***"
+   echo "*****************************************************"
+   exit 1
+else
+   echo "*** Homebrew is installed - Continuing            ***"
+   echo "***                                               ***"
+fi
+
+# This will test if GCC is installed.
+# If GCC is installed it will attempt an upgrade
+# if it is not installed it will install gcc using homebrew
+echo "*** Checking if GCC is installed                  ***"
+echo "***                                               ***"
+if brew list gcc &>/dev/null; then
+        echo "*** GCC is already installed - Upgrading          ***"
+        echo "*****************************************************"
+else
+        echo "*** GCC Not Installed - Installing                ***"
+        echo "*****************************************************"
+        brew install gcc
+fi
 
 # Better isolation for virtual environment
 unset CONDA_SHLVL
@@ -53,6 +86,7 @@ export TEMP="$PWD/installer_files/temp"
 export TMP="$PWD/installer_files/temp"
 
 MINICONDA_DIR="$PWD/installer_files/miniconda3"
+INSTALL_DIR="$PWD"
 INSTALL_ENV_DIR="$PWD/installer_files/lollms_env"
 ENV_NAME="lollms"
 
@@ -114,31 +148,27 @@ echo "$ENV_NAME Activated"
 export CUDA_PATH="$INSTALL_ENV_DIR"
 
 # Clone the repository
+cd $INSTALL_DIR
 if [ -d "lollms-webui" ]; then
-  cd lollms-webui || exit 1
+  cd $INSTALL_DIR/lollms-webui || exit 1
   git pull
   git submodule update --init --recursive
-  cd lollms_core 
+  cd $INSTALL_DIR/lollms-webui/lollms_core 
   pip install -e .
-  cd ..
-  cd utilities/safe_store
+  cd $INSTALL_DIR/lollms-webui/utilities/safe_store
   pip install -e .
-  cd ../..
 
 else
   git clone --depth 1  --recurse-submodules "$REPO_URL"
   git submodule update --init --recursive
-  cd lollms-webui/lollms_core
+  cd $INSTALL_DIR/lollms-webui/lollms_core
   pip install -e .
-  cd ..
-  cd utilities/safe_store
+  cd $INSTALL_DIR/lollms-webui/utilities/safe_store
   pip install -e .
-  cd ../../..
-  cd utilities/pipmaster
+  cd $INSTALL_DIR/lollms-webui/utilities/pipmaster
   pip install -e .
-  cd ../../..
 
-  cd lollms-webui || exit 1
+  cd $INSTALL_DIR/lollms-webui || exit 1
 fi
 
 # Loop through each "git+" requirement and uninstall it (workaround for inconsistent git package updating)
@@ -152,22 +182,23 @@ done < requirements.txt
 # Install the pip requirements
 python -m pip install -r requirements.txt --upgrade
 
-if [[ -e "../macos_run.sh" ]]; then
+if [[ -e "$INSTALL_DIR/macos_run.sh" ]]; then
     echo "Macos run found"
 else
-    cp scripts/macos/macos_run.sh ../
+    cp $INSTALL_DIR/lollms-webui/scripts/macos/macos_run.sh $INSTALL_DIR/ 
 fi
 
-if [[ -e "../macos_update.sh" ]]; then
-    echo "Macos update found"
-else
-    cp scripts/macos/macos_update.sh ../
-fi
+# Macos_update.sh is no longer available on github skipping
+#if [[ -e "$INSTALL_DIR/macos_update.sh" ]]; then
+#    echo "Macos update found"
+#else
+#    cp $INSTALL_DIR/lollms-webui/scripts/macos/macos_update.sh $INSTALL_DIR/ 
+#fi
 
-if [[ -e "../macos_conda_session.sh" ]]; then
+if [[ -e "$INSTALL_DIR/macos_conda_session.sh" ]]; then
     echo "Macos conda session found"
 else
-    cp scripts/macos/macos_conda_session.sh ../
+    cp $INSTALL_DIR/lollms-webui/scripts/macos/macos_conda_session.sh $INSTALL_DIR/ 
 fi
 
 echo "Select the default binding to be installed:"
