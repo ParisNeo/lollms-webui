@@ -939,6 +939,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
         Processes a chunk of generated text
         """
         client = self.session.get_client(client_id)
+        if chunk is None:
+            return
+        
         if chunk is not None:
             if not client_id in list(self.session.clients.keys()):
                 self.error("Connection lost", client_id=client_id)
@@ -1051,7 +1054,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 self.personality.text_files = client.discussion.text_files
                 self.personality.image_files = client.discussion.image_files
                 self.personality.audio_files = client.discussion.audio_files
-                self.personality.processor.run_workflow(prompt, full_prompt, callback, context_details,client=client)
+                output = self.personality.processor.run_workflow(prompt, full_prompt, callback, context_details,client=client)
             except Exception as ex:
                 trace_exception(ex)
                 # Catch the exception and get the traceback as a list of strings
@@ -1061,13 +1064,15 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 ASCIIColors.error(f"Workflow run failed.\nError:{ex}")
                 ASCIIColors.error(traceback_text)
                 if callback:
-                    callback(f"Workflow run failed\nError:{ex}", MSG_TYPE.MSG_TYPE_EXCEPTION)                   
+                    callback(f"Workflow run failed\nError:{ex}", MSG_TYPE.MSG_TYPE_EXCEPTION)
+                return          
             print("Finished executing the workflow")
-            return
+            return output
 
 
-        self._generate(full_prompt, n_predict, client_id, callback)
+        txt = self._generate(full_prompt, n_predict, client_id, callback)
         ASCIIColors.success("\nFinished executing the generation")
+        return txt
 
     def _generate(self, prompt, n_predict, client_id, callback=None):
         client = self.session.get_client(client_id)
@@ -1307,7 +1312,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             self.busy=False
             return ""
 
-    def receive_and_generate(self, text, client:Client, callback):
+    def receive_and_generate(self, text, client:Client, callback=None):
         prompt = text
         try:
             nb_tokens = len(self.model.tokenize(prompt))
@@ -1323,5 +1328,14 @@ class LOLLMSWebUI(LOLLMSElfServer):
             parent_message_id=self.message_id,
             nb_tokens=nb_tokens
         )
-        discussion_messages, current_message, tokens, context_details, internet_search_infos = self.prepare_query(client.client_id, -1, False, n_tokens=self.config.min_n_predict, force_using_internet=False)
-        return self.generate(discussion_messages, current_message, context_details, self.config.ctx_size-len(tokens)-1, client.client_id, callback)
+        discussion_messages, current_message, tokens, context_details, internet_search_infos = self.prepare_query(client.client_id, client.discussion.current_message.id, False, n_tokens=self.config.min_n_predict, force_using_internet=False)
+        self.new_message(
+                        client.client_id, 
+                        self.personality.name,
+                        message_type= MSG_TYPE.MSG_TYPE_FULL,
+                        content=""
+        )
+        client.generated_text = ""
+        self.generate(discussion_messages, current_message, context_details, self.config.ctx_size-len(tokens)-1, client.client_id, callback if callback else partial(self.process_chunk, client_id=client.client_id))
+        self.close_message(client.client_id)        
+        return client.generated_text

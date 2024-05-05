@@ -887,6 +887,22 @@
                                     <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <tr>
                                         <td style="min-width: 200px;">
+                                            <label for="whisper_activate" class="text-sm font-bold" style="margin-right: 1rem;">Activate Whisper at startup:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                            <input
+                                            type="checkbox"
+                                            id="whisper_activate"
+                                            required
+                                            v-model="configFile.whisper_activate"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                            </div>
+                                        </td>                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
                                             <label for="whisper_model" class="text-sm font-bold" style="margin-right: 1rem;">Whisper model:</label>
                                         </td>
                                         <td>
@@ -904,7 +920,7 @@
                                             </select>
                                             </div>
                                         </td>
-                                        </tr>
+                                        </tr>                                        
 
                                     </table>
                                 </Card>
@@ -2022,6 +2038,24 @@
                                 </div>
                             </td>
                             </tr>                    
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="xtts_stream_chunk_size" class="text-sm font-bold" style="margin-right: 1rem;">xtts stream chunk size:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                    <input
+                                        type="text"
+                                        id="xtts_stream_chunk_size"
+                                        required
+                                        v-model="configFile.xtts_stream_chunk_size"
+                                        @change="settingsChanged=true"
+                                        class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                </div>
+                            </td>
+                            </tr>
+
                         </table>
 
                     </Card>

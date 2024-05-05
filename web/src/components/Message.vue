@@ -520,7 +520,7 @@ export default {
             }
         },
         speak() {
-            if(this.$store.state.config.xtts_enable){
+            if(this.$store.state.config.xtts_enable && this.$store.state.config.xtts_use_streaming_mode){
                 this.isSpeaking = true;
                 axios.post("./text2Audio",{text:this.message.content}).then(response => {
                     this.isSpeaking = false;
@@ -753,12 +753,13 @@ export default {
             }
         },
         'message.content': function (newContent) {
-            if(this.$store.state.config.auto_speak){
-                if(!this.isSpeaking){
-                    // Watch for changes to this.message.content and call the checkForFullSentence method
-                    this.checkForFullSentence();
+            if(this.$store.state.config.auto_speak)
+                if(!(this.$store.state.config.xtts_enable && this.$store.state.config.xtts_use_streaming_mode)){
+                    if(!this.isSpeaking){
+                        // Watch for changes to this.message.content and call the checkForFullSentence method
+                        this.checkForFullSentence();
+                    }
                 }
-            }
         },
         'message.ui': function (newContent) {
             console.log("ui changed")

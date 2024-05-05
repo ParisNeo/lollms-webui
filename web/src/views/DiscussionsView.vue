@@ -241,7 +241,7 @@
                 <div class="container pt-4 pb-50 mb-50 w-full">
                     <TransitionGroup v-if="discussionArr.length > 0" name="list">
                         <Message v-for="(msg, index) in discussionArr" 
-                            :key="msg.id" :message="msg"  :id="'msg-' + msg.id"
+                            :key="msg.id" :message="msg"  :id="'msg-' + msg.id" :ref="'msg-' + msg.id"
                             :host="host"
                             ref="messages"
                             
@@ -1659,12 +1659,12 @@ export default {
             })
         },
         finalMsgEvent(msgObj) {
-            console.log("final", msgObj)
+            let index=0;
 
             // Last message contains halucination suppression so we need to update the message content too
             this.discussion_id = msgObj.discussion_id
             if (this.currentDiscussion.id == this.discussion_id) {
-                const index = this.discussionArr.findIndex((x) => x.id == msgObj.id)
+                index = this.discussionArr.findIndex((x) => x.id == msgObj.id)
                 this.discussionArr[index].content = msgObj.content
                 this.discussionArr[index].finished_generating_at = msgObj.finished_generating_at
 
@@ -1682,9 +1682,16 @@ export default {
             this.isGenerating = false
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
             this.chime.play()
-            const index = this.discussionArr.findIndex((x) => x.id == msgObj.id)
+            index = this.discussionArr.findIndex((x) => x.id == msgObj.id)
             const messageItem = this.discussionArr[index]            
             messageItem.status_message = "Done"
+            console.log("final", msgObj)
+            if(this.$store.state.config.auto_speak && (this.$store.state.config.xtts_enable && this.$store.state.config.xtts_use_streaming_mode)){
+                index = this.discussionArr.findIndex((x) => x.id == msgObj.id)
+                let message_component = this.$refs['msg-' + msgObj.id][0]
+                console.log(message_component)
+                message_component.speak()
+            }
 
         },
         copyToClipBoard(messageEntry) {

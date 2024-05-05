@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 91
+version: 92
 binding_name: null
 model_name: null
 model_variant: null
@@ -88,6 +88,14 @@ xtts_use_streaming_mode: true
 auto_read: false
 xtts_current_voice: null
 xtts_current_language: en
+xtts_stream_chunk_size: 100
+xtts_temperature: 0.75
+xtts_length_penalty: 1.0
+xtts_repetition_penalty: 5.0
+xtts_top_k: 50
+xtts_top_p: 0.85
+xtts_speed: 1
+xtts_enable_text_splitting: true
 
 # Image generation service
 enable_sd_service: false
