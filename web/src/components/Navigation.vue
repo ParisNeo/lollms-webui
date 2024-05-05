@@ -44,7 +44,7 @@
               ComfyUI
             </RouterLink>
             <RouterLink 
-              v-if="$store.state.config.xtts_enable" 
+              v-if="$store.state.config.xtts_enable && $store.state.config.xtts_use_streaming_mode" 
               :to="{ name: 'interactive' }" 
               class="inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold"
               :class="{ 

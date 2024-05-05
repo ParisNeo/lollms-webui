@@ -13,10 +13,11 @@ from pydantic import BaseModel, Field
 from starlette.responses import StreamingResponse
 from lollms.types import MSG_TYPE
 from lollms.main_config import BaseConfig
-from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception, show_yes_no_dialog
+from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception, show_yes_no_dialog, add_period
 from lollms.security import sanitize_path, forbid_remote_access, check_access
 from ascii_colors import ASCIIColors
 from lollms.databases.discussions_database import DiscussionsDB
+from lollms.client_session import Client
 from pathlib import Path
 from safe_store.text_vectorizer import TextVectorizer, VectorizationMethod, VisualizationMethod
 import tqdm
@@ -54,7 +55,8 @@ from utilities.execution_engines.svg_execution_engine import execute_svg
 
 router = APIRouter()
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
-
+class Identification(BaseModel):
+    client_id:str
 
 class CodeRequest(BaseModel):
     client_id: str  = Field(...)
@@ -403,8 +405,10 @@ async def open_discussion_folder(request: FolderRequest):
         lollmsElfServer.error(ex)
         return {"status": False, "error": "An error occurred while processing the request"}
 
-@router.get("/start_recording")
-def start_recording():
+@router.post("/start_recording")
+def start_recording(data:Identification):
+    client = check_access(lollmsElfServer, data.client_id)
+
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Start recording is blocked when in headless mode for obvious security reasons!"}
 
@@ -417,14 +421,16 @@ def start_recording():
         lollmsElfServer.rec_output_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"audio_rec"
         lollmsElfServer.rec_output_folder.mkdir(exist_ok=True, parents=True)
         lollmsElfServer.summoned = False
-        lollmsElfServer.audio_cap = AudioRecorder(lollmsElfServer.sio,lollmsElfServer.rec_output_folder/"rt.wav", callback=lollmsElfServer.audio_callback,lollmsCom=lollmsElfServer, transcribe=True)
+        lollmsElfServer.audio_cap = AudioRecorder(client.discussion.discussion_folder/"audio"/"rt.wav", callback=lollmsElfServer.audio_callback,lollmsCom=lollmsElfServer, transcribe=True)
         lollmsElfServer.audio_cap.start_recording()
     except:
         lollmsElfServer.InfoMessage("Couldn't load media library.\nYou will not be able to perform any of the media linked operations. please verify the logs and install any required installations")
 
 
-@router.get("/stop_recording")
-def stop_recording():
+@router.post("/stop_recording")
+def stop_recording(data:Identification):
+    client = check_access(lollmsElfServer, data.client_id)
+
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Stop recording is blocked when in headless mode for obvious security reasons!"}
 
@@ -433,5 +439,21 @@ def stop_recording():
 
     lollmsElfServer.info("Stopping audio capture")
     text = lollmsElfServer.audio_cap.stop_recording()
-    return text
+    ai_text = lollmsElfServer.receive_and_generate(text, client, n_predict=lollmsElfServer.config, callback= lollmsElfServer.tasks_library.sink)
+    if lollmsElfServer.tts and lollmsElfServer.tts.ready:
+        personality_audio:Path = lollmsElfServer.personality.personality_package_path/"audio"
+        voice=lollmsElfServer.config.xtts_current_voice
+        if personality_audio.exists() and len([v for v in personality_audio.iterdir()])>0:
+            voices_folder = personality_audio
+        elif voice!="main_voice":
+            voices_folder = lollmsElfServer.lollms_paths.custom_voices_path
+        else:
+            voices_folder = Path(__file__).parent.parent.parent/"services/xtts/voices"
+        language = lollmsElfServer.config.xtts_current_language# convert_language_name()
+        lollmsElfServer.tts.set_speaker_folder(voices_folder)
+        preprocessed_text= add_period(ai_text)
+        voice_file =  [v for v in voices_folder.iterdir() if v.stem==voice and v.suffix==".wav"]
+
+        lollmsElfServer.tts.tts_to_audio(preprocessed_text, voice_file[0].name, language=language)
+    return preprocessed_text
 

@@ -21,7 +21,7 @@ from lollms.com import NotificationType, NotificationDisplayType, LoLLMsCom
 from lollms.app import LollmsApplication
 from lollms.utilities import File64BitsManager, PromptReshaper, PackageManager, find_first_available_file_index, run_async, is_asyncio_loop_running, yes_or_no_input, process_ai_output
 from lollms.generation import RECEPTION_MANAGER, ROLE_CHANGE_DECISION, ROLE_CHANGE_OURTPUT
-
+from lollms.client_session import Client
 import git
 import asyncio
 import os
@@ -1306,3 +1306,22 @@ class LOLLMSWebUI(LOLLMSElfServer):
             print()
             self.busy=False
             return ""
+
+    def receive_and_generate(self, text, client:Client, callback):
+        prompt = text
+        try:
+            nb_tokens = len(self.model.tokenize(prompt))
+        except:
+            nb_tokens = None
+        ump = self.config.discussion_prompt_separator +self.config.user_name.strip() if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
+        message = client.discussion.add_message(
+            message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
+            sender_type     = SENDER_TYPES.SENDER_TYPES_USER.value,
+            sender          = ump.replace(self.config.discussion_prompt_separator,"").replace(":",""),
+            content         = prompt,
+            metadata        = None,
+            parent_message_id=self.message_id,
+            nb_tokens=nb_tokens
+        )
+        discussion_messages, current_message, tokens, context_details, internet_search_infos = self.prepare_query(client.client_id, -1, False, n_tokens=self.config.min_n_predict, force_using_internet=False)
+        return self.generate(discussion_messages, current_message, context_details, self.config.ctx_size-len(tokens)-1, client.client_id, callback)

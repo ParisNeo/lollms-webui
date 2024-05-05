@@ -153,7 +153,7 @@
                                     <i data-feather="volume-2"></i>
                                 </div>
                             </div>    
-                            <div class="flex flex-row items-center">
+                            <div v-if="this.$store.state.config.xtts_enable && !this.$store.state.config.xtts_use_streaming_mode" class="flex flex-row items-center">
                                 <div v-if="!isSynthesizingVoice" class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2 cursor-pointer" 
                                     title="generate_audio"
                                     @click.stop="read()"
@@ -214,7 +214,7 @@
                     </div>
 
                     <DynamicUIRenderer v-if="message.ui !== null && message.ui !== undefined && message.ui !== ''" class="w-full h-full" :code="message.ui"></DynamicUIRenderer>
-                    <audio controls autoplay v-if="audio_url!=null" :key="audio_url">
+                    <audio controls v-if="audio_url!=null" :key="audio_url">
                         <source :src="audio_url" type="audio/wav"  ref="audio_player" >
                         Your browser does not support the audio element.
                     </audio>  

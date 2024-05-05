@@ -83,7 +83,7 @@ copy_to_clipboard_add_all_details: false
 # Voice service
 xtts_enable: false
 xtts_base_url: http://localhost:8020
-xtts_use_deepspeed: true
+xtts_use_deepspeed: false
 xtts_use_streaming_mode: true
 auto_read: false
 xtts_current_voice: null
@@ -186,4 +186,5 @@ activate_audio_infos: true
 
 
 # whisper configuration
+whisper_activate: false
 whisper_model: base

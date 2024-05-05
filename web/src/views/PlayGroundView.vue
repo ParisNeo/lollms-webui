@@ -135,7 +135,7 @@
 
               <span>Cursor position {{ cursorPosition }}</span>
             </div>
-            <audio controls autoplay v-if="audio_url!=null"  :key="audio_url">
+            <audio controls v-if="audio_url!=null"  :key="audio_url">
                 <source :src="audio_url" type="audio/wav"  ref="audio_player">
                 Your browser does not support the audio element.
             </audio>  
@@ -913,7 +913,7 @@ export default {
     startRecording(){
       this.pending = true;
       if(!this.is_recording){
-        axios.get('/start_recording').then(response => {
+        axios.post('/start_recording', {client_id:this.$store.state.client_id}).then(response => {
           this.is_recording = true;
           this.pending = false;
           console.log(response.data)

@@ -1917,6 +1917,8 @@
                                 <div class="flex flex-row">
                                 <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallAudioService">install xtts service</button>
                                 <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startAudioService">start xtts service</button>
+                                <a class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" :href="this.$store.state.config.xtts_base_url+'/docs'" target="_blank">show xtts service entries</a>
+                                <a class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" href="https://github.com/ParisNeo/xtts-api-server/blob/main/LICENSE" target="_blank">licence</a>
                                 </div>
                             </td>
                             </tr>                                        
@@ -1939,11 +1941,11 @@
                             </tr> 
                             <tr>
                             <td style="min-width: 200px;">
-                                <label for="current_language" class="text-sm font-bold" style="margin-right: 1rem;">Current language:</label>
+                                <label for="xtts_current_language" class="text-sm font-bold" style="margin-right: 1rem;">Current language:</label>
                             </td>
                             <td>
                                 <div class="flex flex-row">
-                                    <select v-model="current_language" @change="settingsChanged=true" :disabled="!xtts_enable">
+                                    <select v-model="xtts_current_language" @change="settingsChanged=true" :disabled="!xtts_enable">
                                     <option v-for="(value, key) in voice_languages" :key="key" :value="value">
                                         {{ key }}
                                     </option>
@@ -5495,9 +5497,9 @@ export default {
                 this.$store.state.config.xtts_enable = value
             },
         },
-        current_language:{
+        xtts_current_language:{
             get() {
-                return this.$store.state.config.current_language;
+                return this.$store.state.config.xtts_current_language;
             },
             set(value) {
                 // You should not set the value directly here; use the updateSetting method instead

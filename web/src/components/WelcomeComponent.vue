@@ -23,14 +23,20 @@
 
 <script>
 import storeLogo from '@/assets/logo.png'
+
 export default {
     name: 'WelcomeComponent',
+    computed:{
+        storeLogo(){
+            if (this.$store.state.config){
+                return storeLogo
+            }
+            return this.$store.state.config.app_custom_logo!=''?'/user_infos/'+this.$store.state.config.app_custom_logo:storeLogo
+        },   
+    },
     data(){
-        storeLogo:storeLogo
     },
     setup() {
-
-
         return {}
     }
 }

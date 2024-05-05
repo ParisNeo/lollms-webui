@@ -56,16 +56,23 @@ def add_events(sio:socketio):
 
     @sio.on('start_audio_stream')
     def start_audio_stream(sid):
+        if lollmsElfServer.config.headless_server_mode:
+            return {"status":False,"error":"Start recording is blocked when in headless mode for obvious security reasons!"}
+
+        if lollmsElfServer.config.host!="localhost" and lollmsElfServer.config.host!="127.0.0.1":
+            return {"status":False,"error":"Start recording is blocked when the server is exposed outside for very obvious reasons!"}
+
         lollmsElfServer.info("Starting audio capture")
         try:
             from lollms.media import AudioRecorder
             lollmsElfServer.rec_output_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"audio_rec"
             lollmsElfServer.rec_output_folder.mkdir(exist_ok=True, parents=True)
             lollmsElfServer.summoned = False
-            lollmsElfServer.audio_cap = AudioRecorder(sio,lollmsElfServer.rec_output_folder/"rt.wav", callback=lollmsElfServer.audio_callback,lollmsCom=lollmsElfServer)
+            lollmsElfServer.audio_cap = AudioRecorder(client.discussion.discussion_folder/"audio"/"rt.wav", callback=lollmsElfServer.audio_callback,lollmsCom=lollmsElfServer, transcribe=True)
             lollmsElfServer.audio_cap.start_recording()
         except:
             lollmsElfServer.InfoMessage("Couldn't load media library.\nYou will not be able to perform any of the media linked operations. please verify the logs and install any required installations")
+
 
 
     @sio.on('stop_audio_stream')
