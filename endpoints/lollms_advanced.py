@@ -439,21 +439,22 @@ def stop_recording(data:Identification):
 
     lollmsElfServer.info("Stopping audio capture")
     text = lollmsElfServer.audio_cap.stop_recording()
-    ai_text = lollmsElfServer.receive_and_generate(text, client, n_predict=lollmsElfServer.config, callback= lollmsElfServer.tasks_library.sink)
-    if lollmsElfServer.tts and lollmsElfServer.tts.ready:
-        personality_audio:Path = lollmsElfServer.personality.personality_package_path/"audio"
-        voice=lollmsElfServer.config.xtts_current_voice
-        if personality_audio.exists() and len([v for v in personality_audio.iterdir()])>0:
-            voices_folder = personality_audio
-        elif voice!="main_voice":
-            voices_folder = lollmsElfServer.lollms_paths.custom_voices_path
-        else:
-            voices_folder = Path(__file__).parent.parent.parent/"services/xtts/voices"
-        language = lollmsElfServer.config.xtts_current_language# convert_language_name()
-        lollmsElfServer.tts.set_speaker_folder(voices_folder)
-        preprocessed_text= add_period(ai_text)
-        voice_file =  [v for v in voices_folder.iterdir() if v.stem==voice and v.suffix==".wav"]
 
-        lollmsElfServer.tts.tts_to_audio(preprocessed_text, voice_file[0].name, language=language)
-    return preprocessed_text
+    # ai_text = lollmsElfServer.receive_and_generate(text, client, n_predict=lollmsElfServer.config, callback= lollmsElfServer.tasks_library.sink)
+    # if lollmsElfServer.tts and lollmsElfServer.tts.ready:
+    #     personality_audio:Path = lollmsElfServer.personality.personality_package_path/"audio"
+    #     voice=lollmsElfServer.config.xtts_current_voice
+    #     if personality_audio.exists() and len([v for v in personality_audio.iterdir()])>0:
+    #         voices_folder = personality_audio
+    #     elif voice!="main_voice":
+    #         voices_folder = lollmsElfServer.lollms_paths.custom_voices_path
+    #     else:
+    #         voices_folder = Path(__file__).parent.parent.parent/"services/xtts/voices"
+    #     language = lollmsElfServer.config.xtts_current_language# convert_language_name()
+    #     lollmsElfServer.tts.set_speaker_folder(voices_folder)
+    #     preprocessed_text= add_period(ai_text)
+    #     voice_file =  [v for v in voices_folder.iterdir() if v.stem==voice and v.suffix==".wav"]
+
+    #     lollmsElfServer.tts.tts_to_audio(preprocessed_text, voice_file[0].name, language=language)
+    return text
 

@@ -922,7 +922,7 @@ export default {
         });
       }
       else{
-        axios.get('/stop_recording').then(response => {
+        axios.post('/stop_recording', {client_id:this.$store.state.client_id}).then(response => {
           this.is_recording = false;
           this.pending = false;
           console.log(response)

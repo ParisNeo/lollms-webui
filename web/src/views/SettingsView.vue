@@ -2055,6 +2055,135 @@
                                 </div>
                             </td>
                             </tr>
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="xtts_temperature" class="text-sm font-bold" style="margin-right: 1rem;">Temperature:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                    <input
+                                        type="number"
+                                        id="xtts_temperature"
+                                        required
+                                        v-model.number="configFile.xtts_temperature"
+                                        @change="settingsChanged=true"
+                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        step="0.01"
+                                    >
+                                </div>
+                            </td>
+                            </tr>
+
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="xtts_length_penalty" class="text-sm font-bold" style="margin-right: 1rem;">Length Penalty:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                    <input
+                                        type="number"
+                                        id="xtts_length_penalty"
+                                        required
+                                        v-model.number="configFile.xtts_length_penalty"
+                                        @change="settingsChanged=true"
+                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        step="0.1"
+                                    >
+                                </div>
+                            </td>
+                            </tr>
+
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="xtts_repetition_penalty" class="text-sm font-bold" style="margin-right: 1rem;">Repetition Penalty:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                    <input
+                                        type="number"
+                                        id="xtts_repetition_penalty"
+                                        required
+                                        v-model.number="configFile.xtts_repetition_penalty"
+                                        @change="settingsChanged=true"
+                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        step="0.1"
+                                    >
+                                </div>
+                            </td>
+                            </tr>
+
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="xtts_top_k" class="text-sm font-bold" style="margin-right: 1rem;">Top K:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                    <input
+                                        type="number"
+                                        id="xtts_top_k"
+                                        required
+                                        v-model.number="configFile.xtts_top_k"
+                                        @change="settingsChanged=true"
+                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                    >
+                                </div>
+                            </td>
+                            </tr>
+
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="xtts_top_p" class="text-sm font-bold" style="margin-right: 1rem;">Top P:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                    <input
+                                        type="number"
+                                        id="xtts_top_p"
+                                        required
+                                        v-model.number="configFile.xtts_top_p"
+                                        @change="settingsChanged=true"
+                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                    >
+                                </div>
+                            </td>
+                            </tr>
+
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="xtts_speed" class="text-sm font-bold" style="margin-right: 1rem;">Speed:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                    <input
+                                        type="number"
+                                        id="xtts_speed"
+                                        required
+                                        v-model.number="configFile.xtts_speed"
+                                        @change="settingsChanged=true"
+                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        step="0.1"
+                                    >
+                                </div>
+                            </td>
+                            </tr>
+
+                            <!-- Keeping the enable_text_splitting as is since it inherently respects the boolean data type -->
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="enable_text_splitting" class="text-sm font-bold" style="margin-right: 1rem;">Enable Text Splitting:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                    <input
+                                        type="checkbox"
+                                        id="enable_text_splitting"
+                                        v-model="configFile.enable_text_splitting"
+                                        @change="settingsChanged=true"
+                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                    >
+                                </div>
+                            </td>
+                            </tr>
 
                         </table>
 
