@@ -437,8 +437,15 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         try:
                             from lollms.services.xtts.lollms_xtts import LollmsXTTS
                             if self.tts is None:
+                                voice=self.config.xtts_current_voice
+                                if voice!="main_voice":
+                                    voices_folder = self.lollms_paths.custom_voices_path
+                                else:
+                                    voices_folder = Path(__file__).parent.parent.parent/"services/xtts/voices"
+
                                 self.tts = LollmsXTTS(
                                                         self, 
+                                                        voices_folder=voices_folder,
                                                         voice_samples_path=Path(__file__).parent.parent/"voices", 
                                                         xtts_base_url= self.config.xtts_base_url,
                                                         use_deep_speed=self.config.xtts_use_deepspeed,
@@ -1191,9 +1198,16 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         try:
                             self.process_chunk("Generating voice output",MSG_TYPE.MSG_TYPE_STEP_START,client_id=client_id)
                             from lollms.services.xtts.lollms_xtts import LollmsXTTS
+                            voice=self.config.xtts_current_voice
+                            if voice!="main_voice":
+                                voices_folder = self.lollms_paths.custom_voices_path
+                            else:
+                                voices_folder = Path(__file__).parent.parent.parent/"services/xtts/voices"
+
                             if self.tts is None:
                                 self.tts = LollmsXTTS(
                                                         self, 
+                                                        voices_folder=voices_folder,
                                                         voice_samples_path=Path(__file__).parent.parent/"voices", 
                                                         xtts_base_url= self.config.xtts_base_url,
                                                         use_deep_speed=self.config.xtts_use_deepspeed,
