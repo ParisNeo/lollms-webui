@@ -65,7 +65,11 @@ def add_events(sio:socketio):
                                 pygame.mixer.music.play()
                             except Exception as ex:
                                 pass
-            default_language = lollmsElfServer.personality.language.lower().strip().split()[0]
+            if lollmsElfServer.personality.language:         
+                default_language = lollmsElfServer.personality.language.lower().strip().split()[0]
+            else:
+                default_language = 'english'
+                
             current_language = lollmsElfServer.config.current_language.lower().strip().split()[0]
 
             if lollmsElfServer.config.current_language and  current_language!= default_language:
