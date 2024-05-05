@@ -51,11 +51,28 @@ document.getElementById('save-svg').addEventListener('click', function() {
 
 function zoomSVG(factor) {
     var svg = document.getElementById('svg-viewer');
-    var currentWidth = svg.getAttribute("width");
-    var currentHeight = svg.getAttribute("height");
-    svg.setAttribute("width", Math.round(currentWidth * factor));
-    svg.setAttribute("height", Math.round(currentHeight * factor));
+    // Get current width and height as integers
+    var currentWidth = parseInt(svg.getAttribute("width"), 10);
+    var currentHeight = parseInt(svg.getAttribute("height"), 10);
+
+    // Check if currentWidth and currentHeight are numbers. If not, log an error or set a default value.
+    if (isNaN(currentWidth) || isNaN(currentHeight)) {
+        console.error("Error: Current width or height of the SVG is not a valid number.");
+        // Optionally, set default values or return to avoid further execution
+        // currentWidth = 100; // Example default value
+        // currentHeight = 100; // Example default value
+        return; // Exit the function if values are not valid numbers
+    }
+
+    // Calculate new width and height by applying the zoom factor and rounding the result
+    var newWidth = Math.round(currentWidth * factor);
+    var newHeight = Math.round(currentHeight * factor);
+
+    // Set the new width and height on the SVG element
+    svg.setAttribute("width", newWidth);
+    svg.setAttribute("height", newHeight);
 }
+
 
 function saveSVG() {
     var svg = document.getElementById('svg-viewer');
