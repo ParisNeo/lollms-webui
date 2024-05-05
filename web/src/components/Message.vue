@@ -155,7 +155,7 @@
                             </div>    
                             <div class="flex flex-row items-center">
                                 <div v-if="!isSynthesizingVoice" class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2 cursor-pointer" 
-                                    title="read"
+                                    title="generate_audio"
                                     @click.stop="read()"
                                 >
                                     <i data-feather="voicemail"></i>
@@ -491,7 +491,7 @@ export default {
             }
             else{
                 this.isSynthesizingVoice=true
-                axios.post("./text2Audio",{text:this.message.content}).then(response => {
+                axios.post("./text2wav",{text:this.message.content}).then(response => {
                     this.isSynthesizingVoice=false
                     let url = response.data.url
                     console.log(url)
@@ -520,81 +520,97 @@ export default {
             }
         },
         speak() {
-            if (this.msg) {
-                this.speechSynthesis.cancel();
-                this.msg = null;
-                this.isSpeaking = false;
-                return;
-            }
-            let startIndex =0;
-            // Set isSpeaking to true before starting synthesis
-            console.log("voice on")
-            this.isSpeaking = true;
-
-            const chunkSize = 200; // You can adjust the chunk size as needed
-            this.message.content;
-
-            // Create a new SpeechSynthesisUtterance instance
-            this.msg = new SpeechSynthesisUtterance();
-            this.msg.pitch = this.$store.state.config.audio_pitch;
-
-            // Optionally, set the voice and other parameters as before
-            if (this.voices.length > 0) {
-                this.msg.voice = this.voices.filter(voice => voice.name === this.$store.state.config.audio_out_voice)[0];
-            }
-
-
-            // Function to find the index of the last sentence that fits within the chunk size
-            const findLastSentenceIndex = (startIndex) => {
-                let txt = this.message.content.substring(startIndex, startIndex+chunkSize)
-                // Define an array of characters that represent end of sentence markers.
-                const endOfSentenceMarkers = ['.', '!', '?', '\n'];
-
-                // Initialize a variable to store the index of the last end of sentence marker.
-                let lastIndex = -1;
-
-                // Iterate through the end of sentence markers and find the last occurrence in the txt string.
-                endOfSentenceMarkers.forEach(marker => {
-                const markerIndex = txt.lastIndexOf(marker);
-                if (markerIndex > lastIndex) {
-                    lastIndex = markerIndex;
-                }
+            if(this.$store.state.config.xtts_enable){
+                this.isSpeaking = true;
+                axios.post("./text2Audio",{text:this.message.content}).then(response => {
+                    this.isSpeaking = false;
+                }).catch(ex=>{
+                    this.$store.state.toast.showToast(`Error: ${ex}`,4,false)
+                    this.isSpeaking = false;
                 });
-                if(lastIndex==-1){lastIndex=txt.length}
-                console.log(lastIndex)
-                return lastIndex+startIndex+1;
-            };
+            }
+            else{
+                if (this.msg) {
+                    this.speechSynthesis.cancel();
+                    this.msg = null;
+                    this.isSpeaking = false;
+                    return;
+                }
+                let startIndex =0;
+                // Set isSpeaking to true before starting synthesis
+                console.log("voice on")
+                this.isSpeaking = true;
 
-            // Function to speak a chunk of text
-            const speakChunk = () => {
-                if (this.message.content.includes('.')){
-                    const endIndex = findLastSentenceIndex(startIndex);
-                    const chunk = this.message.content.substring(startIndex, endIndex);
-                    this.msg.text = chunk;
-                    startIndex = endIndex + 1;
-                    this.msg.onend = (event) => {
-                        if (startIndex < this.message.content.length-2) {
-                            // Use setTimeout to add a brief delay before speaking the next chunk
-                            setTimeout(() => {
+                const chunkSize = 200; // You can adjust the chunk size as needed
+                this.message.content;
+
+                // Create a new SpeechSynthesisUtterance instance
+                this.msg = new SpeechSynthesisUtterance();
+                this.msg.pitch = this.$store.state.config.audio_pitch;
+
+                // Optionally, set the voice and other parameters as before
+                if (this.voices.length > 0) {
+                    this.msg.voice = this.voices.filter(voice => voice.name === this.$store.state.config.audio_out_voice)[0];
+                }
+
+
+                // Function to find the index of the last sentence that fits within the chunk size
+                const findLastSentenceIndex = (startIndex) => {
+                    let txt = this.message.content.substring(startIndex, startIndex+chunkSize)
+                    // Define an array of characters that represent end of sentence markers.
+                    const endOfSentenceMarkers = ['.', '!', '?', '\n'];
+
+                    // Initialize a variable to store the index of the last end of sentence marker.
+                    let lastIndex = -1;
+
+                    // Iterate through the end of sentence markers and find the last occurrence in the txt string.
+                    endOfSentenceMarkers.forEach(marker => {
+                    const markerIndex = txt.lastIndexOf(marker);
+                    if (markerIndex > lastIndex) {
+                        lastIndex = markerIndex;
+                    }
+                    });
+                    if(lastIndex==-1){lastIndex=txt.length}
+                    console.log(lastIndex)
+                    return lastIndex+startIndex+1;
+                };
+
+                // Function to speak a chunk of text
+                const speakChunk = () => {
+                    if (this.message.content.includes('.')){
+                        const endIndex = findLastSentenceIndex(startIndex);
+                        const chunk = this.message.content.substring(startIndex, endIndex);
+                        this.msg.text = chunk;
+                        startIndex = endIndex + 1;
+                        this.msg.onend = (event) => {
+                            if (startIndex < this.message.content.length-2) {
+                                // Use setTimeout to add a brief delay before speaking the next chunk
+                                setTimeout(() => {
+                                    speakChunk();
+                                }, 1); // Adjust the delay as needed
+                            } else {
+                                this.isSpeaking = false;
+                                console.log("voice off :",this.message.content.length,"  ",endIndex)
+                            }
+                        };
+                        this.speechSynthesis.speak(this.msg);
+
+                    }
+                    else{
+                        setTimeout(() => {
                                 speakChunk();
                             }, 1); // Adjust the delay as needed
-                        } else {
-                            this.isSpeaking = false;
-                            console.log("voice off :",this.message.content.length,"  ",endIndex)
-                        }
-                    };
-                    this.speechSynthesis.speak(this.msg);
+                    }
+                };
 
-                }
-                else{
-                    setTimeout(() => {
-                            speakChunk();
-                        }, 1); // Adjust the delay as needed
-                }
-            };
+                // Speak the first chunk
+                speakChunk();
+            }
 
-            // Speak the first chunk
-            speakChunk();
+
+
+
+
         },
    
         toggleModel() {

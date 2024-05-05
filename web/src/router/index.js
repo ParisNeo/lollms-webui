@@ -9,12 +9,18 @@ import DiscussionsView from '../views/DiscussionsView.vue'
 import InteractiveView from '../views/InteractiveView.vue'
 import NodesView from '../views/NodesView.vue'
 import ComfyuiView from '../views/ComfyuiView.vue'
+import AutoSDView from '../views/AutoSDView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/comfyui_view/',
+      path: '/auto_sd_view/',
+      name: 'AutoSD',
+      component: AutoSDView
+    },
+    {
+      path: '/autosd_view/',
       name: 'ComfyUI',
       component: ComfyuiView
     },

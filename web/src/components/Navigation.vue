@@ -22,6 +22,17 @@
               Playground
             </RouterLink>
             <RouterLink 
+              v-if="$store.state.config.enable_sd_service" 
+              :to="{ name: 'AutoSD' }" 
+              class="inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold"
+              :class="{ 
+                'text-green-600 hover:text-green-500 dark:text-green-100 font-bold bg-bg-secondary shadow-no-bottom': isRouteActive('AutoSD'),
+                'bounce-in': isRouteActive('AutoSD'),
+              }"
+              >
+              Auto111-SD
+            </RouterLink>
+            <RouterLink 
               v-if="$store.state.config.enable_comfyui_service" 
               :to="{ name: 'ComfyUI' }" 
               class="inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold"
@@ -33,7 +44,7 @@
               ComfyUI
             </RouterLink>
             <RouterLink 
-              v-if="$store.state.config.enable_voice_service" 
+              v-if="$store.state.config.xtts_enable" 
               :to="{ name: 'interactive' }" 
               class="inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold"
               :class="{ 
