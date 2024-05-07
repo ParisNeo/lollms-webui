@@ -56,7 +56,7 @@
                     </button>
                     <button class="text-2xl hover:text-secondary duration-75 active:scale-90"
                         title="Reset database, remove all discussions">
-                        <i data-feather="refresh-ccw"></i>
+                        <i data-feather="trash-2" @click.stop=""></i>
                     </button>
                     <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Export database"
                         type="button" @click.stop="database_selectorDialogVisible=true">
@@ -67,6 +67,12 @@
                         title="Import discussions" type="button" @click.stop="$refs.fileDialog.click()">
                         <i data-feather="log-in"></i>
                     </button>
+                    <input type="file" ref="bundleLoadingDialog" style="display: none" @change="importDiscussionsBundle" />
+                    <button  v-if="!showSaveConfirmation" title="Import discussion bundle" @click.stop="$refs.bundleLoadingDialog.click()" 
+                        class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                        >
+                        <i data-feather="folder"></i>
+                    </button>
                     
                     <div v-if="isOpen" class="dropdown">
                       <button @click="importDiscussions">LOLLMS</button> 
@@ -75,10 +81,6 @@
                     <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Filter discussions"
                         type="button" @click="isSearch = !isSearch" :class="isSearch ? 'text-secondary' : ''">
                         <i data-feather="search"></i>
-                    </button>
-                    <button  v-if="!showSaveConfirmation" title="Save configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                        @click="showSaveConfirmation = true">
-                        <i data-feather="save"></i>
                     </button>
                     <!-- SAVE CONFIG -->
                     <div v-if="showSaveConfirmation" class="flex gap-3 flex-1 items-center duration-75">
@@ -103,7 +105,7 @@
                         class=" w-6 hover:text-secondary duration-75 active:scale-90">
                         <i data-feather="x-octagon"></i>
                     </button>
-                    <button v-if="!loading" type="button" @click.stop="showSkillsLib" title="Skills database is deactivated"
+                    <button v-if="!loading" type="button" @click.stop="showSkillsLib" title="Show Skills database"
                         class=" w-6 hover:text-secondary duration-75 active:scale-90">
                         <i data-feather="book"></i>
                     </button>
@@ -183,8 +185,12 @@
 
                             <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
                                 title="Export selected to a json file" type="button" @click.stop="exportDiscussionsAsJson">
-                                <i data-feather="log-out"></i>
+                                <i data-feather="codepen"></i>
                             </button>
+                            <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
+                                title="Export selected to a martkdown file" type="button" @click.stop="exportDiscussions">
+                                <i data-feather="folder"></i>
+                            </button>                            
                             <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
                                 title="Export selected to a martkdown file" type="button" @click.stop="exportDiscussionsAsMarkdown">
                                 <i data-feather="bookmark"></i>
@@ -1350,23 +1356,25 @@ export default {
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_END) {
                     console.log("received step end", msgObj)
                     try{
-                        // Find the step with the matching message and update its 'done' property to true
-                        const matchingStep = messageItem.steps.find(step => step.message === msgObj.content);
 
-                        if (matchingStep) {
-                            matchingStep.done = true;
-                            try {
-                                console.log(msgObj.parameters)
-                                const parameters = msgObj.parameters;
-                                if(parameters!=undefined){
-                                    matchingStep.status=parameters.status
-                                    console.log(parameters);
+                        // Iterate over each step and update the 'done' property if the message matches msgObj.content
+                        messageItem.steps.forEach(step => {
+                            if (step.message === msgObj.content) {
+                                step.done = true;
+                                try {
+                                    console.log(msgObj.parameters)
+                                    const parameters = msgObj.parameters;
+                                    if(parameters !== undefined){
+                                        step.status = parameters.status;
+                                        console.log(parameters);
+                                    }
+                                    
+                                } catch (error) {
+                                    console.error('Error parsing JSON:', error.message);
                                 }
-                                
-                            } catch (error) {
-                                console.error('Error parsing JSON:', error.message);
                             }
-                        }
+                        });
+
                     }
                     catch{
                         console.log("error")
@@ -1834,7 +1842,10 @@ export default {
                 this.loading = false
             }
 
-        },        
+        },
+        async exportDiscussions(){
+
+        },
         async exportDiscussionsAsJson() {
             // Export selected discussions
 
@@ -1878,6 +1889,9 @@ export default {
                 }
                 this.loading = false
             }
+
+        },
+        async importDiscussionsBundle(event){
 
         },
         async importDiscussions(event) {
