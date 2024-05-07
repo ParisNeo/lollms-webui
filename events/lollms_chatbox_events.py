@@ -1,10 +1,10 @@
 """
 project: lollms
-file: lollms_discussion_events.py 
+file: lollms_chatbox_events.py 
 author: ParisNeo
 description: 
     This module contains a set of Socketio routes that provide information about the Lord of Large Language and Multimodal Systems (LoLLMs) Web UI
-    application. These routes are specific to discussion operation
+    application. These routes are specific to chatbox operation
 
 """
 from fastapi import APIRouter, Request
@@ -120,13 +120,15 @@ def add_events(sio:socketio):
                 cv2.imwrite(str(save_path), frame)
                 if not lollmsElfServer.personality.processor is None:
                     lollmsElfServer.info("Sending file to scripted persona")
-                    lollmsElfServer.personality.processor.add_file(save_path, client, partial(lollmsElfServer.process_chunk, client_id = sid))
+                    client.discussion.add_file(save_path, client, partial(lollmsElfServer.process_chunk, client_id = sid))
+                    # lollmsElfServer.personality.processor.add_file(save_path, client, partial(lollmsElfServer.process_chunk, client_id = sid))
                     # File saved successfully
                     run_async(partial(sio.emit,'picture_taken', {'status':True, 'progress': 100}))
                     lollmsElfServer.info("File sent to scripted persona")
                 else:
                     lollmsElfServer.info("Sending file to persona")
-                    lollmsElfServer.personality.add_file(save_path, client, partial(lollmsElfServer.process_chunk, client_id = sid))
+                    client.discussion.add_file(save_path, client, partial(lollmsElfServer.process_chunk, client_id = sid))
+                    #lollmsElfServer.personality.add_file(save_path, client, partial(lollmsElfServer.process_chunk, client_id = sid))
                     # File saved successfully
                     run_async(partial(sio.emit,'picture_taken', {'status':True, 'progress': 100}))
                     lollmsElfServer.info("File sent to persona")
