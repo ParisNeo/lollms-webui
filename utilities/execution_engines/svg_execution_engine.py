@@ -51,7 +51,7 @@ def build_svg_output(code, ifram_name=None):
             '}',
             '</style>',
             '<div class=\'svg\'>',
-            "\n".join([c for c in code.split("\n") if c.strip()!=""]),
+            "\n".join([c for c in code.replace("\"","'").split("\n") if c.strip()!=""]),
             '</div>',
             '<script src=\'https://cdn.jsdelivr.net/npm/svg/dist/svg.min.js\'></script>',
             '<script>',

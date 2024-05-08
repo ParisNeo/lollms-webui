@@ -47,6 +47,7 @@
                             :on-settings="onSettingsPersonality"  
                             :on-reinstall="onPersonalityReinstall"
                             :on-talk="handleOnTalk"
+                            :on-open-folder="handleOpenFolder"
                            />
                     </TransitionGroup>
                 </div>
@@ -184,6 +185,7 @@ export default {
         personalityImgPlacehodler(event) {
             event.target.src = defaultPersonalityImgPlaceholder
         },
+        
         onPersonalityReinstall(persItem){
             console.log('on reinstall ', persItem)
             this.isLoading = true
@@ -244,6 +246,16 @@ export default {
         },
         onPersonalityRemount(persItem){
             this.reMountPersonality(persItem)
+        },
+        async handleOpenFolder(pers){
+            const data = {
+                                    client_id:this.$store.state.client_id, 
+                                    personality_folder: pers.personality.folder
+                                }
+            console.log(data)                    
+            await axios.post("/open_personality_folder",
+                                data
+                            )
         },
         async handleOnTalk(pers){
             // eslint-disable-next-line no-unused-vars

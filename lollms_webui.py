@@ -793,7 +793,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             metadata            = mtdt,
             ui                  = ui,
             rank                = 0,
-            parent_message_id   = client.discussion.current_message.id,
+            parent_message_id   = client.discussion.current_message.id if client.discussion.current_message is not None else 0,
             binding             = self.config["binding_name"],
             model               = self.config["model_name"], 
             personality         = self.config["personalities"][self.config["active_personality_id"]],

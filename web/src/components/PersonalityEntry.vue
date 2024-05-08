@@ -84,7 +84,15 @@
             class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
             <i data-feather="send" class="w-5"></i>
             <span class="sr-only">Talk</span>
-        </button>        
+        </button>      
+        <button type="button" title="Show_folder"
+            @click="showFolder"
+            class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center " @click.stop="">
+            <i data-feather="folder" class="w-5"></i>
+            <span class="sr-only">Show Folder</span>
+        </button>      
+
+          
         <InteractiveMenu  :commands="commandsList" :force_position=2 title="Menu">
         
         </InteractiveMenu>
@@ -110,6 +118,7 @@ export default {
     selected: Boolean,
     full_path: String,
     onTalk:Function,
+    onOpenFolder:Function,
     onSelected: Function,
     onMount: Function,
     onUnMount: Function,
@@ -170,6 +179,9 @@ export default {
     },
     defaultImg(event) {
       event.target.src = botImgPlaceholder
+    },
+    showFolder() {
+      this.onOpenFolder(this)
     },
     toggleTalk() {
       this.onTalk(this)

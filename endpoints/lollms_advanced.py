@@ -363,12 +363,12 @@ async def open_code_in_vs_code(vs_code_data: VSCodeData):
         lollmsElfServer.error(ex)
         return {"status":False,"error":str(ex)}
     
-class FolderRequest(BaseModel):
+class DiscussionFolderRequest(BaseModel):
     client_id: str = Field(...)
     discussion_id: int = Field(...)
 
 @router.post("/open_discussion_folder")
-async def open_discussion_folder(request: FolderRequest):
+async def open_discussion_folder(request: DiscussionFolderRequest):
     """
     Opens code folder.
 
@@ -404,6 +404,50 @@ async def open_discussion_folder(request: FolderRequest):
         trace_exception(ex)
         lollmsElfServer.error(ex)
         return {"status": False, "error": "An error occurred while processing the request"}
+
+class PersonalityFolderRequest(BaseModel):
+    client_id: str = Field(...)
+    personality_folder: int = Field(...)
+
+@router.post("/open_personality_folder")
+async def open_personality_folder(request: PersonalityFolderRequest):
+    """
+    Opens code folder.
+
+    :param request: The HTTP request object.
+    :return: A JSON response with the status of the operation.
+    """
+    client = check_access(lollmsElfServer, request.client_id)
+    personality_folder = sanitize_path(request.personality_folder)
+
+    if lollmsElfServer.config.headless_server_mode:
+        return {"status":False,"error":"Open code folder is blocked when in headless mode for obvious security reasons!"}
+
+    if lollmsElfServer.config.host!="localhost" and lollmsElfServer.config.host!="127.0.0.1":
+        return {"status":False,"error":"Open code folder is blocked when the server is exposed outside for very obvious reasons!"}
+    
+    if lollmsElfServer.config.turn_on_open_file_validation:
+        if not show_yes_no_dialog("Validation","Do you validate the opening of a folder?"):
+            return {"status":False,"error":"User refused the opeining folder!"}
+
+    try:
+        ASCIIColors.info("Opening folder:")
+        # Create a temporary file.
+        root_folder = lollmsElfServer.lollms_paths.personalities_zoo_path/personality_folder
+        root_folder.mkdir(parents=True, exist_ok=True)
+        if platform.system() == 'Windows':
+            subprocess.Popen(f'explorer "{root_folder}"')
+        elif platform.system() == 'Linux':
+            subprocess.run(['xdg-open', str(root_folder)], check=True)
+        elif platform.system() == 'Darwin':
+            subprocess.run(['open', str(root_folder)], check=True)
+        return {"status": True, "execution_time": 0}
+
+    except Exception as ex:
+        trace_exception(ex)
+        lollmsElfServer.error(ex)
+        return {"status": False, "error": "An error occurred while processing the request"}
+
 
 @router.post("/start_recording")
 def start_recording(data:Identification):
