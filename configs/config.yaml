@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 92
+version: 93
 binding_name: null
 model_name: null
 model_variant: null
@@ -79,6 +79,10 @@ auto_show_browser: true
 
 # copy to clipboard 
 copy_to_clipboard_add_all_details: false
+
+# STT service 
+asr_enable: false
+asr_base_url: http://localhost:9000
 
 # Voice service
 xtts_enable: false

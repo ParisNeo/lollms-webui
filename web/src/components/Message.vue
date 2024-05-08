@@ -577,7 +577,7 @@ export default {
 
                 // Function to speak a chunk of text
                 const speakChunk = () => {
-                    if (this.message.content.includes('.')){
+                    if (this.status_message=='Done' || this.message.content.includes('.')||this.message.content.includes('?')||this.message.content.includes('!')){
                         const endIndex = findLastSentenceIndex(startIndex);
                         const chunk = this.message.content.substring(startIndex, endIndex);
                         this.msg.text = chunk;
@@ -604,6 +604,7 @@ export default {
                 };
 
                 // Speak the first chunk
+                console.log("Speaking chunk")
                 speakChunk();
             }
 
