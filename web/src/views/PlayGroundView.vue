@@ -143,7 +143,7 @@
 
             </tokens-hilighter>
             <div  v-if="tab_id === 'render'">
-              <MarkdownRenderer ref="mdRender" :markdown-text="text" class="mt-4 p-2 rounded shadow-lg dark:bg-bg-dark">
+              <MarkdownRenderer ref="mdRender" :client_id="this.$store.state.client_id" :message_id="0" :discussion_id="0" :markdown-text="text" class="mt-4 p-2 rounded shadow-lg dark:bg-bg-dark">
               </MarkdownRenderer>          
             </div>
           </div>

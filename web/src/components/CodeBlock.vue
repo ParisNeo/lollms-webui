@@ -147,8 +147,8 @@ export default {
       const json = JSON.stringify({
                                     'client_id': this.client_id, 
                                     'code': this.code, 
-                                    'discussion_id': this.discussion_id, 
-                                    'message_id': this.message_id, 
+                                    'discussion_id': this.discussion_id?this.discussion_id:0, 
+                                    'message_id': this.message_id?this.message_id:0, 
                                     'language': this.language
                                   })   
       console.log(json)     

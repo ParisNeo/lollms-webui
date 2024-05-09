@@ -5671,8 +5671,8 @@ export default {
             },
             set(value) {
                 // You should not set the value directly here; use the updateSetting method instead
-                console.log("Current voice set to ",value)
-                this.$store.state.config.current_language = value
+                console.log("Current xtts voice set to ",value)
+                this.$store.state.config.xtts_current_language = value
             },
         },
         xtts_current_voice:{
