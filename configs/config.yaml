@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 94
+version: 95
 binding_name: null
 model_name: null
 model_variant: null
@@ -32,7 +32,7 @@ discussion_prompt_separator: "!@>"
 seed: -1
 ctx_size: 4084
 max_n_predict: 4096
-min_n_predict: 512
+min_n_predict: 1024
 temperature: 0.9
 top_k: 50
 top_p: 0.95

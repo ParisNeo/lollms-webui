@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Lollms"
-#define MyAppVersion "9.5"
+#define MyAppVersion "9.7"
 #define MyAppPublisher "ParisNeo"
 #define MyAppURL "https://www.lollms.com/"
 #define MyAppExeName "win_run.bat"
@@ -42,11 +42,10 @@ Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "docs\*"; DestDir: "{app}\docs"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "../{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "first_install.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "win_conda_session.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "uninstall.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "../win_conda_session.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "../uninstall.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "logo.ico"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
@@ -63,6 +62,7 @@ ElfRadioButton: TRadioButton;
 OpenRouterRadioButton: TRadioButton;
 GroqRadioButton: TRadioButton;
 MistralAIRadioButton: TRadioButton;
+OpenAIRadioButton: TRadioButton;
 RadioButton: TRadioButton;
 OllamaRadioButton: TRadioButton;
 VllmRadioButton: TRadioButton;
@@ -101,6 +101,12 @@ MistralAIRadioButton.Caption := 'mistralai';
 MistralAIRadioButton.Checked := False;
 MistralAIRadioButton.Parent := OptionsPage.Surface;
 MistralAIRadioButton.Top := GroqRadioButton.Top + GroqRadioButton.Height + 8;
+
+OpenAIRadioButton := TRadioButton.Create(OptionsPage);
+OpenAIRadioButton.Caption := 'openai';
+OpenAIRadioButton.Checked := False;
+OpenAIRadioButton.Parent := OptionsPage.Surface;
+OpenAIRadioButton.Top := GroqRadioButton.Top + GroqRadioButton.Height + 8;
 
 OllamaRadioButton := TRadioButton.Create(OptionsPage);
 OllamaRadioButton.Caption := 'ollama';
@@ -158,6 +164,8 @@ begin
     Result := '--groq'
   else if MistralAIRadioButton.Checked then
     Result := '--mistralai'
+  else if OpenAIRadioButton.Checked then
+    Result := '--openai'
   else if OllamaRadioButton.Checked then
     Result := '--ollama'
   else if VllmRadioButton.Checked then
