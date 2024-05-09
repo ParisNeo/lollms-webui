@@ -117,6 +117,11 @@ export default {
 
 
         return {
+
+            posts_headers : {
+                'accept': 'application/json',
+                'Content-Type': 'application/json'
+            },            
             bUrl: bUrl,
             isMounted: false,
             isLoading: false
@@ -406,17 +411,16 @@ export default {
         },        
         async unmount_personality(pers) {
             if (!pers) { return { 'status': false, 'error': 'no personality - unmount_personality' } }
-
             const obj = {
+                client_id: this.$store.state.client_id,
+                language: pers.language,
                 category: pers.category,
-                folder: pers.folder,
-                language: pers.language
+                folder: pers.folder
             }
 
 
             try {
-
-                const res = await axios.post('/unmount_personality', obj);
+                const res = await axios.post('/unmount_personality', obj, {headers: this.posts_headers});
 
 
                 if (res) {
