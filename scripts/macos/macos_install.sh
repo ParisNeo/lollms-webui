@@ -3,6 +3,10 @@
 # This script will install Miniconda and git with all dependencies for this 
 # project. This enables a user to install this project without manually 
 # installing Conda and git.
+#
+# Introdusing Versions so can troubleshoot problems with script faster
+# Version: 2.2
+
 
 echo "      ___       ___           ___       ___       ___           ___      "
 echo "     /\__\     /\  \         /\__\     /\__\     /\__\         /\  \     "
@@ -182,24 +186,15 @@ done < requirements.txt
 # Install the pip requirements
 python -m pip install -r requirements.txt --upgrade
 
-if [[ -e "$INSTALL_DIR/macos_run.sh" ]]; then
-    echo "Macos run found"
-else
-    cp $INSTALL_DIR/lollms-webui/scripts/macos/macos_run.sh $INSTALL_DIR/ 
-fi
+# The Following section creates the links to the install directory
+# scripts vs copying the scripts. 
 
-# Macos_update.sh is no longer available on github skipping
-#if [[ -e "$INSTALL_DIR/macos_update.sh" ]]; then
-#    echo "Macos update found"
-#else
-#    cp $INSTALL_DIR/lollms-webui/scripts/macos/macos_update.sh $INSTALL_DIR/ 
-#fi
+# Linking to the macos_run.sh script
+cd $INSTALL_DIR
+ln -s lollms-webui/scripts/macos/macos_run.sh macos_run.sh 
 
-if [[ -e "$INSTALL_DIR/macos_conda_session.sh" ]]; then
-    echo "Macos conda session found"
-else
-    cp $INSTALL_DIR/lollms-webui/scripts/macos/macos_conda_session.sh $INSTALL_DIR/ 
-fi
+# Linking to the macos_conda_sessions.sh
+ln -s lollms-webui/scripts/macos/macos_conda_session.sh macos_conda_session.sh 
 
 echo "Select the default binding to be installed:"
 options=("None (install the binding later)" "Local binding - ollama" "Local binding - python_llama_cpp" "Local binding - bs_exllamav2" "Remote binding - open_router" "Remote binding - open_ai" "Remote binding - mistral_ai")
