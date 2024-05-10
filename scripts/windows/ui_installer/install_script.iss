@@ -63,7 +63,6 @@ OpenRouterRadioButton: TRadioButton;
 GroqRadioButton: TRadioButton;
 MistralAIRadioButton: TRadioButton;
 OpenAIRadioButton: TRadioButton;
-RadioButton: TRadioButton;
 OllamaRadioButton: TRadioButton;
 VllmRadioButton: TRadioButton;
 LitellmRadioButton: TRadioButton;
