@@ -167,7 +167,7 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto w-full">
+                <div class="overflow-x-auto w-full overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
                     <!-- MESSAGE CONTENT -->
                     <details v-show="message != undefined && message.steps != undefined && message.steps.length>0" class="flex w-full cursor-pointer rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 mb-3.5 max-w-full">
                         <summary class="grid min-w-72 select-none grid-cols-[40px,1fr] items-center gap-2.5 p-2">
@@ -191,7 +191,7 @@
                     </details>
                     <div class="flex flex-col items-start w-full">
                     </div>
-                    <div class="flex flex-col items-start w-full">
+                    <div class="flex flex-col items-start w-full overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
                         <div v-for="(html_js, index) in message.html_js_s" :key="'htmljs-' + message.id + '-' + index" class="htmljs font-bold" :style="{ backgroundColor: step.done ? 'transparent' : 'inherit' }">
                             <RenderHTMLJS :htmlContent="html_js" />
                         </div>
@@ -213,7 +213,7 @@
                         </div>
                     </div>
 
-                    <DynamicUIRenderer v-if="message.ui !== null && message.ui !== undefined && message.ui !== ''" class="w-full h-full" :code="message.ui"></DynamicUIRenderer>
+                    <DynamicUIRenderer v-if="message.ui !== null && message.ui !== undefined && message.ui !== ''" class="w-full" :code="message.ui"></DynamicUIRenderer>
                     <audio controls v-if="audio_url!=null" :key="audio_url">
                         <source :src="audio_url" type="audio/wav"  ref="audio_player" >
                         Your browser does not support the audio element.

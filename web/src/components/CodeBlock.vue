@@ -39,7 +39,7 @@
     <span v-if="executionOutput" class="text-2xl">Execution output</span>
     <pre  class="hljs mt-0 p-1 rounded-md break-all grid grid-cols-1" v-if="executionOutput">
       <div class="container h-[200px] overflow-x-auto break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
-        <div ref="execution_output" v-html="executionOutput"></div>
+        <div ref="execution_output" class="w-full h-full overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" v-html="executionOutput"></div>
       </div>
     </pre>    
 
