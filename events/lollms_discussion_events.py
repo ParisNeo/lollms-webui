@@ -53,6 +53,10 @@ def add_events(sio:socketio):
             lollmsElfServer.session.get_client(client_id).discussion = lollmsElfServer.db.load_last_discussion()
     
         if lollmsElfServer.personality.welcome_message!="":
+            if lollmsElfServer.personality.processor:
+                welcome_message = lollmsElfServer.personality.processor.get_welcome()
+                if welcome_message is not None:
+                    lollmsElfServer.personality.welcome_message = welcome_message
             if lollmsElfServer.personality.welcome_audio_path.exists():
                 for voice in lollmsElfServer.personality.welcome_audio_path.iterdir():
                     if voice.suffix.lower() in [".wav",".mp3"]:
