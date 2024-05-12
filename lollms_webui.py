@@ -1274,8 +1274,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     self.personality.full(client.generated_text)
             except Exception as ex:
                 trace_exception(ex)
-            self.close_message(client_id)
             self.update_message(client_id, "Generating ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_END)
+            self.close_message(client_id)
 
             client.processing=False
             if client.schedule_for_deletion:

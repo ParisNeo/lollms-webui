@@ -54,15 +54,6 @@ def add_events(sio:socketio):
             lollmsElfServer.session.get_client(client_id).discussion = lollmsElfServer.db.load_last_discussion()
     
         if lollmsElfServer.personality.welcome_message!="":
-            if lollmsElfServer.personality.processor:
-                lollmsElfServer.ShowBlockingMessage("Building custom welcome message.\nPlease standby.")
-                try:
-                    welcome_message = lollmsElfServer.personality.processor.get_welcome(client)
-                    if welcome_message is not None:
-                        lollmsElfServer.personality.welcome_message = welcome_message
-                except Exception as ex:
-                    trace_exception(ex)
-                lollmsElfServer.HideBlockingMessage()
             if lollmsElfServer.personality.welcome_audio_path.exists():
                 for voice in lollmsElfServer.personality.welcome_audio_path.iterdir():
                     if voice.suffix.lower() in [".wav",".mp3"]:
@@ -99,6 +90,16 @@ def add_events(sio:socketio):
                         welcome_message = language_pack["welcome_message"]
             else:
                 welcome_message = lollmsElfServer.personality.welcome_message
+
+            if lollmsElfServer.personality.processor:
+                lollmsElfServer.ShowBlockingMessage("Building custom welcome message.\nPlease standby.")
+                try:
+                    welcome_message = lollmsElfServer.personality.processor.get_welcome(welcome_message,client)
+                    if welcome_message is None:
+                        welcome_message = lollmsElfServer.personality.welcome_message
+                except Exception as ex:
+                    trace_exception(ex)
+                lollmsElfServer.HideBlockingMessage()
 
             try:
                 nb_tokens = len(lollmsElfServer.model.tokenize(welcome_message))
