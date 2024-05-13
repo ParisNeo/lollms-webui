@@ -123,9 +123,9 @@ async def add_webpage(request: AddWebPageRequest):
         ASCIIColors.yellow("Scaping web page")
         client = lollmsElfServer.session.get_client(request.client_id)
         url = request.url
-        index =  find_first_available_file_index(lollmsElfServer.lollms_paths.personal_uploads_path,"web_",".txt")
+        index =  find_first_available_file_index(client.discussion.discussion_folder/"text_data","web_",".txt")
         try:
-            file_path=sanitize_path(str(lollmsElfServer.lollms_paths.personal_uploads_path/f"web_{index}.txt"),True)
+            file_path=sanitize_path(str(client.discussion.discussion_folder/"text_data"/f"web_{index}.txt"),True)
         except Exception as ex:
             lollmsElfServer.HideBlockingMessage()
             raise ex
