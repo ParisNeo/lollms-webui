@@ -120,14 +120,14 @@ def add_events(sio:socketio):
                 cv2.imwrite(str(save_path), frame)
                 if not lollmsElfServer.personality.processor is None:
                     lollmsElfServer.info("Sending file to scripted persona")
-                    client.discussion.add_file(save_path, client, partial(lollmsElfServer.process_chunk, client_id = sid), lollmsElfServer.tasks_library)
+                    client.discussion.add_file(save_path, client, lollmsElfServer.tasks_library,  partial(lollmsElfServer.process_chunk, client_id = sid))
                     # lollmsElfServer.personality.processor.add_file(save_path, client, partial(lollmsElfServer.process_chunk, client_id = sid))
                     # File saved successfully
                     run_async(partial(sio.emit,'picture_taken', {'status':True, 'progress': 100}))
                     lollmsElfServer.info("File sent to scripted persona")
                 else:
                     lollmsElfServer.info("Sending file to persona")
-                    client.discussion.add_file(save_path, client, partial(lollmsElfServer.process_chunk, client_id = sid), lollmsElfServer.tasks_library)
+                    client.discussion.add_file(save_path, client, lollmsElfServer.tasks_library, partial(lollmsElfServer.process_chunk, client_id = sid))
                     #lollmsElfServer.personality.add_file(save_path, client, partial(lollmsElfServer.process_chunk, client_id = sid))
                     # File saved successfully
                     run_async(partial(sio.emit,'picture_taken', {'status':True, 'progress': 100}))

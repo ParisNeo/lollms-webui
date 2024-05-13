@@ -91,6 +91,12 @@ async def execute_code(request: CodeRequest):
         message_id = request.message_id
         language = request.language
 
+        if language=="function":
+            ASCIIColors.info("Executing function call:")
+            ASCIIColors.yellow(code)
+            lollmsElfServer.personality.execute_function()
+            return execute_python(code, client, message_id)
+
         if language=="python":
             ASCIIColors.info("Executing python code:")
             ASCIIColors.yellow(code)

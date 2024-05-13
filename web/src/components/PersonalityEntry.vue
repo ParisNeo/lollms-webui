@@ -7,18 +7,23 @@
 
     <div :class="!personality.installed ? 'border-red-500' : ''">
 
-      <div class="flex flex-row items-center  flex-shrink-0 gap-3">
+      <div class="flex flex-row items-center flex-shrink-0 gap-3">
         <img @click="toggleSelected" ref="imgElement" :src="getImgUrl()" @error="defaultImg($event)"
-          class="w-10 h-10 rounded-full object-fill text-red-700 cursor-pointer">
-        <!-- :class="personality.installed ? 'grayscale-0':'grayscale'" -->
-        <h3 @click="toggleSelected" class="font-bold font-large text-lg line-clamp-3 cursor-pointer">
+          class="w-10 h-10 rounded-full object-fill text-red-700 cursor-pointer"
+          @mouseover="showThumbnail" @mousemove="updateThumbnailPosition" @mouseleave="hideThumbnail">
+        <h3 @click="toggleSelected" class="font-bold font-large text-lg line-clamp-3 cursor-pointer"
+          @mouseover="showThumbnail" @mousemove="updateThumbnailPosition" @mouseleave="hideThumbnail">
           {{ personality.name }}
         </h3>
         <button
-              class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center "
-              title="Copy link to clipboard" @click.stop="toggleCopyLink()">
-              <i data-feather="clipboard" class="w-5"></i>
-            </button>        
+          class="hover:text-secondary duration-75 active:scale-90 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center"
+          title="Copy link to clipboard" @click.stop="toggleCopyLink()">
+          <i data-feather="clipboard" class="w-5"></i>
+        </button>
+        <div v-if="thumbnailVisible" :style="{ top: thumbnailPosition.y + 'px', left: thumbnailPosition.x + 'px' }"
+          class="fixed z-50 w-20 h-20 rounded-full overflow-hidden">
+          <img :src="getImgUrl()" class="w-full h-full object-fill">
+        </div>
       </div>
       <div class="">
         <div class="">
@@ -136,6 +141,8 @@ export default {
     return {
       isMounted: false,
       name: this.personality.name,
+      thumbnailVisible: false,
+      thumbnailPosition: { x: 0, y: 0 }
     };
   },
   computed:{
@@ -174,6 +181,18 @@ export default {
     })
   },
   methods: {
+    showThumbnail() {
+      this.thumbnailVisible = true;
+    },
+    hideThumbnail() {
+      this.thumbnailVisible = false;
+    },
+    updateThumbnailPosition(event) {
+      this.thumbnailPosition = {
+        x: event.clientX + 10, // 10px offset to avoid cursor overlap
+        y: event.clientY + 10
+      };
+    },    
     getImgUrl() {
       return bUrl + this.personality.avatar
     },
