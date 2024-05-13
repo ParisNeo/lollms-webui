@@ -1499,6 +1499,46 @@
                             </tr> 
                         </table>                                
                     </Card>
+
+                    <Card title="Dall-E" :is_subcard="true" class="pb-2  m-2">
+                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="dall_e_key" class="text-sm font-bold" style="margin-right: 1rem;">dall e key:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="text"
+                                id="dall_e_key"
+                                required
+                                v-model="configFile.dall_e_key"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr> 
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="dall_e_generation_engine" class="text-sm font-bold" style="margin-right: 1rem;">dall e generation engine:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                    <select v-model="configFile.dall_e_generation_engine" @change="settingsChanged=true">
+                                    <option>
+                                        dall-e-2
+                                    </option>
+                                    <option>
+                                        dall-e-3
+                                    </option>
+                                    </select>
+                                </div>
+                            </td>
+                            </tr> 
+                        </table>                                
+                    </Card>
+
                     <Card title="ComfyUI service" :is_subcard="true" class="pb-2  m-2">
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <tr>
@@ -3426,7 +3466,7 @@ export default {
 
         },
         reinstallAudioService(){
-            axios.get('install_xtts')
+            axios.post('install_xtts',{client_id:this.$store.state.client_id})
             .then(response => {
 
             })

@@ -101,6 +101,9 @@ export default {
       let validLanguage;
       if (this.language === 'vue' || this.language === 'vue.js') {
         validLanguage = 'javascript';
+      } else 
+      if (this.language === 'function') {
+        validLanguage = 'json';
       } else {
         validLanguage = hljs.getLanguage(this.language) ? this.language : 'plaintext';
       }

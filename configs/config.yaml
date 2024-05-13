@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 95
+version: 96
 binding_name: null
 model_name: null
 model_variant: null
@@ -104,6 +104,11 @@ xtts_enable_text_splitting: true
 # Image generation service
 enable_sd_service: false
 sd_base_url: http://localhost:7860
+
+# Dall e service key
+dall_e_key: ""
+dall_e_generation_engine: "dall-e-3"
+
 
 # Image generation service comfyui
 enable_comfyui_service: false
