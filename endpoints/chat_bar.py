@@ -125,7 +125,7 @@ async def add_webpage(request: AddWebPageRequest):
         url = request.url
         index =  find_first_available_file_index(lollmsElfServer.lollms_paths.personal_uploads_path,"web_",".txt")
         try:
-            file_path=sanitize_path(lollmsElfServer.lollms_paths.personal_uploads_path/f"web_{index}.txt",True)
+            file_path=sanitize_path(str(lollmsElfServer.lollms_paths.personal_uploads_path/f"web_{index}.txt"),True)
         except Exception as ex:
             lollmsElfServer.HideBlockingMessage()
             raise ex
