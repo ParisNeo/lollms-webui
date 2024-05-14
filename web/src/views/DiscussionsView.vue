@@ -1668,7 +1668,6 @@ export default {
         },
         finalMsgEvent(msgObj) {
             let index=0;
-
             // Last message contains halucination suppression so we need to update the message content too
             this.discussion_id = msgObj.discussion_id
             if (this.currentDiscussion.id == this.discussion_id) {
@@ -1684,6 +1683,7 @@ export default {
             nextTick(() => {
                 const msgList = document.getElementById('messages-list')
                 this.scrollBottom(msgList)
+                this.recoverFiles()
             })
 
 
