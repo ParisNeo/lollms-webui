@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 96
+version: 98
 binding_name: null
 model_name: null
 model_variant: null
@@ -80,10 +80,30 @@ auto_show_browser: true
 # copy to clipboard 
 copy_to_clipboard_add_all_details: false
 
+# -------------------- Services global configurations --------------------------
+# Select the active test to speach, text to image and speach to text services
+active_tts_service: "None" # xtts (offline), openai_tts (API key required)
+active_tti_service: "None" # autosd (offline), dall-e (online)
+active_stt_service: "None" # whisper (offline), asr (offline or online), openai_whiosper (API key required)
+
+# -------------------- Services --------------------------
+
+# ***************** STT *****************
 # STT service 
 asr_enable: false
 asr_base_url: http://localhost:9000
 
+# openai_whisper configuration
+openai_whisper_key: ""
+openai_whisper_model: "whisper-1"
+
+
+# whisper configuration
+whisper_activate: false
+whisper_model: base
+
+
+# ***************** TTS *****************
 # Voice service
 xtts_enable: false
 xtts_base_url: http://localhost:8020
@@ -101,6 +121,13 @@ xtts_top_p: 0.85
 xtts_speed: 1
 xtts_enable_text_splitting: true
 
+# openai_whisper configuration
+openai_tts_key: ""
+openai_tts_model: "tts-1"
+openai_tts_voice: "alloy"
+
+# ***************** TTI *****************
+
 # Image generation service
 enable_sd_service: false
 sd_base_url: http://localhost:7860
@@ -109,6 +136,8 @@ sd_base_url: http://localhost:7860
 dall_e_key: ""
 dall_e_generation_engine: "dall-e-3"
 
+# Midjourney service key
+midjourney_key: ""
 
 # Image generation service comfyui
 enable_comfyui_service: false
@@ -117,6 +146,8 @@ comfyui_base_url: http://127.0.0.1:8188/
 # Motion control service
 enable_motion_ctrl_service: false
 motion_ctrl_base_url: http://localhost:7861
+
+# ***************** TTT *****************
 
 # ollama service
 enable_ollama_service: false
@@ -202,6 +233,3 @@ show_code_of_conduct: true
 activate_audio_infos: true
 
 
-# whisper configuration
-whisper_activate: false
-whisper_model: base

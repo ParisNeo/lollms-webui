@@ -883,47 +883,7 @@
                                         </tr>                                                                                                                     
                                     </table>
                                 </Card>
-                                <Card title="Whisper audio transcription" :is_subcard="true" class="pb-2  m-2">
-                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="whisper_activate" class="text-sm font-bold" style="margin-right: 1rem;">Activate Whisper at startup:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="whisper_activate"
-                                            required
-                                            v-model="configFile.whisper_activate"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                            </div>
-                                        </td>                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="whisper_model" class="text-sm font-bold" style="margin-right: 1rem;">Whisper model:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <select
-                                                id="whisper_model"
-                                                v-model="configFile.whisper_model"
-                                                @change="settingsChanged=true"
-                                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                                <!-- Options with language codes and corresponding language names -->
-                                                <option v-for="whispermodel in whisperModels" :key="whispermodel" :value="whispermodel">
-                                                {{ whispermodel }}
-                                                </option>
-                                            </select>
-                                            </div>
-                                        </td>
-                                        </tr>                                        
 
-                                    </table>
-                                </Card>
                                 <Card title="Browser Audio" :is_subcard="true" class="pb-2  m-2">
                                     <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <tr>
@@ -1307,10 +1267,72 @@
                         <div v-show="!servers_conf_collapsed" ><i data-feather='chevron-down'></i></div>
 
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
-                            Servers configurations</h3>
+                            Servers Zoo</h3>
                     </button>
                 </div>
+
+
+                                
                 <div :class="{ 'hidden': servers_conf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                    <Card title="Lollms service" :is_subcard="true" class="pb-2  m-2">
+                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="active_tts_service" class="text-sm font-bold" style="margin-right: 1rem;">Active TTS Service:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <select
+                                id="active_tts_service"
+                                required
+                                v-model="configFile.active_tts_service"
+                                @change="settingsChanged=true"
+                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                    <option value="xtts">XTTS</option>
+                                    <option value="openai_tts">Open AI TTS</option>
+                                </select>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="active_tti_service" class="text-sm font-bold" style="margin-right: 1rem;">Active TTI Service:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <select
+                                id="active_tti_service"
+                                required
+                                v-model="configFile.active_tti_service"
+                                @change="settingsChanged=true"
+                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                    <option value="autosd">AUTO1111's SD</option>
+                                    <option value="dall-e">Open AI DALL-E</option>
+                                    <option value="midjourney">Midjourney</option>
+                                    <option value="comfyui">Comfyui</option>
+                                    <option value="fooocus">Fooocus</option>
+                                </select>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="active_stt_service" class="text-sm font-bold" style="margin-right: 1rem;">Active STT Service:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <select
+                                id="active_stt_service"
+                                required
+                                v-model="configFile.active_stt_service"
+                                @change="settingsChanged=true"
+                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                    <option value="whisper">Whisper</option>
+                                    <option value="openai_whisper">Open AI Whisper</option>
+                                </select>
+                            </td>
+                            </tr>
+
+                        </table>                    
+                    </Card>
                     <Card title="Lollms service" :is_subcard="true" class="pb-2  m-2">
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <tr>
@@ -1436,798 +1458,937 @@
                             </tr>   
                         </table>               
                     </Card>                    
-
-                    <Card title="Stable diffusion service" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="enable_sd_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable sd service:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="checkbox"
-                                id="enable_sd_service"
-                                required
-                                v-model="configFile.enable_sd_service"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            <td>
-                                <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates Stable diffusion service. The service will be automatically loaded at startup alowing you to use the stable diffusion endpoint to generate images')">
-                                    <i data-feather="help-circle" class="w-5 h-5 "></i>
-                                </div>
-                            </td>                            
-                            </tr>                                        
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="install_sd_service" class="text-sm font-bold" style="margin-right: 1rem;">Install SD service:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallSDService">install sd service</button>
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="upgradeSDService">upgrade sd service</button>
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startSDService">start sd service</button>
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="showSD">show sd ui</button>
-                                <a class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" href="https://github.com/ParisNeo/stable-diffusion-webui/blob/master/LICENSE.txt" target="_blank">automatic1111's sd licence</a>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallSDService">install sd service</button>
-                                </div>
-                            </td>
-                            </tr>                                        
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="sd_base_url" class="text-sm font-bold" style="margin-right: 1rem;">sd base url:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="text"
-                                id="sd_base_url"
-                                required
-                                v-model="configFile.sd_base_url"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr> 
-                        </table>                                
-                    </Card>
-
-                    <Card title="Dall-E" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="dall_e_key" class="text-sm font-bold" style="margin-right: 1rem;">dall e key:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="text"
-                                id="dall_e_key"
-                                required
-                                v-model="configFile.dall_e_key"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr> 
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="dall_e_generation_engine" class="text-sm font-bold" style="margin-right: 1rem;">dall e generation engine:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                    <select v-model="configFile.dall_e_generation_engine" @change="settingsChanged=true">
-                                    <option>
-                                        dall-e-2
-                                    </option>
-                                    <option>
-                                        dall-e-3
-                                    </option>
-                                    </select>
-                                </div>
-                            </td>
-                            </tr> 
-                        </table>                                
-                    </Card>
-
-                    <Card title="ComfyUI service" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="enable_comfyui_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable comfyui service:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="checkbox"
-                                id="enable_comfyui_service"
-                                required
-                                v-model="configFile.enable_comfyui_service"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            <td>
-                                <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates Stable diffusion service. The service will be automatically loaded at startup alowing you to use the stable diffusion endpoint to generate images')">
-                                    <i data-feather="help-circle" class="w-5 h-5 "></i>
-                                </div>
-                            </td>                            
-                            </tr>                                        
-                            <tr>
-                            <td style="min-width: 200px;">
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallComfyUIService">install comfyui service</button>
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="upgradeComfyUIService">upgrade comfyui service</button>
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startComfyUIService">start comfyui service</button>
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="showComfyui">show comfyui</button>
-                                <a class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" href="https://github.com/ParisNeo/ComfyUI/blob/master/LICENSE" target="_blank">comfyui licence</a>
-                                
-                                </div>
-                            </td>
-                            </tr>                                                                    
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="comfyui_base_url" class="text-sm font-bold" style="margin-right: 1rem;">comfyui base url:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="text"
-                                id="comfyui_base_url"
-                                required
-                                v-model="configFile.comfyui_base_url"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr> 
-                        </table>                                
-                    </Card>                    
-                    <Card title="Motion Ctrl service" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="enable_sd_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable Motion Ctrl service:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="checkbox"
-                                id="enable_motion_ctrl_service"
-                                required
-                                v-model="configFile.enable_motion_ctrl_service"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            <td>
-                                <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates Motion ctrl service. The service will be automatically loaded at startup alowing you to use the motoin control endpoint to generate videos')">
-                                    <i data-feather="help-circle" class="w-5 h-5 "></i>
-                                </div>
-                            </td>                            
-                            </tr>                                        
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="install_sd_service" class="text-sm font-bold" style="margin-right: 1rem;">Install Motion Ctrl service:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallMotionCtrlService">install Motion Ctrl service</button>
-                                </div>
-                            </td>
-                            </tr>                                        
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="sd_base_url" class="text-sm font-bold" style="margin-right: 1rem;">sd base url:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="text"
-                                id="sd_base_url"
-                                required
-                                v-model="configFile.sd_base_url"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr> 
-                        </table>                                
-                    </Card>                    
-                    <Card title="Ollama service" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="enable_ollama_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable ollama service:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="checkbox"
-                                id="enable_ollama_service"
-                                required
-                                v-model="configFile.enable_ollama_service"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            <td>
-                                <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates ollama service. The service will be automatically loaded at startup alowing you to use the ollama binding.\nIf you are using windows, this uses wsl which requires you to have it installed or at least activated.\nIf You are using windows, this will install wsl so you need to activate it.\n<a href=\'https://techcommunity.microsoft.com/t5/windows-11/how-to-install-the-linux-windows-subsystem-in-windows-11/m-p/2701207\' target=\'_blank\'>Here is how you can do that</a>')">
-                                    <i data-feather="help-circle" class="w-5 h-5 "></i>
-                                </div>
-                            </td>
-                            </tr>                                        
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="ollama_base_url" class="text-sm font-bold" style="margin-right: 1rem;">Install Ollama service:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallOLLAMAService">install ollama service</button>
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startollamaService">start ollama service</button>
-                                </div>
-                            </td>
-                            </tr>                                        
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="ollama_base_url" class="text-sm font-bold" style="margin-right: 1rem;">ollama base url:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="text"
-                                id="ollama_base_url"
-                                required
-                                v-model="configFile.ollama_base_url"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr> 
-                        </table>                                
-                    </Card>
-                    <Card title="vLLM service" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="enable_vllm_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable vLLM service:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="checkbox"
-                                id="enable_vllm_service"
-                                required
-                                v-model="configFile.enable_vllm_service"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            <td>
-                                <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates vllm service. The service will be automatically loaded at startup alowing you to use the elf binding.\nIf you are using windows, this uses wsl which requires you to have it installed or at least activated.\nIf You are using windows, this will install wsl so you need to activate it.\n<a href=\'https://techcommunity.microsoft.com/t5/windows-11/how-to-install-the-linux-windows-subsystem-in-windows-11/m-p/2701207\' target=\'_blank\'>Here is how you can do that</a>')">
-                                    <i data-feather="help-circle" class="w-5 h-5 "></i>
-                                </div>
-                            </td>
-                            </tr>                                        
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="vllm_url" class="text-sm font-bold" style="margin-right: 1rem;">Install vLLM service:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallvLLMService">install vLLM service</button>
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startvLLMService">start vllm service</button>
-                                </div>
-                            </td>
-                            </tr>                                        
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="vllm_url" class="text-sm font-bold" style="margin-right: 1rem;">vllm base url:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="text"
-                                id="vllm_url"
-                                required
-                                v-model="configFile.vllm_url"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="vllm_gpu_memory_utilization" class="text-sm font-bold" style="margin-right: 1rem;">gpu memory utilization:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-col align-bottom ">
-                                <div class="relative">
-                                    <p class="absolute left-0 mt-6">
-                                        <label for="vllm_gpu_memory_utilization" class=" text-sm font-medium">
-                                            vllm gpu memory utilization:
-                                        </label>
-                                    </p>
-                                    <p class="absolute right-0">
-
-                                        <input type="text" id="temp-val" v-model="configFile.vllm_gpu_memory_utilization"
-                                            @change="settingsChanged=true"
-                                            class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                    </p>
-
-                                </div>
-
-                                <input id="vllm_gpu_memory_utilization"
+                    <Card title="TTS services" :is_subcard="true" class="pb-2  m-2">
+                        <Card title="XTTS service" :is_subcard="true" class="pb-2  m-2">
+                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="xtts_enable" class="text-sm font-bold" style="margin-right: 1rem;">Enable voice service:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="checkbox"
+                                    id="xtts_enable"
+                                    required
+                                    v-model="configFile.xtts_enable"
                                     @change="settingsChanged=true"
-                                    type="range" v-model="configFile.vllm_gpu_memory_utilization" min="0.10" max="1" step="0.01"
-                                    class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            </div> 
-                            </td>
-                            </tr>
-                            
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="vllm_max_num_seqs" class="text-sm font-bold" style="margin-right: 1rem;">vllm max num seqs:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="number"
-                                id="vllm_max_num_seqs"
-                                min=64
-                                max=2048
-                                required
-                                v-model="configFile.vllm_max_num_seqs"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr>                            
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="vllm_max_model_len" class="text-sm font-bold" style="margin-right: 1rem;">max model len:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="number"
-                                id="vllm_max_model_len"
-                                min=2048
-                                max=1000000
-                                required
-                                v-model="configFile.vllm_max_model_len"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr>                            
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="vllm_model_path" class="text-sm font-bold" style="margin-right: 1rem;">vllm model path:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="text"
-                                id="vllm_model_path"
-                                required
-                                v-model="configFile.vllm_model_path"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr>                            
-                            
-                        </table>                                
-                    </Card>                    
-                    <Card title="Petals service" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="enable_petals_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable petals service:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="checkbox"
-                                id="enable_petals_service"
-                                required
-                                v-model="configFile.enable_petals_service"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            <td>
-                                <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates Petals service. The service will be automatically loaded at startup alowing you to use the petals endpoint to generate text in a distributed network.\nIf You are using windows, this will install wsl so you need to activate it.\n<a href=\'https://techcommunity.microsoft.com/t5/windows-11/how-to-install-the-linux-windows-subsystem-in-windows-11/m-p/2701207\' target=\'_blank\'>Here is how you can do that</a>')">
-                                    <i data-feather="help-circle" class="w-5 h-5 "></i>
-                                </div>
-                            </td>                            
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr>                                        
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="install_xtts_service" class="text-sm font-bold" style="margin-right: 1rem;">xTTS service:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallAudioService">install xtts service</button>
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startAudioService">start xtts service</button>
+                                    <a class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" :href="this.$store.state.config.xtts_base_url+'/docs'" target="_blank">show xtts service entries</a>
+                                    <a class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" href="https://github.com/ParisNeo/xtts-api-server/blob/main/LICENSE" target="_blank">licence</a>
+                                    </div>
+                                </td>
+                                </tr>                                        
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="xtts_base_url" class="text-sm font-bold" style="margin-right: 1rem;">xtts base url:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="text"
+                                    id="xtts_base_url"
+                                    required
+                                    v-model="configFile.xtts_base_url"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr> 
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="xtts_current_language" class="text-sm font-bold" style="margin-right: 1rem;">Current language:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <select v-model="xtts_current_language" @change="settingsChanged=true" :disabled="!xtts_enable">
+                                        <option v-for="(value, key) in voice_languages" :key="key" :value="value">
+                                            {{ key }}
+                                        </option>
+                                        </select>
+                                    </div>
+                                </td>
+                                </tr>                                        
 
-                            </tr>                                        
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="petals_base_url" class="text-sm font-bold" style="margin-right: 1rem;">Install Petals service:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallPetalsService">install petals service</button>
-                                </div>
-                            </td>
-                            </tr>                                        
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="petals_base_url" class="text-sm font-bold" style="margin-right: 1rem;">petals base url:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="text"
-                                id="petals_base_url"
-                                required
-                                v-model="configFile.petals_base_url"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr> 
-                        </table>                                
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="xtts_current_voice" class="text-sm font-bold" style="margin-right: 1rem;">Current voice:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <select v-model="xtts_current_voice" @change="settingsChanged=true" :disabled="!xtts_enable">
+                                        <option v-for="voice in voices" :key="voice" :value="voice">
+                                            {{ voice }}
+                                        </option>
+                                        </select>
+                                    </div>
+                                </td>
+                                </tr>                                        
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="xtts_use_deepspeed" class="text-sm font-bold" style="margin-right: 1rem;">Enable deepspeed:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <input
+                                            type="checkbox"
+                                            id="xtts_use_deepspeed"
+                                            required
+                                            v-model="configFile.xtts_use_deepspeed"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                            :disabled="!xtts_enable"
+                                        >
+                                    </div>
+                                </td>
+                                </tr>
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="xtts_use_streaming_mode" class="text-sm font-bold" style="margin-right: 1rem;">Enable streaming mode:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <input
+                                            type="checkbox"
+                                            id="xtts_use_streaming_mode"
+                                            required
+                                            v-model="configFile.xtts_use_streaming_mode"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                            :disabled="!xtts_enable"
+                                        >
+                                    </div>
+                                </td>
+                                </tr>                                                
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="auto_read" class="text-sm font-bold" style="margin-right: 1rem;">Enable auto read:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <input
+                                            type="checkbox"
+                                            id="auto_read"
+                                            required
+                                            v-model="configFile.auto_read"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                            :disabled="!xtts_enable"
+                                        >
+                                    </div>
+                                </td>
+                                </tr>                    
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="xtts_stream_chunk_size" class="text-sm font-bold" style="margin-right: 1rem;">xtts stream chunk size:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <input
+                                            type="text"
+                                            id="xtts_stream_chunk_size"
+                                            required
+                                            v-model="configFile.xtts_stream_chunk_size"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                        >
+                                    </div>
+                                </td>
+                                </tr>
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="xtts_temperature" class="text-sm font-bold" style="margin-right: 1rem;">Temperature:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <input
+                                            type="number"
+                                            id="xtts_temperature"
+                                            required
+                                            v-model.number="configFile.xtts_temperature"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                            step="0.01"
+                                        >
+                                    </div>
+                                </td>
+                                </tr>
+
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="xtts_length_penalty" class="text-sm font-bold" style="margin-right: 1rem;">Length Penalty:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <input
+                                            type="number"
+                                            id="xtts_length_penalty"
+                                            required
+                                            v-model.number="configFile.xtts_length_penalty"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                            step="0.1"
+                                        >
+                                    </div>
+                                </td>
+                                </tr>
+
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="xtts_repetition_penalty" class="text-sm font-bold" style="margin-right: 1rem;">Repetition Penalty:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <input
+                                            type="number"
+                                            id="xtts_repetition_penalty"
+                                            required
+                                            v-model.number="configFile.xtts_repetition_penalty"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                            step="0.1"
+                                        >
+                                    </div>
+                                </td>
+                                </tr>
+
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="xtts_top_k" class="text-sm font-bold" style="margin-right: 1rem;">Top K:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <input
+                                            type="number"
+                                            id="xtts_top_k"
+                                            required
+                                            v-model.number="configFile.xtts_top_k"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        >
+                                    </div>
+                                </td>
+                                </tr>
+
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="xtts_top_p" class="text-sm font-bold" style="margin-right: 1rem;">Top P:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <input
+                                            type="number"
+                                            id="xtts_top_p"
+                                            required
+                                            v-model.number="configFile.xtts_top_p"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        >
+                                    </div>
+                                </td>
+                                </tr>
+
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="xtts_speed" class="text-sm font-bold" style="margin-right: 1rem;">Speed:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <input
+                                            type="number"
+                                            id="xtts_speed"
+                                            required
+                                            v-model.number="configFile.xtts_speed"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                            step="0.1"
+                                        >
+                                    </div>
+                                </td>
+                                </tr>
+
+                                <!-- Keeping the enable_text_splitting as is since it inherently respects the boolean data type -->
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="enable_text_splitting" class="text-sm font-bold" style="margin-right: 1rem;">Enable Text Splitting:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <input
+                                            type="checkbox"
+                                            id="enable_text_splitting"
+                                            v-model="configFile.enable_text_splitting"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        >
+                                    </div>
+                                </td>
+                                </tr>
+
+                            </table>
+                        </Card>
+                        <Card title="Open AI TTS service" :is_subcard="true" class="pb-2  m-2">
+                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="openai_tts_key" class="text-sm font-bold" style="margin-right: 1rem;">Open AI key:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="text"
+                                    id="openai_tts_key"
+                                    required
+                                    v-model="configFile.openai_tts_key"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr> 
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="openai_tts_model" class="text-sm font-bold" style="margin-right: 1rem;">openai tts model:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <select v-model="configFile.openai_tts_model" @change="settingsChanged=true">
+                                        <option>
+                                            tts-1
+                                        </option>
+                                        <option>
+                                            tts-2
+                                        </option>
+                                        </select>
+                                    </div>
+                                </td>
+                                </tr>                                 
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="openai_tts_voice" class="text-sm font-bold" style="margin-right: 1rem;">openai tts voice:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <select v-model="configFile.openai_tts_voice" @change="settingsChanged=true">
+                                        <option>
+                                            alloy
+                                        </option>
+                                        <option>
+                                            echo
+                                        </option>
+                                        <option>
+                                            fable
+                                        </option>
+                                        <option>
+                                            nova
+                                        </option>
+                                        <option>
+                                            shimmer
+                                        </option>
+                                        </select>
+                                    </div>
+                                </td>
+                                </tr>                                 
+                                
+                            </table>
+                        </Card>                        
                     </Card>
-                    <Card title="Elastic search Service (under construction)" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="xtts_enable" class="text-sm font-bold" style="margin-right: 1rem;">Enable elastic search service:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="checkbox"
-                                id="elastic_search_service"
-                                required
-                                v-model="configFile.elastic_search_service"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr>                                        
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="install_elastic_search_service" class="text-sm font-bold" style="margin-right: 1rem;">Reinstall Elastic Search service:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallElasticSearchService">install ElasticSearch service</button>
-                                </div>
-                            </td>
-                            </tr>                                        
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="elastic_search_url" class="text-sm font-bold" style="margin-right: 1rem;">elastic search base url:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="text"
-                                id="elastic_search_url"
-                                required
-                                v-model="configFile.elastic_search_url"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr> 
-         
-                        </table>
+                    <Card title="TTI services" :is_subcard="true" class="pb-2  m-2">
+                        <Card title="Stable diffusion service" :is_subcard="true" class="pb-2  m-2">
+                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="enable_sd_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable sd service:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="checkbox"
+                                    id="enable_sd_service"
+                                    required
+                                    v-model="configFile.enable_sd_service"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates Stable diffusion service. The service will be automatically loaded at startup alowing you to use the stable diffusion endpoint to generate images')">
+                                        <i data-feather="help-circle" class="w-5 h-5 "></i>
+                                    </div>
+                                </td>                            
+                                </tr>                                        
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="install_sd_service" class="text-sm font-bold" style="margin-right: 1rem;">Install SD service:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallSDService">install sd service</button>
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="upgradeSDService">upgrade sd service</button>
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startSDService">start sd service</button>
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="showSD">show sd ui</button>
+                                    <a class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" href="https://github.com/ParisNeo/stable-diffusion-webui/blob/master/LICENSE.txt" target="_blank">automatic1111's sd licence</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallSDService">install sd service</button>
+                                    </div>
+                                </td>
+                                </tr>                                        
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="sd_base_url" class="text-sm font-bold" style="margin-right: 1rem;">sd base url:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="text"
+                                    id="sd_base_url"
+                                    required
+                                    v-model="configFile.sd_base_url"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr> 
+                            </table>                                
+                        </Card>
+                        <Card title="Midjourney" :is_subcard="true" class="pb-2  m-2">
+                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="midjourney_key" class="text-sm font-bold" style="margin-right: 1rem;">midjourney key:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="text"
+                                    id="midjourney_key"
+                                    required
+                                    v-model="configFile.midjourney_key"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr> 
+                            </table>                                
+                        </Card>
+                        <Card title="Dall-E" :is_subcard="true" class="pb-2  m-2">
+                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="dall_e_key" class="text-sm font-bold" style="margin-right: 1rem;">dall e key:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="text"
+                                    id="dall_e_key"
+                                    required
+                                    v-model="configFile.dall_e_key"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr> 
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="dall_e_generation_engine" class="text-sm font-bold" style="margin-right: 1rem;">dall e generation engine:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <select v-model="configFile.dall_e_generation_engine" @change="settingsChanged=true">
+                                        <option>
+                                            dall-e-2
+                                        </option>
+                                        <option>
+                                            dall-e-3
+                                        </option>
+                                        </select>
+                                    </div>
+                                </td>
+                                </tr> 
+                            </table>                                
+                        </Card>
 
-                    </Card>                    
-                    <Card title="XTTS service" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="xtts_enable" class="text-sm font-bold" style="margin-right: 1rem;">Enable voice service:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="checkbox"
-                                id="xtts_enable"
-                                required
-                                v-model="configFile.xtts_enable"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr>                                        
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="install_xtts_service" class="text-sm font-bold" style="margin-right: 1rem;">xTTS service:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallAudioService">install xtts service</button>
-                                <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startAudioService">start xtts service</button>
-                                <a class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" :href="this.$store.state.config.xtts_base_url+'/docs'" target="_blank">show xtts service entries</a>
-                                <a class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" href="https://github.com/ParisNeo/xtts-api-server/blob/main/LICENSE" target="_blank">licence</a>
-                                </div>
-                            </td>
-                            </tr>                                        
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="xtts_base_url" class="text-sm font-bold" style="margin-right: 1rem;">xtts base url:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="text"
-                                id="xtts_base_url"
-                                required
-                                v-model="configFile.xtts_base_url"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr> 
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="xtts_current_language" class="text-sm font-bold" style="margin-right: 1rem;">Current language:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                    <select v-model="xtts_current_language" @change="settingsChanged=true" :disabled="!xtts_enable">
-                                    <option v-for="(value, key) in voice_languages" :key="key" :value="value">
-                                        {{ key }}
-                                    </option>
-                                    </select>
-                                </div>
-                            </td>
-                            </tr>                                        
+                        <Card title="ComfyUI service" :is_subcard="true" class="pb-2  m-2">
+                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="enable_comfyui_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable comfyui service:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="checkbox"
+                                    id="enable_comfyui_service"
+                                    required
+                                    v-model="configFile.enable_comfyui_service"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates Stable diffusion service. The service will be automatically loaded at startup alowing you to use the stable diffusion endpoint to generate images')">
+                                        <i data-feather="help-circle" class="w-5 h-5 "></i>
+                                    </div>
+                                </td>                            
+                                </tr>                                        
+                                <tr>
+                                <td style="min-width: 200px;">
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallComfyUIService">install comfyui service</button>
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="upgradeComfyUIService">upgrade comfyui service</button>
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startComfyUIService">start comfyui service</button>
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="showComfyui">show comfyui</button>
+                                    <a class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" href="https://github.com/ParisNeo/ComfyUI/blob/master/LICENSE" target="_blank">comfyui licence</a>
+                                    
+                                    </div>
+                                </td>
+                                </tr>                                                                    
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="comfyui_base_url" class="text-sm font-bold" style="margin-right: 1rem;">comfyui base url:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="text"
+                                    id="comfyui_base_url"
+                                    required
+                                    v-model="configFile.comfyui_base_url"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr> 
+                            </table>                                
+                        </Card>                    
 
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="xtts_current_voice" class="text-sm font-bold" style="margin-right: 1rem;">Current voice:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                    <select v-model="xtts_current_voice" @change="settingsChanged=true" :disabled="!xtts_enable">
-                                    <option v-for="voice in voices" :key="voice" :value="voice">
-                                        {{ voice }}
-                                    </option>
-                                    </select>
-                                </div>
-                            </td>
-                            </tr>                                        
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="xtts_use_deepspeed" class="text-sm font-bold" style="margin-right: 1rem;">Enable deepspeed:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                    <input
-                                        type="checkbox"
-                                        id="xtts_use_deepspeed"
-                                        required
-                                        v-model="configFile.xtts_use_deepspeed"
-                                        @change="settingsChanged=true"
-                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                        :disabled="!xtts_enable"
-                                    >
-                                </div>
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="xtts_use_streaming_mode" class="text-sm font-bold" style="margin-right: 1rem;">Enable streaming mode:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                    <input
-                                        type="checkbox"
-                                        id="xtts_use_streaming_mode"
-                                        required
-                                        v-model="configFile.xtts_use_streaming_mode"
-                                        @change="settingsChanged=true"
-                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                        :disabled="!xtts_enable"
-                                    >
-                                </div>
-                            </td>
-                            </tr>                                                
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="auto_read" class="text-sm font-bold" style="margin-right: 1rem;">Enable auto read:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                    <input
-                                        type="checkbox"
-                                        id="auto_read"
-                                        required
-                                        v-model="configFile.auto_read"
-                                        @change="settingsChanged=true"
-                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                        :disabled="!xtts_enable"
-                                    >
-                                </div>
-                            </td>
-                            </tr>                    
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="xtts_stream_chunk_size" class="text-sm font-bold" style="margin-right: 1rem;">xtts stream chunk size:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                    <input
-                                        type="text"
-                                        id="xtts_stream_chunk_size"
-                                        required
-                                        v-model="configFile.xtts_stream_chunk_size"
-                                        @change="settingsChanged=true"
-                                        class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                    >
-                                </div>
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="xtts_temperature" class="text-sm font-bold" style="margin-right: 1rem;">Temperature:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                    <input
-                                        type="number"
-                                        id="xtts_temperature"
-                                        required
-                                        v-model.number="configFile.xtts_temperature"
-                                        @change="settingsChanged=true"
-                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                        step="0.01"
-                                    >
-                                </div>
-                            </td>
-                            </tr>
-
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="xtts_length_penalty" class="text-sm font-bold" style="margin-right: 1rem;">Length Penalty:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                    <input
-                                        type="number"
-                                        id="xtts_length_penalty"
-                                        required
-                                        v-model.number="configFile.xtts_length_penalty"
-                                        @change="settingsChanged=true"
-                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                        step="0.1"
-                                    >
-                                </div>
-                            </td>
-                            </tr>
-
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="xtts_repetition_penalty" class="text-sm font-bold" style="margin-right: 1rem;">Repetition Penalty:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                    <input
-                                        type="number"
-                                        id="xtts_repetition_penalty"
-                                        required
-                                        v-model.number="configFile.xtts_repetition_penalty"
-                                        @change="settingsChanged=true"
-                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                        step="0.1"
-                                    >
-                                </div>
-                            </td>
-                            </tr>
-
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="xtts_top_k" class="text-sm font-bold" style="margin-right: 1rem;">Top K:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                    <input
-                                        type="number"
-                                        id="xtts_top_k"
-                                        required
-                                        v-model.number="configFile.xtts_top_k"
-                                        @change="settingsChanged=true"
-                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                    >
-                                </div>
-                            </td>
-                            </tr>
-
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="xtts_top_p" class="text-sm font-bold" style="margin-right: 1rem;">Top P:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                    <input
-                                        type="number"
-                                        id="xtts_top_p"
-                                        required
-                                        v-model.number="configFile.xtts_top_p"
-                                        @change="settingsChanged=true"
-                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                    >
-                                </div>
-                            </td>
-                            </tr>
-
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="xtts_speed" class="text-sm font-bold" style="margin-right: 1rem;">Speed:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                    <input
-                                        type="number"
-                                        id="xtts_speed"
-                                        required
-                                        v-model.number="configFile.xtts_speed"
-                                        @change="settingsChanged=true"
-                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                        step="0.1"
-                                    >
-                                </div>
-                            </td>
-                            </tr>
-
-                            <!-- Keeping the enable_text_splitting as is since it inherently respects the boolean data type -->
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="enable_text_splitting" class="text-sm font-bold" style="margin-right: 1rem;">Enable Text Splitting:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                    <input
-                                        type="checkbox"
-                                        id="enable_text_splitting"
-                                        v-model="configFile.enable_text_splitting"
-                                        @change="settingsChanged=true"
-                                        class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                    >
-                                </div>
-                            </td>
-                            </tr>
-
-                        </table>
 
                     </Card>
+                    <Card title="STT services" :is_subcard="true" class="pb-2  m-2">
+                        <Card title="Whisper audio transcription" :is_subcard="true" class="pb-2  m-2">
+                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="whisper_activate" class="text-sm font-bold" style="margin-right: 1rem;">Activate Whisper at startup:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="checkbox"
+                                    id="whisper_activate"
+                                    required
+                                    v-model="configFile.whisper_activate"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>                                        </tr>
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="whisper_model" class="text-sm font-bold" style="margin-right: 1rem;">Whisper model:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <select
+                                        id="whisper_model"
+                                        v-model="configFile.whisper_model"
+                                        @change="settingsChanged=true"
+                                        class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                        <!-- Options with language codes and corresponding language names -->
+                                        <option v-for="whispermodel in whisperModels" :key="whispermodel" :value="whispermodel">
+                                        {{ whispermodel }}
+                                        </option>
+                                    </select>
+                                    </div>
+                                </td>
+                                </tr>                                        
+
+                            </table>
+                        </Card>
+                    </Card>
+                    <Card title="TTT services" :is_subcard="true" class="pb-2  m-2">
+                        <Card title="Ollama service" :is_subcard="true" class="pb-2  m-2">
+                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="enable_ollama_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable ollama service:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="checkbox"
+                                    id="enable_ollama_service"
+                                    required
+                                    v-model="configFile.enable_ollama_service"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates ollama service. The service will be automatically loaded at startup alowing you to use the ollama binding.\nIf you are using windows, this uses wsl which requires you to have it installed or at least activated.\nIf You are using windows, this will install wsl so you need to activate it.\n<a href=\'https://techcommunity.microsoft.com/t5/windows-11/how-to-install-the-linux-windows-subsystem-in-windows-11/m-p/2701207\' target=\'_blank\'>Here is how you can do that</a>')">
+                                        <i data-feather="help-circle" class="w-5 h-5 "></i>
+                                    </div>
+                                </td>
+                                </tr>                                        
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="ollama_base_url" class="text-sm font-bold" style="margin-right: 1rem;">Install Ollama service:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallOLLAMAService">install ollama service</button>
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startollamaService">start ollama service</button>
+                                    </div>
+                                </td>
+                                </tr>                                        
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="ollama_base_url" class="text-sm font-bold" style="margin-right: 1rem;">ollama base url:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="text"
+                                    id="ollama_base_url"
+                                    required
+                                    v-model="configFile.ollama_base_url"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr> 
+                            </table>                                
+                        </Card>
+                        <Card title="vLLM service" :is_subcard="true" class="pb-2  m-2">
+                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="enable_vllm_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable vLLM service:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="checkbox"
+                                    id="enable_vllm_service"
+                                    required
+                                    v-model="configFile.enable_vllm_service"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates vllm service. The service will be automatically loaded at startup alowing you to use the elf binding.\nIf you are using windows, this uses wsl which requires you to have it installed or at least activated.\nIf You are using windows, this will install wsl so you need to activate it.\n<a href=\'https://techcommunity.microsoft.com/t5/windows-11/how-to-install-the-linux-windows-subsystem-in-windows-11/m-p/2701207\' target=\'_blank\'>Here is how you can do that</a>')">
+                                        <i data-feather="help-circle" class="w-5 h-5 "></i>
+                                    </div>
+                                </td>
+                                </tr>                                        
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="vllm_url" class="text-sm font-bold" style="margin-right: 1rem;">Install vLLM service:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallvLLMService">install vLLM service</button>
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startvLLMService">start vllm service</button>
+                                    </div>
+                                </td>
+                                </tr>                                        
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="vllm_url" class="text-sm font-bold" style="margin-right: 1rem;">vllm base url:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="text"
+                                    id="vllm_url"
+                                    required
+                                    v-model="configFile.vllm_url"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr>
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="vllm_gpu_memory_utilization" class="text-sm font-bold" style="margin-right: 1rem;">gpu memory utilization:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-col align-bottom ">
+                                    <div class="relative">
+                                        <p class="absolute left-0 mt-6">
+                                            <label for="vllm_gpu_memory_utilization" class=" text-sm font-medium">
+                                                vllm gpu memory utilization:
+                                            </label>
+                                        </p>
+                                        <p class="absolute right-0">
+
+                                            <input type="text" id="temp-val" v-model="configFile.vllm_gpu_memory_utilization"
+                                                @change="settingsChanged=true"
+                                                class="mt-2 w-16 text-right p-2 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        </p>
+
+                                    </div>
+
+                                    <input id="vllm_gpu_memory_utilization"
+                                        @change="settingsChanged=true"
+                                        type="range" v-model="configFile.vllm_gpu_memory_utilization" min="0.10" max="1" step="0.01"
+                                        class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                </div> 
+                                </td>
+                                </tr>
+                                
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="vllm_max_num_seqs" class="text-sm font-bold" style="margin-right: 1rem;">vllm max num seqs:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="number"
+                                    id="vllm_max_num_seqs"
+                                    min=64
+                                    max=2048
+                                    required
+                                    v-model="configFile.vllm_max_num_seqs"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr>                            
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="vllm_max_model_len" class="text-sm font-bold" style="margin-right: 1rem;">max model len:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="number"
+                                    id="vllm_max_model_len"
+                                    min=2048
+                                    max=1000000
+                                    required
+                                    v-model="configFile.vllm_max_model_len"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr>                            
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="vllm_model_path" class="text-sm font-bold" style="margin-right: 1rem;">vllm model path:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="text"
+                                    id="vllm_model_path"
+                                    required
+                                    v-model="configFile.vllm_model_path"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr>                            
+                                
+                            </table>                                
+                        </Card>                    
+                        <Card title="Petals service" :is_subcard="true" class="pb-2  m-2">
+                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="enable_petals_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable petals service:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="checkbox"
+                                    id="enable_petals_service"
+                                    required
+                                    v-model="configFile.enable_petals_service"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates Petals service. The service will be automatically loaded at startup alowing you to use the petals endpoint to generate text in a distributed network.\nIf You are using windows, this will install wsl so you need to activate it.\n<a href=\'https://techcommunity.microsoft.com/t5/windows-11/how-to-install-the-linux-windows-subsystem-in-windows-11/m-p/2701207\' target=\'_blank\'>Here is how you can do that</a>')">
+                                        <i data-feather="help-circle" class="w-5 h-5 "></i>
+                                    </div>
+                                </td>                            
+
+                                </tr>                                        
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="petals_base_url" class="text-sm font-bold" style="margin-right: 1rem;">Install Petals service:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallPetalsService">install petals service</button>
+                                    </div>
+                                </td>
+                                </tr>                                        
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="petals_base_url" class="text-sm font-bold" style="margin-right: 1rem;">petals base url:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="text"
+                                    id="petals_base_url"
+                                    required
+                                    v-model="configFile.petals_base_url"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr> 
+                            </table>                                
+                        </Card>                        
+                    </Card>
+                    <Card title="Misc" :is_subcard="true" class="pb-2  m-2">
+                        <Card title="Motion Ctrl service" :is_subcard="true" class="pb-2  m-2">
+                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="enable_sd_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable Motion Ctrl service:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="checkbox"
+                                    id="enable_motion_ctrl_service"
+                                    required
+                                    v-model="configFile.enable_motion_ctrl_service"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates Motion ctrl service. The service will be automatically loaded at startup alowing you to use the motoin control endpoint to generate videos')">
+                                        <i data-feather="help-circle" class="w-5 h-5 "></i>
+                                    </div>
+                                </td>                            
+                                </tr>                                        
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="install_sd_service" class="text-sm font-bold" style="margin-right: 1rem;">Install Motion Ctrl service:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallMotionCtrlService">install Motion Ctrl service</button>
+                                    </div>
+                                </td>
+                                </tr>                                        
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="sd_base_url" class="text-sm font-bold" style="margin-right: 1rem;">sd base url:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="text"
+                                    id="sd_base_url"
+                                    required
+                                    v-model="configFile.sd_base_url"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr> 
+                            </table>                                
+                        </Card>                    
+
+                        <Card title="Elastic search Service (under construction)" :is_subcard="true" class="pb-2  m-2">
+                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="xtts_enable" class="text-sm font-bold" style="margin-right: 1rem;">Enable elastic search service:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="checkbox"
+                                    id="elastic_search_service"
+                                    required
+                                    v-model="configFile.elastic_search_service"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr>                                        
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="install_elastic_search_service" class="text-sm font-bold" style="margin-right: 1rem;">Reinstall Elastic Search service:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallElasticSearchService">install ElasticSearch service</button>
+                                    </div>
+                                </td>
+                                </tr>                                        
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="elastic_search_url" class="text-sm font-bold" style="margin-right: 1rem;">elastic search base url:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="text"
+                                    id="elastic_search_url"
+                                    required
+                                    v-model="configFile.elastic_search_url"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr> 
+            
+                            </table>
+
+                        </Card>                    
+
+                    </Card>
+
 
                 </div>
             </div>

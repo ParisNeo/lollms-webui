@@ -402,6 +402,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
 
 
+
+
     def rebuild_personalities(self, reload_all=False):
         if reload_all:
             self.mounted_personalities=[]
@@ -1199,7 +1201,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                     client_id=client_id,
                                     callback=partial(self.process_chunk,client_id = client_id)
                                 )
-                    if self.config.xtts_enable and self.config.auto_read and len(self.personality.audio_samples)>0:
+                    if self.tts and self.config.auto_read and len(self.personality.audio_samples)>0:
                         try:
                             self.process_chunk("Generating voice output",MSG_TYPE.MSG_TYPE_STEP_START,client_id=client_id)
                             from lollms.services.xtts.lollms_xtts import LollmsXTTS
@@ -1209,22 +1211,13 @@ class LOLLMSWebUI(LOLLMSElfServer):
                             else:
                                 voices_folder = Path(__file__).parent.parent.parent/"services/xtts/voices"
 
-                            if self.tts is None:
-                                self.tts = LollmsXTTS(
-                                                        self, 
-                                                        voices_folder=voices_folder,
-                                                        voice_samples_path=Path(__file__).parent.parent/"voices", 
-                                                        xtts_base_url= self.config.xtts_base_url,
-                                                        use_deep_speed=self.config.xtts_use_deepspeed,
-                                                        use_streaming_mode=self.config.xtts_use_streaming_mode                                                        
-                                                    )
-                            if self.tts.ready:
+                            if self.xtts.ready:
                                 language = convert_language_name(self.personality.language)
-                                self.tts.set_speaker_folder(Path(self.personality.audio_samples[0]).parent)
+                                self.xtts.set_speaker_folder(Path(self.personality.audio_samples[0]).parent)
                                 fn = self.personality.name.lower().replace(' ',"_").replace('.','')    
                                 fn = f"{fn}_{message_id}.wav"
                                 url = f"audio/{fn}"
-                                self.tts.tts_to_file(client.generated_text, Path(self.personality.audio_samples[0]).name, f"{fn}", language=language)
+                                self.xtts.tts_to_file(client.generated_text, Path(self.personality.audio_samples[0]).name, f"{fn}", language=language)
                                 fl = f"\n".join([
                                 f"<audio controls>",
                                 f'    <source src="{url}" type="audio/wav">',
