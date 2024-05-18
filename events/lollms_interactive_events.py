@@ -69,7 +69,24 @@ def add_events(sio:socketio):
             lollmsElfServer.rec_output_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"audio_rec"
             lollmsElfServer.rec_output_folder.mkdir(exist_ok=True, parents=True)
             lollmsElfServer.summoned = False
-            lollmsElfServer.audio_cap = AudioRecorder( client.discussion.discussion_folder/"audio"/"rt.wav", sio, callback=lollmsElfServer.audio_callback,lollmsCom=lollmsElfServer, transcribe=True)
+            lollmsElfServer.audio_cap = AudioRecorder(
+                                                lollmsElfServer, 
+                                                lollmsElfServer.sio, 
+                                                lollmsElfServer.personality, 
+                                                threshold=1000, 
+                                                silence_duration=2, 
+                                                sound_threshold_percentage=10, 
+                                                gain=1.0, 
+                                                rate=44100, 
+                                                channels=1, 
+                                                buffer_size=10, 
+                                                model="small.en", 
+                                                snd_device=None, 
+                                                logs_folder="logs", 
+                                                voice=None, 
+                                                block_while_talking=True, 
+                                                context_size=4096
+                                            ) 
             lollmsElfServer.audio_cap.start_recording()
         except Exception as ex:
             trace_exception(ex)
