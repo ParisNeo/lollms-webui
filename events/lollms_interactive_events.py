@@ -72,7 +72,8 @@ def add_events(sio:socketio):
             lollmsElfServer.audio_cap = AudioRecorder(
                                                 lollmsElfServer, 
                                                 lollmsElfServer.sio, 
-                                                lollmsElfServer.personality, 
+                                                lollmsElfServer.personality,
+                                                lollmsElfServer.db,
                                                 threshold=1000, 
                                                 silence_duration=2, 
                                                 sound_threshold_percentage=10, 
