@@ -5,7 +5,6 @@
     <div class="controls">
       <button v-if="!isAudioActive" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" @click="startAudioStream"><i data-feather="mic"></i> </button>
       <button v-if="isAudioActive" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" @click="stopAudioStream"><i data-feather="mic"></i></button>
-      <span v-if="isAudioActive">FPS: {{ frameRate }}</span>
     </div>
   </div>
 </template>

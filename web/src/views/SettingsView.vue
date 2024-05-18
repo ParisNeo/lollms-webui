@@ -1288,6 +1288,7 @@
                                 @change="settingsChanged=true"
                                 class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                 >
+                                    <option value="None">None</option>
                                     <option value="xtts">XTTS</option>
                                     <option value="openai_tts">Open AI TTS</option>
                                 </select>
@@ -1305,6 +1306,7 @@
                                 @change="settingsChanged=true"
                                 class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                 >
+                                    <option value="None">None</option>
                                     <option value="autosd">AUTO1111's SD</option>
                                     <option value="dall-e">Open AI DALL-E</option>
                                     <option value="midjourney">Midjourney</option>
@@ -1325,6 +1327,7 @@
                                 @change="settingsChanged=true"
                                 class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                 >
+                                    <option value="None">None</option>
                                     <option value="whisper">Whisper</option>
                                     <option value="openai_whisper">Open AI Whisper</option>
                                 </select>
