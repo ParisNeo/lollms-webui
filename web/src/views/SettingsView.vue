@@ -1267,7 +1267,7 @@
                         <div v-show="!servers_conf_collapsed" ><i data-feather='chevron-down'></i></div>
 
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
-                            Servers Zoo</h3>
+                            Services Zoo</h3>
                     </button>
                 </div>
 
