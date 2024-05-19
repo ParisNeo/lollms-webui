@@ -148,6 +148,7 @@
                             <div class="flex flex-row items-center">
                                 <div class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2 cursor-pointer" 
                                     title="speak"
+                                    v-if ="this.$store.state.config.active_tts_service!='None'"
                                     @click.stop="speak()"
                                     :class="{ 'text-red-500': isTalking }">
                                     <i data-feather="volume-2"></i>
@@ -520,7 +521,7 @@ export default {
             }
         },
         speak() {
-            if(this.$store.state.config.xtts_enable && this.$store.state.config.xtts_use_streaming_mode){
+            if(this.$store.state.config.active_tts_service!="browser" && this.$store.state.config.active_tts_service!="None"){
                 this.isSpeaking = true;
                 axios.post("./text2Audio",{text:this.message.content}).then(response => {
                     this.isSpeaking = false;
