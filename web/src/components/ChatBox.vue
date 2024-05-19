@@ -250,13 +250,35 @@
                                     <button v-if="!loading" 
                                         type="button"
                                         @click="startSpeechRecognition"
-                                        :class="{ 'text-red-500': isLesteningToVoice }"
+                                        :class="{ 'text-red-500': isListeningToVoice }"
                                         class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90"
                                     >
                                     <i data-feather="mic"></i>
                                     </button>                      
                                     <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Press and talk.</p></div>
                                 </div>
+                                <div class="group relative w-max">
+                                    <button v-if="$store.state.config.active_tts_service!='None' && !$store.state.is_rt_on" 
+                                        type="button"
+                                        @click="startRTCom"
+                                        :class="{ 'text-red-500': isListeningToVoice }"
+                                        class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90 bg-green-500 border border-green-700 rounded-md"
+                                    >
+                                    <i data-feather="mic"></i>
+                                    </button>                      
+                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Real time bidirectional audio mode.</p></div>
+                                    <button v-if="$store.state.config.active_tts_service!='None' && $store.state.is_rt_on" 
+                                        type="button"
+                                        @click="stopRTCom"
+                                        :class="{ 'text-red-500': isListeningToVoice }"
+                                        class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90 bg-red-500 border border-red-700 rounded-md"
+                                    >
+                                    <i data-feather="mic"></i>
+                                    </button>                      
+                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Real time bidirectional audio mode.</p></div>
+
+                                </div>
+
                                 <div v-if="!loading" class="group relative w-max">
                                     <input type="file" ref="fileDialog" style="display: none" @change="addFiles" multiple />
                                     <button type="button" @click.prevent="add_file"
@@ -389,7 +411,7 @@ export default {
             selecting_binding:false,
             selecting_model:false,
             selectedModel:'',
-            isLesteningToVoice:false,
+            isListeningToVoice:false,
             filesList: [],
             isFileSentList: [],
             totalSize: 0,
@@ -639,6 +661,8 @@ export default {
                     await this.$store.dispatch('refreshConfig');    
                     await this.$store.dispatch('fetchLanguages');
                     await this.$store.dispatch('fetchLanguage');
+                    await this.$store.dispatch('fetchisRTOn');
+                    
                     console.log('pers is mounted', res)
 
                     if (res && res.status && res.active_personality_id > -1) {
@@ -829,6 +853,22 @@ export default {
         makeAnEmptyAIMessage() {
             this.$emit('createEmptyAIMessage')
         },
+        startRTCom(){
+            socket.emit('start_audio_stream', ()=>{this.isAudioActive = true;});
+                nextTick(() => {
+                    feather.replace()
+                }
+            )
+            this.$store.state.is_rt_on = true;
+        },
+        stopRTCom(){
+            socket.emit('stop_audio_stream', ()=>{this.isAudioActive = true;});
+                nextTick(() => {
+                    feather.replace()
+                }
+            )
+            this.$store.state.is_rt_on = false;
+        },
         startSpeechRecognition() {
             if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
                 this.recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
@@ -836,7 +876,7 @@ export default {
                 this.recognition.interimResults = true; // Enable interim results to get real-time updates
 
                 this.recognition.onstart = () => {
-                this.isLesteningToVoice = true;
+                this.isListeningToVoice = true;
                 this.silenceTimer = setTimeout(() => {
                     this.recognition.stop();
                 }, this.silenceTimeout); // Set the silence timeout to stop recognition
@@ -856,13 +896,13 @@ export default {
 
                 this.recognition.onerror = (event) => {
                 console.error('Speech recognition error:', event.error);
-                this.isLesteningToVoice = false;
+                this.isListeningToVoice = false;
                 clearTimeout(this.silenceTimer); // Clear the silence timeout on error
                 };
 
                 this.recognition.onend = () => {
                 console.log('Speech recognition ended.');
-                this.isLesteningToVoice = false;
+                this.isListeningToVoice = false;
                 clearTimeout(this.silenceTimer); // Clear the silence timeout when recognition ends normally
                 this.submit(); // Call the function to handle form submission or action once speech recognition ends
                 };

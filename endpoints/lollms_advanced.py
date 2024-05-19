@@ -454,6 +454,9 @@ async def open_personality_folder(request: PersonalityFolderRequest):
         lollmsElfServer.error(ex)
         return {"status": False, "error": "An error occurred while processing the request"}
 
+@router.get("/is_rt_on")
+def is_rt_on():
+    return {"status": lollmsElfServer.rt_com is not None}
 
 @router.post("/start_recording")
 def start_recording(data:Identification):
@@ -467,11 +470,11 @@ def start_recording(data:Identification):
 
     lollmsElfServer.info("Starting audio capture")
     try:
-        from lollms.media import AudioRecorder
+        from lollms.media import RTCom
         lollmsElfServer.rec_output_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"audio_rec"
         lollmsElfServer.rec_output_folder.mkdir(exist_ok=True, parents=True)
         lollmsElfServer.summoned = False
-        lollmsElfServer.audio_cap = AudioRecorder(
+        lollmsElfServer.rt_com = RTCom(
                                                 lollmsElfServer, 
                                                 lollmsElfServer.sio, 
                                                 lollmsElfServer.personality, 
@@ -483,14 +486,14 @@ def start_recording(data:Identification):
                                                 rate=44100, 
                                                 channels=1, 
                                                 buffer_size=10, 
-                                                model="small.en", 
+                                                model=lollmsElfServer.config.whisper_model,
                                                 snd_device=None, 
                                                 logs_folder="logs", 
                                                 voice=None, 
                                                 block_while_talking=True, 
                                                 context_size=4096
                                             ) 
-        lollmsElfServer.audio_cap.start_recording()
+        lollmsElfServer.rt_com.start_recording()
     except:
         lollmsElfServer.InfoMessage("Couldn't load media library.\nYou will not be able to perform any of the media linked operations. please verify the logs and install any required installations")
 
@@ -506,7 +509,7 @@ def stop_recording(data:Identification):
         return {"status":False,"error":"Stop recording is blocked when the server is exposed outside for very obvious reasons!"}
 
     lollmsElfServer.info("Stopping audio capture")
-    text = lollmsElfServer.audio_cap.stop_recording()
+    text = lollmsElfServer.rt_com.stop_recording()
 
     # ai_text = lollmsElfServer.receive_and_generate(text, client, n_predict=lollmsElfServer.config, callback= lollmsElfServer.tasks_library.sink)
     # if lollmsElfServer.tts and lollmsElfServer.tts.ready:

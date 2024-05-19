@@ -24,6 +24,7 @@ function copyObject(obj) {
 export const store = createStore({
     state () {
       return {
+        is_rt_on:false,
         language: "english",
         languages: [],
         currentTheme: '',
@@ -83,6 +84,11 @@ export const store = createStore({
       }
     },
     mutations: {    
+      
+      setisRTOn(state, is_rt_on) {
+        state.is_rt_on = is_rt_on;
+      },
+
       setLanguages(state, languages) {
         state.languages = languages;
       },
@@ -162,6 +168,10 @@ export const store = createStore({
       }      
     },
     getters: {
+      
+      getisRTOn(state) {
+        return state.is_rt_on;
+      },      
       getLanguages(state) {
         return state.languages;
       },      
@@ -275,7 +285,17 @@ export const store = createStore({
         console.log("databases:",databases)
         commit('setDatabases', databases);
       },
-
+      async fetchisRTOn({ commit }) {
+        console.log("is_rt_on", this.state.client_id)
+        const response = await axios.get(
+                    '/is_rt_on'
+                  );
+            
+        console.log("response", response)
+        const is_rt_on = response.data;
+        console.log("languages", is_rt_on)
+        commit('setRTOn', is_rt_on);
+      },
       async fetchLanguages({ commit }) {
         console.log("get_personality_languages_list", this.state.client_id)
         const response = await axios.post(
@@ -770,7 +790,14 @@ app.mixin({
       catch (ex){
         console.log("Error cought:", ex)
       }
-    
+      try{
+        await this.$store.dispatch('fetchisRTOn');
+      }
+      catch (ex){
+        console.log("Error cought:", ex)
+      }
+
+      
       this.$store.state.ready = true;
     }
 

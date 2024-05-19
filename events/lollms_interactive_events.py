@@ -65,11 +65,11 @@ def add_events(sio:socketio):
 
         lollmsElfServer.info("Starting audio capture")
         try:
-            from lollms.media import AudioRecorder
+            from lollms.media import RTCom
             lollmsElfServer.rec_output_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"audio_rec"
             lollmsElfServer.rec_output_folder.mkdir(exist_ok=True, parents=True)
             lollmsElfServer.summoned = False
-            lollmsElfServer.audio_cap = AudioRecorder(
+            lollmsElfServer.rt_com = RTCom(
                                                 lollmsElfServer, 
                                                 lollmsElfServer.sio,
                                                 lollmsElfServer.personality,
@@ -81,14 +81,14 @@ def add_events(sio:socketio):
                                                 rate=44100, 
                                                 channels=1, 
                                                 buffer_size=10, 
-                                                model="small.en", 
+                                                model=lollmsElfServer.config.whisper_model, 
                                                 snd_device=None, 
                                                 logs_folder="logs", 
                                                 voice=None, 
                                                 block_while_talking=True, 
                                                 context_size=4096
                                             ) 
-            lollmsElfServer.audio_cap.start_recording()
+            lollmsElfServer.rt_com.start_recording()
         except Exception as ex:
             trace_exception(ex)
             lollmsElfServer.InfoMessage("Couldn't load media library.\nYou will not be able to perform any of the media linked operations. please verify the logs and install any required installations")
@@ -99,7 +99,8 @@ def add_events(sio:socketio):
     def stop_audio_stream(sid):
         client = check_access(lollmsElfServer, sid)
         lollmsElfServer.info("Stopping audio capture")
-        lollmsElfServer.audio_cap.stop_recording()
+        lollmsElfServer.rt_com.stop_recording()
+        lollmsElfServer.rt_com = None
 
 
 
