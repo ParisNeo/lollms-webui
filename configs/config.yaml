@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 98
+version: 99
 binding_name: null
 model_name: null
 model_variant: null
@@ -85,7 +85,7 @@ copy_to_clipboard_add_all_details: false
 active_tts_service: "None" # xtts (offline), openai_tts (API key required)
 active_tti_service: "None" # autosd (offline), dall-e (online)
 active_stt_service: "None" # whisper (offline), asr (offline or online), openai_whiosper (API key required)
-
+active_ttm_service: "None" # musicgen (offline)
 # -------------------- Services --------------------------
 
 # ***************** STT *****************

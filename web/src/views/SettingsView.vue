@@ -1274,11 +1274,11 @@
 
                                 
                 <div :class="{ 'hidden': servers_conf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
-                    <Card title="Lollms service" :is_subcard="true" class="pb-2  m-2">
+                    <Card title="Default services selection" :is_subcard="true" class="pb-2  m-2">
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <tr>
                             <td style="min-width: 200px;">
-                                <label for="active_tts_service" class="text-sm font-bold" style="margin-right: 1rem;">Active TTS Service:</label>
+                                <label for="active_tts_service" class="text-sm font-bold" style="margin-right: 1rem;" title="Default Text to speach engine">Active TTS Service:</label>
                             </td>
                             <td style="width: 100%;">
                                 <select
@@ -1296,7 +1296,26 @@
                             </tr>
                             <tr>
                             <td style="min-width: 200px;">
-                                <label for="active_tti_service" class="text-sm font-bold" style="margin-right: 1rem;">Active TTI Service:</label>
+                                <label for="active_stt_service" class="text-sm font-bold" style="margin-right: 1rem;" title="Default Speach to Text engine">Active STT Service:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <select
+                                id="active_stt_service"
+                                required
+                                v-model="configFile.active_stt_service"
+                                @change="settingsChanged=true"
+                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                    <option value="None">None</option>
+                                    <option value="whisper">Whisper</option>
+                                    <option value="openai_whisper">Open AI Whisper</option>
+                                </select>
+                            </td>
+                            </tr>
+                            <tr></tr>                            
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="active_tti_service" class="text-sm font-bold" style="margin-right: 1rem;" title="Default Text to image engine">Active TTI Service:</label>
                             </td>
                             <td style="width: 100%;">
                                 <select
@@ -1317,19 +1336,18 @@
                             </tr>
                             <tr>
                             <td style="min-width: 200px;">
-                                <label for="active_stt_service" class="text-sm font-bold" style="margin-right: 1rem;">Active STT Service:</label>
+                                <label for="active_ttm_service" class="text-sm font-bold" style="margin-right: 1rem;" title="Default Text to Music engine">Active TTM Service:</label>
                             </td>
                             <td style="width: 100%;">
                                 <select
-                                id="active_stt_service"
+                                id="active_ttm_service"
                                 required
-                                v-model="configFile.active_stt_service"
+                                v-model="configFile.active_ttm_service"
                                 @change="settingsChanged=true"
                                 class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                 >
                                     <option value="None">None</option>
-                                    <option value="whisper">Whisper</option>
-                                    <option value="openai_whisper">Open AI Whisper</option>
+                                    <option value="musicgen">Music Gen</option>
                                 </select>
                             </td>
                             </tr>

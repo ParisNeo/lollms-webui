@@ -121,7 +121,7 @@ if __name__ == "__main__":
     from lollms.server.endpoints.lollms_skills_library import router as lollms_skills_library_router
 
     from lollms.server.endpoints.lollms_user import router as lollms_user_router
-    from lollms.server.endpoints.lollms_xtts import router as lollms_xtts_add_router
+    from lollms.server.endpoints.lollms_tts import router as lollms_xtts_add_router
     from lollms.server.endpoints.lollms_sd import router as lollms_sd_router    
     from lollms.server.endpoints.lollms_comfyui import router as lollms_comfyui_router    
     
