@@ -72,7 +72,7 @@ def terminate_thread(thread):
         else:
             ASCIIColors.yellow("Canceled successfully")# The current version of the webui
 
-lollms_webui_version="9.8 (Alpha)"
+lollms_webui_version="9.8 (Beta)"
 
 
 
@@ -1009,6 +1009,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         if message_type == MSG_TYPE.MSG_TYPE_NEW_MESSAGE:
             self.nb_received_tokens = 0
             self.start_time = datetime.now()
+            self.update_message(client_id, "Generating ...", {"status":True}, msg_type=MSG_TYPE.MSG_TYPE_STEP_END)
             self.new_message(
                                     client_id, 
                                     self.personality.name if personality is None else personality.name, 
