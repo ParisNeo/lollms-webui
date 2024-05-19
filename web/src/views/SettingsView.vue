@@ -1354,7 +1354,7 @@
 
                         </table>                    
                     </Card>
-                    <Card title="Lollms service" :is_subcard="true" class="pb-2  m-2">
+                    <Card title="Lollms service" :is_shrunk="true" :is_subcard="true" class="pb-2  m-2">
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <tr>
                             <td style="min-width: 200px;">
@@ -1479,7 +1479,7 @@
                             </tr>   
                         </table>               
                     </Card>                    
-                    <Card title="TTS services" :is_subcard="true" class="pb-2  m-2">
+                    <Card title="TTS services" :is_shrunk="true" :is_subcard="true" class="pb-2  m-2">
                         <Card title="XTTS service" :is_subcard="true" class="pb-2  m-2">
                             <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <tr>
@@ -1827,7 +1827,7 @@
                             </table>
                         </Card>                        
                     </Card>
-                    <Card title="TTI services" :is_subcard="true" class="pb-2  m-2">
+                    <Card title="TTI services" :is_shrunk="true" :is_subcard="true" class="pb-2  m-2">
                         <Card title="Stable diffusion service" :is_subcard="true" class="pb-2  m-2">
                             <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <tr>
@@ -2010,7 +2010,7 @@
 
 
                     </Card>
-                    <Card title="STT services" :is_subcard="true" class="pb-2  m-2">
+                    <Card title="STT services" :is_shrunk="true" :is_subcard="true" class="pb-2  m-2">
                         <Card title="Whisper audio transcription" :is_subcard="true" class="pb-2  m-2">
                             <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <tr>
@@ -2053,7 +2053,7 @@
                             </table>
                         </Card>
                     </Card>
-                    <Card title="TTT services" :is_subcard="true" class="pb-2  m-2">
+                    <Card title="TTT services" :is_shrunk="true" :is_subcard="true" class="pb-2  m-2">
                         <Card title="Ollama service" :is_subcard="true" class="pb-2  m-2">
                             <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <tr>
@@ -2302,7 +2302,7 @@
                             </table>                                
                         </Card>                        
                     </Card>
-                    <Card title="Misc" :is_subcard="true" class="pb-2  m-2">
+                    <Card title="Misc" :is_shrunk="true" :is_subcard="true" class="pb-2  m-2">
                         <Card title="Motion Ctrl service" :is_subcard="true" class="pb-2  m-2">
                             <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <tr>
