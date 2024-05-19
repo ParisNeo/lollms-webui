@@ -142,7 +142,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
         
         self.config_file_path = config.file_path
         self.cancel_gen = False
-
         
         if self.config.auto_update:
             if self.check_update_():

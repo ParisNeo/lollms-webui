@@ -475,6 +475,7 @@ def start_recording(data:Identification):
                                                 lollmsElfServer, 
                                                 lollmsElfServer.sio, 
                                                 lollmsElfServer.personality, 
+                                                client=client,
                                                 threshold=1000, 
                                                 silence_duration=2, 
                                                 sound_threshold_percentage=10, 

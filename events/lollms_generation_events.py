@@ -46,8 +46,7 @@ def add_events(sio:socketio):
         client.continuing=False
         client.first_chunk=True
         
-
-        
+       
         if not lollmsElfServer.model:
             ASCIIColors.error("Model not selected. Please select a model")
             lollmsElfServer.error("Model not selected. Please select a model", client_id=client_id)
@@ -193,3 +192,7 @@ def add_events(sio:socketio):
         client.generation_thread = threading.Thread(target=lollmsElfServer.start_message_generation, args=(message, message.id, client_id, True))
         client.generation_thread.start()
 
+    #add functions to lollm
+    lollmsElfServer.handle_generate_msg                 = handle_generate_msg
+    lollmsElfServer.generate_msg_with_internet          = generate_msg_with_internet
+    lollmsElfServer.handle_continue_generate_msg_from   = handle_continue_generate_msg_from
