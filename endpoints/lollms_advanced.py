@@ -14,7 +14,7 @@ from starlette.responses import StreamingResponse
 from lollms.types import MSG_TYPE
 from lollms.main_config import BaseConfig
 from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception, show_yes_no_dialog, add_period
-from lollms.security import sanitize_path, forbid_remote_access, check_access
+from lollms.security import sanitize_path, forbid_remote_access, check_access, sanitize_svg
 from ascii_colors import ASCIIColors
 from lollms.databases.discussions_database import DiscussionsDB
 from lollms.client_session import Client
@@ -104,7 +104,7 @@ async def execute_code(request: CodeRequest):
         if language=="svg":
             ASCIIColors.info("Executing svg code:")
             ASCIIColors.yellow(code)
-            return execute_svg(code, client, message_id)
+            return execute_svg(sanitize_svg(code), client, message_id)
         if language=="javascript":
             ASCIIColors.info("Executing javascript code:")
             ASCIIColors.yellow(code)
