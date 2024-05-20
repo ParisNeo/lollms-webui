@@ -1255,7 +1255,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                 fn = self.personality.name.lower().replace(' ',"_").replace('.','')    
                                 fn = f"{fn}_{message_id}.wav"
                                 url = f"audio/{fn}"
-                                self.xtts.tts_to_file(client.generated_text, Path(self.personality.audio_samples[0]).name, f"{fn}", language=language)
+                                self.xtts.tts_file(client.generated_text, Path(self.personality.audio_samples[0]).name, f"{fn}", language=language)
                                 fl = f"\n".join([
                                 f"<audio controls>",
                                 f'    <source src="{url}" type="audio/wav">',

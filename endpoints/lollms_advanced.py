@@ -527,6 +527,6 @@ def stop_recording(data:Identification):
     #     preprocessed_text= add_period(ai_text)
     #     voice_file =  [v for v in voices_folder.iterdir() if v.stem==voice and v.suffix==".wav"]
 
-    #     lollmsElfServer.tts.tts_to_audio(preprocessed_text, voice_file[0].name, language=language)
+    #     lollmsElfServer.tts.tts_audio(preprocessed_text, voice_file[0].name, language=language)
     return text
 
