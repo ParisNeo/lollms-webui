@@ -47,4 +47,6 @@ Since we’ve chosen OpenAI for TTS, navigate to the TTS services section, scrol
 
 Repeat the process for DALL-E and OpenAI Whisper by entering your API key and selecting the appropriate model.
 
+Make sure you press apply settings to commit the settings to the backend. It may take a little while the first time as it will install some extra libraries.
+
 And there you have it! Your settings are configured, and your AI is ready to assist you.
