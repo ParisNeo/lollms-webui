@@ -631,9 +631,11 @@ export default {
                 console.log("after")
                 const res = await axios.post('/remount_personality', obj);
                 console.log("Remounting personality executed:",res)
+                
 
                 if (res) {
                     console.log("Remounting personality res")
+                    this.$store.state.toast.showToast("Personality remounted", 4, true)
 
                     return res.data
 
@@ -994,6 +996,7 @@ export default {
         handleOnTalk(pers){
             console.log("talking")
             this.showPersonalities=false
+            this.$store.state.toast.showToast(`Personality ${pers.name} is Talking`, 4, true)
             this.onTalk(pers)
         },
                             
