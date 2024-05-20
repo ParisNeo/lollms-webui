@@ -2077,7 +2077,7 @@
                                         class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                     >
                                         <!-- Options with language codes and corresponding language names -->
-                                        <option v-for="whispermodel in whisperModels" :key="whispermodel" :value="whispermodel">
+                                        <option v-for="whispermodel in openaiWhisperModels" :key="whispermodel" :value="whispermodel">
                                         {{ whispermodel }}
                                         </option>
                                     </select>
@@ -5769,6 +5769,11 @@ export default {
             set(value) {
                 this.$store.state.config.audio_out_voice = value;
             },
+        },
+        openaiWhisperModels(){
+            return [
+                "whisper-1"
+            ]
         },
         whisperModels(){
             return [
