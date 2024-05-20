@@ -62,3 +62,7 @@ So let's go back to discussion and then we press this button here, real time by 
 Oh, I forgot. I think we may want to test the new persona system. So let's use persona, third generation persona, for example, LOLLMZ with Z. This personality has more functionalities than the old ones. 
 
 So here for example, it is installing by AutoGuy, which will allow it actually to move the mouse and do things on the screen. Even though here we're just going to show a few of its capabilities, but maybe in a future video, I will show you how you can use it to actually do stuff in your place on your PC. So let's just wait for a moment that it finalizes the installation of all the tools. And then I think we can have fun talking to the AI.
+
+
+
+In this video, we explored how LoLLMs can perform a multitude of tasks using cutting-edge AI tools: STT (Speech-to-Text), TTS (Text-to-Speech), TTI (Text-to-Image), and TTT (Text-to-Text). We also delved into the function call capabilities of 3rd generation personalities within the LoLLMs system. Finally, we interacted with GPT-4O in an engaging way by playing a guessing game using cameras, solving a linear equation with the camera, and even creating and playing a Pygame. The possibilities with LoLLMs are truly limitless. Thank you so much for watching. Don't forget to like, subscribe, and star the repo on GitHub. See ya!
