@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Lollms"
-#define MyAppVersion "9.7"
+#define MyAppVersion "9.8"
 #define MyAppPublisher "ParisNeo"
 #define MyAppURL "https://www.lollms.com/"
 #define MyAppExeName "win_run.bat"
