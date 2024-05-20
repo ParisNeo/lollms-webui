@@ -489,7 +489,7 @@ def start_recording(data:Identification):
                                                 model=lollmsElfServer.config.whisper_model,
                                                 snd_input_device=lollmsElfServer.config.stt_input_device, 
                                                 snd_output_device=lollmsElfServer.config.tts_output_device, 
-                                                logs_folder="logs", 
+                                                logs_folder=lollmsElfServer.rec_output_folder, 
                                                 voice=None, 
                                                 block_while_talking=True, 
                                                 context_size=4096
