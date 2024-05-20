@@ -1,0 +1,50 @@
+Hi there! Today, I'm going to guide you through the installation of LOLLMs with the OpenAI binding and the GPT4O model. This setup will enable you to explore LOLLMs in the most efficient manner, utilizing all its features at the highest quality.
+
+First, you'll need an OpenAI account to generate an API key. You can find tutorials on how to do this on YouTube. 
+
+Once you have your API key ready, head over to the LOLLMs with UI GitHub page. As of today, the latest version is 9.8, released seven hours ago.
+
+Since I'm on Windows, I'll download the Windows installer. If you're on Linux or Macos, you can use the provided scripts. After downloading, execute the installer. If Windows flags the file as untrusted, it's because it's very new. Just choose to run it anyway.
+
+Select English as the language, then review and accept the Apache License Version 2.0. The installer will describe the tool's features. I highly recommend creating a desktop shortcut for easy access. Choose OpenAI as the binding, then click 'Next' and proceed with the installation.
+
+You'll need to accept the code of conduct, emphasizing responsible use of the tool. It's your responsibility to use it ethically. Click 'Next' and ensure you do not uncheck 'runfirstinstall.bat'. This is crucial.
+
+Finish the installation and wait as the installer downloads and installs the necessary components. It will detect any old versions of the tool, remove them, and reinstall everything. LOLLMS is a self-contained tool, so it will install MiniConda, create an environment within it, and download all required libraries. Once this process is complete, we will be ready to proceed.
+
+See ya in the next part!
+
+Okay, so once everything is installed, it will ask you to provide the open AI key. You can provide it here or you can simply do it in the UI afterwards. So here, for example, let's go on.
+
+Let's press enter and the lollms application will be launched.
+
+So as you can see, it is loading. Here, it indicates that the API key was not provided, but we will handle that in the web UI. Now, we're in the web UI. Let's go to settings. By default, the binding is OpenAI and the model is GPT-3.5. First, navigate to OpenAI. Click on the binding and then press settings. Here, you can find all the details about your costs as well as the OpenAI key. Enter your OpenAI key here. The context size depends on the model you're using. It's manual for now. By default, it's set to 4090, but you can adjust it as needed. The rest of the configurations pertain to blip. We're not using these visual models since GPT-4O has its own vision model, eliminating the need for an additional model. 
+
+You can also set the model template and model name, which is a common configuration for all bindings. Here we don't need to set those as we'll be using the models zoo to select the model. I'll input my own API key, and then we'll proceed.
+
+So as you can see, it is loading. Here, it indicates that the API key was not provided, but we will handle that in the web UI. Now, we're in the web UI. Let's go to settings. By default, the binding is OpenAI and the model is GPT-3.5. First, navigate to OpenAI. Click on the binding and then press settings. Here, you can find all the details about your costs as well as the OpenAI key. Enter your OpenAI key here. The context size depends on the model you're using. It's manual for now. By default, it's set to 4090, but you can adjust it as needed. The rest of the configurations pertain to blip. We're not using these visual models since GPT-4O has its own vision model, eliminating the need for an additional model. 
+
+You can also set the model template and model name, which is a common configuration for all bindings. Here we don't need to set those as we'll be using the models zoo to select the model. I'll input my own API key, and then we'll proceed.
+
+Once the API key is set, the web UI page refreshes, and we return to the discussions tab. To verify everything is working, simply hit the plus icon to start a new discussion and greet the AI with a "Hi.".
+
+As you can see, it responds promptly.
+
+Now that the AI is active, let’s configure some additional settings. Navigate back to the settings menu. First, head to the Model Zoo and select the GPT4O model, which is both powerful and multi-modal. After selecting it, proceed to the Services Zoo to configure the services we’ll be using for the web UI.
+
+For speech-to-text (STT) services, we have options like Whisper for local transcription or OpenAI Whisper, a paid service. We’ll select the OpenAI Whisper for this demo, but note that Whisper can also run locally without heavy resource usage.
+
+
+For text-to-image services, you can opt for Automatic Stable Diffusion, which requires local installation, or use DALL-E from OpenAI, which we’ll choose here.
+
+For speech-to-text (STT) services, we have options like Whisper for local transcription or OpenAI Whisper, a paid service. We’ll select the OpenAI Whisper for this demo, but note that Whisper can also run locally without heavy resource usage.
+
+For text-to-image services, you can opt for Automatic Stable Diffusion, which requires local installation, or use DALL-E from OpenAI, which we’ll choose here.
+
+Finally, for text-to-music services, MusicGen is available for generating music, but setup is required.
+
+Since we’ve chosen OpenAI for TTS, navigate to the TTS services section, scroll to OpenAI text-to-speech service, and select your preferred model and voice. OpenAI provides various voices; for this demo, we’ll stick with Alloy. Enter your OpenAI API key and validate it.
+
+Repeat the process for DALL-E and OpenAI Whisper by entering your API key and selecting the appropriate model.
+
+And there you have it! Your settings are configured, and your AI is ready to assist you.
