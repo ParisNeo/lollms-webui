@@ -2794,7 +2794,7 @@
                                         </button>
                                         <button @click.stop="unmountPersonality (item)">
                                             <span
-                                                class="hidden group-hover:block top-0 left-7 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
+                                                class="hidden group-hover:block -top-2 -right-1 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
                                                 title="Unmount personality">
                                                 <!-- UNMOUNT BUTTON -->
                                                 <svg aria-hidden="true" class="w-4 h-4 text-red-600 hover:text-red-500 "
@@ -2804,7 +2804,6 @@
                                                         d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                                         clip-rule="evenodd"></path>
                                                 </svg>
-
                                             </span>
                                         </button>
                                     </div>

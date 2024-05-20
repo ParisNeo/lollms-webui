@@ -1173,29 +1173,27 @@ export default {
                 this.chime.play()
             }*/
         },
-        talk(pers){
+        async talk(pers){
             this.isGenerating = true;
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
-            axios.get('/get_generation_status', {}).then((res) => {
-                if (res) {
-                    //console.log(res.data.status);
-                    if (!res.data.status) {
-                        console.log('Generating message from ',res.data.status);
-                        socket.emit('generate_msg_from', { id: -1 });
-                        // Temp data
-                        let lastmsgid =0
-                        if(this.discussionArr.length>0){
-                            lastmsgid= Number(this.discussionArr[this.discussionArr.length - 1].id) + 1
-                        }
-                        
+            let res = await axios.get('/get_generation_status', {})
+            if (res) {
+                //console.log(res.data.status);
+                if (!res.data.status) {
+                    const id = this.$store.state.config.personalities.findIndex(item => item === pers.full_path)
+                    const obj = {
+                    client_id:this.$store.state.client_id,
+                    id: id
                     }
-                    else {
-                        console.log("Already generating");
-                    }
+                    res = await axios.post('/select_personality', obj);
+
+                    console.log('Generating message from ',res.data.status);
+                    socket.emit('generate_msg_from', { id: -1 });
                 }
-            }).catch((error) => {
-                console.log("Error: Could not get generation status", error);
-            });
+                else {
+                    console.log("Already generating");
+                }
+            }
         },
         createEmptyUserMessage(message){
             socket.emit('create_empty_message', {"type":0,"message":message}); // 0 for user and 1 for AI

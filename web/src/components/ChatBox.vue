@@ -178,33 +178,68 @@
                                 </div>    
                                 <div class="w-fit group relative" >
                                     <!-- :onShowPersList="onShowPersListFun" -->
-                                    <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-12 group-hover:translate-x-15 transition-all duration-300">
-                                        <div class="w-full"
+                                    <div class= "fixed w-[500px] -bottom-[50px] group absolute opacity-0 group-hover:opacity-100 transform group-hover:translate-y-[-6rem] group-hover:translate-x-15 transition-all duration-300">
+                                        <div class="w-fit flex-wrap flex">
+                                        <div class="w-fit h-fit "
                                             v-for="(item, index) in mountedPersonalities" :key="index + '-' + item.name"
-                                            ref="mountedPersonalities">
-                                            <div v-if="index!=personality_name" class="group items-center flex flex-row">
-                                                <button @click.prevent="onPersonalitySelected(item)" class="w-10 h-10">
-                                                    <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
-                                                        class="w-10 h-10 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
-                                                        :class="this.$store.state.active_personality_id == this.$store.state.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
+                                            ref="mountedPersonalities"
+                                            @mouseover="showPersonalityHoveredIn(index)" @mouseleave="showPersonalityHoveredOut()"
+                                            >
+                                            <div v-if="index!=personality_name" class="items-center flex flex-row relative z-20  hover:-translate-y-8 duration-300"
+                                            :class="personalityHoveredIndex === index?'scale-150':''"
+                                            >
+                                                <div class="relative">
+                                                    <button @click.prevent="onPersonalitySelected(item)" class="w-10 h-10 relative">
+                                                        <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
+                                                        class="z-50 w-10 h-10 rounded-full object-fill text-red-700 border-2 border-gray-500 active:scale-90"
+                                                        :class="personalityHoveredIndex === index?'scale-150  ':'' + this.$store.state.active_personality_id == this.$store.state.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
                                                         :title="item.name">
-                                                </button>
-                                                <button @click.prevent="unmountPersonality (item)">
-                                                    <span
-                                                        class="hidden hover:block top-3 left-9 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2  border-transparent"
-                                                        title="Unmount personality">
-                                                        <svg aria-hidden="true" class="w-4 h-4 text-red-600 hover:text-red-500 "
-                                                            fill="currentColor" viewBox="0 0 20 20"
-                                                            xmlns="http://www.w3.org/2000/svg">
-                                                            <path fill-rule="evenodd"
-                                                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                                clip-rule="evenodd"></path>
-                                                        </svg>
+                                                    </button>
+                                                    <button @click.prevent="unmountPersonality(item)"  v-if="personalityHoveredIndex === index" >
+                                                        <span
+                                                            class="-top-6 -right-6 border-gray-500 absolute active:scale-90  w-7 h-7 hover:scale-150 transition bg-bg-light dark:bg-bg-dark rounded-full border-2" 
+                                                            title="Unmount personality">
+                                                            <!-- UNMOUNT BUTTON -->
+                                                            <svg aria-hidden="true" class="top-1 left-1 relative w-5 h-5 text-red-600 hover:text-red-500 "
+                                                                fill="currentColor" viewBox="0 0 20 20"  stroke-width="1"
+                                                                xmlns="http://www.w3.org/2000/svg">
+                                                                <path fill-rule="evenodd"
+                                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                    clip-rule="evenodd"></path>
+                                                            </svg>
+                                                        </span>
+                                                    </button>        
+                                                    <button @click.prevent="remount_personality(item)" v-if="personalityHoveredIndex === index">
+                                                        <span
+                                                            class="-top-9 left-2 border-gray-500 active:scale-90 absolute items-center  w-7 h-7 hover:scale-150 transition text-red-200 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2"
+                                                            title="Talk">
+                                                            <!-- UNMOUNT BUTTON -->
+                                                            <svg xmlns="http://www.w3.org/2000/svg"  class="top-1 left-1 relative w-4 h-4 text-red-600 hover:text-red-500 " viewBox="0 0 30 30" width="2" height="2" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                                                                <g id="surface1">
+                                                                <path style=" " d="M 16 4 C 10.886719 4 6.617188 7.160156 4.875 11.625 L 6.71875 12.375 C 8.175781 8.640625 11.710938 6 16 6 C 19.242188 6 22.132813 7.589844 23.9375 10 L 20 10 L 20 12 L 27 12 L 27 5 L 25 5 L 25 8.09375 C 22.808594 5.582031 19.570313 4 16 4 Z M 25.28125 19.625 C 23.824219 23.359375 20.289063 26 16 26 C 12.722656 26 9.84375 24.386719 8.03125 22 L 12 22 L 12 20 L 5 20 L 5 27 L 7 27 L 7 23.90625 C 9.1875 26.386719 12.394531 28 16 28 C 21.113281 28 25.382813 24.839844 27.125 20.375 Z "/>
+                                                                </g>
+                                                            </svg>
 
-                                                    </span>
-                                                </button>
+                                                        </span>
+                                                    </button>
+
+                                                    
+                                                    <button @click.prevent="handleOnTalk(item)" v-if="personalityHoveredIndex === index">
+                                                        <span
+                                                            class="-top-6 -left-6 border-gray-500 active:scale-90 absolute items-center  w-7 h-7 hover:scale-150 transition text-red-200 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2"
+                                                            title="Talk">
+                                                            <!-- UNMOUNT BUTTON -->
+                                                            <svg xmlns="http://www.w3.org/2000/svg"  class="top-1 left-1 relative w-4 h-4 text-red-600 hover:text-red-500 " viewBox="0 0 24 24" width="2" height="2" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                                                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                                                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                                            </svg>
+
+                                                        </span>
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>             
+                                        </div>
+                                        </div>
                                     </div>
                 
                                     <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
@@ -403,6 +438,7 @@ export default {
     },
     data() {
         return {
+            personalityHoveredIndex:null,
             loader_v0:loader_v0,
             sendGlobe:sendGlobe,
             modelImgPlaceholder:modelImgPlaceholder,
@@ -581,13 +617,43 @@ export default {
                 this.$store.state.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
             }
         },
+        async remount_personality(pers) {
+            console.log("Remounting personality ", pers)
+            if (!pers) { return { 'status': false, 'error': 'no personality - mount_personality' } }
+            try {
+                console.log("before")
+                const obj = {
+                    client_id: this.$store.state.client_id,
+                    category: pers.category,
+                    folder: pers.folder,
+                    language: pers.language
+                }
+                console.log("after")
+                const res = await axios.post('/remount_personality', obj);
+                console.log("Remounting personality executed:",res)
+
+                if (res) {
+                    console.log("Remounting personality res")
+
+                    return res.data
+
+                }
+                else{
+                    console.log("failed remount_personality")
+                }
+            } catch (error) {
+                console.log(error.message, 'remount_personality - settings')
+                return
+            }
+
+        },      
         async unmountPersonality(pers) {
-            this.loading = true
+            console.log("Unmounting personality:",pers)
             if (!pers) { return }
 
             const res = await this.unmount_personality(pers.personality || pers)
 
-
+            console.log(res)
             if (res.status) {
                 this.$store.state.config.personalities = res.personalities
                 this.$store.state.toast.showToast("Personality unmounted", 4, true)
@@ -609,12 +675,13 @@ export default {
                 this.$store.state.toast.showToast("Could not unmount personality\nError: " + res.error, 4, false)
             }
 
-            this.loading = false
         },
+
         async unmount_personality(pers) {
             if (!pers) { return { 'status': false, 'error': 'no personality - unmount_personality' } }
 
             const obj = {
+                client_id: this.$store.state.client_id,
                 language: pers.language,
                 category: pers.category,
                 folder: pers.folder
@@ -634,10 +701,14 @@ export default {
             }
 
         },        
+        async showPersonalityHoveredIn(index){
+            this.personalityHoveredIndex = index
+        },
+        async showPersonalityHoveredOut(){
+            this.personalityHoveredIndex = null
+        },
         async onPersonalitySelected(pers) {
-            console.log('on pers', pers)
             // eslint-disable-next-line no-unused-vars
-            console.log('selecting ', pers)
             if (pers) {
 
                 if (pers.selected) {
@@ -921,6 +992,7 @@ export default {
 
         },
         handleOnTalk(pers){
+            console.log("talking")
             this.showPersonalities=false
             this.onTalk(pers)
         },

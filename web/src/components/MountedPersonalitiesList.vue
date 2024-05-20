@@ -452,6 +452,7 @@ export default {
             if(id>-1){
                 console.log('Selecting personality with id:', JSON.stringify(id))
                 const obj = {
+                    client_id:this.$store.state.client_id,
                     id: id
                 }
                 try {
