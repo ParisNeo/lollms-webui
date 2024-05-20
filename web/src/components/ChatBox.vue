@@ -178,7 +178,7 @@
                                 </div>    
                                 <div class="w-fit group relative" >
                                     <!-- :onShowPersList="onShowPersListFun" -->
-                                    <div class= "fixed w-[500px] -bottom-[50px] group absolute opacity-0 group-hover:opacity-100 transform group-hover:translate-y-[-6rem] group-hover:translate-x-15 transition-all duration-300">
+                                    <div class= "fixed w-[500px] -bottom-[150px] group absolute group-hover:opacity-100 transform group-hover:translate-y-[-200px] group-hover:translate-x-[0px] transition-all duration-300">
                                         <div class="w-fit flex-wrap flex">
                                         <div class="w-fit h-fit "
                                             v-for="(item, index) in mountedPersonalities" :key="index + '-' + item.name"
