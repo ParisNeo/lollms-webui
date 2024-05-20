@@ -50,3 +50,15 @@ Repeat the process for DALL-E and OpenAI Whisper by entering your API key and se
 Make sure you press apply settings to commit the settings to the backend. It may take a little while the first time as it will install some extra libraries.
 
 And there you have it! Your settings are configured, and your AI is ready to assist you.
+
+Now that we've finished the settings, let's dive into the fun stuff. You can use the press-to-talk feature in LoLLMs, which utilizes the browser interpreter and text-to-speech technology. For instance, you can ask it to write a very short song about itself. While it may not be the shortest, it's concise enough. You can also press a button to make it speak.
+
+Now, let's activate the new feature: real-time bi-directional audio mode. We'll create a new page, and I'll use my real voice.
+
+Before we start, let's go to settings and let's use the local whisper instead of using the open AI one. My PC is powerful enough and since these are not free, we can save on the whisper part. 
+
+So let's go back to discussion and then we press this button here, real time by directional audio mode and let's start. 
+
+Oh, I forgot. I think we may want to test the new persona system. So let's use persona, third generation persona, for example, LOLLMZ with Z. This personality has more functionalities than the old ones. 
+
+So here for example, it is installing by AutoGuy, which will allow it actually to move the mouse and do things on the screen. Even though here we're just going to show a few of its capabilities, but maybe in a future video, I will show you how you can use it to actually do stuff in your place on your PC. So let's just wait for a moment that it finalizes the installation of all the tools. And then I think we can have fun talking to the AI.
