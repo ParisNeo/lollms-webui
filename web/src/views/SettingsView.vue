@@ -1219,6 +1219,47 @@
 
                         </table>                    
                     </Card>
+                    <Card title="Audio devices settings" :is_subcard="true" class="pb-2  m-2">
+                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="stt_input_device" class="text-sm font-bold" style="margin-right: 1rem;" title="Input device">Audio Input device:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <select
+                                id="stt_input_device"
+                                required
+                                v-model="configFile.stt_input_device"
+                                @change="settingsChanged=true"
+                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                    <option v-for="snd_input_device in snd_input_devices" :key="snd_input_device" :value="snd_input_device">
+                                        {{ snd_input_device }}
+                                    </option>                                
+                                </select>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="tts_output_device" class="text-sm font-bold" style="margin-right: 1rem;" title="Input device">Audio Output device:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <select
+                                id="tts_output_device"
+                                required
+                                v-model="configFile.tts_output_device"
+                                @change="settingsChanged=true"
+                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                    <option v-for="tts_output_device in tts_output_devices" :key="tts_output_device" :value="tts_output_device">
+                                        {{ tts_output_device }}
+                                    </option>                                
+                                </select>
+                            </td>
+                            </tr>
+
+                        </table>                    
+                    </Card>
                     <Card title="Lollms service" :is_shrunk="true" :is_subcard="true" class="pb-2  m-2">
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <tr>
@@ -3425,6 +3466,8 @@ export default {
                 'Content-Type': 'application/json'
             },
             defaultModelImgPlaceholder:defaultModelImgPlaceholder,
+            snd_input_devices: [],
+            snd_output_devices: [],
             voices: [],
             voice_languages:{
                             "Arabic": "ar",
@@ -5690,12 +5733,14 @@ export default {
         console.log("Constructing")
         this.load_everything()
         this.getSeviceVoices()
+        this.snd_input_devices = await axios.get("/get_snd_input_devices")
+        this.snd_output_devices = await axios.get("/get_snd_output_devices")
+
     },
     activated() {
         //this.load_everything()
     },
     computed: { 
-        
         rendered_models_zoo:{
             get(){
                 if (this.searchModel){

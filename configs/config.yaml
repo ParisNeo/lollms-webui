@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 99
+version: 100
 binding_name: null
 model_name: null
 model_variant: null
@@ -89,7 +89,11 @@ active_ttm_service: "None" # musicgen (offline)
 # -------------------- Services --------------------------
 
 # ***************** STT *****************
-# STT service 
+stt_input_device: null
+
+
+
+# ASR STT service 
 asr_enable: false
 asr_base_url: http://localhost:9000
 
@@ -104,6 +108,8 @@ whisper_model: base
 
 
 # ***************** TTS *****************
+tts_output_device: null
+
 # Voice service
 xtts_enable: false
 xtts_base_url: http://localhost:8020
