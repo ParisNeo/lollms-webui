@@ -1251,7 +1251,7 @@
                                 @change="settingsChanged=true"
                                 class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                 >
-                                    <option v-for="tts_output_device in tts_output_devices" :key="tts_output_device" :value="tts_output_device">
+                                    <option v-for="tts_output_device in snd_output_devices" :key="tts_output_device" :value="tts_output_device">
                                         {{ tts_output_device }}
                                     </option>                                
                                 </select>
@@ -5736,8 +5736,6 @@ export default {
         try{
             console.log("Loading input devices list")
             const response = await axios.get("/get_snd_input_devices")
-            console.log("response:", response)
-            console.log("response data : ", response.data)
             this.snd_input_devices = response.data["device_names"]
         }
         catch{
@@ -5745,7 +5743,8 @@ export default {
         }
         try{
             console.log("Loading output devices list")
-            this.snd_output_devices = await axios.get("/get_snd_output_devices").data["device_names"]
+            const response = await axios.get("/get_snd_output_devices")
+            this.snd_output_devices = response.data["device_names"]
         }
         catch{
             console.log("Couldin't list output devices")
