@@ -5733,8 +5733,24 @@ export default {
         console.log("Constructing")
         this.load_everything()
         this.getSeviceVoices()
-        this.snd_input_devices = await axios.get("/get_snd_input_devices")
-        this.snd_output_devices = await axios.get("/get_snd_output_devices")
+        try{
+            console.log("Loading input devices list")
+            const response = await axios.get("/get_snd_input_devices")
+            console.log("response:", response)
+            console.log("response data : ", response.data)
+            this.snd_input_devices = response.data["device_names"]
+        }
+        catch{
+            console.log("Couldin't list input devices")
+        }
+        try{
+            console.log("Loading output devices list")
+            this.snd_output_devices = await axios.get("/get_snd_output_devices").data["device_names"]
+        }
+        catch{
+            console.log("Couldin't list output devices")
+        }
+        
 
     },
     activated() {
