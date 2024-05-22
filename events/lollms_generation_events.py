@@ -36,7 +36,7 @@ lollmsElfServer = LOLLMSWebUI.get_instance()
 def add_events(sio:socketio):
     forbid_remote_access(lollmsElfServer)
     @sio.on('generate_msg')
-    def handle_generate_msg(sid, data):        
+    def handle_generate_msg(sid, data, use_threading=True):        
         client_id = sid
         lollmsElfServer.cancel_gen = False
         client = lollmsElfServer.session.get_client(client_id)
@@ -78,9 +78,12 @@ def add_events(sio:socketio):
             )
 
             ASCIIColors.green("Starting message generation by "+lollmsElfServer.personality.name)
-            client.generation_thread = threading.Thread(target=lollmsElfServer.start_message_generation, args=(message, message.id, client_id))
-            client.generation_thread.start()
-            
+            if use_threading:
+                client.generation_thread = threading.Thread(target=lollmsElfServer.start_message_generation, args=(message, message.id, client_id))
+                client.generation_thread.start()
+            else:
+                lollmsElfServer.start_message_generation(message, message.id, client_id)
+                    
             # lollmsElfServer.sio.sleep(0.01)
             ASCIIColors.info("Started generation task")
             lollmsElfServer.busy=True
