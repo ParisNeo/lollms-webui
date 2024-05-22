@@ -97,6 +97,13 @@
                     @click="showNews()">
                     <img :src="static_info">
                 </div>
+                <div v-if="is_fun_mode" title="fun mode is on press to turn off" class="text-green-500 cursor-pointer" @click="fun_mode_off()">
+                    <img class="w-5 h-5" :src="fun_mode">
+                </div>
+                <div v-else title="fun mode is off press to turn on" class="text-red-500 cursor-pointer" @click="fun_mode_on()">
+                    <img class="w-5 h-5" :src="normal_mode">
+                </div>
+
                 <div class="language-selector relative" style="position: relative;"> 
                     <button @click="toggleLanguageMenu" class="bg-transparent text-black dark:text-white py-1 px-1 rounded font-bold uppercase transition-colors duration-300 hover:bg-blue-500">
                         {{ $store.state.language.slice(0, 2) }}
@@ -169,6 +176,8 @@ import static_info from "../assets/static_info.svg"
 import animated_info from "../assets/animated_info.svg"
 import { useRouter } from 'vue-router'
 import storeLogo from '@/assets/logo.png'
+import fun_mode from "../assets/fun_mode.svg"
+import normal_mode from "../assets/normal_mode.svg"
 
 import axios from 'axios';
 </script>
@@ -216,7 +225,16 @@ export default {
         
         loading_infos(){
             return this.$store.state.loading_infos;
-        },        
+        },
+        is_fun_mode(){
+            try{
+                return this.$store.state.config.fun_mode
+            }
+            catch(error){
+                console.error("Oopsie! Looks like we hit a snag: ", error);
+                return false;
+            }
+        },
         isModelOK(){
             return this.$store.state.isModelOk;
         },
@@ -238,7 +256,11 @@ export default {
         PopupViewer
     },
     watch:{
-        isConnected(){
+        '$store.state.config.fun_mode': function(newVal, oldVal) {
+            console.log(`Fun mode changed from ${oldVal} to ${newVal}! 🎉`);
+            this.updateIcon();
+        },        
+        '$store.state.isConnected': function(newVal, oldVal) {
             if (!this.isConnected){
                 this.$store.state.messageBox.showBlockingMessage("Server suddenly disconnected. Please reboot the server to recover the connection")
                 this.is_first_connection = false
@@ -270,6 +292,8 @@ export default {
             isLanguageMenuVisible: false,
             static_info: static_info,
             animated_info: animated_info,
+            normal_mode:normal_mode,
+            fun_mode:fun_mode,
             is_first_connection:true,
             discord:discord,
             FastAPI:FastAPI,
@@ -284,6 +308,10 @@ export default {
             moonIcon: document.querySelector(".moon"),
             userTheme: localStorage.getItem("theme"),
             systemTheme: window.matchMedia("prefers-color-scheme: dark").matches,
+            posts_headers : {
+                'accept': 'application/json',
+                'Content-Type': 'application/json'
+            }            
         }
     },
     async mounted() {
@@ -378,6 +406,38 @@ export default {
         //    }
             
         // },
+        applyConfiguration() {
+            this.isLoading = true;
+            console.log(this.$store.state.config)
+            axios.post('/apply_settings', {"client_id":this.$store.state.client_id, "config":this.$store.state.config}, {headers: this.posts_headers}).then((res) => {
+                this.isLoading = false;
+                //console.log('apply-res',res)
+                if (res.data.status) {
+
+                    this.$store.state.toast.showToast("Configuration changed successfully.", 4, true)
+                    this.settingsChanged = false
+                    //this.save_configuration()
+                } else {
+
+                    this.$store.state.toast.showToast("Configuration change failed.", 4, false)
+
+                }
+                nextTick(() => {
+                    feather.replace()
+
+                })
+            })
+        },
+        fun_mode_on(){
+            console.log("Turning on fun mode")
+            this.$store.state.config.fun_mode=true;
+            this.applyConfiguration()
+        },
+        fun_mode_off(){
+            console.log("Turning off fun mode")
+            this.$store.state.config.fun_mode=false;
+            this.applyConfiguration()
+        },
         showNews(){
             this.$store.state.news.show()
         },
