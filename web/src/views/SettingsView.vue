@@ -3589,7 +3589,9 @@ export default {
             },
             defaultModelImgPlaceholder:defaultModelImgPlaceholder,
             snd_input_devices: [],
+            snd_input_devices_indexes: [],
             snd_output_devices: [],
+            snd_output_devices_indexes: [],
             voices: [],
             voice_languages:{
                             "Arabic": "ar",
@@ -5859,6 +5861,7 @@ export default {
             console.log("Loading input devices list")
             const response = await axios.get("/get_snd_input_devices")
             this.snd_input_devices = response.data["device_names"]
+            this.snd_input_devices_indexes = response.data["device_indexes"]
         }
         catch{
             console.log("Couldin't list input devices")
@@ -5867,6 +5870,7 @@ export default {
             console.log("Loading output devices list")
             const response = await axios.get("/get_snd_output_devices")
             this.snd_output_devices = response.data["device_names"]
+            this.snd_output_devices_indexes = response.data["device_indexes"]
         }
         catch{
             console.log("Couldin't list output devices")
