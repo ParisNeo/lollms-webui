@@ -130,7 +130,7 @@
                                 </div>
                                 <div class="w-fit group relative" v-if="!loading" >
                                     <!-- :onShowPersList="onShowPersListFun" -->
-                                    <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-12 group-hover:translate-x-15 transition-all duration-300">
+                                    <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-1 transition-all duration-300" style="pointer-events: none;">
                                         <div class="w-full"
                                             v-for="(item, index) in installedBindings" :key="index + '-' + item.name"
                                             ref="installedBindings">
@@ -178,7 +178,7 @@
                                 </div>    
                                 <div class="w-fit group relative" >
                                     <!-- :onShowPersList="onShowPersListFun" -->
-                                    <div class= "fixed w-[1000px] -bottom-[150px] group absolute opacity-0 group-hover:opacity-100 transform group-hover:translate-y-[-200px] group-hover:translate-x-[0px] transition-all duration-300">
+                                    <div class= "hide .group-hover:block fixed w-[1000px] bottom-0 group absolute opacity-0 group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
                                         <div class="w-fit flex-wrap flex">
                                         <div class="w-fit h-fit "
                                             v-for="(item, index) in mountedPersonalities" :key="index + '-' + item.name"
@@ -212,7 +212,7 @@
                                                     <button @click.prevent="remount_personality(item)" v-if="personalityHoveredIndex === index">
                                                         <span
                                                             class="-top-9 left-2 border-gray-500 active:scale-90 absolute items-center  w-7 h-7 hover:scale-150 transition text-red-200 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2"
-                                                            title="Talk">
+                                                            title="Remount">
                                                             <!-- UNMOUNT BUTTON -->
                                                             <svg xmlns="http://www.w3.org/2000/svg"  class="top-1 left-1 relative w-4 h-4 text-red-600 hover:text-red-500 " viewBox="0 0 30 30" width="2" height="2" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
                                                                 <g id="surface1">
