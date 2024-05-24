@@ -469,6 +469,15 @@ def start_recording(data:Identification):
         return {"status":False,"error":"Start recording is blocked when the server is exposed outside for very obvious reasons!"}
 
     lollmsElfServer.info("Starting audio capture")
+    if not lollmsElfServer.tts or not lollmsElfServer.stt:
+        lollmsElfServer.InfoMessage("TTS or STT are not configured.\nPlease go to settings and configure them first")
+        return  {"status":False,"error":"TTS or STT not configured"}
+
+    if not lollmsElfServer.tts.ready or not lollmsElfServer.stt.ready:
+        lollmsElfServer.InfoMessage("TTS is not ready yet.\nPlease wait")
+        return  {"status":False,"error":"TTS not ready"}
+
+    lollmsElfServer.info("Starting audio capture")
     try:
         from lollms.media import RTCom
         lollmsElfServer.rec_output_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"audio_rec"
