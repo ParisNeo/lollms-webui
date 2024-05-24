@@ -413,7 +413,7 @@ async def open_discussion_folder(request: DiscussionFolderRequest):
 
 class PersonalityFolderRequest(BaseModel):
     client_id: str = Field(...)
-    personality_folder: int = Field(...)
+    personality_folder: str = Field(...)
 
 @router.post("/open_personality_folder")
 async def open_personality_folder(request: PersonalityFolderRequest):
