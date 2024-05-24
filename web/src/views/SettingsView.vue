@@ -5963,22 +5963,7 @@ export default {
         },
         whisperModels(){
             return [
-                "base",
-                "base.en",
-                "base.fr",
-                "base.es",
-                "small",
-                "small.en",
-                "small.fr",
-                "small.es",
-                "medium",
-                "medium.en",
-                "medium.fr",
-                "medium.es",
-                "large",
-                "large.en",
-                "large.fr",
-                "large.es",
+            'tiny.en', 'tiny', 'base.en', 'base', 'small.en', 'small', 'medium.en', 'medium', 'large-v1', 'large-v2', 'large-v3', 'large'
             ]
         },
         audioLanguages() {

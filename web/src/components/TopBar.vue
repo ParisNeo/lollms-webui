@@ -64,7 +64,7 @@
                     </div>
                 </a>
 
-                <a href="https://twitter.com/SpaceNerduino" target="_blank">
+                <a href="https://x.com/ParisNeo_AI" target="_blank">
 
                     <div class="text-2xl hover:fill-primary dark:fill-white dark:hover:fill-primary duration-150" title="Follow me on my twitter acount">
                         <svg class="w-10 h-10 rounded-lg object-fill dark:text-white" xmlns="http://www.w3.org/2000/svg"

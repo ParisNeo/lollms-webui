@@ -130,14 +130,14 @@
                                 </div>
                                 <div class="w-fit group relative" v-if="!loading" >
                                     <!-- :onShowPersList="onShowPersListFun" -->
-                                    <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-1 transition-all duration-300" style="pointer-events: none;">
-                                        <div class="w-full"
+                                    <div class= " inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-12 group-hover:translate-x-15 transition-all duration-300" style="pointer-events: none;">
+                                        <div class="w-full hover:scale-150"
                                             v-for="(item, index) in installedBindings" :key="index + '-' + item.name"
                                             ref="installedBindings">
                                             <div v-if="item.name!=binding_name" class="group items-center flex flex-row">
                                                 <button @click.prevent="setBinding(item)" class="w-10 h-10">
                                                     <img :src="item.icon?item.icon:modelImgPlaceholder"
-                                                        class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                                        class="z-50 w-10 h-10 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
                                                         :title="item.name">
                                                 </button>
                                             </div>
@@ -161,7 +161,7 @@
                                             <div v-if="item.name!=model_name" class="group items-center flex flex-row">
                                                 <button @click.prevent="setModel(item)" class="w-10 h-10">
                                                     <img :src="item.icon?item.icon:modelImgPlaceholder"
-                                                        class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                                        class="z-50 w-10 h-10 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
                                                         :title="item.name">
                                                 </button>
                                             </div>
