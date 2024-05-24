@@ -89,7 +89,7 @@ active_ttm_service: "None" # musicgen (offline)
 # -------------------- Services --------------------------
 
 # ***************** STT *****************
-stt_input_device: null
+stt_input_device: 0
 
 
 # TTS service
@@ -118,7 +118,7 @@ whisper_model: base
 
 
 # ***************** TTS *****************
-tts_output_device: null
+tts_output_device: 0
 
 # Voice service
 xtts_enable: false

@@ -1350,7 +1350,7 @@
                                 @change="settingsChanged=true"
                                 class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                 >
-                                    <option v-for="snd_input_device in snd_input_devices" :key="snd_input_device" :value="snd_input_device">
+                                    <option v-for="(snd_input_device, index) in snd_input_devices" :key="snd_input_device" :value="snd_input_devices_indexes[index]">
                                         {{ snd_input_device }}
                                     </option>                                
                                 </select>
@@ -1368,7 +1368,7 @@
                                 @change="settingsChanged=true"
                                 class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                 >
-                                    <option v-for="tts_output_device in snd_output_devices" :key="tts_output_device" :value="tts_output_device">
+                                    <option v-for="(tts_output_device, index) in snd_output_devices" :key="tts_output_device" :value="snd_output_devices_indexes[index]">
                                         {{ tts_output_device }}
                                     </option>                                
                                 </select>
@@ -5649,6 +5649,7 @@ export default {
             pers=pers.personality;
             // Make a POST request to the '/get_personality_config' endpoint using Axios
             axios.post('/get_personality_config', {
+                client_id:this.$store.state.client_id,
                 category: pers.category,
                 name: pers.folder,
             })

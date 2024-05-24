@@ -72,6 +72,8 @@ def add_events(sio:socketio):
             lollmsElfServer.InfoMessage("TTS is not ready yet.\nPlease wait")
             return  {"status":False,"error":"TTS not ready"}
 
+        if lollmsElfServer.rt_com:
+            return  {"status":False,"error":"Already running"}
 
         try:
             from lollms.media import RTCom

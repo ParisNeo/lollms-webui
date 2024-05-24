@@ -932,7 +932,6 @@ export default {
                     feather.replace()
                 }
             )
-            this.$store.state.is_rt_on = true;
         },
         stopRTCom(){
             socket.emit('stop_audio_stream', ()=>{this.isAudioActive = true;});
