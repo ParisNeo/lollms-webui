@@ -120,7 +120,6 @@ if __name__ == "__main__":
     from lollms.server.endpoints.lollms_binding_infos import router as lollms_binding_infos_router
     from lollms.server.endpoints.lollms_models_infos import router as lollms_models_infos_router
     from lollms.server.endpoints.lollms_personalities_infos import router as lollms_personalities_infos_router
-    from lollms.server.endpoints.lollms_extensions_infos import router as lollms_extensions_infos_router
     from lollms.server.endpoints.lollms_generator import router as lollms_generator_router
     from lollms.server.endpoints.lollms_configuration_infos import router as lollms_configuration_infos_router
     from lollms.server.endpoints.lollms_skills_library import router as lollms_skills_library_router
@@ -170,7 +169,6 @@ if __name__ == "__main__":
         app.include_router(lollms_binding_infos_router)
         app.include_router(lollms_models_infos_router)   
         app.include_router(lollms_personalities_infos_router)   
-        app.include_router(lollms_extensions_infos_router)   
         app.include_router(lollms_skills_library_router)   
         
         app.include_router(lollms_webui_infos_router)
