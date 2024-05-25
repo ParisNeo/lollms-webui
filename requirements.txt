@@ -11,7 +11,7 @@ setuptools
 psutil
 pytest
 GitPython
-ascii-colors>=0.1.4
+ascii-colors>=0.3.0
 beautifulsoup4
 packaging
 
@@ -25,3 +25,5 @@ python-socketio[asyncio_client]
 pydantic
 selenium
 tiktoken
+
+pipmaster>=0.1.2
