@@ -479,31 +479,15 @@ def start_recording(data:Identification):
 
     lollmsElfServer.info("Starting audio capture")
     try:
-        from lollms.media import RTCom
+        from lollms.media import AudioNinja
         lollmsElfServer.rec_output_folder = lollmsElfServer.lollms_paths.personal_outputs_path/"audio_rec"
         lollmsElfServer.rec_output_folder.mkdir(exist_ok=True, parents=True)
         lollmsElfServer.summoned = False
-        lollmsElfServer.rt_com = RTCom(
-                                                lollmsElfServer, 
-                                                lollmsElfServer.sio, 
-                                                lollmsElfServer.personality, 
-                                                client=client,
-                                                threshold=lollmsElfServer.config.stt_listening_threshold, 
-                                                silence_duration=lollmsElfServer.config.stt_silence_duration, 
-                                                sound_threshold_percentage=lollmsElfServer.config.stt_sound_threshold_percentage, 
-                                                gain=lollmsElfServer.config.stt_gain, 
-                                                rate=lollmsElfServer.config.stt_rate, 
-                                                channels=lollmsElfServer.config.stt_channels, 
-                                                buffer_size=lollmsElfServer.config.stt_buffer_size, 
-                                                model=lollmsElfServer.config.whisper_model,
-                                                snd_input_device=lollmsElfServer.config.stt_input_device, 
-                                                snd_output_device=lollmsElfServer.config.tts_output_device, 
-                                                logs_folder=lollmsElfServer.rec_output_folder, 
-                                                voice=None, 
-                                                block_while_talking=True, 
-                                                context_size=4096
+        lollmsElfServer.audioNinja = AudioNinja(
+                                                lollmsElfServer,
+                                                logs_folder=lollmsElfServer.rec_output_folder
                                             ) 
-        lollmsElfServer.rt_com.start_recording()
+        lollmsElfServer.audioNinja.start_recording()
     except:
         lollmsElfServer.InfoMessage("Couldn't load media library.\nYou will not be able to perform any of the media linked operations. please verify the logs and install any required installations")
 
@@ -519,23 +503,9 @@ def stop_recording(data:Identification):
         return {"status":False,"error":"Stop recording is blocked when the server is exposed outside for very obvious reasons!"}
 
     lollmsElfServer.info("Stopping audio capture")
-    text = lollmsElfServer.rt_com.stop_recording()
-
-    # ai_text = lollmsElfServer.receive_and_generate(text, client, n_predict=lollmsElfServer.config, callback= lollmsElfServer.tasks_library.sink)
-    # if lollmsElfServer.tts and lollmsElfServer.tts.ready:
-    #     personality_audio:Path = lollmsElfServer.personality.personality_package_path/"audio"
-    #     voice=lollmsElfServer.config.xtts_current_voice
-    #     if personality_audio.exists() and len([v for v in personality_audio.iterdir()])>0:
-    #         voices_folder = personality_audio
-    #     elif voice!="main_voice":
-    #         voices_folder = lollmsElfServer.lollms_paths.custom_voices_path
-    #     else:
-    #         voices_folder = Path(__file__).parent.parent.parent/"services/xtts/voices"
-    #     language = lollmsElfServer.config.xtts_current_language# convert_language_name()
-    #     lollmsElfServer.tts.set_speaker_folder(voices_folder)
-    #     preprocessed_text= add_period(ai_text)
-    #     voice_file =  [v for v in voices_folder.iterdir() if v.stem==voice and v.suffix==".wav"]
-
-    #     lollmsElfServer.tts.tts_audio(preprocessed_text, voice_file[0].name, language=language)
-    return text
+    fn = lollmsElfServer.audioNinja.stop_recording()
+    lollmsElfServer.audioNinja = None
+    if lollmsElfServer.stt:
+        text = lollmsElfServer.stt.transcribe(fn)
+        return text
 

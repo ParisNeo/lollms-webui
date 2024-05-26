@@ -819,7 +819,6 @@ export default {
         time_spent() {
             const startTime = new Date(Date.parse(this.message.started_generating_at))
             const endTime = new Date(Date.parse(this.message.finished_generating_at))
-            console.log("Computing the generation duration, ", startTime," -> ", endTime)
 
             //const spentTime = new Date(endTime - startTime)
             const same = endTime.getTime() === startTime.getTime();
@@ -890,7 +889,6 @@ export default {
             const startTime = new Date(Date.parse(this.message.started_generating_at))
             const endTime = new Date(Date.parse(this.message.finished_generating_at))
             const nb_tokens = this.message.nb_tokens
-            console.log("Computing the generation rate, ", nb_tokens, " in ", startTime," -> ", endTime)
             //const spentTime = new Date(endTime - startTime)
             const same = endTime.getTime() === startTime.getTime();
             if (same) {

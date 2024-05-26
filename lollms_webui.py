@@ -72,7 +72,7 @@ def terminate_thread(thread):
         else:
             ASCIIColors.yellow("Canceled successfully")# The current version of the webui
 
-lollms_webui_version="9.8 (β)"
+lollms_webui_version="9.8 (γ)"
 
 
 
@@ -733,6 +733,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
         if callback:
             callback(full_text, MSG_TYPE.MSG_TYPE_FULL)
+
+    def emit_socket_io_info(self, name, data, client_id):
+        run_async(partial(self.sio.emit,name, data, to=client_id))
 
     def notify(
                 self, 

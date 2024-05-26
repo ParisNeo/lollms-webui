@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 101
+version: 102
 binding_name: null
 model_name: null
 model_variant: null
@@ -92,7 +92,7 @@ active_ttm_service: "None" # musicgen (offline)
 stt_input_device: 0
 
 
-# TTS service
+# STT service
 stt_listening_threshold: 1000
 stt_silence_duration: 2
 stt_sound_threshold_percentage: 10
@@ -100,6 +100,9 @@ stt_gain: 1.0
 stt_rate: 44100
 stt_channels: 1
 stt_buffer_size: 10
+
+stt_activate_word_detection: false
+stt_word_detection_file: null
 
 
 

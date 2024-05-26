@@ -66,7 +66,6 @@ export const store = createStore({
         config:null,
         mountedPers:null,
         mountedPersArr:[],
-        mountedExtensions:[],
         bindingsZoo:[],
         modelsArr:[],
         selectedModel:null,
@@ -79,7 +78,6 @@ export const store = createStore({
         installedBindings:[],
         currentModel:null,
         currentBinding:null,
-        extensionsZoo:[],
         databases:[],
       }
     },
@@ -122,9 +120,6 @@ export const store = createStore({
       setMountedPersArr(state, mountedPersArr) {
         state.mountedPersArr = mountedPersArr;
       },
-      setMountedExtensions(state, mountedExtensions) {
-        state.mountedExtensions = mountedExtensions;
-      },
       setbindingsZoo(state, bindingsZoo) {
         state.bindingsZoo = bindingsZoo;
       },
@@ -153,9 +148,6 @@ export const store = createStore({
         state.currentModel = currentModel;
       },   
          
-      setExtensionsZoo(state, extensionsZoo) {
-        state.extensionsZoo = extensionsZoo;
-      },
       setDatabases(state, databases) {
         state.databases = databases;
       },
@@ -198,9 +190,6 @@ export const store = createStore({
       getMountedPersArr(state) {
         return state.mountedPersArr;
       },
-      getmmountedExtensions(state) {
-        return state.mountedExtensions;
-      },      
       getMountedPers(state) {
         return state.mountedPers;
       },
@@ -232,9 +221,6 @@ export const store = createStore({
       getCurrentModel(state) {
         return state.currentModel;
       },
-      getExtensionsZoo(state) {
-        return state.extensionsZoo;
-      },
     },
     actions: {
       async getVersion(){
@@ -263,12 +249,6 @@ export const store = createStore({
           configFile.personality_category = personality_path_infos[0]
           configFile.personality_folder = personality_path_infos[1]
 
-          if (configFile.extensions.length>0){
-            configFile.extension_category = configFile.extensions[-1]
-          }
-          else{
-            configFile.extension_category = "ai_sensors"
-          }
           console.log("Recovered config")
           console.log(configFile)
           console.log("Committing config");
@@ -292,7 +272,7 @@ export const store = createStore({
                   );
             
         console.log("response", response)
-        const is_rt_on = response.data;
+        const is_rt_on = response.data.status;
         console.log("languages", is_rt_on)
         commit('setRTOn', is_rt_on);
       },
@@ -515,77 +495,6 @@ export const store = createStore({
           commit('setCurrentModel',this.state.modelsZoo[index])
         }
     },
-    async refreshExtensionsZoo({ commit }) {
-          let extensions = []
-          let catdictionary = await api_get_req("list_extensions")
-          const catkeys = Object.keys(catdictionary); // returns categories
-          console.log("Extensions recovered:"+catdictionary)
-
-          for (let j = 0; j < catkeys.length; j++) {
-              const catkey = catkeys[j];
-              const extensionsArray = catdictionary[catkey];
-              const modExtArr = extensionsArray.map((item) => {
-                  let isMounted = false;
-
-                  for(const extension of this.state.config.extensions){
-                    if(extension.includes(catkey + '/' + item.folder)){
-                      isMounted = true;
-                    }
-                  }
-                  // if (isMounted) {
-                  //     console.log(item)
-                  // }
-                  let newItem = {}
-                  newItem = item
-                  newItem.category = catkey // add new props to items
-                  newItem.full_path = catkey + '/' + item.folder // add new props to items
-                  newItem.isMounted = isMounted // add new props to items
-                  return newItem
-              })
-
-
-              if (extensions.length == 0) {
-                  extensions = modExtArr
-              } else {
-                  extensions = extensions.concat(modExtArr)
-              }
-          }
-
-          extensions.sort((a, b) => a.name.localeCompare(b.name))
-
-          //commit('setActiveExtensions', this.state.config.extensions);
-
-          console.log("Done loading extensions")
-
-          commit('setExtensionsZoo',extensions)
-      },
-      refreshmountedExtensions({ commit }) {
-        console.log("Mounting extensions")
-        let mountedExtensions = []
-        // console.log('perrs listo',this.state.personalities)
-        const indicesToRemove = [];
-        for (let i = 0; i < this.state.config.extensions.length; i++) {
-            const full_path_item = this.state.config.extensions[i]
-            const index = this.state.extensionsZoo.findIndex(item => item.full_path == full_path_item)
-            if(index>=0){
-              let ext = copyObject(this.state.config.extensions[index])
-              if (ext) {
-                  mountedExtensions.push(ext)
-              }
-            }
-            else{
-              indicesToRemove.push(i)
-              console.log("Couldn't load extension : ",full_path_item)
-            }
-        }
-        // Remove the broken extensions using the collected indices
-        for (let i = indicesToRemove.length - 1; i >= 0; i--) {
-          console.log("Removing extensions : ",this.state.config.extensions[indicesToRemove[i]])
-          this.state.config.extensions.splice(indicesToRemove[i], 1);
-        }
-
-        commit('setMountedExtensions', mountedExtensions);
-      },
       async refreshDiskUsage({ commit }) {
         this.state.diskUsage = await api_get_req("disk_usage")
       },
@@ -731,23 +640,7 @@ app.mixin({
       catch (ex){
         console.log("Error cought:", ex)
       }
-      try{
-        this.$store.state.loading_infos = "Getting extensions zoo"
-        this.$store.state.loading_progress = 50
-        await this.$store.dispatch('refreshExtensionsZoo');
-      }
-      catch (ex){
-        console.log("Error cought:", ex)
-      }
-      try{
-        this.$store.state.loading_infos = "Getting mounted extensions"
-        this.$store.state.loading_progress = 60
-        await this.$store.dispatch('refreshmountedExtensions');
-      }
-      catch (ex){
-        console.log("Error cought:", ex)
-      }
-    
+   
       try{
         this.$store.state.loading_infos = "Getting personalities zoo"
         this.$store.state.loading_progress = 70

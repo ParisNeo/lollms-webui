@@ -927,19 +927,19 @@ export default {
             this.$emit('createEmptyAIMessage')
         },
         startRTCom(){
-            socket.emit('start_audio_stream', ()=>{this.isAudioActive = true;});
+            socket.emit('start_bidirectional_audio_stream');
                 nextTick(() => {
                     feather.replace()
                 }
             )
+
         },
         stopRTCom(){
-            socket.emit('stop_audio_stream', ()=>{this.isAudioActive = true;});
+            socket.emit('stop_bidirectional_audio_stream');
                 nextTick(() => {
                     feather.replace()
                 }
             )
-            this.$store.state.is_rt_on = false;
         },
         startSpeechRecognition() {
             if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
@@ -1182,6 +1182,15 @@ export default {
         nextTick(() => {
             feather.replace()
         })
+        console.log("Chatbar mounted")
+        socket.on('rtcom_status_changed', (data)=>{
+                console.log("rtcom_status_changed")
+                console.log("rtcom_status_changed: ",data.status)
+                this.$store.dispatch('fetchisRTOn');
+                console.log("active_tts_service: ",this.$store.state.config.active_tts_service)
+                console.log("is_rt_on: ",this.$store.state.is_rt_on)
+                this.isAudioActive = data.status;
+            });
     },
     activated() {
         nextTick(() => {

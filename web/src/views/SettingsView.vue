@@ -1333,7 +1333,40 @@
                                 >
                             </td>
                             </tr>
-
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="stt_activate_word_detection" class="text-sm font-bold" style="margin-right: 1rem;">Activate word detection:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="checkbox"
+                                id="stt_activate_word_detection"
+                                required
+                                v-model="configFile.stt_activate_word_detection"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="stt_word_detection_file" class="text-sm font-bold" style="margin-right: 1rem;">Word detection wav file:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="text"
+                                id="stt_word_detection_file"
+                                required
+                                v-model="configFile.stt_word_detection_file"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>
                         </table>                    
                     </Card>
                     <Card title="Audio devices settings" :is_subcard="true" class="pb-2  m-2">

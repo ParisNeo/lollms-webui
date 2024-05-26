@@ -228,7 +228,12 @@ export default {
         },
         is_fun_mode(){
             try{
-                return this.$store.state.config.fun_mode
+                if (this.$store.state.config){
+                    return this.$store.state.config.fun_mode;
+                }
+                else{
+                    return false;
+                }
             }
             catch(error){
                 console.error("Oopsie! Looks like we hit a snag: ", error);
@@ -258,7 +263,6 @@ export default {
     watch:{
         '$store.state.config.fun_mode': function(newVal, oldVal) {
             console.log(`Fun mode changed from ${oldVal} to ${newVal}! 🎉`);
-            this.updateIcon();
         },        
         '$store.state.isConnected': function(newVal, oldVal) {
             if (!this.isConnected){

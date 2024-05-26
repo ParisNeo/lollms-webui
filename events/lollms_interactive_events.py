@@ -54,8 +54,8 @@ def add_events(sio:socketio):
         lollmsElfServer.info("Stopping video capture")
         lollmsElfServer.webcam.stop_capture()
 
-    @sio.on('start_audio_stream')
-    def start_audio_stream(sid):
+    @sio.on('start_bidirectional_audio_stream')
+    def start_bidirectional_audio_stream(sid):
         client = check_access(lollmsElfServer, sid)
         if lollmsElfServer.config.headless_server_mode:
             return {"status":False,"error":"Start recording is blocked when in headless mode for obvious security reasons!"}
@@ -73,6 +73,10 @@ def add_events(sio:socketio):
             return  {"status":False,"error":"TTS not ready"}
 
         if lollmsElfServer.rt_com:
+            lollmsElfServer.info("audio_mode is already on\nTurning it off")
+            lollmsElfServer.info("Stopping audio capture")
+            lollmsElfServer.rt_com.stop_recording()
+            lollmsElfServer.rt_com = None
             return  {"status":False,"error":"Already running"}
 
         try:
@@ -92,23 +96,22 @@ def add_events(sio:socketio):
                                                 rate=lollmsElfServer.config.stt_rate, 
                                                 channels=lollmsElfServer.config.stt_channels, 
                                                 buffer_size=lollmsElfServer.config.stt_buffer_size, 
-                                                model=lollmsElfServer.config.whisper_model, 
                                                 snd_input_device=lollmsElfServer.config.stt_input_device, 
                                                 snd_output_device=lollmsElfServer.config.tts_output_device, 
                                                 logs_folder=lollmsElfServer.rec_output_folder, 
-                                                voice=None, 
                                                 block_while_talking=True, 
-                                                context_size=4096
-                                            ) 
+                                            )
             lollmsElfServer.rt_com.start_recording()
+            lollmsElfServer.emit_socket_io_info("rtcom_status_changed",{"status":True}, client.client_id)
         except Exception as ex:
             trace_exception(ex)
             lollmsElfServer.InfoMessage("Couldn't load media library.\nYou will not be able to perform any of the media linked operations. please verify the logs and install any required installations")
+            lollmsElfServer.emit_socket_io_info("rtcom_status_changed",{"status":False}, client.client_id)
 
 
 
-    @sio.on('stop_audio_stream')
-    def stop_audio_stream(sid):
+    @sio.on('stop_bidirectional_audio_stream')
+    def stop_bidirectional_audio_stream(sid):
         client = check_access(lollmsElfServer, sid)
         lollmsElfServer.info("Stopping audio capture")
         lollmsElfServer.rt_com.stop_recording()
