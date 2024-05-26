@@ -1,7 +1,3 @@
-[submodule "zoos/extensions_zoo"]
-	path = zoos/extensions_zoo
-	url = https://github.com/ParisNeo/lollms_extensions_zoo.git
-	branch = main
 [submodule "zoos/bindings_zoo"]
 	path = zoos/bindings_zoo
 	url = https://github.com/ParisNeo/lollms_bindings_zoo.git
