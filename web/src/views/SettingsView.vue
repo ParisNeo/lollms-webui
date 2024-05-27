@@ -1239,7 +1239,7 @@
                             </tr>
                             <tr>
                             <td style="min-width: 200px;">
-                                <label for="stt_silence_duration" class="text-sm font-bold" style="margin-right: 1rem;" title="Scilence duration">Scelence duration (s):</label>
+                                <label for="stt_silence_duration" class="text-sm font-bold" style="margin-right: 1rem;" title="Scilence duration">Silence duration (s):</label>
                             </td>
                             <td style="width: 100%;">
                                 <input
@@ -1255,7 +1255,7 @@
                             </tr>
                             <tr>
                             <td style="min-width: 200px;">
-                                <label for="stt_sound_threshold_percentage" class="text-sm font-bold" style="margin-right: 1rem;" title="stt_sound_threshold_percentage">Minimum sound percentage ins recorded segment:</label>
+                                <label for="stt_sound_threshold_percentage" class="text-sm font-bold" style="margin-right: 1rem;" title="stt_sound_threshold_percentage">Minimum sound percentage in recorded segment:</label>
                             </td>
                             <td style="width: 100%;">
                                 <input
