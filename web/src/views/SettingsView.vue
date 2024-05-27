@@ -1191,6 +1191,7 @@
                                 class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                 >
                                     <option value="None">None</option>
+                                    <option value="diffusers">Diffusers</option>
                                     <option value="autosd">AUTO1111's SD</option>
                                     <option value="dall-e">Open AI DALL-E</option>
                                     <option value="midjourney">Midjourney</option>
@@ -2164,6 +2165,41 @@
                                 </tr> 
                             </table>                                
                         </Card>
+                        <Card title="Diffusers service" :is_subcard="true" class="pb-2  m-2">
+                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="install_diffusers_service" class="text-sm font-bold" style="margin-right: 1rem;">Install Diffusers service:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallDiffusersService">install diffusers service</button>
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="upgradeDiffusersService">upgrade diffusers service</button>
+                                    <a class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" href="https://github.com/huggingface/diffusers?tab=Apache-2.0-1-ov-file#readme" target="_blank">Diffusers licence</a>
+                                    </div>
+                                </td>
+                                </tr>
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="diffusers_model" class="text-sm font-bold" style="margin-right: 1rem;">Diffusers model:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="text"
+                                    id="diffusers_model"
+                                    required
+                                    v-model="configFile.diffusers_model"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                <td>
+                                </td>
+                                </tr>
+                            </table>                                
+                        </Card>                        
                         <Card title="Midjourney" :is_subcard="true" class="pb-2  m-2">
                             <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <tr>
@@ -3571,6 +3607,27 @@ export default {
     }, 
     methods: {
         install_model(){
+
+        },
+        reinstallDiffusersService(){
+            axios.post('/install_diffusers', {client_id:this.$store.state.client_id}, this.posts_headers)
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+
+        },
+
+        upgradeDiffusersService(){
+            axios.post('upgrade_sd', {client_id:this.$store.state.client_id}, this.posts_headers)
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
 
         },
         reinstallSDService(){

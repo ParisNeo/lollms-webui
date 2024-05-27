@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 102
+version: 104
 binding_name: null
 model_name: null
 model_variant: null
@@ -150,6 +150,10 @@ openai_tts_voice: "alloy"
 # Image generation service
 enable_sd_service: false
 sd_base_url: http://localhost:7860
+
+# diffuser
+diffusers_offloading_mode: sequential_cpu_offload # sequential_cpu_offload
+diffusers_model: PixArt-alpha/PixArt-Sigma-XL-2-1024-MS
 
 # Dall e service key
 dall_e_key: ""
