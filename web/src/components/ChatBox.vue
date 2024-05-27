@@ -1188,7 +1188,7 @@ export default {
                 console.log("rtcom_status_changed: ",data.status)
                 console.log("active_tts_service: ",this.$store.state.config.active_tts_service)
                 console.log("is_rt_on: ",this.$store.state.is_rt_on)
-                this.is_rt = this.$store.state.is_rt_on
+                //this.is_rt = this.$store.state.is_rt_on
             });
         this.$store.dispatch('fetchisRTOn');
     },
