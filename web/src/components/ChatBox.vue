@@ -292,21 +292,18 @@
                                     </button>                      
                                     <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Press and talk.</p></div>
                                 </div>
-                                <div class="group relative w-max">
-                                    <button v-if="$store.state.config.active_tts_service!='None' && !$store.state.is_rt_on" 
+                                <div v-if="$store.state.config.active_tts_service!='None'" class="group relative w-max">
+                                    <button v-if="is_rt" 
                                         type="button"
-                                        @click="startRTCom"
-                                        :class="{ 'text-red-500': isListeningToVoice }"
-                                        class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90 bg-green-500 border border-green-700 rounded-md"
+                                        @click="stopRTCom"
+                                        class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90 bg-red-500 border borderred700 rounded-md"
                                     >
                                     <i data-feather="mic"></i>
                                     </button>                      
-                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Real time bidirectional audio mode.</p></div>
-                                    <button v-if="$store.state.config.active_tts_service!='None' && $store.state.is_rt_on" 
+                                    <button v-else
                                         type="button"
-                                        @click="stopRTCom"
-                                        :class="{ 'text-red-500': isListeningToVoice }"
-                                        class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90 bg-red-500 border border-red-700 rounded-md"
+                                        @click="startRTCom"
+                                        class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90 bg-green-500 border border-green-700 rounded-md"
                                     >
                                     <i data-feather="mic"></i>
                                     </button>                      
@@ -438,6 +435,7 @@ export default {
     },
     data() {
         return {
+            is_rt:false,
             personalityHoveredIndex:null,
             loader_v0:loader_v0,
             sendGlobe:sendGlobe,
@@ -927,18 +925,20 @@ export default {
             this.$emit('createEmptyAIMessage')
         },
         startRTCom(){
+            this.is_rt = true
+            console.log("is_rt:",this.is_rt)
             socket.emit('start_bidirectional_audio_stream');
-                nextTick(() => {
-                    feather.replace()
-                }
-            )
-
+            nextTick(() => {
+                feather.replace()
+            })
         },
         stopRTCom(){
+            this.is_rt = false
+            console.log("is_rt:",this.is_rt)
             socket.emit('stop_bidirectional_audio_stream');
-                nextTick(() => {
-                    feather.replace()
-                }
+            nextTick(() => {
+                feather.replace()
+            }
             )
         },
         startSpeechRecognition() {
@@ -1184,13 +1184,13 @@ export default {
         })
         console.log("Chatbar mounted")
         socket.on('rtcom_status_changed', (data)=>{
-                console.log("rtcom_status_changed")
-                console.log("rtcom_status_changed: ",data.status)
                 this.$store.dispatch('fetchisRTOn');
+                console.log("rtcom_status_changed: ",data.status)
                 console.log("active_tts_service: ",this.$store.state.config.active_tts_service)
                 console.log("is_rt_on: ",this.$store.state.is_rt_on)
-                this.isAudioActive = data.status;
+                this.is_rt = this.$store.state.is_rt_on
             });
+        this.$store.dispatch('fetchisRTOn');
     },
     activated() {
         nextTick(() => {

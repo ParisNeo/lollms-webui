@@ -77,6 +77,7 @@ def add_events(sio:socketio):
             lollmsElfServer.info("Stopping audio capture")
             lollmsElfServer.rt_com.stop_recording()
             lollmsElfServer.rt_com = None
+            lollmsElfServer.emit_socket_io_info("rtcom_status_changed",{"status":False}, client.client_id)
             return  {"status":False,"error":"Already running"}
 
         try:

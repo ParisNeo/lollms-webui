@@ -273,7 +273,7 @@ export const store = createStore({
             
         console.log("response", response)
         const is_rt_on = response.data.status;
-        console.log("languages", is_rt_on)
+        console.log("is_rt_on", is_rt_on)
         commit('setRTOn', is_rt_on);
       },
       async fetchLanguages({ commit }) {
