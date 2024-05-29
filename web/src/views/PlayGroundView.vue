@@ -887,6 +887,7 @@ export default {
     addPreset() {
       let title = prompt('Enter the title of the preset:');
       this.presets[title] =  {
+                                client_id:this.$store.state.client_id,
                                 name:title,
                                 content:this.text
                              }

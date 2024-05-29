@@ -1,6 +1,6 @@
 name: Build a Latex Book
 content: |
-    @<Add some context information to give the AI some context about the book or leave blank if you have no specific idea>@
+   @<Add some context information to give the AI some context about the book or leave blank if you have no specific idea>@
     ```latex
     \documentclass[12pt]{book}
     \usepackage{url}
@@ -17,8 +17,7 @@ content: |
 snippets: 
     - Import graphics(required to add graphics to the page) :
         \usepackage[demo]{graphic}
-    - Add graph: |
-        \includegraphics[width=4in]{@<Image name>@}% Replace with your own image path
+    - Add graph: |   \includegraphics[width=4in]{@<Image name>@}% Replace with your own image path
 
 help: |
-    Builds a latex code for a book
+   Builds a latex code for a book

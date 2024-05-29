@@ -220,6 +220,7 @@ export default {
             pers=pers.personality;
             // Make a POST request to the '/get_personality_config' endpoint using Axios
             axios.post('/get_personality_config', {
+                client_id:this.$store.state.client_id,
                 category: pers.category,
                 name: pers.folder,
             })

@@ -634,10 +634,15 @@ class LOLLMSWebUI(LOLLMSElfServer):
         """
         Builds a title for a discussion
         """
+        discussion_prompt_separator = self.config.discussion_prompt_separator
+        start_header_id_template    = self.config.start_header_id_template
+        end_header_id_template      = self.config.end_header_id_template
+        separator_template          = self.config.separator_template
+        system_message_template     = self.config.system_message_template        
         # Get the list of messages
         messages = discussion.get_messages()
-        discussion_messages = "!@>instruction: Create a short title to this discussion\nYour response should only contain the title without any comments.\n"
-        discussion_title = "\n!@>Discussion title:"
+        discussion_messages = f"{start_header_id_template}instruction{end_header_id_template}Create a short title to this discussion\nYour response should only contain the title without any comments.\n"
+        discussion_title = f"\n{start_header_id_template}Discussion title{end_header_id_template}"
 
         available_space = self.config.ctx_size - 150 - len(self.model.tokenize(discussion_messages))- len(self.model.tokenize(discussion_title))
         # Initialize a list to store the full messages
@@ -708,16 +713,16 @@ class LOLLMSWebUI(LOLLMSElfServer):
             if message["id"]<= message_id or message_id==-1: 
                 if message["type"]!=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER:
                     if message["sender"]==self.personality.name:
-                        full_message_list.append(self.personality.ai_message_prefix+message["content"])
+                        full_message_list.append(self.config.discussion_prompt_separator+self.personality.ai_message_prefix+message["content"])
                     else:
                         full_message_list.append(ump + message["content"])
 
         link_text = "\n"# self.personality.link_text
 
         if len(full_message_list) > self.config["nb_messages_to_remember"]:
-            discussion_messages = self.personality.personality_conditioning+ link_text.join(full_message_list[-self.config["nb_messages_to_remember"]:])
+            discussion_messages = self.config.discussion_prompt_separator + self.personality.personality_conditioning+ link_text.join(full_message_list[-self.config["nb_messages_to_remember"]:])
         else:
-            discussion_messages = self.personality.personality_conditioning+ link_text.join(full_message_list)
+            discussion_messages = self.config.discussion_prompt_separator + self.personality.personality_conditioning+ link_text.join(full_message_list)
         
         return discussion_messages # Removes the last return
 
@@ -938,11 +943,16 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
 
     def close_message(self, client_id):
+        discussion_prompt_separator = self.config.discussion_prompt_separator
+        start_header_id_template    = self.config.start_header_id_template
+        end_header_id_template      = self.config.end_header_id_template
+        separator_template          = self.config.separator_template
+        system_message_template     = self.config.system_message_template        
         client = self.session.get_client(client_id)
         if not client.discussion:
             return
         #fix halucination
-        client.generated_text=client.generated_text.split("!@>")[0]
+        client.generated_text=client.generated_text.split(f"{start_header_id_template}")[0]
         # Send final message
         client.discussion.current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         try:
@@ -1118,6 +1128,12 @@ class LOLLMSWebUI(LOLLMSElfServer):
         return txt
 
     def _generate(self, prompt, n_predict, client_id, callback=None):
+        discussion_prompt_separator = self.config.discussion_prompt_separator
+        start_header_id_template    = self.config.start_header_id_template
+        end_header_id_template      = self.config.end_header_id_template
+        separator_template          = self.config.separator_template
+        system_message_template     = self.config.system_message_template        
+
         client = self.session.get_client(client_id)
         self.nb_received_tokens = 0
         self.start_time = datetime.now()
@@ -1140,7 +1156,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     )
                 else:
                     prompt = "\n".join([
-                        "!@>system: I am an AI assistant that can converse and analyze images. When asked to locate something in an image you send, I will reply with:",
+                        f"{start_header_id_template}{system_message_template}{end_header_id_template}I am an AI assistant that can converse and analyze images. When asked to locate something in an image you send, I will reply with:",
                         "boundingbox(image_index, label, left, top, width, height)",
                         "Where:",
                         "image_index: 0-based index of the image",
@@ -1155,7 +1171,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         prompt,
                         client.discussion.image_files,
                         callback=callback,
-                        n_predict=min(n_predict,self.personality.model_n_predicts),
+                        n_predict=n_predict,
                         temperature=self.personality.model_temperature,
                         top_k=self.personality.model_top_k,
                         top_p=self.personality.model_top_p,
@@ -1189,7 +1205,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     output = self.model.generate(
                         prompt,
                         callback=callback,
-                        n_predict=min(n_predict,self.personality.model_n_predicts),
+                        n_predict=n_predict,
                         temperature=self.personality.model_temperature,
                         top_k=self.personality.model_top_k,
                         top_p=self.personality.model_top_p,
@@ -1207,6 +1223,12 @@ class LOLLMSWebUI(LOLLMSElfServer):
         return output
 
     def start_message_generation(self, message, message_id, client_id, is_continue=False, generation_type=None, force_using_internet=False):
+        discussion_prompt_separator = self.config.discussion_prompt_separator
+        start_header_id_template    = self.config.start_header_id_template
+        end_header_id_template      = self.config.end_header_id_template
+        separator_template          = self.config.separator_template
+        system_message_template     = self.config.system_message_template   
+
         client = self.session.get_client(client_id)
         if self.personality is None:
             self.warning("Select a personality")
@@ -1304,7 +1326,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         f'</a>',
                         ])
                     sources_text += '</div>'
-                    client.generated_text=client.generated_text.split("!@>")[0] + "\n" + sources_text
+                    client.generated_text=client.generated_text.split(f"{start_header_id_template}")[0] + "\n" + sources_text
                     self.personality.full(client.generated_text)
             except Exception as ex:
                 trace_exception(ex)

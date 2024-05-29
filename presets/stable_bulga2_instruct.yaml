@@ -1,6 +1,6 @@
 name: StableBulga2 Instruct
 content: |
-  ### System:
+  ### 
   @<Put your system prompt here>@
 
   ### User:

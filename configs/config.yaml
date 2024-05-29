@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 104
+version: 106
 binding_name: null
 model_name: null
 model_variant: null
@@ -29,6 +29,11 @@ app_custom_logo: ""
 
 # Genreration parameters 
 discussion_prompt_separator: "!@>"
+start_header_id_template: "!@>"
+end_header_id_template: ": "
+separator_template: "\n"
+system_message_template: "system"
+
 seed: -1
 ctx_size: 4084
 max_n_predict: 4096

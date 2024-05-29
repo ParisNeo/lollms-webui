@@ -241,7 +241,65 @@
                                         </td>
                                         
                                         </tr>
-
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="start_header_id_template" class="text-sm font-bold" style="margin-right: 1rem;">Start header id template:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="text"
+                                            id="start_header_id_template"
+                                            required
+                                            v-model="configFile.start_header_id_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="end_header_id_template" class="text-sm font-bold" style="margin-right: 1rem;">End header id template:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="text"
+                                            id="end_header_id_template"
+                                            required
+                                            v-model="configFile.end_header_id_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="separator_template" class="text-sm font-bold" style="margin-right: 1rem;">Separator template:</label>
+                                        </td>
+                                        <td>
+                                            <textarea
+                                            id="separator_template"
+                                            required
+                                            v-model="configFile.separator_template"
+                                            @change="settingsChanged=true"
+                                            class="min-h-[500px] w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            ></textarea>
+                                        </td>
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="system_message_template" class="text-sm font-bold" style="margin-right: 1rem;">System template:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="text"
+                                            id="system_message_template"
+                                            required
+                                            v-model="configFile.system_message_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>                                                                                                                        
                                         <tr>
                                         <td style="min-width: 200px;">
                                             <label for="hardware_mode" class="text-sm font-bold" style="margin-right: 1rem;">Hardware mode:</label>

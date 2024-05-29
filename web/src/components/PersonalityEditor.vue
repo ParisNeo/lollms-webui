@@ -44,14 +44,6 @@
               <td><label for="modelTemperature">Model Temperature:</label></td><td><input type="number" id="modelTemperature" v-model="config.model_temperature"></td>
             </tr>
             <tr>
-              <td><label for="modelNPredicts">Model N Predicts:</label></td>
-              <td><input class="dark:bg-black dark:text-primary w-full" type="number" id="modelNPredicts" v-model="config.model_n_predicts"></td>
-            </tr>   
-            <tr>
-              <td><label for="modelNPredicts">Model N Predicts:</label></td>
-              <td><input class="dark:bg-black dark:text-primary w-full" type="number" id="modelNPredicts" v-model="config.model_n_predicts"></td>
-            </tr>
-            <tr>
               <td><label for="modelTopK">Model Top K:</label></td>
               <td><input class="dark:bg-black dark:text-primary w-full" type="number" id="modelTopK" v-model="config.model_top_k"></td>
             </tr>
@@ -138,6 +130,7 @@ export default {
     },
     submitForm() {
       axios.post('/set_personality_config', {
+                client_id: this.$store.state.client_id,
                 category: this.personality.category,
                 name: this.personality.folder,
                 config: this.config

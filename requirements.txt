@@ -11,7 +11,7 @@ setuptools
 psutil
 pytest
 GitPython
-ascii-colors>=0.3.0
+ascii-colors>=0.3.2
 beautifulsoup4
 packaging
 

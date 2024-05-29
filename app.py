@@ -5,14 +5,6 @@ Description: Singleton class for the LoLLMS web UI.
 
 This file is the entry point to the webui.
 """
-
-from lollms.utilities import PackageManager
-if PackageManager.check_package_installed("pipmaster"):
-    PackageManager.install_package("pipmaster")
-
-PackageManager.install_or_update("ascii_colors")
-
-
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
