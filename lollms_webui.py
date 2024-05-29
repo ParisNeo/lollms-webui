@@ -326,6 +326,12 @@ class LOLLMSWebUI(LOLLMSElfServer):
         sys.exit(0)
 
     def audio_callback(self, text):
+        discussion_prompt_separator = self.config.discussion_prompt_separator
+        start_header_id_template    = self.config.start_header_id_template
+        end_header_id_template      = self.config.end_header_id_template
+        separator_template          = self.config.separator_template
+        system_message_template     = self.config.system_message_template        
+        
         if self.summoned:
             client_id = 0
             self.cancel_gen = False
@@ -352,11 +358,10 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     nb_tokens = len(self.model.tokenize(prompt))
                 except:
                     nb_tokens = None
-                ump = self.config.discussion_prompt_separator +self.config.user_name.strip() if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
                 message = client.discussion.add_message(
                     message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
                     sender_type     = SENDER_TYPES.SENDER_TYPES_USER.value,
-                    sender          = ump.replace(self.config.discussion_prompt_separator,"").replace(":",""),
+                    sender          = self.config.user_name.strip(),
                     content         = prompt,
                     metadata        = None,
                     parent_message_id=self.message_id,
@@ -634,11 +639,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
         """
         Builds a title for a discussion
         """
-        discussion_prompt_separator = self.config.discussion_prompt_separator
         start_header_id_template    = self.config.start_header_id_template
         end_header_id_template      = self.config.end_header_id_template
-        separator_template          = self.config.separator_template
-        system_message_template     = self.config.system_message_template        
+
         # Get the list of messages
         messages = discussion.get_messages()
         discussion_messages = f"{start_header_id_template}instruction{end_header_id_template}Create a short title to this discussion\nYour response should only contain the title without any comments.\n"
@@ -705,9 +708,15 @@ class LOLLMSWebUI(LOLLMSElfServer):
     
 
     def get_discussion_to(self, client_id,  message_id=-1):
+        start_header_id_template    = self.config.start_header_id_template
+        end_header_id_template      = self.config.end_header_id_template
+
+        start_header_id_template    = self.config.start_header_id_template
+        end_header_id_template      = self.config.end_header_id_template
+        
         messages = self.session.get_client(client_id).discussion.get_messages()
         full_message_list = []
-        ump = self.config.discussion_prompt_separator +self.config.user_name.strip() if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
+        ump = f"{start_header_id_template}{self.config.user_name.strip()if self.config.use_user_name_in_discussions else self.personality.user_message_prefix}{end_header_id_template}"
 
         for message in messages:
             if message["id"]<= message_id or message_id==-1: 
@@ -1356,8 +1365,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
             self.busy=False
 
         else:
-            ump = self.config.discussion_prompt_separator +self.config.user_name.strip() if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
-            
             self.cancel_gen = False
             #No discussion available
             ASCIIColors.warning("No discussion selected!!!")
@@ -1369,16 +1376,21 @@ class LOLLMSWebUI(LOLLMSElfServer):
             return ""
 
     def receive_and_generate(self, text, client:Client, callback=None):
+        discussion_prompt_separator = self.config.discussion_prompt_separator
+        start_header_id_template    = self.config.start_header_id_template
+        end_header_id_template      = self.config.end_header_id_template
+        separator_template          = self.config.separator_template
+        system_message_template     = self.config.system_message_template   
         prompt = text
         try:
             nb_tokens = len(self.model.tokenize(prompt))
         except:
             nb_tokens = None
-        ump = self.config.discussion_prompt_separator +self.config.user_name.strip() if self.config.use_user_name_in_discussions else self.personality.user_message_prefix
+        
         message = client.discussion.add_message(
             message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
             sender_type     = SENDER_TYPES.SENDER_TYPES_USER.value,
-            sender          = ump.replace(self.config.discussion_prompt_separator,"").replace(":",""),
+            sender          = self.config.user_name.strip() if self.config.use_user_name_in_discussions else self.personality.user_message_prefix,
             content         = prompt,
             metadata        = None,
             parent_message_id=self.message_id,
