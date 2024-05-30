@@ -239,67 +239,8 @@
                                                 <i data-feather="x"></i>
                                             </button>
                                         </td>
-                                        
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="start_header_id_template" class="text-sm font-bold" style="margin-right: 1rem;">Start header id template:</label>
-                                        </td>
-                                        <td>
-                                            <input
-                                            type="text"
-                                            id="start_header_id_template"
-                                            required
-                                            v-model="configFile.start_header_id_template"
-                                            @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="end_header_id_template" class="text-sm font-bold" style="margin-right: 1rem;">End header id template:</label>
-                                        </td>
-                                        <td>
-                                            <input
-                                            type="text"
-                                            id="end_header_id_template"
-                                            required
-                                            v-model="configFile.end_header_id_template"
-                                            @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="separator_template" class="text-sm font-bold" style="margin-right: 1rem;">Separator template:</label>
-                                        </td>
-                                        <td>
-                                            <textarea
-                                            id="separator_template"
-                                            required
-                                            v-model="configFile.separator_template"
-                                            @change="settingsChanged=true"
-                                            class="min-h-[500px] w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            ></textarea>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="system_message_template" class="text-sm font-bold" style="margin-right: 1rem;">System template:</label>
-                                        </td>
-                                        <td>
-                                            <input
-                                            type="text"
-                                            id="system_message_template"
-                                            required
-                                            v-model="configFile.system_message_template"
-                                            @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>                                                                                                                        
+                                        </tr>  
+
                                         <tr>
                                         <td style="min-width: 200px;">
                                             <label for="hardware_mode" class="text-sm font-bold" style="margin-right: 1rem;">Hardware mode:</label>
@@ -482,6 +423,187 @@
                                         </tr>                                        
                                     </table>
                                 </Card>
+                                <Card  title="Model template" :is_subcard="true" class="pb-2  m-2">
+                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="start_header_id_template" class="text-sm font-bold" style="margin-right: 1rem;">Start header id template:</label>
+                                        </td>
+                                        <td>
+                                            <select @change="handleTemplateSelection">
+                                                <option value="lollms">Lollms communication template</option>
+                                                <option value="lollms_simplified">Lollms simplified communication template</option>
+                                                <option value="llama3">LLama3 communication template</option>
+                                                <option value="mistral">Mistral communication template</option>
+                                            </select>
+                                        </td>
+                                        </tr>
+
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="start_header_id_template" class="text-sm font-bold" style="margin-right: 1rem;">Start header id template:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="text"
+                                            id="start_header_id_template"
+                                            required
+                                            v-model="configFile.start_header_id_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="end_header_id_template" class="text-sm font-bold" style="margin-right: 1rem;">End header id template:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="text"
+                                            id="end_header_id_template"
+                                            required
+                                            v-model="configFile.end_header_id_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>
+
+
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="start_user_header_id_template" class="text-sm font-bold" style="margin-right: 1rem;">Start user header id template:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="text"
+                                            id="start_user_header_id_template"
+                                            required
+                                            v-model="configFile.start_user_header_id_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="end_user_header_id_template" class="text-sm font-bold" style="margin-right: 1rem;">End user header id template:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="text"
+                                            id="end_user_header_id_template"
+                                            required
+                                            v-model="configFile.end_user_header_id_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>                                        
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="end_user_message_id_template" class="text-sm font-bold" style="margin-right: 1rem;">End user message id template:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="text"
+                                            id="end_user_message_id_template"
+                                            required
+                                            v-model="configFile.end_user_message_id_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>                                        
+
+
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="start_ai_header_id_template" class="text-sm font-bold" style="margin-right: 1rem;">Start ai header id template:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="text"
+                                            id="start_ai_header_id_template"
+                                            required
+                                            v-model="configFile.start_ai_header_id_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="end_ai_header_id_template" class="text-sm font-bold" style="margin-right: 1rem;">End ai header id template:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="text"
+                                            id="end_ai_header_id_template"
+                                            required
+                                            v-model="configFile.end_ai_header_id_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>                                        
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="end_ai_message_id_template" class="text-sm font-bold" style="margin-right: 1rem;">End ai message id template:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="text"
+                                            id="end_ai_message_id_template"
+                                            required
+                                            v-model="configFile.end_ai_message_id_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>  
+
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="separator_template" class="text-sm font-bold" style="margin-right: 1rem;">Separator template:</label>
+                                        </td>
+                                        <td>
+                                            <textarea
+                                            id="separator_template"
+                                            required
+                                            v-model="configFile.separator_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            ></textarea>
+                                        </td>
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="system_message_template" class="text-sm font-bold" style="margin-right: 1rem;">System template:</label>
+                                        </td>
+                                        <td>
+                                            <input
+                                            type="text"
+                                            id="system_message_template"
+                                            required
+                                            v-model="configFile.system_message_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="full_template" class="text-sm font-bold" style="margin-right: 1rem;">Full template:</label>
+                                        </td>
+                                        <td>
+                                            <div v-html="full_template"></div>
+                                        </td>
+                                        </tr>
+                                    </table>
+                                </Card>
+
                                 <Card  title="User" :is_subcard="true" class="pb-2  m-2">
                                     <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <tr>
@@ -3664,6 +3786,64 @@ export default {
         //refreshHardwareUsage()
     }, 
     methods: {
+        handleTemplateSelection(event) {
+            console.log("handleTemplateSelection")
+            const selectedOption = event.target.value;
+            console.log("handleTemplateSelection: ",selectedOption)
+            if (selectedOption === 'lollms') {
+                console.log("Using lollms template")
+                this.configFile.start_header_id_template = "!@>"
+                this.configFile.system_message_template = "system"
+                this.configFile.end_header_id_template = ": "
+                this.configFile.separator_template = "\n"
+                this.configFile.start_user_header_id_template = "!@>"
+                this.configFile.end_user_header_id_template = ": "
+                this.configFile.end_user_message_id_template = ""
+                this.configFile.start_ai_header_id_template = "!@>"
+                this.configFile.end_ai_header_id_template = ": "
+                this.configFile.end_ai_message_id_template = ""
+                this.settingsChanged=true
+            } else if (selectedOption === 'lollms_simplified') {
+                console.log("Using lollms template")
+                this.configFile.start_header_id_template = "@>"
+                this.configFile.system_message_template = "system"
+                this.configFile.end_header_id_template = ": "
+                this.configFile.separator_template = "\n"
+                this.configFile.start_user_header_id_template = "@>"
+                this.configFile.end_user_header_id_template = ": "
+                this.configFile.end_user_message_id_template = ""
+                this.configFile.start_ai_header_id_template = "@>"
+                this.configFile.end_ai_header_id_template = ": "
+                this.configFile.end_ai_message_id_template = ""
+                this.settingsChanged=true
+            } else if (selectedOption === 'llama3') {
+                console.log("Using llama3 template")
+                this.configFile.start_header_id_template = "<|start_header_id|>"
+                this.configFile.system_message_template = "system"
+                this.configFile.end_header_id_template = "<|end_header_id|>"
+                this.configFile.separator_template = "<|eot_id|>"
+                this.configFile.start_user_header_id_template = "<|start_header_id|>"
+                this.configFile.end_user_header_id_template = "<|end_header_id|>"
+                this.configFile.end_user_message_id_template = ""
+                this.configFile.start_ai_header_id_template = "<|start_header_id|>"
+                this.configFile.end_ai_header_id_template = "<|end_header_id|>"
+                this.configFile.end_ai_message_id_template = ""
+                this.settingsChanged=true
+            } else if (selectedOption === 'mistral') {
+                console.log("Using mistral template")
+                this.configFile.start_header_id_template = "[INST]"
+                this.configFile.system_message_template = " Using this information"
+                this.configFile.end_header_id_template = ": "
+                this.configFile.separator_template = "\n"
+                this.configFile.start_user_header_id_template = "[INST]"
+                this.configFile.end_user_header_id_template = ": "
+                this.configFile.end_user_message_id_template = "[/INST]"
+                this.configFile.start_ai_header_id_template = "[INST]"
+                this.configFile.end_ai_header_id_template = ": "
+                this.configFile.end_ai_message_id_template = "[/INST]"
+                this.settingsChanged=true
+            }
+        },
         install_model(){
 
         },
@@ -5544,6 +5724,11 @@ export default {
         //this.load_everything()
     },
     computed: { 
+        full_template:{
+            get(){
+                return (this.configFile.start_header_id_template+this.configFile.system_message_template+this.configFile.end_header_id_template+" system message"+this.configFile.separator_template+this.configFile.start_user_header_id_template+"user name"+this.configFile.end_user_header_id_template+" User prompt"+this.configFile.separator_template+this.configFile.end_user_message_id_template+this.configFile.separator_template+this.configFile.start_ai_header_id_template+"ai personality"+this.configFile.end_ai_header_id_template+"ai response"+this.configFile.end_ai_message_id_template).replace("\n","<br>")
+            }
+        },
         rendered_models_zoo:{
             get(){
                 if (this.searchModel){

@@ -72,7 +72,7 @@ def terminate_thread(thread):
         else:
             ASCIIColors.yellow("Canceled successfully")# The current version of the webui
 
-lollms_webui_version="9.8 (γ)"
+lollms_webui_version="9.8 (δ)"
 
 
 
@@ -962,7 +962,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
         if not client.discussion:
             return
         #fix halucination
-        client.generated_text=client.generated_text.split(f"{start_header_id_template}")[0]
+        if len(client.generated_text)>0 and len(start_header_id_template)>0:
+            client.generated_text=client.generated_text.split(f"{start_header_id_template}")[0]
         # Send final message
         client.discussion.current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         try:

@@ -8,7 +8,7 @@
                         class="w-8 h-8 rounded-full object-fill text-red-700 hover:scale-150 active:scale-90 hover:z-50 hover:-translate-y-2 duration-150  border-secondary cursor-pointer"
                         :title="'Active personality: '+mountedPers.name" @click="onSettingsPersonality(mountedPers)">
                 <div class="opacity-0 group-hover:opacity-100">
-                    <button class="-top-1 group-hover:translate-x-5 border-gray-500 absolute active:scale-90  w-7 h-7 hover:scale-150 transition bg-bg-light dark:bg-bg-dark rounded-full border-2" @click.prevent="remount_personality()" v-if="personalityHoveredIndex === index">
+                    <button class="z-50 -top-1 group-hover:translate-x-5 border-gray-500 absolute active:scale-90  w-7 h-7 hover:scale-150 transition bg-bg-light dark:bg-bg-dark rounded-full border-2" @click.prevent="remount_personality()" v-if="personalityHoveredIndex === index">
                         <span
                             title="Remount">
                             <!-- UNMOUNT BUTTON -->
@@ -33,13 +33,11 @@
 
                         </span>
                     </button>                    
+                    <div class="top-0 group-hover:-translate-x-8 group-hover:-translate-y-8 left-0 border-gray-500 active:scale-90 absolute items-center w-7 h-7 hover:scale-150 transition text-red-500 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2"
+                            @click.stop="toggleShowPersList" title="Click to show more">+{{ mountedPersArr.length - 1 }}</div>
 
                 </div>
             </div>
-        </div>
-        <div class="flex -space-x-4 " v-if="mountedPersArr.length > 1">
-            <div class="flex items-center justify-center w-8 h-8 cursor-pointer text-xs font-medium bg-bg-light dark:bg-bg-dark border-2 hover:border-secondary  rounded-full hover:bg-bg-light-tone dark:hover:bg-bg-dark-tone dark:border-gray-800 hover:z-50 hover:-translate-y-2 duration-150 active:scale-90"
-                @click.stop="toggleShowPersList" title="Click to show more">+{{ mountedPersArr.length - 1 }}</div>
         </div>
     </div>  
     <UniversalForm ref="universalForm" class="z-50" />

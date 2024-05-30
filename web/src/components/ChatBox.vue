@@ -130,14 +130,14 @@
                                 </div>
                                 <div class="w-fit group relative" v-if="!loading" >
                                     <!-- :onShowPersList="onShowPersListFun" -->
-                                    <div class= " inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-12 group-hover:translate-x-15 transition-all duration-300" style="pointer-events: none;">
-                                        <div class="w-full hover:scale-150"
+                                    <div class= "group space-x-1 w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-12 group-hover:translate-x-15 transition-all duration-300">
+                                        <div class="w-full"
                                             v-for="(item, index) in installedBindings" :key="index + '-' + item.name"
                                             ref="installedBindings">
                                             <div v-if="item.name!=binding_name" class="group items-center flex flex-row">
-                                                <button @click.prevent="setBinding(item)" class="w-10 h-10">
+                                                <button @click.prevent="setBinding(item)" class="w-8 h-8">
                                                     <img :src="item.icon?item.icon:modelImgPlaceholder"
-                                                        class="z-50 w-10 h-10 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                                        class="z-50 w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
                                                         :title="item.name">
                                                 </button>
                                             </div>
@@ -154,14 +154,14 @@
                                 </div>   
                                 <div class="w-fit group relative" v-if="!loading" >
                                     <!-- :onShowPersList="onShowPersListFun" -->
-                                    <div class= "group w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-12 group-hover:translate-x-15 transition-all duration-300">
+                                    <div class= "group space-x-1 w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-12 group-hover:translate-x-15 transition-all duration-300">
                                         <div class="w-full"
                                             v-for="(item, index) in installedModels" :key="index + '-' + item.name"
                                             ref="installedModels">
                                             <div v-if="item.name!=model_name" class="group items-center flex flex-row">
-                                                <button @click.prevent="setModel(item)" class="w-10 h-10">
+                                                <button @click.prevent="setModel(item)" class="w-8 h-8">
                                                     <img :src="item.icon?item.icon:modelImgPlaceholder"
-                                                        class="z-50 w-10 h-10 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                                        class="z-50 w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
                                                         :title="item.name">
                                                 </button>
                                             </div>
@@ -176,7 +176,7 @@
                                     </div>
 
                                 </div>    
-                                <div class="w-fit group relative" >
+                                <div class="w-fit group relative" v-if="!loading">
                                     <!-- :onShowPersList="onShowPersListFun" -->
                                     <div class= "hide .group-hover:block fixed w-[1000px] bottom-0 group absolute opacity-0 group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
                                         <div class="w-fit flex-wrap flex">

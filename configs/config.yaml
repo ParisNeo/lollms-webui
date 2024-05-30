@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 106
+version: 108
 binding_name: null
 model_name: null
 model_variant: null
@@ -31,7 +31,17 @@ app_custom_logo: ""
 discussion_prompt_separator: "!@>"
 start_header_id_template: "!@>"
 end_header_id_template: ": "
+
 separator_template: "\n"
+
+start_user_header_id_template: "!@>"
+end_user_header_id_template: ": "
+end_user_message_id_template: ""
+
+start_ai_header_id_template: "!@>"
+end_ai_header_id_template: ": "
+end_ai_message_id_template: ""
+
 system_message_template: "system"
 
 seed: -1
@@ -155,6 +165,10 @@ openai_tts_voice: "alloy"
 # Image generation service
 enable_sd_service: false
 sd_base_url: http://localhost:7860
+
+# Image generation service
+enable_fooocus_service: false
+fooocus_base_url: http://localhost:7860
 
 # diffuser
 diffusers_offloading_mode: sequential_cpu_offload # sequential_cpu_offload
