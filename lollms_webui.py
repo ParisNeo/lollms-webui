@@ -225,7 +225,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 if self.session.get_client(sid).processing:
                     self.session.get_client(sid).schedule_for_deletion=True
                 else:
-                   self.session.remove_client(sid, sid)
+                    # Clients are now kept forever
+                    pass# self.session.remove_client(sid, sid)
             except Exception as ex:
                 pass
             
@@ -1343,8 +1344,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
             self.close_message(client_id)
 
             client.processing=False
-            if client.schedule_for_deletion:
-                self.session.remove_client(client.client_id, client.client_id)
+            # Clients are now kept forever
+            #if client.schedule_for_deletion:
+            #    self.session.remove_client(client.client_id, client.client_id)
 
             ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
             ASCIIColors.success(f" ║                        Done                      ║ ")
