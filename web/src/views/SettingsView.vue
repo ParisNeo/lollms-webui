@@ -1400,6 +1400,79 @@
 
                         </table>                    
                     </Card>
+                    <Card title="TTI settings" :is_subcard="true" class="pb-2  m-2">
+                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="use_negative_prompt" class="text-sm font-bold" style="margin-right: 1rem;">Use negative prompt:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                    <input
+                                type="checkbox"
+                                id="use_negative_prompt"
+                                required
+                                v-model="configFile.use_negative_prompt"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="use_ai_generated_negative_prompt" class="text-sm font-bold" style="margin-right: 1rem;">Use AI generated negative prompt:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                    <input
+                                type="checkbox"
+                                id="use_ai_generated_negative_prompt"
+                                required
+                                v-model="configFile.use_ai_generated_negative_prompt"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="negative_prompt_generation_prompt" class="text-sm font-bold" style="margin-right: 1rem;">Negative prompt generation prompt:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="text"
+                                id="negative_prompt_generation_prompt"
+                                required
+                                v-model="configFile.negative_prompt_generation_prompt"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>
+
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="default_negative_prompt" class="text-sm font-bold" style="margin-right: 1rem;">Default negative prompt:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="text"
+                                id="default_negative_prompt"
+                                required
+                                v-model="configFile.default_negative_prompt"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>
+                        </table>
+                    </Card>
                     <Card title="Full Audio settings" :is_subcard="true" class="pb-2  m-2">
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <tr>
