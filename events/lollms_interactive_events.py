@@ -99,8 +99,10 @@ def add_events(sio:socketio):
                                                 buffer_size=lollmsElfServer.config.stt_buffer_size, 
                                                 snd_input_device=lollmsElfServer.config.stt_input_device, 
                                                 snd_output_device=lollmsElfServer.config.tts_output_device, 
-                                                logs_folder=lollmsElfServer.rec_output_folder, 
+                                                logs_folder=lollmsElfServer.rec_output_folder,
                                                 block_while_talking=True, 
+                                                use_keyword_audio=lollmsElfServer.config.stt_activate_word_detection,
+                                                keyword_audio_path=lollmsElfServer.config.stt_word_detection_file
                                             )
             lollmsElfServer.rt_com.start_recording()
             lollmsElfServer.emit_socket_io_info("rtcom_status_changed",{"status":True}, client.client_id)
