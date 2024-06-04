@@ -165,7 +165,7 @@ openai_tts_voice: "alloy"
 use_negative_prompt: true
 use_ai_generated_negative_prompt: false
 negative_prompt_generation_prompt: Generate negative prompt for the following prompt. negative prompt is a set of words that describe things we do not want to have in the generated image.
-default_negative_prompt: (((ugly))), (((duplicate))), ((morbid)), ((mutilated)), out of frame, extra fingers, mutated hands, ((poorly drawn hands)), ((poorly drawn face)), (((mutation))), (((deformed))), blurry, ((bad anatomy)), (((bad proportions))), ((extra limbs)), cloned face, (((disfigured))), ((extra arms)), (((extra legs))), mutated hands, (fused fingers), (too many fingers), (((long neck))), ((watermark)), ((robot eyes))
+default_negative_prompt: (((text))), (((ugly))), (((duplicate))), ((morbid)), ((mutilated)), out of frame, extra fingers, mutated hands, ((poorly drawn hands)), ((poorly drawn face)), (((mutation))), (((deformed))), blurry, ((bad anatomy)), (((bad proportions))), ((extra limbs)), cloned face, (((disfigured))), ((extra arms)), (((extra legs))), mutated hands, (fused fingers), (too many fingers), (((long neck))), ((watermark)), ((robot eyes))
 
 # Image generation service
 enable_sd_service: false
