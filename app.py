@@ -7,6 +7,7 @@ This file is the entry point to the webui.
 """
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from starlette.responses import FileResponse
 from fastapi.responses import HTMLResponse
 from lollms.app import LollmsApplication
 from lollms.paths import LollmsPaths
@@ -222,6 +223,18 @@ if __name__ == "__main__":
     app.mount("/extensions", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="extensions")
     app.mount("/playground", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="playground")
     app.mount("/settings", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="settings")
+
+    # Custom route to serve JavaScript files with the correct MIME type
+    @app.get("/{path:path}")
+    async def serve_js(path: str):
+        if path=="":
+            return FileResponse(Path(__file__).parent / "web" / "dist" / "index.html", media_type="text/html")
+        file_path = Path(__file__).parent / "web" / "dist" / path
+        if file_path.suffix == ".js":
+            return FileResponse(file_path, media_type="application/javascript")
+        return FileResponse(file_path)
+
+
     app.mount("/", StaticFiles(directory=Path(__file__).parent/"web"/"dist", html=True), name="static")
 
 
