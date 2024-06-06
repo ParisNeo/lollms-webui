@@ -51,7 +51,6 @@ app = FastAPI(title="LoLLMS", description="This is the LoLLMS-Webui API document
 
 if __name__ == "__main__":
     desired_version = (3, 11)
-
     if not sys.version_info >= desired_version:
         ASCIIColors.error(f"Your Python version is {sys.version_info.major}.{sys.version_info.minor}, but version {desired_version[0]}.{desired_version[1]} or higher is required.")
         sys.exit(1)
@@ -74,6 +73,13 @@ if __name__ == "__main__":
         config.host=args.host
     if args.port:
         config.port=args.port
+
+    # Define the path to your custom CA bundle file
+    ca_bundle_path = lollms_paths.personal_certificates/"truststore.pem"
+
+    if ca_bundle_path.exists():
+        # Set the environment variable
+        os.environ['REQUESTS_CA_BUNDLE'] = str(ca_bundle_path)
 
     cert_file_path = lollms_paths.personal_certificates/"cert.pem"
     key_file_path = lollms_paths.personal_certificates/"key.pem"
