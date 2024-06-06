@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 110
+version: 111
 binding_name: null
 model_name: null
 model_variant: null
@@ -189,6 +189,7 @@ midjourney_key: ""
 # Image generation service comfyui
 enable_comfyui_service: false
 comfyui_base_url: http://127.0.0.1:8188/
+comfyui_model: v1-5-pruned-emaonly.ckpt
 
 # Motion control service
 enable_motion_ctrl_service: false
