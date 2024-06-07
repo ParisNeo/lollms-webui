@@ -286,6 +286,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
             return False
                     
     def run_update_script(self, args=None):
+        # deactivate trust store for github and pip package install
+        del os.environ['REQUESTS_CA_BUNDLE']
         update_script = Path(__file__).parent/"update_script.py"
 
         # Convert Namespace object to a dictionary
