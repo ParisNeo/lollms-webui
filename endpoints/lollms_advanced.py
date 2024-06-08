@@ -94,9 +94,12 @@ async def execute_code(request: CodeRequest):
         if language=="function":
             ASCIIColors.info("Executing function call:")
             ASCIIColors.yellow(code)
-            lollmsElfServer.personality.execute_function()
-            return execute_python(code, client, message_id)
-
+            try:
+                out = lollmsElfServer.personality.execute_function(code)
+                return out if type(out)==str else out[0] if type(out) is tuple and type(out[0])==str else "Done"
+            except Exception as ex:
+                trace_exception(ex)
+                return ex
         if language=="python":
             ASCIIColors.info("Executing python code:")
             ASCIIColors.yellow(code)
