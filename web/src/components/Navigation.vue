@@ -22,7 +22,7 @@
               Playground
             </RouterLink>
             <RouterLink 
-              v-if="$store.state.config.enable_sd_service" 
+              v-if="$store.state.config.enable_sd_service | $store.state.config.active_tti_service== 'autosd'" 
               :to="{ name: 'AutoSD' }" 
               class="inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold"
               :class="{ 
@@ -33,7 +33,7 @@
               Auto111-SD
             </RouterLink>
             <RouterLink 
-              v-if="$store.state.config.enable_comfyui_service" 
+              v-if="$store.state.config.enable_comfyui_service | $store.state.config.active_tti_service== 'comfyui'" 
               :to="{ name: 'ComfyUI' }" 
               class="inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold"
               :class="{ 
@@ -44,7 +44,7 @@
               ComfyUI
             </RouterLink>
             <RouterLink 
-              v-if="$store.state.config.active_tts_service!='None'" 
+              v-if="$store.state.config.active_tts_service!='None' & $store.state.config.active_stt_service!='None'" 
               :to="{ name: 'interactive' }" 
               class="inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold"
               :class="{ 
