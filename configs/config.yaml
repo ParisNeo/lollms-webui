@@ -263,9 +263,9 @@ data_vectorization_make_persistance: false # If true, the data will be persistan
 # Activate internet search
 activate_internet_search: false
 internet_vectorization_chunk_size: 512 # chunk size
-internet_vectorization_overlap_size: 128 # overlap between chunks size
-internet_vectorization_nb_chunks: 2 # number of chunks to use
-internet_nb_search_pages: 3 # number of pages to select
+internet_vectorization_overlap_size: 0 # overlap between chunks size
+internet_vectorization_nb_chunks: 4 # number of chunks to use
+internet_nb_search_pages: 8 # number of pages to select
 internet_quick_search: false # If active the search engine will not load and read the webpages
 internet_activate_search_decision: false # If active the ai decides by itself if it needs to do search
 # Helpers
