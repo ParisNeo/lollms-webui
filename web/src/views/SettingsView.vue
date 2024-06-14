@@ -856,154 +856,6 @@
                                         </tr>      
                                     </table>
                                 </Card>
-                                <Card title="Internet search" :is_subcard="true" class="pb-2  m-2">
-                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="activate_internet_search" class="text-sm font-bold" style="margin-right: 1rem;">Activate internet search:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="fun_mode"
-                                            required
-                                            v-model="configFile.activate_internet_search"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="activate_internet_pages_judgement" class="text-sm font-bold" style="margin-right: 1rem;">Activate internet pages judgement:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="activate_internet_pages_judgement"
-                                            required
-                                            v-model="configFile.activate_internet_pages_judgement"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>                                                                                       
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="internet_quick_search" class="text-sm font-bold" style="margin-right: 1rem;">Activate quick search:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="internet_quick_search"
-                                            required
-                                            v-model="configFile.internet_quick_search"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>                                        
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="internet_activate_search_decision" class="text-sm font-bold" style="margin-right: 1rem;">Activate search decision:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="internet_activate_search_decision"
-                                            required
-                                            v-model="configFile.internet_activate_search_decision"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>                                        
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="internet_vectorization_chunk_size" class="text-sm font-bold" style="margin-right: 1rem;">Internet vectorization chunk size:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-col">
-                                                <input id="internet_vectorization_chunk_size" v-model="configFile.internet_vectorization_chunk_size"
-                                                @change="settingsChanged=true"
-                                                type="range" min="0" max="64000" step="1"
-                                                class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                                                <input v-model="configFile.internet_vectorization_chunk_size"
-                                                type="number"
-                                                @change="settingsChanged=true"
-                                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                                >
-                                            </div>
-                                        </td>
-                                        </tr>              
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="internet_vectorization_overlap_size" class="text-sm font-bold" style="margin-right: 1rem;">Internet vectorization overlap size:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-col">
-                                                <input id="internet_vectorization_overlap_size" v-model="configFile.internet_vectorization_overlap_size"
-                                                @change="settingsChanged=true"
-                                                type="range" min="0" max="1000" step="1"
-                                                class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                                                <input v-model="configFile.internet_vectorization_overlap_size"
-                                                type="number"
-                                                @change="settingsChanged=true"
-                                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                                >
-                                            </div>
-                                        </td>
-                                        </tr>                                                                                
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="internet_vectorization_nb_chunks" class="text-sm font-bold" style="margin-right: 1rem;">Internet vectorization number of chunks:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-col">
-                                                <input id="internet_vectorization_nb_chunks" v-model="configFile.internet_vectorization_nb_chunks"
-                                                @change="settingsChanged=true"
-                                                type="range" min="0" max="100" step="1"
-                                                class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                                                <input v-model="configFile.internet_vectorization_nb_chunks"
-                                                type="number"
-                                                @change="settingsChanged=true"
-                                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                                >
-                                            </div>
-                                        </td>
-                                        </tr>         
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="internet_nb_search_pages" class="text-sm font-bold" style="margin-right: 1rem;">Internet number of search pages:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-col">
-                                                <input id="internet_nb_search_pages" v-model="configFile.internet_nb_search_pages"
-                                                @change="settingsChanged=true"
-                                                type="range" min="1" max="100" step="1"
-                                                class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                                                <input v-model="configFile.internet_nb_search_pages"
-                                                type="number"
-                                                @change="settingsChanged=true"
-                                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                                >
-                                            </div>
-                                        </td>
-                                        </tr>                                                                            
-                                    </table>
-                                </Card>
                                 <Card title="Latex" :is_subcard="true" class="pb-2  m-2">
                                     <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <tr>
@@ -1338,6 +1190,173 @@
                 </div>
             </div>
 
+            <div
+                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                <div class="flex flex-row p-3">
+                    <button @click.stop="servers_conf_collapsed = !servers_conf_collapsed"
+                        class="text-2xl hover:text-primary p-2 -m-2 w-full text-left flex flex-row items-center">
+                        <div v-show="servers_conf_collapsed" ><i data-feather='chevron-right'></i></div>
+                        <div v-show="!servers_conf_collapsed" ><i data-feather='chevron-down'></i></div>
+
+                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            Internet</h3>
+                    </button>
+                </div>
+
+
+                                
+                <div :class="{ 'hidden': servers_conf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+
+                    <Card title="Internet search" :is_subcard="true" class="pb-2  m-2">
+                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="activate_internet_search" class="text-sm font-bold" style="margin-right: 1rem;">Activate internet search:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="checkbox"
+                                id="fun_mode"
+                                required
+                                v-model="configFile.activate_internet_search"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="activate_internet_pages_judgement" class="text-sm font-bold" style="margin-right: 1rem;">Activate internet pages judgement:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="checkbox"
+                                id="activate_internet_pages_judgement"
+                                required
+                                v-model="configFile.activate_internet_pages_judgement"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>                                                                                       
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="internet_quick_search" class="text-sm font-bold" style="margin-right: 1rem;">Activate quick search:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="checkbox"
+                                id="internet_quick_search"
+                                required
+                                v-model="configFile.internet_quick_search"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="internet_activate_search_decision" class="text-sm font-bold" style="margin-right: 1rem;">Activate search decision:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="checkbox"
+                                id="internet_activate_search_decision"
+                                required
+                                v-model="configFile.internet_activate_search_decision"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                            </tr>                                        
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="internet_vectorization_chunk_size" class="text-sm font-bold" style="margin-right: 1rem;">Internet vectorization chunk size:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-col">
+                                    <input id="internet_vectorization_chunk_size" v-model="configFile.internet_vectorization_chunk_size"
+                                    @change="settingsChanged=true"
+                                    type="range" min="0" max="64000" step="1"
+                                    class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                                    <input v-model="configFile.internet_vectorization_chunk_size"
+                                    type="number"
+                                    @change="settingsChanged=true"
+                                    class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                </div>
+                            </td>
+                            </tr>              
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="internet_vectorization_overlap_size" class="text-sm font-bold" style="margin-right: 1rem;">Internet vectorization overlap size:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-col">
+                                    <input id="internet_vectorization_overlap_size" v-model="configFile.internet_vectorization_overlap_size"
+                                    @change="settingsChanged=true"
+                                    type="range" min="0" max="1000" step="1"
+                                    class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                                    <input v-model="configFile.internet_vectorization_overlap_size"
+                                    type="number"
+                                    @change="settingsChanged=true"
+                                    class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                </div>
+                            </td>
+                            </tr>                                                                                
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="internet_vectorization_nb_chunks" class="text-sm font-bold" style="margin-right: 1rem;">Internet vectorization number of chunks:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-col">
+                                    <input id="internet_vectorization_nb_chunks" v-model="configFile.internet_vectorization_nb_chunks"
+                                    @change="settingsChanged=true"
+                                    type="range" min="0" max="100" step="1"
+                                    class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                                    <input v-model="configFile.internet_vectorization_nb_chunks"
+                                    type="number"
+                                    @change="settingsChanged=true"
+                                    class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                </div>
+                            </td>
+                            </tr>         
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="internet_nb_search_pages" class="text-sm font-bold" style="margin-right: 1rem;">Internet number of search pages:</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-col">
+                                    <input id="internet_nb_search_pages" v-model="configFile.internet_nb_search_pages"
+                                    @change="settingsChanged=true"
+                                    type="range" min="1" max="100" step="1"
+                                    class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                                    <input v-model="configFile.internet_nb_search_pages"
+                                    type="number"
+                                    @change="settingsChanged=true"
+                                    class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                </div>
+                            </td>
+                            </tr>                                                                            
+                        </table>
+                    </Card>
+                </div>
+            </div>
 
             <!-- Servers CONFIGS -->
             <div
