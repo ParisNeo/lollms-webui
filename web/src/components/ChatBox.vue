@@ -253,7 +253,17 @@
                                         :on-show-toast-message="onShowToastMessage"
                                         ref="personalityCMD"
                                     ></PersonalitiesCommands>
-                                </div>        
+                                </div>   
+                                <div class="w-fit">
+                                    <PersonalitiesCommands
+                                        v-if="isDataSourceNamesValid"
+                                        :icon="'feather:book'"
+                                        :commandsList="dataSourceNames"
+                                        :sendCommand="mountDB"
+                                        :on-show-toast-message="onShowToastMessage"
+                                        ref="databasesList"
+                                    ></PersonalitiesCommands>                                    
+                                </div>                                        
                                 <div class="relative grow">
                                     <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"
                                         @paste="handlePaste"
@@ -407,6 +417,7 @@ import UniversalForm from '@/components/UniversalForm.vue';
 import modelImgPlaceholder from "../assets/default_model.png"
 import sendGlobe from "../assets/send_globe.svg"
 import loader_v0 from "../assets/loader_v0.svg"
+import InteractiveMenu from './InteractiveMenu.vue';
 
 console.log("modelImgPlaceholder:",modelImgPlaceholder)
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
@@ -460,6 +471,20 @@ export default {
         }
     },
     computed: {
+        isDataSourceNamesValid() {
+            console.log('dataSourceNames:', this.dataSourceNames);
+            console.log('Type of dataSourceNames:', typeof this.dataSourceNames);
+            return Array.isArray(this.dataSourceNames) && this.dataSourceNames.length > 0;
+        },        
+        dataSourceNames() {
+        // Extract the names from the data_sources array
+        return this.$store.state.config.data_sources.map(dataSource => {
+            // Assuming the name is part of the path, extract it here
+            // For example, if the path is "path/to/databaseName", extract "databaseName"
+            const parts = dataSource.split('::');
+            return parts[0];
+        });
+        },        
         currentBindingIcon(){
             return this.currentBinding.icon || this.modelImgPlaceholder;
         },
@@ -1038,6 +1063,9 @@ export default {
         },
         sendCMDEvent(cmd){
             this.$emit('sendCMDEvent', cmd)
+        },
+        async mountDB(cmd){
+            await axios.post('/mount_rag_database', {"client_id":this.$store.state.client_id,"database_name":cmd})
         },
         addWebLink(){
             console.log("Emitting addWebLink")

@@ -966,6 +966,7 @@
                                 @change="settingsChanged=true"
                                 class="w-full mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
                                 >
+                                <button @click="select_folder(index)" class="ml-2 px-2 py-1 bg-blue-500 text-white rounded">Select Folder</button>
                                 <button @click="removeDataSource(index)" class="ml-2 px-2 py-1 bg-red-500 text-white rounded">Remove</button>
                             </div>
                             <button @click="addDataSource" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded">Add Data Source</button>
@@ -1193,10 +1194,10 @@
             <div
                 class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row p-3">
-                    <button @click.stop="servers_conf_collapsed = !servers_conf_collapsed"
+                    <button @click.stop="internet_conf_collapsed = !internet_conf_collapsed"
                         class="text-2xl hover:text-primary p-2 -m-2 w-full text-left flex flex-row items-center">
-                        <div v-show="servers_conf_collapsed" ><i data-feather='chevron-right'></i></div>
-                        <div v-show="!servers_conf_collapsed" ><i data-feather='chevron-down'></i></div>
+                        <div v-show="internet_conf_collapsed" ><i data-feather='chevron-right'></i></div>
+                        <div v-show="!internet_conf_collapsed" ><i data-feather='chevron-down'></i></div>
 
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
                             Internet</h3>
@@ -1205,7 +1206,7 @@
 
 
                                 
-                <div :class="{ 'hidden': servers_conf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                <div :class="{ 'hidden': internet_conf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
 
                     <Card title="Internet search" :is_subcard="true" class="pb-2  m-2">
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -3868,6 +3869,7 @@ export default {
             collapsedArr: [],
             all_collapsed: true,
             data_conf_collapsed: true,
+            internet_conf_collapsed: true,// internet 
             servers_conf_collapsed: true, // Servers configuration
             minconf_collapsed: true, // Main configuration 
             bec_collapsed: true,
@@ -3915,15 +3917,31 @@ export default {
         //await socket.on('install_progress', this.progressListener);
         //refreshHardwareUsage()
     }, 
-    methods: {
-        addDataSource() {
-        this.configFile.data_sources.push('');
-        this.settingsChanged = true;
-        },
-        removeDataSource(index) {
-        this.configFile.data_sources.splice(index, 1);
-        this.settingsChanged = true;
-        },    
+        methods: {
+            addDataSource() {
+            this.configFile.data_sources.push('');
+            this.settingsChanged = true;
+            },
+            removeDataSource(index) {
+            this.configFile.data_sources.splice(index, 1);
+            this.settingsChanged = true;
+            },
+            async select_folder(index){
+                try{
+                    let infos = await axios.post('/add_rag_database', {client_id:this.$store.state.client_id}, this.posts_headers)
+                    if (infos){
+                        console.log(infos)
+                        self.$store.config.data_sources[index]=`${infos.data["database_name"]}::${infos.data["database_path"]}`
+                        self.settingsChanged=true;
+                    }
+                    else{
+                        this.$store.state.toast.showToast("Failed to select a folder", 4, false)
+                    }
+                }
+                catch{
+                    this.$store.state.toast.showToast("Failed to select a folder", 4, false)
+                }
+            },
         handleTemplateSelection(event) {
             console.log("handleTemplateSelection")
             const selectedOption = event.target.value;

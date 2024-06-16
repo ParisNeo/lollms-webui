@@ -27,3 +27,5 @@ selenium
 tiktoken
 
 pipmaster>=0.1.2
+
+lollmsvectordb>=0.1.5

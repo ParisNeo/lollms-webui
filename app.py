@@ -143,7 +143,7 @@ if __name__ == "__main__":
     
     from endpoints.lollms_playground import router as lollms_playground_router    
     
-
+    from lollms.server.endpoints.lollms_file_system import router as lollms_file_system_router
 
     from lollms.server.events.lollms_generation_events import add_events as lollms_generation_events_add
     from lollms.server.events.lollms_personality_events import add_events as lollms_personality_events_add
@@ -188,6 +188,8 @@ if __name__ == "__main__":
         app.include_router(lollms_petals_router)  
         app.include_router(lollms_vllm_router)  
         app.include_router(lollms_motion_ctrl_router)  
+        
+        app.include_router(lollms_file_system_router)  
         
         
         app.include_router(lollms_playground_router)   
