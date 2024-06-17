@@ -3919,20 +3919,22 @@ export default {
     }, 
         methods: {
             addDataSource() {
-            this.configFile.data_sources.push('');
+            this.$store.state.config.data_sources.push('');
             this.settingsChanged = true;
             },
             removeDataSource(index) {
-            this.configFile.data_sources.splice(index, 1);
+            this.$store.state.config.data_sources.splice(index, 1);
             this.settingsChanged = true;
             },
             async select_folder(index){
                 try{
                     let infos = await axios.post('/add_rag_database', {client_id:this.$store.state.client_id}, this.posts_headers)
                     if (infos){
-                        console.log(infos)
-                        self.$store.config.data_sources[index]=`${infos.data["database_name"]}::${infos.data["database_path"]}`
-                        self.settingsChanged=true;
+                        console.log(infos.data)
+                        console.log(index)
+                        console.log(this.$store.state.config.data_sources)
+                        this.$store.state.config.data_sources[index]=`${infos.data["database_name"]}::${infos.data["database_path"]}`
+                        this.settingsChanged=true;
                     }
                     else{
                         this.$store.state.toast.showToast("Failed to select a folder", 4, false)
@@ -4884,7 +4886,7 @@ export default {
                     };
 
                     socket.on('uninstall_progress', progressListener);
-                    if(self.selected_variant!=undefined){
+                    if(this.selected_variant!=undefined){
                         socket.emit('uninstall_model', { path: 'https://huggingface.co/'+model_object.model.quantizer+'/'+model_object.model.name+'/resolve/main/'+this.selected_variant.name, type: model_object.model.type });
                     }
                     else{
