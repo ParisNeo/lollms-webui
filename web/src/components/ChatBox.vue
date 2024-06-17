@@ -487,7 +487,7 @@ export default {
                     name: parts[0], 
                     value: parts[0] || 'default_value', 
                     icon: 'feather:file', 
-                    help: 'start'
+                    help: 'mounts the database'
                 };
             });
             console.log("formatted data sources", formattedDataSources);
