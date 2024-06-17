@@ -485,7 +485,7 @@ export default {
                 console.log("extracted", parts[0]);
                 return {
                     name: parts[0], 
-                    value: parts[1] || 'default_value', 
+                    value: parts[0] || 'default_value', 
                     icon: 'feather:file', 
                     help: 'start'
                 };
