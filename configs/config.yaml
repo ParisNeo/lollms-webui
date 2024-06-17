@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 113
+version: 114
 binding_name: null
 model_name: null
 model_variant: null
@@ -239,7 +239,7 @@ audio_auto_send_input: true
 audio_silenceTimer: 5000
 
 # Data vectorization
-data_sources: [] # This is the list of paths to database sources. Each database is a folder containing data
+rag_databases: [] # This is the list of paths to database sources. Each database is a folder containing data
 
 activate_skills_lib: false # Activate vectorizing previous conversations
 skills_lib_database_name: "default" # Default skills database

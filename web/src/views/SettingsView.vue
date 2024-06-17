@@ -956,13 +956,13 @@
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         <tr>
                             <td style="min-width: 200px;">
-                            <label for="data_sources" class="text-sm font-bold" style="margin-right: 1rem;">Data Sources:</label>
+                            <label for="rag_databases" class="text-sm font-bold" style="margin-right: 1rem;">Data Sources:</label>
                             </td>
                             <td style="width: 100%;">
-                            <div v-for="(source, index) in configFile.data_sources" :key="index" class="flex items-center mb-2">
+                            <div v-for="(source, index) in configFile.rag_databases" :key="index" class="flex items-center mb-2">
                                 <input
                                 type="text"
-                                v-model="configFile.data_sources[index]"
+                                v-model="configFile.rag_databases[index]"
                                 @change="settingsChanged=true"
                                 class="w-full mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
                                 >
@@ -2597,6 +2597,28 @@
                                 </tr>                                        
                                 <tr>
                                 <td style="min-width: 200px;">
+                                    <label for="comfyui_model" class="text-sm font-bold" style="margin-right: 1rem;">Enable comfyui model:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="text"
+                                    id="comfyui_model"
+                                    required
+                                    v-model="configFile.comfyui_model"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary" @click="this.$store.state.messageBox.showMessage('Activates Stable diffusion service. The service will be automatically loaded at startup alowing you to use the stable diffusion endpoint to generate images')">
+                                        <i data-feather="help-circle" class="w-5 h-5 "></i>
+                                    </div>
+                                </td>                            
+                                </tr>                                        
+                                <tr>
+                                <td style="min-width: 200px;">
                                 </td>
                                 <td>
                                     <div class="flex flex-row">
@@ -3919,11 +3941,11 @@ export default {
     }, 
         methods: {
             addDataSource() {
-            this.$store.state.config.data_sources.push('');
+            this.$store.state.config.rag_databases.push('');
             this.settingsChanged = true;
             },
             removeDataSource(index) {
-            this.$store.state.config.data_sources.splice(index, 1);
+            this.$store.state.config.rag_databases.splice(index, 1);
             this.settingsChanged = true;
             },
             async select_folder(index){
@@ -3932,8 +3954,8 @@ export default {
                     if (infos){
                         console.log(infos.data)
                         console.log(index)
-                        console.log(this.$store.state.config.data_sources)
-                        this.$store.state.config.data_sources[index]=`${infos.data["database_name"]}::${infos.data["database_path"]}`
+                        console.log(this.$store.state.config.rag_databases)
+                        this.$store.state.config.rag_databases[index]=`${infos.data["database_name"]}::${infos.data["database_path"]}`
                         this.settingsChanged=true;
                     }
                     else{

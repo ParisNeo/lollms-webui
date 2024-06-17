@@ -701,15 +701,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         return title[0]
    
 
-    def recover_discussion(self,client_id, message_index=-1):
-        messages = self.session.get_client(client_id).discussion.get_messages()
-        discussion=""
-        for msg in messages:
-            if message_index!=-1 and msg>message_index:
-                break
-            discussion += "\n" + self.config.discussion_prompt_separator + msg.sender + ": " + msg.content.strip()
-        return discussion
-    
+  
 
     def get_discussion_to(self, client_id,  message_id=-1):
         start_header_id_template    = self.config.start_header_id_template

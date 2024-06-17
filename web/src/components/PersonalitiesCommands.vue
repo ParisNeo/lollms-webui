@@ -64,6 +64,7 @@ import feather from 'feather-icons'
 import axios from "axios";
 import InteractiveMenu from "@/components/InteractiveMenu.vue"
 import socket from '@/services/websocket.js'
+import { nextTick, ref, TransitionGroup } from 'vue'
 
 export default {
   components:{
@@ -88,6 +89,11 @@ data() {
     };
 },
 async mounted() {
+    // Example commands data
+    this.commands = this.commandsList;
+    console.log("Commands",this.commands)
+
+    document.addEventListener('click', this.handleClickOutside);
     //this.fileSize = await this.getFileSize(this.model.path)
     //console.log('model path', this.model.path)
     nextTick(() => {
@@ -180,12 +186,6 @@ methods: {
         this.showMenu = false;
     }
     },
-},
-mounted() {
-    // Example commands data
-    this.commands = this.commandsList;
-
-    document.addEventListener('click', this.handleClickOutside);
 },
 beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside);

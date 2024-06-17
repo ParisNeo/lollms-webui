@@ -477,14 +477,22 @@ export default {
             return Array.isArray(this.dataSourceNames) && this.dataSourceNames.length > 0;
         },        
         dataSourceNames() {
-        // Extract the names from the data_sources array
-        return this.$store.state.config.data_sources.map(dataSource => {
-            // Assuming the name is part of the path, extract it here
-            // For example, if the path is "path/to/databaseName", extract "databaseName"
-            const parts = dataSource.split('::');
-            return parts[0];
-        });
-        },        
+            console.log("dataSourceNames", this.$store.state.config.data_sources);
+            // Extract the names from the data_sources array and transform them into the desired format
+            const formattedDataSources = this.$store.state.config.data_sources.map(dataSource => {
+                console.log("entry", dataSource);
+                const parts = dataSource.split('::');
+                console.log("extracted", parts[0]);
+                return {
+                    name: parts[0], 
+                    value: parts[1] || 'default_value', 
+                    icon: 'feather:file', 
+                    help: 'start'
+                };
+            });
+            console.log("formatted data sources", formattedDataSources);
+            return formattedDataSources;
+        },    
         currentBindingIcon(){
             return this.currentBinding.icon || this.modelImgPlaceholder;
         },
