@@ -477,9 +477,9 @@ export default {
             return Array.isArray(this.dataSourceNames) && this.dataSourceNames.length > 0;
         },        
         dataSourceNames() {
-            console.log("dataSourceNames", this.$store.state.config.data_sources);
-            // Extract the names from the data_sources array and transform them into the desired format
-            const formattedDataSources = this.$store.state.config.data_sources.map(dataSource => {
+            console.log("dataSourceNames", this.$store.state.config.rag_databases);
+            // Extract the names from the rag_databases array and transform them into the desired format
+            const formattedDataSources = this.$store.state.config.rag_databases.map(dataSource => {
                 console.log("entry", dataSource);
                 const parts = dataSource.split('::');
                 console.log("extracted", parts[0]);
