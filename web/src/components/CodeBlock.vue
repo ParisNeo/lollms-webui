@@ -32,8 +32,13 @@
     </div>
     <pre  class="hljs p-1 rounded-md break-all grid grid-cols-1">
       <div class="code-container">
-          <code class="code-content overflow-x-auto break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" v-html="highlightedCode"></code>
-      </div>
+        <div 
+          class="code-content overflow-x-auto break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+          v-html="highlightedCode"
+          contenteditable="true"
+          @input="updateCode"
+        ></div>
+        </div>
 
     </pre>    
     <span v-if="executionOutput" class="text-2xl">Execution output</span>
@@ -294,6 +299,7 @@ export default {
 .code-content {
   flex-grow: 1;
   margin: 0; /* Remove the default margin */
+  outline: none; /* Remove the default focus outline */
 }
 
 

@@ -483,10 +483,16 @@ export default {
                 console.log("entry", dataSource);
                 const parts = dataSource.split('::');
                 console.log("extracted", parts[0]);
+
+                const isMounted = dataSource.endsWith('mounted');
+                const icon = isMounted ? 'feather:check' : '';
+
+                console.log("icon decision", icon);
+
                 return {
                     name: parts[0], 
                     value: parts[0] || 'default_value', 
-                    icon: 'feather:file', 
+                    icon: icon, 
                     help: 'mounts the database'
                 };
             });
@@ -1053,7 +1059,7 @@ export default {
         },
 
         removeItem(file) {
-            console.log("Réemoving ",file.name)
+            console.log("Removing ",file.name)
             axios.post('/remove_discussion_file',{
                                         client_id:this.$store.state.client_id, 
                                         name:file.name
@@ -1073,7 +1079,10 @@ export default {
             this.$emit('sendCMDEvent', cmd)
         },
         async mountDB(cmd){
-            await axios.post('/mount_rag_database', {"client_id":this.$store.state.client_id,"database_name":cmd})
+            await axios.post('/toggle_mount_rag_database', {"client_id":this.$store.state.client_id,"database_name":cmd})
+            await this.$store.dispatch('refreshConfig');
+            console.log("Refreshed")
+
         },
         addWebLink(){
             console.log("Emitting addWebLink")
