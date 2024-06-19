@@ -4005,10 +4005,7 @@ export default {
                     socket.on("rag_db_added", (infos)=>{
                         console.log(infos)
                         if (infos){
-                            console.log(infos)
-                            console.log(index)
-                            console.log(this.$store.state.config.rag_databases)
-                            this.$store.state.config.rag_databases[index]=`${infos.data["database_name"]}::${infos.data["database_path"]}`
+                            this.$store.state.config.rag_databases[index]=`${infos["database_name"]}::${infos["database_path"]}`
                             this.settingsChanged=true;
                         }
                         else{
