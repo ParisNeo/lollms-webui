@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 114
+version: 115
 binding_name: null
 model_name: null
 model_variant: null
@@ -242,7 +242,7 @@ audio_silenceTimer: 5000
 rag_databases: [] # This is the list of paths to database sources. Each database is a folder containing data
 rag_vectorizer: bert # possible values bert, tfidf, word2vec
 rag_chunk_size: 512 # number of tokens per chunk
-
+rag_n_chunks: 4 #Number of chunks to recover from the database
 
 activate_skills_lib: false # Activate vectorizing previous conversations
 skills_lib_database_name: "default" # Default skills database

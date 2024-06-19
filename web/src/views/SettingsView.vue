@@ -972,6 +972,58 @@
                             <button @click="addDataSource" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded">Add Data Source</button>
                             </td>
                         </tr>
+                        <tr>
+                            <td style="min-width: 200px;">
+                                <label for="data_vectorization_save_db" class="text-sm font-bold" style="margin-right: 1rem;">RAG Vectorizer:</label>
+                            </td>
+                            <td>
+                                <select
+                                id="rag_vectorizer"
+                                required
+                                v-model="configFile.rag_vectorizer"
+                                @change="settingsChanged=true"
+                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                    <option value="bert">Bert Vectorizer</option>
+                                    <option value="tfidf">TFIDF Vectorizer</option>
+                                    <option value="word2vec">Word2Vec Vectorizer</option>
+                                </select>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="rag_chunk_size" class="text-sm font-bold" style="margin-right: 1rem;">RAG chunk size:</label>
+                            </td>
+                            <td>
+                                <input id="rag_chunk_size" v-model="configFile.data_vectorization_chunk_size"
+                                @change="settingsChanged=true"
+                                type="range" min="2" max="64000" step="1"
+                                class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                                <input v-model="configFile.rag_chunk_size"
+                                type="number"
+                                @change="settingsChanged=true"
+                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                            </td>
+                            </tr>                                          
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="rag_n_chunks" class="text-sm font-bold" style="margin-right: 1rem;">RAG number of chunks:</label>
+                            </td>
+                            <td>
+                                <input id="rag_n_chunks" v-model="configFile.data_vectorization_chunk_size"
+                                @change="settingsChanged=true"
+                                type="range" min="2" max="64000" step="1"
+                                class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                                <input v-model="configFile.rag_n_chunks"
+                                type="number"
+                                @change="settingsChanged=true"
+                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                            </td>
+                            </tr>  
                         </table>
                     </Card>
                     <Card title="Data Vectorization" :is_subcard="true" class="pb-2  m-2">
@@ -3950,17 +4002,21 @@ export default {
             },
             async select_folder(index){
                 try{
-                    let infos = await axios.post('/add_rag_database', {client_id:this.$store.state.client_id}, this.posts_headers)
-                    if (infos){
-                        console.log(infos.data)
-                        console.log(index)
-                        console.log(this.$store.state.config.rag_databases)
-                        this.$store.state.config.rag_databases[index]=`${infos.data["database_name"]}::${infos.data["database_path"]}`
-                        this.settingsChanged=true;
-                    }
-                    else{
-                        this.$store.state.toast.showToast("Failed to select a folder", 4, false)
-                    }
+                    socket.on("rag_db_added", (infos)=>{
+                        console.log(infos)
+                        if (infos){
+                            console.log(infos)
+                            console.log(index)
+                            console.log(this.$store.state.config.rag_databases)
+                            this.$store.state.config.rag_databases[index]=`${infos.data["database_name"]}::${infos.data["database_path"]}`
+                            this.settingsChanged=true;
+                        }
+                        else{
+                            this.$store.state.toast.showToast("Failed to select a folder", 4, false)
+                        }
+
+                    });
+                    await axios.post('/add_rag_database', {client_id:this.$store.state.client_id}, this.posts_headers)
                 }
                 catch{
                     this.$store.state.toast.showToast("Failed to select a folder", 4, false)
