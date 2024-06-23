@@ -966,8 +966,9 @@
                                 @change="settingsChanged=true"
                                 class="w-full mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
                                 >
-                                <button @click="select_folder(index)" class="ml-2 px-2 py-1 bg-blue-500 text-white rounded">Select Folder</button>
-                                <button @click="removeDataSource(index)" class="ml-2 px-2 py-1 bg-red-500 text-white rounded">Remove</button>
+                                <button @click="vectorize_folder(index)" class="w-500 ml-2 px-2 py-1 bg-green-500 text-white hover:bg-green-300 rounded">(Re)Vectorize</button>
+                                <button @click="select_folder(index)" class="w-500 ml-2 px-2 py-1 bg-blue-500 text-white hover:bg-green-300 rounded">Select Folder</button>
+                                <button @click="removeDataSource(index)" class="ml-2 px-2 py-1 bg-red-500 text-white hover:bg-green-300 rounded">Remove</button>
                             </div>
                             <button @click="addDataSource" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded">Add Data Source</button>
                             </td>
@@ -989,8 +990,26 @@
                                     <option value="word2vec">Word2Vec Vectorizer</option>
                                 </select>
                             </td>
-                            </tr>
-                            <tr>
+                        </tr>
+                        <tr>
+                            <td style="min-width: 200px;">
+                                <label for="rag_vectorizer_model" class="text-sm font-bold" style="margin-right: 1rem;">RAG Vectorizer model:</label>
+                            </td>
+                            <td>
+                                <select
+                                id="rag_vectorizer_model"
+                                required
+                                v-model="configFile.rag_vectorizer_model"
+                                @change="settingsChanged=true"
+                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                    <option value="bert-large-uncased">bert-large-uncased</option>
+                                    <option value="bert-base-uncased">bert-base-uncased</option>
+                                    <option value="word2vec">Word2Vec Vectorizer</option>
+                                </select>
+                            </td>
+                        </tr>                        
+                        <tr>
                             <td style="min-width: 200px;">
                                 <label for="rag_chunk_size" class="text-sm font-bold" style="margin-right: 1rem;">RAG chunk size:</label>
                             </td>
@@ -1023,7 +1042,56 @@
                                 class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                 >
                             </td>
-                            </tr>  
+                            </tr>                                          
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="rag_clean_chunks" class="text-sm font-bold" style="margin-right: 1rem;">Clean chunks:</label>
+                            </td>
+                            <td>
+                                <input v-model="configFile.rag_clean_chunks"
+                                type="checkbox"
+                                @change="settingsChanged=true"
+                                class="w-5 mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                            </td>
+                            </tr>                      
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="rag_follow_subfolders" class="text-sm font-bold" style="margin-right: 1rem;">Follow subfolders:</label>
+                            </td>
+                            <td>
+                                <input v-model="configFile.rag_follow_subfolders"
+                                type="checkbox"
+                                @change="settingsChanged=true"
+                                class="w-5 mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                            </td>
+                            </tr>                                              
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="rag_check_new_files_at_startup" class="text-sm font-bold" style="margin-right: 1rem;">Check for new files at startup:</label>
+                            </td>
+                            <td>
+                                <input v-model="configFile.rag_check_new_files_at_startup"
+                                type="checkbox"
+                                @change="settingsChanged=true"
+                                class="w-5 mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="rag_preprocess_chunks" class="text-sm font-bold" style="margin-right: 1rem;">Preprocess chunks:</label>
+                            </td>
+                            <td>
+                                <input v-model="configFile.rag_preprocess_chunks"
+                                type="checkbox"
+                                @change="settingsChanged=true"
+                                class="w-5 mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                            </td>
+                            </tr>    
+                            
                         </table>
                     </Card>
                     <Card title="Data Vectorization" :is_subcard="true" class="pb-2  m-2">
@@ -4000,6 +4068,9 @@ export default {
             this.$store.state.config.rag_databases.splice(index, 1);
             this.settingsChanged = true;
             },
+            async vectorize_folder(index){
+                await axios.post('/vectorize_folder', {client_id:this.$store.state.client_id, db_path:this.$store.state.config.rag_databases[index]}, this.posts_headers)
+            },            
             async select_folder(index){
                 try{
                     socket.on("rag_db_added", (infos)=>{

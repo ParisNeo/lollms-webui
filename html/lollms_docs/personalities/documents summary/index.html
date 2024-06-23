@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contextual Summarization with LoLLMs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        ul {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Contextual Summarization with LoLLMs</h1>
+        <p>Welcome to the guide on performing contextual summarization using LoLLMs (Lord of Large Language Multimodal Systems). This document will walk you through the steps required to summarize documents contextually using the <code>docs_zipper</code> personality.</p>
+
+        <h2>Table of Contents</h2>
+        <ul>
+            <li><a href="#introduction">Introduction</a></li>
+            <li><a href="#prerequisites">Prerequisites</a></li>
+            <li><a href="#steps-to-perform-contextual-summarization">Steps to Perform Contextual Summarization</a>
+                <ul>
+                    <li><a href="#1-go-to-the-settings-page">1. Go to the Settings Page</a></li>
+                    <li><a href="#2-select-the-personality">2. Select the Personality</a></li>
+                    <li><a href="#3-configure-summary-parameters">3. Configure Summary Parameters</a></li>
+                    <li><a href="#4-add-the-document">4. Add the Document</a></li>
+                    <li><a href="#5-start-the-summarization">5. Start the Summarization</a></li>
+                </ul>
+            </li>
+            <li><a href="#example">Example</a></li>
+            <li><a href="#conclusion">Conclusion</a></li>
+        </ul>
+
+        <h2 id="introduction">Introduction</h2>
+        <p>LoLLMs is a versatile system designed to handle various tasks, including contextual summarization of documents. By leveraging the <code>docs_zipper</code> personality, you can generate concise summaries that respect specific constraints such as keeping the title, author names, method, and numerical results.</p>
+
+        <h2 id="prerequisites">Prerequisites</h2>
+        <ul>
+            <li>LoLLMs installed and configured on your system.</li>
+            <li>The <code>docs_zipper</code> personality available in the personalities section.</li>
+        </ul>
+
+        <h2 id="steps-to-perform-contextual-summarization">Steps to Perform Contextual Summarization</h2>
+
+        <h3 id="1-go-to-the-settings-page">1. Go to the Settings Page</h3>
+        <p>Navigate to the settings page of LoLLMs.</p>
+
+        <h3 id="2-select-the-personality">2. Select the Personality</h3>
+        <p>Under the personalities section, select the category <code>data</code> and mount the <code>docs_zipper</code> personality.</p>
+
+        <h3 id="3-configure-summary-parameters">3. Configure Summary Parameters</h3>
+        <ul>
+            <li>Go to the personality settings.</li>
+            <li>Set specific summary parameters such as:
+                <ul>
+                    <li>Keep the method description.</li>
+                    <li>Keep document title and authors in the summary.</li>
+                    <li>Set the summary size in tokens.</li>
+                </ul>
+            </li>
+            <li>Validate the settings.</li>
+        </ul>
+
+        <h3 id="4-add-the-document">4. Add the Document</h3>
+        <p>Add the document you want to summarize.</p>
+
+        <h3 id="5-start-the-summarization">5. Start the Summarization</h3>
+        <ul>
+            <li>Go to the personality menu.</li>
+            <li>Select <code>start</code>.</li>
+        </ul>
+        <p>The document will be decomposed into chunks, and each chunk will be contextually summarized. The summaries are then tied together, and the operation is repeated until the compressed text is smaller than the maximum number of tokens set in the configuration.</p>
+
+        <h2 id="example">Example</h2>
+        <p>Here is an example of how to perform contextual summarization:</p>
+        <ul>
+            <li><strong>Settings Page</strong>: Navigate to the settings page.</li>
+            <li><strong>Select Personality</strong>: Choose <code>data</code> category and mount <code>docs_zipper</code>.</li>
+            <li><strong>Configure Parameters</strong>:
+                <ul>
+                    <li>Keep method description.</li>
+                    <li>Keep document title and authors.</li>
+                    <li>Set summary size in tokens.</li>
+                    <li>Validate settings.</li>
+                </ul>
+            </li>
+            <li><strong>Add Document</strong>: Upload the document to be summarized.</li>
+            <li><strong>Start Summarization</strong>: Go to the personality menu and select <code>start</code>.</li>
+        </ul>
+        <p>The contextual nature of this algorithm allows for better control over the summary, ensuring that specified constraints are respected.</p>
+
+        <h2 id="conclusion">Conclusion</h2>
+        <p>By following these steps, you can efficiently perform contextual summarization using LoLLMs. This method provides a high degree of control over the summary content, making it a powerful tool for document analysis.</p>
+        <p>For more detailed information, refer to the document titled "lollms_contextual_summery" located at <code>C:\Users\aloui\Documents\content\lollms_contextual_summery.md</code>.</p>
+
+        <hr>
+        <p><strong>Author</strong>: ParisNeo</p>
+        <p><strong>Contact</strong>: <a href="mailto:parisneoai@gmail.com">parisneoai@gmail.com</a></p>
+        <p><strong>Twitter</strong>: <a href="https://twitter.com/ParisNeo_AI" target="_blank">@ParisNeo_AI</a></p>
+        <p><strong>Discord</strong>: <a href="https://discord.gg/BDxacQmv" target="_blank">Join our Discord</a></p>
+        <p><strong>Sub-Reddit</strong>: <a href="https://www.reddit.com/r/lollms" target="_blank">r/lollms</a></p>
+        <p><strong>Instagram</strong>: <a href="https://www.instagram.com/spacenerduino/" target="_blank">spacenerduino</a></p>
+        <p>See ya!</p>
+    </div>
+</body>
+</html>
