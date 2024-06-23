@@ -1244,9 +1244,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
         print(f"Received message : {message.content}")
         if client.discussion:
             try:
-                if not self.model:
-                    self.error("No model selected. Please make sure you select a model before starting generation", client_id=client_id)
-                    return          
                 # First we need to send the new message ID to the client
                 if is_continue:
                     client.discussion.load_message(message_id)

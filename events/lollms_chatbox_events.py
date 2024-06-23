@@ -50,9 +50,6 @@ def add_events(sio:socketio):
             # send the message to the bot
             print(f"Creating an empty message for AI answer orientation")
             if lollmsElfServer.session.get_client(client_id).discussion:
-                if not lollmsElfServer.model:
-                    lollmsElfServer.error("No model selected. Please make sure you select a model before starting generation", client_id = client_id)
-                    return          
                 lollmsElfServer.new_message(client_id, lollmsElfServer.config.user_name, message, sender_type=SENDER_TYPES.SENDER_TYPES_USER, open=True)
         else:
             if lollmsElfServer.personality is None:
@@ -62,9 +59,6 @@ def add_events(sio:socketio):
             # send the message to the bot
             print(f"Creating an empty message for AI answer orientation")
             if lollmsElfServer.session.get_client(client_id).discussion:
-                if not lollmsElfServer.model:
-                    lollmsElfServer.error("No model selected. Please make sure you select a model before starting generation", client_id=client_id)
-                    return          
                 lollmsElfServer.new_message(client_id, lollmsElfServer.personality.name, "[edit this to put your ai answer start]", open=True)
 
 
