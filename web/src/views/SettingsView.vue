@@ -1003,9 +1003,7 @@
                                 @change="settingsChanged=true"
                                 class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                 >
-                                    <option value="bert-large-uncased">bert-large-uncased</option>
-                                    <option value="bert-base-uncased">bert-base-uncased</option>
-                                    <option value="word2vec">Word2Vec Vectorizer</option>
+                                    <option value="bert-base-nli-mean-tokens">bert-base-nli-mean-tokens</option>
                                 </select>
                             </td>
                         </tr>                        
