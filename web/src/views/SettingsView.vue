@@ -16,10 +16,6 @@
             </div>
             <!-- SAVE AND RESET -->
             <div v-if="!showConfirmation" class="flex gap-3 flex-1 items-center ">
-                <button title="Save configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                    @click="showConfirmation = true">
-                    <i data-feather="save"></i>
-                </button>
                 <button title="Reset configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90"
                     @click="reset_configuration()">
                     <i data-feather="refresh-ccw"></i>
@@ -45,23 +41,29 @@
                     >
                     <i data-feather="refresh-ccw"></i>
                     </button>
-                    <button
+                    <button v-if="has_updates"
                     title="Upgrade program "
                     class="text-2xl hover:text-secondary duration-75 active:scale-90"
                     @click="api_post_req('update_software').then((res)=>{if(res.status){this.$store.state.toast.showToast('Success!', 4, true)}else{this.$store.state.toast.showToast('Success!', 4, true)}})"
                     >
                     <i data-feather="arrow-up-circle"></i>
-                    
-                    <div  v-if="has_updates" >
-                        <i data-feather="alert-circle"></i>
-                    </div>
-                    </button>
+                    <i data-feather="alert-circle"></i>
+=                   </button>
                 <div class="flex gap-3 items-center">
                     <div v-if="settingsChanged" class="flex gap-3 items-center">
-                        <p class="text-red-600 font-bold">Apply changes:</p>
                         <button v-if="!isLoading" class="text-2xl hover:text-secondary duration-75 active:scale-90"
                             title="Apply changes" type="button" @click.stop="applyConfiguration()">
-                            <i data-feather="check"></i>
+                            <div class="flex flex-row">
+                                <p class="text-green-600 font-bold hover:text-green-300 ml-4 pl-4 mr-4 pr-4">Apply changes:</p>
+                                <i data-feather="check"></i>
+                            </div>
+                        </button>
+                        <button v-if="!isLoading" class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                            title="Cancel changes" type="button" @click.stop="cancelConfiguration()">
+                            <div class="flex flex-row">
+                                <p class="text-red-600 font-bold hover:text-red-300 ml-4 pl-4 mr-4 pr-4">Cancel changes:</p>
+                                <i data-feather="x"></i>
+                            </div>
                         </button>
                     </div>
 
@@ -5520,6 +5522,10 @@ export default {
             })
 
             return res
+        },
+        async cancelConfiguration() {
+            await this.$store.dispatch('refreshConfig');
+            this.settingsChanged=false
         },
         applyConfiguration() {
             this.isLoading = true;

@@ -80,11 +80,11 @@
               Settings
             </RouterLink>
             <RouterLink 
-              :to="{ name: 'help' }" 
+              :to="{ name: 'help_view' }" 
               class="inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold"
               :class="{ 
-                'text-green-600 hover:text-green-500 dark:text-green-100 font-bold bg-bg-secondary shadow-no-bottom': isRouteActive('help'),
-                'bounce-in': isRouteActive('help'),
+                'text-green-600 hover:text-green-500 dark:text-green-100 font-bold bg-bg-secondary shadow-no-bottom': isRouteActive('help_view'),
+                'bounce-in': isRouteActive('help_view'),
               }"
               >
               Help

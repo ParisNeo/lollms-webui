@@ -35,8 +35,8 @@ const router = createRouter({
       component: ExtensionsView
     },
     {
-      path: '/help/',
-      name: 'help',
+      path: '/help_view/',
+      name: 'help_view',
       component: HelpView
     },
     {
