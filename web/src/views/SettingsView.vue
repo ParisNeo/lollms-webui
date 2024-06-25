@@ -3598,6 +3598,7 @@
                                         :on-reinstall="onPersonalityReinstall"
                                         :on-settings="onSettingsPersonality"
                                         :on-copy-personality-name="onCopyPersonalityName"
+                                        :on-copy-to_custom="onCopyToCustom"
                                         :on-open-folder="handleOpenFolder"
                                         />
                                 </TransitionGroup>
@@ -4844,6 +4845,9 @@ export default {
         onCopyPersonalityName(personality) {
             this.$store.state.toast.showToast("Copied name to clipboard!", 4, true)
             navigator.clipboard.writeText(personality.name);
+        },
+        async onCopyToCustom(pers) {
+            await axios.post("/copy_to_custom_personas",{client_id:this.$store.state.client_id, category: pers.personality.category, name: pers.personality.name})
         },
         async handleOpenFolder(pers){
             await axios.post("/open_personality_folder",{client_id:this.$store.state.client_id, personality_folder: pers.personality.folder})

@@ -765,7 +765,6 @@ export default {
         },
         'message.ui': function (newContent) {
             console.log("ui changed")
-            console.log(this.message.ui)
         },
         showConfirmation() {
             nextTick(() => {

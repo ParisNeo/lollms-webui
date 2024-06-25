@@ -1087,6 +1087,14 @@ class LOLLMSWebUI(LOLLMSElfServer):
  
         # Stream the generated text to the main process
         elif message_type == MSG_TYPE.MSG_TYPE_FULL:
+            if self.nb_received_tokens==0:
+                self.start_time = datetime.now()
+                try:
+                    self.update_message(client_id, "✍ warming up ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_END, parameters= {'status':True})
+                    self.update_message(client_id, "Generating ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_START)
+                except Exception as ex:
+                    ASCIIColors.warning("Couldn't send status update to client")
+
             client.generated_text = chunk
             antiprompt = self.personality.detect_antiprompt(client.generated_text)
             if antiprompt:
@@ -1308,11 +1316,34 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     print()
 
                 self.cancel_gen = False
+                sources_text = ""
+                if len(context_details["documentation_entries"]) > 0:
+                    sources_text += '<div class="text-gray-400 mr-10px">Sources:</div>'
+                    sources_text += '<div class="mt-4 flex flex-col items-start gap-x-2 gap-y-1.5 text-sm" style="max-height: 500px; overflow-y: auto;">'
+                    for source in context_details["documentation_entries"]:
+                        title = source["document_title"]
+                        path = source["document_path"]
+                        content = source["chunk_content"]
+                        size = source["chunk_size"]
+                        distance = source["distance"]
+                        sources_text += f'''
+                            <div class="source-item">
+                                <button onclick="var details = document.getElementById('source-details-{title}'); details.style.display = details.style.display === 'none' ? 'block' : 'none';" style="text-align: left; font-weight: bold;"><strong>{title}</strong></button>
+                                <div id="source-details-{title}" style="display:none;">
+                                    <p><strong>Path:</strong> {path}</p>
+                                    <p><strong>Content:</strong> {content}</p>
+                                    <p><strong>Size:</strong> {size}</p>
+                                    <p><strong>Distance:</strong> {distance}</p>
+                                </div>
+                            </div>
+                        '''
+                    sources_text += '</div>'                    
+                    self.personality.ui(sources_text)  
 
                 # Send final message
                 if self.config.activate_internet_search or force_using_internet or generation_type == "full_context_with_internet":
                     from lollms.internet import get_favicon_url, get_root_url
-                    sources_text = '<div class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm ">'
+                    sources_text += '<div class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm ">'
                     sources_text += '<div class="text-gray-400 mr-10px">Sources:</div>'
                     for source in internet_search_infos:
                         url = source["url"]
@@ -1329,11 +1360,13 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         f'</a>',
                         ])
                     sources_text += '</div>'
-                    client.generated_text=client.generated_text.split(f"{start_header_id_template}")[0] + "\n" + sources_text
-                    self.personality.full(client.generated_text)
+                    self.personality.ui(sources_text)
             except Exception as ex:
                 trace_exception(ex)
-            self.update_message(client_id, "Generating ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_END)
+            try:
+                self.update_message(client_id, "Generating ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_END, parameters= {'status':True})
+            except Exception as ex:
+                ASCIIColors.warning("Couldn't send status update to client")
             self.close_message(client_id)
 
             client.processing=False

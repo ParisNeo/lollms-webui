@@ -17,8 +17,7 @@ export default {
   watch: {
     code: {
       handler(newCode) {
-        // Extract and evaluate script tags from the new code
-        console.log("Code changed")
+        console.log("Code changed");
         this.evaluateScriptTags(newCode);
         this.componentKey++;
       },
@@ -44,7 +43,11 @@ export default {
 
       // Set the evaluated code to the modified HTML
       this.evaluatedCode = tempDiv.innerHTML;
-      console.log("evaluated code: " + this.evaluatedCode)
+
+      // Force a re-render by updating the component key
+      this.$nextTick(() => {
+        this.componentKey++;
+      });
     },
   },
 };
