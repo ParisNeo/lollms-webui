@@ -214,7 +214,7 @@
                         </div>
                     </div>
 
-                    <DynamicUIRenderer v-if="message.ui !== null && message.ui !== undefined && message.ui !== ''" class="w-full" :code="message.ui"></DynamicUIRenderer>
+                    <DynamicUIRenderer class="w-full" :code="message.ui"></DynamicUIRenderer>
                     <audio controls v-if="audio_url!=null" :key="audio_url">
                         <source :src="audio_url" type="audio/wav"  ref="audio_player" >
                         Your browser does not support the audio element.

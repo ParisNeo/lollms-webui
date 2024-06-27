@@ -13,6 +13,7 @@ from lollms.app import LollmsApplication
 from lollms.paths import LollmsPaths
 from lollms.main_config import LOLLMSConfig
 from lollms.utilities import trace_exception
+from lollms.security import sanitize_path
 from lollms_webui import LOLLMSWebUI
 from pathlib import Path
 from ascii_colors import ASCIIColors
@@ -236,6 +237,7 @@ if __name__ == "__main__":
     # Custom route to serve JavaScript files with the correct MIME type
     @app.get("/{path:path}")
     async def serve_js(path: str):
+        sanitize_path(path)
         if path=="":
             return FileResponse(Path(__file__).parent / "web" / "dist" / "index.html", media_type="text/html")
         file_path = Path(__file__).parent / "web" / "dist" / path

@@ -1014,7 +1014,7 @@
                                 <label for="rag_chunk_size" class="text-sm font-bold" style="margin-right: 1rem;">RAG chunk size:</label>
                             </td>
                             <td>
-                                <input id="rag_chunk_size" v-model="configFile.data_vectorization_chunk_size"
+                                <input id="rag_chunk_size" v-model="configFile.rag_chunk_size"
                                 @change="settingsChanged=true"
                                 type="range" min="2" max="64000" step="1"
                                 class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -1031,7 +1031,7 @@
                                 <label for="rag_n_chunks" class="text-sm font-bold" style="margin-right: 1rem;">RAG number of chunks:</label>
                             </td>
                             <td>
-                                <input id="rag_n_chunks" v-model="configFile.data_vectorization_chunk_size"
+                                <input id="rag_n_chunks" v-model="configFile.rag_n_chunks"
                                 @change="settingsChanged=true"
                                 type="range" min="2" max="64000" step="1"
                                 class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
