@@ -6,7 +6,11 @@
 <script>
 export default {
   props: {
-    code: String, // The HTML/CSS/JavaScript code as a prop
+    code: {
+            type: String,
+            required: true,
+            default: "",
+        },
   },
   data() {
     return {

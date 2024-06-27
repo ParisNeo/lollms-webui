@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 121
+version: 122
 binding_name: null
 model_name: null
 model_variant: null
@@ -76,6 +76,9 @@ discussion_db_name: default
 
 # Automatic updates
 debug: false
+debug_show_final_full_prompt: false
+debug_show_chunks: false
+
 debug_log_file_path: ""
 auto_update: true
 auto_sync_personalities: true

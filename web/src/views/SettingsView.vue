@@ -338,6 +338,40 @@
                                         </tr>
                                         <tr>
                                         <td style="min-width: 200px;">
+                                            <label for="debug_show_final_full_prompt" class="text-sm font-bold" style="margin-right: 1rem;">Show final full prompt in console:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                                <input
+                                            type="checkbox"
+                                            id="debug_show_final_full_prompt"
+                                            required
+                                            v-model="configFile.debug_show_final_full_prompt"
+                                            @change="settingsChanged=true"
+                                            class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600 "
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="debug_show_chunks" class="text-sm font-bold" style="margin-right: 1rem;">Show chunks in console:</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                                <input
+                                            type="checkbox"
+                                            id="debug_show_chunks"
+                                            required
+                                            v-model="configFile.debug_show_chunks"
+                                            @change="settingsChanged=true"
+                                            class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600 "
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
                                             <label for="debug_log_file_path" class="text-sm font-bold" style="margin-right: 1rem;">Debug file path:</label>
                                         </td>
                                         <td>

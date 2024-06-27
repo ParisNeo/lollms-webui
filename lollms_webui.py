@@ -72,7 +72,7 @@ def terminate_thread(thread):
         else:
             ASCIIColors.yellow("Canceled successfully")# The current version of the webui
 
-lollms_webui_version="9.9 (🅱️)"
+lollms_webui_version="9.9 (📈)"
 
 
 
@@ -330,11 +330,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
         sys.exit(0)
 
     def audio_callback(self, text):
-        discussion_prompt_separator = self.config.discussion_prompt_separator
-        start_header_id_template    = self.config.start_header_id_template
-        end_header_id_template      = self.config.end_header_id_template
-        separator_template          = self.config.separator_template
-        system_message_template     = self.config.system_message_template        
         
         if self.summoned:
             client_id = 0
@@ -365,7 +360,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 message = client.discussion.add_message(
                     message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
                     sender_type     = SENDER_TYPES.SENDER_TYPES_USER.value,
-                    sender          = self.config.user_name.strip(),
+                    sender          = self.config.user_name.strip() if self.config.use_user_name_in_discussions else self.config.user_name,
                     content         = prompt,
                     metadata        = None,
                     parent_message_id=self.message_id,
@@ -643,13 +638,11 @@ class LOLLMSWebUI(LOLLMSElfServer):
         """
         Builds a title for a discussion
         """
-        start_header_id_template    = self.config.start_header_id_template
-        end_header_id_template      = self.config.end_header_id_template
 
         # Get the list of messages
         messages = discussion.get_messages()
-        discussion_messages = f"{start_header_id_template}instruction{end_header_id_template}Create a short title to this discussion\nYour response should only contain the title without any comments.\n"
-        discussion_title = f"\n{start_header_id_template}Discussion title{end_header_id_template}"
+        discussion_messages = f"{self.start_header_id_template}instruction{self.end_header_id_template}Create a short title to this discussion\nYour response should only contain the title without any comments.\n"
+        discussion_title = f"\n{self.start_header_id_template}Discussion title{self.end_header_id_template}"
 
         available_space = self.config.ctx_size - 150 - len(self.model.tokenize(discussion_messages))- len(self.model.tokenize(discussion_title))
         # Initialize a list to store the full messages
@@ -703,16 +696,10 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
   
 
-    def get_discussion_to(self, client_id,  message_id=-1):
-        start_header_id_template    = self.config.start_header_id_template
-        end_header_id_template      = self.config.end_header_id_template
-
-        start_header_id_template    = self.config.start_header_id_template
-        end_header_id_template      = self.config.end_header_id_template
-        
+    def get_discussion_to(self, client_id,  message_id=-1):        
         messages = self.session.get_client(client_id).discussion.get_messages()
         full_message_list = []
-        ump = f"{start_header_id_template}{self.config.user_name.strip()if self.config.use_user_name_in_discussions else self.personality.user_message_prefix}{end_header_id_template}"
+        ump = f"{self.start_header_id_template}{self.config.user_name.strip()if self.config.use_user_name_in_discussions else self.personality.user_message_prefix}{self.end_header_id_template}"
 
         for message in messages:
             if message["id"]<= message_id or message_id==-1: 
@@ -948,17 +935,12 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
 
     def close_message(self, client_id):
-        discussion_prompt_separator = self.config.discussion_prompt_separator
-        start_header_id_template    = self.config.start_header_id_template
-        end_header_id_template      = self.config.end_header_id_template
-        separator_template          = self.config.separator_template
-        system_message_template     = self.config.system_message_template        
         client = self.session.get_client(client_id)
         if not client.discussion:
             return
         #fix halucination
-        if len(client.generated_text)>0 and len(start_header_id_template)>0:
-            client.generated_text=client.generated_text.split(f"{start_header_id_template}")[0]
+        if len(client.generated_text)>0 and len(self.start_header_id_template)>0:
+            client.generated_text=client.generated_text.split(f"{self.start_header_id_template}")[0]
         # Send final message
         client.discussion.current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         try:
@@ -1058,7 +1040,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
             if dt==0:
                 dt=1
             spd = self.nb_received_tokens/dt
-            ASCIIColors.green(f"Received {self.nb_received_tokens} tokens (speed: {spd:.2f}t/s)              ",end="\r",flush=True) 
+            if self.config.debug_show_chunks:
+                print(chunk,end="",flush=True)
+            #ASCIIColors.green(f"Received {self.nb_received_tokens} tokens (speed: {spd:.2f}t/s)              ",end="\r",flush=True) 
             sys.stdout = sys.__stdout__
             sys.stdout.flush()
             if chunk:
@@ -1112,6 +1096,20 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
 
     def generate(self, full_prompt, prompt, context_details, n_predict, client_id, callback=None):
+        if self.config.debug and self.config.debug_show_final_full_prompt:
+            ASCIIColors.highlight(full_prompt,[r for r in [
+                        self.config.discussion_prompt_separator,
+                        self.config.start_header_id_template,
+                        self.config.end_header_id_template,
+                        self.config.separator_template,
+                        self.config.start_user_header_id_template,
+                        self.config.end_user_header_id_template,
+                        self.config.end_user_message_id_template,
+                        self.config.start_ai_header_id_template,
+                        self.config.end_ai_header_id_template,
+                        self.config.end_ai_message_id_template,
+                        self.config.system_message_template,
+                        ] if r!="" and r!="\n"])
         if self.personality.processor is not None:
             ASCIIColors.info("Running workflow")
             try:
@@ -1142,12 +1140,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
         return txt
 
     def _generate(self, prompt, n_predict, client_id, callback=None):
-        discussion_prompt_separator = self.config.discussion_prompt_separator
-        start_header_id_template    = self.config.start_header_id_template
-        end_header_id_template      = self.config.end_header_id_template
-        separator_template          = self.config.separator_template
-        system_message_template     = self.config.system_message_template        
-
         client = self.session.get_client(client_id)
         self.nb_received_tokens = 0
         self.start_time = datetime.now()
@@ -1170,7 +1162,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     )
                 else:
                     prompt = "\n".join([
-                        f"{start_header_id_template}{system_message_template}{end_header_id_template}I am an AI assistant that can converse and analyze images. When asked to locate something in an image you send, I will reply with:",
+                        f"{self.start_header_id_template}{self.system_message_template}{self.end_header_id_template}I am an AI assistant that can converse and analyze images. When asked to locate something in an image you send, I will reply with:",
                         "boundingbox(image_index, label, left, top, width, height)",
                         "Where:",
                         "image_index: 0-based index of the image",
@@ -1237,12 +1229,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
         return output
 
     def start_message_generation(self, message, message_id, client_id, is_continue=False, generation_type=None, force_using_internet=False):
-        discussion_prompt_separator = self.config.discussion_prompt_separator
-        start_header_id_template    = self.config.start_header_id_template
-        end_header_id_template      = self.config.end_header_id_template
-        separator_template          = self.config.separator_template
-        system_message_template     = self.config.system_message_template   
-
         client = self.session.get_client(client_id)
         if self.personality is None:
             self.warning("Select a personality")
@@ -1404,11 +1390,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
             return ""
 
     def receive_and_generate(self, text, client:Client, callback=None):
-        discussion_prompt_separator = self.config.discussion_prompt_separator
-        start_header_id_template    = self.config.start_header_id_template
-        end_header_id_template      = self.config.end_header_id_template
-        separator_template          = self.config.separator_template
-        system_message_template     = self.config.system_message_template   
         prompt = text
         try:
             nb_tokens = len(self.model.tokenize(prompt))
