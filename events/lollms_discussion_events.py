@@ -128,7 +128,7 @@ def add_events(sio:socketio):
             )                        
         else:
             await lollmsElfServer.sio.emit('discussion_created',
-                        {'id':0},
+                        {'id':lollmsElfServer.session.get_client(client_id).discussion.discussion_id},
                         to=client_id
             )                        
 
