@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 122
+version: 123
 binding_name: null
 model_name: null
 model_variant: null
@@ -247,6 +247,8 @@ rag_vectorizer: bert # possible values bert, tfidf, word2vec
 rag_vectorizer_model: bert-base-nli-mean-tokens # The model name if applicable
 rag_vectorizer_parameters: null # Parameters of the model in json format
 rag_chunk_size: 512 # number of tokens per chunk
+rag_overlap: 0 # number of tokens of overlap
+
 rag_n_chunks: 4 #Number of chunks to recover from the database
 rag_clean_chunks: true #Removed all uinecessary spaces and line returns
 rag_follow_subfolders: true #if true the vectorizer will vectorize the content of subfolders too

@@ -995,15 +995,17 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 ASCIIColors.success("--> Step ended:"+chunk)
             else:
                 ASCIIColors.error("--> Step ended:"+chunk)
-        if message_type == MSG_TYPE.MSG_TYPE_EXCEPTION:
-            self.error(chunk, client_id=client_id)
-            ASCIIColors.error("--> Exception from personality:"+chunk)
         if message_type == MSG_TYPE.MSG_TYPE_WARNING:
             self.warning(chunk,client_id=client_id)
             ASCIIColors.error("--> Exception from personality:"+chunk)
+        if message_type == MSG_TYPE.MSG_TYPE_EXCEPTION:
+            self.error(chunk, client_id=client_id)
+            ASCIIColors.error("--> Exception from personality:"+chunk)
+            return
         if message_type == MSG_TYPE.MSG_TYPE_INFO:
             self.info(chunk, client_id=client_id)
             ASCIIColors.info("--> Info:"+chunk)
+            return
         if message_type == MSG_TYPE.MSG_TYPE_UI:
             self.update_message(client_id, "", parameters, metadata, chunk, MSG_TYPE.MSG_TYPE_UI)
 

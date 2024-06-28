@@ -147,9 +147,6 @@ def add_events(sio:socketio):
         else:
             lollmsElfServer.error("I am busy. Come back later.", client_id=client_id)
 
-
-
-
     @sio.on('generate_msg_from')
     def handle_generate_msg_from(sid, data):
         client_id = sid
