@@ -130,8 +130,8 @@
                                 </div>
                                 <div class="w-fit group relative" v-if="!loading" >
                                     <div class= "hide top-50 hide opacity-0 group-hover:bottom-0 opacity-0 .group-hover:block fixed w-[1000px] group absolute  group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
-                                        <div class="w-fit flex-wrap flex">
-                                        <div class="w-fit h-fit "
+                                        <div class="w-fit flex-wrap flex bg-white bg-opacity-50 backdrop-blur-md rounded p-4">
+                                        <div class="w-fit h-fit inset-0 opacity-100"
                                             v-for="(item, index) in installedBindings" :key="index + '-' + item.name"
                                             ref="installedBindings"
                                             @mouseover="showBindingHoveredIn(index)" @mouseleave="showBindingHoveredOut()"
@@ -154,7 +154,7 @@
                                     <div class="group items-center flex flex-row">
                                         <button @click.prevent="showModelConfig()" class="w-8 h-8">
                                             <img :src="currentBindingIcon"
-                                                class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                                class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary hover:scale-110 hover:-translate-y-1 duration-200"
                                                 :title="currentBinding?currentBinding.name:'unknown'">
                                         </button>
                                     </div>
@@ -162,8 +162,8 @@
                                 </div>                                    
                                 <div class="w-fit group relative" v-if="!loading" >
                                     <div class= "hide top-50 hide opacity-0 group-hover:bottom-0 opacity-0 .group-hover:block fixed w-[1000px] group absolute  group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
-                                        <div class="w-fit flex-wrap flex">
-                                        <div class="w-fit h-fit "
+                                        <div class="w-fit flex-wrap flex bg-white bg-opacity-50 backdrop-blur-md rounded p-4">
+                                        <div class="w-fit h-fit"
                                             v-for="(item, index) in installedModels" :key="index + '-' + item.name"
                                             ref="installedModels"
                                             @mouseover="showModelHoveredIn(index)" @mouseleave="showModelHoveredOut()"
@@ -186,7 +186,7 @@
                                     <div class="group items-center flex flex-row">
                                         <button @click.prevent="showModelConfig()" class="w-8 h-8">
                                             <img :src="currentModelIcon"
-                                                class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                                class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary hover:scale-110 hover:-translate-y-1 duration-400"
                                                 :title="currentModel?currentModel.name:'unknown'">
                                         </button>
                                     </div>
@@ -194,9 +194,9 @@
                                 </div>    
                                 <div class="w-fit group relative" v-if="!loading">
                                     <!-- :onShowPersList="onShowPersListFun" -->
-                                    <div class= "top-50 hide opacity-0 group-hover:bottom-0 .group-hover:block fixed w-[1000px] group absolute group-hover:opacity-100 transform group-hover:translate-y-[-60px] group-hover:translate-x-[0px] transition-all duration-300">
-                                        <div class="w-fit flex-wrap flex">
-                                        <div class="w-fit h-fit "
+                                    <div class= "top-50 hide opacity-0 group-hover:bottom-0 .group-hover:block fixed w-[1000px] group absolute group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
+                                        <div class="w-fit flex-wrap flex bg-white bg-opacity-50 backdrop-blur-md rounded p-4">
+                                        <div class="w-fit h-fit inset-0 opacity-100"
                                             v-for="(item, index) in mountedPersonalities" :key="index + '-' + item.name"
                                             ref="mountedPersonalities"
                                             @mouseover="showPersonalityHoveredIn(index)" @mouseleave="showPersonalityHoveredOut()"
