@@ -129,19 +129,27 @@
                                     </div>
                                 </div>
                                 <div class="w-fit group relative" v-if="!loading" >
-                                    <!-- :onShowPersList="onShowPersListFun" -->
-                                    <div class= "group space-x-1 w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-12 group-hover:translate-x-15 transition-all duration-300">
-                                        <div class="w-full"
+                                    <div class= "hide top-50 hide opacity-0 group-hover:bottom-0 opacity-0 .group-hover:block fixed w-[1000px] group absolute  group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
+                                        <div class="w-fit flex-wrap flex">
+                                        <div class="w-fit h-fit "
                                             v-for="(item, index) in installedBindings" :key="index + '-' + item.name"
-                                            ref="installedBindings">
-                                            <div v-if="item.name!=binding_name" class="group items-center flex flex-row">
-                                                <button @click.prevent="setBinding(item)" class="w-8 h-8">
-                                                    <img :src="item.icon?item.icon:modelImgPlaceholder"
-                                                        class="z-50 w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                            ref="installedBindings"
+                                            @mouseover="showBindingHoveredIn(index)" @mouseleave="showBindingHoveredOut()"
+                                            >
+                                            <div v-if="index!=binding_name" class="items-center flex flex-row relative z-20  hover:-translate-y-8 duration-300"
+                                            :class="bindingHoveredIndex === index?'scale-150':''"
+                                            >
+                                                <div class="relative">
+                                                    <button @click.prevent="setBinding(item)" class="w-10 h-10 relative">
+                                                        <img :src="item.icon?item.icon:modelImgPlaceholder" @error="modelImgPlaceholder"
+                                                        class="z-50 w-10 h-10 rounded-full object-fill text-red-700 border-2 border-gray-500 active:scale-90"
+                                                        :class="bindingHoveredIndex === index?'scale-150  ':'' + item.name==binding_name ? 'border-secondary' : 'border-transparent z-0'"
                                                         :title="item.name">
-                                                </button>
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>             
+                                        </div>
+                                        </div>
                                     </div>
                                     <div class="group items-center flex flex-row">
                                         <button @click.prevent="showModelConfig()" class="w-8 h-8">
@@ -151,21 +159,29 @@
                                         </button>
                                     </div>
 
-                                </div>   
+                                </div>                                    
                                 <div class="w-fit group relative" v-if="!loading" >
-                                    <!-- :onShowPersList="onShowPersListFun" -->
-                                    <div class= "group space-x-1 w-full inline-flex absolute opacity-0 group-hover:opacity-100 transform group-hover:-translate-y-12 group-hover:translate-x-15 transition-all duration-300">
-                                        <div class="w-full"
+                                    <div class= "hide top-50 hide opacity-0 group-hover:bottom-0 opacity-0 .group-hover:block fixed w-[1000px] group absolute  group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
+                                        <div class="w-fit flex-wrap flex">
+                                        <div class="w-fit h-fit "
                                             v-for="(item, index) in installedModels" :key="index + '-' + item.name"
-                                            ref="installedModels">
-                                            <div v-if="item.name!=model_name" class="group items-center flex flex-row">
-                                                <button @click.prevent="setModel(item)" class="w-8 h-8">
-                                                    <img :src="item.icon?item.icon:modelImgPlaceholder"
-                                                        class="z-50 w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary "
+                                            ref="installedModels"
+                                            @mouseover="showModelHoveredIn(index)" @mouseleave="showModelHoveredOut()"
+                                            >
+                                            <div v-if="index!=model_name" class="items-center flex flex-row relative z-20  hover:-translate-y-8 duration-300"
+                                            :class="modelHoveredIndex === index?'scale-150':''"
+                                            >
+                                                <div class="relative">
+                                                    <button @click.prevent="setModel(item)" class="w-10 h-10 relative">
+                                                        <img :src="item.icon?item.icon:modelImgPlaceholder" @error="personalityImgPlacehodler"
+                                                        class="z-50 w-10 h-10 rounded-full object-fill text-red-700 border-2 border-gray-500 active:scale-90"
+                                                        :class="modelHoveredIndex === index?'scale-150  ':'' + item.name==model_name ? 'border-secondary' : 'border-transparent z-0'"
                                                         :title="item.name">
-                                                </button>
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>             
+                                        </div>
+                                        </div>
                                     </div>
                                     <div class="group items-center flex flex-row">
                                         <button @click.prevent="showModelConfig()" class="w-8 h-8">
@@ -178,7 +194,7 @@
                                 </div>    
                                 <div class="w-fit group relative" v-if="!loading">
                                     <!-- :onShowPersList="onShowPersListFun" -->
-                                    <div class= "hide .group-hover:block fixed w-[1000px] bottom-0 group absolute opacity-0 group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
+                                    <div class= "top-50 hide opacity-0 group-hover:bottom-0 .group-hover:block fixed w-[1000px] group absolute group-hover:opacity-100 transform group-hover:translate-y-[-60px] group-hover:translate-x-[0px] transition-all duration-300">
                                         <div class="w-fit flex-wrap flex">
                                         <div class="w-fit h-fit "
                                             v-for="(item, index) in mountedPersonalities" :key="index + '-' + item.name"
@@ -447,6 +463,8 @@ export default {
     data() {
         return {
             is_rt:false,
+            bindingHoveredIndex:null,
+            modelHoveredIndex:null,
             personalityHoveredIndex:null,
             loader_v0:loader_v0,
             sendGlobe:sendGlobe,
@@ -739,7 +757,20 @@ export default {
                 return
             }
 
-        },        
+        },
+        async showBindingHoveredIn(index){
+            this.bindingHoveredIndex = index
+        },
+        async showBindingHoveredOut(){
+            this.bindingHoveredIndex = null
+        },
+
+        async showModelHoveredIn(index){
+            this.modelHoveredIndex = index
+        },
+        async showModelHoveredOut(){
+            this.modelHoveredIndex = null
+        },
         async showPersonalityHoveredIn(index){
             this.personalityHoveredIndex = index
         },
