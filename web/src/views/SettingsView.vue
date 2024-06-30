@@ -1154,6 +1154,18 @@
                                 class="w-5 mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                 >
                             </td>
+                            </tr>    
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="contextual_summary" class="text-sm font-bold" style="margin-right: 1rem;">Use contextual summary instead of rag (consumes alot of tokens and may be very slow but efficient, useful for summary and global questions that RAG can't do):</label>
+                            </td>
+                            <td>
+                                <input v-model="configFile.contextual_summary"
+                                type="checkbox"
+                                @change="settingsChanged=true"
+                                class="w-5 mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                            </td>
                             </tr>
                             
                         </table>

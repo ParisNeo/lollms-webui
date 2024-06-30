@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 123
+version: 124
 binding_name: null
 model_name: null
 model_variant: null
@@ -258,6 +258,7 @@ rag_activate_multi_hops: false #if true, we use multi hops algorithm to do multi
 rag_min_nb_tokens_in_chunk: 10 #this removed any useless junk ith less than x tokens
 rag_max_n_hops: 3 #We set the maximum number of hop in multi hops rag
 
+contextual_summary: false #If activated this will completely replace the rag and instead will use contextual summary
 
 activate_skills_lib: false # Activate vectorizing previous conversations
 skills_lib_database_name: "default" # Default skills database
