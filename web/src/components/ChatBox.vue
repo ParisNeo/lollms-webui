@@ -166,7 +166,8 @@
                                         <div class="w-fit h-fit"
                                             v-for="(item, index) in installedModels" :key="index + '-' + item.name"
                                             ref="installedModels"
-                                            @mouseover="showModelHoveredIn(index)" @mouseleave="showModelHoveredOut()"
+                                            @mouseover="showModelHoveredIn(index)" 
+                                            @mouseleave="showModelHoveredOut()"
                                             >
                                             <div v-if="index!=model_name" class="items-center flex flex-row relative z-20  hover:-translate-y-8 duration-300"
                                             :class="modelHoveredIndex === index?'scale-150':''"
@@ -184,7 +185,7 @@
                                         </div>
                                     </div>
                                     <div class="group items-center flex flex-row">
-                                        <button @click.prevent="showModelConfig()" class="w-8 h-8">
+                                        <button @click.prevent="copyModelName()" class="w-8 h-8">
                                             <img :src="currentModelIcon"
                                                 class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary hover:scale-110 hover:-translate-y-1 duration-400"
                                                 :title="currentModel?currentModel.name:'unknown'">
@@ -620,6 +621,10 @@ export default {
 
                 })
             })
+        },
+        copyModelName(){
+            navigator.clipboard.writeText(this.binding_name + "::" + this.model_name);
+            this.$store.state.toast.showToast("Model name copyed to clipboard: "+this.binding_name + "::" + this.model_name, 4, true)
         },
         showModelConfig(){
             try {
