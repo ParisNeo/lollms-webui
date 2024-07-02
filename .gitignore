@@ -216,3 +216,4 @@ xtts_models
 
 models.txt
 logs
+*.pkl
