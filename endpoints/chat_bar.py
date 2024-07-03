@@ -144,11 +144,7 @@ async def add_webpage(request: AddWebPageRequest):
             raise HTTPException(status_code=400, detail=f"Exception : {e}")
         
         try:
-            if not lollmsElfServer.personality.processor is None:
-                lollmsElfServer.personality.processor.add_file(file_path, client, partial(lollmsElfServer.process_chunk, client_id = request.client_id))
-                # File saved successfully
-            else:
-                lollmsElfServer.personality.add_file(file_path, client, partial(lollmsElfServer.process_chunk, client_id = request.client_id))
+            client.discussion.add_file(file_path, client, partial(lollmsElfServer.process_chunk, client_id = request.client_id))
                 # File saved successfully
             lollmsElfServer.HideBlockingMessage()
             lollmsElfServer.refresh_files()
