@@ -2726,6 +2726,44 @@
                                     </div>
                                 </td>
                                 </tr> 
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="midjourney_timeout" class="text-sm font-bold" style="margin-right: 1rem;">request timeout(s):</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="number"
+                                    min=10
+                                    max=2048
+                                    id="midjourney_timeout"
+                                    required
+                                    v-model="configFile.midjourney_timeout"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr> 
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="midjourney_retries" class="text-sm font-bold" style="margin-right: 1rem;">number of retries:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="number"
+                                    min=0
+                                    max=2048
+                                    id="midjourney_retries"
+                                    required
+                                    v-model="configFile.midjourney_retries"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr> 
                             </table>                                
                         </Card>
                         <Card title="Dall-E" :is_subcard="true" class="pb-2  m-2">

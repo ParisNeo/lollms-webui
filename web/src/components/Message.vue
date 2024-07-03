@@ -214,7 +214,7 @@
                         </div>
                     </div>
 
-                    <DynamicUIRenderer class="w-full" :code="message.ui"></DynamicUIRenderer>
+                    <DynamicUIRenderer class="w-full" :id="`ui_${ui_componentKey}`" :code="message.ui"></DynamicUIRenderer>
                     <audio controls v-if="audio_url!=null" :key="audio_url">
                         <source :src="audio_url" type="audio/wav"  ref="audio_player" >
                         Your browser does not support the audio element.
@@ -314,6 +314,7 @@ export default {
     },
     data() {
         return {
+            ui_componentKey:0,
             isSynthesizingVoice:false,
             cpp_block:cpp_block,
             html5_block:html5_block,
@@ -341,7 +342,8 @@ export default {
             mdRenderHeight: Number
 
         }
-    }, mounted() {
+    }, 
+    mounted() {
         // Check if speech synthesis is supported by the browser
         if ('speechSynthesis' in window) {
             this.speechSynthesis = window.speechSynthesis;
@@ -385,7 +387,8 @@ export default {
             }
         }
 
-    }, methods: {
+    }, 
+    methods: {
         computeTimeDiff(startTime, endTime){
             let timeDiff = endTime.getTime() - startTime.getTime();
 
@@ -765,6 +768,7 @@ export default {
         },
         'message.ui': function (newContent) {
             console.log("ui changed")
+            this.ui_componentKey++;
         },
         showConfirmation() {
             nextTick(() => {

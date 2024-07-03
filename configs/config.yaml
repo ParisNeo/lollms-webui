@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 124
+version: 125
 binding_name: null
 model_name: null
 model_variant: null
@@ -188,6 +188,8 @@ dall_e_generation_engine: "dall-e-3"
 
 # Midjourney service key
 midjourney_key: ""
+midjourney_timeout: 300
+midjourney_retries: 1
 
 # Image generation service comfyui
 enable_comfyui_service: false
