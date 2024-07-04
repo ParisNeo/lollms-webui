@@ -1147,7 +1147,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
         self.start_time = datetime.now()
         if self.model is not None:
             if self.model.binding_type==BindingType.TEXT_IMAGE and len(client.discussion.image_files)>0:
-                ASCIIColors.info(f"warmup for generating up to {n_predict} tokens")
                 if self.config["override_personality_model_parameters"]:
                     output = self.model.generate_with_images(
                         prompt,
@@ -1195,7 +1194,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     except Exception as ex:
                         ASCIIColors.error(str(ex))                                 
             else:
-                ASCIIColors.info(f"warmup for generating up to {n_predict} tokens")
                 if self.config["override_personality_model_parameters"]:
                     output = self.model.generate(
                         prompt,
@@ -1251,6 +1249,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
                 # prepare query and reception
                 self.discussion_messages, self.current_message, tokens, context_details, internet_search_infos = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type, force_using_internet=force_using_internet)
+                ASCIIColors.info(f"prompt has {self.config.ctx_size-context_details['available_space']} tokens")
+                ASCIIColors.info(f"warmup for generating up to {min(context_details['available_space'],self.config.max_n_predict)} tokens")
                 self.prepare_reception(client_id)
                 self.generating = True
                 client.processing=True
@@ -1259,7 +1259,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                     self.discussion_messages, 
                                     self.current_message,
                                     context_details=context_details,
-                                    n_predict = self.config.ctx_size-len(tokens)-1,
+                                    n_predict = min(self.config.ctx_size-len(tokens)-1,self.config.max_n_predict),
                                     client_id=client_id,
                                     callback=partial(self.process_chunk,client_id = client_id)
                                 )
@@ -1415,6 +1415,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         content=""
         )
         client.generated_text = ""
-        self.generate(discussion_messages, current_message, context_details, self.config.ctx_size-len(tokens)-1, client.client_id, callback if callback else partial(self.process_chunk, client_id=client.client_id))
+        ASCIIColors.info(f"prompt has {self.config.ctx_size-context_details['available_space']} tokens")
+        ASCIIColors.info(f"warmup for generating up to {min(context_details['available_space'],self.config.max_n_predict)} tokens")
+        self.generate(discussion_messages, current_message, context_details, min(self.config.ctx_size-len(tokens)-1, self.config.max_n_predict), client.client_id, callback if callback else partial(self.process_chunk, client_id=client.client_id))
         self.close_message(client.client_id)        
         return client.generated_text
