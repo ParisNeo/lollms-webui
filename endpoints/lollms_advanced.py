@@ -1,10 +1,9 @@
 """
-project: lollms_user
-file: lollms_user.py 
+project: lollms_advanced
+file: lollms_advanced.py 
 author: ParisNeo
 description: 
-    This module contains a set of FastAPI routes that provide information about the Lord of Large Language and Multimodal Systems (LoLLMs) Web UI
-    application. These routes allow users to do advanced stuff like executing code.
+    This module contains a set of FastAPI routes that provide access to advanced functionalities of lollms. These routes allow users to do advanced stuff like executing code.
 
 """
 from fastapi import APIRouter, Request
@@ -309,7 +308,7 @@ async def open_discussion_folder_in_vs_code(request: OpenCodeFolderInVsCodeReque
             root_folder = client.discussion.discussion_folder
             root_folder.mkdir(parents=True,exist_ok=True)
             tmp_file = root_folder/f"ai_code_{request.message_id}.py"
-            with open(tmp_file,"w") as f:
+            with open(tmp_file,"w",encoding="utf-8", errors='ignore') as f:
                 f.write(request.code)
             
             if os.path.isdir(root_folder):
@@ -360,7 +359,7 @@ async def open_code_in_vs_code(vs_code_data: VSCodeData):
 
         root_folder.mkdir(parents=True,exist_ok=True)
         tmp_file = root_folder/f"ai_code_{message_id}.py"
-        with open(tmp_file,"w") as f:
+        with open(tmp_file,"w", encoding="utf-8", errors='ignore') as f:
             f.write(code)
         
         # Use subprocess.Popen to safely open the file
