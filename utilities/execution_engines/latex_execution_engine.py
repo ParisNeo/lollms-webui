@@ -105,6 +105,6 @@ def execute_latex(code, client:Client, message_id):
     else:
         host = lollmsElfServer.config.host
 
-    url = f"{host}:{lollmsElfServer.config.port}/{discussion_path_to_url(pdf_file)}"
+    url = f"{host}:{lollmsElfServer.config.port}{discussion_path_to_url(pdf_file)}"
     output_json = {"output": f"Pdf file generated at: {pdf_file}\n<a href='{url}' target='_blank'>Click here to show</a>", "execution_time": execution_time}
     return output_json

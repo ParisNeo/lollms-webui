@@ -56,7 +56,7 @@ def execute_html(code, client:Client, message_id, build_file=False):
         tmp_file = root_folder/f"ai_code_{message_id}.html"
         with open(tmp_file,"w",encoding="utf8") as f:
             f.write(code)
-        link = f"{host}:{lollmsElfServer.config.port}/{discussion_path_to_url(tmp_file)}"
+        link = f"{host}:{lollmsElfServer.config.port}{discussion_path_to_url(tmp_file)}"
         # Stop the timer.
         execution_time = time.time() - start_time
         output_json = {"output": f'<b>Page built successfully</b><br><a href="{link}" target="_blank">Press here to view the page</a>', "execution_time": execution_time}
