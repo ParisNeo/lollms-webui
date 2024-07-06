@@ -580,6 +580,7 @@ export default {
                 let startIndex = lastMessage.indexOf(startTag);
                 console.log(startIndex)
                 if (startIndex === -1) {
+                    this.lastMessageHtml = this.defaultMessageHtml;
                     this.renderIsolatedContent();
                     return this.defaultMessageHtml;
                 }
