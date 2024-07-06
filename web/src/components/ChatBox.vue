@@ -280,7 +280,7 @@
                                         :on-show-toast-message="onShowToastMessage"
                                         ref="databasesList"
                                     ></PersonalitiesCommands>                                    
-                                </div>                                        
+                                </div>      
                                 <div class="relative grow">
                                     <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"
                                         @paste="handlePaste"
@@ -387,8 +387,6 @@
                                 
                             </div>
                         </div>
-
-
             </div>
         </form>
     <UniversalForm ref="universalForm" class="z-20" />
@@ -1273,6 +1271,7 @@ export default {
             });
         this.$store.dispatch('fetchisRTOn');
     },
+    
     activated() {
         nextTick(() => {
             feather.replace()
