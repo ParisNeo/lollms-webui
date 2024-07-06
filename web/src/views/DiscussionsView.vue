@@ -249,7 +249,7 @@
         </div>
     </div>
     </transition>
-        <div v-if="isReady" class="relative flex flex-col flex-grow w-full" >
+        <div v-if="isReady" class="relative flex flex-col flex-grow" >
             <div id="messages-list"
                 class="w-full z-0 flex flex-col  flex-grow  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
                 :class="isDragOverChat ? 'pointer-events-none' : ''">
@@ -429,7 +429,69 @@ export default {
     
     data() {
         return {
-            lastMessageHtml: "",
+            lastMessageHtml:"",
+            defaultMessageHtml: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Default Render Panel</title>
+            <style>
+                body, html {
+                    margin: 0;
+                    padding: 0;
+                    height: 100%;
+                    font-family: Arial, sans-serif;
+                    background-color: #f0f0f0;
+                }
+                .container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                    padding: 20px;
+                    box-sizing: border-box;
+                }
+                .message {
+                    text-align: center;
+                    padding: 30px;
+                    background-color: white;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                    max-width: 600px;
+                    width: 100%;
+                }
+                h1 {
+                    color: #2c3e50;
+                    margin-bottom: 20px;
+                    font-size: 28px;
+                }
+                p {
+                    color: #34495e;
+                    margin: 0 0 15px;
+                    line-height: 1.6;
+                }
+                .highlight {
+                    color: #e74c3c;
+                    font-weight: bold;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="message">
+                    <h1>Welcome to the Interactive Render Panel</h1>
+                    <p>This space is designed to bring your ideas to life! Currently, it's empty because no HTML has been generated yet.</p>
+                    <p>To see something amazing here, try asking the AI to <span class="highlight">create a specific web component or application</span>. For example:</p>
+                    <p>"Create a responsive image gallery" or "Build a simple todo list app"</p>
+                    <p>Once you request a web component, the AI will generate the necessary HTML, CSS, and JavaScript, and it will be rendered right here in this panel!</p>
+                </div>
+            </div>
+        </body>
+        </html>       
+            `,
             memory_icon: memory_icon,
             active_skills:active_skills,
             inactive_skills:inactive_skills,
@@ -517,7 +579,10 @@ export default {
                 console.log(lastMessage)
                 let startIndex = lastMessage.indexOf(startTag);
                 console.log(startIndex)
-                if (startIndex === -1) return "";
+                if (startIndex === -1) {
+                    this.renderIsolatedContent();
+                    return this.defaultMessageHtml;
+                }
                 
                 startIndex += startTag.length;
                 let endIndex = lastMessage.indexOf(endTag, startIndex);
@@ -529,7 +594,7 @@ export default {
                     this.lastMessageHtml = lastMessage.slice(startIndex, endIndex).trim();
                 }
             } else {
-                this.lastMessageHtml = '';
+                this.lastMessageHtml = this.defaultMessageHtml;
             }
             console.log("this.lastMessageHtml")
             console.log(this.lastMessageHtml)
@@ -539,7 +604,9 @@ export default {
             const iframe = document.createElement('iframe');
             iframe.style.border = 'none';
             iframe.style.width = '100%';
-            iframe.style.height = '100px'; // Adjust as needed
+            iframe.style.height = '100%'; // Adjust as needed
+            console.log("this.$refs.isolatedContent")
+            console.log(this.$refs.isolatedContent)
             if (this.$refs.isolatedContent){
                 this.$refs.isolatedContent.innerHTML = '';
                 this.$refs.isolatedContent.appendChild(iframe);
@@ -557,6 +624,10 @@ export default {
             this.rightPanelCollapsed = !this.rightPanelCollapsed;
             if(!this.rightPanelCollapsed){
                 this.leftPanelCollapsed=true;
+                this.$nextTick(() => {
+                this.extractHtml()
+                });
+
             }
             console.log(this.rightPanelCollapsed)
         }, 
