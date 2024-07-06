@@ -1256,7 +1256,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 client.processing=True
                 try:
                     self.generate(
-                                    self.discussion_messages, 
+                                    self.discussion_messages+ "CONTINUE FROM HERE And do not open a new markdown code tag" if is_continue else self.discussion_messages, 
                                     self.current_message,
                                     context_details=context_details,
                                     n_predict = min(self.config.ctx_size-len(tokens)-1,self.config.max_n_predict),
