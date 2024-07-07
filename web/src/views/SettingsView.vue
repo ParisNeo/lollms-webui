@@ -2828,7 +2828,27 @@
                                         <i data-feather="help-circle" class="w-5 h-5 "></i>
                                     </div>
                                 </td>                            
-                                </tr>                                        
+                                </tr>
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="comfyui_model" class="text-sm font-bold" style="margin-right: 1rem;">Available models (only if local):</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <select
+                                    id="comfyui_model"
+                                    required
+                                    v-model="configFile.comfyui_model"
+                                    @change="settingsChanged=true"
+                                    class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                        <option v-for="(comfyui_model, index) in comfyui_models" :key="comfyui_model" :value="comfyui_model">
+                                            {{ comfyui_model }}
+                                        </option>                                
+                                    </select>
+                                    </div>
+                                </td>
+                                </tr>                                                                     
                                 <tr>
                                 <td style="min-width: 200px;">
                                     <label for="comfyui_model" class="text-sm font-bold" style="margin-right: 1rem;">Enable comfyui model:</label>
@@ -4102,6 +4122,8 @@ export default {
                 { label: 'Sort by Maker', value: 3 },
                 { label: 'Sort by Quantizer', value: 4 },
             ],
+            // Comfyui models
+            comfyui_models:[],
             show_only_installed_models:false,
             // Local model reference path
             reference_path:"",
@@ -6144,6 +6166,18 @@ export default {
             console.log("Couldin't list output devices")
         }
         
+        try{
+            console.log("Getting comfyui models")
+            const res = await axios.get("/list_comfyui_models")
+            console.log("res is ",res)
+            if(res.data.status){
+                this.comfyui_models= res.data.models
+            }
+
+        }
+        catch{
+            console.log("Couldin't list output devices")
+        }
 
     },
     activated() {

@@ -570,15 +570,11 @@ export default {
     },
     methods: {      
         extractHtml() {
-            console.log("Extracting html")
             if (this.discussionArr.length > 0) {
                 const lastMessage = this.discussionArr[this.discussionArr.length - 1].content;
                 const startTag = '```html';
                 const endTag = '```';
-                console.log("lastMessage")
-                console.log(lastMessage)
                 let startIndex = lastMessage.indexOf(startTag);
-                console.log(startIndex)
                 if (startIndex === -1) {
                     this.lastMessageHtml = this.defaultMessageHtml;
                     this.renderIsolatedContent();
@@ -587,7 +583,6 @@ export default {
                 
                 startIndex += startTag.length;
                 let endIndex = lastMessage.indexOf(endTag, startIndex);
-                console.log(endIndex)
                 
                 if (endIndex === -1) {
                     this.lastMessageHtml = lastMessage.slice(startIndex).trim();
@@ -597,8 +592,6 @@ export default {
             } else {
                 this.lastMessageHtml = this.defaultMessageHtml;
             }
-            console.log("this.lastMessageHtml")
-            console.log(this.lastMessageHtml)
             this.renderIsolatedContent()
         },
         renderIsolatedContent() {
@@ -606,8 +599,6 @@ export default {
             iframe.style.border = 'none';
             iframe.style.width = '100%';
             iframe.style.height = '100%'; // Adjust as needed
-            console.log("this.$refs.isolatedContent")
-            console.log(this.$refs.isolatedContent)
             if (this.$refs.isolatedContent){
                 this.$refs.isolatedContent.innerHTML = '';
                 this.$refs.isolatedContent.appendChild(iframe);
@@ -1556,8 +1547,7 @@ export default {
                     messageItem.metadata = msgObj.metadata
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_UI) {
                     console.log("UI message")
-                    messageItem.ui = msgObj.ui      
-                    console.log(messageItem.ui)
+                    messageItem.ui = msgObj.ui
                 } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_EXCEPTION) {
                     this.$store.state.toast.showToast(msgObj.content, 5, false)
                 }

@@ -891,6 +891,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
         client.discussion.current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         client.discussion.current_message.nb_tokens = self.nb_received_tokens
         mtdt = json.dumps(metadata, indent=4) if metadata is not None and type(metadata)== list else metadata
+
+        
         if self.nb_received_tokens==1:
             client.discussion.current_message.started_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
@@ -899,7 +901,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                                 "sender": self.personality.name,
                                                 'id':client.discussion.current_message.id, 
                                                 'content': "✍ warming up ...",
-                                                'ui': ui,
+                                                'ui': client.discussion.current_message.ui if ui is None else ui,
                                                 'discussion_id':client.discussion.discussion_id,
                                                 'message_type': MSG_TYPE.MSG_TYPE_STEP_END.value,
                                                 'created_at':client.discussion.current_message.created_at,
@@ -917,7 +919,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                             "sender": self.personality.name,
                                             'id':client.discussion.current_message.id, 
                                             'content': chunk,
-                                            'ui': ui,
+                                            'ui': client.discussion.current_message.ui if ui is None else ui,
                                             'discussion_id':client.discussion.discussion_id,
                                             'message_type': msg_type.value if msg_type is not None else MSG_TYPE.MSG_TYPE_CHUNK.value if self.nb_received_tokens>1 else MSG_TYPE.MSG_TYPE_FULL.value,
                                             'created_at':client.discussion.current_message.created_at,

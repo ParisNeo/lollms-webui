@@ -1,38 +1,43 @@
 <template>
-  <div :id="`ui_${componentKey}`" class="w-full h-auto overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" v-html="evaluatedCode" :key="componentKey">
+  <div  class="w-full h-auto overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" 
+        ref="ui">
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    code: {
+    ui: {
             type: String,
             required: true,
             default: "",
         },
   },
-  data() {
-    return {
-      evaluatedCode: '', // Store the evaluated code
-      componentKey: 0,
-    };
-  },
   watch: {
-    code: {
-      handler(newCode) {
-        console.log("Code changed");
-        this.evaluateScriptTags(newCode);
-        this.componentKey++;
-      },
-      immediate: true, // Trigger the handler immediately when the component is mounted
+    ui(newVal, oldVal) {
+      console.log(`ui changed from ${oldVal} to ${newVal}`);
+      // Add your custom logic here
+      this.$nextTick(() => {
+        this.evaluateScriptTags();
+      });      
     },
   },
+  data() {
+    return {
+
+    };
+  },
+  mounted(){
+    this.$nextTick(() => {
+      this.evaluateScriptTags();
+    });
+  },
   methods: {
-    evaluateScriptTags(code) {
+    evaluateScriptTags() {
+      console.log("evaluateScriptTags")
       // Create a temporary div element to execute scripts
       const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = code;
+      tempDiv.innerHTML = this.ui;
 
       // Get all script elements within the div
       const scriptElements = tempDiv.querySelectorAll('script');
@@ -45,13 +50,10 @@ export default {
         document.body.removeChild(newScript);
       });
 
-      // Set the evaluated code to the modified HTML
-      this.evaluatedCode = tempDiv.innerHTML;
-
-      // Force a re-render by updating the component key
-      this.$nextTick(() => {
-        this.componentKey++;
-      });
+      // Set the evaluated ui to the modified HTML
+      this.$refs.ui.innerHTML = tempDiv.innerHTML;
+      console.log("this.$refs.ui.innerHTML")
+      console.log(this.$refs.ui.innerHTML)
     },
   },
 };
