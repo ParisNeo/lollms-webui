@@ -625,7 +625,7 @@ export default {
         }, 
         add_webpage(){
             console.log("addWebLink received")
-            this.$refs.web_url_input_box.showLeftPanel();
+            this.$refs.web_url_input_box.showPanel();
         },
         addWebpage(){
 
