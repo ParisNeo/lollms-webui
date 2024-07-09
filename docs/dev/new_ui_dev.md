@@ -55,7 +55,7 @@ Here we keep track of things to implement and stuff we need to do.
 - Add indicator to messages when non-comercial model was used. 
 - Ability to export messages that are for commercial use or open source model messages Only.
 - Ability to hide non commercial model messages.
-- Feature - bot council where you add multiple bots to discussion, give them a topic and maybe max message count or something and they ponder about the topic then summerize it all.
+- Feature - bot council where you add multiple bots to discussion, give them a topic and maybe max message count or something and they ponder about the topic then summarize it all.
 - Feature voice chat with bot and voice output from bot - whisper + bard?
 - Feature under selected discussion show more options to select and add more bots, select model per discussion or per bot, tweak settings per bot or per model.
 - Easy share personality via export to a file, then drag and drop on to the webui and youre done.

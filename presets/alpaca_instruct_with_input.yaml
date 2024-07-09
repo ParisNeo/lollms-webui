@@ -12,5 +12,5 @@ content: |
 help: |
   This is the default Alpaca fine tuning format for instruct mode with input.
   There are two parameters:
-  - The first parameter is the instruction itself. For example, summerize this text. 
-  - The second parameter is the input, which is the subject of your instruction. For example, if the instruction is summerize this text, then the input is the text.
+  - The first parameter is the instruction itself. For example, summarize this text. 
+  - The second parameter is the input, which is the subject of your instruction. For example, if the instruction is summarize this text, then the input is the text.

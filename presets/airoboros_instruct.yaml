@@ -8,7 +8,7 @@ content: |
 help: |
   This is the default Airoboros fine tuning format for chat mode with input.
   There are two parameters:
-  - The first is the input, which is the subject of your injstruction. For example, if the instruction is summerize this text, then the input is the text.
-  - The second parameter is the instruction itself. For example, summerize this text.
+  - The first is the input, which is the subject of your injstruction. For example, if the instruction is summarize this text, then the input is the text.
+  - The second parameter is the instruction itself. For example, summarize this text.
 
 author: ParisNeo (adapted from the original Airoboros documentation by Jon Durbin)
