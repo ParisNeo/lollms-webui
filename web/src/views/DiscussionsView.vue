@@ -661,7 +661,7 @@ export default {
                                 // send new data
                                 try {
                                     axios.post('/set_active_binding_settings',
-                                        res).then(response => {
+                                    {client_id:this.$store.state.client_id, "settings":res}).then(response => {
 
                                             if (response && response.data) {
                                                 console.log('binding set with new settings', response.data)
@@ -707,7 +707,7 @@ export default {
             const res = await axios.post("/select_database", {"client_id":this.client_id, "name": choice}, {headers: this.posts_headers});
             if(res.status){
                 console.log("Selected database")
-                this.$store.state.config = await axios.get("/get_config");
+                this.$store.state.config = await axios.post("/get_config",{"client_id":this.client_id});
                 console.log("new config loaded :",this.$store.state.config)
                 let dbs = await axios.get("/list_databases")["data"];
                 console.log("New list of database: ",dbs)

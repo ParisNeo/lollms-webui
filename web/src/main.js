@@ -240,7 +240,7 @@ export const store = createStore({
       async refreshConfig({ commit }) {
         console.log("Fetching configuration");
         try {
-          const configFile = await api_get_req('get_config')
+          const configFile = await api_post_req('get_config', {client_id:this.state.client_id})
           if(configFile.active_personality_id<0){
             configFile.active_personality_id=0;
           }

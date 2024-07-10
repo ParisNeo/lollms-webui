@@ -4350,7 +4350,7 @@ export default {
 
         },
         reinstallComfyUIService(){
-            axios.get('install_comfyui')
+            axios.post('install_comfyui', {client_id:this.$store.state.client_id})
             .then(response => {
 
             })
@@ -4360,7 +4360,7 @@ export default {
 
         },
         upgradeComfyUIService(){
-            axios.get('upgrade_comfyui')
+            axios.post('upgrade_comfyui', {client_id:this.$store.state.client_id})
             .then(response => {
 
             })
@@ -4370,7 +4370,7 @@ export default {
 
         },
         startComfyUIService(){
-            axios.get('start_comfyui')
+            axios.post('start_comfyui', {client_id:this.$store.state.client_id})
             .then(response => {
 
             })
@@ -4380,7 +4380,7 @@ export default {
 
         },        
         showComfyui(){
-            axios.get('show_comfyui')
+            axios.post('show_comfyui', {client_id:this.$store.state.client_id})
             .then(response => {
 
             })
@@ -4389,7 +4389,7 @@ export default {
             });
         },
         reinstallMotionCtrlService(){
-            axios.get('install_motion_ctrl')
+            axios.post('install_motion_ctrl', {client_id:this.$store.state.client_id})
             .then(response => {
 
             })
@@ -4398,7 +4398,7 @@ export default {
             });
         },
         reinstallvLLMService(){
-            axios.get('install_vllm')
+            axios.post('install_vllm', {client_id:this.$store.state.client_id})
             .then(response => {
 
             })
@@ -4408,7 +4408,7 @@ export default {
 
         },
         startvLLMService(){
-            axios.get('start_vllm')
+            axios.post('start_vllm', {client_id:this.$store.state.client_id})
             .then(response => {
 
             })
@@ -4418,7 +4418,7 @@ export default {
 
         },
         startollamaService(){
-            axios.get('start_ollama')
+            axios.post('start_ollama', {client_id:this.$store.state.client_id})
             .then(response => {
 
             })
@@ -4428,7 +4428,7 @@ export default {
 
         },
         reinstallPetalsService(){
-            axios.get('install_petals')
+            axios.post('install_petals', {client_id:this.$store.state.client_id})
             .then(response => {
 
             })
@@ -4438,7 +4438,7 @@ export default {
 
         },
         reinstallOLLAMAService(){
-        axios.get('install_ollama')
+        axios.post('install_ollama', {client_id:this.$store.state.client_id})
             .then(response => {
 
             })
@@ -4457,7 +4457,7 @@ export default {
             });
         },
         startAudioService(){
-            axios.get('start_xtts')
+            axios.personalitiesFiltered('start_xtts', {client_id:this.$store.state.client_id})
             .then(response => {
 
             })
@@ -4466,7 +4466,7 @@ export default {
             });
         },
         reinstallElasticSearchService(){
-            axios.get('install_vllm')
+            axios.post('install_vllm', {client_id:this.$store.state.client_id})
             .then(response => {
 
             })
@@ -5315,7 +5315,7 @@ export default {
                     this.isLoading = false
                     if (res) {
 
-                        console.log('binding sett', res)
+                        console.log('binding setting', res)
 
                         if (res.data && Object.keys(res.data).length > 0) {
 
@@ -5325,11 +5325,11 @@ export default {
                                 // send new data
                                 try {
                                     axios.post('/set_active_binding_settings',
-                                        res, {headers: this.posts_headers}).then(response => {
+                                        {client_id:this.$store.state.client_id, "settings":res}, {headers: this.posts_headers}).then(response => {
                                             if (response && response.data) {
                                                 console.log('binding set with new settings', response.data)
                                                 this.$store.state.toast.showToast("Binding settings updated successfully!", 4, true)
-                                                axios.get('/update_binding_settings').then((res) => {
+                                                axios.post('/update_binding_settings', {client_id:this.$store.state.client_id}).then((res) => {
                                                     this.$store.state.toast.showToast("Binding settings committed successfully!", 4, true)
                                                     window.location.href = "/";
                                                 })
