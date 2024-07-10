@@ -1266,11 +1266,9 @@ export default {
             }
 
         },
-        socketIOConnected() {
+        async socketIOConnected() {
             console.log("socketIOConnected")
-            this.$store.state.isConnected=true;
-            this.$store.state.client_id = socket.id
-            return true
+ 
         },
         socketIODisconnected() {
             console.log("socketIOConnected")
@@ -2132,6 +2130,7 @@ export default {
         },
     },
     async created() {
+        console.log("Created discussions view")
         const response = await axios.get('/get_versionID');
         const serverVersionId = response.data.versionId;
         if (this.versionId !== serverVersionId) {
@@ -2144,6 +2143,142 @@ export default {
         this.$nextTick(() => {
             feather.replace();
         });           
+
+        console.log("Connected to socket io")
+        
+        try{
+        this.$store.state.loading_infos = "Getting version"
+        this.$store.state.loading_progress = 30
+        await this.$store.dispatch('getVersion');
+        }
+        catch (ex){
+        console.log("Error cought:", ex)
+        }
+
+
+        try{
+        this.$store.state.loading_infos = "Loading Configuration"
+        this.$store.state.client_id = socket.id
+        console.log(this.$store.state.client_id)
+        await this.$store.dispatch('refreshConfig');
+        console.log("Config ready")
+        }
+        catch (ex){
+        console.log("Error cought:", ex)
+        }
+        try{
+        this.$store.state.loading_infos = "Loading Database"
+        this.$store.state.loading_progress = 20
+        await this.$store.dispatch('refreshDatabase');
+        }
+        catch (ex){
+        console.log("Error cought:", ex)
+        }
+
+        try{
+        this.$store.state.loading_infos = "Getting Bindings list"
+        this.$store.state.loading_progress = 40
+        await this.$store.dispatch('refreshBindings');
+        }
+        catch (ex){
+        console.log("Error cought:", ex)
+        }
+        try{
+        this.$store.state.loading_infos = "Getting Hardware usage"
+        await refreshHardwareUsage(this.$store);
+        }
+        catch (ex){
+        console.log("Error cought:", ex)
+        }
+    
+        try{
+        this.$store.state.loading_infos = "Getting personalities zoo"
+        this.$store.state.loading_progress = 70
+        await this.$store.dispatch('refreshPersonalitiesZoo')
+        }
+        catch (ex){
+        console.log("Error cought:", ex)
+        }
+        try{
+        this.$store.state.loading_infos = "Getting mounted personalities"
+        this.$store.state.loading_progress = 80
+        await this.$store.dispatch('refreshMountedPersonalities');
+        }
+        catch (ex){
+        console.log("Error cought:", ex)
+        }
+
+        try{
+        this.$store.state.loading_infos = "Getting models zoo"
+        this.$store.state.loading_progress = 90
+        await this.$store.dispatch('refreshModelsZoo');
+        }
+        catch (ex){
+        console.log("Error cought:", ex)
+        }
+        try{
+        this.$store.state.loading_infos = "Getting active models"
+        this.$store.state.loading_progress = 100
+        await this.$store.dispatch('refreshModels');
+        await this.$store.dispatch('refreshModelStatus');
+        }
+        catch (ex){
+        console.log("Error cought:", ex)
+        }
+    
+        try{
+        await this.$store.dispatch('fetchLanguages');
+        await this.$store.dispatch('fetchLanguage');
+        }
+        catch (ex){
+        console.log("Error cought:", ex)
+        }
+        try{
+        await this.$store.dispatch('fetchisRTOn');
+        }
+        catch (ex){
+        console.log("Error cought:", ex)
+        }
+
+        this.$store.state.isConnected=true;
+        this.$store.state.client_id = socket.id
+        console.log("Ready")
+        // Constructor
+        this.setPageTitle()
+        await this.list_discussions()
+        this.loadLastUsedDiscussion()
+
+        this.isCreated = true
+        this.$store.state.ready = true;    
+
+        socket.on('connected',this.socketIOConnected)
+        socket.on('disconnected',this.socketIODisconnected)
+        console.log("Added events")
+
+        // socket responses
+        socket.on('show_progress', this.show_progress)
+        socket.on('hide_progress', this.hide_progress)
+        socket.on('update_progress', this.update_progress)
+        
+        socket.on('notification', this.notify)
+        socket.on('new_message', this.new_message)
+        socket.on('update_message', this.streamMessageContent)
+        socket.on('close_message', this.finalMsgEvent)
+
+        socket.onopen = () => {
+            console.log('WebSocket connection established.');
+            if (this.currentDiscussion!=null){
+                this.setPageTitle(item)
+                localStorage.setItem('selected_discussion', this.currentDiscussion.id)
+                this.load_discussion(item.id, ()=>{
+                    if (this.discussionArr.length > 1) {
+                        if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
+                            this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
+                        }
+                    }
+                });
+            }
+        };
         socket.on('disucssion_renamed',(event)=>{
             console.log('Received new title', event.discussion_id, event.title);
             const index = this.list.findIndex((x) => x.id == event.discussion_id)
@@ -2175,48 +2310,6 @@ export default {
             this.socketIODisconnected();
             socket.disconnect();
         };
-        socket.on('connected',this.socketIOConnected)
-        socket.on('disconnected',this.socketIODisconnected)
-        console.log("Added events")
-        
-        
-        console.log("Waiting to be ready")
-        while (this.$store.state.ready === false) {
-            await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for 100ms
-        }          
-        console.log("Ready")
-        // Constructor
-        this.setPageTitle()
-        await this.list_discussions()
-        this.loadLastUsedDiscussion()
-
-
-        // socket responses
-        socket.on('show_progress', this.show_progress)
-        socket.on('hide_progress', this.hide_progress)
-        socket.on('update_progress', this.update_progress)
-        
-        socket.on('notification', this.notify)
-        socket.on('new_message', this.new_message)
-        socket.on('update_message', this.streamMessageContent)
-        socket.on('close_message', this.finalMsgEvent)
-
-        socket.onopen = () => {
-            console.log('WebSocket connection established.');
-            if (this.currentDiscussion!=null){
-                this.setPageTitle(item)
-                localStorage.setItem('selected_discussion', this.currentDiscussion.id)
-                this.load_discussion(item.id, ()=>{
-                    if (this.discussionArr.length > 1) {
-                        if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
-                            this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
-                        }
-                    }
-                });
-            }
-        };
-
-        this.isCreated = true
     },
     async mounted() {
         // let serverAddress = "http://localhost:9600/";

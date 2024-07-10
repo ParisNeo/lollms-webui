@@ -4,6 +4,7 @@ import axios from "axios";
 import App from './App.vue'
 import router from './router'
 
+import socket from '@/services/websocket.js'
 import './assets/tailwind.css'
 //import './assets/tailwind_april_fool.css'
 
@@ -240,7 +241,7 @@ export const store = createStore({
       async refreshConfig({ commit }) {
         console.log("Fetching configuration");
         try {
-          const configFile = await api_post_req('get_config', {client_id:this.state.client_id})
+          const configFile = await api_post_req('get_config', this.state.client_id)
           if(configFile.active_personality_id<0){
             configFile.active_personality_id=0;
           }
@@ -589,113 +590,28 @@ async function refreshHardwareUsage(store) {
 let actionsExecuted = false;
 
 app.mixin({
+  async socketIOConnected(){
+
+
+  },
+  socketIODisconnected(){
+    this.$store.state.isConnected=false;
+  },
   async created() {
     if (!actionsExecuted) {
       this.$store.state.api_get_req = api_get_req
       this.$store.state.api_post_req = api_post_req
-
-      actionsExecuted = true;
-      console.log("Calling")
-      
-      try{
-        this.$store.state.loading_infos = "Getting version"
-        this.$store.state.loading_progress = 30
-        await this.$store.dispatch('getVersion');
-      }
-      catch (ex){
-        console.log("Error cought:", ex)
-      }
-
-
-      try{
-        this.$store.state.loading_infos = "Loading Configuration"
-        this.$store.state.loading_progress = 10
-        await this.$store.dispatch('refreshConfig');
-        console.log("Config ready")
-      }
-      catch (ex){
-        console.log("Error cought:", ex)
-      }
-      try{
-        this.$store.state.loading_infos = "Loading Database"
-        this.$store.state.loading_progress = 20
-        await this.$store.dispatch('refreshDatabase');
-      }
-      catch (ex){
-        console.log("Error cought:", ex)
-      }
-
-      try{
-        this.$store.state.loading_infos = "Getting Bindings list"
-        this.$store.state.loading_progress = 40
-        await this.$store.dispatch('refreshBindings');
-      }
-      catch (ex){
-        console.log("Error cought:", ex)
-      }
-      try{
-        this.$store.state.loading_infos = "Getting Hardware usage"
-        await refreshHardwareUsage(this.$store);
-      }
-      catch (ex){
-        console.log("Error cought:", ex)
-      }
-   
-      try{
-        this.$store.state.loading_infos = "Getting personalities zoo"
-        this.$store.state.loading_progress = 70
-        await this.$store.dispatch('refreshPersonalitiesZoo')
-      }
-      catch (ex){
-        console.log("Error cought:", ex)
-      }
-      try{
-        this.$store.state.loading_infos = "Getting mounted personalities"
-        this.$store.state.loading_progress = 80
-        await this.$store.dispatch('refreshMountedPersonalities');
-      }
-      catch (ex){
-        console.log("Error cought:", ex)
-      }
-
-      try{
-        this.$store.state.loading_infos = "Getting models zoo"
-        this.$store.state.loading_progress = 90
-        await this.$store.dispatch('refreshModelsZoo');
-      }
-      catch (ex){
-        console.log("Error cought:", ex)
-      }
-      try{
-        this.$store.state.loading_infos = "Getting active models"
-        this.$store.state.loading_progress = 100
-        await this.$store.dispatch('refreshModels');
-        await this.$store.dispatch('refreshModelStatus');
-      }
-      catch (ex){
-        console.log("Error cought:", ex)
-      }
-    
-      try{
-        await this.$store.dispatch('fetchLanguages');
-        await this.$store.dispatch('fetchLanguage');
-      }
-      catch (ex){
-        console.log("Error cought:", ex)
-      }
-      try{
-        await this.$store.dispatch('fetchisRTOn');
-      }
-      catch (ex){
-        console.log("Error cought:", ex)
-      }
-
-      
-      this.$store.state.ready = true;
+      console.log("Main.js creation started")
     }
-
+    console.log("Main.js created")
   },
   beforeMount() {
+    socket.on('connected',this.socketIOConnected)
+    socket.on('disconnected',this.socketIODisconnected)
+    console.log("Main.js before mount")
+  },
+  mounted() {
+    console.log("Main.js mounted")
   }
 })
 
