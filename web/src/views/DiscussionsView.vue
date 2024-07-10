@@ -30,7 +30,7 @@
 
   
     </transition>
-    <button v-if="isReady" @click="togglePanel" class="absolute bottom-2 left-2 p-3 bg-white bg-opacity-10 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 hover:bg-opacity-20 shadow-lg hover:shadow-xl group">
+    <button v-if="isReady" @click="togglePanel" class="absolute top-2 left-2 p-3 bg-white bg-opacity-0 cursor-pointer transition-all duration-300 hover:scale-110 hover:bg-opacity-20 hover:shadow-xl group">
                     <div v-show="leftPanelCollapsed" ><i data-feather='chevron-right'></i></div>
                     <div v-show="!leftPanelCollapsed" ><i data-feather='chevron-left'></i></div>
     </button>
@@ -2198,13 +2198,6 @@ export default {
         this.$store.state.loading_infos = "Getting Bindings list"
         this.$store.state.loading_progress = 40
         await this.$store.dispatch('refreshBindings');
-        }
-        catch (ex){
-        console.log("Error cought:", ex)
-        }
-        try{
-        this.$store.state.loading_infos = "Getting Hardware usage"
-        await refreshHardwareUsage(this.$store);
         }
         catch (ex){
         console.log("Error cought:", ex)

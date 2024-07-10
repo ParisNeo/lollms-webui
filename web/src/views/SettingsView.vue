@@ -4055,7 +4055,6 @@ import RadioOptions from '../components/RadioOptions.vue';
 import storeLogo from '@/assets/logo.png'
 
 
-import {refreshHardwareUsage} from "../main"
 import SVGGPU from '@/assets/gpu.svg';
 
 
@@ -4191,12 +4190,24 @@ export default {
         }
     },
     async created() {
+        try{
+        this.$store.state.loading_infos = "Getting Hardware usage"
+        await this.refreshHardwareUsage(this.$store);
+        }
+        catch (ex){
+        console.log("Error cought:", ex)
+        }
+
         socket.on('loading_text',this.on_loading_text);
         this.updateHasUpdates();
         //await socket.on('install_progress', this.progressListener);
-        //refreshHardwareUsage()
     }, 
         methods: {
+            async refreshHardwareUsage(store) {
+                await store.dispatch('refreshDiskUsage');
+                await store.dispatch('refreshRamUsage');
+                await store.dispatch('refreshVramUsage');
+            },            
             addDataSource() {
             this.$store.state.config.rag_databases.push('');
             this.settingsChanged = true;
@@ -6595,30 +6606,27 @@ export default {
         },
         binding_name() {
             if (!this.isMounted) {
-                return
+                return null
             }
             const index = this.bindingsZoo.findIndex(item => item.folder === this.configFile.binding_name)
             if (index > -1) {
                 return this.bindingsZoo[index].name
 
             } else {
-                return
+                return null
             }
         },
         active_pesonality() {
             if (!this.isMounted) {
-                return
+                return null
             }
             const index = this.personalities.findIndex(item => item.full_path === this.configFile.personalities[this.configFile.active_personality_id])
             if (index > -1) {
                 return this.personalities[index].name
             } else {
-                return
+                return null
 
             }
-
-
-
         },
         speed_computed() {
             return filesize(this.addModel.speed)

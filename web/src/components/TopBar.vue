@@ -352,15 +352,17 @@ export default {
     methods: {
         adjustMenuPosition() {
             const menu = this.$refs.languageMenu;
-            const rect = menu.getBoundingClientRect();
-            const windowWidth = window.innerWidth;
+            if(menu){
+                const rect = menu.getBoundingClientRect();
+                const windowWidth = window.innerWidth;
 
-            if (rect.right > windowWidth) {
-                menu.style.left = 'auto';
-                menu.style.right = '0';
-            } else {
-                menu.style.left = '0';
-                menu.style.right = 'auto';
+                if (rect.right > windowWidth) {
+                    menu.style.left = 'auto';
+                    menu.style.right = '0';
+                } else {
+                    menu.style.left = '0';
+                    menu.style.right = 'auto';
+                }
             }
         },
         addCustomLanguage() {

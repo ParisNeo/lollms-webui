@@ -272,7 +272,7 @@ export const store = createStore({
                   );
             
         const is_rt_on = response.data.status;
-        commit('setRTOn', is_rt_on);
+        commit('setisRTOn', is_rt_on);
       },
       async fetchLanguages({ commit }) {
         console.log("get_personality_languages_list", this.state.client_id)
@@ -579,11 +579,7 @@ async function api_post_req(endpoint, client_id) {
 
 }
 
-async function refreshHardwareUsage(store) {
-  await store.dispatch('refreshDiskUsage');
-  await store.dispatch('refreshRamUsage');
-  await store.dispatch('refreshVramUsage');
-}
+
 let actionsExecuted = false;
 
 app.mixin({
@@ -643,4 +639,4 @@ app.use(router)
 app.use(store)
 app.mount('#app')
 
-export{logObjectProperties, copyObject, flattenObject, refreshHardwareUsage }
+export{logObjectProperties, copyObject, flattenObject }
