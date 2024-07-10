@@ -2133,6 +2133,22 @@ export default {
         console.log("Created discussions view")
         const response = await axios.get('/get_versionID');
         const serverVersionId = response.data.versionId;
+
+        socket.onopen = () => {
+            console.log('WebSocket connection established.');
+            if (this.currentDiscussion!=null){
+                this.setPageTitle(item)
+                localStorage.setItem('selected_discussion', this.currentDiscussion.id)
+                this.load_discussion(item.id, ()=>{
+                    if (this.discussionArr.length > 1) {
+                        if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
+                            this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
+                        }
+                    }
+                });
+            }
+        };
+
         if (this.versionId !== serverVersionId) {
             // Update the store value
             this.$store.commit('updateVersionId', serverVersionId);
@@ -2158,6 +2174,7 @@ export default {
 
         try{
         this.$store.state.loading_infos = "Loading Configuration"
+        while(socket.id===undefined){}
         this.$store.state.client_id = socket.id
         console.log(this.$store.state.client_id)
         await this.$store.dispatch('refreshConfig');
@@ -2265,20 +2282,6 @@ export default {
         socket.on('update_message', this.streamMessageContent)
         socket.on('close_message', this.finalMsgEvent)
 
-        socket.onopen = () => {
-            console.log('WebSocket connection established.');
-            if (this.currentDiscussion!=null){
-                this.setPageTitle(item)
-                localStorage.setItem('selected_discussion', this.currentDiscussion.id)
-                this.load_discussion(item.id, ()=>{
-                    if (this.discussionArr.length > 1) {
-                        if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
-                            this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)
-                        }
-                    }
-                });
-            }
-        };
         socket.on('disucssion_renamed',(event)=>{
             console.log('Received new title', event.discussion_id, event.title);
             const index = this.list.findIndex((x) => x.id == event.discussion_id)

@@ -4,7 +4,6 @@ import axios from "axios";
 import App from './App.vue'
 import router from './router'
 
-import socket from '@/services/websocket.js'
 import './assets/tailwind.css'
 //import './assets/tailwind_april_fool.css'
 
@@ -241,6 +240,7 @@ export const store = createStore({
       async refreshConfig({ commit }) {
         console.log("Fetching configuration");
         try {
+          console.log("Fetching configuration with client id: ", this.state.client_id);
           const configFile = await api_post_req('get_config', this.state.client_id)
           if(configFile.active_personality_id<0){
             configFile.active_personality_id=0;
@@ -267,14 +267,11 @@ export const store = createStore({
         commit('setDatabases', databases);
       },
       async fetchisRTOn({ commit }) {
-        console.log("is_rt_on", this.state.client_id)
         const response = await axios.get(
                     '/is_rt_on'
                   );
             
-        console.log("response", response)
         const is_rt_on = response.data.status;
-        console.log("is_rt_on", is_rt_on)
         commit('setRTOn', is_rt_on);
       },
       async fetchLanguages({ commit }) {
@@ -590,13 +587,6 @@ async function refreshHardwareUsage(store) {
 let actionsExecuted = false;
 
 app.mixin({
-  async socketIOConnected(){
-
-
-  },
-  socketIODisconnected(){
-    this.$store.state.isConnected=false;
-  },
   async created() {
     if (!actionsExecuted) {
       this.$store.state.api_get_req = api_get_req
@@ -606,8 +596,6 @@ app.mixin({
     console.log("Main.js created")
   },
   beforeMount() {
-    socket.on('connected',this.socketIOConnected)
-    socket.on('disconnected',this.socketIODisconnected)
     console.log("Main.js before mount")
   },
   mounted() {
