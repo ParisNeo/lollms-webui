@@ -641,7 +641,7 @@ export default {
                                 // send new data
                                 try {
                                     axios.post('/set_active_binding_settings',
-                                        res).then(response => {
+                                    {client_id:this.$store.state.client_id, "settings":res}).then(response => {
 
                                             if (response && response.data) {
                                                 console.log('binding set with new settings', response.data)
