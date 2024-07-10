@@ -30,7 +30,7 @@
 
   
     </transition>
-    <button v-if="isReady" @click="togglePanel" class="absolute top-2 left-2 p-3 bg-white bg-opacity-10 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 hover:bg-opacity-20 animate-pulse shadow-lg hover:shadow-xl group">
+    <button v-if="isReady" @click="togglePanel" class="absolute bottom-2 left-2 p-3 bg-white bg-opacity-10 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 hover:bg-opacity-20 shadow-lg hover:shadow-xl group">
                     <div v-show="leftPanelCollapsed" ><i data-feather='chevron-right'></i></div>
                     <div v-show="!leftPanelCollapsed" ><i data-feather='chevron-left'></i></div>
     </button>
@@ -2174,7 +2174,9 @@ export default {
 
         try{
         this.$store.state.loading_infos = "Loading Configuration"
-        while(socket.id===undefined){}
+        while(socket.id===undefined){
+            await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for 100ms
+        }
         this.$store.state.client_id = socket.id
         console.log(this.$store.state.client_id)
         await this.$store.dispatch('refreshConfig');
