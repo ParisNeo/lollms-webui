@@ -1320,36 +1320,75 @@ class LOLLMSWebUI(LOLLMSElfServer):
                             <div class="source-item">
                                 <button onclick="var details = document.getElementById('source-details-{title}'); details.style.display = details.style.display === 'none' ? 'block' : 'none';" style="text-align: left; font-weight: bold;"><strong>{title}</strong></button>
                                 <div id="source-details-{title}" style="display:none;">
-                                    <p><strong>Path:</strong> {path}</p>
-                                    <p><strong>Content:</strong> {content}</p>
-                                    <p><strong>Size:</strong> {size}</p>
-                                    <p><strong>Distance:</strong> {distance}</p>
+                                    <div style="max-height: 200px; overflow-y: auto;">
+                                        <p><strong>Path:</strong> {path}</p>
+                                        <p><strong>Content:</strong> {content}</p>
+                                        <p><strong>Size:</strong> {size}</p>
+                                        <p><strong>Distance:</strong> {distance}</p>
+                                    </div>
                                 </div>
                             </div>
                         '''
                     sources_text += '</div>'                    
                     self.personality.ui(sources_text)  
-
+                if len(context_details["skills"]) > 0:
+                    sources_text += '<div class="text-gray-400 mr-10px">Memories:</div>'
+                    sources_text += '<div class="mt-4 flex flex-col items-start gap-x-2 gap-y-1.5 text-sm" style="max-height: 500px; overflow-y: auto;">'
+                    ind = 0
+                    for skill in context_details["skills"]:
+                        sources_text += f'''
+                            <div class="source-item">
+                                <button onclick="var details = document.getElementById('source-details-{ind}'); details.style.display = details.style.display === 'none' ? 'block' : 'none';" style="text-align: left; font-weight: bold;"><strong>Memory {ind}</strong></button>
+                                <div id="source-details-{ind}" style="display:none;">
+                                    <div style="max-height: 200px; overflow-y: auto;">
+                                        <pre>{skill}</pre>
+                                    </div>    
+                                </div>
+                            </div>
+                        '''
+                        ind += 1
+                    sources_text += '</div>'                 
+                    self.personality.ui(sources_text)  
                 # Send final message
                 if self.config.activate_internet_search or force_using_internet or generation_type == "full_context_with_internet":
                     from lollms.internet import get_favicon_url, get_root_url
-                    sources_text += '<div class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm ">'
-                    sources_text += '<div class="text-gray-400 mr-10px">Sources:</div>'
+                    sources_text += '''
+                    <div class="mt-4 text-sm">
+                        <div class="text-gray-500 font-semibold mb-2">Sources:</div>
+                        <div class="flex flex-wrap items-center gap-2">
+                    '''
+
                     for source in internet_search_infos:
                         url = source["url"]
                         title = source["title"]
                         brief = source["brief"]
-                        favicon_url = get_favicon_url(url)
-                        if favicon_url is None:
-                            favicon_url ="/personalities/internet/loi/assets/logo.png"
-                        root_url = get_root_url(url)                        
-                        sources_text += "\n".join([
-                        f'<a class="relative flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none hover:border-gray-300 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700" target="_blank" href="{url}" title="{brief}">',
-                        f'  <img class="h-3.5 w-3.5 rounded" src="{favicon_url}">',
-                        f'  <div>{root_url}</div>',
-                        f'</a>',
-                        ])
-                    sources_text += '</div>'
+                        favicon_url = get_favicon_url(url) or "/personalities/generic/lollms/assets/logo.png"
+                        root_url = get_root_url(url)
+                        
+                        sources_text += f'''
+                        <a class="relative flex items-center gap-2 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm transition duration-200 ease-in-out transform hover:scale-105 hover:border-gray-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600 dark:hover:shadow-lg animate-fade-in" target="_blank" href="{url}" title="{brief}">
+                            <img class="h-4 w-4 rounded-full" src="{favicon_url}" alt="{title}" onerror="this.onerror=null;this.src='/personalities/generic/lollms/assets/logo.png';">
+                            <div class="text-gray-700 dark:text-gray-300">{root_url}</div>
+                        </a>
+                        '''
+
+                    sources_text += '''
+                        </div>
+                    </div>
+                    '''
+
+                    # Add CSS for animations
+                    sources_text += '''
+                    <style>
+                    @keyframes fadeIn {
+                        from { opacity: 0; transform: translateY(10px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                    .animate-fade-in {
+                        animation: fadeIn 0.5s ease-in-out;
+                    }
+                    </style>
+                    '''
                     self.personality.ui(sources_text)
             except Exception as ex:
                 trace_exception(ex)
