@@ -142,10 +142,6 @@ whisper_model: base
 tts_output_device: 0
 
 # Voice service
-xtts_enable: false
-xtts_base_url: http://localhost:8020
-xtts_use_deepspeed: false
-xtts_use_streaming_mode: true
 auto_read: false
 xtts_current_voice: null
 xtts_current_language: en

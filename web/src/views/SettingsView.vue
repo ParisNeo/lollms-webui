@@ -2266,58 +2266,11 @@
                             <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <tr>
                                 <td style="min-width: 200px;">
-                                    <label for="xtts_enable" class="text-sm font-bold" style="margin-right: 1rem;">Enable voice service:</label>
-                                </td>
-                                <td>
-                                    <div class="flex flex-row">
-                                    <input
-                                    type="checkbox"
-                                    id="xtts_enable"
-                                    required
-                                    v-model="configFile.xtts_enable"
-                                    @change="settingsChanged=true"
-                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                    >
-                                    </div>
-                                </td>
-                                </tr>                                        
-                                <tr>
-                                <td style="min-width: 200px;">
-                                    <label for="install_xtts_service" class="text-sm font-bold" style="margin-right: 1rem;">xTTS service:</label>
-                                </td>
-                                <td>
-                                    <div class="flex flex-row">
-                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallAudioService">install xtts service</button>
-                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="startAudioService">start xtts service</button>
-                                    <a class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" :href="this.$store.state.config.xtts_base_url+'/docs'" target="_blank">show xtts service entries</a>
-                                    <a class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" href="https://github.com/ParisNeo/xtts-api-server/blob/main/LICENSE" target="_blank">licence</a>
-                                    </div>
-                                </td>
-                                </tr>                                        
-                                <tr>
-                                <td style="min-width: 200px;">
-                                    <label for="xtts_base_url" class="text-sm font-bold" style="margin-right: 1rem;">xtts base url:</label>
-                                </td>
-                                <td>
-                                    <div class="flex flex-row">
-                                    <input
-                                    type="text"
-                                    id="xtts_base_url"
-                                    required
-                                    v-model="configFile.xtts_base_url"
-                                    @change="settingsChanged=true"
-                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                    >
-                                    </div>
-                                </td>
-                                </tr> 
-                                <tr>
-                                <td style="min-width: 200px;">
                                     <label for="xtts_current_language" class="text-sm font-bold" style="margin-right: 1rem;">Current language:</label>
                                 </td>
                                 <td>
                                     <div class="flex flex-row">
-                                        <select v-model="xtts_current_language" @change="settingsChanged=true" :disabled="!xtts_enable">
+                                        <select v-model="xtts_current_language" @change="settingsChanged=true" >
                                         <option v-for="(value, key) in voice_languages" :key="key" :value="value">
                                             {{ key }}
                                         </option>
@@ -2332,50 +2285,14 @@
                                 </td>
                                 <td>
                                     <div class="flex flex-row">
-                                        <select v-model="xtts_current_voice" @change="settingsChanged=true" :disabled="!xtts_enable">
+                                        <select v-model="xtts_current_voice" @change="settingsChanged=true" >
                                         <option v-for="voice in voices" :key="voice" :value="voice">
                                             {{ voice }}
                                         </option>
                                         </select>
                                     </div>
                                 </td>
-                                </tr>                                        
-                                <tr>
-                                <td style="min-width: 200px;">
-                                    <label for="xtts_use_deepspeed" class="text-sm font-bold" style="margin-right: 1rem;">Enable deepspeed:</label>
-                                </td>
-                                <td>
-                                    <div class="flex flex-row">
-                                        <input
-                                            type="checkbox"
-                                            id="xtts_use_deepspeed"
-                                            required
-                                            v-model="configFile.xtts_use_deepspeed"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                            :disabled="!xtts_enable"
-                                        >
-                                    </div>
-                                </td>
                                 </tr>
-                                <tr>
-                                <td style="min-width: 200px;">
-                                    <label for="xtts_use_streaming_mode" class="text-sm font-bold" style="margin-right: 1rem;">Enable streaming mode:</label>
-                                </td>
-                                <td>
-                                    <div class="flex flex-row">
-                                        <input
-                                            type="checkbox"
-                                            id="xtts_use_streaming_mode"
-                                            required
-                                            v-model="configFile.xtts_use_streaming_mode"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                            :disabled="!xtts_enable"
-                                        >
-                                    </div>
-                                </td>
-                                </tr>                                                
                                 <tr>
                                 <td style="min-width: 200px;">
                                     <label for="auto_read" class="text-sm font-bold" style="margin-right: 1rem;">Enable auto read:</label>
@@ -2389,7 +2306,7 @@
                                             v-model="configFile.auto_read"
                                             @change="settingsChanged=true"
                                             class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                            :disabled="!xtts_enable"
+                                            
                                         >
                                     </div>
                                 </td>
@@ -3215,7 +3132,7 @@
                             <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <tr>
                                 <td style="min-width: 200px;">
-                                    <label for="xtts_enable" class="text-sm font-bold" style="margin-right: 1rem;">Enable elastic search service:</label>
+                                    <label for="elastic_search_service" class="text-sm font-bold" style="margin-right: 1rem;">Enable elastic search service:</label>
                                 </td>
                                 <td>
                                     <div class="flex flex-row">
@@ -4457,24 +4374,6 @@ export default {
             console.error(error);
             });
 
-        },
-        reinstallAudioService(){
-            axios.post('install_xtts',{client_id:this.$store.state.client_id})
-            .then(response => {
-
-            })
-            .catch(error => {
-            console.error(error);
-            });
-        },
-        startAudioService(){
-            axios.personalitiesFiltered('start_xtts', {client_id:this.$store.state.client_id})
-            .then(response => {
-
-            })
-            .catch(error => {
-            console.error(error);
-            });
         },
         reinstallElasticSearchService(){
             axios.post('install_vllm', {client_id:this.$store.state.client_id})
@@ -6406,15 +6305,6 @@ export default {
                 this.$store.state.config.auto_read = value
             },
         },
-        xtts_enable:{
-            get() {
-                return this.$store.state.config.xtts_enable;
-            },
-            set(value) {
-                // You should not set the value directly here; use the updateSetting method instead
-                this.$store.state.config.xtts_enable = value
-            },
-        },
         xtts_current_language:{
             get() {
                 return this.$store.state.config.xtts_current_language;
@@ -6641,11 +6531,6 @@ export default {
 
     },
     watch: {
-        xtts_enable(newValue) {
-            if (!newValue) {
-              this.configFile.auto_read = false;
-            }
-        },
         bec_collapsed() {
             nextTick(() => {
                 feather.replace()

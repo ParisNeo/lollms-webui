@@ -438,7 +438,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                                 run_scripts=True)
 
                     mounted_personalities.append(personality)
-                    if self.config.xtts_enable and self.config.auto_read and len(personality.audio_samples)>0:
+                    if self.config.auto_read and len(personality.audio_samples)>0:
                         try:
                             from lollms.services.xtts.lollms_xtts import LollmsXTTS
                             if self.tts is None:
@@ -450,14 +450,11 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
                                 self.tts = LollmsXTTS(
                                                         self, 
-                                                        voices_folder=voices_folder,
-                                                        voice_samples_path=Path(__file__).parent.parent/"voices", 
-                                                        xtts_base_url= self.config.xtts_base_url,
-                                                        use_deep_speed=self.config.xtts_use_deepspeed,
-                                                        use_streaming_mode=self.config.xtts_use_streaming_mode
+                                                        voices_folders=[voices_folder, Path(__file__).parent.parent.parent/"services/xtts/voices"],
                                                         )
                             
-                        except:
+                        except Exception as ex:
+                            trace_exception(ex)
                             self.warning(f"Personality {personality.name} request using custom voice but couldn't load XTTS")
                 except Exception as ex:
                     ASCIIColors.error(f"Personality file not found or is corrupted ({personality_path}).\nReturned the following exception:{ex}\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
