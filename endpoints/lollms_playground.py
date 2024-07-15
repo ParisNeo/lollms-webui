@@ -34,9 +34,13 @@ def get_presets():
     presets_folder = Path("__file__").parent/"presets"
     for filename in presets_folder.glob('*.yaml'):
         with open(filename, 'r', encoding='utf-8') as file:
-            preset = yaml.safe_load(file)
-            if preset is not None:
-                presets.append(preset)
+            try:
+                print(filename)
+                preset = yaml.safe_load(file)
+                if preset is not None:
+                    presets.append(preset)
+            except Exception as ex:
+                trace_exception(ex)
     presets_folder = lollmsElfServer.lollms_paths.personal_discussions_path/"lollms_playground_presets"
     presets_folder.mkdir(exist_ok=True, parents=True)
     for filename in presets_folder.glob('*.yaml'):

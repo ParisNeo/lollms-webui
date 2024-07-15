@@ -17,7 +17,8 @@ content: |
 snippets: 
     - Import graphics(required to add graphics to the page) :
         \usepackage[demo]{graphic}
-    - Add graph: |   \includegraphics[width=4in]{@<Image name>@}% Replace with your own image path
+    - Add graph: |   
+        \includegraphics[width=4in]{@<Image name>@}% Replace with your own image path
 
 help: |
    Builds a latex code for a book

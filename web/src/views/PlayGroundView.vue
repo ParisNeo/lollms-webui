@@ -699,7 +699,7 @@ export default {
         axios.post("./text2Wave",{text:text}).then(response => {
           console.log(response.data.url)
           let url = response.data.url
-          this.audio_url = bUrl+url
+          this.audio_url = url
           this.isSynthesizingVoice=false
           nextTick(() => {
               feather.replace()
