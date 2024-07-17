@@ -17,7 +17,6 @@ from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_e
 from ascii_colors import ASCIIColors
 from lollms.databases.discussions_database import DiscussionsDB
 from lollms.security import forbid_remote_access
-from safe_store.text_vectorizer import TextVectorizer, VectorizationMethod, VisualizationMethod
 import tqdm
 from typing import Any, Optional
 from pydantic import BaseModel, ValidationError

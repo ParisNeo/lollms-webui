@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 125
+version: 127
 binding_name: null
 model_name: null
 model_variant: null
@@ -153,6 +153,7 @@ xtts_top_k: 50
 xtts_top_p: 0.85
 xtts_speed: 1
 xtts_enable_text_splitting: true
+xtts_freq: 22050
 
 # openai_whisper configuration
 openai_tts_key: ""

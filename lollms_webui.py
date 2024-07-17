@@ -27,7 +27,6 @@ import asyncio
 import os
 
 
-from safe_store import TextVectorizer, VectorizationMethod, VisualizationMethod
 import threading
 from tqdm import tqdm 
 import traceback
@@ -193,21 +192,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
         self.db.add_missing_columns()
         ASCIIColors.success("ok")
 
-        # prepare vectorization
-        if self.config.data_vectorization_activate and self.config.activate_skills_lib:
-            try:
-                ASCIIColors.yellow("Loading long term memory")
-                folder = self.lollms_paths.personal_discussions_path/"vectorized_dbs"
-                folder.mkdir(parents=True, exist_ok=True)
-                self.build_long_term_skills_memory()
-                ASCIIColors.yellow("Ready")
-
-            except Exception as ex:
-                trace_exception(ex)
-                self.long_term_memory = None
-        else:
-            self.long_term_memory = None
-
         # This is used to keep track of messages 
         self.download_infos={}
 
@@ -274,9 +258,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
             if self.check_module_update_(repo_path, branch_name):
                 return True
             repo_path = str(Path(__file__).parent/"lollms_core")
-            if self.check_module_update_(repo_path, branch_name):
-                return True
-            repo_path = str(Path(__file__).parent/"utilities/safe_store")
             if self.check_module_update_(repo_path, branch_name):
                 return True
             return False
@@ -451,6 +432,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                 self.tts = LollmsXTTS(
                                                         self, 
                                                         voices_folders=[voices_folder, Path(__file__).parent.parent.parent/"services/xtts/voices"],
+                                                        freq=self.config.xtts_freq
                                                         )
                             
                         except Exception as ex:

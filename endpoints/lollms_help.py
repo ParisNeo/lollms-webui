@@ -20,7 +20,6 @@ from ascii_colors import ASCIIColors
 from lollms.databases.discussions_database import DiscussionsDB
 from lollms.client_session import Client
 from pathlib import Path
-from safe_store.text_vectorizer import TextVectorizer, VectorizationMethod, VisualizationMethod
 import tqdm
 from fastapi import FastAPI, UploadFile, File
 import shutil

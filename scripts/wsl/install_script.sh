@@ -51,9 +51,6 @@ echo "Initializing submodules"
 git submodule update --init --recursive
 cd lollms-webui\lollms_core
 pip install -e .
-cd ..
-cd utilities\safe_store
-pip install -e .
 cd ..\..
 
 # Install requirements

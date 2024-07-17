@@ -21,7 +21,6 @@ from lollms.databases.discussions_database import DiscussionsDB
 from lollms.types import SENDER_TYPES
 from typing import List
 from pathlib import Path
-from safe_store.text_vectorizer import TextVectorizer, VectorizationMethod, VisualizationMethod
 import tqdm
 from fastapi import FastAPI, UploadFile, File
 import shutil

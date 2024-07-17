@@ -35,7 +35,6 @@ def run_git_pull():
             # Clone the repository to the target path
             ASCIIColors.info("Lollms_core found in the app space.\nPulling last lollms_core")
             subprocess.run(["git", "-C", str(execution_path/"lollms_core"), "pull"])            
-            subprocess.run(["git", "-C", str(execution_path/"utilities/safe_store"), "pull"])         
               
                     
         except Exception as ex:
@@ -50,7 +49,6 @@ def install_requirements():
     try:
         subprocess.check_call(["pip", "install", "--upgrade", "-r", "requirements.txt"])
         subprocess.check_call(["pip", "install", "--upgrade", "-e", "lollms_core"])
-        subprocess.check_call(["pip", "install", "--upgrade", "-e", "utilities/safe_store"])
     except subprocess.CalledProcessError as e:
         print(f"Error during pip install: {e}")
 

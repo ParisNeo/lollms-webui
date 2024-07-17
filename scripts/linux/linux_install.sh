@@ -103,9 +103,6 @@ if [ -d "lollms-webui" ]; then
   git submodule update --init --recursive
   cd lollms_core 
   pip install -e .
-  cd ..
-  cd utilities/safe_store
-  pip install -e .
   cd ../..
   cd utilities/pipmaster
   pip install -e .
@@ -115,9 +112,6 @@ else
   git clone --depth 1  --recurse-submodules "$REPO_URL"
   git submodule update --init --recursive
   cd lollms-webui/lollms_core
-  pip install -e .
-  cd ..
-  cd utilities/safe_store
   pip install -e .
   cd ../..
 fi

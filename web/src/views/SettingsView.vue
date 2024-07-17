@@ -2295,6 +2295,25 @@
                                 </tr>
                                 <tr>
                                 <td style="min-width: 200px;">
+                                    <label for="xtts_freq" class="text-sm font-bold" style="margin-right: 1rem;">Frequency (controls the tone):</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <input
+                                            type="number"
+                                            id="xtts_freq"
+                                            required
+                                            v-model.number="configFile.xtts_freq"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                            step="0.01"
+                                        >
+                                    </div>
+                                </td>
+                                </tr>
+
+                                <tr>
+                                <td style="min-width: 200px;">
                                     <label for="auto_read" class="text-sm font-bold" style="margin-right: 1rem;">Enable auto read:</label>
                                 </td>
                                 <td>
