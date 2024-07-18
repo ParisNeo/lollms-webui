@@ -1,5 +1,5 @@
 <template>
-  <div class="break-all container w-full" >
+  <div class="break-all container w-full">
     <div ref="mdRender" class="markdown-content">
       <div v-for="(item, index) in markdownItems" :key="index">
         <code-block
@@ -10,6 +10,7 @@
           :discussion_id="discussion_id"
           :message_id="message_id"
           :client_id="client_id"
+          @update-code="updateCode(index, $event)"
         ></code-block>
         <div v-else v-html="item.html"></div>
       </div>
@@ -18,12 +19,11 @@
 </template>
 
 <script>
-import {nextTick, ref, onMounted, watch } from 'vue';
+import { nextTick, ref, onMounted, watch } from 'vue';
 import feather from 'feather-icons';
 import MarkdownIt from 'markdown-it';
 import emoji from 'markdown-it-emoji';
 import anchor from 'markdown-it-anchor';
-import MarkdownItMath from 'markdown-it-math';
 import MarkdownItMultimdTable from 'markdown-it-multimd-table';
 import implicitFigures from 'markdown-it-implicit-figures';
 import 'highlight.js/styles/tomorrow-night-blue.css';
@@ -31,8 +31,7 @@ import 'highlight.js/styles/tokyo-night-dark.css';
 import attrs from 'markdown-it-attrs';
 import CodeBlock from './CodeBlock.vue';
 import hljs from 'highlight.js';
-import DOMPurify from 'dompurify';
-
+import mathjax from 'markdown-it-mathjax';
 
 function escapeHtml(unsafe) {
   return unsafe
@@ -42,6 +41,7 @@ function escapeHtml(unsafe) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
+
 export default {
   name: 'MarkdownRenderer',
   props: {
@@ -49,11 +49,11 @@ export default {
       type: String,
       required: false,
       default: "http://localhost:9600",
-    },   
+    },
     client_id: {
       type: String,
       required: true,
-    }, 
+    },
     markdownText: {
       type: String,
       required: true,
@@ -88,13 +88,7 @@ export default {
         figcaption: true,
       })
       .use(attrs)
-      .use(MarkdownItMath, {
-        inlineOpen: '$',
-        inlineClose: '$',
-        blockOpen: '$$',
-        blockClose: '$$',
-      })
-      .use(MarkdownItMultimdTable,{
+      .use(MarkdownItMultimdTable, {
         enableRowspan: true,
         enableColspan: true,
         enableGridTables: true,
@@ -106,44 +100,43 @@ export default {
         multilineCellEndMarker: '<|',
         multilineCellPadding: ' ',
         multilineCellJoiner: '\n',
-      });
+      })
+      .use(mathjax({
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        blockMath: [['$$', '$$'], ['\\[', '\\]']]
+      }));
+
     const markdownItems = ref([]);
     const updateMarkdown = () => {
       if (props.markdownText) {
         let tokens = md.parse(props.markdownText, {});
         let cumulated = [];
-        markdownItems.value = []
+        markdownItems.value = [];
         for (let i = 0; i < tokens.length; i++) {
           if (tokens[i].type !== 'fence') {
             cumulated.push(tokens[i]);
-          }
-          else{
-            if(cumulated.length>0){
-              markdownItems.value.push(
-              {
+          } else {
+            if (cumulated.length > 0) {
+              markdownItems.value.push({
                 type: 'html',
                 html: md.renderer.render(cumulated, md.options, {}),
               });
-              cumulated = []
+              cumulated = [];
             }
-            markdownItems.value.push(
-              {
-                type: 'code',
-                language: escapeHtml(tokens[i].info),
-                code: tokens[i].content,
-              }
-            )
+            markdownItems.value.push({
+              type: 'code',
+              language: escapeHtml(tokens[i].info),
+              code: tokens[i].content,
+            });
           }
         }
-        if(cumulated.length>0){
-          markdownItems.value.push(
-          {
+        if (cumulated.length > 0) {
+          markdownItems.value.push({
             type: 'html',
             html: md.renderer.render(cumulated, md.options, {}),
           });
-          cumulated = []
+          cumulated = [];
         }
-
       } else {
         markdownItems.value = [];
       }
@@ -151,14 +144,25 @@ export default {
         feather.replace();
       });
     };
-    watch(() => props.markdownText, updateMarkdown);
-    onMounted(updateMarkdown);
-    return { markdownItems };
-  },
 
+    const updateCode = (index, newCode) => {
+      markdownItems.value[index].code = newCode;
+    };
+
+    watch(() => props.markdownText, updateMarkdown);
+    onMounted(() => {
+      updateMarkdown();
+      nextTick(() => {
+        if (window.MathJax) {
+          window.MathJax.typesetPromise();
+        }
+      });
+    });
+    return { markdownItems, updateCode };
+  },
 };
 </script>
+
 <style>
 /* Your existing styles */
 </style>
-

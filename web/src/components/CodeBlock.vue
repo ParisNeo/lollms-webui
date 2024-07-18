@@ -1,35 +1,5 @@
 <template>
   <div class="bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel p-2 rounded-lg shadow-sm">
-    <div class="flex flex-row bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel p-2 rounded-lg shadow-sm">
-      <span class="text-2xl">{{ language }}</span>
-      <button @click="copyCode" title="copy"
-              :class="isCopied ? 'bg-green-500' : 'bg-bg-dark-tone-panel dark:bg-bg-dark-tone'" 
-              class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
-        <i data-feather="copy"></i>
-      </button>
-      <button v-if="['function', 'python', 'sh', 'shell', 'bash', 'cmd', 'powershell', 'latex', 'mermaid', 'graphviz', 'dot', 'javascript', 'html', 'html5', 'svg'].includes(language)" ref="btn_code_exec" @click="executeCode"  title="execute"
-              class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200"
-              :class="isExecuting?'bg-green-500':''">
-        <i data-feather="play-circle"></i>
-      </button>
-      <button v-if="['airplay', 'mermaid', 'graphviz', 'dot', 'javascript', 'html', 'html5', 'svg', 'css'].includes(language)" ref="btn_code_exec_in_new_tab" @click="executeCode_in_new_tab"  title="execute"
-              class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200"
-              :class="isExecuting?'bg-green-500':''">
-        <i data-feather="airplay"></i>
-      </button>
-      <button v-if="['python', 'latex', 'html'].includes(language)" @click="openFolder"  title="open code project folder"
-              class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
-        <i data-feather="folder"></i>
-      </button>
-      <button v-if="['python', 'latex', 'html'].includes(language)" @click="openFolderVsCode"  title="open code project folder in vscode"
-              class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
-        <img src="@/assets/vscode_black.svg" width="25" height="25">
-      </button>
-      <button v-if="['python', 'latex', 'html'].includes(language)" @click="openVsCode"  title="open code in vscode"
-              class="px-2 py-1 ml-2 text-left p-2 text-sm font-medium bg-bg-dark-tone-panel dark:bg-bg-dark-tone rounded-lg hover:bg-primary dark:hover:bg-primary text-white text-xs transition-colors duration-200">
-        <img src="@/assets/vscode.svg" width="25" height="25">
-      </button>
-    </div>
     <pre  class="hljs p-1 rounded-md break-all grid grid-cols-1">
       <div class="code-container">
         <div 
@@ -41,6 +11,41 @@
         </div>
 
     </pre>    
+    <div class="flex flex-row bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel p-2 rounded-lg shadow-sm">
+      <span class="text-2xl mr-2">{{ language }}</span>
+      <button @click="copyCode"
+              :title="isCopied ? 'Copied!' : 'Copy code'"
+              :class="isCopied ? 'bg-green-500' : ''" 
+              class="px-2 py-1 mr-2 mb-2 text-left text-sm font-medium rounded-lg hover:bg-primary dark:hover:bg-primary text-white transition-colors duration-200"
+              >
+        <i data-feather="copy"></i>
+      </button>
+      <button v-if="['function', 'python', 'sh', 'shell', 'bash', 'cmd', 'powershell', 'latex', 'mermaid', 'graphviz', 'dot', 'javascript', 'html', 'html5', 'svg'].includes(language)" ref="btn_code_exec" @click="executeCode"  title="execute"
+        class="px-2 py-1 mr-2 mb-2 text-left text-sm font-medium rounded-lg hover:bg-primary dark:hover:bg-primary text-white transition-colors duration-200"
+        :class="isExecuting?'bg-green-500':''">
+        <i data-feather="play-circle"></i>
+      </button>
+      <button v-if="['airplay', 'mermaid', 'graphviz', 'dot', 'javascript', 'html', 'html5', 'svg', 'css'].includes(language)" ref="btn_code_exec_in_new_tab" @click="executeCode_in_new_tab"  title="execute"
+        class="px-2 py-1 mr-2 mb-2 text-left text-sm font-medium rounded-lg hover:bg-primary dark:hover:bg-primary text-white transition-colors duration-200"
+        :class="isExecuting?'bg-green-500':''">
+        <i data-feather="airplay"></i>
+      </button>
+      <button v-if="['python', 'latex', 'html'].includes(language)" @click="openFolder"  title="open code project folder"
+      class="px-2 py-1 mr-2 mb-2 text-left text-sm font-medium rounded-lg hover:bg-primary dark:hover:bg-primary text-white transition-colors duration-200"
+      >
+        <i data-feather="folder"></i>
+      </button>
+      <button v-if="['python', 'latex', 'html'].includes(language)" @click="openFolderVsCode"  title="open code project folder in vscode"
+      class="px-2 py-1 mr-2 mb-2 text-left text-sm font-medium rounded-lg hover:bg-primary dark:hover:bg-primary text-white transition-colors duration-200"
+      >
+        <img src="@/assets/vscode_black.svg" width="25" height="25">
+      </button>
+      <button v-if="['python', 'latex', 'html'].includes(language)" @click="openVsCode"  title="open code in vscode"
+      class="px-2 py-1 mr-2 mb-2 text-left text-sm font-medium rounded-lg hover:bg-primary dark:hover:bg-primary text-white transition-colors duration-200"
+      >
+        <img src="@/assets/vscode.svg" width="25" height="25">
+      </button>
+    </div>
     <span v-if="executionOutput" class="text-2xl">Execution output</span>
     <pre  class="hljs mt-0 p-1 rounded-md break-all grid grid-cols-1" v-if="executionOutput">
       <div class="container h-[200px] overflow-x-auto break-all scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
