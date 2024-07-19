@@ -531,6 +531,7 @@ export default {
                 if(!this.isSpeaking){
                     this.isSpeaking = true;
                     axios.post("./text2Audio",{client_id:this.$store.state.client_id, text:this.message.content}).then(response => {
+                        this.isSpeaking = false;
                     }).catch(ex=>{
                         this.$store.state.toast.showToast(`Error: ${ex}`,4,false)
                         this.isSpeaking = false;
