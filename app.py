@@ -5,6 +5,24 @@ Description: Singleton class for the LoLLMS web UI.
 
 This file is the entry point to the webui.
 """
+from lollms.utilities import PackageManager
+
+print("Checking ParisNeo libraries installation ... ",end="",flush=True)
+
+if not PackageManager.check_package_installed("pipmaster"):
+    PackageManager.install_or_update("pipmaster")
+
+if not PackageManager.check_package_installed("lollmsvectordb"):
+    PackageManager.install_or_update("lollmsvectordb")
+
+if not PackageManager.check_package_installed("freedom_search"):
+    PackageManager.install_or_update("freedom-search")
+
+if not PackageManager.check_package_installed("scrapemaster"):
+    PackageManager.install_or_update("scrapemaster")
+print("OK")
+
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse
