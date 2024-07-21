@@ -637,6 +637,22 @@
                                             <div v-html="full_template"></div>
                                         </td>
                                         </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="use_continue_message" class="text-sm font-bold" style="margin-right: 1rem;" title="useful for chat models and repote models but can be less useful for instruct ones">Use continue message:</label>
+                                        </td>
+                                        <td style="width: 100%;">
+                                            <input
+                                            type="checkbox"
+                                            id="use_continue_message"
+                                            required
+                                            v-model="configFile.use_continue_message"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                            >
+                                        </td>
+                                        </tr>
+                                        
                                     </table>
                                 </Card>
 

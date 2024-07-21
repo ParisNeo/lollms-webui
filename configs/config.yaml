@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 127
+version: 128
 binding_name: null
 model_name: null
 model_variant: null
@@ -43,6 +43,7 @@ end_ai_header_id_template: ": "
 end_ai_message_id_template: ""
 
 system_message_template: "system"
+use_continue_message: true
 
 seed: -1
 ctx_size: 4084

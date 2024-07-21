@@ -100,11 +100,10 @@ export default {
         multilineCellEndMarker: '<|',
         multilineCellPadding: ' ',
         multilineCellJoiner: '\n',
-      })
-      .use(mathjax({
+      }).use(mathjax({
         inlineMath: [['$', '$'], ['\\(', '\\)']],
         blockMath: [['$$', '$$'], ['\\[', '\\]']]
-      }));
+      }))
 
     const markdownItems = ref([]);
     const updateMarkdown = () => {

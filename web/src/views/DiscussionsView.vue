@@ -265,9 +265,36 @@
                             @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
                             @rankDown="rankDownMessage" @updateMessage="updateMessage" @resendMessage="resendMessage" @continueMessage="continueMessage"
                             :avatar="getAvatar(msg.sender)" />
-
+                        
                         <!-- REMOVED FOR NOW, NEED MORE TESTING -->
                         <!-- @click="scrollToElementInContainer($event.target, 'messages-list')"  -->
+                        <div  v-if="discussionArr.length < 2 && personality.prompts_list.length > 0"  class="w-full rounded-lg m-2 shadow-lg hover:border-primary dark:hover:border-primary hover:border-solid hover:border-2 border-2 border-transparent even:bg-bg-light-discussion-odd dark:even:bg-bg-dark-discussion-odd flex flex-col overflow-hidden p-4 pb-2 h-[600px]">
+                            <h2 class="text-2xl font-bold mb-4">Prompt examples</h2>
+                            <div v-if="discussionArr.length < 2 && personality.prompts_list.length > 0" 
+                                class="overflow-y-auto flex-grow pr-2 custom-scrollbar">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-2">
+                                <div 
+                                    v-for="(prompt, index) in personality.prompts_list" 
+                                    :key="index" 
+                                    @click="selectPrompt(prompt)"
+                                    class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 flex flex-col justify-between h-[220px] overflow-hidden group"
+                                >
+                                    <div 
+                                    :title="prompt" 
+                                    class="text-base text-gray-700 dark:text-gray-300 overflow-hidden relative h-full"
+                                    >
+                                    <div class="absolute inset-0 overflow-hidden">
+                                        {{ prompt }}
+                                    </div>
+                                    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white dark:to-gray-800 group-hover:opacity-0 transition-opacity duration-300"></div>
+                                    </div>
+                                    <div class="mt-2 text-sm text-gray-500 dark:text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    Click to select
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
 
 
                     </TransitionGroup>
@@ -324,7 +351,24 @@
 
 
 <style scoped>
+.custom-scrollbar {
+scrollbar-width: thin;
+scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+}
 
+.custom-scrollbar::-webkit-scrollbar {
+width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+background-color: rgba(155, 155, 155, 0.5);
+border-radius: 20px;
+border: transparent;
+}
 @keyframes custom-pulse {
     0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
     50% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); }
@@ -569,6 +613,9 @@ export default {
         }
     },
     methods: {      
+        selectPrompt(prompt){
+            this.$refs.chatBox.message = prompt;
+        },
         extractHtml() {
             if (this.discussionArr.length > 0) {
                 const lastMessage = this.discussionArr[this.discussionArr.length - 1].content;
@@ -2451,6 +2498,18 @@ export default {
             set(val){
                 this.$store.state.isGenerating=val
             }
+        },
+        personality(){
+            console.log("personality:", this.$store.state.config.personalities[this.$store.state.config.active_personality_id])
+            const current_personality_name = this.$store.state.config.personalities[this.$store.state.config.active_personality_id]
+            console.log("peronslities", this.$store.state.personalities[0])
+            const personality = this.$store.state.personalities.find(personality => personality.full_path === current_personality_name);
+            console.log("personality:", personality)
+            return personality
+        },
+        prompts_list() {
+            console.log(this.personality.prompts_list)
+            return this.personality.prompts_list;
         },
         formatted_database_name() {
             const db_name = this.$store.state.config.discussion_db_name;

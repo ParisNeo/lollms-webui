@@ -26,6 +26,7 @@ pydantic
 selenium
 tiktoken
 
-pipmaster>=0.1.2
+pipmaster>=0.1.7
 
 lollmsvectordb>=0.3.0
+freedom-search
