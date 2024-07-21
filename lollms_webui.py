@@ -1334,7 +1334,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     sources_text += '''
                     <div class="mt-4 text-sm">
                         <div class="text-gray-500 font-semibold mb-2">Sources:</div>
-                        <div class="flex flex-wrap items-center gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                     '''
 
                     for source in internet_search_infos:
@@ -1345,13 +1345,13 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         root_url = get_root_url(url)
                         
                         sources_text += f'''
-                        <div class="relative flex items-center gap-2 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm transition duration-200 ease-in-out transform hover:scale-105 hover:border-gray-300 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600 dark:hover:shadow-lg animate-fade-in">
-                            <a class="flex items-center" target="_blank" href="{url}" title="{brief}">
-                                <img class="h-6 w-6 rounded-full" src="{favicon_url}" alt="{title}" onerror="this.onerror=null;this.src='/personalities/generic/lollms/assets/logo.png';">
+                        <div class="relative flex flex-col items-start gap-2 rounded-lg border border-gray-200 bg-white p-3 shadow-sm transition duration-200 ease-in-out transform hover:scale-105 hover:border-gray-300 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600 dark:hover:shadow-lg animate-fade-in">
+                            <a class="flex items-center w-full" target="_blank" href="{url}" title="{brief}">
+                                <img class="h-8 w-8 rounded-full" src="{favicon_url}" alt="{title}" onerror="this.onerror=null;this.src='/personalities/generic/lollms/assets/logo.png';">
                                 <div class="ml-2">
-                                    <div class="text-gray-700 dark:text-gray-300 font-semibold">{title}</div>
-                                    <div class="text-gray-500 dark:text-gray-400">{root_url}</div>
-                                    <div class="text-gray-400 dark:text-gray-500 text-sm">{brief}</div>
+                                    <div class="text-gray-700 dark:text-gray-300 font-semibold text-sm">{title}</div>
+                                    <div class="text-gray-500 dark:text-gray-400 text-xs">{root_url}</div>
+                                    <div class="text-gray-400 dark:text-gray-500 text-xs">{brief}</div>
                                 </div>
                             </a>
                         </div>
@@ -1362,7 +1362,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     </div>
                     '''
 
-                    # Add CSS for animations and hover effects
+                    # Add CSS for animations and scrollbar styles
                     sources_text += '''
                     <style>
                     @keyframes fadeIn {
@@ -1372,9 +1372,20 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     .animate-fade-in {
                         animation: fadeIn 0.5s ease-in-out;
                     }
+                    .scrollbar-thin::-webkit-scrollbar {
+                        width: 8px;
+                    }
+                    .scrollbar-thin::-webkit-scrollbar-thumb {
+                        background-color: #cbd5e1; /* Tailwind gray-300 */
+                        border-radius: 10px;
+                    }
+                    .scrollbar-thin::-webkit-scrollbar-track {
+                        background: #f9fafb; /* Tailwind gray-100 */
+                    }
                     </style>
                     '''
                     self.personality.ui(sources_text)
+
             except Exception as ex:
                 trace_exception(ex)
             try:
