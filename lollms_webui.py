@@ -1334,7 +1334,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     sources_text += '''
                     <div class="mt-4 text-sm">
                         <div class="text-gray-500 font-semibold mb-2">Sources:</div>
-                        <div class="flex flex-wrap items-center gap-2">
+                        <div class="flex flex-wrap items-center gap-4">
                     '''
 
                     for source in internet_search_infos:
@@ -1345,10 +1345,16 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         root_url = get_root_url(url)
                         
                         sources_text += f'''
-                        <a class="relative flex items-center gap-2 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm transition duration-200 ease-in-out transform hover:scale-105 hover:border-gray-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600 dark:hover:shadow-lg animate-fade-in" target="_blank" href="{url}" title="{brief}">
-                            <img class="h-4 w-4 rounded-full" src="{favicon_url}" alt="{title}" onerror="this.onerror=null;this.src='/personalities/generic/lollms/assets/logo.png';">
-                            <div class="text-gray-700 dark:text-gray-300">{root_url}</div>
-                        </a>
+                        <div class="relative flex items-center gap-2 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm transition duration-200 ease-in-out transform hover:scale-105 hover:border-gray-300 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600 dark:hover:shadow-lg animate-fade-in">
+                            <a class="flex items-center" target="_blank" href="{url}" title="{brief}">
+                                <img class="h-6 w-6 rounded-full" src="{favicon_url}" alt="{title}" onerror="this.onerror=null;this.src='/personalities/generic/lollms/assets/logo.png';">
+                                <div class="ml-2">
+                                    <div class="text-gray-700 dark:text-gray-300 font-semibold">{title}</div>
+                                    <div class="text-gray-500 dark:text-gray-400">{root_url}</div>
+                                    <div class="text-gray-400 dark:text-gray-500 text-sm">{brief}</div>
+                                </div>
+                            </a>
+                        </div>
                         '''
 
                     sources_text += '''
@@ -1356,7 +1362,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     </div>
                     '''
 
-                    # Add CSS for animations
+                    # Add CSS for animations and hover effects
                     sources_text += '''
                     <style>
                     @keyframes fadeIn {
