@@ -312,7 +312,7 @@ async def open_discussion_folder_in_vs_code(request: OpenCodeFolderInVsCodeReque
             
             if os.path.isdir(root_folder):
                 path = '"'+str(root_folder)+'"'.replace("\\","/")
-                subprocess.run(['code', path], shell=True)
+                subprocess.run(['code', '-n', path], shell=True)
 
 
         return {"status": True, "execution_time": 0}
