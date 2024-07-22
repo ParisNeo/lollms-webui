@@ -266,7 +266,8 @@ async def open_folder(file_path: FilePath):
         if Path(path).exists():
             # Use subprocess.Popen to safely open the file
             if platform.system() == 'Windows':
-                subprocess.Popen(f'explorer "{path}"', shell=True)
+                path = path.replace('/','\\')
+                subprocess.Popen(f'explorer "{path}"')
             elif platform.system() == 'Linux':
                 subprocess.run(['xdg-open', str(path)], check=True, shell=True)
             elif platform.system() == 'Darwin':

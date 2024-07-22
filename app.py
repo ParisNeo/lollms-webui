@@ -35,9 +35,16 @@ ASCIIColors.success("OK")
 
 expected_scrapemaster_version = "0.1.6"
 ASCIIColors.yellow(f"Checking scrapemaster ({expected_scrapemaster_version}) ...", end="", flush=True)
-if not PackageManager.check_package_installed_with_version("scrapemaster", "0.1.4"):
+if not PackageManager.check_package_installed_with_version("scrapemaster", expected_scrapemaster_version):
     PackageManager.install_or_update("scrapemaster")
 ASCIIColors.success("OK")
+ 
+expected_lollms_client_version = "0.6.2"
+ASCIIColors.yellow(f"Checking lollms_client ({expected_lollms_client_version}) ...", end="", flush=True)
+if not PackageManager.check_package_installed_with_version("lollms_client", expected_lollms_client_version):
+    PackageManager.install_or_update("lollms-client")
+ASCIIColors.success("OK")
+
 
 
 from fastapi import FastAPI
