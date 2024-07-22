@@ -21,7 +21,7 @@ if not PackageManager.check_package_installed_with_version("pipmaster", expected
     PackageManager.install_or_update("pipmaster")
 ASCIIColors.success("OK")
 
-expected_lollmsvectordb_version = "0.7.5"
+expected_lollmsvectordb_version = "0.7.6"
 ASCIIColors.yellow(f"Checking lollmsvectordb ({expected_lollmsvectordb_version}) ...", end="", flush=True)
 if not PackageManager.check_package_installed_with_version("lollmsvectordb", expected_lollmsvectordb_version):
     PackageManager.install_or_update("lollmsvectordb")
@@ -33,7 +33,7 @@ if not PackageManager.check_package_installed_with_version("freedom_search", exp
     PackageManager.install_or_update("freedom-search")
 ASCIIColors.success("OK")
 
-expected_scrapemaster_version = "0.1.6"
+expected_scrapemaster_version = "0.1.4"
 ASCIIColors.yellow(f"Checking scrapemaster ({expected_scrapemaster_version}) ...", end="", flush=True)
 if not PackageManager.check_package_installed_with_version("scrapemaster", expected_scrapemaster_version):
     PackageManager.install_or_update("scrapemaster")

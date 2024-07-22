@@ -8,6 +8,7 @@ rich
 scipy
 tqdm
 setuptools
+wheel
 psutil
 pytest
 GitPython
@@ -31,3 +32,4 @@ pipmaster>=0.1.7
 lollmsvectordb>=0.3.0
 freedom-search
 scrapemaster
+poetry
