@@ -15,7 +15,7 @@ if not PackageManager.check_package_installed_with_version("ascii_colors", ):
 from ascii_colors import ASCIIColors
 ASCIIColors.success("OK")
 
-expected_pipmaster_version = "0.1.8"
+expected_pipmaster_version = "0.2.2"
 ASCIIColors.yellow(f"Checking pipmaster ({expected_pipmaster_version}) ...", end="", flush=True)
 if not PackageManager.check_package_installed_with_version("pipmaster", expected_pipmaster_version):
     PackageManager.install_or_update("pipmaster")
@@ -27,7 +27,7 @@ if not PackageManager.check_package_installed_with_version("lollmsvectordb", exp
     PackageManager.install_or_update("lollmsvectordb")
 ASCIIColors.success("OK")
 
-expected_freedom_search_version = "0.1.6"
+expected_freedom_search_version = "0.1.7"
 ASCIIColors.yellow(f"Checking freedom_search ({expected_freedom_search_version}) ...", end="", flush=True)
 if not PackageManager.check_package_installed_with_version("freedom_search", expected_freedom_search_version):
     PackageManager.install_or_update("freedom-search")
