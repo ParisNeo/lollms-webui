@@ -15,13 +15,13 @@ if not PackageManager.check_package_installed_with_version("ascii_colors", ):
 from ascii_colors import ASCIIColors
 ASCIIColors.success("OK")
 
-expected_pipmaster_version = "0.2.3"
+expected_pipmaster_version = "0.2.4"
 ASCIIColors.yellow(f"Checking pipmaster ({expected_pipmaster_version}) ...", end="", flush=True)
 if not PackageManager.check_package_installed_with_version("pipmaster", expected_pipmaster_version):
     PackageManager.install_or_update("pipmaster")
 ASCIIColors.success("OK")
 
-expected_lollmsvectordb_version = "0.7.6"
+expected_lollmsvectordb_version = "0.7.7"
 ASCIIColors.yellow(f"Checking lollmsvectordb ({expected_lollmsvectordb_version}) ...", end="", flush=True)
 if not PackageManager.check_package_installed_with_version("lollmsvectordb", expected_lollmsvectordb_version):
     PackageManager.install_or_update("lollmsvectordb")
