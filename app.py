@@ -6,6 +6,8 @@ Description: Singleton class for the LoLLMS web UI.
 This file is the entry point to the webui.
 """
 from lollms.utilities import PackageManager
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 
 print("Checking ParisNeo libraries installation")
 expected_ascii_colors_version = "0.4.0"
@@ -140,6 +142,32 @@ if __name__ == "__main__":
             config.allowed_origins += [f"https://{ip}:{config['port']}" if is_https else f"http://{ip}:{config['port']}" for ip in get_ip_addresses()]
     allowed_origins = config.allowed_origins+[f"https://localhost:{config['port']}" if is_https else f"http://localhost:{config['port']}"]
     
+
+
+    # class EndpointSpecificCORSMiddleware(BaseHTTPMiddleware):
+    #     async def dispatch(self, request: Request, call_next):
+    #         if request.url.path == "/v1/completions":
+    #             # For /v1/completions, allow all origins
+    #             response = await call_next(request)
+    #             response.headers["Access-Control-Allow-Origin"] = "*"
+    #             response.headers["Access-Control-Allow-Methods"] = "*"
+    #             response.headers["Access-Control-Allow-Headers"] = "*"
+    #             return response
+    #         else:
+    #             # For other endpoints, use the restricted CORS policy
+    #             origin = request.headers.get("origin")
+    #             if origin in allowed_origins:
+    #                 response = await call_next(request)
+    #                 response.headers["Access-Control-Allow-Origin"] = origin
+    #                 response.headers["Access-Control-Allow-Credentials"] = "true"
+    #                 response.headers["Access-Control-Allow-Methods"] = "*"
+    #                 response.headers["Access-Control-Allow-Headers"] = "*"
+    #                 return response
+    #             else:
+    #                 return await call_next(request)
+
+    # # Add the custom middleware
+    # app.add_middleware(EndpointSpecificCORSMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=allowed_origins,
@@ -147,7 +175,8 @@ if __name__ == "__main__":
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    
+
+
     sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=allowed_origins, ping_timeout=1200, ping_interval=30)  # Enable CORS for selected origins
 
     LOLLMSWebUI.build_instance(config=config, lollms_paths=lollms_paths, args=args, sio=sio)
