@@ -10,17 +10,24 @@ import InteractiveView from '../views/InteractiveView.vue'
 import NodesView from '../views/NodesView.vue'
 import ComfyuiView from '../views/ComfyuiView.vue'
 import AutoSDView from '../views/AutoSDView.vue'
+import AppsZoo from '../views/AppsZoo.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/apps_view/',
+      name: 'AppsZoo',
+      component: AppsZoo
+    },
     {
       path: '/auto_sd_view/',
       name: 'AutoSD',
       component: AutoSDView
     },
     {
-      path: '/autosd_view/',
+      path: '/comfyui_view/',
       name: 'ComfyUI',
       component: ComfyuiView
     },

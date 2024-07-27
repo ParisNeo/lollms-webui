@@ -703,7 +703,7 @@ export default {
                         if (res.data && Object.keys(res.data).length > 0) {
 
                             // open form
-
+                            const bindingEntry = this.$store.state.bindingsZoo.find(item=>item.name == this.state.config.binding_name)
                             this.$store.state.universalForm.showForm(res.data, "Binding settings - " + bindingEntry.binding.name, "Save changes", "Cancel").then(res => {
                                 // send new data
                                 try {

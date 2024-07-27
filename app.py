@@ -35,7 +35,7 @@ if not PackageManager.check_package_installed_with_version("freedom_search", exp
     PackageManager.install_or_update("freedom-search")
 ASCIIColors.success("OK")
 
-expected_scrapemaster_version = "0.1.4"
+expected_scrapemaster_version = "0.1.5"
 ASCIIColors.yellow(f"Checking scrapemaster ({expected_scrapemaster_version}) ...", end="", flush=True)
 if not PackageManager.check_package_installed_with_version("scrapemaster", expected_scrapemaster_version):
     PackageManager.install_or_update("scrapemaster")
@@ -214,6 +214,7 @@ if __name__ == "__main__":
     from endpoints.lollms_webui_infos import router as lollms_webui_infos_router
     from endpoints.lollms_message import router as lollms_message_router
     from endpoints.lollms_advanced import router as lollms_advanced_router
+    from endpoints.lollms_apps import router as lollms_apps_router
     from endpoints.chat_bar import router as chat_bar_router
     
     from endpoints.lollms_help import router as help_router
@@ -255,6 +256,8 @@ if __name__ == "__main__":
         app.include_router(lollms_message_router)
         app.include_router(lollms_user_router)
         app.include_router(lollms_advanced_router)
+        app.include_router(lollms_apps_router)
+        
         app.include_router(chat_bar_router)
         app.include_router(help_router)
         app.include_router(lollms_xtts_add_router)

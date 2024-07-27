@@ -71,7 +71,7 @@ def terminate_thread(thread):
         else:
             ASCIIColors.yellow("Canceled successfully")# The current version of the webui
 
-lollms_webui_version="10 (🧠)"
+lollms_webui_version="10 (Brainwaves)"
 
 
 

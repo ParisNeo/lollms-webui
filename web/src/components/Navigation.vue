@@ -22,6 +22,16 @@
               Playground
             </RouterLink>
             <RouterLink 
+              :to="{ name: 'AppsZoo' }" 
+              class="inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold"
+              :class="{ 
+                'text-green-600 hover:text-green-500 dark:text-green-100 font-bold bg-bg-secondary shadow-no-bottom': isRouteActive('AppsZoo'),
+                'bounce-in': isRouteActive('AppsZoo'),
+              }"
+              >
+              Apps Zoo
+            </RouterLink>
+            <RouterLink 
               v-if="$store.state.config.enable_sd_service | $store.state.config.active_tti_service== 'autosd'" 
               :to="{ name: 'AutoSD' }" 
               class="inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold"
