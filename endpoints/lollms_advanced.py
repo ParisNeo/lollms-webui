@@ -363,7 +363,7 @@ async def open_code_in_vs_code(vs_code_data: VSCodeData):
             f.write(code)
         
         # Use subprocess.Popen to safely open the file
-        subprocess.Popen(["code", str(tmp_file)], shell=True)
+        os.system(f'code -n "{tmp_file}"')
         
         return {"status": True, "execution_time": 0}
     except Exception as ex:

@@ -23,12 +23,12 @@
           <button v-if="app.installed" @click.stop="uninstallApp(app.name)" class="bg-red-500 text-white px-2 py-1 rounded">Uninstall</button>
           <button v-else-if="app.existsInFolder" @click.stop="deleteApp(app.name)" class="bg-yellow-500 text-white px-2 py-1 rounded">Delete</button>
           <button v-else @click.stop="installApp(app.name)" class="bg-blue-500 text-white px-2 py-1 rounded">Install</button>
+          <button v-if="app.installed" @click.stop="editApp(app)" class="bg-purple-500 text-white px-2 py-1 rounded">Edit</button>
         </div>
       </div>
     </div>
     <div v-if="selectedApp" class="app-render fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
       <button @click="backToZoo" class="absolute top-4 right-4 bg-gray-300 px-2 py-1 rounded">Back</button>
-      <h2 class="text-2xl font-bold mb-4">Rendering: {{ selectedApp.name }}</h2>
       <iframe v-if="appCode" :srcdoc="appCode" class="app-frame w-full h-full border-none"></iframe>
       <p v-else class="text-center text-red-500">Please install this app to view its code.</p>
     </div>
@@ -146,6 +146,21 @@ export default {
       } finally {
         this.loading = false;
         this.fetchApps(); // Refresh the app list
+      }
+    },
+    async editApp(app) {
+      this.loading = true;
+      console.log("editing app", app.name)
+      try {
+        const response = await axios.post('/open_app_in_vscode', {
+          client_id: this.$store.state.client_id,
+          app_name: app.name,
+        });
+        this.showMessage(response.data.message, true);
+      } catch (error) {
+        this.showMessage('Failed to open folder in VSCode.', false);
+      } finally {
+        this.loading = false;
       }
     },
     showMessage(msg, success) {

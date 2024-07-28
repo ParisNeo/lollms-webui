@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, Field
 from fastapi.responses import FileResponse
 from lollms_webui import LOLLMSWebUI
 from pydantic import BaseModel
@@ -8,7 +9,7 @@ import uuid
 import os
 import requests
 import yaml
-from lollms.security import check_access
+from lollms.security import check_access, sanitize_path
 import os
 import subprocess
 import yaml
@@ -71,6 +72,27 @@ async def list_apps():
     
     return apps
 
+class OpenFolderRequest(BaseModel):
+    client_id: str = Field(...)
+    app_name: str = Field(...)
+
+@router.post("/open_app_in_vscode")
+async def open_folder_in_vscode(request: OpenFolderRequest):
+    check_access(lollmsElfServer, request.client_id)
+    sanitize_path(request.app_name)
+    # Construct the folder path
+    folder_path = lollmsElfServer.lollms_paths.apps_zoo_path/ request.app_name
+
+    # Check if the folder exists
+    if not folder_path.exists():
+        raise HTTPException(status_code=404, detail="Folder not found")
+
+    # Open the folder in VSCode
+    try:
+        os.system(f'code -n "{folder_path}"')  # This assumes 'code' is in the PATH
+        return {"message": f"Opened {folder_path} in VSCode."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to open folder: {str(e)}")
 
 @router.post("/apps/{app_name}/code")
 async def get_app_code(app_name: str, auth: AuthRequest):
