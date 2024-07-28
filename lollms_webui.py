@@ -1229,7 +1229,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     self.update_message(client_id, "✍ warming up ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_START)
 
                 # prepare query and reception
-                self.discussion_messages, self.current_message, tokens, context_details, internet_search_infos = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type, force_using_internet=force_using_internet)
+                self.discussion_messages, self.current_message, tokens, context_details, internet_search_infos = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type, force_using_internet=force_using_internet, previous_chunk = client.generated_text if is_continue else "")
                 ASCIIColors.info(f"prompt has {self.config.ctx_size-context_details['available_space']} tokens")
                 ASCIIColors.info(f"warmup for generating up to {min(context_details['available_space'],self.config.max_n_predict)} tokens")
                 self.prepare_reception(client_id)

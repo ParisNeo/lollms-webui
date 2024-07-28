@@ -12,7 +12,7 @@
 
     </pre>    
     <div class="flex flex-row bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel p-2 rounded-lg shadow-sm">
-      <span class="text-2xl mr-2">{{ language }}</span>
+      <span class="text-2xl mr-2">{{ language.trim() }}</span>
       <button @click="copyCode"
               :title="isCopied ? 'Copied!' : 'Copy code'"
               :class="isCopied ? 'bg-green-500' : ''" 
@@ -25,22 +25,22 @@
         :class="isExecuting?'bg-green-500':''">
         <i data-feather="play-circle"></i>
       </button>
-      <button v-if="['airplay', 'mermaid', 'graphviz', 'dot', 'javascript', 'html', 'html5', 'svg', 'css'].includes(language)" ref="btn_code_exec_in_new_tab" @click="executeCode_in_new_tab"  title="execute"
+      <button v-if="['airplay', 'mermaid', 'graphviz', 'dot', 'javascript', 'html', 'html5', 'svg', 'css'].includes(language.trim())" ref="btn_code_exec_in_new_tab" @click="executeCode_in_new_tab"  title="execute"
         class="px-2 py-1 mr-2 mb-2 text-left text-sm font-medium rounded-lg hover:bg-primary dark:hover:bg-primary text-white transition-colors duration-200"
         :class="isExecuting?'bg-green-500':''">
         <i data-feather="airplay"></i>
       </button>
-      <button v-if="['python', 'latex', 'html'].includes(language)" @click="openFolder"  title="open code project folder"
+      <button @click="openFolder"  title="open code project folder"
       class="px-2 py-1 mr-2 mb-2 text-left text-sm font-medium rounded-lg hover:bg-primary dark:hover:bg-primary text-white transition-colors duration-200"
       >
         <i data-feather="folder"></i>
       </button>
-      <button v-if="['python', 'latex', 'html'].includes(language)" @click="openFolderVsCode"  title="open code project folder in vscode"
+      <button v-if="['python', 'latex', 'html'].includes(language.trim())" @click="openFolderVsCode"  title="open code project folder in vscode"
       class="px-2 py-1 mr-2 mb-2 text-left text-sm font-medium rounded-lg hover:bg-primary dark:hover:bg-primary text-white transition-colors duration-200"
       >
         <img src="@/assets/vscode_black.svg" width="25" height="25">
       </button>
-      <button v-if="['python', 'latex', 'html'].includes(language)" @click="openVsCode"  title="open code in vscode"
+      <button v-if="['python', 'latex', 'html'].includes(language.trim())" @click="openVsCode"  title="open code in vscode"
       class="px-2 py-1 mr-2 mb-2 text-left text-sm font-medium rounded-lg hover:bg-primary dark:hover:bg-primary text-white transition-colors duration-200"
       >
         <img src="@/assets/vscode.svg" width="25" height="25">
