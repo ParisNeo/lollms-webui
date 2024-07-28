@@ -8,6 +8,12 @@ import uuid
 import os
 import requests
 import yaml
+from lollms.security import check_access
+import os
+import subprocess
+import yaml
+import uuid
+
 
 router = APIRouter()
 lollmsElfServer: LOLLMSWebUI = LOLLMSWebUI.get_instance()
@@ -76,25 +82,28 @@ async def get_app_code(app_name: str, auth: AuthRequest):
 
 @router.post("/install/{app_name}")
 async def install_app(app_name: str, auth: AuthRequest):
+    check_access(lollmsElfServer, auth.client_id)
+    REPO_DIR = lollmsElfServer.lollms_paths.personal_path/"apps_zoo_repo"
+    
     # Create the app directory
-    app_path = lollmsElfServer.lollms_paths.apps_zoo_path / app_name
+    app_path = lollmsElfServer.lollms_paths.apps_zoo_path/app_name  # Adjust the path as needed
     os.makedirs(app_path, exist_ok=True)
 
-    # Define the URLs for the files to download
-    files_to_download = {
-        "icon.png": f"https://github.com/ParisNeo/lollms_apps_zoo/raw/main/{app_name}/icon.png",
-        "description.yaml": f"https://raw.githubusercontent.com/ParisNeo/lollms_apps_zoo/main/{app_name}/description.yaml",
-        "index.html": f"https://raw.githubusercontent.com/ParisNeo/lollms_apps_zoo/main/{app_name}/index.html"
+    # Define the local paths for the files to copy
+    files_to_copy = {
+        "icon.png": REPO_DIR/app_name/"icon.png",
+        "description.yaml": REPO_DIR/app_name/"description.yaml",
+        "index.html": REPO_DIR/app_name/"index.html"
     }
 
-    # Download each file
-    for file_name, url in files_to_download.items():
-        response = requests.get(url)
-        if response.status_code == 200:
-            with open(app_path / file_name, 'wb') as f:
-                f.write(response.content)
+    # Copy each file from the local repo
+    for file_name, local_path in files_to_copy.items():
+        if local_path.exists():
+            with open(local_path, 'rb') as src_file:
+                with open(app_path/file_name, 'wb') as dest_file:
+                    dest_file.write(src_file.read())
         else:
-            raise HTTPException(status_code=404, detail=f"{file_name} not found on GitHub")
+            raise HTTPException(status_code=404, detail=f"{file_name} not found in the local repository")
 
     return {"message": f"App {app_name} installed successfully."}
 
@@ -108,38 +117,63 @@ async def uninstall_app(app_name: str, auth: AuthRequest):
         raise HTTPException(status_code=404, detail="App not found")
     
 
+REPO_URL = "https://github.com/ParisNeo/lollms_apps_zoo.git"
+
+
+def clone_repo():
+    REPO_DIR = Path(lollmsElfServer.lollms_paths.personal_path) / "apps_zoo_repo"
+    
+    # Check if the directory exists and if it is empty
+    if REPO_DIR.exists():
+        if any(REPO_DIR.iterdir()):  # Check if the directory is not empty
+            print(f"Directory {REPO_DIR} is not empty. Aborting clone.")
+            return
+    else:
+        REPO_DIR.mkdir(parents=True, exist_ok=True)  # Create the directory if it doesn't exist
+
+    # Clone the repository
+    subprocess.run(["git", "clone", REPO_URL, str(REPO_DIR)], check=True)
+    print(f"Repository cloned into {REPO_DIR}")
+
+def pull_repo():
+    REPO_DIR = lollmsElfServer.lollms_paths.personal_path/"apps_zoo_repo"
+    subprocess.run(["git", "-C", str(REPO_DIR), "pull"], check=True)
+
+def load_apps_data():
+    apps = []
+    REPO_DIR = lollmsElfServer.lollms_paths.personal_path/"apps_zoo_repo"
+    for item in os.listdir(REPO_DIR):
+        item_path = os.path.join(REPO_DIR, item)
+        if os.path.isdir(item_path):
+            description_path = os.path.join(item_path, "description.yaml")
+            icon_url = f"https://github.com/ParisNeo/lollms_apps_zoo/blob/main/{item}/icon.png?raw=true"
+            
+            if os.path.exists(description_path):
+                with open(description_path, 'r') as file:
+                    description_data = yaml.safe_load(file)
+                    apps.append(AppInfo(
+                        uid=str(uuid.uuid4()),
+                        name=item,
+                        icon=icon_url,
+                        description=description_data.get('description', ''),
+                        author=description_data.get('author', ''),
+                        version=description_data.get('version', ''),
+                        model_name=description_data.get('model_name', ''),
+                        disclaimer=description_data.get('disclaimer', 'No disclaimer provided.')
+                    ))
+    return apps
+
+
+
 @router.get("/github/apps")
 async def fetch_github_apps():
-    github_repo_url = "https://api.github.com/repos/ParisNeo/lollms_apps_zoo/contents"
-    response = requests.get(github_repo_url)
-    
-    if response.status_code == 200:
-        apps = []
-        for item in response.json():
-            if item['type'] == 'dir':
-                app_name = item['name']
-                description_url = f"https://api.github.com/repos/ParisNeo/lollms_apps_zoo/contents/{app_name}/description.yaml"
-                icon_url = f"https://github.com/ParisNeo/lollms_apps_zoo/blob/main/{app_name}/icon.png?raw=true"
-                
-                # Fetch description.yaml
-                description_response = requests.get(description_url)
-                description_data = {}
-                if description_response.status_code == 200:
-                    description_data = yaml.safe_load(requests.get(description_url).text)
-                
-                apps.append(AppInfo(
-                    uid=str(uuid.uuid4()),
-                    name=app_name,
-                    icon=icon_url,
-                    description=description_data.get('description', ''),
-                    author=description_data.get('author', ''),
-                    version=description_data.get('version', ''),
-                    model_name=description_data.get('model_name', ''),
-                    disclaimer=description_data.get('disclaimer', 'No disclaimer provided.')
-                ))
+    try:
+        clone_repo()
+        pull_repo()
+        apps = load_apps_data()
         return {"apps": apps}
-    else:
-        raise HTTPException(status_code=response.status_code, detail="Failed to fetch apps from GitHub")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/apps/{app_name}/icon")
 async def get_app_icon(app_name: str):
