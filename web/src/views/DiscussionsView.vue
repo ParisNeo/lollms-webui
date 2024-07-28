@@ -35,7 +35,7 @@
                     <div v-show="!leftPanelCollapsed" ><i data-feather='chevron-left'></i></div>
     </button>
     <!-- Robot SVG -->
-    <button v-if="isReady" @click.stop="triggerRobotAction()" class="absolute top-2 right-2 p-3 bg-white bg-opacity-10 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 hover:bg-opacity-20 animate-pulse shadow-lg hover:shadow-xl group">
+    <button v-if="isReady" @click.stop="triggerRobotAction()" class="absolute z-50 bottom-20 right-2 p-3 bg-white bg-opacity-10 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 hover:bg-opacity-20 animate-pulse shadow-lg hover:shadow-xl group">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-blue-500 transition-colors duration-300 group-hover:text-yellow-400">
         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
         <circle cx="12" cy="5" r="2"></circle>
