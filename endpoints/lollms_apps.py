@@ -24,9 +24,10 @@ class AuthRequest(BaseModel):
     client_id: str
 
 class AppInfo:
-    def __init__(self, uid: str, name: str, icon: str, category:str, description: str, author:str, version:str, model_name:str, disclaimer:str):
+    def __init__(self, uid: str, name: str, folder_name: str, icon: str, category:str, description: str, author:str, version:str, model_name:str, disclaimer:str, installed: bool):
         self.uid = uid
         self.name = name
+        self.folder_name = folder_name
         self.icon = icon
         self.category = category
         self.description = description
@@ -34,6 +35,7 @@ class AppInfo:
         self.version = version
         self.model_name = model_name
         self.disclaimer = disclaimer
+        self.installed = installed
 
 @router.get("/apps")
 async def list_apps():
@@ -60,19 +62,24 @@ async def list_apps():
                     version = data.get('version', '')
                     model_name = data.get('model_name', '')
                     disclaimer = data.get('disclaimer', 'No disclaimer provided.')
+                    installed = True
+            else:
+                installed = False
                     
             if icon_path.exists():
                 uid = str(uuid.uuid4())
                 apps.append(AppInfo(
                     uid=uid,
                     name=application_name,
+                    folder_name = app_name.name,
                     icon=f"/apps/{app_name.name}/icon",
                     category=category,
                     description=description,
                     author=author,
                     version=version,
                     model_name=model_name,
-                    disclaimer=disclaimer
+                    disclaimer=disclaimer,
+                    installed=installed
                 ))
     
     return apps
@@ -205,14 +212,16 @@ def load_apps_data():
                     description_data = yaml.safe_load(file)
                     apps.append(AppInfo(
                         uid=str(uuid.uuid4()),
-                        name=item,
+                        name=description_data.get("name",item),
+                        folder_name=item,
                         icon=icon_url,
                         category=description_data.get('category', 'generic'),
                         description=description_data.get('description', ''),
                         author=description_data.get('author', ''),
                         version=description_data.get('version', ''),
                         model_name=description_data.get('model_name', ''),
-                        disclaimer=description_data.get('disclaimer', 'No disclaimer provided.')
+                        disclaimer=description_data.get('disclaimer', 'No disclaimer provided.'),
+                        installed=True
                     ))
     return apps
 

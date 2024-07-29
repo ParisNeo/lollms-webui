@@ -192,12 +192,12 @@ export default {
     async handleAppClick(app) {
       if (app.installed) {
         this.selectedApp = app;
-        const response = await axios.post(`/apps/${app.name}/code`, {
+        const response = await axios.post(`/apps/${app.folder_name}/code`, {
           client_id: this.$store.state.client_id,
         });
         this.appCode = response.data;
       } else {
-        this.showMessage(`Please install ${app.name} to view its code.`, false);
+        this.showMessage(`Please install ${app.folder_name} to view its code.`, false);
       }
     },
     backToZoo() {
@@ -252,7 +252,7 @@ export default {
       try {
         const response = await axios.post('/open_app_in_vscode', {
           client_id: this.$store.state.client_id,
-          app_name: app.name,
+          app_name: app.folder_name,
         });
         this.showMessage(response.data.message, true);
       } catch (error) {
