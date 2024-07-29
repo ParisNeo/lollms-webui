@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field
 from fastapi.responses import FileResponse
 from lollms_webui import LOLLMSWebUI
@@ -23,10 +24,11 @@ class AuthRequest(BaseModel):
     client_id: str
 
 class AppInfo:
-    def __init__(self, uid: str, name: str, icon: str, description: str, author:str, version:str, model_name:str, disclaimer:str):
+    def __init__(self, uid: str, name: str, icon: str, category:str, description: str, author:str, version:str, model_name:str, disclaimer:str):
         self.uid = uid
         self.name = name
         self.icon = icon
+        self.category = category
         self.description = description
         self.author = author
         self.version = version
@@ -51,6 +53,8 @@ async def list_apps():
             if description_path.exists():
                 with open(description_path, 'r') as file:
                     data = yaml.safe_load(file)
+                    application_name = data.get('name', app_name.name)
+                    category = data.get('category', 'generic')
                     description = data.get('description', '')
                     author = data.get('author', '')
                     version = data.get('version', '')
@@ -61,8 +65,9 @@ async def list_apps():
                 uid = str(uuid.uuid4())
                 apps.append(AppInfo(
                     uid=uid,
-                    name=app_name.name,
+                    name=application_name,
                     icon=f"/apps/{app_name.name}/icon",
+                    category=category,
                     description=description,
                     author=author,
                     version=version,
@@ -177,6 +182,7 @@ def load_apps_data():
                         uid=str(uuid.uuid4()),
                         name=item,
                         icon=icon_url,
+                        category=description_data.get('category', 'generic'),
                         description=description_data.get('description', ''),
                         author=description_data.get('author', ''),
                         version=description_data.get('version', ''),
@@ -185,7 +191,30 @@ def load_apps_data():
                     ))
     return apps
 
+@router.get("/lollms_js", response_class=PlainTextResponse)
+async def lollms_js():
+    # Define the path to the JSON file using pathlib
+    file_path = Path(__file__).parent / "lollms_client_js.js"
+    
+    # Read the JSON file
+    with file_path.open('r') as file:
+        data = file.read()
+    return data
 
+@router.get("/template")
+async def lollms_js():
+    return {
+        "start_header_id_template": lollmsElfServer.config.start_header_id_template,
+        "end_header_id_template": lollmsElfServer.config.end_header_id_template,
+        "separator_template": lollmsElfServer.config.separator_template,
+        "start_user_header_id_template": lollmsElfServer.config.start_user_header_id_template,
+        "end_user_header_id_template": lollmsElfServer.config.end_user_header_id_template,
+        "end_user_message_id_template": lollmsElfServer.config.end_user_message_id_template,
+        "start_ai_header_id_template": lollmsElfServer.config.start_ai_header_id_template,
+        "end_ai_header_id_template": lollmsElfServer.config.end_ai_header_id_template,
+        "end_ai_message_id_template": lollmsElfServer.config.end_ai_message_id_template,
+        "system_message_template": lollmsElfServer.config.system_message_template
+    }
 
 @router.get("/github/apps")
 async def fetch_github_apps():
