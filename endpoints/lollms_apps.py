@@ -15,7 +15,7 @@ import os
 import subprocess
 import yaml
 import uuid
-
+import platform
 
 router = APIRouter()
 lollmsElfServer: LOLLMSWebUI = LOLLMSWebUI.get_instance()
@@ -76,6 +76,31 @@ async def list_apps():
                 ))
     
     return apps
+
+
+class ShowAppsFolderRequest(BaseModel):
+    client_id: str = Field(...)
+
+@router.post("/show_apps_folder")
+async def open_folder_in_vscode(request: ShowAppsFolderRequest):
+    check_access(lollmsElfServer, request.client_id)
+    # Get the current operating system
+    current_os = platform.system()
+
+    try:
+        if current_os == "Windows":
+            # For Windows
+            subprocess.run(['explorer', lollmsElfServer.lollms_paths.apps_zoo_path])
+        elif current_os == "Darwin":
+            # For macOS
+            subprocess.run(['open', lollmsElfServer.lollms_paths.apps_zoo_path])
+        elif current_os == "Linux":
+            # For Linux
+            subprocess.run(['xdg-open', lollmsElfServer.lollms_paths.apps_zoo_path])
+        else:
+            print("Unsupported operating system.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 class OpenFolderRequest(BaseModel):
     client_id: str = Field(...)

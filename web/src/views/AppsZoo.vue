@@ -1,14 +1,48 @@
 <template>
   <div class="app-zoo w-full p-4 overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
-    <div class="mb-4 flex justify-between items-center">
-      <button @click="fetchGithubApps" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
-        Refresh apps from GitHub
+    <div class="mb-6 flex flex-wrap justify-between items-center gap-4">
+      <button 
+        @click="fetchGithubApps" 
+        class="bg-green-500 hover:bg-green-600 focus:ring-2 focus:ring-green-300 text-white font-semibold px-6 py-2 rounded-lg transition duration-300 ease-in-out shadow-md"
+        aria-label="Refresh apps from GitHub"
+      >
+        <span class="flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          Refresh apps
+        </span>
       </button>
-      <input v-model="searchQuery" placeholder="Search apps..." class="border rounded px-2 py-1">
-    </div>
-    
-    <div v-if="loading" class="loading-animation text-center text-xl text-gray-600">Loading...</div>
-    
+      
+      <button 
+        @click="openAppsFolder" 
+        class="bg-blue-500 hover:bg-blue-600 focus:ring-2 focus:ring-blue-300 text-white font-semibold px-6 py-2 rounded-lg transition duration-300 ease-in-out shadow-md"
+        aria-label="Open apps folder"
+      >
+        <span class="flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"></path>
+          </svg>
+          Open applications folder
+        </span>
+      </button>
+      
+      <div class="relative flex-grow max-w-md">
+        <input 
+          v-model="searchQuery" 
+          placeholder="Search apps..." 
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-300 ease-in-out"
+          aria-label="Search apps"
+        >
+        <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </div>
+    </div>    
+    <div v-if="loading" class="flex justify-center items-center space-x-2 my-8" aria-live="polite">
+      <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+      <span class="text-xl text-gray-700 font-semibold">Loading...</span>
+    </div>    
     <div v-for="category in categories" :key="category" class="mb-8">
       <h2 class="text-2xl font-bold mb-4">{{ category }}</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -33,11 +67,10 @@
           
           <p class="text-sm text-gray-600 mb-2">AI Model: {{ app.model_name }}</p>
           
-          <div class="mb-4">
+          <div v-if="app.disclaimer && app.disclaimer.trim() !== ''" class="mb-4">
             <h4 class="font-semibold mb-1">Disclaimer:</h4>
             <p class="text-xs text-gray-500 italic h-16 overflow-y-auto">{{ app.disclaimer }}</p>
-          </div>
-          
+          </div>          
           <div class="flex flex-wrap gap-2">
             <button v-if="app.installed" @click="uninstallApp(app.name)" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm">
               Uninstall
@@ -127,6 +160,19 @@ export default {
         this.showMessage('Refresh successful!', true);
       } catch (error) {
         this.showMessage('Failed to refresh apps.', false);
+      } finally {
+        this.loading = false;
+      }
+    },    
+    async openAppsFolder() {
+      this.loading = true;
+      try {
+        console.log("opening apps folder")
+        const response = await axios.post(`/show_apps_folder`, {
+          client_id: this.$store.state.client_id
+        });
+      } catch (error) {
+        this.showMessage('Failed to refresh GitHub apps.', false);
       } finally {
         this.loading = false;
       }
