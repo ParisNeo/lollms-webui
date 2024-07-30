@@ -696,7 +696,7 @@ export default {
         if(ss!=se){
           text = text.slice(ss,se)
         }
-        axios.post("./text2Wave",{text:text}).then(response => {
+        axios.post("./text2Wave",{client_id:this.$store.state.client_id, text:text}).then(response => {
           console.log(response.data.url)
           let url = response.data.url
           this.audio_url = url
