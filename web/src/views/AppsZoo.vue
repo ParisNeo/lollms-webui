@@ -72,13 +72,13 @@
             <p class="text-xs text-gray-500 italic h-16 overflow-y-auto">{{ app.disclaimer }}</p>
           </div>          
           <div class="flex flex-wrap gap-2">
-            <button v-if="app.installed" @click="uninstallApp(app.name)" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm">
+            <button v-if="app.installed" @click="uninstallApp(app.folder_name)" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm">
               Uninstall
             </button>
             <button v-else-if="app.existsInFolder" @click="deleteApp(app.name)" class="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-sm">
               Delete
             </button>
-            <button v-else @click="installApp(app.name)" class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-sm">
+            <button v-else @click="installApp(app.folder_name)" class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-sm">
               Install
             </button>
             <button v-if="app.installed" @click="editApp(app)" class="bg-purple-500 hover:bg-purple-600 text-white px-2 py-1 rounded text-sm">
