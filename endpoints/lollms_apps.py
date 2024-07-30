@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field
 from fastapi.responses import FileResponse
@@ -72,7 +72,7 @@ async def list_apps():
                     uid=uid,
                     name=application_name,
                     folder_name = app_name.name,
-                    icon=f"/apps/{app_name.name}/icon",
+                    icon=f"/apps/{app_name.name}/icon.png",
                     category=category,
                     description=description,
                     author=author,
@@ -133,9 +133,18 @@ async def open_folder_in_vscode(request: OpenFolderRequest):
 
 @router.post("/apps/{app_name}/code")
 async def get_app_code(app_name: str, auth: AuthRequest):
+    check_access(lollmsElfServer, auth.client_id)
     app_path = lollmsElfServer.lollms_paths.apps_zoo_path / app_name / "index.html"
     if not app_path.exists():
         raise HTTPException(status_code=404, detail="App not found")
+    return FileResponse(app_path)
+
+@router.get("/apps/{app_name}/{file}")
+async def get_app_file(app_name: str, file: str):
+    file=sanitize_path(file)
+    app_path = lollmsElfServer.lollms_paths.apps_zoo_path / app_name / file
+    if not app_path.exists():
+        raise HTTPException(status_code=404, detail="App file not found")
     return FileResponse(app_path)
 
 

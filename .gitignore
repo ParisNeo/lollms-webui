@@ -217,3 +217,4 @@ xtts_models
 models.txt
 logs
 *.pkl
+lollms_apps_zoo

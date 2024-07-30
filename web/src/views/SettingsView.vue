@@ -1607,6 +1607,7 @@
                                     <option value="browser">Use Browser TTS (doesn't work in realtime mode)</option>
                                     <option value="xtts">XTTS</option>
                                     <option value="openai_tts">Open AI TTS</option>
+                                    <option value="eleven_labs_tts">ElevenLabs TTS</option>
                                 </select>
                             </td>
                             </tr>
@@ -2562,6 +2563,94 @@
                             </table>
                         </Card>                        
                     </Card>
+                    <Card title="Eleven Labs TTS service" :is_subcard="true" class="pb-2 m-2">
+                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="elevenlabs_tts_key" class="text-sm font-bold" style="margin-right: 1rem;">Eleven Labs key:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <input
+                                            type="text"
+                                            id="elevenlabs_tts_key"
+                                            required
+                                            v-model="configFile.elevenlabs_tts_key"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        >
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="elevenlabs_tts_model_id" class="text-sm font-bold" style="margin-right: 1rem;">Eleven Labs TTS model ID:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <input
+                                            type="text"
+                                            id="elevenlabs_tts_model_id"
+                                            required
+                                            v-model="configFile.elevenlabs_tts_model_id"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        >
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="elevenlabs_tts_voice_stability" class="text-sm font-bold" style="margin-right: 1rem;">Voice Stability:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <input
+                                            type="number"
+                                            id="elevenlabs_tts_voice_stability"
+                                            required
+                                            v-model="configFile.elevenlabs_tts_voice_stability"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                            step="0.1"
+                                            min="0" max="1"
+                                        >
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="elevenlabs_tts_voice_boost" class="text-sm font-bold" style="margin-right: 1rem;">Voice Boost:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <input
+                                            type="number"
+                                            id="elevenlabs_tts_voice_boost"
+                                            required
+                                            v-model="configFile.elevenlabs_tts_voice_boost"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                            step="0.1"
+                                            min="0" max="1"
+                                        >
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="elevenlabs_tts_voice_id" class="text-sm font-bold" style="margin-right: 1rem;">Voice ID:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                        <select v-model="configFile.elevenlabs_tts_voice_id" @change="settingsChanged=true">
+                                            <option v-for="voice in voices" :key="voice.voice_id" :value="voice.voice_id">{{ voice.name }}</option>
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </Card>                    
                     <Card title="TTI services" :is_shrunk="true" :is_subcard="true" class="pb-2  m-2">
                         <Card title="Stable diffusion service" :is_subcard="true" class="pb-2  m-2">
                             <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -4156,6 +4245,14 @@ export default {
         //await socket.on('install_progress', this.progressListener);
     }, 
         methods: {
+            fetchElevenLabsVoices() {
+                fetch('https://api.elevenlabs.io/v1/voices')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.voices = data.voices;
+                    })
+                    .catch(error => console.error('Error fetching voices:', error));
+            },         
             async refreshHardwareUsage(store) {
                 await store.dispatch('refreshDiskUsage');
                 await store.dispatch('refreshRamUsage');
@@ -6137,7 +6234,7 @@ export default {
         catch{
             console.log("Couldin't list output devices")
         }
-
+        this.fetchElevenLabsVoices();
     },
     activated() {
         //this.load_everything()
