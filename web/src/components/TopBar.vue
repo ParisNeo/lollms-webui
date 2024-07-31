@@ -2,16 +2,16 @@
     <header class="top-0 shadow-lg">
       <nav class="container flex flex-col lg:flex-row items-center gap-2 pb-0">
         <!-- LOGO -->
-        <RouterLink :to="{ name: 'discussions' }" >
-            <div class="logo-container">
-              <img class="w-12 h-12 rounded-full object-cover logo-image" 
-                  :src="$store.state.config == null ? storeLogo : $store.state.config.app_custom_logo != '' ? '/user_infos/' + $store.state.config.app_custom_logo : storeLogo" 
-                  alt="Logo" title="LoLLMS WebUI">
-            </div>
-            <div class="flex flex-col logo-text">
-            <p class="text-2xl font-bold drop-shadow-md align-middle">LoLLMS</p>
-            <p class="text-gray-400">One tool to rule them all</p>
-            </div>
+        <RouterLink :to="{ name: 'discussions' }" class="flex items-center space-x-2"> <!-- Added space-x-2 -->
+          <div class="logo-container"> <!-- Removed mr-1 -->
+            <img class="w-12 h-12 rounded-full object-cover logo-image" 
+                :src="$store.state.config == null ? storeLogo : $store.state.config.app_custom_logo != '' ? '/user_infos/' + $store.state.config.app_custom_logo : storeLogo" 
+                alt="Logo" title="LoLLMS WebUI">
+          </div>
+          <div class="flex flex-col justify-center logo-text">
+            <p class="text-2xl font-bold drop-shadow-md leading-none">LoLLMS</p>
+            <p class="text-gray-400 text-sm">One tool to rule them all</p>
+          </div>
         </RouterLink>
   
         <!-- GITHUB AND THEME BUTTONS -->
@@ -476,75 +476,75 @@ export default {
 }
 
 </script>
-<style>
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-
-.dot-green {
-  background-color: green;
-}
-
-.dot-red {
-  background-color: red;
-}
-
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
+  <style>
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
   }
-  50% {
-    opacity: .7;
-  }
-}
 
-.logo-container {
-  position: relative;
-  width: 48px;
-  height: 48px;
-}
+  .dot-green {
+    background-color: green;
+  }
 
-.logo-image {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-}
+  .dot-red {
+    background-color: red;
+  }
 
-@keyframes roll-and-bounce {
-  0%, 100% {
-    transform: translateX(0) rotate(0deg);
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
-  45% {
-    transform: translateX(100px) rotate(360deg);
-  }
-  50% {
-    transform: translateX(90px) rotate(390deg);
-  }
-  55% {
-    transform: translateX(100px) rotate(360deg);
-  }
-  95% {
-    transform: translateX(0) rotate(0deg);
-  }
-}
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: .7;
+    }
   }
-  100% {
-    transform: rotate(360deg);
+  .logo-container {
+    position: relative;
+    width: 48px;
+    height: 48px;
   }
-}
 
-.logo-text {
-  position: relative;
-  left: 100px; /* Adjust this value to match the maximum translation of the logo */
-}
-</style>
+  .logo-image {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  @keyframes roll-and-bounce {
+    0%, 100% {
+      transform: translateX(0) rotate(0deg);
+    }
+    45% {
+      transform: translateX(100px) rotate(360deg);
+    }
+    50% {
+      transform: translateX(90px) rotate(390deg);
+    }
+    55% {
+      transform: translateX(100px) rotate(360deg);
+    }
+    95% {
+      transform: translateX(0) rotate(0deg);
+    }
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .logo-text {
+    position: relative;
+    left: 100px; /* Adjust this value to match the maximum translation of the logo */
+  }
+  </style>
