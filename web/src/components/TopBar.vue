@@ -2,11 +2,11 @@
     <header class="top-0 shadow-lg">
       <nav class="container flex flex-col lg:flex-row items-center gap-2 pb-0">
         <!-- LOGO -->
-        <RouterLink :to="{ name: 'discussions' }" class="flex items-center gap-3 flex-1">
+        <RouterLink :to="{ name: 'discussions' }" >
             <div class="logo-container">
-            <img class="w-12 h-12 rounded-full object-cover logo-image" 
-                :src="$store.state.config == null ? storeLogo : $store.state.config.app_custom_logo != '' ? '/user_infos/' + $store.state.config.app_custom_logo : storeLogo" 
-                alt="Logo" title="LoLLMS WebUI">
+              <img class="w-12 h-12 rounded-full object-cover logo-image" 
+                  :src="$store.state.config == null ? storeLogo : $store.state.config.app_custom_logo != '' ? '/user_infos/' + $store.state.config.app_custom_logo : storeLogo" 
+                  alt="Logo" title="LoLLMS WebUI">
             </div>
             <div class="flex flex-col logo-text">
             <p class="text-2xl font-bold drop-shadow-md align-middle">LoLLMS</p>
@@ -508,14 +508,12 @@ export default {
   position: relative;
   width: 48px;
   height: 48px;
-  animation: roll-and-bounce 4s linear infinite;
 }
 
 .logo-image {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  animation: spin 4s linear infinite;
 }
 
 @keyframes roll-and-bounce {
