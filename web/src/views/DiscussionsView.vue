@@ -1,33 +1,44 @@
 <template>
     <transition name="fade-and-fly">
-    <div v-if="!isReady" class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center">
-        <!-- SPINNER -->
-     
-        <div class="flex flex-col text-center">
-            <div class="flex flex-col text-center items-center">
-                
-                <div class="flex items-center gap-3 text-5xl drop-shadow-md align-middle pt-24 ">
-                
-                    <img class="w-24 animate-bounce" title="LoLLMS WebUI" src="@/assets/logo.png" alt="Logo">
-                        <div class="flex flex-col items-start">
-                        <p class="text-2xl font-bold text-5xl drop-shadow-md align-middle">LoLLMS {{ version_info }} </p>
-                        <p class="text-gray-400 text-base">One tool to rule them all</p>
-                        <p class="text-gray-400 text-base">by ParisNeo</p>
+        <div v-if="!isReady" class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900">
+            <div class="flex flex-col items-center text-center max-w-4xl w-full px-4">
+            <div class="mb-8 w-full">
+                <h1 class="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 mb-2">
+                LoLLMS {{ version_info }}
+                </h1>
+                <p class="text-2xl text-gray-600 dark:text-gray-300 italic">
+                One tool to rule them all
+                </p>
+                <p class="text-xl text-gray-500 dark:text-gray-400 mb-6">
+                by ParisNeo
+                </p>
 
-                        </div>
+                <div class="w-full h-24 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg">
+                <img 
+                    class="w-24 h-24 rounded-full absolute top-0 transition-all duration-300 ease-linear"
+                    :style="{ left: `calc(${loading_progress}% - 3rem)` }"
+                    title="LoLLMS WebUI" 
+                    src="@/assets/logo.png" 
+                    alt="Logo"
+                >
                 </div>
-                <hr class=" mt-1 w-96 h-1 mx-auto my-2 md:my-2 dark:bg-bg-dark-tone-panel bg-bg-light-tone-panel border-0 rounded ">
-                <p class="text-2xl mb-10 font-bold drop-shadow-md ">Welcome</p>
-                <div role="status" class="text-center w-full display: flex; flex-row align-items: center;">
-                        <ProgressBar ref="loading_progress" :progress="loading_progress"></ProgressBar>
-                        <p class="text-2xl animate-pulse mt-2"> {{ loading_infos }} ...</p>
-                </div> 
-
             </div>
-
-        </div>  
-    </div>
-
+            
+            <div class="w-full max-w-2xl">
+                <h2 class="text-3xl font-semibold text-gray-800 dark:text-gray-200 mb-6">
+                Welcome
+                </h2>
+                <div role="status" class="w-full">
+                <p class="text-xl text-gray-700 dark:text-gray-300">
+                    {{ loading_infos }}...
+                </p>
+                <p class="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">
+                    {{ Math.round(loading_progress) }}%
+                </p>
+                </div>
+            </div>
+            </div>
+        </div>
   
     </transition>
     <button v-if="isReady" @click="togglePanel" class="absolute top-2 left-2 p-3 bg-white bg-opacity-0 cursor-pointer transition-all duration-300 hover:scale-110 hover:bg-opacity-20 hover:shadow-xl group">
@@ -454,6 +465,27 @@ animation: custom-pulse 2s infinite;
    animations can be calculated correctly. */
 .list-leave-active {
     position: absolute;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes roll {
+  0% {
+    transform: translateX(-50%) rotate(0deg);
+  }
+  100% {
+    transform: translateX(50%) rotate(360deg);
+  }
+}
+
+.animate-roll {
+  animation: roll 4s linear infinite;
 }
 </style>
 <script>
