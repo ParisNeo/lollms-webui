@@ -16,7 +16,7 @@ import subprocess
 import yaml
 import uuid
 import platform
-
+from ascii_colors import ASCIIColors, trace_exception
 router = APIRouter()
 lollmsElfServer: LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
@@ -40,9 +40,9 @@ class AppInfo:
 @router.get("/apps")
 async def list_apps():
     apps = []
-    binding_models_path = lollmsElfServer.lollms_paths.apps_zoo_path
+    apps_zoo_path = lollmsElfServer.lollms_paths.apps_zoo_path
     
-    for app_name in binding_models_path.iterdir():
+    for app_name in apps_zoo_path.iterdir():
         if app_name.is_dir():
             icon_path = app_name / "icon.png"
             description_path = app_name / "description.yaml"
@@ -264,10 +264,11 @@ async def fetch_github_apps():
     try:
         clone_repo()
         pull_repo()
-        apps = load_apps_data()
-        return {"apps": apps}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except:
+        ASCIIColors.error("Couldn't interact with ")
+        lollmsElfServer.error("Couldn't interact with github.\nPlease verify your internet connection")
+    apps = load_apps_data()
+    return {"apps": apps}
 
 @router.get("/apps/{app_name}/icon")
 async def get_app_icon(app_name: str):
