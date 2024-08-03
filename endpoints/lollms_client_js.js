@@ -378,5 +378,211 @@ async summarizeText(textChunk, summaryLength = "short", host_address = null, mod
   );
 
   return summary;
-}  
+}
+
+yesNo(question, context = "", maxAnswerLength = 50, conditioning = "") {
+  /**
+   * Analyzes the user prompt and answers whether it is asking to generate an image.
+   *
+   * @param {string} question - The user's message.
+   * @param {string} context - The context for the question.
+   * @param {number} maxAnswerLength - The maximum length of the generated answer.
+   * @param {string} conditioning - An optional system message to put at the beginning of the prompt.
+   * @returns {boolean} True if the user prompt is asking to generate an image, False otherwise.
+   */
+  return this.multichoiceQuestion(question, ["no", "yes"], context, maxAnswerLength, conditioning) > 0;
+}
+
+multichoiceQuestion(question, possibleAnswers, context = "", maxAnswerLength = 50, conditioning = "") {
+  /**
+   * Interprets a multi-choice question from a user's response. This function expects only one choice as true. 
+   * All other choices are considered false. If none are correct, returns -1.
+   *
+   * @param {string} question - The multi-choice question posed by the user.
+   * @param {Array} possibleAnswers - A list containing all valid options for the chosen value.
+   * @param {string} context - The context for the question.
+   * @param {number} maxAnswerLength - Maximum string length allowed while interpreting the users' responses.
+   * @param {string} conditioning - An optional system message to put at the beginning of the prompt.
+   * @returns {number} Index of the selected option within the possibleAnswers list. Or -1 if there was no match found among any of them.
+   */
+  const startHeaderIdTemplate = this.config.start_header_id_template;
+  const endHeaderIdTemplate = this.config.end_header_id_template;
+  const systemMessageTemplate = this.config.system_message_template;
+
+  const choices = possibleAnswers.map((answer, index) => `${index}. ${answer}`).join("\n");
+  const elements = conditioning ? [conditioning] : [];
+  elements.push(
+      `${startHeaderIdTemplate}${systemMessageTemplate}${endHeaderIdTemplate}`,
+      "Answer this multi choices question.",
+      "Answer with an id from the possible answers.",
+      "Do not answer with an id outside this possible answers."
+  );
+
+  if (context) {
+      elements.push(
+          `${startHeaderIdTemplate}context${endHeaderIdTemplate}`,
+          context
+      );
+  }
+
+  elements.push(
+      `${startHeaderIdTemplate}question${endHeaderIdTemplate}${question}`,
+      `${startHeaderIdTemplate}possible answers${endHeaderIdTemplate}`,
+      choices,
+      `${startHeaderIdTemplate}answer${endHeaderIdTemplate}`
+  );
+
+  const prompt = this.buildPrompt(elements);
+  const gen = this.lollms.generate(prompt, {
+      n_predict: maxAnswerLength,
+      temperature: 0.1,
+      top_k: 50,
+      top_p: 0.9,
+      repeat_penalty: 1.0,
+      repeat_last_n: 50,
+      callback: this.sink
+  }).trim().replace("", "").replace("", "");
+
+  const selection = gen.trim().split(" ")[0].replace(",", "").replace(".", "");
+  this.printPrompt("Multi choice selection", prompt + gen);
+
+  try {
+      return parseInt(selection, 10);
+  } catch (error) {
+      console.log("Model failed to answer the question");
+      return -1;
+  }
+}
+
+buildPrompt(promptParts, sacrificeId = -1, contextSize = null, minimumSpareContextSize = null) {
+  /**
+   * Builds the prompt for code generation.
+   *
+   * @param {Array<string>} promptParts - A list of strings representing the parts of the prompt.
+   * @param {number} sacrificeId - The ID of the part to sacrifice.
+   * @param {number} contextSize - The size of the context.
+   * @param {number} minimumSpareContextSize - The minimum spare context size.
+   * @returns {string} - The built prompt.
+   */
+  if (contextSize === null) {
+      contextSize = this.config.ctxSize;
+  }
+  if (minimumSpareContextSize === null) {
+      minimumSpareContextSize = this.config.minNPredict;
+  }
+
+  if (sacrificeId === -1 || promptParts[sacrificeId].length < 50) {
+      return promptParts.filter(s => s !== "").join("\n");
+  } else {
+      const partTokens = [];
+      let nbTokens = 0;
+
+      for (let i = 0; i < promptParts.length; i++) {
+          const part = promptParts[i];
+          const tk = this.lollms.tokenize(part);
+          partTokens.push(tk);
+          if (i !== sacrificeId) {
+              nbTokens += tk.length;
+          }
+      }
+
+      let sacrificeText = "";
+      if (partTokens[sacrificeId].length > 0) {
+          const sacrificeTk = partTokens[sacrificeId];
+          const tokensToKeep = sacrificeTk.slice(-(contextSize - nbTokens - minimumSpareContextSize));
+          sacrificeText = this.lollms.detokenize(tokensToKeep);
+      }
+
+      promptParts[sacrificeId] = sacrificeText;
+      return promptParts.filter(s => s !== "").join("\n");
+  }
+}
+
+extractCodeBlocks(text) {
+  /**
+   * This function extracts code blocks from a given text.
+   *
+   * @param {string} text - The text from which to extract code blocks. Code blocks are identified by triple backticks (```).
+   * @returns {Array<Object>} - A list of objects where each object represents a code block and contains the following keys:
+   *     - 'index' (number): The index of the code block in the text.
+   *     - 'file_name' (string): An empty string. This field is not used in the current implementation.
+   *     - 'content' (string): The content of the code block.
+   *     - 'type' (string): The type of the code block. If the code block starts with a language specifier (like 'python' or 'java'), this field will contain that specifier. Otherwise, it will be set to 'language-specific'.
+   *
+   * Note: The function assumes that the number of triple backticks in the text is even.
+   * If the number of triple backticks is odd, it will consider the rest of the text as the last code block.
+   */
+  
+  let remaining = text;
+  let blocIndex = 0;
+  let firstIndex = 0;
+  let indices = [];
+  
+  while (remaining.length > 0) {
+      try {
+          let index = remaining.indexOf("```");
+          indices.push(index + firstIndex);
+          remaining = remaining.substring(index + 3);
+          firstIndex += index + 3;
+          blocIndex += 1;
+      } catch (ex) {
+          if (blocIndex % 2 === 1) {
+              let index = remaining.length;
+              indices.push(index);
+          }
+          remaining = "";
+      }
+  }
+
+  let codeBlocks = [];
+  let isStart = true;
+
+  for (let index = 0; index < indices.length; index++) {
+      let codeDelimiterPosition = indices[index];
+      let blockInfos = {
+          index: index,
+          file_name: "",
+          content: "",
+          type: ""
+      };
+
+      if (isStart) {
+          let subText = text.substring(codeDelimiterPosition + 3);
+          if (subText.length > 0) {
+              let findSpace = subText.indexOf(" ");
+              let findReturn = subText.indexOf("\n");
+              findSpace = findSpace === -1 ? Number.MAX_SAFE_INTEGER : findSpace;
+              findReturn = findReturn === -1 ? Number.MAX_SAFE_INTEGER : findReturn;
+              let nextIndex = Math.min(findReturn, findSpace);
+
+              if (subText.slice(0, nextIndex).includes('{')) {
+                  nextIndex = 0;
+              }
+
+              let startPos = nextIndex;
+              if (codeDelimiterPosition + 3 < text.length && ["\n", " ", "\t"].includes(text[codeDelimiterPosition + 3])) {
+                  // No
+                  blockInfos.type = 'language-specific';
+              } else {
+                  blockInfos.type = subText.slice(0, nextIndex);
+              }
+
+              let nextPos = indices[index + 1] - codeDelimiterPosition;
+              if (subText[nextPos - 3] === "`") {
+                  blockInfos.content = subText.slice(startPos, nextPos - 3).trim();
+              } else {
+                  blockInfos.content = subText.slice(startPos, nextPos).trim();
+              }
+              codeBlocks.push(blockInfos);
+          }
+          isStart = false;
+      } else {
+          isStart = true;
+          continue;
+      }
+  }
+
+  return codeBlocks;
+}
+
 }
