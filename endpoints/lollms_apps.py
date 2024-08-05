@@ -17,6 +17,11 @@ import yaml
 import uuid
 import platform
 from ascii_colors import ASCIIColors, trace_exception
+import pipmaster as pm
+if not pm.is_installed("httpx"):
+    pm.install("httpx")
+import httpx
+
 router = APIRouter()
 lollmsElfServer: LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
@@ -187,7 +192,18 @@ async def uninstall_app(app_name: str, auth: AuthRequest):
 
 REPO_URL = "https://github.com/ParisNeo/lollms_apps_zoo.git"
 
+class ProxyRequest(BaseModel):
+    url: str
 
+@router.post("/api/proxy")
+async def proxy(request: ProxyRequest):
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(request.url)
+            return {"content": response.text}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
 def clone_repo():
     REPO_DIR = Path(lollmsElfServer.lollms_paths.personal_path) / "apps_zoo_repo"
     
