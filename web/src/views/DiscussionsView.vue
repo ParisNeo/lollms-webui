@@ -63,7 +63,7 @@
         <!-- LEFT SIDE PANEL -->
         <div id="leftPanel" class="flex flex-col flex-grow overflow-y-scroll no-scrollbar "
             @dragover.stop.prevent="setDropZoneDiscussion()">
-            <div class="text-light-text-panel dark:text-dark-text-panel bg-bg-light-panel sticky z-10 top-0 dark:bg-bg-dark-tone shadow-md ">
+            <div class="text-light-text-panel dark:text-dark-text-panel panels-color sticky z-10 top-0 ">
 
                 <!-- CONTROL PANEL -->
                 <div class="flex-row p-4  flex items-center gap-3 flex-0">
@@ -255,7 +255,7 @@
                 </div>
             </div>
         </div>
-        <div class="absolute h-15 bottom-0 left-0 w-full bg-bg-light-panel dark:bg-bg-dark-tone light-text-panel py-4 cursor-pointer text-light-text-panel dark:text-dark-text-panel hover:text-secondary" @click="showDatabaseSelector">
+        <div class="absolute h-15 bottom-0 left-0 w-full unicolor-panels-color light-text-panel py-4 cursor-pointer text-light-text-panel dark:text-dark-text-panel hover:text-secondary" @click="showDatabaseSelector">
             <p class="text-center font-large font-bold text-l drop-shadow-md align-middle">{{ formatted_database_name.replace("_"," ") }}</p>
         </div>
     </div>

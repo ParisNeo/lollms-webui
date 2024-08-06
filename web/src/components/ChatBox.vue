@@ -2,7 +2,7 @@
 
         <form>
             <div class="absolute bottom-0 left-0 w-fit min-w-96  w-full justify-center text-center">
-                <div v-if="filesList.length > 0 || showPersonalities" class="items-center gap-2 bg-bg-light-panel dark:bg-bg-dark-tone shadow-sm hover:shadow-none dark:border-gray-800  w-fit">
+                <div v-if="filesList.length > 0 || showPersonalities" class="items-center gap-2 panels-color shadow-sm hover:shadow-none dark:border-gray-800  w-fit">
                     <!-- EXPAND / COLLAPSE BUTTON -->
                     <div class="flex">
                         <button 
@@ -112,7 +112,7 @@
                 </div>
 
                     <!-- CHAT BOX -->
-                        <div v-if="selecting_model||selecting_binding" title="Selecting model" class="flex flex-row flex-grow justify-end bg-primary">
+                        <div v-if="selecting_model||selecting_binding" title="Selecting model" class="flex flex-row flex-grow justify-end panels-color">
                             <!-- SPINNER -->
                             <div role="status">
                                 <img :src="loader_v0" class="w-50 h-50">
@@ -120,7 +120,7 @@
                             </div>
                         </div>
                         <div class="flex w-fit relative grow w-full">
-                            <div class="relative text-light-text-panel dark:text-dark-text-panel grow flex h-12.5 cursor-pointer select-none items-center gap-2 bg-bg-light-panel dark:bg-bg-dark-tone p-1 shadow-sm hover:shadow-none dark:border-gray-800" tabindex="0">
+                            <div class="relative text-light-text-panel dark:text-dark-text-panel grow flex h-12.5 cursor-pointer select-none items-center gap-2 chatbox-color p-1 shadow-sm hover:shadow-none dark:border-gray-800" tabindex="0">
                                 <div v-if="loading" title="Waiting for reply">
                                     <img :src="loader_v0">
                                     <!-- SPINNER -->

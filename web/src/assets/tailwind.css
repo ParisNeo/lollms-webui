@@ -15,69 +15,53 @@
     src: url('./fonts/PTSans/PTSans-Regular.ttf') format('truetype');
   }
 }
+
 @layer utilities {
-  /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
 
-  /* Hide scrollbar for IE, Edge and Firefox */
   .no-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
-
 }
+
 .display-none {
   @apply hidden;
 }
 
-
 h1 {
-  font-size: 36px;
-  font-weight: bold;
+  @apply text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400;
 }
 
-
-
 h2 {
-  font-size: 24px;
-  font-weight: bold;
+  @apply text-3xl font-semibold text-gray-800 dark:text-gray-200;
 }
 
 h3 {
-  font-size: 18px;
-  font-weight: bold;
+  @apply text-2xl font-semibold text-gray-700 dark:text-gray-300;
 }
 
 h4 {
-  font-size: 18px;
-  font-style: italic;
+  @apply text-xl font-semibold italic text-gray-600 dark:text-gray-400;
 }
 
-/* Include any additional styles you need */
 p {
-  font-size: 16px;
-  word-wrap: break-word;  
-  overflow-wrap: break-word;
-  white-space: normal;
+  @apply text-base text-gray-600 dark:text-gray-300 break-words;
 }
 
 ul {
-  list-style-type: disc;
-  margin-left: 0px;
+  @apply list-disc ml-0;
 }
 
 li {
-  list-style-type: disc;
-  margin-left: 20px;
+  @apply list-disc ml-5;
 }
 
 ol {
-  list-style-type: decimal;
-  margin-left: 20px;
+  @apply list-decimal ml-5;
 }
-
 
 :root {
   --color-primary: #0e8ef0;
@@ -99,4 +83,113 @@ ol {
   --color-bg-dark-code-block: #2254a7;
   --color-bg-dark-discussion: #435E8A;
   --color-bg-dark-discussion-odd: #284471;
+}
+
+.background-color {
+  @apply bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 min-h-screen;
+}
+
+.toolbar-color {
+  @apply  text-gray-700 dark:text-gray-50 bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg
+}
+.panels-color {
+  @apply  text-gray-700 dark:text-gray-50 bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded shadow-lg
+}
+.unicolor-panels-color {
+  @apply bg-blue-200 dark:bg-blue-800
+}
+.chatbox-color {
+  @apply bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800
+}
+.message {
+  @apply relative w-full rounded-lg m-2 shadow-lg border-2 border-transparent 
+         flex flex-col flex-grow flex-wrap overflow-visible p-4 pb-2;
+}
+
+.message:hover {
+  @apply border-primary border-solid;
+}
+
+/* Light theme */
+.message:nth-child(even) {
+  @apply bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800;
+}
+
+.message:nth-child(odd) {
+  @apply bg-gradient-to-r from-blue-300 to-purple-300 dark:from-blue-900 dark:to-purple-900;
+}
+
+
+body {
+  @apply bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 min-h-screen;
+}
+
+.bg-gradient-welcome {
+  @apply bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900;
+}
+
+.bg-gradient-progress {
+  @apply bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800;
+}
+
+.text-gradient-title {
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400;
+}
+
+.text-subtitle {
+  @apply text-gray-600 dark:text-gray-300;
+}
+
+.text-author {
+  @apply text-gray-500 dark:text-gray-400;
+}
+
+.text-loading {
+  @apply text-gray-700 dark:text-gray-300;
+}
+
+.text-progress {
+  @apply text-blue-600 dark:text-blue-400;
+}
+
+.btn-primary {
+  @apply bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded;
+}
+
+.btn-secondary {
+  @apply bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded;
+}
+
+.card {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-6;
+}
+
+.input {
+  @apply bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400;
+}
+
+.label {
+  @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1;
+}
+
+.link {
+  @apply text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300;
+}
+
+.nav-ul {
+  @apply list-none p-0 m-0 flex flex-row justify-center h-full;
+}
+
+.nav-link {
+  @apply relative inline-block px-4 py-2 mx-1 text-white font-bold rounded transition-all duration-300 ease-in-out;
+  @apply text-gray-700 dark:text-gray-50 bg-gradient-to-r from-indigo-300 to-purple-400 dark:from-indigo-500 dark:to-purple-600; /* Light mode gradient */
+}
+
+.nav-link:hover {
+  @apply transform -translate-y-1;
+  @apply text-gray-700 dark:text-gray-50 bg-gradient-to-r  from-indigo-300 to-purple-300 dark:from-indigo-400 dark:to-purple-500; /* Reverse gradient on hover */
+}
+
+.nav-link.active {
+  @apply bg-white text-indigo-600 shadow-lg; /* Active state styles */
 }

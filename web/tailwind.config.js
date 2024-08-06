@@ -29,17 +29,37 @@ module.exports = {
         'bg-dark-code-block': 'var(--color-bg-dark-code-block)',
         'bg-dark-discussion': 'var(--color-bg-dark-discussion)',
         'bg-dark-discussion-odd': 'var(--color-bg-dark-discussion-odd)'
-    },
+      },
       fontFamily: {
         sans: ['PTSans', 'Roboto', 'sans-serif']
       },
       container: {
         padding: '2rem',
         center: true
-      }
+      },
+      backgroundImage: {
+        'gradient-light': 'linear-gradient(to bottom right, var(--tw-gradient-stops))',
+        'gradient-dark': 'linear-gradient(to bottom right, var(--tw-gradient-stops))',
+      },
+      gradientColorStops: {
+        'light-start': '#e0eaff',
+        'light-end': '#f0e6ff',
+        'dark-start': '#0f2647',
+        'dark-end': '#1e1b4b',
+      },
     }
   },
-  plugins: [require('flowbite/plugin'), require('tailwind-scrollbar')],
+  plugins: [
+    require('flowbite/plugin'),
+    require('tailwind-scrollbar'),
+    function({ addBase, theme }) {
+      addBase({
+        'body': {
+          '@apply bg-gradient-light from-light-start to-light-end dark:bg-gradient-dark dark:from-dark-start dark:to-dark-end min-h-screen': {}
+        },
+      })
+    }
+  ],
   variants: {
     h1: {
       fontWeight: 'bold'
