@@ -58,7 +58,7 @@
        
     <transition name="slide-right">
     <div  v-if="showLeftPanel"
-        class="relative flex flex-col no-scrollbar shadow-lg min-w-[24rem] max-w-[24rem] bg-bg-light-tone dark:bg-bg-dark-tone"
+        class="relative flex flex-col no-scrollbar shadow-lg min-w-[24rem] max-w-[24rem] unicolor-panels-color dark:bg-bg-dark-tone"
         >
         <!-- LEFT SIDE PANEL -->
         <div id="leftPanel" class="flex flex-col flex-grow overflow-y-scroll no-scrollbar "
@@ -229,9 +229,9 @@
             </div>
             <div class="relative flex flex-row flex-grow mb-10 z-0  w-full">
                 <!-- DISCUSSION LIST -->
-                <div class="mx-4 flex flex-col flex-grow  w-full " :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
+                <div class="mx-0 flex flex-col flex-grow  w-full " :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
                     <div id="dis-list" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''"
-                        class="flex flex-col flex-grow  w-full">
+                        class="flex flex-col flex-grow w-full pb-80">
                         <TransitionGroup v-if="list.length > 0" name="list">
                             <Discussion v-for="(item, index) in list" :key="item.id" :id="item.id" :title="item.title"
                                 :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"

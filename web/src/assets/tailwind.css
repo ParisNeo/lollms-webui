@@ -99,24 +99,29 @@ ol {
   @apply bg-blue-200 dark:bg-blue-800
 }
 .chatbox-color {
-  @apply bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800
+  @apply bg-gradient-to-br from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800
 }
 .message {
   @apply relative w-full rounded-lg m-2 shadow-lg border-2 border-transparent 
          flex flex-col flex-grow flex-wrap overflow-visible p-4 pb-2;
 }
-
 .message:hover {
   @apply border-primary border-solid;
 }
-
 /* Light theme */
 .message:nth-child(even) {
-  @apply bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800;
+  @apply bg-gradient-to-br from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800;
 }
 
 .message:nth-child(odd) {
-  @apply bg-gradient-to-r from-blue-300 to-purple-300 dark:from-blue-900 dark:to-purple-900;
+  @apply bg-gradient-to-br from-blue-300 to-purple-300 dark:from-blue-900 dark:to-purple-900;
+}
+
+.discussion{
+  @apply mr-2 bg-gradient-to-r from-blue-300 to-purple-300 dark:from-blue-900 dark:to-purple-900 hover:from-blue-100 hover:to-purple-100 hover:dark:from-blue-700 hover:dark:to-purple-700
+}
+.discussion-hilighted{
+  @apply bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 hover:from-blue-100 hover:to-purple-100 hover:dark:from-blue-700 hover:dark:to-purple-700
 }
 
 
