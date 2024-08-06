@@ -44,6 +44,7 @@ As an all-encompassing tool with access to over 500 AI expert conditioning acros
 - Support for LM Studio as a backend
 - Support for Ollama as a backend
 - Support for vllm as a backend
+- Support for prompt Routing to various models depending on the complexity of the task
 
 ## Star History
 
@@ -70,6 +71,35 @@ The installation scripts are:
 
 ### Manual install:
 Since v 9.4, it is not advised to do manual install as many services require the creation of a separate environment and lollms needs to have complete control on the environments. So If you install it using your own conda setup, you will not be able to install any service and reduce the use of lollms to the chat interface (no xtts, no comfyui, no fast generation through vllm or petals or soever)
+
+## Smart Routing: Optimizing for Money and Speed
+
+Lollms' Smart Routing feature goes beyond just selecting the right model for accuracy. It empowers you to optimize your text generation process for two key factors: **money** and **speed**.
+
+**Optimizing for Money:**
+
+Imagine you're using multiple text generation services with varying price points. Some models might be exceptionally powerful but come with a hefty price tag, while others offer a more budget-friendly option with slightly less capability. Smart Routing lets you leverage this price difference to your advantage:
+
+* **Cost-Effective Selection:** By defining a hierarchy of models based on their cost, Smart Routing can automatically choose the most economical model for your prompt. This ensures you're only paying for the power you need, minimizing unnecessary expenses.
+* **Dynamic Price Adjustment:**  As your prompt complexity changes, Smart Routing can dynamically switch between models, ensuring you're always using the most cost-effective option for the task at hand.
+
+**Optimizing for Speed:**
+
+Speed is another critical factor in text generation, especially when dealing with large volumes of content or time-sensitive tasks. Smart Routing allows you to prioritize speed by:
+
+* **Prioritizing Smaller Models:** By placing faster, less resource-intensive models higher in the hierarchy, Smart Routing can prioritize speed for simple prompts. This ensures quick responses and efficient processing.
+* **Dynamic Speed Adjustment:**  For more complex prompts requiring the power of larger models, Smart Routing can seamlessly switch to those models while maintaining a balance between speed and accuracy.
+
+**Example Use Cases:**
+
+* **Content Marketing:**  Use Smart Routing to select the most cost-effective model for generating large volumes of blog posts or social media content.
+* **Customer Support:**  Prioritize speed by using smaller models for quick responses to frequently asked questions, while leveraging more powerful models for complex inquiries.
+* **Research and Development:**  Optimize for both money and speed by using a tiered model hierarchy, ensuring you can quickly generate initial drafts while using more powerful models for in-depth analysis.
+
+**Conclusion:**
+
+Smart Routing is a versatile tool that empowers you to optimize your text generation process for both cost and speed. By leveraging a hierarchy of models and dynamically adjusting your selection based on prompt complexity, you can achieve the perfect balance between efficiency, accuracy, and cost-effectiveness.
+
 
 # Code of conduct
 

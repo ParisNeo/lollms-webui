@@ -48,7 +48,7 @@
                     >
                     <i data-feather="arrow-up-circle"></i>
                     <i data-feather="alert-circle"></i>
-=                   </button>
+                   </button>
                 <div class="flex gap-3 items-center">
                     <div v-if="settingsChanged" class="flex gap-3 items-center">
                         <button v-if="!isLoading" class="text-2xl hover:text-secondary duration-75 active:scale-90"
@@ -208,20 +208,88 @@
 
                 </div>
             </div>
+            <!-- Router CONFIGS -->
+            <div
+                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                <div class="flex flex-row p-3">
+                    <button @click.stop="smartrouterconf_collapsed = !smartrouterconf_collapsed"
+                        class="text-2xl hover:text-primary p-2 -m-2 w-full text-left flex flex-row items-center">
+                        <div v-show="smartrouterconf_collapsed" ><i data-feather='chevron-right'></i></div>
+                        <div v-show="!smartrouterconf_collapsed" ><i data-feather='chevron-down'></i></div>
+
+                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            Smart routing configurations</h3>
+                    </button>
+                </div>
+                <div :class="{ 'hidden': smartrouterconf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                    <div class="flex flex-col mb-2 px-3 pb-2">
+                        <Card title="Smart Routing Settings" :is_shrunk="false" :is_subcard="true" class="pb-2 m-2">
+                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <tr>
+                                    <td style="min-width: 200px;">
+                                        <!-- ? Label for the checkbox to enable/disable smart routing -->
+                                        <label for="use_smart_routing" class="text-sm font-bold" style="margin-right: 1rem;">Use Smart Routing:</label>
+                                    </td>
+                                    <td style="width: 100%;">
+                                        <!-- ? Checkbox input to toggle smart routing on/off -->
+                                        <input
+                                            type="checkbox"
+                                            id="use_smart_routing"
+                                            v-model="configFile.use_smart_routing"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="min-width: 200px;">
+                                        <!-- ? Label for the input field to specify the router model -->
+                                        <label for="smart_routing_router_model" class="text-sm font-bold" style="margin-right: 1rem;">Router Model:</label>
+                                    </td>
+                                    <td style="width: 100%;">
+                                        <!-- ? Input field to enter the name of the model used for routing decisions -->
+                                        <input
+                                            type="text"
+                                            id="smart_routing_router_model"
+                                            v-model="configFile.smart_routing_router_model"
+                                            @change="settingsChanged=true"
+                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="min-width: 200px;">
+                                        <!-- ? Label for the list of models ordered by their processing power -->
+                                        <label for="smart_routing_models_by_power" class="text-sm font-bold" style="margin-right: 1rem;">Models by Power:</label>
+                                    </td>
+                                    <td style="width: 100%;">
+                                        <!-- ? Custom component to manage a list of model names, ordered by their processing capability -->
+                                        <StringListManager
+                                            v-model="configFile.smart_routing_models_by_power"
+                                            @change="settingsChanged = true"
+                                            placeholder="Enter model name"
+                                        />
+                                    </td>
+                                </tr>
+                            </table>
+                        </Card>
+                    </div>
+                </div>
+            </div>
             <!-- MAIN CONFIGS -->
             <div
                 class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row p-3">
-                    <button @click.stop="minconf_collapsed = !minconf_collapsed"
+                    <button @click.stop="mainconf_collapsed = !mainconf_collapsed"
                         class="text-2xl hover:text-primary p-2 -m-2 w-full text-left flex flex-row items-center">
-                        <div v-show="minconf_collapsed" ><i data-feather='chevron-right'></i></div>
-                        <div v-show="!minconf_collapsed" ><i data-feather='chevron-down'></i></div>
+                        <div v-show="mainconf_collapsed" ><i data-feather='chevron-right'></i></div>
+                        <div v-show="!mainconf_collapsed" ><i data-feather='chevron-down'></i></div>
 
                         <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
                             Main configurations</h3>
                     </button>
                 </div>
-                <div :class="{ 'hidden': minconf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                <div :class="{ 'hidden': mainconf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
                     <div class="flex flex-col mb-2 px-3 pb-2">
                                 <Card title="General" :is_subcard="true" class="pb-2 m-2">
                                     <table class="expand-to-fit bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -336,6 +404,24 @@
                                             </div>
                                         </td>
                                         </tr>
+                                        <tr>
+                                        <td style="min-width: 200px;">
+                                            <label for="debug_show_final_full_prompt" class="text-sm font-bold" style="margin-right: 1rem;">Activate showing the full prompt in console (for debug):</label>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-row">
+                                                <input
+                                            type="checkbox"
+                                            id="debug_show_final_full_prompt"
+                                            required
+                                            v-model="configFile.debug_show_final_full_prompt"
+                                            @change="settingsChanged=true"
+                                            class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600 "
+                                            >
+                                            </div>
+                                        </td>
+                                        </tr>
+                                        
                                         <tr>
                                         <td style="min-width: 200px;">
                                             <label for="debug_show_final_full_prompt" class="text-sm font-bold" style="margin-right: 1rem;">Show final full prompt in console:</label>
@@ -1936,131 +2022,221 @@
 
                         </table>                    
                     </Card>
-                    <Card title="Lollms service" :is_shrunk="true" :is_subcard="true" class="pb-2  m-2">
+
+                    <Card title="Lollms service" :is_shrunk="true" :is_subcard="true" class="pb-2 m-2">
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <tr>
+                        <tr>
                             <td style="min-width: 200px;">
-                                <label for="host" class="text-sm font-bold" style="margin-right: 1rem;">Host:</label>
+                            <label for="host" class="text-sm font-bold" style="margin-right: 1rem;">Host:</label>
                             </td>
                             <td style="width: 100%;">
-                                <input
+                            <input
                                 type="text"
                                 id="host"
                                 required
                                 v-model="configFile.host"
                                 @change="settingsChanged=true"
-                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                >
+                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                            >
                             </td>
-                            </tr>                                        
-                            <tr>
+                        </tr>
+                        <tr>
                             <td style="min-width: 200px;">
-                                <label for="lollms_access_keys" class="text-sm font-bold" style="margin-right: 1rem;">Access keys (coma separated, if empty, anyone can use the server without authentication):</label>
+                            <label for="lollms_access_keys" class="text-sm font-bold" style="margin-right: 1rem;">Access keys:</label>
                             </td>
                             <td style="width: 100%;">
-                                <input
-                                type="text"
-                                id="lollms_access_keys"
-                                required
+                            <StringListManager
                                 v-model="configFile.lollms_access_keys"
-                                @change="settingsChanged=true"
-                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                >
+                                @change="settingsChanged = true"
+                                placeholder="Enter access key"
+                            />
                             </td>
-                            </tr>                                        
-                            <tr>
+                        </tr>
+                        <tr>
                             <td style="min-width: 200px;">
-                                <label for="discussion_db_name" class="text-sm font-bold" style="margin-right: 1rem;">Port:</label>
+                            <label for="port" class="text-sm font-bold" style="margin-right: 1rem;">Port:</label>
                             </td>
                             <td style="width: 100%;">
-                                <input
+                            <input
                                 type="number"
                                 step="1"
                                 id="port"
                                 required
                                 v-model="configFile.port"
                                 @change="settingsChanged=true"
-                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                >
+                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                            >
                             </td>
-                            </tr>
-                            <tr>
+                        </tr>
+                        <tr>
                             <td style="min-width: 200px;">
-                                <label for="discussion_db_name" class="text-sm font-bold" style="margin-right: 1rem;">Activate headless server mode (deactivates all code exectuion to protect the PC from attacks):</label>
+                            <label for="headless_server_mode" class="text-sm font-bold" style="margin-right: 1rem;">Activate headless server mode:</label>
                             </td>
                             <td style="width: 100%;">
-                                <input
+                            <input
                                 type="checkbox"
                                 id="headless_server_mode"
                                 required
                                 v-model="configFile.headless_server_mode"
                                 @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                >
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                            >
                             </td>
-                            </tr>
-                            <tr>
+                        </tr>
+                        <tr>
                             <td style="min-width: 200px;">
                                 <label for="activate_lollms_server" class="text-sm font-bold" style="margin-right: 1rem;">Activate lollms server:</label>
                             </td>
                             <td style="width: 100%;">
                                 <input
-                                type="checkbox"
-                                id="activate_lollms_server"
-                                required
-                                v-model="configFile.activate_lollms_server"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                    type="checkbox"
+                                    id="activate_lollms_server"
+                                    required
+                                    v-model="configFile.activate_lollms_server"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
                                 >
                             </td>
-                            </tr>      
-                            <tr>
+                        </tr>
+                        <tr>
                             <td style="min-width: 200px;">
-                                <label for="activate_ollama_emulator" class="text-sm font-bold" style="margin-right: 1rem;">Activate ollama server emulator:</label>
+                                <label for="activate_lollms_rag_server" class="text-sm font-bold" style="margin-right: 1rem;">Activate lollms RAG server:</label>
                             </td>
                             <td style="width: 100%;">
                                 <input
+                                    type="checkbox"
+                                    id="activate_lollms_rag_server"
+                                    required
+                                    v-model="configFile.activate_lollms_rag_server"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="min-width: 200px;">
+                                <label for="activate_lollms_tts_server" class="text-sm font-bold" style="margin-right: 1rem;">Activate lollms TTS server:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <input
+                                    type="checkbox"
+                                    id="activate_lollms_tts_server"
+                                    required
+                                    v-model="configFile.activate_lollms_tts_server"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="min-width: 200px;">
+                                <label for="activate_lollms_stt_server" class="text-sm font-bold" style="margin-right: 1rem;">Activate lollms STT server:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <input
+                                    type="checkbox"
+                                    id="activate_lollms_stt_server"
+                                    required
+                                    v-model="configFile.activate_lollms_stt_server"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="min-width: 200px;">
+                                <label for="activate_lollms_tti_server" class="text-sm font-bold" style="margin-right: 1rem;">Activate lollms TTI server:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <input
+                                    type="checkbox"
+                                    id="activate_lollms_tti_server"
+                                    required
+                                    v-model="configFile.activate_lollms_tti_server"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="min-width: 200px;">
+                                <label for="activate_lollms_itt_server" class="text-sm font-bold" style="margin-right: 1rem;">Activate lollms ITT server:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <input
+                                    type="checkbox"
+                                    id="activate_lollms_itt_server"
+                                    required
+                                    v-model="configFile.activate_lollms_itt_server"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="min-width: 200px;">
+                                <label for="activate_lollms_ttm_server" class="text-sm font-bold" style="margin-right: 1rem;">Activate lollms TTM server:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <input
+                                    type="checkbox"
+                                    id="activate_lollms_ttm_server"
+                                    required
+                                    v-model="configFile.activate_lollms_ttm_server"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                >
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="min-width: 200px;">
+                            <label for="activate_ollama_emulator" class="text-sm font-bold" style="margin-right: 1rem;">Activate ollama server emulator:</label>
+                            </td>
+                            <td style="width: 100%;">
+                            <input
                                 type="checkbox"
                                 id="activate_ollama_emulator"
                                 required
                                 v-model="configFile.activate_ollama_emulator"
                                 @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                >
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                            >
                             </td>
-                            </tr>
-                            <tr>
+                        </tr>
+                        <tr>
                             <td style="min-width: 200px;">
-                                <label for="activate_openai_emulator" class="text-sm font-bold" style="margin-right: 1rem;">Activate openai server emulator:</label>
+                            <label for="activate_openai_emulator" class="text-sm font-bold" style="margin-right: 1rem;">Activate openai server emulator:</label>
                             </td>
                             <td style="width: 100%;">
-                                <input
+                            <input
                                 type="checkbox"
                                 id="activate_openai_emulator"
                                 required
                                 v-model="configFile.activate_openai_emulator"
                                 @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                >
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                            >
                             </td>
-                            </tr>                                  
-                            <tr>
+                        </tr>
+                        <tr>
                             <td style="min-width: 200px;">
-                                <label for="activate_mistralai_emulator" class="text-sm font-bold" style="margin-right: 1rem;">Activate mistral ai server emulator:</label>
+                            <label for="activate_mistralai_emulator" class="text-sm font-bold" style="margin-right: 1rem;">Activate mistral ai server emulator:</label>
                             </td>
                             <td style="width: 100%;">
-                                <input
+                            <input
                                 type="checkbox"
                                 id="activate_mistralai_emulator"
                                 required
                                 v-model="configFile.activate_mistralai_emulator"
                                 @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                >
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                            >
                             </td>
-                            </tr>   
-                        </table>               
+                        </tr>
+                        </table>
                     </Card>                    
+
                     <Card title="STT services" :is_shrunk="true" :is_subcard="true" class="pb-2  m-2">
                         <Card title="Browser Audio STT" :is_subcard="true" class="pb-2  m-2">
                             <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -4100,6 +4276,7 @@ import storeLogo from '@/assets/logo.png'
 
 import SVGGPU from '@/assets/gpu.svg';
 
+import StringListManager from '@/components/StringListManager.vue';
 
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_LOLLMS_API_BASEURL
@@ -4113,6 +4290,7 @@ export default {
         BindingEntry,
         ChoiceDialog,
         Card,
+        StringListManager,
         RadioOptions,
     },
     data() {
@@ -4192,7 +4370,8 @@ export default {
             data_conf_collapsed: true,
             internet_conf_collapsed: true,// internet 
             servers_conf_collapsed: true, // Servers configuration
-            minconf_collapsed: true, // Main configuration 
+            mainconf_collapsed: true, // Main configuration 
+            smartrouterconf_collapsed: true, // Smart router configuration
             bec_collapsed: true,
             sort_type : 0, // 0: by date, 1: by rank, 2: by name, 3: by maker, 4: by quantizer
             is_loading_zoo:false, // Is loading models zoo
@@ -4901,7 +5080,7 @@ export default {
         },
         collapseAll(val) {
             this.servers_conf_collapsed = val
-            this.minconf_collapsed = val
+            this.mainconf_collapsed = val
             this.bec_collapsed = val
             this.mzc_collapsed = val
             this.pzc_collapsed = val

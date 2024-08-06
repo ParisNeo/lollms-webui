@@ -910,7 +910,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                         }, to=client_id
                                 )
         )
-        if msg_type != MSG_TYPE.MSG_TYPE_INFO:
+        if msg_type and msg_type.value < MSG_TYPE.MSG_TYPE_INFO.value:
             client.discussion.update_message(client.generated_text, new_metadata=mtdt, new_ui=ui, started_generating_at=client.discussion.current_message.started_generating_at, nb_tokens=client.discussion.current_message.nb_tokens)
 
 
@@ -1053,7 +1053,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     return False
  
         # Stream the generated text to the main process
-        elif message_type == MSG_TYPE.MSG_TYPE_FULL:
+        elif message_type in [MSG_TYPE.MSG_TYPE_FULL, MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI, MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER]:
             if self.nb_received_tokens==0:
                 self.start_time = datetime.now()
                 try:
@@ -1067,7 +1067,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             if antiprompt:
                 ASCIIColors.warning(f"\n{antiprompt} detected. Stopping generation")
                 client.generated_text = self.remove_text_from_string(client.generated_text,antiprompt)
-                self.update_message(client_id, client.generated_text, parameters, metadata, None, MSG_TYPE.MSG_TYPE_FULL)
+                self.update_message(client_id, client.generated_text, parameters, metadata, None, message_type)
                 return False
 
             self.update_message(client_id, chunk,  parameters, metadata, ui=None, msg_type=message_type)
@@ -1093,6 +1093,30 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         self.config.end_ai_message_id_template,
                         self.config.system_message_template,
                         ] if r!="" and r!="\n"])
+
+        if self.config.use_smart_routing:
+            if self.config.smart_routing_router_model!="" and len(self.config.smart_routing_models_by_power)>=2:
+                ASCIIColors.yellow("Using smart routing")
+                self.personality.step_start("Routing request")
+                self.back_model = f"{self.binding.binding_folder_name}::{self.model.model_name}"
+                try:
+                    binding, model_name = self.model_path_to_binding_model(self.config.smart_routing_router_model)
+                    self.select_model(binding, model_name)
+                    output_id = self.personality.multichoice_question("assess the complexity of the following prompt (higher means more complex, lower less complex), if the user asking simple questions or just saying hello, please select the lowest model.", [str(i) for i in range(len(self.config.smart_routing_models_by_power))], full_prompt)
+                    if output_id >=0 and output_id<len(self.config.smart_routing_models_by_power):
+                        binding, model_name = self.model_path_to_binding_model(self.config.smart_routing_models_by_power[output_id])
+                        self.select_model(binding, model_name)
+                        self.personality.step_end("Routing request")
+                        self.personality.step(f"Selected {self.config.smart_routing_models_by_power[output_id]}")
+                except Exception as ex:
+                    self.error("Failed to route beceause of this error : " + str(ex))
+                    self.personality.step_end("Routing request", False)
+            else:
+                ASCIIColors.yellow("Warning! Smart routing is active but one of the following requirements are not met")
+                ASCIIColors.yellow("- smart_routing_router_model must be set correctly")
+                ASCIIColors.yellow("- smart_routing_models_by_power must contain at least one model")
+
+
         if self.personality.processor is not None:
             ASCIIColors.info("Running workflow")
             try:
@@ -1120,6 +1144,15 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
         txt = self._generate(full_prompt, n_predict, client_id, callback)
         ASCIIColors.success("\nFinished executing the generation")
+
+        if self.config.use_smart_routing and self.config.restore_model_after_smart_routing:
+            if self.config.smart_routing_router_model!="" and len(self.config.smart_routing_models_by_power)>=2:
+                ASCIIColors.yellow("Restoring model")
+                self.personality.step_start("Restoring main model")
+                binding, model_name = self.model_path_to_binding_model(self.back_model)
+                self.select_model(binding, model_name)
+                self.personality.step_end("Restoring main model")
+
         return txt
 
     def _generate(self, prompt, n_predict, client_id, callback=None):

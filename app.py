@@ -35,7 +35,7 @@ if not PackageManager.check_package_installed_with_version("freedom_search", exp
     PackageManager.install_or_update("freedom-search")
 ASCIIColors.success("OK")
 
-expected_scrapemaster_version = "0.1.5"
+expected_scrapemaster_version = "0.1.6"
 ASCIIColors.yellow(f"Checking scrapemaster ({expected_scrapemaster_version}) ...", end="", flush=True)
 if not PackageManager.check_package_installed_with_version("scrapemaster", expected_scrapemaster_version):
     PackageManager.install_or_update("scrapemaster")
@@ -208,7 +208,8 @@ if __name__ == "__main__":
     from lollms.server.endpoints.lollms_vllm import router as lollms_vllm_router    
     from lollms.server.endpoints.lollms_motion_ctrl import router as lollms_motion_ctrl_router
     from lollms.server.endpoints.lollms_discussion import router as lollms_discussion_router
-    from lollms.server.endpoints.lollms_petals import router as lollms_petals_router    
+    from lollms.server.endpoints.lollms_petals import router as lollms_petals_router   
+    from lollms.server.endpoints.lollms_rag import router as lollms_rag_router 
 
 
     from endpoints.lollms_webui_infos import router as lollms_webui_infos_router
@@ -268,6 +269,8 @@ if __name__ == "__main__":
         
         app.include_router(lollms_ollama_router)  
         app.include_router(lollms_petals_router)  
+        
+        app.include_router(lollms_rag_router)  
         app.include_router(lollms_vllm_router)  
         app.include_router(lollms_motion_ctrl_router)  
         

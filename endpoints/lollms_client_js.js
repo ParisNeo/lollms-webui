@@ -586,3 +586,64 @@ extractCodeBlocks(text) {
 }
 
 }
+
+
+class LOLLMSRAGClient {
+  constructor(baseURL, apiKey) {
+      this.baseURL = baseURL;
+      this.apiKey = apiKey;
+  }
+
+  async request(endpoint, method = 'GET', body = null) {
+      const headers = {
+          'Authorization': this.apiKey,
+          'Content-Type': 'application/json',
+      };
+
+      const options = {
+          method,
+          headers,
+      };
+
+      if (body) {
+          options.body = JSON.stringify(body);
+      }
+
+      const response = await fetch(`${this.baseURL}${endpoint}`, options);
+
+      if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`Error: ${errorData.detail || response.statusText}`);
+      }
+
+      return response.json();
+  }
+
+  async addDocument(title, content, path = "unknown") {
+      const document = { title, content, path };
+      return this.request('/add_document', 'POST', document);
+  }
+
+  async removeDocument(documentId) {
+      return this.request(`/remove_document/${documentId}`, 'POST');
+  }
+
+  async indexDatabase() {
+      return this.request('/index_database', 'POST');
+  }
+
+  async search(query) {
+      const searchQuery = { query };
+      return this.request('/search', 'POST', searchQuery);
+  }
+
+  async wipeDatabase() {
+      return this.request('/wipe_database', 'DELETE');
+  }
+}
+
+// Example usage:
+// const ragClient = new RAGClient('http://localhost:8000', 'your_bearer_token');
+// ragClient.addDocument('My Title', 'This is the content of the document.')
+//     .then(response => console.log(response))
+//     .catch(error => console.error(error));

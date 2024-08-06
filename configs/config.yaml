@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 129
+version: 131
 binding_name: null
 model_name: null
 model_variant: null
@@ -218,12 +218,22 @@ petals_device: cuda
 
 # lollms service
 enable_lollms_service: false
-lollms_base_url: http://localhost:1234
-lollms_access_keys : "" # set a list of keys separated by coma to restrict access
+lollms_access_keys : [] # set a list of keys separated by coma to restrict access
 activate_lollms_server: true
+activate_lollms_rag_server: true
+activate_lollms_tts_server: true
+activate_lollms_stt_server: true
+activate_lollms_tti_server: true
+activate_lollms_itt_server: true
+activate_lollms_ttm_server: true
 activate_ollama_emulator: true
 activate_openai_emulator: true
 activate_mistralai_emulator: true
+
+use_smart_routing: false
+smart_routing_router_model : ""
+smart_routing_models_by_power : []
+
 
 # elastic search service
 elastic_search_service: false
