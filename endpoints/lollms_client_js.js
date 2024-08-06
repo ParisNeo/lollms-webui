@@ -46,7 +46,7 @@ class LollmsClient {
     this.host_address = host_address;
     this.model_name = model_name;
     this.ctx_size = ctx_size;
-    this.n_predict = n_predict;
+    this.n_predict = n_predict?n_predict:4096;
     this.personality = personality;
     this.temperature = temperature;
     this.top_k = top_k;
@@ -118,7 +118,7 @@ class LollmsClient {
       const output = await axios.post("/lollms_detokenize", {"tokens": tokensList});
       console.log(output.data.text)
       return output.data.text
-    }
+  }
   generate(prompt, {
       n_predict = null,
       stream = false,
@@ -141,6 +141,26 @@ class LollmsClient {
           return this.ollama_generate(prompt, this.host_address, this.model_name, -1, n_predict, stream, temperature, top_k, top_p, repeat_penalty, repeat_last_n, seed, n_threads, ELF_COMPLETION_FORMAT.INSTRUCT, service_key, streamingCallback);
         case ELF_GENERATION_FORMAT.LITELLM:
           return this.litellm_generate(prompt, this.host_address, this.model_name, -1, n_predict, stream, temperature, top_k, top_p, repeat_penalty, repeat_last_n, seed, n_threads, ELF_COMPLETION_FORMAT.INSTRUCT, service_key, streamingCallback);
+        default:
+          throw new Error('Invalid generation mode');
+      }
+    }
+    generate_with_images(prompt, images, {
+      n_predict = null,
+      stream = false,
+      temperature = 0.1,
+      top_k = 50,
+      top_p = 0.95,
+      repeat_penalty = 0.8,
+      repeat_last_n = 40,
+      seed = null,
+      n_threads = 8,
+      service_key = "",
+      streamingCallback = null
+    } = {}) {
+      switch (this.default_generation_mode) {
+        case ELF_GENERATION_FORMAT.LOLLMS:
+          return this.lollms_generate_with_images(prompt, images, this.host_address, this.model_name, -1, n_predict, stream, temperature, top_k, top_p, repeat_penalty, repeat_last_n, seed, n_threads, service_key, streamingCallback);
         default:
           throw new Error('Invalid generation mode');
       }
@@ -203,12 +223,13 @@ class LollmsClient {
       } : {
           'Content-Type': 'application/json',
       };
-
+      console.log("n_predict:",n_predict)
+      console.log("self.n_predict:",this.n_predict)
       const data = JSON.stringify({
           prompt: prompt,
           model_name: model_name,
           personality: personality,
-          n_predict: n_predict?n_predict:self.n_predict,
+          n_predict: n_predict?n_predict:this.n_predict,
           stream: stream,
           temperature: temperature,
           top_k: top_k,
@@ -240,7 +261,59 @@ class LollmsClient {
           return null;
       }
   }
+  async lollms_generate_with_images(prompt, images, host_address = this.host_address, model_name = this.model_name, personality = this.personality, n_predict = this.n_predict, stream = false, temperature = this.temperature, top_k = this.top_k, top_p = this.top_p, repeat_penalty = this.repeat_penalty, repeat_last_n = this.repeat_last_n, seed = this.seed, n_threads = this.n_threads, service_key = this.service_key, streamingCallback = null) {
+    let url;
+    if(host_address!=null){
+      url = `${host_address}/lollms_generate_with_images`;
+    }
+    else{
+      url = `/lollms_generate_with_images`;
+    }
+    const headers = service_key !== "" ? {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Authorization': `Bearer ${service_key}`,
+    } : {
+        'Content-Type': 'application/json',
+    };
+    console.log("n_predict:",n_predict)
+    console.log("self.n_predict:",this.n_predict)
+    const data = JSON.stringify({
+        prompt: prompt,
+        images: images,
+        model_name: model_name,
+        personality: personality,
+        n_predict: n_predict?n_predict:this.n_predict,
+        stream: stream,
+        temperature: temperature,
+        top_k: top_k,
+        top_p: top_p,
+        repeat_penalty: repeat_penalty,
+        repeat_last_n: repeat_last_n,
+        seed: seed,
+        n_threads: n_threads
+    });
 
+    try {
+      const response = await fetch(url, {
+          method: 'POST',
+          headers: headers,
+          body: data
+      });
+
+      // Check if the response is okay
+      if (!response.ok) {
+          throw new Error('Network response was not ok ' + response.statusText);
+      }
+
+      // Read the response as plaintext
+      const responseBody = await response.text();
+      console.log(responseBody)
+      return responseBody ;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
 
 
 async openai_generate(prompt, host_address = this.host_address, model_name = this.model_name, personality = this.personality, n_predict = this.n_predict, stream = false, temperature = this.temperature, top_k = this.top_k, top_p = this.top_p, repeat_penalty = this.repeat_penalty, repeat_last_n = this.repeat_last_n, seed = this.seed, n_threads = this.n_threads, ELF_COMPLETION_FORMAT = "vllm instruct", service_key = this.service_key, streamingCallback = null) {
