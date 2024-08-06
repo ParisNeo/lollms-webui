@@ -243,6 +243,22 @@
                                 </tr>
                                 <tr>
                                     <td style="min-width: 200px;">
+                                        <!-- ? Label for the checkbox to enable/disable smart routing -->
+                                        <label for="restore_model_after_smart_routing" class="text-sm font-bold" style="margin-right: 1rem;">Restore model after smart routing:</label>
+                                    </td>
+                                    <td style="width: 100%;">
+                                        <!-- ? Checkbox input to toggle smart routing on/off -->
+                                        <input
+                                            type="checkbox"
+                                            id="restore_model_after_smart_routing"
+                                            v-model="configFile.restore_model_after_smart_routing"
+                                            @change="settingsChanged=true"
+                                            class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        >
+                                    </td>
+                                </tr>                                
+                                <tr>
+                                    <td style="min-width: 200px;">
                                         <!-- ? Label for the input field to specify the router model -->
                                         <label for="smart_routing_router_model" class="text-sm font-bold" style="margin-right: 1rem;">Router Model:</label>
                                     </td>

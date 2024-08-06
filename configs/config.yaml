@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 131
+version: 132
 binding_name: null
 model_name: null
 model_variant: null
@@ -233,6 +233,7 @@ activate_mistralai_emulator: true
 use_smart_routing: false
 smart_routing_router_model : ""
 smart_routing_models_by_power : []
+restore_model_after_smart_routing : false
 
 
 # elastic search service
