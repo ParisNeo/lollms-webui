@@ -1,8 +1,8 @@
 <template>
-    <div class="container overflow-y-scroll flex flex-row shadow-lg p-10 pt-0 overflow-y-scroll w-full dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+    <div class="container flex flex-row shadow-lg p-10 pt-0 overflow-y-scroll w-full background-color scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
         <!-- CONTROL PANEL -->
         <div
-            class="sticky top-0 z-10 flex flex-row mb-2 p-3 gap-3 w-full rounded-b-lg bg-bg-light-tone dark:bg-bg-dark-tone  shadow-lg">
+            class="sticky top-0 z-10 flex flex-row mb-2 p-3 gap-3 w-full rounded-b-lg panel-color  shadow-lg">
             <!-- SAVE CONFIG -->
             <div v-if="showConfirmation" class="flex gap-3 flex-1 items-center duration-75">
                 <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Cancel" type="button"
@@ -88,7 +88,7 @@
 
         <div :class="isLoading ? 'pointer-events-none opacity-30 w-full' : 'w-full'">
             <!-- DISK AND RAM USAGE -->
-            <div class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+            <div class="flex flex-col mb-2  rounded-lg panels-color hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row p-3">
                     <button @click.stop="sc_collapsed = !sc_collapsed"
                         class="text-2xl hover:text-primary  p-2 -m-2 w-full text-left flex flex-row items-center ">
@@ -210,7 +210,7 @@
             </div>
             <!-- Router CONFIGS -->
             <div
-                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                class="flex flex-col mb-2  rounded-lg panels-color hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row p-3">
                     <button @click.stop="smartrouterconf_collapsed = !smartrouterconf_collapsed"
                         class="text-2xl hover:text-primary p-2 -m-2 w-full text-left flex flex-row items-center">
@@ -294,7 +294,7 @@
             </div>
             <!-- MAIN CONFIGS -->
             <div
-                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                class="flex flex-col mb-2  rounded-lg panels-color hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row p-3">
                     <button @click.stop="mainconf_collapsed = !mainconf_collapsed"
                         class="text-2xl hover:text-primary p-2 -m-2 w-full text-left flex flex-row items-center">
@@ -1094,7 +1094,7 @@
             <!-- Data settings-->
 
             <div
-                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                class="flex flex-col mb-2  rounded-lg panels-color hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row p-3">
                     <button @click.stop="data_conf_collapsed = !data_conf_collapsed"
                         class="text-2xl hover:text-primary p-2 -m-2 w-full text-left flex flex-row items-center">
@@ -1507,7 +1507,7 @@
             </div>
 
             <div
-                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                class="flex flex-col mb-2  rounded-lg panels-color hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row p-3">
                     <button @click.stop="internet_conf_collapsed = !internet_conf_collapsed"
                         class="text-2xl hover:text-primary p-2 -m-2 w-full text-left flex flex-row items-center">
@@ -1676,7 +1676,7 @@
 
             <!-- Servers CONFIGS -->
             <div
-                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                class="flex flex-col mb-2  rounded-lg panels-color hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row p-3">
                     <button @click.stop="servers_conf_collapsed = !servers_conf_collapsed"
                         class="text-2xl hover:text-primary p-2 -m-2 w-full text-left flex flex-row items-center">
@@ -3506,7 +3506,7 @@
 
             <!-- BINDING ZOO -->
             <div
-                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                class="flex flex-col mb-2  rounded-lg panels-color hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row p-3">
                     <button @click.stop="bzc_collapsed = !bzc_collapsed"
                         class="text-2xl hover:text-primary p-2 -m-2 w-full text-left flex flex-row items-center">
@@ -3574,7 +3574,7 @@
 
             <!-- MODELS ZOO -->
             <div
-                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                class="flex flex-col mb-2  rounded-lg panels-color hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row p-3">
                     <button @click.stop="modelsZooToggleCollapse()"
                         class="text-2xl hover:text-primary  p-2 -m-2 w-full text-left flex items-center">
@@ -3815,7 +3815,7 @@
             <!-- ADD MODELS -->
             <!-- PERSONALITY ZOO -->
             <div
-                class="flex flex-col mb-2  rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                class="flex flex-col mb-2  rounded-lg panels-color hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row p-3 items-center">
                     <button @click.stop="pzc_collapsed = !pzc_collapsed"
                         class="text-2xl hover:text-primary  p-2 -m-2 text-left w-full  flex items-center">
@@ -3992,7 +3992,7 @@
 
             <!-- MODEL CONFIGURATION -->
             <div
-                class="flex flex-col mb-2 p-3 rounded-lg bg-bg-light-tone dark:bg-bg-dark-tone hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                class="flex flex-col mb-2 p-3 rounded-lg panels-color hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row">
                     <button @click.stop="mc_collapsed = !mc_collapsed"
                         class="text-2xl hover:text-primary  p-2 -m-2 w-full text-left flex items-center">

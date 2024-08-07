@@ -1,5 +1,5 @@
 <template>
-    <header class="top-0 shadow-lg">
+    <header class="top-0 shadow-lg navbar-container">
       <nav class="container flex flex-col lg:flex-row items-center gap-2 pb-0">
         <!-- LOGO -->
         <RouterLink :to="{ name: 'discussions' }" class="flex items-center space-x-2"> <!-- Added space-x-2 -->

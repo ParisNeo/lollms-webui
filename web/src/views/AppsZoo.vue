@@ -1,6 +1,6 @@
 <template>
-  <div class="app-zoo w-full p-6 overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
-    <nav class="bg-white shadow-lg rounded-lg p-4 max-w-4xl mx-auto">
+  <div class="app-zoo background-color w-full p-6 overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+    <nav class="panels-color shadow-lg rounded-lg p-4 max-w-4xl mx-auto">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center space-x-4">
           <button 
@@ -320,76 +320,3 @@ export default {
 };
 </script>
 
-<style scoped>
-.app-card {
-  transition: all 0.3s ease;
-}
-
-.app-card:hover {
-  transform: translateY(-5px);
-}
-
-button {
-  transition: all 0.3s ease;
-}
-
-button:hover {
-  transform: translateY(-2px);
-}
-
-.scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 3px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-.btn {
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  display: flex;
-  align-items: center;
-}
-.btn-primary {
-  background-color: #3b82f6;
-  color: white;
-}
-.btn-primary:hover {
-  background-color: #2563eb;
-}
-.btn-primary:focus {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
-}
-.btn-secondary {
-  background-color: #e5e7eb;
-  color: #374151;
-}
-.btn-secondary:hover {
-  background-color: #d1d5db;
-}
-.btn-secondary:focus {
-  box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.5);
-}
-.search-input {
-  width: 100%;
-  border-bottom: 2px solid #e5e7eb;
-  padding: 0.5rem 1rem 0.5rem 2.5rem;
-  transition: border-color 0.3s ease-in-out;
-}
-.search-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-}
-</style>

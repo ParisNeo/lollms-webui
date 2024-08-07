@@ -180,21 +180,108 @@ body {
 .link {
   @apply text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300;
 }
-
-.nav-ul {
-  @apply list-none p-0 m-0 flex flex-row justify-center h-full;
+.navbar-container {
+  @apply  text-gray-700 dark:text-gray-50 bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded shadow-lg
 }
 
-.nav-link {
-  @apply relative inline-block px-4 py-2 mx-1 text-white font-bold rounded transition-all duration-300 ease-in-out;
-  @apply text-gray-700 dark:text-gray-50 bg-gradient-to-r from-indigo-300 to-purple-400 dark:from-indigo-500 dark:to-purple-600; /* Light mode gradient */
+.game-menu {
+  @apply flex justify-center items-center relative;
+}
+.menu-item {
+  @apply px-4 py-2 text-gray-800 dark:text-gray-100 font-bold text-lg transition-all duration-300 ease-in-out;
+  @apply hover:text-gray-500 hover:dark:text-gray-50 hover:transform hover:-translate-y-1;
 }
 
-.nav-link:hover {
+.menu-item.active-link {
+  @apply px-4 py-2 text-gray-800 dark:text-gray-100 font-bold text-lg transition-all duration-300 ease-in-out scale-105;
+  @apply hover:text-gray-500 hover:dark:text-gray-50 hover:transform hover:-translate-y-1;
+  /* Glow effect on text */
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  /* Lightsaber effect */
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    /* Lightsaber colors */
+    background: linear-gradient(to right, #ff0000, #b13a06, #d31515); /* Normal mode */
+    border-radius: 10px;
+    animation: lightsaber 2s infinite;
+  }
+}
+
+.dark .menu-item.active-link::after {
+  background: linear-gradient(to right, #2c2c67, #1d3062, #4e36b6); /* Dark mode */
+}
+
+@keyframes lightsaber {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+.app-card {
+  @apply transition-all duration-300 ease-in-out bg-gradient-to-br from-blue-200 to-purple-300 dark:from-blue-800 dark:to-purple-800 text-gray-800 dark:text-gray-100 shadow-md hover:shadow-lg;
+}
+
+.app-card:hover {
   @apply transform -translate-y-1;
-  @apply text-gray-700 dark:text-gray-50 bg-gradient-to-r  from-indigo-300 to-purple-300 dark:from-indigo-400 dark:to-purple-500; /* Reverse gradient on hover */
 }
 
-.nav-link.active {
-  @apply bg-white text-indigo-600 shadow-lg; /* Active state styles */
+button {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+button:hover {
+  @apply transform -translate-y-0.5;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.blue.300') theme('colors.blue.100');
+}
+
+.dark .scrollbar-thin {
+  scrollbar-color: theme('colors.blue.700') theme('colors.blue.900');
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  @apply w-2;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  @apply bg-blue-100 dark:bg-blue-900 rounded-full;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  @apply bg-blue-300 dark:bg-blue-700 rounded-full;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  @apply bg-blue-400 dark:bg-blue-600;
+}
+.btn {
+  @apply font-semibold py-2 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-md flex items-center;
+}
+
+.btn-primary {
+  @apply bg-blue-500 text-white hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800;
+}
+
+.btn-secondary {
+  @apply bg-blue-200 text-gray-700 hover:bg-blue-300 focus:ring-4 focus:ring-blue-200 dark:bg-blue-700 dark:text-gray-200 dark:hover:bg-blue-600 dark:focus:ring-blue-600;
+}
+
+.search-input {
+  @apply w-full border-b-2 border-blue-200 dark:border-blue-700 py-2 px-4 pl-10 transition-colors duration-300 ease-in-out focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 bg-transparent text-gray-800 dark:text-gray-100;
 }
