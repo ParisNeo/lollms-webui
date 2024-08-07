@@ -197,24 +197,24 @@ body {
   @apply hover:text-gray-500 hover:dark:text-gray-50 hover:transform hover:-translate-y-1;
   /* Glow effect on text */
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-  /* Lightsaber effect */
-  position: relative;
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 0;
-    width: 100%;
-    height: 5px;
-    /* Lightsaber colors */
-    background: linear-gradient(to right, #ff0000, #b13a06, #d31515); /* Normal mode */
-    border-radius: 10px;
-    animation: lightsaber 2s infinite;
-  }
+}
+
+.menu-item.active-link::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  /* Lightsaber colors */
+  z-index: 10000;
+  background: linear-gradient(to right, #00ff00, #00ff00, #00ff00); /* Normal mode */
+  border-radius: 10px;
+  animation: lightsaber 2s infinite;
 }
 
 .dark .menu-item.active-link::after {
-  background: linear-gradient(to right, #2c2c67, #1d3062, #4e36b6); /* Dark mode */
+  background: linear-gradient(to right, #ff0000, #ff0000, #ff0000); /* Dark mode */
 }
 
 @keyframes lightsaber {
@@ -228,6 +228,8 @@ body {
     transform: scale(1);
   }
 }
+
+
 
 
 .app-card {
