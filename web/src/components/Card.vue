@@ -1,11 +1,12 @@
 <template>
+  <div>
   <div v-if="isActive" class="overlay" @click="toggleCard"></div>
   <div v-show="shrink===false"
     :class="[
       'border-blue-300 rounded-lg shadow-lg p-2',
       cardWidthClass,
       'm-2',
-      {'bg-white dark:bg-gray-800': is_subcard},
+      {'subcard': is_subcard},
       {'bg-white dark:bg-gray-900': !is_subcard},
       { hovered: !disableHoverAnimation && isHovered, active: isActive }
     ]"
@@ -33,8 +34,8 @@
   <div v-else v-show="shrink===true"  @click="shrink=false" class="bg-white text-center text-2xl dark:bg-gray-500 border-2 border-blue-300 rounded-lg shadow-lg p-0 h-7 cursor-pointer hover:h-8 hover:bg-blue-300">
     +    
   </div>
+  </div>
 </template>
-
 <script>
 export default {
   props: {
@@ -115,28 +116,24 @@ export default {
 </script>
 
 <style>
-/* Add the animation for the hover effect */
-.hovered {
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  transform: scale(1.1); /* You can adjust the scale value as per your preference */
-}
-
-/* Add the styles for centering the card when it's active */
-.active {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); /* You can adjust the opacity as per your preference */
-   /* Make sure the overlay is above other elements */
-  pointer-events: all; /* Allow interactions with the overlay itself */
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.hovered {
+  transform: scale(1.05);
+  transition: transform 0.2s ease-in-out;
+}
+
+.active {
+  transform: scale(1.1);
+  transition: transform 0.2s ease-in-out;
 }
 </style>
+

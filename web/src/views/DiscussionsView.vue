@@ -262,7 +262,7 @@
     </transition>
         <div v-if="isReady" class="relative flex flex-col flex-grow" >
             <div id="messages-list"
-                class="w-full z-0 flex flex-col  flex-grow  overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+                class="w-full z-0 flex flex-col  flex-grow  overflow-y-auto scrollbar"
                 :class="isDragOverChat ? 'pointer-events-none' : ''">
 
                 <!-- CHAT AREA -->

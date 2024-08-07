@@ -287,3 +287,44 @@ button:hover {
 .search-input {
   @apply w-full border-b-2 border-blue-200 dark:border-blue-700 py-2 px-4 pl-10 transition-colors duration-300 ease-in-out focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 bg-transparent text-gray-800 dark:text-gray-100;
 }
+
+.scrollbar {
+  @apply scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary
+}
+
+.card-title {
+  @apply text-xl font-bold text-gray-900 dark:text-white mb-2;
+}
+
+.card-content {
+  @apply text-gray-700 dark:text-gray-300;
+}
+
+.card-footer {
+  @apply mt-4 flex justify-between items-center;
+}
+
+.card-footer-button {
+  @apply bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded;
+}
+
+/* Subcard styles */
+.subcard {
+  @apply bg-gray-100 dark:bg-gray-700 rounded-lg shadow-md p-4;
+}
+
+.subcard-title {
+  @apply text-lg font-bold text-gray-900 dark:text-white mb-2;
+}
+
+.subcard-content {
+  @apply text-gray-700 dark:text-gray-300;
+}
+
+.subcard-footer {
+  @apply mt-4 flex justify-between items-center;
+}
+
+.subcard-footer-button {
+  @apply bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded;
+}

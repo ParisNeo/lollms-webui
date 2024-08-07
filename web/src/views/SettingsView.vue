@@ -2,7 +2,7 @@
     <div class="container flex flex-row shadow-lg p-10 pt-0 overflow-y-scroll w-full background-color scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
         <!-- CONTROL PANEL -->
         <div
-            class="sticky top-0 z-10 flex flex-row mb-2 p-3 gap-3 w-full rounded-b-lg panel-color  shadow-lg">
+            class="sticky top-0 z-10 flex flex-row mb-2 p-3 gap-3 w-full rounded-b-lg  panels-color  shadow-lg">
             <!-- SAVE CONFIG -->
             <div v-if="showConfirmation" class="flex gap-3 flex-1 items-center duration-75">
                 <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Cancel" type="button"
@@ -15,7 +15,7 @@
                 </button>
             </div>
             <!-- SAVE AND RESET -->
-            <div v-if="!showConfirmation" class="flex gap-3 flex-1 items-center ">
+            <div v-if="!showConfirmation" class="flex gap-3 flex-1 items-center">
                 <button title="Reset configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90"
                     @click="reset_configuration()">
                     <i data-feather="refresh-ccw"></i>
