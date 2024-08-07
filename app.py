@@ -23,7 +23,7 @@ if not PackageManager.check_package_installed_with_version("pipmaster", expected
     PackageManager.install_or_update("pipmaster")
 ASCIIColors.success("OK")
 
-expected_lollmsvectordb_version = "0.7.7"
+expected_lollmsvectordb_version = "0.7.9"
 ASCIIColors.yellow(f"Checking lollmsvectordb ({expected_lollmsvectordb_version}) ...", end="", flush=True)
 if not PackageManager.check_package_installed_with_version("lollmsvectordb", expected_lollmsvectordb_version):
     PackageManager.install_or_update("lollmsvectordb")

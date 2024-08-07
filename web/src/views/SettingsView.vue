@@ -1285,7 +1285,21 @@
                                 class="w-5 mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                 >
                             </td>
+                            </tr>    
+                            <tr>
+                            <td style="min-width: 200px;">
+                                <label for="rag_deactivate" class="text-sm font-bold" style="margin-right: 1rem;" title="Useful for very big contexts and global tasks that require the whole document">Use all the document content (No split):</label>
+                            </td>
+                            <td>
+                                <input v-model="configFile.rag_deactivate"
+                                type="checkbox"
+                                @change="settingsChanged=true"
+                                class="w-5 mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                            </td>
                             </tr>
+
+                            
                             
                         </table>
                     </Card>

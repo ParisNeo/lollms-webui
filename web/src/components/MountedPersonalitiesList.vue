@@ -267,7 +267,7 @@ export default {
         async handleOpenFolder(pers){
             const data = {
                                     client_id:this.$store.state.client_id, 
-                                    personality_folder: pers.personality.folder
+                                    personality_folder: pers.personality.category+"/"+pers.personality.folder
                                 }
             console.log(data)                    
             await axios.post("/open_personality_folder",
