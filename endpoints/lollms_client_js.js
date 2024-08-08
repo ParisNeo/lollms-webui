@@ -105,7 +105,6 @@ class LollmsClient {
        * @returns {Array} A list of tokens representing the tokenized prompt.
        */
       const output = await axios.post("/lollms_tokenize", {"prompt": prompt});
-      console.log(output.data.named_tokens)
       return output.data.named_tokens
     }
   async detokenize(tokensList) {
@@ -657,9 +656,76 @@ extractCodeBlocks(text) {
 
   return codeBlocks;
 }
+/**
+ * Updates the given code based on the provided query string.
+ * The query string can contain two types of modifications:
+ * 1. FULL_REWRITE: Completely replaces the original code with the new code.
+ * 2. REPLACE: Replaces specific code snippets within the original code.
+ *
+ * @param {string} originalCode - The original code to be updated.
+ * @param {string} queryString - The string containing the update instructions.
+ * @returns {object} - An object with the following properties:
+ *   - updatedCode: The updated code.
+ *   - modifications: An array of objects representing the changes made, each with properties 'oldCode' and 'newCode'.
+ *   - hasQuery: A boolean indicating whether the queryString contained any valid queries.
+ */
+updateCode(originalCode, queryString) {
+  const queries = queryString.split('# REPLACE\n');
+  let updatedCode = originalCode;
+  const modifications = [];
 
+  // Check if there's a FULL_REWRITE first
+  const fullRewriteStart = queryString.indexOf('# FULL_REWRITE');
+  if (fullRewriteStart !== -1) {
+    const newCode = queryString.slice(fullRewriteStart + 14).trim();
+    updatedCode = newCode;
+    modifications.push({
+      oldCode: originalCode,
+      newCode
+    });
+    return {
+      updatedCode,
+      modifications,
+      hasQuery: true
+    };
+  }
+
+  if (queries.length === 1 && queries[0].trim() === '') {
+    console.log("No queries detected");
+    return {
+      updatedCode,
+      modifications: [],
+      hasQuery: false
+    };
+  }
+
+  for (const query of queries) {
+    if (query.trim() === '') continue;
+
+    const originalCodeStart = query.indexOf('# ORIGINAL\n') + 11;
+    const originalCodeEnd = query.indexOf('\n# SET\n');
+    const oldCode = query.slice(originalCodeStart, originalCodeEnd);
+
+    const newCodeStart = query.indexOf('# SET\n') + 6;
+    const newCode = query.slice(newCodeStart);
+
+    const modification = {
+      oldCode: oldCode.trim(),
+      newCode: newCode.trim()
+    };
+    modifications.push(modification);
+
+    updatedCode = updatedCode.replace(oldCode, newCode.trim());
+  }
+
+  console.log("New code", updatedCode);
+  return {
+    updatedCode,
+    modifications,
+    hasQuery: true
+  };
 }
-
+}
 
 class LOLLMSRAGClient {
   constructor(baseURL, apiKey) {

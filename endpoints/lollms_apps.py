@@ -260,6 +260,25 @@ async def lollms_js():
         data = file.read()
     return data
 
+@router.get("/lollms_markdown_renderer", response_class=PlainTextResponse)
+async def lollms_markdown_renderer():
+    # Define the path to the JSON file using pathlib
+    file_path = Path(__file__).parent / "lollms_markdown_renderer.js"
+    
+    # Read the JSON file
+    with file_path.open('r') as file:
+        data = file.read()
+    return data
+
+@router.get("/lollms_markdown_renderer_css")
+async def lollms_markdown_renderer_css():
+    # Define the path to the CSS file using pathlib
+    file_path = Path(__file__).parent / "lollms_markdown_renderer.css"
+
+    # Use FileResponse to serve the CSS file
+    return FileResponse(file_path, media_type="text/css")
+
+
 @router.get("/template")
 async def lollms_js():
     return {

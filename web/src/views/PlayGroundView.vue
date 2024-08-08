@@ -6,7 +6,6 @@
             <button v-show="!generating" id="generate-button" title="Generate from current cursor position" @click="generate" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="pen-tool"></i></button>
             <button v-show="!generating" id="generate-next-button" title="Generate from next place holder" @click="generate_in_placeholder" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="archive"></i></button>
             <button v-show="!generating" id="tokenize" title="Tokenize text" @click="tokenize_text" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><img width="25" height="25" :src="tokenize_icon"></button>
-            
             <span class="w-80"></span>
             <button v-show="generating" id="stop-button" @click="stopGeneration" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="x"></i></button>
             <button
@@ -36,9 +35,21 @@
             >   
               <img v-if="!pending" :src="is_deaf_transcribing?deaf_on:deaf_off" height="25">
               <img v-if="pending" :src="loading_icon" height="25">
-            </button>            
+            </button>
 
-            <button
+.slider-value {
+    display: inline-block;
+    margin-left: 10px;
+    color: #6b7280;
+    font-size: 14px;
+  }
+.small-button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+</style>
+
+<button
                 type="button"
                 title="Start recording audio"
                 @click="startRecording"
@@ -47,7 +58,6 @@
             >   
             <img v-if="!pending" :src="is_recording?rec_on:rec_off" height="25">
             <img v-if="pending" :src="loading_icon" height="25">
-                        
             </button>            
             <button v-if="!isSynthesizingVoice"
                     title="generate audio from the text"
@@ -67,7 +77,7 @@
             <button v-show="!generating" id="export-button" @click="exportText" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="upload"></i></button>
             <button v-show="!generating" id="import-button" @click="importText" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="download"></i></button>
 
-            <div class="flex gap-3 flex-1 items-center flex-grow  justify-end">   
+<div class="flex gap-3 flex-1 items-center flex-grow  justify-end">   
             <button 
             class="border-2 text-blue-600 dark:text-white border-blue-300 p-2 rounded shadow-lg hover:border-gray-600 dark:link-item-dark cursor-pointer"
             @click="tab_id='source'" :class="{'bg-blue-200 dark:bg-blue-500':tab_id=='source'}">
@@ -80,7 +90,6 @@
             </button>
             </div>
             <input type="file" id="import-input" class="hidden">
-            
           </div>
           <div class="flex-grow m-2 p-2 border border-blue-300 rounded-md border-2 border-blue-300 m-2 p-4" :class="{ 'border-red-500': generating }">
             <div  v-if="tab_id === 'source'">
@@ -117,7 +126,6 @@
                                 title="Add bash block" @click.stop="addBlock('bash')">
                                 <img :src="bash_block" width="25" height="25">
                             </div>
-                            
                             <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
                                 title="Copy message to clipboard" @click.stop="copyContentToClipboard()">
                                 <i data-feather="copy"></i>
@@ -133,7 +141,7 @@
                 >
                 </textarea>
 
-              <span>Cursor position {{ cursorPosition }}</span>
+<span>Cursor position {{ cursorPosition }}</span>
             </div>
             <audio controls v-if="audio_url!=null"  :key="audio_url">
                 <source :src="audio_url" type="audio/wav"  ref="audio_player">
@@ -141,15 +149,19 @@
             </audio>  
             <tokens-hilighter :namedTokens="namedTokens">
 
-            </tokens-hilighter>
+</tokens-hilighter>
             <div  v-if="tab_id === 'render'">
               <MarkdownRenderer ref="mdRender" :client_id="this.$store.state.client_id" :message_id="0" :discussion_id="0" :markdown-text="text" class="mt-4 p-2 rounded shadow-lg dark:bg-bg-dark">
               </MarkdownRenderer>          
             </div>
           </div>
       </div>
-      <Card title="settings"  class="slider-container ml-0 mr-0"  :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
-        <Card  title="Model" class="slider-container ml-0 mr-0" :is_subcard="true" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
+      <div class="settings-button" @click="showSettings = !showSettings">
+        <i data-feather="settings"></i> Settings
+      </div>
+      <div v-if="showSettings" class="settings bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Settings</h2>
+        <Card title="Model"  class="slider-container ml-0 mr-0"  :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
           <select v-model="this.$store.state.selectedModel" @change="setModel" class="bg-white dark:bg-black m-0 border-2 rounded-md shadow-sm w-full">
             <option v-for="model in models" :key="model" :value="model">
               {{ model }}
@@ -171,7 +183,7 @@
               </div>
           </div>
 
-        </Card>
+</Card>
         <Card  title="Presets" class="slider-container ml-0 mr-0" :is_subcard="true" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
           <select v-model="selectedPreset" class="bg-white dark:bg-black mb-2 border-2 rounded-md shadow-sm w-full">
             <option v-for="preset in presets" :key="preset" :value="preset">
@@ -183,11 +195,10 @@
           <button class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer" @click="addPreset"  title="Add this text as a preset"><i data-feather="plus"></i></button>
           <button class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer" @click="removePreset"  title="Remove preset"><i data-feather="x"></i></button>
           <button class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer" @click="reloadPresets"  title="Reload presets list"><i data-feather="refresh-ccw"></i></button>
-          
           </Card>
           <Card  title="Generation params" class="slider-container ml-0 mr-0" :is_subcard="true" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
 
-            <div class="slider-container ml-2 mr-2">
+<div class="slider-container ml-2 mr-2">
               <h3 class="text-gray-600">Temperature</h3>
               <input type="range" v-model="temperature" min="0" max="5" step="0.1" class="w-full">
               <span class="slider-value text-gray-500">Current value: {{ temperature }}</span>
@@ -228,7 +239,7 @@
               <span class="slider-value text-gray-500">Current value: {{ seed }}</span>
             </div>
           </Card>
-        </Card>
+        </div>
     </div>
   </div>
   <Toast ref="toast"/>
