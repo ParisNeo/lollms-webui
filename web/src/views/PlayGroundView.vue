@@ -36,7 +36,7 @@
               <img v-if="!pending" :src="is_deaf_transcribing?deaf_on:deaf_off" height="25">
               <img v-if="pending" :src="loading_icon" height="25">
             </button>
-
+<style>
 .slider-value {
     display: inline-block;
     margin-left: 10px;
@@ -159,7 +159,7 @@
       <div class="settings-button" @click="showSettings = !showSettings">
         <i data-feather="settings"></i> Settings
       </div>
-      <div v-if="showSettings" class="settings bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+      <div v-if="showSettings" class="settings scrollbar bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Settings</h2>
         <Card title="Model"  class="slider-container ml-0 mr-0"  :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
           <select v-model="this.$store.state.selectedModel" @change="setModel" class="bg-white dark:bg-black m-0 border-2 rounded-md shadow-sm w-full">
@@ -431,6 +431,7 @@ export default {
                 'accept': 'application/json',
                 'Content-Type': 'application/json'
             },
+      showSettings: false,
       pending:false,
       is_recording:false,
       is_deaf_transcribing:false,
@@ -1046,10 +1047,11 @@ export default {
     position: fixed;
     top: 0;
     right: 0;
-    width: 250px;
+    width: 500px;
     background-color: #fff;
     z-index: 1000;
-    display: none;
+    overflow-y: auto;
+    height: 100%;
   }
 
   .settings-button {

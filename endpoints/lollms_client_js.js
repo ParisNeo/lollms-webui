@@ -704,7 +704,7 @@ updateCode(originalCode, queryString) {
 
     const originalCodeStart = query.indexOf('# ORIGINAL\n') + 11;
     const originalCodeEnd = query.indexOf('\n# SET\n');
-    const oldCode = query.slice(originalCodeStart, originalCodeEnd);
+    let oldCode = query.slice(originalCodeStart, originalCodeEnd);
 
     const newCodeStart = query.indexOf('# SET\n') + 6;
     const newCode = query.slice(newCodeStart);
@@ -713,12 +713,26 @@ updateCode(originalCode, queryString) {
       oldCode: oldCode.trim(),
       newCode: newCode.trim()
     };
+    if(oldCode =="<old_code>"){
+      oldCode = originalCode
+    }
+    console.log("oldCode:")
+    console.log(oldCode)
+    console.log("newCode:")
+    console.log(newCode)
+    console.log("Before update", updatedCode);
+    if(oldCode===updatedCode){
+      console.log("Changing the whole content")
+      updatedCode = newCode
+    }
+    else{
+      updatedCode = updatedCode.replace(oldCode, newCode.trim());
+    }
+    console.log("After update", updatedCode);
     modifications.push(modification);
 
-    updatedCode = updatedCode.replace(oldCode, newCode.trim());
   }
 
-  console.log("New code", updatedCode);
   return {
     updatedCode,
     modifications,

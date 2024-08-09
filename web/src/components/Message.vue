@@ -781,7 +781,7 @@ export default {
                 }
         },
         'message.ui': function (newContent) {
-            console.log("ui changed")
+            console.log("ui changed to", newContent)
             this.ui_componentKey++;
         },
         showConfirmation() {
