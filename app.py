@@ -9,46 +9,78 @@ from lollms.utilities import PackageManager
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
-print("Checking ParisNeo libraries installation")
-expected_ascii_colors_version = "0.4.0"
+import threading
+import time
+import sys
+from typing import List, Tuple
+expected_ascii_colors_version = "0.4.2"
 print(f"Checking ascii_colors ({expected_ascii_colors_version}) ...", end="", flush=True)
-if not PackageManager.check_package_installed_with_version("ascii_colors", ):
+if not PackageManager.check_package_installed_with_version("ascii_colors", expected_ascii_colors_version):
     PackageManager.install_or_update("ascii_colors")
 from ascii_colors import ASCIIColors
 ASCIIColors.success("OK")
 
-expected_pipmaster_version = "0.2.4"
-ASCIIColors.yellow(f"Checking pipmaster ({expected_pipmaster_version}) ...", end="", flush=True)
-if not PackageManager.check_package_installed_with_version("pipmaster", expected_pipmaster_version):
+ASCIIColors.yellow(f"Checking pipmaster ({expected_ascii_colors_version}) ...", end="", flush=True)
+if not PackageManager.check_package_installed_with_version("pipmaster", "0.2.4"):
     PackageManager.install_or_update("pipmaster")
-ASCIIColors.success("OK")
-
-expected_lollmsvectordb_version = "0.7.9"
-ASCIIColors.yellow(f"Checking lollmsvectordb ({expected_lollmsvectordb_version}) ...", end="", flush=True)
-if not PackageManager.check_package_installed_with_version("lollmsvectordb", expected_lollmsvectordb_version):
-    PackageManager.install_or_update("lollmsvectordb")
-ASCIIColors.success("OK")
-
-expected_freedom_search_version = "0.1.7"
-ASCIIColors.yellow(f"Checking freedom_search ({expected_freedom_search_version}) ...", end="", flush=True)
-if not PackageManager.check_package_installed_with_version("freedom_search", expected_freedom_search_version):
-    PackageManager.install_or_update("freedom-search")
-ASCIIColors.success("OK")
-
-expected_scrapemaster_version = "0.1.6"
-ASCIIColors.yellow(f"Checking scrapemaster ({expected_scrapemaster_version}) ...", end="", flush=True)
-if not PackageManager.check_package_installed_with_version("scrapemaster", expected_scrapemaster_version):
-    PackageManager.install_or_update("scrapemaster")
-ASCIIColors.success("OK")
- 
-expected_lollms_client_version = "0.6.2"
-ASCIIColors.yellow(f"Checking lollms_client ({expected_lollms_client_version}) ...", end="", flush=True)
-if not PackageManager.check_package_installed_with_version("lollms_client", expected_lollms_client_version):
-    PackageManager.install_or_update("lollms-client")
+import pipmaster as pm
 ASCIIColors.success("OK")
 
 
+def animate(text: str, stop_event: threading.Event):
+    animation = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+    idx = 0
+    while not stop_event.is_set():
+        ASCIIColors.yellow(f"\r{text} {animation[idx % len(animation)]}", end="", flush=True)
+        idx += 1
+        time.sleep(0.1)
+    print("\r" + " " * 50, end="\r")  # Clear the line
 
+def check_and_install_package(package: str, version: str):
+    stop_event = threading.Event()
+    animation_thread = threading.Thread(target=animate, args=(f"Checking {package} ({version})", stop_event))
+    animation_thread.start()
+
+    try:
+        installed = PackageManager.check_package_installed_with_version(package, version)
+        
+        if not installed:
+            stop_event.set()
+            animation_thread.join()
+            print("\r" + " " * 50, end="\r")  # Clear the line
+            PackageManager.install_or_update(package)
+        
+        stop_event.set()
+        animation_thread.join()
+        
+        print("\r" + " " * 50, end="\r")  # Clear the line
+        ASCIIColors.yellow(f"Checking {package} ({version}) ...", end="")
+        ASCIIColors.success("OK")
+    
+    except Exception as e:
+        stop_event.set()
+        animation_thread.join()
+        print("\r" + " " * 50, end="\r")  # Clear the line
+        ASCIIColors.red(f"Error checking/installing {package}: {str(e)}")
+
+packages: List[Tuple[str, str]] = [
+    ("lollmsvectordb", "0.7.9"),
+    ("freedom_search", "0.1.7"),
+    ("scrapemaster", "0.1.6"),
+    ("lollms_client", "0.6.2")
+]
+
+def main():
+    ASCIIColors.cyan("Checking ParisNeo libraries installation")
+    print()
+
+    for package, version in packages:
+        check_and_install_package(package, version)
+        print()  # Add a newline for better readability between package checks
+
+    ASCIIColors.green("All packages have been checked and are up to date!")
+
+main()
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse

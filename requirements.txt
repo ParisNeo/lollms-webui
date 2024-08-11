@@ -32,4 +32,7 @@ pipmaster>=0.1.7
 lollmsvectordb>=0.3.0
 freedom-search
 scrapemaster
-poetry
+
+aiofiles
+python-multipart
+zipfile36
