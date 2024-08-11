@@ -1,13 +1,9 @@
-from fastapi import APIRouter, HTTPException
-from fastapi.responses import PlainTextResponse
-from pathlib import Path
-
-from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import PlainTextResponse
+from fastapi import FastAPI, File, UploadFile, HTTPException, APIRouter, BackgroundTasks
+from fastapi.responses import JSONResponse, StreamingResponse, PlainTextResponse
 from pydantic import BaseModel, Field
 from fastapi.responses import FileResponse
 from lollms_webui import LOLLMSWebUI
-from pydantic import BaseModel
+from packaging import version
 from pathlib import Path
 import shutil
 import uuid
@@ -17,7 +13,6 @@ import yaml
 from lollms.security import check_access, sanitize_path
 import os
 import subprocess
-import yaml
 import uuid
 import platform
 from ascii_colors import ASCIIColors, trace_exception
@@ -34,12 +29,14 @@ def check_lollms_models_zoo():
 ASCIIColors.execute_with_animation("Checking zip library.", check_lollms_models_zoo)
 
 
-from fastapi import APIRouter, HTTPException
-from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from pathlib import Path
 import zipfile
 import io
+
+
+import shutil
+
 
 router = APIRouter()
 lollmsElfServer: LOLLMSWebUI = LOLLMSWebUI.get_instance()
@@ -48,7 +45,23 @@ class AuthRequest(BaseModel):
     client_id: str
 
 class AppInfo:
-    def __init__(self, uid: str, name: str, folder_name: str, icon: str, category:str, description: str, author:str, version:str, model_name:str, disclaimer:str, installed: bool):
+    def __init__(
+            self, 
+            uid: str, 
+            name: str, 
+            folder_name: str, 
+            icon: str, 
+            category:str, 
+            description: str, 
+            author:str, 
+            version:str, 
+            model_name:str, 
+            disclaimer:str, 
+            has_server:bool, 
+            is_public:bool,
+            has_update:bool,
+            installed: bool
+        ):
         self.uid = uid
         self.name = name
         self.folder_name = folder_name
@@ -59,22 +72,31 @@ class AppInfo:
         self.version = version
         self.model_name = model_name
         self.disclaimer = disclaimer
+        self.has_server = has_server
+        self.has_update = has_update
+        self.is_public = is_public
         self.installed = installed
 
 @router.get("/apps")
 async def list_apps():
     apps = []
     apps_zoo_path = lollmsElfServer.lollms_paths.apps_zoo_path
-    
+    REPO_DIR = lollmsElfServer.lollms_paths.personal_path/"apps_zoo_repo"
+    if REPO_DIR.exists():
+        remote_apps = [a.stem for a in REPO_DIR.iterdir()]
+    else:
+        remote_apps = []
     for app_name in apps_zoo_path.iterdir():
         if app_name.is_dir():
             icon_path = app_name / "icon.png"
             description_path = app_name / "description.yaml"
             description = ""
             author = ""
-            version = ""
+            current_version = ""
             model_name = ""
             disclaimer = ""
+            has_server = False
+            is_public = app_name.stem in remote_apps
             
             if description_path.exists():
                 with open(description_path, 'r') as file:
@@ -83,13 +105,29 @@ async def list_apps():
                     category = data.get('category', 'generic')
                     description = data.get('description', '')
                     author = data.get('author', '')
-                    version = data.get('version', '')
+                    current_version = data.get('version', '')
                     model_name = data.get('model_name', '')
                     disclaimer = data.get('disclaimer', 'No disclaimer provided.')
+                    has_server = data.get('has_server', False)
                     installed = True
             else:
                 installed = False
-                    
+
+            if is_public:
+                try:
+                    with (REPO_DIR / app_name / "description.yaml").open("r") as file:
+                        # Parse the YAML content
+                        yaml_content = yaml.safe_load(file)
+                        repo_version = yaml_content.get("version", "0")
+                        
+                        # Compare versions using packaging.version
+                        has_update = version.parse(str(repo_version)) > version.parse(str(current_version))
+                except (yaml.YAMLError, FileNotFoundError) as e:
+                    print(f"Error reading or parsing YAML file: {e}")
+                    has_update = False
+            else:
+                has_update = False
+
             if icon_path.exists():
                 uid = str(uuid.uuid4())
                 apps.append(AppInfo(
@@ -100,9 +138,12 @@ async def list_apps():
                     category=category,
                     description=description,
                     author=author,
-                    version=version,
+                    version=current_version,
                     model_name=model_name,
                     disclaimer=disclaimer,
+                    has_server=has_server,
+                    is_public=is_public,
+                    has_update=has_update,
                     installed=installed
                 ))
     
@@ -196,13 +237,6 @@ async def download_app(input_data: AppNameInput):
         media_type="application/zip",
         headers={"Content-Disposition": f"attachment; filename={app_name}.zip"}
     )
-
-import os
-import yaml
-from fastapi import FastAPI, File, UploadFile, HTTPException
-from fastapi.responses import JSONResponse
-import zipfile
-import shutil
 
 @router.post("/upload_app")
 async def upload_app(client_id: str, file: UploadFile = File(...)):
@@ -352,6 +386,9 @@ def load_apps_data():
                         version=description_data.get('version', ''),
                         model_name=description_data.get('model_name', ''),
                         disclaimer=description_data.get('disclaimer', 'No disclaimer provided.'),
+                        has_server=description_data.get('has_server', False),
+                        is_public=True,
+                        has_update=False,
                         installed=True
                     ))
     return apps
@@ -416,9 +453,26 @@ async def fetch_github_apps():
     apps = load_apps_data()
     return {"apps": apps}
 
-@router.get("/apps/{app_name}/icon")
-async def get_app_icon(app_name: str):
-    icon_path = lollmsElfServer.lollms_paths.apps_zoo_path / app_name / "icon.png"
-    if not icon_path.exists():
-        raise HTTPException(status_code=404, detail="Icon not found")
-    return FileResponse(icon_path)
+def run_server(app_path: Path):    
+    server_script = app_path / "server.py"
+    if server_script.exists():
+        subprocess.Popen(["python", str(server_script)], cwd=str(app_path))
+    else:
+        print(f"Server script not found for app: {app_path.name}")
+
+@router.post("/apps/start_server")
+async def start_app_server(request: OpenFolderRequest):
+    check_access(lollmsElfServer, request.client_id)
+    app_path = lollmsElfServer.lollms_paths.apps_zoo_path / request.app_name
+    
+    if not app_path.exists():
+        raise HTTPException(status_code=404, detail="App not found")
+    
+    server_script = app_path / "server.py"
+    if not server_script.exists():
+        raise HTTPException(status_code=404, detail="Server script not found for this app")
+    
+    # Start the server in the background
+    background_tasks.add_task(run_server, app_path)
+    
+    return {"status": "success", "message": f"Server for {app_name} is starting"}
