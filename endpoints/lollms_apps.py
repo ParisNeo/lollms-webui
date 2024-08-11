@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException, APIRouter, BackgroundTasks
+from fastapi import FastAPI, File, UploadFile, HTTPException, APIRouter, Response
 from fastapi.responses import JSONResponse, StreamingResponse, PlainTextResponse
 from pydantic import BaseModel, Field
 from fastapi.responses import FileResponse
@@ -117,10 +117,11 @@ async def list_apps():
 
             if is_public:
                 try:
-                    with (REPO_DIR / app_name / "description.yaml").open("r") as file:
+                    with (REPO_DIR / app_name.stem / "description.yaml").open("r") as file:
                         # Parse the YAML content
                         yaml_content = yaml.safe_load(file)
                         repo_version = yaml_content.get("version", "0")
+                        print(f"{app_name.stem}:\ncurrent_version: {current_version}\nrepo_vsersion: {repo_version}")
                         
                         # Compare versions using packaging.version
                         has_update = version.parse(str(repo_version)) > version.parse(str(current_version))
@@ -398,18 +399,21 @@ def load_apps_data():
                     ))
     return apps
 
-@router.get("/lollms_assets/{asset_type}/{file_name}", response_class=PlainTextResponse)
+
+@router.get("/lollms_assets/{asset_type}/{file_name}")
 async def lollms_assets(asset_type: str, file_name: str):
     # Define the base path
     base_path = Path(__file__).parent
 
-    # Determine the correct directory based on asset_type
+    # Determine the correct directory and file extension based on asset_type
     if asset_type == "js":
         directory = base_path / "libraries"
         file_extension = ".js"
+        content_type = "application/javascript"
     elif asset_type == "css":
         directory = base_path / "styles"
         file_extension = ".css"
+        content_type = "text/css"
     else:
         raise HTTPException(status_code=400, detail="Invalid asset type")
 
@@ -423,14 +427,13 @@ async def lollms_assets(asset_type: str, file_name: str):
     if not file_path.is_file() or not file_path.is_relative_to(directory):
         raise HTTPException(status_code=404, detail="File not found")
 
-    # Read and return the file content
+    # Read and return the file content with the appropriate content type
     try:
         with file_path.open('r') as file:
             content = file.read()
-        return content
+        return Response(content=content, media_type=content_type)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error reading file: {str(e)}")
-
 
 @router.get("/template")
 async def lollms_js():
