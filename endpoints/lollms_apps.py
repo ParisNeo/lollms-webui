@@ -17,6 +17,8 @@ import uuid
 import platform
 from ascii_colors import ASCIIColors, trace_exception
 import pipmaster as pm
+import sys
+
 if not pm.is_installed("httpx"):
     pm.install("httpx")
 import httpx
@@ -293,30 +295,33 @@ async def upload_app(client_id: str, file: UploadFile = File(...)):
             shutil.rmtree(temp_dir)
 
 
+import shutil
+from pathlib import Path
+
 @router.post("/install/{app_name}")
 async def install_app(app_name: str, auth: AuthRequest):
     check_access(lollmsElfServer, auth.client_id)
     REPO_DIR = lollmsElfServer.lollms_paths.personal_path/"apps_zoo_repo"
     
     # Create the app directory
-    app_path = lollmsElfServer.lollms_paths.apps_zoo_path/app_name  # Adjust the path as needed
+    app_path = lollmsElfServer.lollms_paths.apps_zoo_path/app_name
     os.makedirs(app_path, exist_ok=True)
 
-    # Define the local paths for the files to copy
-    files_to_copy = {
-        "icon.png":         REPO_DIR/app_name/"icon.png",
-        "description.yaml": REPO_DIR/app_name/"description.yaml",
-        "index.html":       REPO_DIR/app_name/"index.html"
-    }
+    source_dir = REPO_DIR/app_name
+    
+    if not source_dir.exists():
+        raise HTTPException(status_code=404, detail=f"App {app_name} not found in the local repository")
 
-    # Copy each file from the local repo
-    for file_name, local_path in files_to_copy.items():
-        if local_path.exists():
-            with open(local_path, 'rb') as src_file:
-                with open(app_path/file_name, 'wb') as dest_file:
-                    dest_file.write(src_file.read())
+    # Define directories to exclude
+    exclude_dirs = {'.vscode', '.git'}
+
+    # Copy all files and directories, excluding the ones in exclude_dirs
+    for item in source_dir.glob('*'):
+        if item.is_dir():
+            if item.name not in exclude_dirs:
+                shutil.copytree(item, app_path/item.name, dirs_exist_ok=True)
         else:
-            raise HTTPException(status_code=404, detail=f"{file_name} not found in the local repository")
+            shutil.copy2(item, app_path)
 
     return {"message": f"App {app_name} installed successfully."}
 
@@ -453,12 +458,40 @@ async def fetch_github_apps():
     apps = load_apps_data()
     return {"apps": apps}
 
+
+def install_requirements(app_path: Path):
+    requirements_file = app_path / "requirements.txt"
+    if requirements_file.exists():
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", str(requirements_file)])
+            print("Requirements installed successfully.")
+        except subprocess.CalledProcessError as e:
+            print(f"Error installing requirements: {e}")
+            raise
+
 def run_server(app_path: Path):    
     server_script = app_path / "server.py"
     if server_script.exists():
-        subprocess.Popen(["python", str(server_script)], cwd=str(app_path))
+        try:
+            # Install requirements if they exist
+            install_requirements(app_path)
+
+            # Determine the platform and open a terminal to execute the Python code.
+            system = platform.system()
+            if system == "Windows":
+                process = subprocess.Popen(f"""start cmd /k "cd /d "{app_path}" && python "{server_script}" && pause" """, shell=True)
+            elif system == "Darwin":  # macOS
+                process = subprocess.Popen(["open", "-a", "Terminal", f'cd "{app_path}" && python "{server_script}"'], shell=True)
+            elif system == "Linux":
+                process = subprocess.Popen(["x-terminal-emulator", "-e", f'bash -c "cd \\"{app_path}\\" && python \\"{server_script}\\"; exec bash"'], shell=True)
+            else:
+                raise Exception(f"Unsupported platform: {system}")
+
+        except Exception as ex:
+            # Stop the timer.
+            ASCIIColors.error(f"Error executing Python code: {ex}")
     else:
-        print(f"Server script not found for app: {app_path.name}")
+        ASCIIColors.error(f"Server script not found for app: {app_path.name}")
 
 @router.post("/apps/start_server")
 async def start_app_server(request: OpenFolderRequest):
@@ -473,6 +506,6 @@ async def start_app_server(request: OpenFolderRequest):
         raise HTTPException(status_code=404, detail="Server script not found for this app")
     
     # Start the server in the background
-    background_tasks.add_task(run_server, app_path)
+    run_server(app_path)
     
-    return {"status": "success", "message": f"Server for {app_name} is starting"}
+    return {"status": "success", "message": f"Server for {app_path} is starting"}

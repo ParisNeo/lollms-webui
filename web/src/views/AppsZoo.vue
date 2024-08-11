@@ -119,7 +119,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
           </button>
-          <button @click="openApp(app)" class="text-indigo-500 hover:text-indigo-600 transition duration-300 ease-in-out" title="Open">
+          <button v-if="app.installed" @click="openApp(app)" class="text-indigo-500 hover:text-indigo-600 transition duration-300 ease-in-out" title="Open">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
@@ -213,8 +213,10 @@ export default {
         app_name: appName
       };
 
+      this.$store.state.messageBox.showBlockingMessage("Loading server.\nThis may take some time the first time as some libraries need to be installed.")
       axios.post(`/apps/start_server`, payload)
         .then(response => {
+          this.$store.state.messageBox.hideBlockingMessage()
           // Handle successful server start
           console.log('Server start initiated:', response.data.message);
           // You might want to show a notification to the user here
@@ -225,6 +227,7 @@ export default {
           });
         })
         .catch(error => {
+          this.$store.state.messageBox.hideBlockingMessage()
           // Handle error
           console.error('Error starting server:', error);
           // Show an error notification
@@ -235,7 +238,7 @@ export default {
           });
         });
     },
-      triggerFileInput() {
+    triggerFileInput() {
       this.$refs.fileInput.click();
     },
     onFileSelected(event) {
