@@ -121,7 +121,6 @@ async def list_apps():
                         # Parse the YAML content
                         yaml_content = yaml.safe_load(file)
                         repo_version = yaml_content.get("version", "0")
-                        print(f"{app_name.stem}:\ncurrent_version: {current_version}\nrepo_vsersion: {repo_version}")
                         
                         # Compare versions using packaging.version
                         has_update = version.parse(str(repo_version)) > version.parse(str(current_version))
