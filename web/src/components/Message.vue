@@ -37,21 +37,36 @@
                 <div class="overflow-x-auto w-full overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
                     <!-- MESSAGE CONTENT -->
                     <details v-show="message != undefined && message.steps != undefined && message.steps.length>0" class="flex w-full cursor-pointer rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 mb-3.5 max-w-full">
-                        <summary class="grid min-w-72 select-none grid-cols-[40px,1fr] items-center gap-2.5 p-2">
-                            <div class="relative grid aspect-square place-content-center overflow-hidden rounded-lg bg-gray-300 dark:bg-gray-200">
-                                <img v-if="message.status_message!='Done' & message.status_message!= 'Generation canceled'" :src="loading_svg" class="w-50 h-50 absolute inset-0 text-gray-100 transition-opacity dark:text-gray-800 opacity-100">
-                                <img v-if="message.status_message== 'Generation canceled'" :src="failed_svg" class="w-50 h-50 absolute inset-0 text-gray-100 transition-opacity dark:text-gray-800 opacity-100">
-                                <img v-if="message.status_message=='Done'" :src="ok_svg" class="w-50 h-50 absolute m-2 w-6 inset-0 text-geen-100 transition-opacity dark:text-gray-800 opacity-100">
+                        <summary class="grid min-w-80 select-none grid-cols-[50px,1fr] items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
+                            <div class="relative grid aspect-square place-content-center overflow-hidden rounded-full bg-gradient-to-br from-blue-400 to-purple-500">
+                                <svg v-if="message.status_message !== 'Done' && message.status_message !== 'Generation canceled'" class="w-8 h-8 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <svg v-if="message.status_message === 'Generation canceled'" class="w-8 h-8 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                <svg v-if="message.status_message === 'Done'" class="w-8 h-8 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
                             </div> 
-                            <dl class="leading-4">
-                                <dd class="text-sm">Processing infos</dd>
-                                <dt class="flex items-center gap-1 truncate whitespace-nowrap text-[.82rem] text-gray-400">{{ message==undefined?"":message.status_message }}</dt>
+                            <dl class="leading-5">
+                                <dd class="text-lg font-semibold text-gray-800 dark:text-gray-200">Processing Info</dd>
+                                <dt class="flex items-center gap-1 truncate whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                    <span class="inline-block w-2 h-2 rounded-full" :class="{
+                                        'bg-blue-500 animate-pulse': message.status_message !== 'Done' && message.status_message !== 'Generation canceled',
+                                        'bg-red-500': message.status_message === 'Generation canceled',
+                                        'bg-green-500': message.status_message === 'Done'
+                                    }"></span>
+                                    {{ message === undefined ? '' : message.status_message }}
+                                </dt>
                             </dl>
-                        </summary> 
+                        </summary>
+
                         <div class="content px-5 pb-5 pt-4">
                             <ol class="list-none">
                                 <div v-for="(step, index) in message.steps" :key="'step-' + message.id + '-' + index" class="group border-l pb-6 last:!border-transparent last:pb-0 dark:border-gray-800" :style="{ backgroundColor: step.done ? 'transparent' : 'inherit' }">
-                                    <Step :done="step.done" :message="step.message" :status="step.status" :step_type = "step.type"/>
+                                    <Step :done="step.done" :text="step.text" :status="step.status" :step_type = "step.step_type"/>
                                 </div>
                             </ol>
                         </div>
@@ -79,7 +94,7 @@
                             <JsonViewer :jsonFormText="metadata.title" :jsonData="metadata.content" />
                         </div>
                     </div>
-                    <div  v-if="message.ui !== null">
+                    <div  v-if="message.ui != null">
                         <DynamicUIRenderer ref="ui" class="w-full" :ui="message.ui"></DynamicUIRenderer>
                     </div>
                     
@@ -595,7 +610,7 @@ export default {
 
                 // Function to speak a chunk of text
                 const speakChunk = () => {
-                    if (this.status_message=='Done' || this.message.content.includes('.')||this.message.content.includes('?')||this.message.content.includes('!')){
+                    if (this.message.status_message=='Done' || this.message.content.includes('.')||this.message.content.includes('?')||this.message.content.includes('!')){
                         const endIndex = findLastSentenceIndex(startIndex);
                         const chunk = this.message.content.substring(startIndex, endIndex);
                         this.msg.text = chunk;

@@ -1,46 +1,61 @@
 <template>
     <transition name="fade-and-fly">
-        <div v-if="!isReady" class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900">
-            <div class="flex flex-col items-center text-center max-w-4xl w-full px-4">
-            <div class="mb-8 w-full">
-                <h1 class="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 mb-2">
-                LoLLMS {{ version_info }}
-                </h1>
-                <p class="text-2xl text-gray-600 dark:text-gray-300 italic">
-                One tool to rule them all
-                </p>
-                <p class="text-xl text-gray-500 dark:text-gray-400 mb-6">
-                by ParisNeo
-                </p>
+        <div v-if="!isReady" class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 overflow-hidden">
+        <!-- Falling stars -->
+        <div class="absolute inset-0 pointer-events-none overflow-hidden">
+            <div v-for="n in 50" :key="n" class="absolute animate-fall"
+                :style="{
+                left: `${Math.random() * 100}%`,
+                top: `-20px`,
+                animationDuration: `${3 + Math.random() * 7}s`,
+                animationDelay: `${Math.random() * 5}s`
+                }">
+            <svg class="w-2 h-2 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+            </div>
+        </div>
 
-                <div class="w-full h-24 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg">
+        <div class="flex flex-col items-center text-center max-w-4xl w-full px-4 relative z-10">
+            <div class="mb-8 w-full">
+            <h1 class="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 mb-2 animate-glow">
+                Lord Of Large Language & Multimodal Systems
+            </h1>
+            <p class="text-2xl text-gray-600 dark:text-gray-300 italic">
+                {{ version_info }}
+            </p>
+            <p class="text-2xl text-gray-600 dark:text-gray-300 italic">
+                One tool to rule them all
+            </p>
+            <p class="text-xl text-gray-500 dark:text-gray-400 mb-6">
+                by ParisNeo
+            </p>
+
+            <div class="w-full h-24 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg">
                 <img 
-                    class="w-24 h-24 rounded-full absolute top-0 transition-all duration-300 ease-linear"
-                    :style="{ left: `calc(${loading_progress}% - 3rem)` }"
-                    title="LoLLMS WebUI" 
-                    src="@/assets/logo.png" 
-                    alt="Logo"
+                class="w-24 h-24 rounded-full absolute top-0 transition-all duration-300 ease-linear"
+                :style="{ left: `calc(${loading_progress}% - 3rem)` }"
+                title="LoLLMS WebUI" 
+                src="@/assets/logo.png" 
+                alt="Logo"
                 >
-                </div>
+            </div>
             </div>
             
             <div class="w-full max-w-2xl">
-                <h2 class="text-3xl font-semibold text-gray-800 dark:text-gray-200 mb-6">
-                Welcome
-                </h2>
-                <div role="status" class="w-full">
+            <div role="status" class="w-full">
                 <p class="text-xl text-gray-700 dark:text-gray-300">
-                    {{ loading_infos }}...
+                {{ loading_infos }}...
                 </p>
                 <p class="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">
-                    {{ Math.round(loading_progress) }}%
+                {{ Math.round(loading_progress) }}%
                 </p>
-                </div>
             </div>
             </div>
         </div>
-  
+        </div>
     </transition>
+
     <button v-if="isReady" @click="togglePanel" class="absolute top-2 left-2 p-3 bg-white bg-opacity-0 cursor-pointer transition-all duration-300 hover:scale-110 hover:bg-opacity-20 hover:shadow-xl group">
                     <div v-show="leftPanelCollapsed" ><i data-feather='chevron-right'></i></div>
                     <div v-show="!leftPanelCollapsed" ><i data-feather='chevron-left'></i></div>
@@ -271,7 +286,6 @@
                         <Message v-for="(msg, index) in discussionArr" 
                             :key="msg.id" :message="msg"  :id="'msg-' + msg.id" :ref="'msg-' + msg.id"
                             :host="host"
-                            ref="messages"
                             
                             @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
                             @rankDown="rankDownMessage" @updateMessage="updateMessage" @resendMessage="resendMessage" @continueMessage="continueMessage"
@@ -468,12 +482,72 @@ animation: custom-pulse 2s infinite;
 }
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-20px); }
+}
+.animate-float {
+  animation: float linear infinite;
 }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+@keyframes star-move {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(20px, 20px) rotate(180deg); }
+  100% { transform: translate(0, 0) rotate(360deg); }
 }
+
+.animate-star {
+  animation: star-move linear infinite;
+}
+
+@keyframes fall {
+  from {
+    transform: translateY(-20px) rotate(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(calc(100vh + 20px)) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.animate-fall {
+  animation: fall linear infinite;
+}
+
+@keyframes glow {
+  0%, 100% { 
+    text-shadow: 0 0 5px rgba(66, 153, 225, 0.5), 0 0 10px rgba(66, 153, 225, 0.5);
+  }
+  50% { 
+    text-shadow: 0 0 20px rgba(66, 153, 225, 0.8), 0 0 30px rgba(66, 153, 225, 0.8);
+  }
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+@media (prefers-color-scheme: dark) {
+  @keyframes glow {
+    0%, 100% { 
+      text-shadow: 0 0 5px rgba(147, 197, 253, 0.5), 0 0 10px rgba(147, 197, 253, 0.5);
+    }
+    50% { 
+      text-shadow: 0 0 20px rgba(147, 197, 253, 0.8), 0 0 30px rgba(147, 197, 253, 0.8);
+    }
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  @keyframes glow {
+    0%, 100% { 
+      text-shadow: 0 0 5px rgba(147, 197, 253, 0.5), 0 0 10px rgba(147, 197, 253, 0.5);
+    }
+    50% { 
+      text-shadow: 0 0 20px rgba(147, 197, 253, 0.8), 0 0 30px rgba(147, 197, 253, 0.8);
+    }
+  }
+}
+
 
 @keyframes roll {
   0% {
@@ -580,34 +654,40 @@ export default {
             host:"",
             progress_visibility_val         : true,
             progress_value                  : 0,
-            // To be synced with the backend database types
             msgTypes: {
                 // Messaging
-                MSG_TYPE_CHUNK                  : 0, // A chunk of a message (used for classical chat)
-                MSG_TYPE_FULL                   : 1, // A full message (for some personality the answer is sent in bulk)
-                MSG_TYPE_FULL_INVISIBLE_TO_AI   : 2, // A full message (for some personality the answer is sent in bulk)
-                MSG_TYPE_FULL_INVISIBLE_TO_USER : 3, // A full message (for some personality the answer is sent in bulk)
-
+                MSG_TYPE_CONTENT                   : 1, // A full message (for some personality the answer is sent in bulk)
+                MSG_TYPE_CONTENT_INVISIBLE_TO_AI   : 2, // A full message (for some personality the answer is sent in bulk)
+                MSG_TYPE_CONTENT_INVISIBLE_TO_USER : 3, // A full message (for some personality the answer is sent in bulk)
+            },
+            // To be synced with the backend database types
+            operationTypes: {
+                // Messaging
+                MSG_OPERATION_TYPE_ADD_CHUNK    : 0, // Add a chunk to the current message
+                MSG_OPERATION_TYPE_SET_CONTENT  : 1, // sets the content of current message
+                MSG_OPERATION_TYPE_SET_CONTENT_INVISIBLE_TO_AI      : 2, // sets the content of current message as invisible to ai
+                MSG_OPERATION_TYPE_SET_CONTENT_INVISIBLE_TO_USER    : 3, // sets the content of current message as invisible to user
                 // Informations
-                MSG_TYPE_EXCEPTION              : 4, // An exception occured
-                MSG_TYPE_WARNING                : 5, // A warning occured
-                MSG_TYPE_INFO                   : 6, // An information to be shown to user
+                MSG_OPERATION_TYPE_EXCEPTION              : 4, // An exception occured
+                MSG_OPERATION_TYPE_WARNING                : 5, // A warning occured
+                MSG_OPERATION_TYPE_INFO                   : 6, // An information to be shown to user
 
                 // Steps
-                MSG_TYPE_STEP                   : 7, // An instant step (a step that doesn't need time to be executed)
-                MSG_TYPE_STEP_START             : 8, // A step has started (the text contains an explanation of the step done by he personality)
-                MSG_TYPE_STEP_PROGRESS          : 9, // The progress value (the text contains a percentage and can be parsed by the reception)
-                MSG_TYPE_STEP_END               : 10,// A step has been done (the text contains an explanation of the step done by he personality)
+                MSG_OPERATION_TYPE_STEP                   : 7, // An instant step (a step that doesn't need time to be executed)
+                MSG_OPERATION_TYPE_STEP_START             : 8, // A step has started (the text contains an explanation of the step done by he personality)
+                MSG_OPERATION_TYPE_STEP_PROGRESS          : 9, // The progress value (the text contains a percentage and can be parsed by the reception)
+                MSG_OPERATION_TYPE_STEP_END_SUCCESS       : 10, // A step has been done (the text contains an explanation of the step done by he personality)
+                MSG_OPERATION_TYPE_STEP_END_FAILURE       : 11, // A step has been done (the text contains an explanation of the step done by he personality)
 
                 //Extra
-                MSG_TYPE_JSON_INFOS             : 11,// A JSON output that is useful for summarizing the process of generation used by personalities like chain of thoughts and tree of thooughts
-                MSG_TYPE_REF                    : 12,// References (in form of  [text](path))
-                MSG_TYPE_CODE                   : 13,// A javascript code to execute
-                MSG_TYPE_UI                     : 14,// A vue.js component to show (we need to build some and parse the text to show it)
+                MSG_OPERATION_TYPE_JSON_INFOS             : 12, // A JSON output that is useful for summarizing the process of generation used by personalities like chain of thoughts and tree of thooughts
+                MSG_OPERATION_TYPE_REF                    : 13, // References (in form of  [text](path))
+                MSG_OPERATION_TYPE_CODE                   : 14, // A javascript code to execute
+                MSG_OPERATION_TYPE_UI                     : 15, // A vue.js component to show (we need to build some and parse the text to show it)
 
-
-                MSG_TYPE_NEW_MESSAGE            : 15,// A new message
-                MSG_TYPE_FINISHED_MESSAGE       : 17 // End of current message
+                //Commands
+                MSG_OPERATION_TYPE_NEW_MESSAGE            : 16, // A new message
+                MSG_OPERATION_TYPE_FINISHED_MESSAGE       : 17, // End of current message
 
             },
             // Sender types
@@ -645,6 +725,15 @@ export default {
         }
     },
     methods: {      
+        getRandomEdgePosition() {
+            const edge = Math.floor(Math.random() * 4);
+            switch (edge) {
+                case 0: return 0; // Top edge
+                case 1: return 100; // Right edge
+                case 2: return Math.random() * 100; // Bottom or left edge
+                case 3: return Math.random() * 100; // Bottom or left edge
+            }
+        },
         selectPrompt(prompt){
             this.$refs.chatBox.message = prompt;
         },
@@ -908,13 +997,13 @@ export default {
                     if (data) {
                         // Filter out the user and bot entries
                         this.discussionArr = data.filter((item) => 
-                                                                item.message_type == this.msgTypes.MSG_TYPE_CHUNK ||
-                                                                item.message_type == this.msgTypes.MSG_TYPE_FULL ||
-                                                                item.message_type == this.msgTypes.MSG_TYPE_FULL_INVISIBLE_TO_AI ||
-                                                                item.message_type == this.msgTypes.MSG_TYPE_CODE ||
-                                                                item.message_type == this.msgTypes.MSG_TYPE_JSON_INFOS ||
-                                                                item.message_type == this.msgTypes.MSG_TYPE_UI
+                                                                item.message_type == this.msgTypes.MSG_TYPE_CONTENT ||
+                                                                item.message_type == this.msgTypes.MSG_TYPE_CONTENT_INVISIBLE_TO_AI
                                                         )
+                        this.discussionArr.forEach((item) => {
+                            item.status_message = "Done";
+                        });                                                        
+                        
                         console.log("this.discussionArr")
                         console.log(this.discussionArr)
                         if(next){
@@ -1476,7 +1565,7 @@ export default {
 
 
                             sender:                 this.$store.state.config.user_name,
-                            message_type:           this.msgTypes.MSG_TYPE_FULL,
+                            message_type:           this.operationTypes.MSG_TYPE_CONTENT,
                             sender_type:            this.senderTypes.SENDER_TYPES_USER,
                             content:                msg,
                             id:                     lastmsgid,
@@ -1557,18 +1646,21 @@ export default {
             
             this.chime.play()
         },
-        streamMessageContent(msgObj) {
+        update_message(msgObj) {
+            console.log("update_message trigged")
+            console.log(msgObj)
             // Streams response message content from binding
             this.discussion_id = msgObj.discussion_id
             this.setDiscussionLoading(this.discussion_id, true);
+
             if (this.currentDiscussion.id == this.discussion_id) {
                 //this.isGenerating = true;
                 const index = this.discussionArr.findIndex((x) => x.id == msgObj.id)
                 const messageItem = this.discussionArr[index]
                 
                 if (
-                    messageItem && (msgObj.message_type==this.msgTypes.MSG_TYPE_FULL ||
-                    msgObj.message_type==this.msgTypes.MSG_TYPE_FULL_INVISIBLE_TO_AI)
+                    messageItem && (msgObj.operation_type==this.operationTypes.MSG_OPERATION_TYPE_SET_CONTENT ||
+                    msgObj.operation_type==this.operationTypes.MSG_OPERATION_TYPE_SET_CONTENT_INVISIBLE_TO_AI)
                 ) {
                     this.isGenerating = true;
                     messageItem.content = msgObj.content
@@ -1578,54 +1670,32 @@ export default {
                     messageItem.finished_generating_at = msgObj.finished_generating_at
                     this.extractHtml()
                 }
-                else if(messageItem && msgObj.message_type==this.msgTypes.MSG_TYPE_CHUNK){
+                else if(messageItem && msgObj.operation_type==this.operationTypes.MSG_OPERATION_TYPE_ADD_CHUNK){
                     this.isGenerating = true;
                     messageItem.content += msgObj.content
-                    messageItem.created_at = msgObj.created_at
-                    messageItem.started_generating_at = msgObj.started_generating_at
-                    messageItem.nb_tokens = msgObj.nb_tokens
-                    messageItem.finished_generating_at = msgObj.finished_generating_at
+                    //console.log("content")
+                    //console.log(messageItem.content)
+                    messageItem.created_at              = msgObj.created_at
+                    messageItem.started_generating_at   = msgObj.started_generating_at
+                    messageItem.nb_tokens               = msgObj.nb_tokens
+                    messageItem.finished_generating_at  = msgObj.finished_generating_at
                     this.extractHtml()
-                } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP){
-                    messageItem.status_message = msgObj.content
-                    messageItem.steps.push({"message":msgObj.content,"done":true, "status":true, "type": "instantanious" })
-                } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_START){
-                    messageItem.status_message = msgObj.content
-                    messageItem.steps.push({"message":msgObj.content,"done":false, "status":true, "type": "start_end" })
-                } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_STEP_END) {
-                    console.log("received step end", msgObj)
-                    try{
-
-                        // Iterate over each step and update the 'done' property if the message matches msgObj.content
-                        messageItem.steps.forEach(step => {
-                            if (step.message === msgObj.content) {
-                                step.done = true;
-                                try {
-                                    console.log(msgObj.parameters)
-                                    const parameters = msgObj.parameters;
-                                    if(parameters !== undefined){
-                                        step.status = parameters.status;
-                                        console.log(parameters);
-                                    }
-                                    
-                                } catch (error) {
-                                    console.error('Error parsing JSON:', error.message);
-                                }
-                            }
-                        });
-
+                } else if (msgObj.operation_type == this.operationTypes.MSG_OPERATION_TYPE_STEP || msgObj.operation_type == this.operationTypes.MSG_OPERATION_TYPE_STEP_START || msgObj.operation_type == this.operationTypes.MSG_OPERATION_TYPE_STEP_END_SUCCESS || msgObj.operation_type == this.operationTypes.MSG_OPERATION_TYPE_STEP_END_FAILURE){
+                    if (Array.isArray(msgObj.steps)) {
+                        messageItem.status_message = msgObj.steps[msgObj.steps.length - 1]["text"]
+                        console.log("step Content: ", messageItem.status_message)
+                        messageItem.steps = msgObj.steps;
+                        console.log("steps: ", msgObj.steps)
+                    } else {
+                        console.error("Invalid steps data:", msgObj.steps);
                     }
-                    catch{
-                        console.log("error")
-                    }
-                } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_JSON_INFOS) {
-                    console.log("JSON message")
-                    console.log(msgObj.metadata)
+
+                } else if (msgObj.message_type == this.operationTypes.MSG_TYPE_JSON_INFOS) {
                     messageItem.metadata = msgObj.metadata
-                } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_UI) {
-                    console.log("UI message")
+                } else if (msgObj.message_type == this.operationTypes.MSG_OPERATION_TYPE_UI) {
+                    console.log("UI", msgObj.ui)
                     messageItem.ui = msgObj.ui
-                } else if (msgObj.message_type == this.msgTypes.MSG_TYPE_EXCEPTION) {
+                } else if (msgObj.message_type == this.operationTypes.MSG_OPERATION_TYPE_EXCEPTION) {
                     this.$store.state.toast.showToast(msgObj.content, 5, false)
                 }
                 // // Disables as per request
@@ -2353,7 +2423,7 @@ export default {
         
         socket.on('notification', this.notify)
         socket.on('new_message', this.new_message)
-        socket.on('update_message', this.streamMessageContent)
+        socket.on('update_message', this.update_message)
         socket.on('close_message', this.finalMsgEvent)
 
         socket.on('disucssion_renamed',(event)=>{

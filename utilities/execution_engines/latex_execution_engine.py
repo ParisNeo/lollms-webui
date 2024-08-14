@@ -10,7 +10,7 @@ from fastapi import APIRouter, Request, routing
 from lollms_webui import LOLLMSWebUI
 from pydantic import BaseModel
 from starlette.responses import StreamingResponse
-from lollms.types import MSG_TYPE
+from lollms.types import MSG_OPERATION_TYPE
 from lollms.main_config import BaseConfig
 from ascii_colors import get_trace_exception, trace_exception
 from ascii_colors import ASCIIColors

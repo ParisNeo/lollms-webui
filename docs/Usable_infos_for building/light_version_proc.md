@@ -47,9 +47,9 @@ class APScript:
     def ui_in_iframe(self, html_ui: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def code(self, code: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def chunk(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
-    def full(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None, msg_type: MSG_TYPE = MSG_TYPE.MSG_TYPE_FULL) -> Any
-    def full_invisible_to_ai(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
-    def full_invisible_to_user(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
+    def set_message_content(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None, msg_type: MSG_TYPE = MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT) -> Any
+    def set_message_content_invisible_to_ai(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
+    def set_message_content_invisible_to_user(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def execute_python(self, code, code_folder = None, code_file_name = None) -> Any
     def build_python_code(self, prompt, max_title_length = 4096) -> Any
     def make_title(self, prompt, max_title_length: int = 50) -> Any
@@ -65,7 +65,7 @@ class APScript:
     def InfoMessage(self, content, client_id = None, verbose: bool = None) -> Any
     def info(self, info_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def step_progress(self, step_text: str, progress: float, callback: Callable[([str, MSG_TYPE, dict, list, AIPersonality], bool)] = None) -> Any
-    def new_message(self, message_text: str, message_type: MSG_TYPE = MSG_TYPE.MSG_TYPE_FULL, metadata = [], callback: Callable[([str, int, dict, list, AIPersonality], bool)] = None) -> Any
+    def new_message(self, message_text: str, message_type: MSG_TYPE = MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT, metadata = [], callback: Callable[([str, int, dict, list, AIPersonality], bool)] = None) -> Any
     def finished_message(self, message_text: str = '', callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def print_prompt(self, title, prompt) -> Any
     def fast_gen_with_images(self, prompt: str, images: list, max_generation_size: int = None, placeholders: dict = {}, sacrifice: list = ['previous_discussion'], debug: bool = False, callback = None, show_progress = False) -> str

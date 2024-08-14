@@ -8,80 +8,103 @@
                 :src="$store.state.config == null ? storeLogo : $store.state.config.app_custom_logo != '' ? '/user_infos/' + $store.state.config.app_custom_logo : storeLogo" 
                 alt="Logo" title="LoLLMS WebUI">
           </div>
-          <div class="flex flex-col justify-center logo-text">
+          <div class="flex flex-col justify-center">
             <p class="text-2xl font-bold drop-shadow-md leading-none">LoLLMS</p>
             <p class="text-gray-400 text-sm">One tool to rule them all</p>
           </div>
         </RouterLink>
   
-        <!-- GITHUB AND THEME BUTTONS -->
+        <!-- SYSTEM STATUS -->
         <div class="flex gap-3 flex-1 items-center justify-end">
-          <div v-if="isModelOK" title="Model is ok" class="text-green-500 cursor-pointer">
-            <b class="text-2xl">M</b>
-          </div>
-          <div v-else title="Model is not ok" class="text-red-500 cursor-pointer">
-            <b class="text-2xl">M</b>
-          </div>
-          <div v-if="!isGenerating" title="Text is not being generated. Ready to generate" class="text-green-500 cursor-pointer">
-            <i data-feather="flag"></i>
-          </div>
-          <div v-else title="Generation in progress..." class="text-red-500 cursor-pointer">
-            <i data-feather="flag"></i>
-          </div>
-          <div v-if="isConnected" title="Connection status: Connected" class="text-green-500 cursor-pointer">
-            <i data-feather="zap"></i>
-          </div>
-          <div v-else title="Connection status: Not connected" class="text-red-500 cursor-pointer">
-            <i data-feather="zap-off"></i>
-          </div>
-  
-          <a href="#" @click="restartProgram" class="text-2xl hover:text-primary duration-150" title="restart program">
-            <i data-feather="power"></i>
-          </a>
-          <a href="#" @click="refreshPage" class="text-2xl hover:text-primary duration-150" title="refresh page">
-            <i data-feather="refresh-ccw"></i>
-          </a>
-          
-          <a href="/docs" target="_blank" class="text-2xl hover:text-primary duration-150" title="Fast API doc">
-            <img :src="FastAPI" width="75" height="25" alt="Fast API">
-          </a>
-  
-          <a href="https://github.com/ParisNeo/lollms-webui" target="_blank" class="text-2xl hover:text-primary duration-150" title="Visit repository page">
-            <i data-feather="github"></i>
-          </a>
-          <a href="https://www.youtube.com/channel/UCJzrg0cyQV2Z30SQ1v2FdSQ" target="_blank" class="text-2xl hover:text-primary duration-150" title="Visit my youtube channel">
-            <i data-feather="youtube"></i>
-          </a>
-          <a href="https://x.com/ParisNeo_AI" target="_blank" class="text-2xl hover:fill-primary dark:fill-white dark:hover:fill-primary duration-150" title="Follow me on my twitter acount">
-            <svg class="w-10 h-10 rounded-lg object-fill dark:text-white" xmlns="http://www.w3.org/2000/svg"
-                 viewBox="0 0 1668.56 1221.19" style="enable-background:new 0 0 1668.56 1221.19;" xml:space="preserve">
-              <g id="layer1" transform="translate(52.390088,-25.058597)">
-                <path id="path1009" d="M283.94,167.31l386.39,516.64L281.5,1104h87.51l340.42-367.76L984.48,1104h297.8L874.15,558.3l361.92-390.99
-                h-87.51l-313.51,338.7l-253.31-338.7H283.94z M412.63,231.77h136.81l604.13,807.76h-136.81L412.63,231.77z"/>
-              </g>
+          <div v-if="isModelOK" title="Model is ok" class="text-green-500 dark:text-green-400 cursor-pointer transition-transform hover:scale-110">
+            <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-          </a>
-          <a href="https://discord.com/channels/1092918764925882418" target="_blank" class="text-2xl hover:text-primary duration-150" title="Visit my discord channel">
-            <img :src="discord" width="25" height="25" alt="Discord">
-          </a>
+          </div>
+          <div v-else title="Model is not ok" class="text-red-500 dark:text-red-400 cursor-pointer transition-transform hover:scale-110">
+            <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M15 9L9 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 9L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div v-if="!isGenerating" title="Text is not being generated. Ready to generate" class="text-green-500 dark:text-green-400 cursor-pointer transition-transform hover:scale-110">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path>
+            </svg>
+          </div>
+          <div v-else title="Generation in progress..." class="text-yellow-500 dark:text-yellow-400 cursor-pointer transition-transform hover:scale-110">
+            <svg class="w-6 h-6 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+          </div>
+          <div v-if="isConnected" title="Connection status: Connected" class="text-green-500 dark:text-green-400 cursor-pointer transition-transform hover:scale-110">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+          </div>
+          <div v-else title="Connection status: Not connected" class="text-red-500 dark:text-red-400 cursor-pointer transition-transform hover:scale-110">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+            </svg>
+          </div>
+        </div>
+          <div class="flex items-center space-x-4">
+            <ActionButton @click="restartProgram" icon="power" title="restart program" />
+            <ActionButton @click="refreshPage" icon="refresh-ccw" title="refresh page" />
+            <ActionButton href="/docs" icon="file-text" title="Fast API doc" />
+          </div>
+
+          <!-- SOCIALS -->
+          <div class="flex items-center space-x-4">
+            <SocialIcon href="https://github.com/ParisNeo/lollms-webui" icon="github" />
+            <SocialIcon href="https://www.youtube.com/channel/UCJzrg0cyQV2Z30SQ1v2FdSQ" icon="youtube" />
+            <SocialIcon href="https://x.com/ParisNeo_AI" icon="x" />
+            <SocialIcon href="https://discord.com/channels/1092918764925882418" icon="discord" />
+          </div>
   
-          <div class="sun text-2xl w-6 hover:text-primary duration-150 cursor-pointer" title="Switch to Light theme" @click="themeSwitch()">
-            <i data-feather="sun"></i>
+          <div class="relative group" title="Lollms News">
+            <div @click="showNews()" class="text-2xl w-8 h-8 cursor-pointer transition-colors duration-300 text-gray-600 hover:text-primary dark:text-gray-300 dark:hover:text-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full">
+                <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+              </svg>
+            </div>
+            <span class="absolute hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap">
+              Lollms News
+            </span>
           </div>
-          <div class="moon text-2xl w-6 hover:text-primary duration-150 cursor-pointer" title="Switch to Dark theme" @click="themeSwitch()">
-            <i data-feather="moon"></i>
-          </div>
-  
-          <div class="text-2xl w-6 hover:text-primary duration-150 cursor-pointer" title="Lollms News" @click="showNews()">
-            <img :src="static_info" alt="News">
-          </div>
-          <div v-if="is_fun_mode" title="fun mode is on press to turn off" class="text-green-500 cursor-pointer" @click="fun_mode_off()">
-            <img class="w-5 h-5" :src="fun_mode" alt="Fun mode on">
-          </div>
-          <div v-else title="fun mode is off press to turn on" class="text-red-500 cursor-pointer" @click="fun_mode_on()">
-            <img class="w-5 h-5" :src="normal_mode" alt="Fun mode off">
-          </div>
-  
+          <div class="relative group">
+              <div 
+                v-if="is_fun_mode" 
+                title="Fun mode is on, press to turn off" 
+                class="w-8 h-8 cursor-pointer text-green-500 dark:text-green-400 hover:text-green-600 dark:hover:text-green-300 transition-colors duration-300"
+                @click="fun_mode_off()"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full animate-bounce">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                  <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                  <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                </svg>
+              </div>
+              <div 
+                v-else 
+                title="Fun mode is off, press to turn on" 
+                class="w-8 h-8 cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-300"
+                @click="fun_mode_on()"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="8" y1="15" x2="16" y2="15"></line>
+                  <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                  <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                </svg>
+              </div>
+              <span class="absolute hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap">
+                {{ is_fun_mode ? 'Turn off fun mode' : 'Turn on fun mode' }}
+              </span>
+            </div>          
           <div class="language-selector relative">
             <button @click="toggleLanguageMenu" class="bg-transparent text-black dark:text-white py-1 px-1 rounded font-bold uppercase transition-colors duration-300 hover:bg-blue-500">
               {{ $store.state.language.slice(0, 2) }}
@@ -100,7 +123,12 @@
               </ul>
             </div>
           </div>
-        </div>
+          <div class="sun text-2xl w-6 hover:text-primary duration-150 cursor-pointer" title="Switch to Light theme" @click="themeSwitch()">
+            <i data-feather="sun"></i>
+          </div>
+          <div class="moon text-2xl w-6 hover:text-primary duration-150 cursor-pointer" title="Switch to Dark theme" @click="themeSwitch()">
+            <i data-feather="moon"></i>
+          </div>
       </nav>
   
       <!-- NAVIGATION BUTTONS -->
@@ -129,6 +157,9 @@ import UniversalForm from '../components/UniversalForm.vue';
 import YesNoDialog from './YesNoDialog.vue';
 import PersonalityEditor from "@/components/PersonalityEditor.vue"
 import PopupViewer from '@/components/PopupViewer.vue';
+import ActionButton from '@/components/ActionButton.vue'
+import SocialIcon from '@/components/SocialIcon.vue'
+
 import FastAPI from '@/assets/fastapi.png';
 import discord from '@/assets/discord.svg';
 import { RouterLink } from 'vue-router'
@@ -222,7 +253,9 @@ export default {
         YesNoDialog,
         Navigation,
         PersonalityEditor,
-        PopupViewer
+        PopupViewer,
+        ActionButton,
+        SocialIcon
     },
     watch:{
         '$store.state.config.fun_mode': function(newVal, oldVal) {
@@ -515,6 +548,20 @@ export default {
     border-radius: 50%;
     object-fit: cover;
   }
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(-25%);
+      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+    50% {
+      transform: translateY(0);
+      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+  }
+  .animate-bounce {
+    animation: bounce 1s infinite;
+  }
+
 
   @keyframes roll-and-bounce {
     0%, 100% {
@@ -543,8 +590,4 @@ export default {
     }
   }
 
-  .logo-text {
-    position: relative;
-    left: 100px; /* Adjust this value to match the maximum translation of the logo */
-  }
   </style>

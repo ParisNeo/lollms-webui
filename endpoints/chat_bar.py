@@ -13,7 +13,7 @@ from pydantic import BaseModel, Field
 from lollms_webui import LOLLMSWebUI
 from pydantic import BaseModel
 from starlette.responses import StreamingResponse
-from lollms.types import MSG_TYPE
+from lollms.types import MSG_OPERATION_TYPE
 from lollms.main_config import BaseConfig
 from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception, find_first_available_file_index
 from ascii_colors import ASCIIColors
@@ -78,7 +78,7 @@ async def execute_personality_command(request: CmdExecutionRequest):
 
         ump = lollmsElfServer.config.discussion_prompt_separator +lollmsElfServer.config.user_name.strip() if lollmsElfServer.config.use_user_name_in_discussions else lollmsElfServer.personality.user_message_prefix
         message = lollmsElfServer.session.get_client(client_id).discussion.add_message(
-            message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
+            message_type    = MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT.value,
             sender_type     = SENDER_TYPES.SENDER_TYPES_USER.value,
             sender          = ump.replace(lollmsElfServer.config.discussion_prompt_separator,"").replace(":",""),
             content="",

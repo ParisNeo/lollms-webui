@@ -330,6 +330,8 @@ export default {
     },
     async installApp(appName) {
       this.loading = true;
+      this.$store.state.messageBox.showBlockingMessage(`Installing app ${appName}`)
+
       try {
         await axios.post(`/install/${appName}`, {
           client_id: this.$store.state.client_id,
@@ -341,6 +343,7 @@ export default {
         this.loading = false;
         this.fetchApps();
         this.fetchGithubApps();
+        this.$store.state.messageBox.hideMessage()
       }
     },
     async uninstallApp(appName) {

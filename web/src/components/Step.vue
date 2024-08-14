@@ -1,71 +1,142 @@
 <template>
-  <div class="flex items-start">
-    <div class="step flex items-center mb-4">
-      <div v-if="step_type=='start_end'" class="flex items-center justify-center w-6 h-6 mr-2">
+  <div class="step-container">
+    <div
+      class="step-wrapper transition-all duration-300 ease-in-out"
+      :class="{
+        'bg-green-100 dark:bg-green-900': done && status,
+        'bg-red-100 dark:bg-red-900': done && !status,
+        'bg-gray-100 dark:bg-gray-800': !done
+      }"
+    >
+      <div class="step-icon">
+        <div v-if="step_type === 'start_end'">
+          <div v-if="!done">
+            <i
+              data-feather="circle"
+              class="feather-icon text-gray-600 dark:text-gray-300"
+            ></i>
+          </div>
+          <div v-else-if="done && status">
+            <i
+              data-feather="check-circle"
+              class="feather-icon text-green-600 dark:text-green-400"
+            ></i>
+          </div>
+          <div v-else>
+            <i
+              data-feather="x-circle"
+              class="feather-icon text-red-600 dark:text-red-400"
+            ></i>
+          </div>
+        </div>
         <div v-if="!done">
-          <i
-          data-feather="square"
-          class="text-gray-400 w-4 h-4"
-        ></i>
-        </div>
-        <div v-if="done && status">
-          <i
-          data-feather="check-square"
-          class="text-green-500 w-4 h-4"
-        ></i>
-        </div>
-        <div v-if="done && !status">
-          <i
-          data-feather="x-square"
-          class="text-red-500 w-4 h-4"
-        ></i>
+          <div class="spinner"></div>
         </div>
       </div>
-      <div v-if="!done" role="status" class="m-15">
-          <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101"
-              fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                  fill="currentColor" />
-              <path
-                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                  fill="currentFill" />
-          </svg>
+      <div class="step-content">
+        <h3
+          class="step-text"
+          :class="{
+            'text-green-600 dark:text-green-400': done && status,
+            'text-red-600 dark:text-red-400': done && !status,
+            'text-gray-800 dark:text-gray-200': !done
+          }"
+        >
+          {{ text || 'No text provided' }}
+        </h3>
+        <p v-if="description" class="step-description">{{ description || 'No description provided' }}</p>
       </div>
-      <h3 class="text-sm ml-6" >{{ message }}</h3>
     </div>
   </div>
 </template>
 
 
+<script>
+export default {
+  props: {
+    done: {
+      type: Boolean,
+      default: false // Default to false if not provided
+    },
+    text: {
+      type: String,
+      default: '' // Default to empty string if not provided
+    },
+    status: {
+      type: Boolean,
+      default: false // Default to false if not provided
+    },
+    step_type: {
+      type: String,
+      default: 'start_end' // Default to 'start_end' if not provided
+    },
+    description: {
+      type: String,
+      default: '' // Default to empty string if not provided
+    }
+  },
+  mounted() {
 
-
-  
-  <script>
-  export default {
-    props: {
-      done: {
-        type: Boolean,
-        required: true
-      },
-      message: {
-        type: String,
-        required: true
-      },
-      status: {
-        type: Boolean,
-        required: true
-      },
-      step_type: {
-        type: String,
-        required: false,
-        default: 'start_end'
+    this.amounted();
+  },
+  methods: {
+    amounted() {
+      console.log('Component mounted with the following properties:');
+      console.log('done:', this.done);
+      console.log('text:', this.text);
+      console.log('status:', this.status);
+      console.log('step_type:', this.step_type);
+      console.log('description:', this.description);
+    }
+  },
+  watch: {
+    done(newValue) {
+      if (typeof newValue !== 'boolean') {
+        console.error('Invalid type for done. Expected Boolean.');
+      }
+    },
+    status(newValue) {
+      if (typeof newValue !== 'boolean') {
+        console.error('Invalid type for status. Expected Boolean.');
+      }
+      if (this.done && !newValue) {
+        console.error('Task completed with errors.');
       }
     }
-  };
-  </script>
-  
-  <style>
- 
-  </style>
-  
+  }
+};
+</script>
+
+<style scoped>
+.step-container {
+  @apply mb-4;
+}
+
+.step-wrapper {
+  @apply flex items-start p-4 rounded-lg shadow-md;
+}
+
+.step-icon {
+  @apply flex-shrink-0 w-6 h-6 mr-4 flex items-center justify-center;
+}
+
+.feather-icon {
+  @apply w-6 h-6 stroke-2 stroke-current;
+}
+
+.spinner {
+  @apply w-6 h-6 border-2 border-gray-600 border-t-2 border-t-blue-600 rounded-full animate-spin;
+}
+
+.step-content {
+  @apply flex-grow;
+}
+
+.step-text {
+  @apply text-lg font-semibold mb-1;
+}
+
+.step-description {
+  @apply text-sm text-gray-600 dark:text-gray-400;
+}
+</style>

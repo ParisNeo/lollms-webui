@@ -11,7 +11,7 @@ from datetime import datetime
 from lollms.databases.discussions_database import DiscussionsDB, Discussion
 from pathlib import Path
 from lollms.config import InstallOption
-from lollms.types import MSG_TYPE, SENDER_TYPES
+from lollms.types import MSG_TYPE, MSG_OPERATION_TYPE, MSG_OPERATION_TYPE, CONTENT_OPERATION_TYPES, SENDER_TYPES
 from lollms.extension import LOLLMSExtension, ExtensionBuilder
 from lollms.personality import AIPersonality, PersonalityBuilder
 from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding, ModelBuilder, BindingType
@@ -71,7 +71,7 @@ def terminate_thread(thread):
         else:
             ASCIIColors.yellow("Canceled successfully")# The current version of the webui
 
-lollms_webui_version="10.1 (Warp Drive)"
+lollms_webui_version="11 code name: Wonder"
 
 
 
@@ -339,7 +339,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 except:
                     nb_tokens = None
                 message = client.discussion.add_message(
-                    message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
+                    message_type    = MSG_TYPE.MSG_TYPE_CONTENT.value,
                     sender_type     = SENDER_TYPES.SENDER_TYPES_USER.value,
                     sender          = self.config.user_name.strip() if self.config.use_user_name_in_discussions else self.config.user_name,
                     content         = prompt,
@@ -632,7 +632,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         for message in messages:
             # Check if the message content is not empty and visible to the AI
             if message.content != '' and (
-                    message.message_type <= MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER.value and message.message_type != MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value):
+                    message.message_type <= MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT_INVISIBLE_TO_USER.value and message.message_type != MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT_INVISIBLE_TO_AI.value):
 
                 # Tokenize the message content
                 message_tokenized = self.model.tokenize(
@@ -656,7 +656,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         title = [""]
         def receive(
                         chunk:str, 
-                        message_type:MSG_TYPE
+                        message_type:MSG_OPERATION_TYPE
                     ):
             if chunk:
                 title[0] += chunk
@@ -682,7 +682,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
         for message in messages:
             if message["id"]<= message_id or message_id==-1: 
-                if message["type"]!=MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER:
+                if message["type"]!=MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT_INVISIBLE_TO_USER:
                     if message["sender"]==self.personality.name:
                         full_message_list.append(self.config.discussion_prompt_separator+self.personality.ai_message_prefix+message["content"])
                     else:
@@ -697,7 +697,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         
         return discussion_messages # Removes the last return
 
-    def full(self, full_text:str, callback: Callable[[str, MSG_TYPE, dict, list], bool]=None, client_id=0):
+    def set_message_content(self, full_text:str, callback: Callable[[str, MSG_OPERATION_TYPE, dict, list], bool]|None=None, client_id=0):
         """This sends full text to front end
 
         Args:
@@ -708,7 +708,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             callback = partial(self.process_chunk,client_id = client_id)
 
         if callback:
-            callback(full_text, MSG_TYPE.MSG_TYPE_FULL)
+            callback(full_text, MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT)
 
     def emit_socket_io_info(self, name, data, client_id):
         run_async(partial(self.sio.emit,name, data, to=client_id))
@@ -753,16 +753,12 @@ class LOLLMSWebUI(LOLLMSElfServer):
                             client_id, 
                             sender=None, 
                             content="",
-                            parameters=None,
-                            metadata=None,
-                            ui=None,
-                            message_type:MSG_TYPE=MSG_TYPE.MSG_TYPE_FULL, 
+                            message_type:MSG_OPERATION_TYPE=MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT, 
                             sender_type:SENDER_TYPES=SENDER_TYPES.SENDER_TYPES_AI,
                             open=False
                         ):
         client = self.session.get_client(client_id)
         #self.close_message(client_id)
-        mtdt = metadata if metadata is None or type(metadata) == str else json.dumps(metadata, indent=4)
         if sender==None:
             sender= self.personality.name
         msg = client.discussion.add_message(
@@ -770,8 +766,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
             sender_type         = sender_type.value,
             sender              = sender,
             content             = content,
-            metadata            = mtdt,
-            ui                  = ui,
+            steps               = [],
+            metadata            = None,
+            ui                  = None,
             rank                = 0,
             parent_message_id   = client.discussion.current_message.id if client.discussion.current_message is not None else 0,
             binding             = self.config["binding_name"],
@@ -786,9 +783,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
                             "message_type":             message_type.value,
                             "sender_type":              SENDER_TYPES.SENDER_TYPES_AI.value,
                             "content":                  content,
-                            "parameters":               parameters,
-                            "metadata":                 metadata,
-                            "ui":                       ui,
+                            "metadata":                 None,
+                            "ui":                       None,
                             "id":                       msg.id,
                             "parent_message_id":        msg.parent_message_id,
 
@@ -805,6 +801,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         }, to=client_id
                 )
             )
+        
     def new_block(          self,                  
                             client_id, 
                             sender=None, 
@@ -812,7 +809,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                             parameters=None,
                             metadata=None,
                             ui=None,
-                            message_type:MSG_TYPE=MSG_TYPE.MSG_TYPE_FULL, 
+                            message_type:MSG_OPERATION_TYPE=MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT, 
                             sender_type:SENDER_TYPES=SENDER_TYPES.SENDER_TYPES_AI,
                             open=False
                         ):
@@ -852,6 +849,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                             'id':client.discussion.current_message.id, 
                                             'content': client.discussion.current_message.content,
                                             'discussion_id':client.discussion.discussion_id,
+                                            'operation_type': MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT.value,
                                             'message_type': client.discussion.current_message.message_type,
                                             'created_at':client.discussion.current_message.created_at,
                                             'started_generating_at': client.discussion.current_message.started_generating_at,
@@ -860,11 +858,12 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                         }, to=client_id
                                 )
         )
+
     def update_message(self, client_id, chunk,                             
                             parameters=None,
                             metadata=[], 
                             ui=None,
-                            msg_type:MSG_TYPE=None
+                            operation_type:MSG_OPERATION_TYPE=None
                         ):
         client = self.session.get_client(client_id)
         client.discussion.current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -874,24 +873,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
         
         if self.nb_received_tokens==1:
             client.discussion.current_message.started_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-            run_async(
-                partial(self.sio.emit,'update_message', {
-                                                "sender": self.personality.name,
-                                                'id':client.discussion.current_message.id, 
-                                                'content': "✍ warming up ...",
-                                                'ui': client.discussion.current_message.ui if ui is None else ui,
-                                                'discussion_id':client.discussion.discussion_id,
-                                                'message_type': MSG_TYPE.MSG_TYPE_STEP_END.value,
-                                                'created_at':client.discussion.current_message.created_at,
-                                                'started_generating_at': client.discussion.current_message.started_generating_at,
-                                                'finished_generating_at': client.discussion.current_message.finished_generating_at,
-                                                'nb_tokens': client.discussion.current_message.nb_tokens,
-                                                'parameters':parameters,
-                                                'metadata':metadata
-                                            }, to=client_id
-                                    )
-            )
+            self.update_message_step(client_id, "✍ warming up ...",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
+            self.update_message_step(client_id, "✍ generating ...",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
 
         run_async(
             partial(self.sio.emit,'update_message', {
@@ -900,7 +883,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                             'content': chunk,
                                             'ui': client.discussion.current_message.ui if ui is None else ui,
                                             'discussion_id':client.discussion.discussion_id,
-                                            'message_type': msg_type.value if msg_type is not None else MSG_TYPE.MSG_TYPE_CHUNK.value if self.nb_received_tokens>1 else MSG_TYPE.MSG_TYPE_FULL.value,
+                                            'operation_type': operation_type.value if operation_type is not None else MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_ADD_CHUNK.value if self.nb_received_tokens>1 else MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT.value,
+                                            'message_type': MSG_TYPE.MSG_TYPE_CONTENT.value,
                                             'created_at':client.discussion.current_message.created_at,
                                             'started_generating_at': client.discussion.current_message.started_generating_at,
                                             'finished_generating_at': client.discussion.current_message.finished_generating_at,
@@ -910,13 +894,107 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                         }, to=client_id
                                 )
         )
-        if msg_type and msg_type.value < MSG_TYPE.MSG_TYPE_INFO.value:
+        if operation_type and operation_type.value < MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_INFO.value:
             client.discussion.update_message(client.generated_text, new_metadata=mtdt, new_ui=ui, started_generating_at=client.discussion.current_message.started_generating_at, nb_tokens=client.discussion.current_message.nb_tokens)
+
+
+
+    def update_message_content(self, client_id, chunk, operation_type:MSG_OPERATION_TYPE=MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT, message_type: MSG_TYPE=None):
+        client = self.session.get_client(client_id)
+        client.discussion.current_message.finished_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        client.discussion.current_message.nb_tokens = self.nb_received_tokens
+
+        
+        if self.nb_received_tokens==1:
+            client.discussion.current_message.started_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        run_async(
+            partial(self.sio.emit,'update_message', {
+                                            "sender": self.personality.name,
+                                            'id':client.discussion.current_message.id, 
+                                            'content': chunk,
+                                            'discussion_id':client.discussion.discussion_id,
+                                            'operation_type': operation_type.value,
+                                            'message_type': client.discussion.current_message.message_type if message_type is None else message_type,
+                                            'created_at':client.discussion.current_message.created_at,
+                                            'started_generating_at': client.discussion.current_message.started_generating_at,
+                                            'finished_generating_at': client.discussion.current_message.finished_generating_at,
+                                            'nb_tokens': client.discussion.current_message.nb_tokens,
+                                        }, to=client_id
+                                )
+        )
+
+        client.discussion.update_message_content(client.generated_text, started_generating_at=client.discussion.current_message.started_generating_at, nb_tokens=client.discussion.current_message.nb_tokens)
+
+    def update_message_step(self, client_id, step_text, msg_operation_type:MSG_OPERATION_TYPE=None):
+        client = self.session.get_client(client_id)
+        if msg_operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP:
+            client.discussion.current_message.add_step(step_text,"instant",True, True)
+        elif msg_operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_START:
+            client.discussion.current_message.add_step(step_text,"start_end",True,False)
+        elif msg_operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS:
+            client.discussion.current_message.add_step(step_text,"start_end",True, True)
+        elif msg_operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_FAILURE:
+            client.discussion.current_message.add_step(step_text,"start_end",False, True)
+
+        run_async(
+            partial(self.sio.emit,'update_message', {
+                                            'id':client.discussion.current_message.id, 
+                                            'discussion_id':client.discussion.discussion_id,
+                                            'operation_type': msg_operation_type.value,
+                                            'steps': client.discussion.current_message.steps,
+
+                                        }, to=client_id
+                                )
+        )
+        
+
+    def update_message_metadata(self, client_id, metadata):
+        client = self.session.get_client(client_id)
+        run_async(
+            partial(self.sio.emit,'update_message', {
+                                            "sender": self.personality.name,
+                                            'id':client.discussion.current_message.id, 
+                                            'metadata': metadata if type(metadata) in [str, None] else json.dumps(metadata) if type(metadata)==dict else None,
+                                            'discussion_id':client.discussion.discussion_id,
+                                            'message_type': MSG_OPERATION_TYPE.MSG_TYPE_JSON_INFOS,
+                                            'created_at':client.discussion.current_message.created_at,
+                                            'started_generating_at': client.discussion.current_message.started_generating_at,
+                                            'finished_generating_at': client.discussion.current_message.finished_generating_at,
+                                            'nb_tokens': client.discussion.current_message.nb_tokens,
+                                        }, to=client_id
+                                )
+        )
+
+        client.discussion.update_message_metadata(metadata)
+
+    def update_message_ui(self, client_id, ui):
+        client = self.session.get_client(client_id)
+        run_async(
+            partial(self.sio.emit,'update_message', {
+                                            "sender": self.personality.name,
+                                            'id':client.discussion.current_message.id, 
+                                            'ui': ui if type(ui) in [str, None] else None,
+                                            'discussion_id':client.discussion.discussion_id,
+                                            'message_type': MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_UI,
+                                            'created_at':client.discussion.current_message.created_at,
+                                            'started_generating_at': client.discussion.current_message.started_generating_at,
+                                            'finished_generating_at': client.discussion.current_message.finished_generating_at,
+                                            'nb_tokens': client.discussion.current_message.nb_tokens,
+                                        }, to=client_id
+                                )
+        )
+
+        client.discussion.update_message_ui(ui)
 
 
 
     def close_message(self, client_id):
         client = self.session.get_client(client_id)
+        for msg in client.discussion.messages:
+            if msg.steps is not None:
+                for step in msg.steps:
+                    step["done"]=True
         if not client.discussion:
             return
         #fix halucination
@@ -949,9 +1027,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
     def process_chunk(
                         self, 
-                        chunk:str, 
-                        message_type:MSG_TYPE,
-                        parameters:dict=None, 
+                        chunk:str|None, 
+                        operation_type:MSG_OPERATION_TYPE,
                         metadata:list=None, 
                         client_id:int=0,
                         personality:AIPersonality=None
@@ -960,64 +1037,61 @@ class LOLLMSWebUI(LOLLMSElfServer):
         Processes a chunk of generated text
         """
         client = self.session.get_client(client_id)
-        if chunk is None:
+        if chunk is None and operation_type in [MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT, MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_ADD_CHUNK]:
             return
         
         if chunk is not None:
             if not client_id in list(self.session.clients.keys()):
                 self.error("Connection lost", client_id=client_id)
                 return
-        if message_type == MSG_TYPE.MSG_TYPE_STEP:
+        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP:
             ASCIIColors.info("--> Step:"+chunk)
-        if message_type == MSG_TYPE.MSG_TYPE_STEP_START:
+        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_START:
             ASCIIColors.info("--> Step started:"+chunk)
-        if message_type == MSG_TYPE.MSG_TYPE_STEP_END:
-            if parameters['status']:
-                ASCIIColors.success("--> Step ended:"+chunk)
-            else:
-                ASCIIColors.error("--> Step ended:"+chunk)
-        if message_type == MSG_TYPE.MSG_TYPE_WARNING:
+            self.update_message_step(client_id, chunk, operation_type)
+        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS:
+            ASCIIColors.success("--> Step ended:"+chunk)
+            self.update_message_step(client_id, chunk, operation_type)
+        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_FAILURE:
+            ASCIIColors.success("--> Step ended:"+chunk)
+            self.update_message_step(client_id, chunk, operation_type)
+        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_WARNING:
             self.warning(chunk,client_id=client_id)
             ASCIIColors.error("--> Exception from personality:"+chunk)
-        if message_type == MSG_TYPE.MSG_TYPE_EXCEPTION:
+        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_EXCEPTION:
             self.error(chunk, client_id=client_id)
             ASCIIColors.error("--> Exception from personality:"+chunk)
             return
-        if message_type == MSG_TYPE.MSG_TYPE_INFO:
+        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_INFO:
             self.info(chunk, client_id=client_id)
             ASCIIColors.info("--> Info:"+chunk)
             return
-        if message_type == MSG_TYPE.MSG_TYPE_UI:
-            self.update_message(client_id, "", parameters, metadata, chunk, MSG_TYPE.MSG_TYPE_UI)
+        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_UI:
+            self.update_message_ui(client_id, chunk)
 
-        if message_type == MSG_TYPE.MSG_TYPE_NEW_MESSAGE:
+        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_NEW_MESSAGE:
             self.nb_received_tokens = 0
             self.start_time = datetime.now()
-            self.update_message(client_id, "Generating ...", {"status":True}, msg_type=MSG_TYPE.MSG_TYPE_STEP_END)
+            self.update_message_step(client_id, "✍ warming up ...", MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
+            self.update_message_step(client_id, "✍ generating ...",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
             self.new_message(
                                     client_id, 
-                                    self.personality.name if personality is None else personality.name, 
-                                    chunk if parameters["type"]!=MSG_TYPE.MSG_TYPE_UI.value else '', 
-                                    metadata = [{
-                                        "title":chunk,
-                                        "content":parameters["metadata"]
-                                        }
-                                    ] if parameters["type"]==MSG_TYPE.MSG_TYPE_JSON_INFOS.value else None, 
-                                    ui= chunk if parameters["type"]==MSG_TYPE.MSG_TYPE_UI.value else None, 
-                                    message_type= MSG_TYPE(parameters["type"])
-            )
-
-        elif message_type == MSG_TYPE.MSG_TYPE_FINISHED_MESSAGE:
+                                    self.personality.name if personality is None else personality.name,
+                                    chunk, 
+                                    operation_type= MSG_TYPE.MSG_TYPE_CONTENT
+                            )
+ 
+        elif operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_FINISHED_MESSAGE:
             self.close_message(client_id)
 
-        elif message_type == MSG_TYPE.MSG_TYPE_CHUNK:
-
+        elif operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_ADD_CHUNK:
             if self.nb_received_tokens==0:
                 self.start_time = datetime.now()
                 try:
-                    self.update_message(client_id, "✍ warming up ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_END, parameters= {'status':True})
-                    self.update_message(client_id, "Generating ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_START)
+                    self.update_message_step(client_id, "✍ warming up ...",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
+                    self.update_message_step(client_id, "✍ generating ...",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
                 except Exception as ex:
+                    trace_exception(ex)
                     ASCIIColors.warning("Couldn't send status update to client")
             dt =(datetime.now() - self.start_time).seconds
             if dt==0:
@@ -1029,20 +1103,20 @@ class LOLLMSWebUI(LOLLMSElfServer):
             sys.stdout = sys.__stdout__
             sys.stdout.flush()
             if chunk:
-                
                 client.generated_text += chunk
             antiprompt = self.personality.detect_antiprompt(client.generated_text)
             if antiprompt:
                 ASCIIColors.warning(f"\n{antiprompt} detected. Stopping generation")
                 client.generated_text = self.remove_text_from_string(client.generated_text,antiprompt)
-                self.update_message(client_id, client.generated_text, parameters, metadata, None, MSG_TYPE.MSG_TYPE_FULL)
+                self.update_message_content(client_id, client.generated_text, MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT)
                 return False
             else:
                 self.nb_received_tokens += 1
                 if client.continuing and client.first_chunk:
-                    self.update_message(client_id, client.generated_text, parameters, metadata)
+                    self.update_message_content(client_id, client.generated_text, MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT)
                 else:
-                    self.update_message(client_id, chunk, parameters, metadata, msg_type=MSG_TYPE.MSG_TYPE_CHUNK)
+                    self.update_message_content(client_id, chunk, MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_ADD_CHUNK)
+
                 client.first_chunk=False
                 # if stop generation is detected then stop
                 if not self.cancel_gen:
@@ -1053,12 +1127,13 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     return False
  
         # Stream the generated text to the main process
-        elif message_type in [MSG_TYPE.MSG_TYPE_FULL, MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI, MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_USER]:
+        elif operation_type in [MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT, MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT_INVISIBLE_TO_AI, MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT_INVISIBLE_TO_USER]:
             if self.nb_received_tokens==0:
                 self.start_time = datetime.now()
                 try:
-                    self.update_message(client_id, "✍ warming up ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_END, parameters= {'status':True})
-                    self.update_message(client_id, "Generating ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_START)
+                    self.update_message_step(client_id, "✍ warming up ...", MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
+                    self.update_message_step(client_id, "✍ generating ...",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
+
                 except Exception as ex:
                     ASCIIColors.warning("Couldn't send status update to client")
 
@@ -1067,14 +1142,14 @@ class LOLLMSWebUI(LOLLMSElfServer):
             if antiprompt:
                 ASCIIColors.warning(f"\n{antiprompt} detected. Stopping generation")
                 client.generated_text = self.remove_text_from_string(client.generated_text,antiprompt)
-                self.update_message(client_id, client.generated_text, parameters, metadata, None, message_type)
+                self.update_message_content(client_id, client.generated_text, operation_type)
                 return False
 
-            self.update_message(client_id, chunk,  parameters, metadata, ui=None, msg_type=message_type)
+            self.update_message_content(client_id, chunk, operation_type)
             return True
         # Stream the generated text to the frontend
         else:
-            self.update_message(client_id, chunk, parameters, metadata, ui=None, msg_type=message_type)
+            self.update_message_content(client_id, chunk, operation_type)
         return True
 
 
@@ -1136,7 +1211,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 ASCIIColors.error(f"Workflow run failed.\nError:{ex}")
                 ASCIIColors.error(traceback_text)
                 if callback:
-                    callback(f"Workflow run failed\nError:{ex}", MSG_TYPE.MSG_TYPE_EXCEPTION)
+                    callback(f"Workflow run failed\nError:{ex}", MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_EXCEPTION)
                 return          
             print("Finished executing the workflow")
             return output
@@ -1204,7 +1279,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     try:
                         post_processed_output = process_ai_output(output, client.discussion.image_files, client.discussion.discussion_folder)
                         if len(post_processed_output)!=output:
-                            self.process_chunk(post_processed_output, MSG_TYPE.MSG_TYPE_FULL,client_id=client_id)
+                            self.process_chunk(post_processed_output, MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT,client_id=client_id)
                     except Exception as ex:
                         ASCIIColors.error(str(ex))                                 
             else:
@@ -1259,7 +1334,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 else:
                     self.send_refresh(client_id)
                     self.new_message(client_id, self.personality.name, "")
-                    self.update_message(client_id, "✍ warming up ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_START)
+                    self.update_message_step(client_id, "✍ warming up ...", MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_START)
 
                 # prepare query and reception
                 self.discussion_messages, self.current_message, tokens, context_details, internet_search_infos = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type, force_using_internet=force_using_internet, previous_chunk = client.generated_text if is_continue else "")
@@ -1279,7 +1354,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                 )
                     if self.tts and self.config.auto_read and len(self.personality.audio_samples)>0:
                         try:
-                            self.process_chunk("Generating voice output",MSG_TYPE.MSG_TYPE_STEP_START,client_id=client_id)
+                            self.process_chunk("Generating voice output",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_START,client_id=client_id)
                             from lollms.services.xtts.lollms_xtts import LollmsXTTS
                             voice=self.config.xtts_current_voice
                             if voice!="main_voice":
@@ -1300,8 +1375,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                 f'    Your browser does not support the audio element.',
                                 f'</audio>'                        
                                 ])
-                                self.process_chunk("Generating voice output", MSG_TYPE.MSG_TYPE_STEP_END, {'status':True},client_id=client_id)
-                                self.process_chunk(fl,MSG_TYPE.MSG_TYPE_UI, client_id=client_id)
+                                self.process_chunk("Generating voice output", operation_type= MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS,client_id=client_id)
+                                self.process_chunk(fl,MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_UI, client_id=client_id)
                             else:
                                 self.InfoMessage("xtts is not up yet.\nPlease wait for it to load then try again. This may take some time.") 
 
@@ -1422,7 +1497,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
             except Exception as ex:
                 trace_exception(ex)
             try:
-                self.update_message(client_id, "Generating ...", msg_type=MSG_TYPE.MSG_TYPE_STEP_END, parameters= {'status':True})
+                self.update_message_step(client_id, "✍ warming up ...", MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
+                self.update_message_step(client_id, "✍ generating ...",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
             except Exception as ex:
                 ASCIIColors.warning("Couldn't send status update to client")
             self.close_message(client_id)
@@ -1469,7 +1545,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             nb_tokens = None
         
         message = client.discussion.add_message(
-            message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
+            operation_type    = MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT.value,
             sender_type     = SENDER_TYPES.SENDER_TYPES_USER.value,
             sender          = self.config.user_name.strip() if self.config.use_user_name_in_discussions else self.personality.user_message_prefix,
             content         = prompt,
@@ -1481,7 +1557,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         self.new_message(
                         client.client_id, 
                         self.personality.name,
-                        message_type= MSG_TYPE.MSG_TYPE_FULL,
+                        operation_type= MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT,
                         content=""
         )
         client.generated_text = ""

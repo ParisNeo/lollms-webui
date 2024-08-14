@@ -11,7 +11,7 @@ from lollms.paths import LollmsPaths
 from lollms.main_config import LOLLMSConfig
 from lollms.utilities import check_and_install_torch, PackageManager, check_torch_version, reinstall_pytorch_with_cuda, reinstall_pytorch_with_cpu, reinstall_pytorch_with_rocm
 from lollms.com import NotificationType, NotificationDisplayType, LoLLMsCom
-from lollms.types import MSG_TYPE, SENDER_TYPES
+from lollms.types import MSG_OPERATION_TYPE, SENDER_TYPES
 from lollms.app import LollmsApplication
 from pathlib import Path
 from ascii_colors import ASCIIColors

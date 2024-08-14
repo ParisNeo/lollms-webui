@@ -15,11 +15,11 @@ class AIPersonality:
     def success(self, content, duration: int = 4, client_id = None, verbose: bool = True) -> Any
     def error(self, content, duration: int = 4, client_id = None, verbose: bool = True) -> Any
     def notify(self, content, notification_type: NotificationType = NotificationType.NOTIF_SUCCESS, duration: int = 4, client_id = None, display_type: NotificationDisplayType = NotificationDisplayType.TOAST, verbose = True) -> Any
-    def new_message(self, message_text: str, message_type: MSG_TYPE = MSG_TYPE.MSG_TYPE_FULL, metadata = [], callback: Callable[([str, int, dict, list, Any], bool)] = None) -> Any
-    def full(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
+    def new_message(self, message_text: str, message_type: MSG_TYPE = MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT, metadata = [], callback: Callable[([str, int, dict, list, Any], bool)] = None) -> Any
+    def set_message_content(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def ui(self, ui_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
-    def full_invisible_to_ai(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
-    def full_invisible_to_user(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
+    def set_message_content_invisible_to_ai(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
+    def set_message_content_invisible_to_user(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def build_prompt(self, prompt_parts: List[str], sacrifice_id: int = -1, context_size: int = None, minimum_spare_context_size: int = None) -> Any
     def add_collapsible_entry(self, title, content) -> Any
     def internet_search_with_vectorization(self, query, quick_search: bool = False, asses_using_llm = True) -> Any
@@ -213,9 +213,9 @@ class APScript:
     def ui_in_iframe(self, html_ui: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def code(self, code: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def chunk(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
-    def full(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None, msg_type: MSG_TYPE = MSG_TYPE.MSG_TYPE_FULL) -> Any
-    def full_invisible_to_ai(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
-    def full_invisible_to_user(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
+    def set_message_content(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None, msg_type: MSG_TYPE = MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT) -> Any
+    def set_message_content_invisible_to_ai(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
+    def set_message_content_invisible_to_user(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def execute_python(self, code, code_folder = None, code_file_name = None) -> Any
     def build_python_code(self, prompt, max_title_length = 4096) -> Any
     def make_title(self, prompt, max_title_length: int = 50) -> Any
@@ -231,7 +231,7 @@ class APScript:
     def InfoMessage(self, content, client_id = None, verbose: bool = None) -> Any
     def info(self, info_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def step_progress(self, step_text: str, progress: float, callback: Callable[([str, MSG_TYPE, dict, list, AIPersonality], bool)] = None) -> Any
-    def new_message(self, message_text: str, message_type: MSG_TYPE = MSG_TYPE.MSG_TYPE_FULL, metadata = [], callback: Callable[([str, int, dict, list, AIPersonality], bool)] = None) -> Any
+    def new_message(self, message_text: str, message_type: MSG_TYPE = MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT, metadata = [], callback: Callable[([str, int, dict, list, AIPersonality], bool)] = None) -> Any
     def finished_message(self, message_text: str = '', callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def print_prompt(self, title, prompt) -> Any
     def fast_gen_with_images(self, prompt: str, images: list, max_generation_size: int = None, placeholders: dict = {}, sacrifice: list = ['previous_discussion'], debug: bool = False, callback = None, show_progress = False) -> str
@@ -385,13 +385,13 @@ def notify(self, content, notification_type: NotificationType = NotificationType
 ### new_message
 
 ```python
-def new_message(self, message_text: str, message_type: MSG_TYPE = MSG_TYPE.MSG_TYPE_FULL, metadata = [], callback: Callable[([str, int, dict, list, Any], bool)] = None) -> Any
+def new_message(self, message_text: str, message_type: MSG_TYPE = MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT, metadata = [], callback: Callable[([str, int, dict, list, Any], bool)] = None) -> Any
 ```
 
 ### full
 
 ```python
-def full(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
+def set_message_content(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
 ```
 
 ### ui
@@ -403,13 +403,13 @@ def ui(self, ui_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool
 ### full_invisible_to_ai
 
 ```python
-def full_invisible_to_ai(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
+def set_message_content_invisible_to_ai(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
 ```
 
 ### full_invisible_to_user
 
 ```python
-def full_invisible_to_user(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
+def set_message_content_invisible_to_user(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
 ```
 
 ### build_prompt
@@ -1393,19 +1393,19 @@ def chunk(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list],
 ### full
 
 ```python
-def full(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None, msg_type: MSG_TYPE = MSG_TYPE.MSG_TYPE_FULL) -> Any
+def set_message_content(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None, msg_type: MSG_TYPE = MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT) -> Any
 ```
 
 ### full_invisible_to_ai
 
 ```python
-def full_invisible_to_ai(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
+def set_message_content_invisible_to_ai(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
 ```
 
 ### full_invisible_to_user
 
 ```python
-def full_invisible_to_user(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
+def set_message_content_invisible_to_user(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
 ```
 
 ### execute_python
@@ -1501,7 +1501,7 @@ def step_progress(self, step_text: str, progress: float, callback: Callable[([st
 ### new_message
 
 ```python
-def new_message(self, message_text: str, message_type: MSG_TYPE = MSG_TYPE.MSG_TYPE_FULL, metadata = [], callback: Callable[([str, int, dict, list, AIPersonality], bool)] = None) -> Any
+def new_message(self, message_text: str, message_type: MSG_TYPE = MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT, metadata = [], callback: Callable[([str, int, dict, list, AIPersonality], bool)] = None) -> Any
 ```
 
 ### finished_message

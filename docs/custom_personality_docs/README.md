@@ -107,7 +107,7 @@ full(text: str)
 Writes text in a full message to the user inside a description. This method replaces any existing content in the message description with the specified text.
 
 Example Usage:
-self.full("Here is a complete overview of your request.")
+self.set_message_content("Here is a complete overview of your request.")
 ```
 
 ### Append Chunk (`chunk`)

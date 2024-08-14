@@ -15,8 +15,8 @@ from lollms.server.elf_server import LOLLMSElfServer
 from fastapi.responses import FileResponse
 from lollms.binding import BindingBuilder, InstallOption
 from ascii_colors import ASCIIColors
-from lollms.personality import MSG_TYPE, AIPersonality
-from lollms.types import MSG_TYPE, SENDER_TYPES
+from lollms.personality import AIPersonality
+from lollms.types import MSG_OPERATION_TYPE, SENDER_TYPES
 from lollms.utilities import load_config, trace_exception, gc
 from lollms.utilities import find_first_available_file_index, convert_language_name
 from lollms.security import forbid_remote_access
@@ -67,10 +67,11 @@ def add_events(sio:socketio):
             created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             ump = lollmsElfServer.config.discussion_prompt_separator +lollmsElfServer.config.user_name.strip() if lollmsElfServer.config.use_user_name_in_discussions else lollmsElfServer.personality.user_message_prefix
             message = lollmsElfServer.session.get_client(client_id).discussion.add_message(
-                message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
+                message_type    = MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT.value,
                 sender_type     = SENDER_TYPES.SENDER_TYPES_USER.value,
                 sender          = ump.replace(lollmsElfServer.config.discussion_prompt_separator,"").replace(":",""),
                 content=prompt,
+                steps=[],
                 metadata=None,
                 parent_message_id=lollmsElfServer.message_id,
                 created_at=created_at,
@@ -124,11 +125,12 @@ def add_events(sio:socketio):
             created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             ump = lollmsElfServer.config.discussion_prompt_separator +lollmsElfServer.config.user_name.strip() if lollmsElfServer.config.use_user_name_in_discussions else lollmsElfServer.personality.user_message_prefix
             message = lollmsElfServer.session.get_client(client_id).discussion.add_message(
-                message_type    = MSG_TYPE.MSG_TYPE_FULL.value,
+                message_type    = MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT.value,
                 sender_type     = SENDER_TYPES.SENDER_TYPES_USER.value,
                 sender          = ump.replace(lollmsElfServer.config.discussion_prompt_separator,"").replace(":",""),
-                content=prompt,
-                metadata=None,
+                content         = prompt,
+                steps           = [],
+                metadata        = None,
                 parent_message_id=lollmsElfServer.message_id,
                 created_at=created_at,
                 nb_tokens=nb_tokens

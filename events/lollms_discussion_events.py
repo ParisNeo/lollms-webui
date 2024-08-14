@@ -15,8 +15,8 @@ from lollms.server.elf_server import LOLLMSElfServer
 from fastapi.responses import FileResponse
 from lollms.binding import BindingBuilder, InstallOption
 from ascii_colors import ASCIIColors
-from lollms.personality import MSG_TYPE, AIPersonality
-from lollms.types import MSG_TYPE, SENDER_TYPES
+from lollms.personality import AIPersonality
+from lollms.types import MSG_OPERATION_TYPE, SENDER_TYPES
 from lollms.utilities import load_config, trace_exception, gc
 from lollms.utilities import find_first_available_file_index, convert_language_name, PackageManager
 from lollms_webui import LOLLMSWebUI
@@ -106,10 +106,11 @@ def add_events(sio:socketio):
             except:
                 nb_tokens = None
             message = lollmsElfServer.session.get_client(client_id).discussion.add_message(
-                message_type        = MSG_TYPE.MSG_TYPE_FULL.value if lollmsElfServer.personality.include_welcome_message_in_discussion else MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value,
+                message_type        = MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT.value if lollmsElfServer.personality.include_welcome_message_in_discussion else MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT_INVISIBLE_TO_AI.value,
                 sender_type         = SENDER_TYPES.SENDER_TYPES_AI.value,
                 sender              = lollmsElfServer.personality.name,
                 content             = welcome_message,
+                steps               = [],
                 metadata            = None,
                 rank                = 0, 
                 parent_message_id   = -1, 

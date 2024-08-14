@@ -8,7 +8,6 @@ import './assets/tailwind.css'
 //import './assets/tailwind_april_fool.css'
 
 const app = createApp(App)
-console.log("Loaded main.js")
 
 function copyObject(obj) {
   const copy = {};
@@ -228,13 +227,11 @@ export const store = createStore({
           let res = await axios.get('/get_lollms_webui_version', {});
           if (res) {
               this.state.version = res.data
-              console.log("version res:", res)
-              console.log("version :", this.state.version)
           }
   
         }
         catch{
-          console.log("Coudln't get version")
+          console.error("Coudln't get version")
         }
       },
       async refreshConfig({ commit }) {
@@ -587,16 +584,8 @@ app.mixin({
     if (!actionsExecuted) {
       this.$store.state.api_get_req = api_get_req
       this.$store.state.api_post_req = api_post_req
-      console.log("Main.js creation started")
     }
-    console.log("Main.js created")
   },
-  beforeMount() {
-    console.log("Main.js before mount")
-  },
-  mounted() {
-    console.log("Main.js mounted")
-  }
 })
 
 function logObjectProperties(obj) {

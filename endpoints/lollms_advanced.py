@@ -10,7 +10,7 @@ from fastapi import APIRouter, Request
 from lollms_webui import LOLLMSWebUI
 from pydantic import BaseModel, Field
 from starlette.responses import StreamingResponse
-from lollms.types import MSG_TYPE
+from lollms.types import MSG_OPERATION_TYPE
 from lollms.main_config import BaseConfig
 from lollms.utilities import detect_antiprompt, remove_text_from_string, trace_exception, show_yes_no_dialog, add_period
 from lollms.security import sanitize_path, forbid_remote_access, check_access, sanitize_svg
