@@ -22,18 +22,18 @@
                 Lord Of Large Language & Multimodal Systems
             </h1>
             <p class="text-2xl text-gray-600 dark:text-gray-300 italic">
-                {{ version_info }}
-            </p>
-            <p class="text-2xl text-gray-600 dark:text-gray-300 italic">
                 One tool to rule them all
             </p>
             <p class="text-xl text-gray-500 dark:text-gray-400 mb-6">
                 by ParisNeo
             </p>
+            <p class="bottom-0 text-2xl text-gray-600 dark:text-gray-300 italic">
+                {{ version_info }}
+            </p>
 
             <div class="w-full h-24 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg">
                 <img 
-                class="w-24 h-24 rounded-full absolute top-0 transition-all duration-300 ease-linear"
+                class="w-24 h-24 animate-glow rounded-full absolute top-0 transition-all duration-300 ease-linear"
                 :style="{ left: `calc(${loading_progress}% - 3rem)` }"
                 title="LoLLMS WebUI" 
                 src="@/assets/logo.png" 
@@ -53,7 +53,7 @@
             </div>
             </div>
         </div>
-        </div>
+    </div>
     </transition>
 
     <button v-if="isReady" @click="togglePanel" class="absolute top-2 left-2 p-3 bg-white bg-opacity-0 cursor-pointer transition-all duration-300 hover:scale-110 hover:bg-opacity-20 hover:shadow-xl group">

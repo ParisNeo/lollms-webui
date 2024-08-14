@@ -873,7 +873,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         
         if self.nb_received_tokens==1:
             client.discussion.current_message.started_generating_at=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            self.update_message_step(client_id, "✍ warming up ...",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
+            self.update_message_step(client_id, "🔥 warming up ...",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
             self.update_message_step(client_id, "✍ generating ...",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
 
         run_async(
@@ -957,11 +957,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                             'id':client.discussion.current_message.id, 
                                             'metadata': metadata if type(metadata) in [str, None] else json.dumps(metadata) if type(metadata)==dict else None,
                                             'discussion_id':client.discussion.discussion_id,
-                                            'message_type': MSG_OPERATION_TYPE.MSG_TYPE_JSON_INFOS,
-                                            'created_at':client.discussion.current_message.created_at,
-                                            'started_generating_at': client.discussion.current_message.started_generating_at,
-                                            'finished_generating_at': client.discussion.current_message.finished_generating_at,
-                                            'nb_tokens': client.discussion.current_message.nb_tokens,
+                                            'operation_type': MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_JSON_INFOS,
                                         }, to=client_id
                                 )
         )
@@ -976,11 +972,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                             'id':client.discussion.current_message.id, 
                                             'ui': ui if type(ui) in [str, None] else None,
                                             'discussion_id':client.discussion.discussion_id,
-                                            'message_type': MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_UI,
-                                            'created_at':client.discussion.current_message.created_at,
-                                            'started_generating_at': client.discussion.current_message.started_generating_at,
-                                            'finished_generating_at': client.discussion.current_message.finished_generating_at,
-                                            'nb_tokens': client.discussion.current_message.nb_tokens,
+                                            'operation_type': MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_UI,
                                         }, to=client_id
                                 )
         )
@@ -1072,13 +1064,13 @@ class LOLLMSWebUI(LOLLMSElfServer):
         if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_NEW_MESSAGE:
             self.nb_received_tokens = 0
             self.start_time = datetime.now()
-            self.update_message_step(client_id, "✍ warming up ...", MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
+            self.update_message_step(client_id, "🔥 warming up ...", MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
             self.update_message_step(client_id, "✍ generating ...",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
             self.new_message(
                                     client_id, 
                                     self.personality.name if personality is None else personality.name,
-                                    chunk, 
-                                    operation_type= MSG_TYPE.MSG_TYPE_CONTENT
+                                    chunk,
+                                    message_type = MSG_TYPE.MSG_TYPE_CONTENT
                             )
  
         elif operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_FINISHED_MESSAGE:
@@ -1088,7 +1080,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             if self.nb_received_tokens==0:
                 self.start_time = datetime.now()
                 try:
-                    self.update_message_step(client_id, "✍ warming up ...",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
+                    self.update_message_step(client_id, "🔥 warming up ...",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
                     self.update_message_step(client_id, "✍ generating ...",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
                 except Exception as ex:
                     trace_exception(ex)
@@ -1131,7 +1123,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             if self.nb_received_tokens==0:
                 self.start_time = datetime.now()
                 try:
-                    self.update_message_step(client_id, "✍ warming up ...", MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
+                    self.update_message_step(client_id, "🔥 warming up ...", MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
                     self.update_message_step(client_id, "✍ generating ...",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
 
                 except Exception as ex:
@@ -1334,7 +1326,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 else:
                     self.send_refresh(client_id)
                     self.new_message(client_id, self.personality.name, "")
-                    self.update_message_step(client_id, "✍ warming up ...", MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_START)
+                    self.update_message_step(client_id, "🔥 warming up ...", MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_START)
 
                 # prepare query and reception
                 self.discussion_messages, self.current_message, tokens, context_details, internet_search_infos = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type, force_using_internet=force_using_internet, previous_chunk = client.generated_text if is_continue else "")
@@ -1497,7 +1489,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             except Exception as ex:
                 trace_exception(ex)
             try:
-                self.update_message_step(client_id, "✍ warming up ...", MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
+                self.update_message_step(client_id, "🔥 warming up ...", MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
                 self.update_message_step(client_id, "✍ generating ...",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
             except Exception as ex:
                 ASCIIColors.warning("Couldn't send status update to client")

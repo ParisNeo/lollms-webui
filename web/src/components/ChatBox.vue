@@ -288,12 +288,39 @@
                                         placeholder="Send message..." @keydown.enter.exact="submitOnEnter($event)">
                                     </textarea>
                                 </div>
-                                <button v-if="loading" type="button"   
-                                        class="bg-red-500 dark:bg-red-800 hover:bg-red-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:hover:bg-bg-dark-tone focus:outline-none dark:focus:ring-blue-800"
-                                        @click.stop="stopGenerating">
-                                        Stop generating
-                                </button>
-                                
+                                <button
+                                    v-if="loading"
+                                    type="button"
+                                    class="relative bg-red-500 dark:bg-red-800 hover:bg-red-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-10 py-2.5 mr-2 mb-2 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-blue-800 transition-all duration-300 ease-in-out overflow-hidden"
+                                    @click.stop="stopGenerating"
+                                >
+                                    <span class="flex items-center justify-center">
+                                    <svg
+                                        class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <circle
+                                        class="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        stroke-width="4"
+                                        ></circle>
+                                        <path
+                                        class="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                        ></path>
+                                    </svg>
+                                    Stop generating
+                                    </span>
+                                    <span
+                                    class="absolute top-0 left-0 w-full h-full bg-white opacity-25 transform scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100"
+                                    ></span>
+                                </button>                                
                                 <div class="group relative w-max">
                                     <button v-if="!loading" type="button" @click="submit" title="Send"
                                     class="w-6 text-panel hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
