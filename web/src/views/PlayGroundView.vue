@@ -1,7 +1,7 @@
 <template>
   <div class="container w-full background-color shadow-lg overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
     <div class="container flex flex-row m-2 w-full ">
-      <div class="flex-grow max-w-[900px] m-2">
+      <div class="flex-grow w-full m-2">
         <div class="flex panels-color gap-3 flex-1 items-center flex-grow flex-row rounded-md border-2 border-blue-300 m-2 p-4">
             <button v-show="!generating" id="generate-button" title="Generate from current cursor position" @click="generate" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="pen-tool"></i></button>
             <button v-show="!generating" id="generate-next-button" title="Generate from next place holder" @click="generate_in_placeholder" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="archive"></i></button>
@@ -36,20 +36,7 @@
               <img v-if="!pending" :src="is_deaf_transcribing?deaf_on:deaf_off" height="25">
               <img v-if="pending" :src="loading_icon" height="25">
             </button>
-<style>
-.slider-value {
-    display: inline-block;
-    margin-left: 10px;
-    color: #6b7280;
-    font-size: 14px;
-  }
-.small-button {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.875rem;
-  }
-</style>
-
-<button
+            <button
                 type="button"
                 title="Start recording audio"
                 @click="startRecording"
@@ -76,8 +63,11 @@
             </svg>
             <button v-show="!generating" id="export-button" @click="exportText" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="upload"></i></button>
             <button v-show="!generating" id="import-button" @click="importText" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="download"></i></button>
+            <div class="cursor-pointer" @click="showSettings = !showSettings">
+              <i data-feather="settings"></i>
+            </div>
 
-<div class="flex gap-3 flex-1 items-center flex-grow  justify-end">   
+        <div class="flex gap-3 flex-1 items-center flex-grow justify-end">   
             <button 
             class="border-2 text-blue-600 dark:text-white border-blue-300 p-2 rounded shadow-lg hover:border-gray-600 dark:link-item-dark cursor-pointer"
             @click="tab_id='source'" :class="{'bg-blue-200 dark:bg-blue-500':tab_id=='source'}">
@@ -155,9 +145,6 @@
               </MarkdownRenderer>          
             </div>
           </div>
-      </div>
-      <div class="settings-button" @click="showSettings = !showSettings">
-        <i data-feather="settings"></i> Settings
       </div>
       <div v-if="showSettings" class="settings scrollbar bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Settings</h2>
@@ -1028,6 +1015,16 @@ export default {
 </script>
 
 <style>
+  .slider-value {
+      display: inline-block;
+      margin-left: 10px;
+      color: #6b7280;
+      font-size: 14px;
+    }
+  .small-button {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+    }
 
   select {
     width: 200px;
@@ -1054,22 +1051,6 @@ export default {
     height: 100%;
   }
 
-  .settings-button {
-    cursor: pointer;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    color: #333;
-    font-size: 14px;
-  }
-
-  .settings-button:hover {
-    background-color: #eee;
-  }
-
-  .settings-button:active {
-    background-color: #ddd;
-  }
 
   .slider-container {
     margin-top: 20px;

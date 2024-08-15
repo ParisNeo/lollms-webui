@@ -338,7 +338,7 @@
                                     </ChatBarButton>
 
                                     <ChatBarButton 
-                                        v-if="$store.state.config.active_tts_service !== 'None'"
+                                        v-if="$store.state.config.active_tts_service != 'None' && $store.state.config.active_tts_service != null && this.$store.state.config.active_stt_service!='None' && this.$store.state.config.active_stt_service!=null"
                                         @click="is_rt ? stopRTCom : startRTCom"
                                         :class="is_rt ? 'bg-red-500 dark:bg-red-600' : 'bg-green-500 dark:bg-green-600'"
                                         title="Real-time audio mode"
