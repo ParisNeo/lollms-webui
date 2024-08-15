@@ -6,7 +6,7 @@
       </span>
       {{ jsonFormText }}
     </div>
-    <div v-show="!collapsed" class="json-content">
+    <div v-show="!collapsed" class="json-content panels-color">
       <json-tree-view :data="parsedJsonData" :depth="0"></json-tree-view>
     </div>
   </div>

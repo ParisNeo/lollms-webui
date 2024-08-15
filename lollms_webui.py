@@ -40,7 +40,7 @@ import re
 import string
 import requests
 from datetime import datetime
-from typing import List, Tuple,Callable
+from typing import List, Tuple,Callable, Any
 import time
 import numpy as np
 from lollms.utilities import find_first_available_file_index, convert_language_name
@@ -697,7 +697,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         
         return discussion_messages # Removes the last return
 
-    def set_message_content(self, full_text:str, callback: Callable[[str, MSG_OPERATION_TYPE, dict, list], bool]|None=None, client_id=0):
+    def set_message_content(self, full_text:str, callback: Callable[[str | list | None, MSG_OPERATION_TYPE, str, Any | None], bool]|None=None, client_id=0):
         """This sends full text to front end
 
         Args:
@@ -1021,7 +1021,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         self, 
                         data:str|list|None, 
                         operation_type:MSG_OPERATION_TYPE,
-                        client_id:int=0,
+                        client_id:str=0,
                         personality:AIPersonality=None
                     ):
         """
