@@ -118,7 +118,7 @@ chunk(text: str)
 Appends a new string to the existing message. It's useful for adding more information to the current message incrementally.
 
 Example Usage:
-self.chunk("Adding additional details...")
+self.add_chunk_to_message_content("Adding additional details...")
 ```
 
 ### Step Start (`step_start`)

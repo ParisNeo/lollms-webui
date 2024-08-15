@@ -46,7 +46,7 @@ class APScript:
     def ui(self, html_ui: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def ui_in_iframe(self, html_ui: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def code(self, code: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
-    def chunk(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
+    def add_chunk_to_message_content(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def set_message_content(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None, msg_type: MSG_TYPE = MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT) -> Any
     def set_message_content_invisible_to_ai(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def set_message_content_invisible_to_user(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any

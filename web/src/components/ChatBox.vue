@@ -1,6 +1,5 @@
 <template>
 
-        <form>
             <div class="absolute bottom-0 left-0 w-fit min-w-96  w-full justify-center text-center">
                 <div v-if="filesList.length > 0 || showPersonalities" class="items-center gap-2 panels-color shadow-sm hover:shadow-none dark:border-gray-800  w-fit">
                     <!-- EXPAND / COLLAPSE BUTTON -->
@@ -282,143 +281,135 @@
                                     ></PersonalitiesCommands>                                    
                                 </div>      
                                 <div class="relative grow">
-                                    <textarea id="chat" rows="1" v-model="message" title="Hold SHIFT + ENTER to add new line"
-                                        @paste="handlePaste"
-                                        class="inline-block  no-scrollbar  p-2.5 w-full text-sm text-gray-900 bg-bg-light rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400  dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="Send message..." @keydown.enter.exact="submitOnEnter($event)">
-                                    </textarea>
-                                </div>
-                                <button
-                                    v-if="loading"
-                                    type="button"
-                                    class="relative bg-red-500 dark:bg-red-800 hover:bg-red-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-10 py-2.5 mr-2 mb-2 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-blue-800 transition-all duration-300 ease-in-out overflow-hidden"
-                                    @click.stop="stopGenerating"
-                                >
-                                    <span class="flex items-center justify-center">
-                                    <svg
-                                        class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
+                                    <form>
+                                        <textarea
+                                            id="chat"
+                                            rows="1"
+                                            v-model="message"
+                                            @paste="handlePaste"
+                                            @keydown.enter.exact="submitOnEnter($event)"
+                                            class="w-full p-3 text-sm text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                            placeholder="Send message..."
+                                        ></textarea>
+                                    </form>
+                                    </div>
+
+                                    <div class="flex items-center space-x-3">
+                                    <ChatBarButton
+                                        v-if="loading"
+                                        @click="stopGenerating"
+                                        class="bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700"
                                     >
-                                        <circle
-                                        class="opacity-25"
-                                        cx="12"
-                                        cy="12"
-                                        r="10"
-                                        stroke="currentColor"
-                                        stroke-width="4"
-                                        ></circle>
-                                        <path
-                                        class="opacity-75"
-                                        fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                        ></path>
-                                    </svg>
-                                    Stop generating
-                                    </span>
-                                    <span
-                                    class="absolute top-0 left-0 w-full h-full bg-white opacity-25 transform scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100"
-                                    ></span>
-                                </button>                                
-                                <div class="group relative w-max">
-                                    <button v-if="!loading" type="button" @click="submit" title="Send"
-                                    class="w-6 text-panel hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
-                                            <i data-feather="send"></i>
-                                    </button>                        
-                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Sends your message to the AI.</p></div>
-                                </div>
-                                <div class="group relative w-max">
-                                    <button v-if="!loading" type="button" @click="submitWithInternetSearch" title="Send With internet"
-                                    class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
-                                            <img :src="sendGlobe" width="50" height="50"  style="stroke: currentColor; fill: currentColor;">
-                                    </button>                        
-                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Sends your message to the AI with internet search.</p></div>
-                                </div>
-                                <div class="group relative w-max">
-                                    <button v-if="!loading" 
-                                        type="button"
-                                        @click="startSpeechRecognition"
-                                        :class="{ 'text-red-500': isListeningToVoice }"
-                                        class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90"
+                                        <template #icon>
+                                        <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        </template>
+                                        <span>Stop</span>
+                                    </ChatBarButton>
+
+                                    <ChatBarButton v-else @click="submit" title="Send">
+                                        <template #icon>
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                                        </svg>
+                                        </template>
+                                    </ChatBarButton>
+
+                                    <ChatBarButton @click="submitWithInternetSearch" title="Send with internet search">
+                                        <template #icon>
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                                        </svg>
+                                        </template>
+                                    </ChatBarButton>
+
+                                    <ChatBarButton 
+                                        @click="startSpeechRecognition" 
+                                        :class="{ 'text-red-500': isListeningToVoice }" 
+                                        title="Voice input"
                                     >
-                                    <i data-feather="mic"></i>
-                                    </button>                      
-                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Press and talk.</p></div>
-                                </div>
-                                <div v-if="$store.state.config.active_tts_service!='None'" class="group relative w-max">
-                                    <button v-if="is_rt" 
-                                        type="button"
-                                        @click="stopRTCom"
-                                        class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90 bg-red-500 border borderred700 rounded-md"
+                                        <template #icon>
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                                        </svg>
+                                        </template>
+                                    </ChatBarButton>
+
+                                    <ChatBarButton 
+                                        v-if="$store.state.config.active_tts_service !== 'None'"
+                                        @click="is_rt ? stopRTCom : startRTCom"
+                                        :class="is_rt ? 'bg-red-500 dark:bg-red-600' : 'bg-green-500 dark:bg-green-600'"
+                                        title="Real-time audio mode"
                                     >
-                                    <i data-feather="mic"></i>
-                                    </button>                      
-                                    <button v-else
-                                        type="button"
-                                        @click="startRTCom"
-                                        class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90 bg-green-500 border border-green-700 rounded-md"
-                                    >
-                                    <i data-feather="mic"></i>
-                                    </button>                      
-                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Real time bidirectional audio mode.</p></div>
+                                        <template #icon>
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 001.414 1.414m2.828-9.9a9 9 0 012.828-2.828"/>
+                                        </svg>
+                                        </template>
+                                    </ChatBarButton>
 
-                                </div>
+                                    <ChatBarButton @click="add_file" title="Send file">
+                                        <template #icon>
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        </template>
+                                    </ChatBarButton>
 
-                                <div v-if="!loading" class="group relative w-max">
-                                    <input type="file" ref="fileDialog" style="display: none" @change="addFiles" multiple />
-                                    <button type="button" @click.prevent="add_file"
-                                        class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
-                                        <i data-feather="file-plus"></i>
-                                    </button>                    
-                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Send File to the AI.</p></div>
-                                </div>
+                                    <ChatBarButton @click="takePicture" title="Take picture">
+                                        <template #icon>
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        </template>
+                                    </ChatBarButton>
 
-                                <div class="group relative w-max">
-                                    <button v-if="!loading" type="button" @click.stop="takePicture"
-                                        class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
-                                        <i data-feather="camera"></i>
-                                    </button>                 
-                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Take a shot from webcam.</p></div>
-                                </div>
+                                    <ChatBarButton @click="addWebLink" title="Add web link">
+                                        <template #icon>
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                        </svg>
+                                        </template>
+                                    </ChatBarButton>
 
-                                <div class="group relative w-max">
-                                    <button v-if="!loading" type="button" @click.stop="addWebLink" 
-                                        class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer transform transition-transform hover:translate-y-[-5px] active:scale-90">
-                                        <i data-feather="globe"></i>
-                                    </button>               
-                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm text-gray-800 dark:text-gray-200">Add a weblink to the discussion.</p></div>
-                                </div>
+                                    <ChatBarButton @click="makeAnEmptyUserMessage" title="New user message" class="text-gray-600 dark:text-gray-300">
+                                        <template #icon>
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                        </svg>
+                                        </template>
+                                    </ChatBarButton>
 
-                                <div class="group relative w-max">
-                                    <button v-if="!loading" type="button" @click.stop="makeAnEmptyUserMessage"
-                                        class=" w-6 text-gray-800 hover:text-secondary duration-75 active:scale-90  hover:translate-y-[-5px]">
-                                        <i data-feather="message-square"></i>
-                                    </button>
-         
-                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm  text-gray-800 dark:text-gray-200">New empty User message.</p></div>
-                                </div>
-
-                                <div class="group relative w-max">
-                                    <button v-if="!loading" type="button" @click.stop="makeAnEmptyAIMessage"
-                                        class=" w-6 text-red-400 hover:text-secondary duration-75 active:scale-90  hover:translate-y-[-5px]">
-                                        <i data-feather="message-square"></i>
-                                    </button>  
-
-         
-                                    <div class="pointer-events-none absolute -top-20 left-1/2 w-max -translate-x-1/2 rounded-md bg-gray-100 p-2 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-800"><p class="max-w-sm text-sm  text-gray-800 dark:text-gray-200">New empty ai message.</p></div>
-                                </div>
-
+                                    <ChatBarButton @click="makeAnEmptyAIMessage" title="New AI message" class="text-red-400 dark:text-red-300">
+                                        <template #icon>
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                        </svg>
+                                        </template>
+                                    </ChatBarButton>
+                                    </div>
+                                    
+                                    <input type="file" ref="fileDialog" @change="addFiles" multiple style="display: none" />
                             </div> 
                             <div class="ml-auto gap-2"> 
                                 
                             </div>
                         </div>
             </div>
-        </form>
+        
     <UniversalForm ref="universalForm" class="z-20" />
 </template>
 <style scoped>
+.chat-bar {
+  transition: all 0.3s ease;
+}
+
+.chat-bar:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
 /* THESE ARE FOR TransitionGroup components */
 .list-move,
 /* apply transition to moving elements */
@@ -454,6 +445,7 @@ import filesize from '../plugins/filesize'
 import MountedPersonalities from '@/components/MountedPersonalities.vue'
 import MountedPersonalitiesList from '@/components/MountedPersonalitiesList.vue'
 import PersonalitiesCommands from '@/components/PersonalitiesCommands.vue';
+import ChatBarButton from '@/components/ChatBarButton.vue'
 import socket from '@/services/websocket.js'
 import UniversalForm from '@/components/UniversalForm.vue';
 import modelImgPlaceholder from "../assets/default_model.png"
@@ -480,6 +472,7 @@ export default {
         MountedPersonalities,
         MountedPersonalitiesList,
         PersonalitiesCommands,
+        ChatBarButton
     },
     setup() {
 
