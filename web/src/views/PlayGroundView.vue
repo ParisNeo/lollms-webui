@@ -3,70 +3,119 @@
     <div class="container flex flex-row m-2 w-full ">
       <div class="flex-grow w-full m-2">
         <div class="flex panels-color gap-3 flex-1 items-center flex-grow flex-row rounded-md border-2 border-blue-300 m-2 p-4">
-            <button v-show="!generating" id="generate-button" title="Generate from current cursor position" @click="generate" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="pen-tool"></i></button>
-            <button v-show="!generating" id="generate-next-button" title="Generate from next place holder" @click="generate_in_placeholder" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="archive"></i></button>
-            <button v-show="!generating" id="tokenize" title="Tokenize text" @click="tokenize_text" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><img width="25" height="25" :src="tokenize_icon"></button>
-            <span class="w-80"></span>
-            <button v-show="generating" id="stop-button" @click="stopGeneration" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="x"></i></button>
-            <button
-                type="button"
-                title="Dictate (using your browser for transcription)"
-                @click="startSpeechRecognition"
-                :class="{ 'text-red-500': isLesteningToVoice }"
-                class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer"
-            >   
-            <i data-feather="mic"></i>
-            </button>
-            <button
-                    title="convert text to audio (not saved and uses your browser tts service)"
-                    @click.stop="speak()"
-                    :class="{ 'text-red-500': isTalking }"
-                    class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer">
-              <i data-feather="volume-2"></i>
-            </button>   
-            <input type="file" ref="fileInput" @change="handleFileUpload"  style="display: none;" accept=".wav" />
-            <button title="Upload a voice" @click="triggerFileUpload"><i data-feather="speaker"></i></button>
-            <button
-                type="button"
-                title="Start audio to audio"
-                @click="startRecordingAndTranscribing"
-                :class="{ 'text-green-500': isLesteningToVoice }"
-                class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer text-red-500"
-            >   
-              <img v-if="!pending" :src="is_deaf_transcribing?deaf_on:deaf_off" height="25">
-              <img v-if="pending" :src="loading_icon" height="25">
-            </button>
-            <button
-                type="button"
-                title="Start recording audio"
-                @click="startRecording"
-                :class="{ 'text-green-500': isLesteningToVoice }"
-                class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer text-red-500"
-            >   
-            <img v-if="!pending" :src="is_recording?rec_on:rec_off" height="25">
-            <img v-if="pending" :src="loading_icon" height="25">
-            </button>            
-            <button v-if="!isSynthesizingVoice"
-                    title="generate audio from the text"
-                    @click.stop="read()"
-                    class="w-6 hover:text-secondary duration-75 active:scale-90 cursor-pointer">
-              <i data-feather="voicemail"></i>
-            </button>
-            <svg v-else aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101"
-                fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                    fill="currentColor" />
-                <path
-                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                    fill="currentFill" />
-            </svg>
-            <button v-show="!generating" id="export-button" @click="exportText" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="upload"></i></button>
-            <button v-show="!generating" id="import-button" @click="importText" class="w-6 ml-2 hover:text-secondary duration-75 active:scale-90 cursor-pointer"><i data-feather="download"></i></button>
-            <div class="cursor-pointer" @click="showSettings = !showSettings">
-              <i data-feather="settings"></i>
-            </div>
+          <div class="flex items-center space-x-2">
+            <ChatBarButton v-show="!generating" @click="generate" title="Generate from the current cursor position">
+      <template #icon>
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+        </svg>
+      </template>
+    </ChatBarButton>
 
+    <ChatBarButton v-show="!generating" @click="generate_in_placeholder" title="Generate from the next placeholder">
+      <template #icon>
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+        </svg>
+      </template>
+    </ChatBarButton>
+
+    <ChatBarButton v-show="!generating" @click="tokenize_text" title="Tokenize the text">
+      <template #icon>
+        <img :src="tokenize_icon" alt="Tokenize" class="h-5 w-5" />
+      </template>
+    </ChatBarButton>
+
+    <span class="w-80"></span>
+
+    <ChatBarButton v-show="generating" @click="stopGeneration" title="Stop generation">
+      <template #icon>
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </template>
+    </ChatBarButton>
+
+    <ChatBarButton @click="startSpeechRecognition" :class="{ 'text-red-500': isListeningToVoice }" title="Dictate (using your browser's transcription)">
+      <template #icon>
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+        </svg>
+      </template>
+    </ChatBarButton>
+
+    <ChatBarButton @click="speak" :class="{ 'text-red-500': isTalking }" title="Convert text to audio (not saved, uses your browser's TTS service)">
+      <template #icon>
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 001.414 1.414m2.828-9.9a9 9 0 012.828-2.828" />
+        </svg>
+      </template>
+    </ChatBarButton>
+
+    <ChatBarButton @click="triggerFileUpload" title="Upload a voice">
+      <template #icon>
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+        </svg>
+      </template>
+    </ChatBarButton>
+
+    <ChatBarButton @click="startRecordingAndTranscribing" :class="{ 'text-green-500': isLesteningToVoice }" title="Start audio to audio">
+      <template #icon>
+        <img v-if="!pending" :src="is_deaf_transcribing ? deaf_on : deaf_off" alt="Deaf" class="h-5 w-5" />
+        <img v-else :src="loading_icon" alt="Loading" class="h-5 w-5" />
+      </template>
+    </ChatBarButton>
+
+    <ChatBarButton @click="startRecording" :class="{ 'text-green-500': isLesteningToVoice }" title="Start audio recording">
+      <template #icon>
+        <img v-if="!pending" :src="is_recording ? rec_on : rec_off" alt="Record" class="h-5 w-5" />
+        <img v-else :src="loading_icon" alt="Loading" class="h-5 w-5" />
+      </template>
+    </ChatBarButton>
+
+    <ChatBarButton v-if="!isSynthesizingVoice" @click="read" title= "Generate audio from text">
+      <template #icon>
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+        </svg>
+      </template>
+    </ChatBarButton>
+
+    <div v-else class="w-6 h-6">
+      <svg class="animate-spin h-5 w-5 text-secondary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+    </div>
+
+    <ChatBarButton v-show="!generating" @click="exportText" title= "Export text">
+      <template #icon>
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+        </svg>
+      </template>
+    </ChatBarButton>
+
+    <ChatBarButton v-show="!generating" @click="importText" title="Import text">
+      <template #icon>
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+      </template>
+    </ChatBarButton>
+
+    <ChatBarButton @click="showSettings = !showSettings" title="Settings">
+      <template #icon>
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      </template>
+    </ChatBarButton>
+  </div>
+
+  <input type="file" ref="fileInput" @change="handleFileUpload" style="display: none;" accept=".wav" />
         <div class="flex gap-3 flex-1 items-center flex-grow justify-end">   
             <button 
             class="border-2 text-blue-600 dark:text-white border-blue-300 p-2 rounded shadow-lg hover:border-gray-600 dark:link-item-dark cursor-pointer"
@@ -240,6 +289,7 @@ import Toast from '../components/Toast.vue'
 import MarkdownRenderer from '../components/MarkdownRenderer.vue';
 import ClipBoardTextInput from "@/components/ClipBoardTextInput.vue";
 import TokensHilighter from "@/components/TokensHilighter.vue"
+import ChatBarButton from "@/components/ChatBarButton.vue"
 import Card from "@/components/Card.vue"
 import { nextTick, TransitionGroup } from 'vue'
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
@@ -474,6 +524,7 @@ export default {
     MarkdownRenderer,
     ClipBoardTextInput,
     TokensHilighter,
+    ChatBarButton,
     Card
   },
   mounted() {
