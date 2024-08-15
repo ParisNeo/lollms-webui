@@ -73,11 +73,11 @@ def add_events(sio:socketio):
         scrape_and_save(url=url, file_path=file_path)
         try:
             if not lollmsElfServer.personality.processor is None:
-                lollmsElfServer.personality.processor.add_file(file_path, client, partial(lollmsElfServer.process_chunk, client_id = sid))
+                lollmsElfServer.personality.processor.add_file(file_path, client, partial(lollmsElfServer.process_data, client_id = sid))
                 # File saved successfully
                 run_async(partial(sio.emit,'web_page_added', {'status':True,}))
             else:
-                lollmsElfServer.personality.add_file(file_path, client, partial(lollmsElfServer.process_chunk, client_id = sid))
+                lollmsElfServer.personality.add_file(file_path, client, partial(lollmsElfServer.process_data, client_id = sid))
                 # File saved successfully
                 run_async(partial(sio.emit,'web_page_added', {'status':True}))
             lollmsElfServer.HideBlockingMessage()
@@ -114,15 +114,15 @@ def add_events(sio:socketio):
                 cv2.imwrite(str(save_path), frame)
                 if not lollmsElfServer.personality.processor is None:
                     lollmsElfServer.info("Sending file to scripted persona")
-                    client.discussion.add_file(save_path, client, lollmsElfServer.tasks_library,  partial(lollmsElfServer.process_chunk, client_id = sid))
-                    # lollmsElfServer.personality.processor.add_file(save_path, client, partial(lollmsElfServer.process_chunk, client_id = sid))
+                    client.discussion.add_file(save_path, client, lollmsElfServer.tasks_library,  partial(lollmsElfServer.process_data, client_id = sid))
+                    # lollmsElfServer.personality.processor.add_file(save_path, client, partial(lollmsElfServer.process_data, client_id = sid))
                     # File saved successfully
                     run_async(partial(sio.emit,'picture_taken', {'status':True, 'progress': 100}))
                     lollmsElfServer.info("File sent to scripted persona")
                 else:
                     lollmsElfServer.info("Sending file to persona")
-                    client.discussion.add_file(save_path, client, lollmsElfServer.tasks_library, partial(lollmsElfServer.process_chunk, client_id = sid))
-                    #lollmsElfServer.personality.add_file(save_path, client, partial(lollmsElfServer.process_chunk, client_id = sid))
+                    client.discussion.add_file(save_path, client, lollmsElfServer.tasks_library, partial(lollmsElfServer.process_data, client_id = sid))
+                    #lollmsElfServer.personality.add_file(save_path, client, partial(lollmsElfServer.process_data, client_id = sid))
                     # File saved successfully
                     run_async(partial(sio.emit,'picture_taken', {'status':True, 'progress': 100}))
                     lollmsElfServer.info("File sent to persona")

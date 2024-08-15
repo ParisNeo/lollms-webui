@@ -64,7 +64,7 @@ def check_and_install_package(package: str, version: str):
         ASCIIColors.red(f"Error checking/installing {package}: {str(e)}")
 
 packages: List[Tuple[str, str]] = [
-    ("lollmsvectordb", "0.7.9"),
+    ("lollmsvectordb", "0.8.3"),
     ("freedom_search", "0.1.7"),
     ("scrapemaster", "0.1.6"),
     ("lollms_client", "0.6.2")

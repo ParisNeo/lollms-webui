@@ -92,7 +92,7 @@ async def execute_personality_command(request: CmdExecutionRequest):
         lollmsElfServer.prepare_reception(client_id)
         if lollmsElfServer.personality.processor is not None:
             lollmsElfServer.start_time = datetime.now()
-            lollmsElfServer.personality.processor.callback = partial(lollmsElfServer.process_chunk, client_id=client_id)
+            lollmsElfServer.personality.processor.callback = partial(lollmsElfServer.process_data, client_id=client_id)
             lollmsElfServer.personality.processor.execute_command(command, parameters)
         else:
             lollmsElfServer.warning("Non scripted personalities do not support commands",client_id=client_id)
@@ -143,7 +143,7 @@ async def add_webpage(request: AddWebPageRequest):
             raise HTTPException(status_code=400, detail=f"Exception : {e}")
         
         try:
-            client.discussion.add_file(file_path, client, partial(lollmsElfServer.process_chunk, client_id = request.client_id))
+            client.discussion.add_file(file_path, client, partial(lollmsElfServer.process_data, client_id = request.client_id))
                 # File saved successfully
             lollmsElfServer.HideBlockingMessage()
             lollmsElfServer.refresh_files()

@@ -705,7 +705,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             callback (callable, optional): A callable with this signature (str, MSG_TYPE) to send the text to. Defaults to None.
         """
         if not callback:
-            callback = partial(self.process_chunk,client_id = client_id)
+            callback = partial(self.process_data,client_id = client_id)
 
         if callback:
             callback(full_text, MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT)
@@ -1017,50 +1017,52 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                 )
         )
 
-    def process_chunk(
+    def process_data(
                         self, 
-                        chunk:str|None, 
+                        data:str|list|None, 
                         operation_type:MSG_OPERATION_TYPE,
-                        metadata:list=None, 
                         client_id:int=0,
                         personality:AIPersonality=None
                     ):
         """
-        Processes a chunk of generated text
+        Processes a data of generated text
         """
         client = self.session.get_client(client_id)
-        if chunk is None and operation_type in [MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT, MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_ADD_CHUNK]:
+        if data is None and operation_type in [MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT, MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_ADD_CHUNK]:
             return
         
-        if chunk is not None:
+        if data is not None:
             if not client_id in list(self.session.clients.keys()):
                 self.error("Connection lost", client_id=client_id)
                 return
         if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP:
-            ASCIIColors.info("--> Step:"+chunk)
+            ASCIIColors.info("--> Step:"+data)
         if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_START:
-            ASCIIColors.info("--> Step started:"+chunk)
-            self.update_message_step(client_id, chunk, operation_type)
+            ASCIIColors.info("--> Step started:"+data)
+            self.update_message_step(client_id, data, operation_type)
         if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS:
-            ASCIIColors.success("--> Step ended:"+chunk)
-            self.update_message_step(client_id, chunk, operation_type)
+            ASCIIColors.success("--> Step ended:"+data)
+            self.update_message_step(client_id, data, operation_type)
         if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_FAILURE:
-            ASCIIColors.success("--> Step ended:"+chunk)
-            self.update_message_step(client_id, chunk, operation_type)
+            ASCIIColors.success("--> Step ended:"+data)
+            self.update_message_step(client_id, data, operation_type)
         if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_WARNING:
-            self.warning(chunk,client_id=client_id)
-            ASCIIColors.error("--> Exception from personality:"+chunk)
+            self.warning(data,client_id=client_id)
+            ASCIIColors.error("--> Exception from personality:"+data)
         if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_EXCEPTION:
-            self.error(chunk, client_id=client_id)
-            ASCIIColors.error("--> Exception from personality:"+chunk)
+            self.error(data, client_id=client_id)
+            ASCIIColors.error("--> Exception from personality:"+data)
             return
         if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_INFO:
-            self.info(chunk, client_id=client_id)
-            ASCIIColors.info("--> Info:"+chunk)
+            self.info(data, client_id=client_id)
+            ASCIIColors.info("--> Info:"+data)
             return
         if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_UI:
-            self.update_message_ui(client_id, chunk)
-
+            self.update_message_ui(client_id, data)
+            return
+        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_JSON_INFOS:
+            self.update_message_metadata(client_id, data)
+            return
         if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_NEW_MESSAGE:
             self.nb_received_tokens = 0
             self.start_time = datetime.now()
@@ -1069,13 +1071,13 @@ class LOLLMSWebUI(LOLLMSElfServer):
             self.new_message(
                                     client_id, 
                                     self.personality.name if personality is None else personality.name,
-                                    chunk,
+                                    data,
                                     message_type = MSG_TYPE.MSG_TYPE_CONTENT
                             )
- 
+            return
         elif operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_FINISHED_MESSAGE:
             self.close_message(client_id)
-
+            return
         elif operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_ADD_CHUNK:
             if self.nb_received_tokens==0:
                 self.start_time = datetime.now()
@@ -1090,12 +1092,12 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 dt=1
             spd = self.nb_received_tokens/dt
             if self.config.debug_show_chunks:
-                print(chunk,end="",flush=True)
+                print(data,end="",flush=True)
             #ASCIIColors.green(f"Received {self.nb_received_tokens} tokens (speed: {spd:.2f}t/s)              ",end="\r",flush=True) 
             sys.stdout = sys.__stdout__
             sys.stdout.flush()
-            if chunk:
-                client.generated_text += chunk
+            if data:
+                client.generated_text += data
             antiprompt = self.personality.detect_antiprompt(client.generated_text)
             if antiprompt:
                 ASCIIColors.warning(f"\n{antiprompt} detected. Stopping generation")
@@ -1107,7 +1109,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 if client.continuing and client.first_chunk:
                     self.update_message_content(client_id, client.generated_text, MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT)
                 else:
-                    self.update_message_content(client_id, chunk, MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_ADD_CHUNK)
+                    self.update_message_content(client_id, data, MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_ADD_CHUNK)
 
                 client.first_chunk=False
                 # if stop generation is detected then stop
@@ -1117,7 +1119,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     self.cancel_gen = False
                     ASCIIColors.warning("Generation canceled")
                     return False
- 
         # Stream the generated text to the main process
         elif operation_type in [MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT, MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT_INVISIBLE_TO_AI, MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT_INVISIBLE_TO_USER]:
             if self.nb_received_tokens==0:
@@ -1129,7 +1130,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 except Exception as ex:
                     ASCIIColors.warning("Couldn't send status update to client")
 
-            client.generated_text = chunk
+            client.generated_text = data
             antiprompt = self.personality.detect_antiprompt(client.generated_text)
             if antiprompt:
                 ASCIIColors.warning(f"\n{antiprompt} detected. Stopping generation")
@@ -1137,11 +1138,11 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 self.update_message_content(client_id, client.generated_text, operation_type)
                 return False
 
-            self.update_message_content(client_id, chunk, operation_type)
+            self.update_message_content(client_id, data, operation_type)
             return True
         # Stream the generated text to the frontend
         else:
-            self.update_message_content(client_id, chunk, operation_type)
+            self.update_message_content(client_id, data, operation_type)
         return True
 
 
@@ -1224,6 +1225,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
     def _generate(self, prompt, n_predict, client_id, callback=None):
         client = self.session.get_client(client_id)
+        if client is None:
+            return None
         self.nb_received_tokens = 0
         self.start_time = datetime.now()
         if self.model is not None:
@@ -1271,7 +1274,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     try:
                         post_processed_output = process_ai_output(output, client.discussion.image_files, client.discussion.discussion_folder)
                         if len(post_processed_output)!=output:
-                            self.process_chunk(post_processed_output, MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT,client_id=client_id)
+                            self.process_data(post_processed_output, MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT,client_id=client_id)
                     except Exception as ex:
                         ASCIIColors.error(str(ex))                                 
             else:
@@ -1342,11 +1345,11 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                     context_details=context_details,
                                     n_predict = min(self.config.ctx_size-len(tokens)-1,self.config.max_n_predict),
                                     client_id=client_id,
-                                    callback=partial(self.process_chunk,client_id = client_id)
+                                    callback=partial(self.process_data,client_id = client_id)
                                 )
                     if self.tts and self.config.auto_read and len(self.personality.audio_samples)>0:
                         try:
-                            self.process_chunk("Generating voice output",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_START,client_id=client_id)
+                            self.process_data("Generating voice output",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_START,client_id=client_id)
                             from lollms.services.xtts.lollms_xtts import LollmsXTTS
                             voice=self.config.xtts_current_voice
                             if voice!="main_voice":
@@ -1367,8 +1370,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                 f'    Your browser does not support the audio element.',
                                 f'</audio>'                        
                                 ])
-                                self.process_chunk("Generating voice output", operation_type= MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS,client_id=client_id)
-                                self.process_chunk(fl,MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_UI, client_id=client_id)
+                                self.process_data("Generating voice output", operation_type= MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS,client_id=client_id)
+                                self.process_data(fl,MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_UI, client_id=client_id)
                             else:
                                 self.InfoMessage("xtts is not up yet.\nPlease wait for it to load then try again. This may take some time.") 
 
@@ -1555,6 +1558,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
         client.generated_text = ""
         ASCIIColors.info(f"prompt has {self.config.ctx_size-context_details['available_space']} tokens")
         ASCIIColors.info(f"warmup for generating up to {min(context_details['available_space'],self.config.max_n_predict)} tokens")
-        self.generate(discussion_messages, current_message, context_details, min(self.config.ctx_size-len(tokens)-1, self.config.max_n_predict), client.client_id, callback if callback else partial(self.process_chunk, client_id=client.client_id))
+        self.generate(discussion_messages, current_message, context_details, min(self.config.ctx_size-len(tokens)-1, self.config.max_n_predict), client.client_id, callback if callback else partial(self.process_data, client_id=client.client_id))
         self.close_message(client.client_id)        
         return client.generated_text
