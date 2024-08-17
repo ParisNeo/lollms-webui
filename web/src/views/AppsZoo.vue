@@ -394,8 +394,10 @@ export default {
 
       try {
         const response = await axios.post('/download_app', {
-            client_id: this.$store.state.client_id,
-            app_name: appName
+          client_id: this.$store.state.client_id,
+          app_name: appName
+        }, {
+          responseType: 'arraybuffer'  // Important: request binary data
         });
 
         // Get the filename from the Content-Disposition header
@@ -428,6 +430,7 @@ export default {
         this.isLoading = false;
       }
     },
+
     openApp(app) {
       if (app.installed) {
         window.open(`/apps/${app.folder_name}/index.html?client_id=${this.$store.state.client_id}`, '_blank');

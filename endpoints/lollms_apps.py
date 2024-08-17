@@ -212,6 +212,17 @@ class AppNameInput(BaseModel):
     app_name: str
 
 
+import tempfile
+
+
+from fastapi.responses import FileResponse
+import tempfile
+import os
+
+from fastapi.responses import Response
+from io import BytesIO
+import zipfile
+
 @router.post("/download_app")
 async def download_app(input_data: AppNameInput):
     check_access(lollmsElfServer, input_data.client_id)
@@ -221,24 +232,33 @@ async def download_app(input_data: AppNameInput):
     if not app_path.exists():
         raise HTTPException(status_code=404, detail="App not found")
 
-    # Create a BytesIO object to store the zip file
-    zip_buffer = io.BytesIO()
+    # Create a BytesIO object to store the zip file in memory
+    zip_buffer = BytesIO()
 
-    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
-        for file in app_path.rglob('*'):
-            if file.is_file() and '.git' not in file.parts:
-                relative_path = file.relative_to(app_path)
-                zip_file.write(file, arcname=relative_path)
+    try:
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            for file in app_path.rglob('*'):
+                if file.is_file() and '.git' not in file.parts:
+                    relative_path = file.relative_to(app_path)
+                    zip_file.write(file, arcname=str(relative_path))
 
-    # Seek to the beginning of the BytesIO object
-    zip_buffer.seek(0)
+        # Move the cursor to the beginning of the BytesIO object
+        zip_buffer.seek(0)
 
-    # Create a StreamingResponse to return the zip file
-    return StreamingResponse(
-        zip_buffer,
-        media_type="application/zip",
-        headers={"Content-Disposition": f"attachment; filename={app_name}.zip"}
-    )
+        # Create a Response with the zip content
+        return Response(
+            content=zip_buffer.getvalue(),
+            media_type="application/zip",
+            headers={
+                "Content-Disposition": f"attachment; filename={app_name}.zip",
+                "Cache-Control": "no-cache",
+                "Pragma": "no-cache",
+                "Expires": "0"
+            }
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating ZIP file: {str(e)}")
+
 
 @router.post("/upload_app")
 async def upload_app(client_id: str, file: UploadFile = File(...)):
