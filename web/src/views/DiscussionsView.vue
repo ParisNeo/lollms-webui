@@ -1002,7 +1002,7 @@ export default {
                                                         )
                         this.discussionArr.forEach((item) => {
                             item.status_message = "Done";
-                        });                                                        
+                        });                          
                         
                         console.log("this.discussionArr")
                         console.log(this.discussionArr)
@@ -1654,14 +1654,15 @@ export default {
             this.setDiscussionLoading(this.discussion_id, true);
 
             if (this.currentDiscussion.id == this.discussion_id) {
+                console.log("discussion ok")
                 //this.isGenerating = true;
                 const index = this.discussionArr.findIndex((x) => x.id == msgObj.id)
                 const messageItem = this.discussionArr[index]
-                
                 if (
                     messageItem && (msgObj.operation_type==this.operationTypes.MSG_OPERATION_TYPE_SET_CONTENT ||
                     msgObj.operation_type==this.operationTypes.MSG_OPERATION_TYPE_SET_CONTENT_INVISIBLE_TO_AI)
                 ) {
+                    console.log("Content triggered")
                     this.isGenerating = true;
                     messageItem.content = msgObj.content
                     messageItem.created_at = msgObj.created_at
@@ -1673,6 +1674,7 @@ export default {
                 else if(messageItem && msgObj.operation_type==this.operationTypes.MSG_OPERATION_TYPE_ADD_CHUNK){
                     this.isGenerating = true;
                     messageItem.content += msgObj.content
+                    console.log("Chunk triggered")
                     //console.log("content")
                     //console.log(messageItem.content)
                     messageItem.created_at              = msgObj.created_at
@@ -1690,12 +1692,26 @@ export default {
                         console.error("Invalid steps data:", msgObj.steps);
                     }
 
-                } else if (msgObj.message_type == this.operationTypes.MSG_TYPE_JSON_INFOS) {
-                    messageItem.metadata = msgObj.metadata
-                } else if (msgObj.message_type == this.operationTypes.MSG_OPERATION_TYPE_UI) {
+                } else if (msgObj.operation_type == this.operationTypes.MSG_OPERATION_TYPE_JSON_INFOS) {
+                    console.log("metadata triggered", msgObj.operation_type)
+                    console.log("metadata", msgObj.metadata)
+                    if (typeof msgObj.metadata === 'string') {
+                        try {
+                            messageItem.metadata = JSON.parse(msgObj.metadata);
+                        } catch (error) {
+                            console.error("Error parsing metadata string:", error);
+                            messageItem.metadata = { raw: msgObj.metadata }; // Fallback: store as raw string in an object
+                        }
+                    } else if (Array.isArray(msgObj.metadata) || typeof msgObj.metadata === 'object') {
+                        messageItem.metadata = msgObj.metadata; // Already an array or object, assign directly
+                    } else {
+                        messageItem.metadata = { value: msgObj.metadata }; // For any other type, wrap in an object
+                    }
+                } else if (msgObj.operation_type == this.operationTypes.MSG_OPERATION_TYPE_UI) {
+                    console.log("UI triggered",msgObj.operation_type)
                     console.log("UI", msgObj.ui)
                     messageItem.ui = msgObj.ui
-                } else if (msgObj.message_type == this.operationTypes.MSG_OPERATION_TYPE_EXCEPTION) {
+                } else if (msgObj.operation_type == this.operationTypes.MSG_OPERATION_TYPE_EXCEPTION) {
                     this.$store.state.toast.showToast(msgObj.content, 5, false)
                 }
                 // // Disables as per request

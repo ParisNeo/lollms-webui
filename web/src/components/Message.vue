@@ -91,12 +91,10 @@
                     </div>
                     <div  v-if="message.metadata !== null">
                         <div v-for="(metadata, index) in (message.metadata?.filter(metadata => metadata!=null && metadata.hasOwnProperty('title') && metadata.hasOwnProperty('content')) || [])" :key="'json-' + message.id + '-' + index" class="json font-bold">
-                            <JsonViewer :jsonFormText="metadata.title" :jsonData="metadata.content" />
+                            <JsonViewer :jsonFormText="metadata.title" :jsonData="metadata.content" :key="'msgjson-' + message.id" />
                         </div>
                     </div>
-                    <div  v-if="message.ui != null">
-                        <DynamicUIRenderer ref="ui" class="w-full" :ui="message.ui"></DynamicUIRenderer>
-                    </div>
+                    <DynamicUIRenderer ref="ui" class="w-full" :ui="message.ui" :key="'msgui-' + message.id" />
                     
                     <audio controls v-if="audio_url!=null" :key="audio_url">
                         <source :src="audio_url" type="audio/wav"  ref="audio_player" >
