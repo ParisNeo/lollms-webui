@@ -1,6 +1,6 @@
 <template>
-  <div  class="w-full h-auto overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" 
-        ref="ui">
+  <div class="w-full h-auto overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" 
+       ref="ui">
   </div>
 </template>
 
@@ -8,54 +8,74 @@
 export default {
   props: {
     ui: {
-            type: String,
-            required: true,
-            default: "",
-        },
+      type: String,
+      required: true,
+      default: "",
+    },
   },
   watch: {
-    ui(newVal, oldVal) {
-      console.log(`ui changed from ${oldVal} to ${newVal}`);
-      // Add your custom logic here
-      this.$nextTick(() => {
-        this.evaluateScriptTags();
-      });      
-    },
-  },
-  data() {
-    return {
-
-    };
-  },
-  mounted(){
-    this.$nextTick(() => {
-      this.evaluateScriptTags();
-    });
+    ui: {
+      handler(newVal) {
+        this.$nextTick(() => {
+          this.renderAndExecuteScripts(newVal);
+        });
+      },
+      immediate: true
+    }
   },
   methods: {
-    evaluateScriptTags() {
-      console.log("evaluateScriptTags")
-      // Create a temporary div element to execute scripts
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = this.ui;
+    renderAndExecuteScripts(content) {
+      // Clear previous content
+      this.$refs.ui.innerHTML = '';
 
-      // Get all script elements within the div
-      const scriptElements = tempDiv.querySelectorAll('script');
+      // Create a temporary container
+      const temp = document.createElement('div');
+      temp.innerHTML = content;
 
-      // Loop through script elements and evaluate them
-      scriptElements.forEach((script) => {
-        const newScript = document.createElement('script');
-        newScript.textContent = script.textContent;
-        document.body.appendChild(newScript);
-        document.body.removeChild(newScript);
-      });
+      // Function to execute a single script
+      const executeScript = (script) => {
+        return new Promise((resolve) => {
+          const newScript = document.createElement('script');
+          
+          if (script.src) {
+            // External script
+            newScript.src = script.src;
+            newScript.onload = resolve;
+          } else {
+            // Inline script
+            newScript.textContent = script.textContent;
+          }
+          
+          // Copy other attributes
+          Array.from(script.attributes).forEach(attr => {
+            if (attr.name !== 'src') {
+              newScript.setAttribute(attr.name, attr.value);
+            }
+          });
 
-      // Set the evaluated ui to the modified HTML
-      this.$refs.ui.innerHTML = tempDiv.innerHTML;
-      console.log("this.$refs.ui.innerHTML")
-      console.log(this.$refs.ui.innerHTML)
-    },
-  },
+          // Replace the old script with the new one
+          script.parentNode.replaceChild(newScript, script);
+          
+          if (!script.src) {
+            // For inline scripts, resolve immediately
+            resolve();
+          }
+        });
+      };
+
+      // Execute scripts sequentially
+      const executeScripts = async () => {
+        const scripts = temp.querySelectorAll('script');
+        for (let script of scripts) {
+          await executeScript(script);
+        }
+      };
+
+      // Render content and execute scripts
+      this.$refs.ui.appendChild(temp);
+      executeScripts();
+    }
+  }
 };
 </script>
 
