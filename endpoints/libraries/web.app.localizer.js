@@ -88,4 +88,3 @@ class WebAppLocalizer {
         });
     }
 }
-export default WebAppLocalizer;

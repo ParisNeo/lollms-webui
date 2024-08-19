@@ -3,9 +3,8 @@
 Quick reference for AI-assisted development of the WebAppLocalizer class.
 
 ## Import
-```javascript
-// Served by LoLLMs system
-import WebAppLocalizer from '/lollms_assets/js/web.app.localizer';
+```html
+    <script src="/lollms_assets/js/web.app.localizer"></script>
 ```
 
 ## Initialization
