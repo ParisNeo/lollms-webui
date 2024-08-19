@@ -57,6 +57,8 @@ class AppInfo:
             description: str, 
             author:str, 
             version:str, 
+            creation_date:str,
+            last_update_date:str,
             model_name:str, 
             disclaimer:str, 
             has_server:bool, 
@@ -72,6 +74,8 @@ class AppInfo:
         self.description = description
         self.author = author
         self.version = version
+        self.creation_date = creation_date
+        self.last_update_date = last_update_date
         self.model_name = model_name
         self.disclaimer = disclaimer
         self.has_server = has_server
@@ -108,6 +112,9 @@ async def list_apps():
                     description = data.get('description', '')
                     author = data.get('author', '')
                     current_version = data.get('version', '')
+                    creation_date = data.get('creation_date', 'unknown')
+                    last_update_date = data.get('last_update_date', '')
+                    current_version = data.get('version', '')
                     model_name = data.get('model_name', '')
                     disclaimer = data.get('disclaimer', 'No disclaimer provided.')
                     has_server = data.get('has_server', False)
@@ -141,6 +148,8 @@ async def list_apps():
                     description=description,
                     author=author,
                     version=current_version,
+                    creation_date=creation_date,
+                    last_update_date = last_update_date,
                     model_name=model_name,
                     disclaimer=disclaimer,
                     has_server=has_server,
@@ -409,6 +418,8 @@ def load_apps_data():
                         description=description_data.get('description', ''),
                         author=description_data.get('author', ''),
                         version=description_data.get('version', ''),
+                        creation_date=description_data.get('creation_date', 'unknown'),
+                        last_update_date=description_data.get('last_update_date', 'unknown'),
                         model_name=description_data.get('model_name', ''),
                         disclaimer=description_data.get('disclaimer', 'No disclaimer provided.'),
                         has_server=description_data.get('has_server', False),
