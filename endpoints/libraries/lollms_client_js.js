@@ -571,91 +571,34 @@ buildPrompt(promptParts, sacrificeId = -1, contextSize = null, minimumSpareConte
 }
 
 extractCodeBlocks(text) {
-  /**
-   * This function extracts code blocks from a given text.
-   *
-   * @param {string} text - The text from which to extract code blocks. Code blocks are identified by triple backticks (```).
-   * @returns {Array<Object>} - A list of objects where each object represents a code block and contains the following keys:
-   *     - 'index' (number): The index of the code block in the text.
-   *     - 'file_name' (string): An empty string. This field is not used in the current implementation.
-   *     - 'content' (string): The content of the code block.
-   *     - 'type' (string): The type of the code block. If the code block starts with a language specifier (like 'python' or 'java'), this field will contain that specifier. Otherwise, it will be set to 'language-specific'.
-   *
-   * Note: The function assumes that the number of triple backticks in the text is even.
-   * If the number of triple backticks is odd, it will consider the rest of the text as the last code block.
-   */
-  
-  let remaining = text;
-  let blocIndex = 0;
-  let firstIndex = 0;
-  let indices = [];
-  
-  while (remaining.length > 0) {
-      try {
-          let index = remaining.indexOf("```");
-          indices.push(index + firstIndex);
-          remaining = remaining.substring(index + 3);
-          firstIndex += index + 3;
-          blocIndex += 1;
-      } catch (ex) {
-          if (blocIndex % 2 === 1) {
-              let index = remaining.length;
-              indices.push(index);
-          }
-          remaining = "";
-      }
-  }
+  const codeBlockRegex = /```([\s\S]*?)```/g;
+  const codeBlocks = [];
+  let match;
+  let index = 0;
 
-  let codeBlocks = [];
-  let isStart = true;
+  while ((match = codeBlockRegex.exec(text)) !== null) {
+    const [fullMatch, content] = match;
+    const blockLines = content.trim().split('\n');
+    let type = 'language-specific';
+    let blockContent = content.trim();
 
-  for (let index = 0; index < indices.length; index++) {
-      let codeDelimiterPosition = indices[index];
-      let blockInfos = {
-          index: index,
-          file_name: "",
-          content: "",
-          type: ""
-      };
+    // Check if the first line is a language specifier
+    if (blockLines.length > 1 && blockLines[0].trim().length > 0 && !blockLines[0].includes(' ')) {
+      type = blockLines[0].trim().toLowerCase();
+      blockContent = blockLines.slice(1).join('\n').trim();
+    }
 
-      if (isStart) {
-          let subText = text.substring(codeDelimiterPosition + 3);
-          if (subText.length > 0) {
-              let findSpace = subText.indexOf(" ");
-              let findReturn = subText.indexOf("\n");
-              findSpace = findSpace === -1 ? Number.MAX_SAFE_INTEGER : findSpace;
-              findReturn = findReturn === -1 ? Number.MAX_SAFE_INTEGER : findReturn;
-              let nextIndex = Math.min(findReturn, findSpace);
-
-              if (subText.slice(0, nextIndex).includes('{')) {
-                  nextIndex = 0;
-              }
-
-              let startPos = nextIndex;
-              if (codeDelimiterPosition + 3 < text.length && ["\n", " ", "\t"].includes(text[codeDelimiterPosition + 3])) {
-                  // No
-                  blockInfos.type = 'language-specific';
-              } else {
-                  blockInfos.type = subText.slice(0, nextIndex);
-              }
-
-              let nextPos = indices[index + 1] - codeDelimiterPosition;
-              if (subText[nextPos - 3] === "`") {
-                  blockInfos.content = subText.slice(startPos, nextPos - 3).trim();
-              } else {
-                  blockInfos.content = subText.slice(startPos, nextPos).trim();
-              }
-              codeBlocks.push(blockInfos);
-          }
-          isStart = false;
-      } else {
-          isStart = true;
-          continue;
-      }
+    codeBlocks.push({
+      index: index++,
+      file_name: '',
+      content: blockContent,
+      type: type
+    });
   }
 
   return codeBlocks;
 }
+
 /**
  * Updates the given code based on the provided query string.
  * The query string can contain two types of modifications:
