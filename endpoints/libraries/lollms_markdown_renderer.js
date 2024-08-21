@@ -29,8 +29,8 @@
 // <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-cpp.min.js"></script>
 // <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-java.min.js"></script>
 // <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-latex.min.js"></script>
-// When served with lollms, just use     <script src="/lollms_markdown_renderer"></script>
-// Don't forget to get the css too <link rel="stylesheet" href="/lollms_markdown_renderer.css">
+// When served with lollms, just use     <script src="/lollms_assets/js/lollms_markdown_renderer"></script>
+// Don't forget to get the css too <link rel="stylesheet" href="/lollms_assets/css/lollms_markdown_renderer">
 
 // Make sure there is a global variable called mr that instanciate MarkdownRenderer
 // mr = new MarkdownRenderer()
