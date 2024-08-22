@@ -55,7 +55,7 @@ class MarkdownRenderer {
                           ${result.svg}
                       </div>
                       <div class="absolute top-0 left-0 flex gap-1 p-1">
-                          <button onclick="zoomMermaid('${uniqueId}', 1.1)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded inline-flex items-center">
+                          <button onclick="mr.zoomMermaid('${uniqueId}', 1.1)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded inline-flex items-center">
                               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 100 100">
                               <circle cx="40" cy="40" r="25" stroke="black" stroke-width="5" fill="none" />
                               <line x1="60" y1="60" x2="80" y2="80" stroke="black" stroke-width="5" />
@@ -63,17 +63,17 @@ class MarkdownRenderer {
                               <line x1="40" y1="30" x2="40" y2="50" stroke="black" stroke-width="3" />
                               </svg>
                           </button>
-                          <button onclick="zoomMermaid('${uniqueId}', 0.9)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded inline-flex items-center">
+                          <button onclick="mr.zoomMermaid('${uniqueId}', 0.9)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded inline-flex items-center">
                               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 100 100">
                               <circle cx="40" cy="40" r="25" stroke="black" stroke-width="5" fill="none" />
                               <line x1="60" y1="60" x2="80" y2="80" stroke="black" stroke-width="5" />
                               <line x1="50" y1="40" x2="30" y2="40" stroke="black" stroke-width="3" />
                               </svg>
                           </button>
-                          <button onclick="saveMermaidAsPNG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded inline-flex items-center">
+                          <button onclick="mr.saveMermaidAsPNG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded inline-flex items-center">
                               PNG
                           </button>
-                          <button onclick="saveMermaidAsSVG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded inline-flex items-center">
+                          <button onclick="mr.saveMermaidAsSVG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded inline-flex items-center">
                               SVG
                           </button>
                       </div>
