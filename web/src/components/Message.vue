@@ -107,84 +107,35 @@
                     <div class="invisible group-hover:visible flex flex-row ">
                         <!-- MESSAGE CONTROLS -->
                         <!-- EDIT CONFIRMATION -->
-                        <div v-if="editMsgMode" class="flex items-center duration-75">
-                            <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 p-2"
-                                title="Cancel edit" type="button" @click.stop="editMsgMode = false">
-                                <i data-feather="x"></i>
-                            </button>
-                            <button class="text-2xl hover:text-secondary duration-75 active:scale-90 p-2"
-                                title="Update message" type="button" @click.stop="updateMessage">
-                                <i data-feather="check"></i>
-                            </button>
-
+                        <div v-if="editMsgMode">
+                            <ToolbarButton @click.stop="editMsgMode = false" title="Cancel edit" icon="x" />
+                            <ToolbarButton @click.stop="updateMessage" title="Update message" icon="check" />
+                            <DropdownMenu title="Add Block">
+                                <ToolbarButton @click.stop="addBlock('')" title="Generic Block" icon="code" />
+                                <ToolbarButton @click.stop="addBlock('python')" title="Python" icon="python" />
+                                <ToolbarButton @click.stop="addBlock('javascript')" title="JavaScript" icon="js" />
+                                <ToolbarButton @click.stop="addBlock('json')" title="JSON" icon="braces" />
+                                <ToolbarButton @click.stop="addBlock('c++')" title="C++" icon="cplusplus" />
+                                <ToolbarButton @click.stop="addBlock('html')" title="HTML" icon="html5" />
+                                <ToolbarButton @click.stop="addBlock('latex')" title="LaTeX" icon="mathFunction" />
+                                <ToolbarButton @click.stop="addBlock('bash')" title="Bash" icon="terminal" />
+                                <ToolbarButton @click.stop="addBlock('mermaid')" title="Mermaid" icon="diagram" />
+                                <ToolbarButton @click.stop="addBlock('graphviz')" title="Graphviz" icon="graph" />
+                                <!-- Add more language options here -->
+                            </DropdownMenu>
                         </div>
-                        <div v-if="!editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
-                            title="Edit message" @click.stop="editMsgMode = true">
-                            <i data-feather="edit"></i>
+                        <div v-else>
+                            <ToolbarButton @click.stop="editMsgMode = true" title="Edit message" icon="edit" />
                         </div>
-                        <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
-                            title="Add generic block" @click.stop="addBlock('')">
-                            <img :src="code_block" width="25" height="25">
-                        </div>                            
-                        <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
-                            title="Add python block" @click.stop="addBlock('python')">
-                            <img :src="python_block" width="25" height="25">
+                        <ToolbarButton @click="copyContentToClipboard" title="Copy message to clipboard" icon="copy" />
+                        <div v-if="!editMsgMode && message.sender !== $store.state.mountedPers.name">
+                            <ToolbarButton @click.stop="resendMessage('full_context')" title="Resend message with full context" icon="send" />
+                            <ToolbarButton @click.stop="resendMessage('full_context_with_internet')" title="Resend message with internet search" icon="globe" />
+                            <ToolbarButton @click.stop="resendMessage('simple_question')" title="Resend message without context" icon="sendSimple" />
                         </div>
-                        <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
-                            title="Add javascript block" @click.stop="addBlock('javascript')">
-                            <img :src="javascript_block" width="25" height="25">
+                        <div v-if="!editMsgMode && message.sender === $store.state.mountedPers.name">
+                            <ToolbarButton @click="continueMessage" title="Continue message" icon="fastForward" />
                         </div>
-                        <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
-                            title="Add json block" @click.stop="addBlock('json')">
-                            <img :src="json_block" width="25" height="25">
-                        </div>
-                        
-                        <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
-                            title="Add c++ block" @click.stop="addBlock('c++')">
-                            <img :src="cpp_block" width="25" height="25">
-                        </div>
-                        <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
-                            title="Add html block" @click.stop="addBlock('html')">
-                            <img :src="html5_block" width="25" height="25">
-                        </div>
-                        <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
-                            title="Add LaTex block" @click.stop="addBlock('latex')">
-                            <img :src="LaTeX_block" width="25" height="25">
-                        </div>
-                        <div v-if="editMsgMode" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
-                            title="Add bash block" @click.stop="addBlock('bash')">
-                            <img :src="bash_block" width="25" height="25">
-                        </div>
-                        
-                        <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
-                            title="Copy message to clipboard" @click.stop="copyContentToClipboard()">
-                            <i data-feather="copy"></i>
-                        </div>
-                        <div v-if="!editMsgMode && message.sender!=this.$store.state.mountedPers.name" class="text-lg text-red-500 hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer" 
-                            title="Resend message with full context"
-                            @click.stop="resendMessage('full_context')" 
-                            :class="{ 'text-5xl': editMsgMode }">
-                            <i data-feather="send"></i>
-                        </div>
-                        <div v-if="!editMsgMode && message.sender!=this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer" 
-                            title="Resend message without the full context"
-                            @click.stop="resendMessage('full_context_with_internet')" 
-                            :class="{ 'text-5xl': editMsgMode }">
-                            <img :src="sendGlobe" width="25" height="25">
-                        </div>
-
-                        <div v-if="!editMsgMode && message.sender!=this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer" 
-                            title="Resend message without the full context"
-                            @click.stop="resendMessage('simple_question')" 
-                            :class="{ 'text-5xl': editMsgMode }">
-                            <i data-feather="send"></i>
-                        </div>
-                        <div v-if="!editMsgMode && message.sender==this.$store.state.mountedPers.name" class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer" 
-                            title="Resend message"
-                            @click.stop="continueMessage()" 
-                            >
-                            <i data-feather="fast-forward"></i>
-                        </div>                            
                         <!-- DELETE CONFIRMATION -->
                         <div v-if="deleteMsgMode" class="flex items-center duration-75">
                             <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 p-2 cursor-pointer"
@@ -306,6 +257,9 @@ import failed_svg from '@/assets/failed.svg';
 import loading_svg from '@/assets/loading.svg';
 import sendGlobe from "../assets/send_globe.svg"
 
+import ToolbarButton from './ToolbarButton.vue'
+import DropdownMenu from './DropdownMenu.vue'
+
 export default {
     // eslint-disable-next-line vue/multi-word-component-names
     name: 'Message',
@@ -316,6 +270,8 @@ export default {
         RenderHTMLJS,
         JsonViewer,
         DynamicUIRenderer,
+        ToolbarButton,
+        DropdownMenu
     },
     props: {
         host: {

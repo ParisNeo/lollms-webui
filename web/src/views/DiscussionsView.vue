@@ -19,7 +19,7 @@
         <div class="flex flex-col items-center text-center max-w-4xl w-full px-4 relative z-10">
             <div class="mb-8 w-full">
             <h1 class="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 mb-2 animate-glow">
-                Lord Of Large Language & Multimodal Systems
+                LoLLMS
             </h1>
             <p class="text-2xl text-gray-600 dark:text-gray-300 italic">
                 One tool to rule them all
