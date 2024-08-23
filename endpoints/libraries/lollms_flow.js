@@ -145,6 +145,10 @@ class WorkflowVisualizer {
         this.tempLine = null;
         this.startSocket = null;
 
+        this.optionsPopup = null;
+        this.setupOptionsPopup();
+
+
         this.addDefs();
         this.setupEventListeners();
     }
@@ -186,16 +190,21 @@ class WorkflowVisualizer {
         }
     }
 
-
     drawNode(node) {
         const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
         g.setAttribute("transform", `translate(${node.x}, ${node.y})`);
         g.setAttribute("data-id", node.id);
         g.classList.add("node");
 
+        const titleHeight = 30;
+        const buttonHeight = 25;
+        const buttonMargin = 5;
+        const nodeWidth = 160;
+        const nodeHeight = titleHeight + (Object.keys(node.options).length * (buttonHeight + buttonMargin)) + buttonMargin;
+
         const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        rect.setAttribute("width", "140");
-        rect.setAttribute("height", this.calculateNodeHeight(node));
+        rect.setAttribute("width", nodeWidth);
+        rect.setAttribute("height", nodeHeight);
         rect.setAttribute("rx", "5");
         rect.setAttribute("ry", "5");
         rect.setAttribute("fill", node.color || "#f0f0f0");
@@ -204,8 +213,8 @@ class WorkflowVisualizer {
         g.appendChild(rect);
 
         const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.setAttribute("x", "70");
-        text.setAttribute("y", "20");
+        text.setAttribute("x", nodeWidth / 2);
+        text.setAttribute("y", titleHeight / 2 + 5);
         text.setAttribute("text-anchor", "middle");
         text.setAttribute("font-family", "Arial, sans-serif");
         text.setAttribute("font-size", "14");
@@ -213,13 +222,166 @@ class WorkflowVisualizer {
         text.textContent = node.name;
         g.appendChild(text);
 
-        this.drawSockets(g, node.inputs, 'input');
-        this.drawSockets(g, node.outputs, 'output');
-        this.drawOptions(g, node.options);
+        this.drawSockets(g, node.inputs, 'input', nodeHeight);
+        this.drawSockets(g, node.outputs, 'output', nodeHeight);
+        this.drawOptionButtons(g, node, titleHeight, buttonHeight, buttonMargin, nodeWidth);
 
         g.addEventListener('mousedown', this.onNodeMouseDown.bind(this));
         this.svg.appendChild(g);
         this.nodeElements[node.id] = g;
+    }
+
+    drawOptionButtons(nodeGroup, node, titleHeight, buttonHeight, buttonMargin, nodeWidth) {
+        Object.entries(node.options).forEach(([key, option], index) => {
+            const button = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            button.setAttribute("x", buttonMargin);
+            button.setAttribute("y", titleHeight + index * (buttonHeight + buttonMargin));
+            button.setAttribute("width", nodeWidth - 2 * buttonMargin);
+            button.setAttribute("height", buttonHeight);
+            button.setAttribute("rx", "3");
+            button.setAttribute("ry", "3");
+            button.setAttribute("fill", "#ddd");
+            button.setAttribute("stroke", "#333");
+            button.setAttribute("stroke-width", "1");
+            button.classList.add("option-button");
+    
+            const buttonText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            buttonText.setAttribute("x", nodeWidth / 2);
+            buttonText.setAttribute("y", titleHeight + index * (buttonHeight + buttonMargin) + buttonHeight / 2 + 5);
+            buttonText.setAttribute("text-anchor", "middle");
+            buttonText.setAttribute("font-family", "Arial, sans-serif");
+            buttonText.setAttribute("font-size", "12");
+            buttonText.setAttribute("fill", "#333");
+            buttonText.textContent = option.name; // Use the option name (key) instead of index
+    
+            button.addEventListener('click', (event) => {
+                event.stopPropagation();
+                this.showOptionsPopup(node, key, option.name);
+            });
+    
+            nodeGroup.appendChild(button);
+            nodeGroup.appendChild(buttonText);
+        });
+    }
+    
+
+    drawSockets(nodeGroup, sockets, type, nodeHeight) {
+        sockets.forEach((socket, index) => {
+            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.setAttribute("cx", type === 'input' ? "0" : "160");
+            circle.setAttribute("cy", (index + 1) * (nodeHeight / (sockets.length + 1)));
+            circle.setAttribute("r", "6");
+            circle.setAttribute("fill", this.getColorForType(socket.type));
+            circle.setAttribute("stroke", "#333");
+            circle.setAttribute("stroke-width", "2");
+            circle.classList.add("socket", `${type}-socket`);
+            circle.setAttribute("data-node-id", nodeGroup.getAttribute("data-id"));
+            circle.setAttribute("data-socket-index", index);
+            circle.setAttribute("data-socket-type", socket.type);
+            
+            this.addSocketListeners(circle, type);
+            nodeGroup.appendChild(circle);
+        });
+    }
+
+    setupOptionsPopup() {
+        this.optionsPopup = document.createElement('div');
+        this.optionsPopup.style.position = 'absolute';
+        this.optionsPopup.style.zIndex = '1000';
+        this.optionsPopup.style.backgroundColor = 'white';
+        this.optionsPopup.style.border = '1px solid #333';
+        this.optionsPopup.style.borderRadius = '5px';
+        this.optionsPopup.style.padding = '10px';
+        this.optionsPopup.style.display = 'none';
+        this.optionsPopup.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+        document.body.appendChild(this.optionsPopup);
+
+        // Close popup when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!this.optionsPopup.contains(event.target) && !event.target.closest('.option-button')) {
+                this.optionsPopup.style.display = 'none';
+            }
+        });
+    }
+
+    showOptionsPopup(node, optionKey, optionName) {
+        this.optionsPopup.innerHTML = '';
+        
+        const title = document.createElement('h3');
+        title.textContent = `${node.name}: ${optionName}`;
+        title.style.marginTop = '0';
+        this.optionsPopup.appendChild(title);
+
+        const option = node.options[optionKey];
+        const optionContainer = document.createElement('div');
+        optionContainer.style.marginBottom = '10px';
+
+        let input;
+        switch (option.type) {
+            case 'checkbox':
+                input = document.createElement('input');
+                input.type = 'checkbox';
+                input.checked = option.value;
+                break;
+            case 'radio':
+                option.options.forEach(optionValue => {
+                    const radioInput = document.createElement('input');
+                    radioInput.type = 'radio';
+                    radioInput.name = optionKey;
+                    radioInput.value = optionValue;
+                    radioInput.checked = option.value === optionValue;
+                    const radioLabel = document.createElement('label');
+                    radioLabel.textContent = optionValue;
+                    optionContainer.appendChild(radioInput);
+                    optionContainer.appendChild(radioLabel);
+                });
+                break;
+            case 'select':
+                input = document.createElement('select');
+                option.options.forEach(optionValue => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = optionValue;
+                    optionElement.textContent = optionValue;
+                    optionElement.selected = option.value === optionValue;
+                    input.appendChild(optionElement);
+                });
+                break;
+            case 'file':
+                input = document.createElement('input');
+                input.type = 'file';
+                break;
+            case 'textarea':
+                input = document.createElement('textarea');
+                input.value = option.value;
+                input.rows = 3;
+                break;
+            default:
+                input = document.createElement('input');
+                input.type = 'text';
+                input.value = option.value;
+        }
+
+        if (input) {
+            input.addEventListener('change', (e) => {
+                option.value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+            });
+            optionContainer.appendChild(input);
+        }
+
+        this.optionsPopup.appendChild(optionContainer);
+
+        const closeButton = document.createElement('button');
+        closeButton.textContent = 'Close';
+        closeButton.style.marginTop = '10px';
+        closeButton.addEventListener('click', () => {
+            this.optionsPopup.style.display = 'none';
+        });
+        this.optionsPopup.appendChild(closeButton);
+
+        const rect = this.svg.getBoundingClientRect();
+        this.optionsPopup.style.left = (rect.left + node.x + 170) + 'px';
+        this.optionsPopup.style.top = (rect.top + node.y) + 'px';
+        this.optionsPopup.style.display = 'block';
     }
 
     calculateNodeHeight(node) {
