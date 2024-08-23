@@ -2,12 +2,13 @@
 // A library for building workflows of execution
 // By ParisNeo
 class WorkflowNode {
-    constructor(id, name, inputs, outputs, operation, x = 0, y = 0) {
+    constructor(id, name, inputs, outputs, operation, options = {}, x = 0, y = 0) {
         this.id = id;
         this.name = name;
         this.inputs = inputs;
         this.outputs = outputs;
         this.operation = operation;
+        this.options = options;
         this.inputConnections = {};
         this.outputConnections = {};
         this.x = x;
@@ -23,7 +24,7 @@ class WorkflowNode {
     }
 
     execute(inputs) {
-        return this.operation(inputs);
+        return this.operation(inputs, this.options);
     }
 
     toJSON() {
@@ -32,13 +33,14 @@ class WorkflowNode {
             name: this.name,
             inputs: this.inputs,
             outputs: this.outputs,
+            options: this.options,
             x: this.x,
             y: this.y
         };
     }
 
     static fromJSON(json, operation) {
-        return new WorkflowNode(json.id, json.name, json.inputs, json.outputs, operation, json.x, json.y);
+        return new WorkflowNode(json.id, json.name, json.inputs, json.outputs, operation, json.options, json.x, json.y);
     }
 }
 
@@ -137,7 +139,36 @@ class WorkflowVisualizer {
         this.offsetX = 0;
         this.offsetY = 0;
 
-        this.svg.addEventListener('mousedown', this.onMouseDown.bind(this));
+        this.svg.setAttribute('width', '100%');
+        this.svg.setAttribute('height', '600px');
+
+        this.tempLine = null;
+        this.startSocket = null;
+
+        this.addDefs();
+        this.setupEventListeners();
+    }
+
+    addDefs() {
+        const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+        
+        // Node shadow filter
+        const filter = document.createElementNS("http://www.w3.org/2000/svg", "filter");
+        filter.setAttribute("id", "dropShadow");
+        filter.innerHTML = `
+            <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur"/>
+            <feOffset in="blur" dx="2" dy="2" result="offsetBlur"/>
+            <feMerge>
+                <feMergeNode in="offsetBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        `;
+        defs.appendChild(filter);
+
+        this.svg.appendChild(defs);
+    }
+
+    setupEventListeners() {
         this.svg.addEventListener('mousemove', this.onMouseMove.bind(this));
         this.svg.addEventListener('mouseup', this.onMouseUp.bind(this));
     }
@@ -155,100 +186,198 @@ class WorkflowVisualizer {
         }
     }
 
+
     drawNode(node) {
         const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
         g.setAttribute("transform", `translate(${node.x}, ${node.y})`);
         g.setAttribute("data-id", node.id);
+        g.classList.add("node");
 
         const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        rect.setAttribute("width", "120");
-        rect.setAttribute("height", "60");
-        rect.setAttribute("fill", "lightblue");
-        rect.setAttribute("stroke", "black");
+        rect.setAttribute("width", "140");
+        rect.setAttribute("height", this.calculateNodeHeight(node));
+        rect.setAttribute("rx", "5");
+        rect.setAttribute("ry", "5");
+        rect.setAttribute("fill", node.color || "#f0f0f0");
+        rect.setAttribute("stroke", "#333");
+        rect.setAttribute("stroke-width", "2");
         g.appendChild(rect);
 
         const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.setAttribute("x", "60");
-        text.setAttribute("y", "35");
+        text.setAttribute("x", "70");
+        text.setAttribute("y", "20");
         text.setAttribute("text-anchor", "middle");
+        text.setAttribute("font-family", "Arial, sans-serif");
+        text.setAttribute("font-size", "14");
+        text.setAttribute("fill", "#333");
         text.textContent = node.name;
         g.appendChild(text);
 
-        // Draw input sockets
-        node.inputs.forEach((input, index) => {
-            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            circle.setAttribute("cx", "0");
-            circle.setAttribute("cy", (index + 1) * 15);
-            circle.setAttribute("r", "5");
-            circle.setAttribute("fill", this.getColorForType(input.type));
-            g.appendChild(circle);
-        });
+        this.drawSockets(g, node.inputs, 'input');
+        this.drawSockets(g, node.outputs, 'output');
+        this.drawOptions(g, node.options);
 
-        // Draw output sockets
-        node.outputs.forEach((output, index) => {
-            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            circle.setAttribute("cx", "120");
-            circle.setAttribute("cy", (index + 1) * 15);
-            circle.setAttribute("r", "5");
-            circle.setAttribute("fill", this.getColorForType(output.type));
-            g.appendChild(circle);
-        });
-
+        g.addEventListener('mousedown', this.onNodeMouseDown.bind(this));
         this.svg.appendChild(g);
         this.nodeElements[node.id] = g;
+    }
+
+    calculateNodeHeight(node) {
+        const baseHeight = 80;
+        const optionsHeight = Object.keys(node.options).length * 30;
+        return baseHeight + optionsHeight;
+    }
+
+    drawOptions(nodeGroup, options) {
+        let yOffset = 50;
+        Object.entries(options).forEach(([key, option]) => {
+            const foreignObject = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
+            foreignObject.setAttribute("x", "10");
+            foreignObject.setAttribute("y", yOffset.toString());
+            foreignObject.setAttribute("width", "120");
+            foreignObject.setAttribute("height", "25");
+
+            const div = document.createElement("div");
+            div.style.display = "flex";
+            div.style.alignItems = "center";
+
+            const label = document.createElement("label");
+            label.textContent = key + ": ";
+            label.style.marginRight = "5px";
+            div.appendChild(label);
+
+            let input;
+            switch (option.type) {
+                case 'checkbox':
+                    input = document.createElement("input");
+                    input.type = "checkbox";
+                    input.checked = option.value;
+                    break;
+                case 'radio':
+                    option.options.forEach(optionValue => {
+                        const radioInput = document.createElement("input");
+                        radioInput.type = "radio";
+                        radioInput.name = key;
+                        radioInput.value = optionValue;
+                        radioInput.checked = option.value === optionValue;
+                        div.appendChild(radioInput);
+                        const radioLabel = document.createElement("label");
+                        radioLabel.textContent = optionValue;
+                        div.appendChild(radioLabel);
+                    });
+                    break;
+                case 'select':
+                    input = document.createElement("select");
+                    option.options.forEach(optionValue => {
+                        const optionElement = document.createElement("option");
+                        optionElement.value = optionValue;
+                        optionElement.textContent = optionValue;
+                        optionElement.selected = option.value === optionValue;
+                        input.appendChild(optionElement);
+                    });
+                    break;
+                case 'file':
+                    input = document.createElement("input");
+                    input.type = "file";
+                    break;
+                case 'textarea':
+                    input = document.createElement("textarea");
+                    input.value = option.value;
+                    input.rows = 3;
+                    break;
+                default:
+                    input = document.createElement("input");
+                    input.type = "text";
+                    input.value = option.value;
+            }
+
+            if (input) {
+                input.addEventListener('change', (e) => {
+                    option.value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+                });
+                div.appendChild(input);
+            }
+
+            foreignObject.appendChild(div);
+            nodeGroup.appendChild(foreignObject);
+
+            yOffset += 30;
+        });
+    }
+
+    drawSockets(nodeGroup, sockets, type) {
+        sockets.forEach((socket, index) => {
+            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.setAttribute("cx", type === 'input' ? "0" : "140");
+            circle.setAttribute("cy", (index + 1) * 20);
+            circle.setAttribute("r", "6");
+            circle.setAttribute("fill", this.getColorForType(socket.type));
+            circle.setAttribute("stroke", "#333");
+            circle.setAttribute("stroke-width", "2");
+            circle.classList.add("socket", `${type}-socket`);
+            circle.setAttribute("data-node-id", nodeGroup.getAttribute("data-id"));
+            circle.setAttribute("data-socket-index", index);
+            circle.setAttribute("data-socket-type", socket.type);
+            
+            this.addSocketListeners(circle, type);
+            nodeGroup.appendChild(circle);
+        });
     }
 
     drawConnection(sourceId, sourceOutput, targetId, targetInput) {
         const sourceNode = this.workflow.nodes[sourceId];
         const targetNode = this.workflow.nodes[targetId];
-        const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        const sourcePosX = sourceNode.x + 120;
-        const sourcePosY = sourceNode.y + (sourceOutput + 1) * 15;
-        const targetPosX = targetNode.x;
-        const targetPosY = targetNode.y + (targetInput + 1) * 15;
-        const midX = (sourcePosX + targetPosX) / 2;
+        const path = this.createConnectionPath(sourceNode, sourceOutput, targetNode, targetInput);
+        this.svg.appendChild(path);
+        this.connectionElements.push({ path, sourceId, sourceOutput, targetId, targetInput });
+    }
 
-        const d = `M ${sourcePosX} ${sourcePosY} C ${midX} ${sourcePosY}, ${midX} ${targetPosY}, ${targetPosX} ${targetPosY}`;
-        line.setAttribute("d", d);
-        line.setAttribute("fill", "none");
-        line.setAttribute("stroke", "black");
-        this.svg.appendChild(line);
-        this.connectionElements.push({ line, sourceId, sourceOutput, targetId, targetInput });
+    createConnectionPath(sourceNode, sourceOutput, targetNode, targetInput) {
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const d = this.calculatePathD(sourceNode, sourceOutput, targetNode, targetInput);
+        path.setAttribute("d", d);
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke", "#666");
+        path.setAttribute("stroke-width", "2");
+        return path;
+    }
+
+    calculatePathD(sourceNode, sourceOutput, targetNode, targetInput) {
+        const sourcePosX = sourceNode.x + 140;
+        const sourcePosY = sourceNode.y + (sourceOutput + 1) * 20;
+        const targetPosX = targetNode.x;
+        const targetPosY = targetNode.y + (targetInput + 1) * 20;
+        const midX = (sourcePosX + targetPosX) / 2;
+        return `M ${sourcePosX} ${sourcePosY} C ${midX} ${sourcePosY}, ${midX} ${targetPosY}, ${targetPosX} ${targetPosY}`;
     }
 
     updateConnections() {
         this.connectionElements.forEach(conn => {
             const sourceNode = this.workflow.nodes[conn.sourceId];
             const targetNode = this.workflow.nodes[conn.targetId];
-            const sourcePosX = sourceNode.x + 120;
-            const sourcePosY = sourceNode.y + (conn.sourceOutput + 1) * 15;
-            const targetPosX = targetNode.x;
-            const targetPosY = targetNode.y + (conn.targetInput + 1) * 15;
-            const midX = (sourcePosX + targetPosX) / 2;
-
-            const d = `M ${sourcePosX} ${sourcePosY} C ${midX} ${sourcePosY}, ${midX} ${targetPosY}, ${targetPosX} ${targetPosY}`;
-            conn.line.setAttribute("d", d);
+            const d = this.calculatePathD(sourceNode, conn.sourceOutput, targetNode, conn.targetInput);
+            conn.path.setAttribute("d", d);
         });
     }
 
     getColorForType(type) {
         const colors = {
-            number: "blue",
-            string: "green",
-            boolean: "red",
-            object: "purple"
+            number: "#4285F4",
+            string: "#34A853",
+            boolean: "#EA4335",
+            object: "#FBBC05"
         };
-        return colors[type] || "gray";
+        return colors[type] || "#9E9E9E";
     }
 
-    onMouseDown(event) {
-        const target = event.target.closest("g");
-        if (target) {
-            this.draggedNode = this.workflow.nodes[target.getAttribute("data-id")];
-            const rect = target.getBoundingClientRect();
-            this.offsetX = event.clientX - rect.left;
-            this.offsetY = event.clientY - rect.top;
-        }
+    onNodeMouseDown(event) {
+        if (event.target.classList.contains('socket')) return;
+        const nodeElement = event.currentTarget;
+        this.draggedNode = this.workflow.nodes[nodeElement.getAttribute("data-id")];
+        const rect = nodeElement.getBoundingClientRect();
+        this.offsetX = event.clientX - rect.left;
+        this.offsetY = event.clientY - rect.top;
+        nodeElement.setAttribute("filter", "url(#dropShadow)");
     }
 
     onMouseMove(event) {
@@ -259,10 +388,72 @@ class WorkflowVisualizer {
             this.nodeElements[this.draggedNode.id].setAttribute("transform", `translate(${this.draggedNode.x}, ${this.draggedNode.y})`);
             this.updateConnections();
         }
+        if (this.tempLine) {
+            const rect = this.svg.getBoundingClientRect();
+            this.updateTempLine(event.clientX - rect.left, event.clientY - rect.top);
+        }
     }
 
-    onMouseUp() {
-        this.draggedNode = null;
+    onMouseUp(event) {
+        if (this.draggedNode) {
+            this.nodeElements[this.draggedNode.id].removeAttribute("filter");
+            this.draggedNode = null;
+        }
+        if (this.tempLine && this.startSocket) {
+            const endSocket = event.target.closest('.input-socket');
+            if (endSocket && this.canConnect(this.startSocket, endSocket)) {
+                const sourceId = this.startSocket.getAttribute('data-node-id');
+                const sourceOutput = this.startSocket.getAttribute('data-socket-index');
+                const targetId = endSocket.getAttribute('data-node-id');
+                const targetInput = endSocket.getAttribute('data-socket-index');
+                this.connectNodes(sourceId, parseInt(sourceOutput), targetId, parseInt(targetInput));
+            }
+            this.svg.removeChild(this.tempLine);
+            this.tempLine = null;
+            this.startSocket = null;
+        }
+    }
+
+    addSocketListeners(socket, type) {
+        socket.addEventListener('mouseenter', () => socket.setAttribute('r', '8'));
+        socket.addEventListener('mouseleave', () => socket.setAttribute('r', '6'));
+
+        if (type === 'output') {
+            socket.addEventListener('mousedown', this.onSocketMouseDown.bind(this));
+        }
+    }
+
+    onSocketMouseDown(event) {
+        event.stopPropagation();
+        this.startSocket = event.target;
+        const rect = this.svg.getBoundingClientRect();
+        const startX = parseFloat(this.startSocket.getAttribute('cx')) + this.startSocket.parentElement.transform.baseVal[0].matrix.e;
+        const startY = parseFloat(this.startSocket.getAttribute('cy')) + this.startSocket.parentElement.transform.baseVal[0].matrix.f;
+        this.tempLine = this.createTempLine(startX, startY, event.clientX - rect.left, event.clientY - rect.top);
+        this.svg.appendChild(this.tempLine);
+    }
+
+    createTempLine(startX, startY, endX, endY) {
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const d = `M ${startX} ${startY} C ${(startX + endX) / 2} ${startY}, ${(startX + endX) / 2} ${endY}, ${endX} ${endY}`;
+        path.setAttribute("d", d);
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke", "#666");
+        path.setAttribute("stroke-width", "2");
+        path.setAttribute("stroke-dasharray", "5,5");
+        return path;
+    }
+
+    updateTempLine(endX, endY) {
+        const startX = parseFloat(this.startSocket.getAttribute('cx')) + this.startSocket.parentElement.transform.baseVal[0].matrix.e;
+        const startY = parseFloat(this.startSocket.getAttribute('cy')) + this.startSocket.parentElement.transform.baseVal[0].matrix.f;
+        const d = `M ${startX} ${startY} C ${(startX + endX) / 2} ${startY}, ${(startX + endX) / 2} ${endY}, ${endX} ${endY}`;
+        this.tempLine.setAttribute("d", d);
+    }
+
+    canConnect(sourceSocket, targetSocket) {
+        return sourceSocket.getAttribute('data-socket-type') === targetSocket.getAttribute('data-socket-type') &&
+               sourceSocket.getAttribute('data-node-id') !== targetSocket.getAttribute('data-node-id');
     }
 
     execute() {
@@ -291,6 +482,7 @@ class WorkflowVisualizer {
 
     redraw() {
         this.svg.innerHTML = '';
+        this.addDefs();
         this.nodeElements = {};
         this.connectionElements = [];
         this.workflow.nodeList.forEach(node => this.drawNode(node));
