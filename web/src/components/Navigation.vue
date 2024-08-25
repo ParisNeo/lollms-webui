@@ -28,6 +28,7 @@ const menuItems = ref([]);
 const navLinks = [
   { active: true, route: 'discussions', text: 'Discussions' },
   { active: true, route: 'playground', text: 'Playground' },
+  { active: true, route: 'PersonalitiesZoo', text: 'Personalities Zoo' },
   { active: true, route: 'AppsZoo', text: 'Apps Zoo' },
   { 
     active: false, 

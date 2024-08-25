@@ -1,5 +1,5 @@
 <template>
-  <div ref="container"></div>
+  <div :id="containerId" ref="container"></div>
 </template>
 
 <script>
@@ -8,54 +8,60 @@ export default {
   props: {
     ui: {
       type: String,
-      required: true,
-      default: "",
+      required: true
     },
+    instanceId: {
+      type: String,
+      required: true
+    }
   },
-  mounted() {
-    this.renderUI();
+  data() {
+    return {
+      containerId: `dynamic-ui-${this.instanceId}`
+    };
   },
   watch: {
     ui: {
-      handler: 'renderUI',
       immediate: true,
-    },
+      handler(newValue) {
+        console.log(`UI prop changed for instance ${this.instanceId}:`, newValue);
+        this.$nextTick(() => {
+          this.renderContent();
+        });
+      }
+    }
   },
   methods: {
-    renderUI() {
+    renderContent() {
+      console.log(`Rendering content for instance ${this.instanceId}...`);
       const container = this.$refs.container;
-      container.innerHTML = '';
-
+      
+      // Parse the UI string
       const parser = new DOMParser();
       const doc = parser.parseFromString(this.ui, 'text/html');
-
-      // Extract and apply styles
+      
+      // Extract and inject CSS
       const styles = doc.getElementsByTagName('style');
       Array.from(styles).forEach(style => {
-        const styleElement = document.createElement('style');
-        styleElement.textContent = style.textContent;
-        container.appendChild(styleElement);
+        const scopedStyle = document.createElement('style');
+        scopedStyle.textContent = this.scopeCSS(style.textContent);
+        document.head.appendChild(scopedStyle);
       });
-
-      // Extract and execute scripts
+      
+      // Extract and inject HTML
+      container.innerHTML = doc.body.innerHTML;
+      
+      // Extract and execute JavaScript
       const scripts = doc.getElementsByTagName('script');
       Array.from(scripts).forEach(script => {
-        const scriptElement = document.createElement('script');
-        scriptElement.textContent = script.textContent;
-        container.appendChild(scriptElement);
+        const newScript = document.createElement('script');
+        newScript.textContent = script.textContent;
+        container.appendChild(newScript);
       });
-
-      // Append body content
-      const body = doc.body;
-      Array.from(body.children).forEach(child => {
-        container.appendChild(child);
-      });
-
-      // Apply any inline styles from the body
-      if (body.style.cssText) {
-        container.style.cssText = body.style.cssText;
-      }
     },
-  },
+    scopeCSS(css) {
+      return css.replace(/([^\r\n,{}]+)(,(?=[^}]*{)|\s*{)/g, `#${this.containerId} $1$2`);
+    }
+  }
 };
 </script>

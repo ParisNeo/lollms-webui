@@ -94,13 +94,12 @@
                             <JsonViewer :jsonFormText="metadata.title" :jsonData="metadata.content" :key="'msgjson-' + message.id" />
                         </div>
                     </div>
-                    <DynamicUIRenderer ref="ui" class="w-full" :ui="message.ui" :key="'msgui-' + message.id" />
+                    <DynamicUIRenderer v-if="message.ui" ref="ui" class="w-full" :ui="message.ui" :key="'msgui-' + message.id" />
                     
                     <audio controls v-if="audio_url!=null" :key="audio_url">
                         <source :src="audio_url" type="audio/wav"  ref="audio_player" >
                         Your browser does not support the audio element.
-                    </audio>  
-
+                    </audio>
                 </div>
                 <!-- MESSAGE CONTROLS -->
                 <div class="flex-row justify-end mx-2">

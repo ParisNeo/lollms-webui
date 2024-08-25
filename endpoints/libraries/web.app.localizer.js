@@ -3,7 +3,12 @@ class WebAppLocalizer {
         this.translations = translations;
         this.localStoragePrefix = localStoragePrefix;
         this.currentLang = this.loadCurrentLanguage() || Object.keys(translations)[0];
-        this.languageSelector = languageSelector;
+
+        if (typeof languageSelector === 'string') {
+            this.languageSelector = document.getElementById(languageSelector);
+        } else {
+            this.languageSelector = languageSelector;
+        }
         
         if (this.languageSelector) {
             this.initializeLanguageSelector();

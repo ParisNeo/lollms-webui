@@ -4979,10 +4979,8 @@ export default {
 
             console.log("category")
 
-           
-            //await this.getPersonalitiesArr()
             this.personality_category = this.configFile.personality_category
-            this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category)
+            this.personalitiesFiltered = this.$store.state.personalities.filter((item) => item.category === this.configFile.personality_category)
             // this.personalitiesFiltered.sort()
             //mountedPersArr
             this.modelsFiltered = []
@@ -5716,7 +5714,7 @@ export default {
                 this.api_get_req("list_personalities_categories").then((cats)=>{
                     console.log("cats",cats)
                     this.persCatgArr = cats
-                    this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.personality_category)
+                    this.personalitiesFiltered = this.$store.state.personalities.filter((item) => item.category === this.personality_category)
                     this.personalitiesFiltered.sort()
 
                 })
@@ -6038,11 +6036,10 @@ export default {
         },
         async getPersonalitiesArr() {
             this.isLoading = true
-            this.personalities = []
+            this.$store.state.personalities = []
             const dictionary = await this.api_get_req("get_all_personalities")
             const config = this.$store.state.config
-            //console.log('asdas',config)
-            // console.log("all_personalities")
+            console.log("recovering all_personalities")
             // console.log(dictionary)
             const catkeys = Object.keys(dictionary); // returns categories folder names
             for (let j = 0; j < catkeys.length; j++) {
@@ -6064,15 +6061,15 @@ export default {
                 })
 
 
-                if (this.personalities.length == 0) {
-                    this.personalities = modPersArr
+                if (this.$store.state.personalities.length == 0) {
+                    this.$store.state.personalities = modPersArr
                 } else {
-                    this.personalities = this.personalities.concat(modPersArr)
+                    this.$store.state.personalities = this.$store.state.personalities.concat(modPersArr)
                 }
             }
 
-            this.personalities.sort((a, b) => a.name.localeCompare(b.name))
-            this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category)
+            this.$store.state.personalities.sort((a, b) => a.name.localeCompare(b.name))
+            this.personalitiesFiltered = this.$store.state.personalities.filter((item) => item.category === this.configFile.personality_category)
             this.personalitiesFiltered.sort()
             console.log('per filtered', this.personalitiesFiltered)
             this.isLoading = false
@@ -6080,13 +6077,13 @@ export default {
         },
         async filterPersonalities() {
             if (!this.searchPersonality) {
-                this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category )
+                this.personalitiesFiltered = this.$store.state.personalities.filter((item) => item.category === this.configFile.personality_category )
                 this.personalitiesFiltered.sort()
                 this.searchPersonalityInProgress = false
                 return
             }
             const searchTerm = this.searchPersonality.toLowerCase()
-            const seachedPersonalities = this.personalities.filter((item) => {
+            const seachedPersonalities = this.$store.state.personalities.filter((item) => {
 
                 if (item.name && item.name.toLowerCase().includes(searchTerm) || item.description && item.description.toLowerCase().includes(searchTerm) || item.full_path && item.full_path.toLowerCase().includes(searchTerm)) {
                     return item
@@ -6099,7 +6096,7 @@ export default {
             if (seachedPersonalities.length > 0) {
                 this.personalitiesFiltered = seachedPersonalities.sort()
             } else {
-                this.personalitiesFiltered = this.personalities.filter((item) => item.category === this.configFile.personality_category)
+                this.personalitiesFiltered = this.$store.state.personalities.filter((item) => item.category === this.configFile.personality_category)
                 this.personalitiesFiltered.sort()
             }
             this.searchPersonalityInProgress = false
@@ -6265,12 +6262,12 @@ export default {
             if (res.status) {
                 this.configFile.personalities = res.personalities
                 this.$store.state.toast.showToast("Personality unmounted", 4, true)
-                const persId = this.personalities.findIndex(item => item.full_path == pers.full_path)
+                const persId = this.$store.state.personalities.findIndex(item => item.full_path == pers.full_path)
                 const persFilteredId = this.personalitiesFiltered.findIndex(item => item.full_path == pers.full_path)
                 const persIdZoo = this.$refs.personalitiesZoo.findIndex(item => item.full_path == pers.full_path)
-                console.log('ppp', this.personalities[persId])
+                console.log('ppp', this.$store.state.personalities[persId])
 
-                this.personalities[persId].isMounted = false
+                this.$store.state.personalities[persId].isMounted = false
 
                 if (persFilteredId > -1) {
                     this.personalitiesFiltered[persFilteredId].isMounted = false
@@ -6866,9 +6863,9 @@ export default {
             if (!this.isMounted) {
                 return null
             }
-            const index = this.personalities.findIndex(item => item.full_path === this.configFile.personalities[this.configFile.active_personality_id])
+            const index = this.$store.state.personalities.findIndex(item => item.full_path === this.configFile.personalities[this.configFile.active_personality_id])
             if (index > -1) {
-                return this.personalities[index].name
+                return this.$store.state.personalities[index].name
             } else {
                 return null
 
