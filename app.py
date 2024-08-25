@@ -227,6 +227,7 @@ if __name__ == "__main__":
     from lollms.server.endpoints.lollms_configuration_infos import router as lollms_configuration_infos_router
     from lollms.server.endpoints.lollms_skills_library import router as lollms_skills_library_router
 
+    from lollms.server.endpoints.lollms_tti import router as lollms_tti_router
     
 
     from lollms.server.endpoints.lollms_user import router as lollms_user_router
@@ -283,6 +284,8 @@ if __name__ == "__main__":
         app.include_router(lollms_models_infos_router)   
         app.include_router(lollms_personalities_infos_router)   
         app.include_router(lollms_skills_library_router)   
+        app.include_router(lollms_tti_router)   
+        
         
         app.include_router(lollms_webui_infos_router)
         app.include_router(lollms_discussion_router)
