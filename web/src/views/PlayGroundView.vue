@@ -132,45 +132,65 @@
           </div>
           <div class="flex-grow m-2 p-2 border panels-color border-blue-300 rounded-md" :class="{ 'border-red-500': generating }">
             <div  v-if="tab_id === 'source'">
-                <div class="flex flex-row justify-end mx-2">
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
-                                title="Add generic block" @click.stop="addBlock('')">
-                                <img :src="code_block" width="25" height="25">
-                            </div>            
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
-                                title="Add python block" @click.stop="addBlock('python')">
-                                <img :src="python_block" width="25" height="25">
-                            </div>
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
-                                title="Add javascript block" @click.stop="addBlock('javascript')">
-                                <img :src="javascript_block" width="25" height="25">
-                            </div>
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
-                                title="Add json block" @click.stop="addBlock('json')">
-                                <img :src="json_block" width="25" height="25">
-                            </div>                            
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
-                                title="Add c++ block" @click.stop="addBlock('c++')">
-                                <img :src="cpp_block" width="25" height="25">
-                            </div>
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
-                                title="Add html block" @click.stop="addBlock('html')">
-                                <img :src="html5_block" width="25" height="25">
-                            </div>
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
-                                title="Add LaTex block" @click.stop="addBlock('latex')">
-                                <img :src="LaTeX_block" width="25" height="25">
-                            </div>
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
-                                title="Add bash block" @click.stop="addBlock('bash')">
-                                <img :src="bash_block" width="25" height="25">
-                            </div>
-                            <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer hover:border-2"
-                                title="Copy message to clipboard" @click.stop="copyContentToClipboard()">
-                                <i data-feather="copy"></i>
-                            </div>
-                </div>
-                <textarea ref="mdTextarea" @keydown.tab.prevent="insertTab"
+              <DropdownMenu title="Add Block">
+                  <!-- Programming Languages -->
+                  <DropdownSubmenu title="Programming Languages" icon="code">
+                      <ToolbarButton @click.stop="addBlock('python')" title="Python" icon="python" />
+                      <ToolbarButton @click.stop="addBlock('javascript')" title="JavaScript" icon="js" />
+                      <ToolbarButton @click.stop="addBlock('typescript')" title="TypeScript" icon="typescript" />
+                      <ToolbarButton @click.stop="addBlock('java')" title="Java" icon="java" />
+                      <ToolbarButton @click.stop="addBlock('c++')" title="C++" icon="cplusplus" />
+                      <ToolbarButton @click.stop="addBlock('csharp')" title="C#" icon="csharp" />
+                      <ToolbarButton @click.stop="addBlock('go')" title="Go" icon="go" />
+                      <ToolbarButton @click.stop="addBlock('rust')" title="Rust" icon="rust" />
+                      <ToolbarButton @click.stop="addBlock('swift')" title="Swift" icon="swift" />
+                      <ToolbarButton @click.stop="addBlock('kotlin')" title="Kotlin" icon="kotlin" />
+                      <ToolbarButton @click.stop="addBlock('r')" title="R" icon="r-project" />
+                  </DropdownSubmenu>
+
+                  <!-- Web Technologies -->
+                  <DropdownSubmenu title="Web Technologies" icon="web">
+                      <ToolbarButton @click.stop="addBlock('html')" title="HTML" icon="html5" />
+                      <ToolbarButton @click.stop="addBlock('css')" title="CSS" icon="css3" />
+                      <ToolbarButton @click.stop="addBlock('vue')" title="Vue.js" icon="vuejs" />
+                      <ToolbarButton @click.stop="addBlock('react')" title="React" icon="react" />
+                      <ToolbarButton @click.stop="addBlock('angular')" title="Angular" icon="angular" />
+                  </DropdownSubmenu>
+
+                  <!-- Markup and Data Formats -->
+                  <DropdownSubmenu title="Markup and Data" icon="file-code">
+                      <ToolbarButton @click.stop="addBlock('xml')" title="XML" icon="xml" />
+                      <ToolbarButton @click.stop="addBlock('json')" title="JSON" icon="json" />
+                      <ToolbarButton @click.stop="addBlock('yaml')" title="YAML" icon="yaml" />
+                      <ToolbarButton @click.stop="addBlock('markdown')" title="Markdown" icon="markdown" />
+                      <ToolbarButton @click.stop="addBlock('latex')" title="LaTeX" icon="latex" />
+                  </DropdownSubmenu>
+
+                  <!-- Scripting and Shell -->
+                  <DropdownSubmenu title="Scripting and Shell" icon="terminal">
+                      <ToolbarButton @click.stop="addBlock('bash')" title="Bash" icon="bash" />
+                      <ToolbarButton @click.stop="addBlock('powershell')" title="PowerShell" icon="powershell" />
+                      <ToolbarButton @click.stop="addBlock('perl')" title="Perl" icon="perl" />
+                  </DropdownSubmenu>
+
+                  <!-- Diagramming -->
+                  <DropdownSubmenu title="Diagramming" icon="sitemap">
+                      <ToolbarButton @click.stop="addBlock('mermaid')" title="Mermaid" icon="mermaid" />
+                      <ToolbarButton @click.stop="addBlock('graphviz')" title="Graphviz" icon="graphviz" />
+                      <ToolbarButton @click.stop="addBlock('plantuml')" title="PlantUML" icon="plantuml" />
+                  </DropdownSubmenu>
+
+                  <!-- Database -->
+                  <DropdownSubmenu title="Database" icon="database">
+                      <ToolbarButton @click.stop="addBlock('sql')" title="SQL" icon="sql" />
+                      <ToolbarButton @click.stop="addBlock('mongodb')" title="MongoDB" icon="mongodb" />
+                  </DropdownSubmenu>
+
+                  <!-- Other -->
+                  <ToolbarButton @click.stop="addBlock('')" title="Generic Block" icon="code" />
+              </DropdownMenu>
+              <ToolbarButton @click.stop="copyContentToClipboard()" title="Copy message to clipboard" icon="copy" />
+              <textarea ref="mdTextarea" @keydown.tab.prevent="insertTab"
                 class="block min-h-500 p-2.5 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 overflow-y-scroll flex flex-col shadow-lg p-10 pt-0 overflow-y-scroll dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
                 :rows="4" 
                 :style="{ minHeight: mdRenderHeight + `px` }" placeholder="Enter message here..."
@@ -315,6 +335,10 @@ import deaf_off from '@/assets/deaf_off.svg';
 import rec_on from '@/assets/rec_on.svg';
 import rec_off from '@/assets/rec_off.svg';
 import loading_icon from '@/assets/loading.svg';
+
+import ToolbarButton from '@/components/ToolbarButton.vue'
+import DropdownMenu from '@/components/DropdownMenu.vue'
+
 
 
 async function showInputPanel(name, default_value="", options=[]) {
@@ -525,7 +549,9 @@ export default {
     ClipBoardTextInput,
     TokensHilighter,
     ChatBarButton,
-    Card
+    Card,
+    ToolbarButton,
+    DropdownMenu
   },
   mounted() {
     axios.get('./get_presets').then(response => {

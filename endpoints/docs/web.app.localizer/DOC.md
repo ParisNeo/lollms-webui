@@ -26,6 +26,10 @@ const localizer = new WebAppLocalizer(translations, localStoragePrefix, language
         name: "Language Name",
         translations: {
             [key]: "Translation"
+        },
+        // optional
+        promptTranslations: {
+            [prompt name]: "Translation"
         }
     }
 }
@@ -37,3 +41,10 @@ const localizer = new WebAppLocalizer(translations, localStoragePrefix, language
 ```
 
 Apply translations: `localizer.apply();`
+Get the translation of a prompt with options:
+```javascript
+localizer.formatPrompt([prompt name], {
+    variable name: variable value to substitude in the translation string
+})
+```
+In the translation string use the syntax {variable name}. This will allow using variable string parts when translating.

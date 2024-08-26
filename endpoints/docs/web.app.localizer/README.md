@@ -78,13 +78,22 @@ const translations = {
         translations: {
             "welcome-message": "Welcome to our website!",
             "about-us": "About Us"
+        },
+        // optional
+        promptTranslations: {
+            main_prompt: "Act as an assistant and answer the user question.\nquestion:{question}"
         }
+
     },
     fr: {
         name: "Français",
         translations: {
             "welcome-message": "Bienvenue sur notre site web!",
             "about-us": "À propos de nous"
+        },
+        // optional
+        promptTranslations: {
+            main_prompt: "Act as an assistant and answer the user question.\nquestion:{question}"
         }
     }
 };
@@ -92,5 +101,15 @@ const translations = {
 const localizer = new WebAppLocalizer(translations, 'myApp_', document.getElementById('language-selector'));
 localizer.apply();
 ```
+
+## Advanced use with prompts
+Get the translation of a prompt with options:
+```javascript
+localizer.formatPrompt([prompt name], {
+    variable name: variable value to substitude in the translation string
+})
+```
+In the translation string use the syntax {variable name}. This will allow using variable string parts when translating.
+
 
 This will initialize the localizer, set up a language selector (if provided), and apply translations to your HTML elements.

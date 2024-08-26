@@ -92,4 +92,10 @@ class WebAppLocalizer {
             this.setLanguage(event.target.value);
         });
     }
+    // helper functions
+    // A format prompt function
+    formatPrompt(prompt_name, values) {
+        return this.translations[this.lang].promptTranslations[prompt_name].replace(/\{(\w+)\}/g, (match, key) => values[key] || match);
+    }
 }
+

@@ -110,17 +110,61 @@
                             <ToolbarButton @click.stop="editMsgMode = false" title="Cancel edit" icon="x" />
                             <ToolbarButton @click.stop="updateMessage" title="Update message" icon="check" />
                             <DropdownMenu title="Add Block">
+                                <!-- Programming Languages -->
+                                <DropdownSubmenu title="Programming Languages" icon="code">
+                                    <ToolbarButton @click.stop="addBlock('python')" title="Python" icon="python" />
+                                    <ToolbarButton @click.stop="addBlock('javascript')" title="JavaScript" icon="js" />
+                                    <ToolbarButton @click.stop="addBlock('typescript')" title="TypeScript" icon="typescript" />
+                                    <ToolbarButton @click.stop="addBlock('java')" title="Java" icon="java" />
+                                    <ToolbarButton @click.stop="addBlock('c++')" title="C++" icon="cplusplus" />
+                                    <ToolbarButton @click.stop="addBlock('csharp')" title="C#" icon="csharp" />
+                                    <ToolbarButton @click.stop="addBlock('go')" title="Go" icon="go" />
+                                    <ToolbarButton @click.stop="addBlock('rust')" title="Rust" icon="rust" />
+                                    <ToolbarButton @click.stop="addBlock('swift')" title="Swift" icon="swift" />
+                                    <ToolbarButton @click.stop="addBlock('kotlin')" title="Kotlin" icon="kotlin" />
+                                    <ToolbarButton @click.stop="addBlock('r')" title="R" icon="r-project" />
+                                </DropdownSubmenu>
+
+                                <!-- Web Technologies -->
+                                <DropdownSubmenu title="Web Technologies" icon="web">
+                                    <ToolbarButton @click.stop="addBlock('html')" title="HTML" icon="html5" />
+                                    <ToolbarButton @click.stop="addBlock('css')" title="CSS" icon="css3" />
+                                    <ToolbarButton @click.stop="addBlock('vue')" title="Vue.js" icon="vuejs" />
+                                    <ToolbarButton @click.stop="addBlock('react')" title="React" icon="react" />
+                                    <ToolbarButton @click.stop="addBlock('angular')" title="Angular" icon="angular" />
+                                </DropdownSubmenu>
+
+                                <!-- Markup and Data Formats -->
+                                <DropdownSubmenu title="Markup and Data" icon="file-code">
+                                    <ToolbarButton @click.stop="addBlock('xml')" title="XML" icon="xml" />
+                                    <ToolbarButton @click.stop="addBlock('json')" title="JSON" icon="json" />
+                                    <ToolbarButton @click.stop="addBlock('yaml')" title="YAML" icon="yaml" />
+                                    <ToolbarButton @click.stop="addBlock('markdown')" title="Markdown" icon="markdown" />
+                                    <ToolbarButton @click.stop="addBlock('latex')" title="LaTeX" icon="latex" />
+                                </DropdownSubmenu>
+
+                                <!-- Scripting and Shell -->
+                                <DropdownSubmenu title="Scripting and Shell" icon="terminal">
+                                    <ToolbarButton @click.stop="addBlock('bash')" title="Bash" icon="bash" />
+                                    <ToolbarButton @click.stop="addBlock('powershell')" title="PowerShell" icon="powershell" />
+                                    <ToolbarButton @click.stop="addBlock('perl')" title="Perl" icon="perl" />
+                                </DropdownSubmenu>
+
+                                <!-- Diagramming -->
+                                <DropdownSubmenu title="Diagramming" icon="sitemap">
+                                    <ToolbarButton @click.stop="addBlock('mermaid')" title="Mermaid" icon="mermaid" />
+                                    <ToolbarButton @click.stop="addBlock('graphviz')" title="Graphviz" icon="graphviz" />
+                                    <ToolbarButton @click.stop="addBlock('plantuml')" title="PlantUML" icon="plantuml" />
+                                </DropdownSubmenu>
+
+                                <!-- Database -->
+                                <DropdownSubmenu title="Database" icon="database">
+                                    <ToolbarButton @click.stop="addBlock('sql')" title="SQL" icon="sql" />
+                                    <ToolbarButton @click.stop="addBlock('mongodb')" title="MongoDB" icon="mongodb" />
+                                </DropdownSubmenu>
+
+                                <!-- Other -->
                                 <ToolbarButton @click.stop="addBlock('')" title="Generic Block" icon="code" />
-                                <ToolbarButton @click.stop="addBlock('python')" title="Python" icon="python" />
-                                <ToolbarButton @click.stop="addBlock('javascript')" title="JavaScript" icon="js" />
-                                <ToolbarButton @click.stop="addBlock('json')" title="JSON" icon="braces" />
-                                <ToolbarButton @click.stop="addBlock('c++')" title="C++" icon="cplusplus" />
-                                <ToolbarButton @click.stop="addBlock('html')" title="HTML" icon="html5" />
-                                <ToolbarButton @click.stop="addBlock('latex')" title="LaTeX" icon="mathFunction" />
-                                <ToolbarButton @click.stop="addBlock('bash')" title="Bash" icon="terminal" />
-                                <ToolbarButton @click.stop="addBlock('mermaid')" title="Mermaid" icon="diagram" />
-                                <ToolbarButton @click.stop="addBlock('graphviz')" title="Graphviz" icon="graph" />
-                                <!-- Add more language options here -->
                             </DropdownMenu>
                         </div>
                         <div v-else>
