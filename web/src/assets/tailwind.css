@@ -84,6 +84,10 @@ ol {
   --color-bg-dark-discussion: #435E8A;
   --color-bg-dark-discussion-odd: #284471;
 }
+/* For both textarea and input elements */
+textarea, input, select {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
 
 .background-color {
   @apply bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 min-h-screen;

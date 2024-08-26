@@ -362,6 +362,8 @@
     <ChoiceDialog reference="database_selector" class="z-20"
       :show="database_selectorDialogVisible"
       :choices="databases"
+      :can-remove=true      
+      @choice-removed="ondatabase_selectorDialogRemoved"
       @choice-selected="ondatabase_selectorDialogSelected"
       @close-dialog="onclosedatabase_selectorDialog"
       @choice-validated="onvalidatedatabase_selectorChoice"
@@ -865,7 +867,11 @@ export default {
         },        
         showDatabaseSelector() {
             this.database_selectorDialogVisible = true;
-        },        
+        },   
+             
+        async ondatabase_selectorDialogRemoved(choice){
+            console.log("Deleted:",choice)
+        },
         async ondatabase_selectorDialogSelected(choice){
             console.log("Selected:",choice)
         },
