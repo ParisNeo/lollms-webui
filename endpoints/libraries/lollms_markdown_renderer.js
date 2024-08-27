@@ -37,97 +37,104 @@
 
 
 class MarkdownRenderer {
-    async renderMermaidDiagrams(text) {
-      const mermaidCodeRegex = /```mermaid\n([\s\S]*?)```/g;
-      const matches = text.match(mermaidCodeRegex);
-      
-      if (!matches) return text; // Return original text if no Mermaid code found
-  
-      for (const match of matches) {
-          const mermaidCode = match.replace(/```mermaid\n/, '').replace(/```$/, '');
-          const uniqueId = 'mermaid-' + Math.random().toString(36).substr(2, 9);
-          
-          try {
-              const result = await mermaid.render(uniqueId, mermaidCode);
-              const htmlCode = `
-                  <div class="relative flex justify-center items-center mt-4 mb-4">
-                      <div class="mermaid-diagram" id="${uniqueId}" style="transform-origin: center; transition: transform 0.3s;">
-                          ${result.svg}
-                      </div>
-                      <div class="absolute top-0 left-0 flex gap-1 p-1">
-                          <button onclick="mr.zoomMermaid('${uniqueId}', 1.1)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded inline-flex items-center">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 100 100">
-                              <circle cx="40" cy="40" r="25" stroke="black" stroke-width="5" fill="none" />
-                              <line x1="60" y1="60" x2="80" y2="80" stroke="black" stroke-width="5" />
-                              <line x1="50" y1="40" x2="30" y2="40" stroke="black" stroke-width="3" />
-                              <line x1="40" y1="30" x2="40" y2="50" stroke="black" stroke-width="3" />
-                              </svg>
-                          </button>
-                          <button onclick="mr.zoomMermaid('${uniqueId}', 0.9)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded inline-flex items-center">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 100 100">
-                              <circle cx="40" cy="40" r="25" stroke="black" stroke-width="5" fill="none" />
-                              <line x1="60" y1="60" x2="80" y2="80" stroke="black" stroke-width="5" />
-                              <line x1="50" y1="40" x2="30" y2="40" stroke="black" stroke-width="3" />
-                              </svg>
-                          </button>
-                          <button onclick="mr.saveMermaidAsPNG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded inline-flex items-center">
-                              PNG
-                          </button>
-                          <button onclick="mr.saveMermaidAsSVG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded inline-flex items-center">
-                              SVG
-                          </button>
-                      </div>
-                  </div>
-              `;
-              text = text.replace(match, htmlCode);
-          } catch (error) {
-              console.error('Mermaid rendering failed:', error);
-              text = text.replace(match, `<div class="mermaid-error">Failed to render diagram</div>`);
-          }
-      }
-  
-      return text;
+  async renderMermaidDiagrams(text) {
+        const mermaidCodeRegex = /```mermaid\n([\s\S]*?)```/g;
+        const matches = text.match(mermaidCodeRegex);
+
+        if (!matches) return text;
+
+        for (const match of matches) {
+            const mermaidCode = match.replace(/```mermaid\n/, '').replace(/```$/, '');
+            const uniqueId = 'mermaid-' + Math.random().toString(36).substr(2, 9);
+
+            try {
+                const result = await mermaid.render(uniqueId, mermaidCode);
+                const htmlCode = `
+                    <div class="mermaid-container relative flex justify-center items-center mt-4 mb-4 w-full">
+                        <div class="mermaid-diagram bg-white p-4 rounded-lg shadow-md overflow-auto w-full" style="max-height: 80vh;">
+                            <div id="${uniqueId}" style="transform-origin: top left; transition: transform 0.3s;">
+                                ${result.svg}
+                            </div>
+                        </div>
+                        <div class="absolute top-2 right-2 flex gap-1">
+                            <button onclick="mr.zoomMermaid('${uniqueId}', 1.1)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    <line x1="11" y1="8" x2="11" y2="14"></line>
+                                    <line x1="8" y1="11" x2="14" y2="11"></line>
+                                </svg>
+                            </button>
+                            <button onclick="mr.zoomMermaid('${uniqueId}', 0.9)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    <line x1="8" y1="11" x2="14" y2="11"></line>
+                                </svg>
+                            </button>
+                            <button onclick="mr.saveMermaidAsPNG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                                PNG
+                            </button>
+                            <button onclick="mr.saveMermaidAsSVG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                                SVG
+                            </button>
+                        </div>
+                    </div>
+                `;
+                text = text.replace(match, htmlCode);
+            } catch (error) {
+                console.error('Mermaid rendering failed:', error);
+                text = text.replace(match, `<div class="mermaid-error bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">Failed to render diagram</div>`);
+            }
+        }
+
+        return text;
     }
+
   
     async renderCodeBlocks(text) {
-        if (typeof Prism === 'undefined') {
+      if (typeof Prism === 'undefined') {
           throw new Error('Prism is not loaded. Please include Prism.js in your project.');
-        }
-      
-        const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
-      
-        const renderedText = await text.replace(codeBlockRegex, (match, language, code) => {
+      }
+
+      const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+
+      const renderedText = await text.replace(codeBlockRegex, (match, language, code) => {
           language = language || 'plaintext';
-      
+
           if (!Prism.languages[language]) {
-            console.warn(`Language '${language}' is not supported by Prism. Falling back to plaintext.`);
-            language = 'plaintext';
+              console.warn(`Language '${language}' is not supported by Prism. Falling back to plaintext.`);
+              language = 'plaintext';
           }
-      
+
           const highlightedCode = Prism.highlight(code.trim(), Prism.languages[language], language);
-      
+
           const lines = highlightedCode.split(/\r?\n/);
           const numberedLines = lines.map((line, index) =>
-            `<span class="code-line"><span class="line-number">${index + 1}</span><span class="line-content">${line}</span></span>`
+              `<span class="code-line"><span class="line-number">${index + 1}</span><span class="line-content">${line}</span></span>`
           ).join('\n');
-      
-          return `<div class="code-block-wrapper">
-            <div class="code-block-header">
-              <div class="language-label">${language}</div>
-              <button class="copy-button" onclick="mr.copyCode(this)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                Copy
-              </button>
-            </div>
-            <pre class="line-numbers"><code class="language-${language}">${numberedLines}</code></pre>
+
+          return `
+          <div class="code-block-wrapper bg-gray-100 rounded-lg shadow-md overflow-hidden my-4">
+              <div class="code-block-header bg-gray-200 px-4 py-2 flex justify-between items-center">
+                  <div class="language-label font-semibold text-gray-700">${language}</div>
+                  <button class="copy-button bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded" onclick="mr.copyCode(this)">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1">
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      Copy
+                  </button>
+              </div>
+              <div class="code-content max-h-[500px] overflow-auto">
+                  <pre class="line-numbers text-sm leading-tight"><code class="language-${language}">${numberedLines}</code></pre>
+              </div>
           </div>`;
-        });
-      
-        return renderedText;
-      }
+      });
+
+      return renderedText;
+  }
+
       
     handleInlineCode(text) {
       return text.replace(/`([^`]+)`/g, function(match, code) {
@@ -194,11 +201,13 @@ class MarkdownRenderer {
     }
   
     handleHeaders(text) {
-      return text.replace(/^(#{1,6})\s+(.*?)$/gm, function(match, hashes, content) {
-          const level = hashes.length;
-          return '<h' + level + '>' + content + '</h' + level + '>';
-      });
+        return text.replace(/^(#{1,6})\s+(.*?)$/gm, function(match, hashes, content) {
+            const level = hashes.length;
+            const fontSize = 2.5 - (level * 0.3); // Decreasing font size for each level
+            return `<h${level} style="font-size: ${fontSize}em; font-weight: bold;">${content}</h${level}>`;
+        });
     }
+  
   
     handleBoldText(text) {
       return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -342,10 +351,10 @@ class MarkdownRenderer {
     }
   
     zoomMermaid(id, factor) {
-        const diagram = document.getElementById(id);
-        const currentScale = diagram.style.transform ? parseFloat(diagram.style.transform.replace('scale(', '').replace(')', '')) : 1;
+        const svg = document.getElementById(id).firstElementChild;
+        const currentScale = svg.style.transform ? parseFloat(svg.style.transform.replace('scale(', '').replace(')', '')) : 1;
         const newScale = currentScale * factor;
-        diagram.style.transform = `scale(${newScale})`;
+        svg.style.transform = `scale(${newScale})`;
     }
   
     copyCode(button) {
@@ -376,8 +385,7 @@ class MarkdownRenderer {
         }).catch(err => {
             console.error('Failed to copy text: ', err);
         });
-    }
-  
+    }  
     async highlightCode(code, language) {
         // Make sure the language is supported by your highlighting library
         const supportedLanguage = Prism.languages[language] ? language : 'plaintext';
