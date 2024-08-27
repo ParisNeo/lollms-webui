@@ -452,6 +452,9 @@ async def lollms_assets(asset_type: str, file_name: str):
 
     # Construct the full file path
     file_path = directory / f"{safe_file_name}{file_extension}"
+    file_path_with_entension = directory / f"{safe_file_name}"
+    if file_path_with_entension.is_file() and file_path_with_entension.is_relative_to(directory):
+        file_path = file_path_with_entension
 
     # Check if the file exists and is within the allowed directory
     if not file_path.is_file() or not file_path.is_relative_to(directory):

@@ -1,30 +1,50 @@
-FROM python:3.10
+# Use an official Python runtime as a parent image
+FROM python:3.11-slim
 
-WORKDIR /srv
-COPY ./requirements.txt .
+# Set environment variables
+ENV PYTHONNOUSERSITE=1 \
+    PYTHONPATH="" \
+    PYTHONHOME="" \
+    TEMP="/installer_files/temp" \
+    TMP="/installer_files/temp" \
+    MINICONDA_DIR="/installer_files/miniconda3" \
+    INSTALL_ENV_DIR="/installer_files/lollms_env" \
+    PACKAGES_TO_INSTALL="python=3.11 git pip"
 
-COPY ./app.py /srv/app.py
-COPY ./api /srv/api
-COPY ./static /srv/static
-COPY ./templates /srv/templates
-COPY ./web /srv/web
-COPY ./assets /srv/assets
+# Create necessary directories
+RUN mkdir -p /installer_files/temp /installer_files/miniconda3 /installer_files/lollms_env
 
-# TODO: this is monkey-patch for check_update() function, should be disabled in Docker
-COPY ./.git /srv/.git
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
 
-VOLUME [ "/data" ]
+# Download and install Miniconda
+RUN curl -LO https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
+    bash Miniconda3-latest-Linux-x86_64.sh -b -p $MINICONDA_DIR && \
+    rm Miniconda3-latest-Linux-x86_64.sh
 
-# Monkey-patch (1): because "binding_zoo" install the packets inside venv, we cannot do pip install on build time
-# Monkey-patch (2): send a "enter" keystroke to python to confirm the first launch process
-CMD ["/bin/bash", "-c", " \
-  python -m venv /data/venv; \
-  source /data/venv/bin/activate; \
-  python -m pip install --no-cache-dir -r requirements.txt --upgrade pip; \
-  echo -ne '\n' | \
-  python app.py \
-  --host 0.0.0.0 \
-  --port 9600 \
-  --discussion_db_name /data/Documents/databases/database.db \
-  --config /configs/config.yaml \
-  "]
+# Initialize conda
+RUN $MINICONDA_DIR/bin/conda init bash
+
+# Create and activate the conda environment
+RUN $MINICONDA_DIR/bin/conda create -y -p $INSTALL_ENV_DIR $PACKAGES_TO_INSTALL && \
+    $MINICONDA_DIR/bin/conda install -y conda
+
+# Clone the repository and install dependencies
+RUN git clone --depth 1 --recurse-submodules https://github.com/ParisNeo/lollms-webui.git && \
+    cd lollms-webui && \
+    git submodule update --init --recursive && \
+    cd lollms_core && \
+    pip install -e . && \
+    cd ../utilities/pipmaster && \
+    pip install -e . && \
+    cd ../.. && \
+    pip install -r requirements.txt
+
+# Set the working directory
+WORKDIR /lollms-webui
+
+# Default command
+CMD ["bash"]
