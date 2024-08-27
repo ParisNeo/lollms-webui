@@ -1,17 +1,11 @@
-version: '3.8'
-
-services: 
-  webui:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - ./data:/data
-      - ./data/.parisneo:/root/.parisneo/
-      - ./configs:/srv/configs
-    environment:
-      - HOME=/data
-    tty: true
-    stdin_open: true
-    ports: 
+version: '3'
+services:
+  lollms-webui:
+    build: .
+    ports:
       - "9600:9600"
+    volumes:
+      - ./lollms-webui:/app/lollms-webui
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: python app.py
