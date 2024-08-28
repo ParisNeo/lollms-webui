@@ -72,7 +72,10 @@ def main():
             args = file.read().split()
         main_script = "app.py"  # Replace with the actual name of your main script
         os.system(f"python {main_script} {' '.join(args)}")
-        os.remove(temp_file)
+        try:
+            os.remove(temp_file)
+        except:
+            print(f"Couldn't remove temp file.\nTry to remove it manually.\nLe fichier se trouve ici: {temp_file}")
     else:
         print("Error: Temporary arguments file not found.")
         sys.exit(1)
