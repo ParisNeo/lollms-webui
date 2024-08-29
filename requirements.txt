@@ -12,7 +12,7 @@ wheel
 psutil
 pytest
 GitPython
-ascii-colors>=0.3.2
+ascii-colors>=0.4.2
 beautifulsoup4
 packaging
 

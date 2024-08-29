@@ -421,7 +421,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     mounted_personalities.append(personality)
                     if self.config.auto_read and len(personality.audio_samples)>0:
                         try:
-                            from lollms.services.xtts.lollms_xtts import LollmsXTTS
+                            from lollms.services.tts.xtts.lollms_xtts import LollmsXTTS
                             if self.tts is None:
                                 voice=self.config.xtts_current_voice
                                 if voice!="main_voice":
@@ -1354,7 +1354,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     if self.tts and self.config.auto_read and len(self.personality.audio_samples)>0:
                         try:
                             self.process_data("Generating voice output",MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_START,client_id=client_id)
-                            from lollms.services.xtts.lollms_xtts import LollmsXTTS
+                            from lollms.services.tts.xtts.lollms_xtts import LollmsXTTS
                             voice=self.config.xtts_current_voice
                             if voice!="main_voice":
                                 voices_folder = self.lollms_paths.custom_voices_path
