@@ -1761,6 +1761,7 @@
                                 >
                                     <option value="None">None</option>
                                     <option value="diffusers">Diffusers</option>
+                                    <option value="diffusers_client">Diffusers Client</option>
                                     <option value="autosd">AUTO1111's SD</option>
                                     <option value="dall-e">Open AI DALL-E</option>
                                     <option value="midjourney">Midjourney</option>
@@ -2964,6 +2965,29 @@
                                     id="diffusers_model"
                                     required
                                     v-model="configFile.diffusers_model"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                <td>
+                                </td>
+                                </tr>
+                            </table>                                
+                        </Card>                        
+                        <Card title="Diffusers client service" :is_subcard="true" class="pb-2  m-2">
+                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="diffusers_client_base_url" class="text-sm font-bold" style="margin-right: 1rem;">Diffusers client base url:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="text"
+                                    id="diffusers_client_base_url"
+                                    required
+                                    v-model="configFile.diffusers_client_base_url"
                                     @change="settingsChanged=true"
                                     class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
                                     >

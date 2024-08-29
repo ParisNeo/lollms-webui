@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 134
+version: 135
 binding_name: null
 model_name: null
 model_variant: null
@@ -102,7 +102,7 @@ copy_to_clipboard_add_all_details: false
 # -------------------- Services global configurations --------------------------
 # Select the active test to speach, text to image and speach to text services
 active_tts_service: "None" # xtts (offline), openai_tts (API key required), elevenlabs_tts (API key required)
-active_tti_service: "None" # autosd (offline), dall-e (online)
+active_tti_service: "None" # autosd (offline), diffusers (offline), diffusers_client (online), dall-e (online), midjourney (online)
 active_stt_service: "None" # whisper (offline), asr (offline or online), openai_whiosper (API key required)
 active_ttm_service: "None" # musicgen (offline)
 active_ttv_service: "None" # cog_video_x (offline)
@@ -183,9 +183,13 @@ sd_base_url: http://localhost:7860
 enable_fooocus_service: false
 fooocus_base_url: http://localhost:7860
 
-# diffuser
+# diffusers
 diffusers_offloading_mode: sequential_cpu_offload # sequential_cpu_offload
-diffusers_model: PixArt-alpha/PixArt-Sigma-XL-2-1024-MS
+diffusers_model: v2ray/stable-diffusion-3-medium-diffusers
+
+# diffusers client
+diffusers_client_base_url: http://localhost:8593
+
 
 # Dall e service key
 dall_e_key: ""
