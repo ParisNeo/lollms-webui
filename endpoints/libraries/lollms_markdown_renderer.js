@@ -91,6 +91,59 @@ class MarkdownRenderer {
         return text;
     }
 
+async renderSVG(text) {
+        const svgCodeRegex = /```svg\n([\s\S]*?)```/g;
+        const matches = text.match(svgCodeRegex);
+    
+        if (!matches) return text;
+    
+        for (const match of matches) {
+            const svgCode = match.replace(/```svg\n/, '').replace(/```$/, '');
+            const uniqueId = 'svg-' + Math.random().toString(36).substr(2, 9);
+    
+            try {
+                // Wrap the SVG code in a div with a unique ID
+                const htmlCode = `
+                    <div class="svg-container relative flex justify-center items-center mt-4 mb-4 w-full">
+                        <div class="svg-diagram bg-white p-4 rounded-lg shadow-md overflow-auto w-full" style="max-height: 80vh;">
+                            <div id="${uniqueId}" style="transform-origin: top left; transition: transform 0.3s;">
+                                ${svgCode}
+                            </div>
+                        </div>
+                        <div class="absolute top-2 right-2 flex gap-1">
+                            <button onclick="svgr.zoomSVG('${uniqueId}', 1.1)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    <line x1="11" y1="8" x2="11" y2="14"></line>
+                                    <line x1="8" y1="11" x2="14" y2="11"></line>
+                                </svg>
+                            </button>
+                            <button onclick="svgr.zoomSVG('${uniqueId}', 0.9)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    <line x1="8" y1="11" x2="14" y2="11"></line>
+                                </svg>
+                            </button>
+                            <button onclick="svgr.saveSVGAsPNG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                                PNG
+                            </button>
+                            <button onclick="svgr.saveSVGAsSVG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                                SVG
+                            </button>
+                        </div>
+                    </div>
+                `;
+                text = text.replace(match, htmlCode);
+            } catch (error) {
+                console.error('SVG rendering failed:', error);
+                text = text.replace(match, `<div class="svg-error bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">Failed to render SVG</div>`);
+            }
+        }
+    
+        return text;
+    }
   
     async renderCodeBlocks(text) {
       if (typeof Prism === 'undefined') {
@@ -248,6 +301,9 @@ class MarkdownRenderer {
     async renderMarkdown(text) {
       // Handle Mermaid graphs first
       text = await this.renderMermaidDiagrams(text);
+
+      // Handle SVG graphs first
+      text = await this.renderSVG(text);
       
       // Handle code blocks with syntax highlighting and copy button
       text = await this.renderCodeBlocks(text);

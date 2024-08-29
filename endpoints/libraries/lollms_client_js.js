@@ -57,6 +57,7 @@ class LollmsClient {
     this.n_threads = n_threads;
     this.service_key = service_key;
     this.default_generation_mode = default_generation_mode;
+    this.minNPredict = 10
     this.template = {
       start_header_id_template: "!@>",
       end_header_id_template: ": ",
@@ -85,6 +86,28 @@ class LollmsClient {
     });
 
   }
+  updateSettings(settings) {
+    // Update each setting if it's provided in the settings object
+    if ('host_address' in settings) this.host_address = settings.host_address;
+    if ('model_name' in settings) this.model_name = settings.model_name;
+    if ('ctx_size' in settings) this.ctx_size = settings.ctx_size;
+    if ('n_predict' in settings) this.n_predict = settings.n_predict;
+    if ('personality' in settings) this.personality = settings.personality;
+    if ('temperature' in settings) this.temperature = settings.temperature;
+    if ('top_k' in settings) this.top_k = settings.top_k;
+    if ('top_p' in settings) this.top_p = settings.top_p;
+    if ('repeat_penalty' in settings) this.repeat_penalty = settings.repeat_penalty;
+    if ('repeat_last_n' in settings) this.repeat_last_n = settings.repeat_last_n;
+    if ('seed' in settings) this.seed = settings.seed;
+    if ('n_threads' in settings) this.n_threads = settings.n_threads;
+    if ('service_key' in settings) this.service_key = settings.service_key;
+    if ('default_generation_mode' in settings) this.default_generation_mode = settings.default_generation_mode;
+
+    // You might want to add some validation or type checking here
+
+    console.log('Settings updated:', settings);
+  }
+
   system_message(){
     return this.template.start_header_id_template+this.template.system_message_template+this.template.end_header_id_template
   }
@@ -93,6 +116,9 @@ class LollmsClient {
   }
   user_message(user_name="user"){
     return this.template.start_user_header_id_template+user_name+this.template.end_user_header_id_template
+  }
+  custom_message(message_name="message"){
+    return this.template.start_ai_header_id_template+message_name+this.template.end_ai_header_id_template
   }
   updateServerAddress(newAddress) {
       this.serverAddress = newAddress;
@@ -420,39 +446,221 @@ async translateTextChunk(textChunk, outputLanguage = "french", host_address = nu
 
   return translated;
 }
-async summarizeText(textChunk, summaryLength = "short", host_address = null, model_name = null, temperature = 0.1, maxGenerationSize = null) {
-  const summaryPrompt = [
-    `system:`,
-    `Summarize the following text in a ${summaryLength} manner.`,
-    `Keep the summary concise and to the point.`,
-    `Include all key points and do not add new information.`,
-    `Respond only with the summary.`,
-    `text to summarize:`,
-    `${textChunk}`,
-    `summary:`,
-  ].join("\n");
 
-  const summary = await this.lollms.generateText(
-    summaryPrompt,
-    host_address,
-    model_name,
-    -1, // personality
-    maxGenerationSize, // n_predict
-    false, // stream
-    temperature, // temperature
-    undefined, // top_k, using undefined to fallback on LollmsClient's default
-    undefined, // top_p, using undefined to fallback on LollmsClient's default
-    undefined, // repeat_penalty, using undefined to fallback on LollmsClient's default
-    undefined, // repeat_last_n, using undefined to fallback on LollmsClient's default
-    undefined, // seed, using undefined to fallback on LollmsClient's default
-    undefined, // n_threads, using undefined to fallback on LollmsClient's default
-    undefined // service_key, using undefined to fallback on LollmsClient's default
-  );
-
-  return summary;
+async tokenize(text) {
+  // Assuming the LollmsClient has a method to tokenize text
+  return await this.lollms.tokenize(text);
 }
 
-yesNo(question, context = "", maxAnswerLength = 50, conditioning = "") {
+async summarizeText({
+  text,
+  summaryInstruction = "summarize",
+  docName = "chunk",
+  answerStart = "",
+  maxGenerationSize = 3000,
+  maxSummarySize = 512,
+  callback = null,
+  chunkSummaryPostProcessing = null,
+  summaryMode = "SEQUENTIAL"
+}) {
+  let tk = await this.tokenize(text);
+  let prevLen = tk.length;
+  let documentChunks = null;
+
+  while (tk.length > maxSummarySize && (documentChunks === null || documentChunks.length > 1)) {
+      this.stepStart(`Compressing ${docName}...`);
+      let chunkSize = Math.floor(this.lollms.ctxSize * 0.6);
+      documentChunks = TextChunker.chunkText(text, this.lollms, chunkSize, 0, true);
+      text = await this.summarizeChunks({
+          chunks: documentChunks,
+          summaryInstruction,
+          docName,
+          answerStart,
+          maxGenerationSize,
+          callback,
+          chunkSummaryPostProcessing,
+          summaryMode
+      });
+      tk = await this.tokenize(text);
+      let dtkLn = prevLen - tk.length;
+      prevLen = tk.length;
+      this.step(`Current text size: ${prevLen}, max summary size: ${maxSummarySize}`);
+      this.stepEnd(`Compressing ${docName}...`);
+      if (dtkLn <= 10) break; // it is not summarizing
+  }
+  return text;
+}
+
+async smartDataExtraction({
+  text,
+  dataExtractionInstruction = "summarize the current chunk.",
+  finalTaskInstruction = "reformulate with better wording",
+  docName = "chunk",
+  answerStart = "",
+  maxGenerationSize = 3000,
+  maxSummarySize = 512,
+  callback = null,
+  chunkSummaryPostProcessing = null,
+  summaryMode = "SEQUENTIAL"
+}) {
+  let tk = await this.tokenize(text);
+  let prevLen = tk.length;
+
+  while (tk.length > maxSummarySize) {
+      let chunkSize = Math.floor(this.lollms.ctxSize * 0.6);
+      let documentChunks = TextChunker.chunkText(text, this.lollms, chunkSize, 0, true);
+      text = await this.summarizeChunks({
+          chunks: documentChunks,
+          summaryInstruction: dataExtractionInstruction,
+          docName,
+          answerStart,
+          maxGenerationSize,
+          callback,
+          chunkSummaryPostProcessing,
+          summaryMode
+      });
+      tk = await this.tokenize(text);
+      let dtkLn = prevLen - tk.length;
+      prevLen = tk.length;
+      this.step(`Current text size: ${prevLen}, max summary size: ${maxSummarySize}`);
+      if (dtkLn <= 10) break; // it is not summarizing
+  }
+
+  this.stepStart("Rewriting ...");
+  text = await this.summarizeChunks({
+      chunks: [text],
+      summaryInstruction: finalTaskInstruction,
+      docName,
+      answerStart,
+      maxGenerationSize,
+      callback,
+      chunkSummaryPostProcessing
+  });
+  this.stepEnd("Rewriting ...");
+
+  return text;
+}
+
+async summarizeChunks({
+  chunks,
+  summaryInstruction = "summarize the current chunk.",
+  docName = "chunk",
+  answerStart = "",
+  maxGenerationSize = 3000,
+  callback = null,
+  chunkSummaryPostProcessing = null,
+  summaryMode = "SEQUENTIAL"
+}) {
+  if (summaryMode === "SEQUENTIAL") {
+      let summary = "";
+      for (let i = 0; i < chunks.length; i++) {
+          this.stepStart(`Summary of ${docName} - Processing chunk: ${i + 1}/${chunks.length}`);
+          summary = `${answerStart}` + await this.fastGen(
+              [
+                  this.lollms.system_message(),
+                  `${summary}`,
+                  this.lollms.system_message(),
+                  `${chunks[i]}`,
+                  this.lollms.system_message(),
+                  summaryInstruction,
+                  "Keep only information relevant to the context",
+                  "The output must keep information from the previous chunk analysis and add the current chunk extracted information.",
+                  "Be precise and do not invent information that does not exist in the previous chunks analysis or the current chunk.",
+                  "Do not add any extra comments.",
+                  this.lollms.system_message() + answerStart
+              ].join("\n"),
+              maxGenerationSize,
+              callback
+          );
+          if (chunkSummaryPostProcessing) {
+              summary = chunkSummaryPostProcessing(summary);
+          }
+          this.stepEnd(`Summary of ${docName} - Processing chunk: ${i + 1}/${chunks.length}`);
+      }
+      return summary;
+  } else {
+      let summaries = [];
+      for (let i = 0; i < chunks.length; i++) {
+          this.stepStart(`Summary of ${docName} - Processing chunk: ${i + 1}/${chunks.length}`);
+          let summary = `${answerStart}` + await this.fastGen(
+              [
+                  `${this.lollms.system_message()}Document_chunk [${docName}]${this.lollms.system_message()}`,
+                  `${chunks[i]}`,
+                  `${this.lollms.system_message()}${summaryInstruction}`,
+                  "Answer directly with the summary with no extra comments.",
+                  `${this.lollms.system_message()}summary${this.lollms.system_message()}`,
+                  `${answerStart}`
+              ].join("\n"),
+              maxGenerationSize,
+              callback
+          );
+          if (chunkSummaryPostProcessing) {
+              summary = chunkSummaryPostProcessing(summary);
+          }
+          summaries.push(summary);
+          this.stepEnd(`Summary of ${docName} - Processing chunk: ${i + 1}/${chunks.length}`);
+      }
+      return summaries.join("\n");
+  }
+}
+
+async sequentialChunksSummary({
+  chunks,
+  summaryInstruction = "summarize",
+  docName = "chunk",
+  answerStart = "",
+  maxGenerationSize = 3000,
+  callback = null,
+  chunkSummaryPostProcessing = null
+}) {
+  let summaries = [];
+
+  for (let i = 0; i < chunks.length; i++) {
+      let chunk1 = i < chunks.length - 1 ? chunks[i + 1] : "";
+      let chunk = i > 0 ? summaries[summaries.length - 1] : chunks[i];
+
+      this.stepStart(`Summary of ${docName} - Processing chunk: ${i + 1}/${chunks.length}`);
+      let summary = `${answerStart}` + await this.fastGen(
+          [
+              `${this.lollms.system_message()}Document_chunk: ${docName}${this.lollms.system_message()}`,
+              "Block1:",
+              `${chunk}`,
+              "Block2:",
+              `${chunk1}`,
+              `${this.lollms.system_message()}${summaryInstruction}`,
+              "Answer directly with the summary with no extra comments.",
+              `${this.lollms.system_message()}summary${this.lollms.system_message()}`,
+              `${answerStart}`
+          ].join("\n"),
+          maxGenerationSize,
+          callback
+      );
+      if (chunkSummaryPostProcessing) {
+          summary = chunkSummaryPostProcessing(summary);
+      }
+      summaries.push(summary);
+      this.stepEnd(`Summary of ${docName} - Processing chunk: ${i + 1}/${chunks.length}`);
+  }
+  return summaries.join("\n");
+}
+
+// Placeholder methods for stepStart, stepEnd, fastGen
+stepStart(message) {
+  console.log(message);
+}
+
+stepEnd(message) {
+  console.log(message);
+}
+
+async fastGen(prompt, maxGenerationSize, callback) {
+  // Use the LollmsClient to generate text
+  const response = await this.lollms.generateText(prompt);
+  if (callback) callback(response);
+  return response;
+}
+
+async yesNo(question, context = "", maxAnswerLength = 50, conditioning = "") {
   /**
    * Analyzes the user prompt and answers whether it is asking to generate an image.
    *
@@ -465,7 +673,12 @@ yesNo(question, context = "", maxAnswerLength = 50, conditioning = "") {
   return this.multichoiceQuestion(question, ["no", "yes"], context, maxAnswerLength, conditioning) > 0;
 }
 
-multichoiceQuestion(question, possibleAnswers, context = "", maxAnswerLength = 50, conditioning = "") {
+printPrompt(prompt){
+  console.log(prompt);
+
+}
+
+async multichoiceQuestion(question, possibleAnswers, context = "", maxAnswerLength = 50, conditioning = "") {
   /**
    * Interprets a multi-choice question from a user's response. This function expects only one choice as true. 
    * All other choices are considered false. If none are correct, returns -1.
@@ -477,14 +690,11 @@ multichoiceQuestion(question, possibleAnswers, context = "", maxAnswerLength = 5
    * @param {string} conditioning - An optional system message to put at the beginning of the prompt.
    * @returns {number} Index of the selected option within the possibleAnswers list. Or -1 if there was no match found among any of them.
    */
-  const startHeaderIdTemplate = this.config.start_header_id_template;
-  const endHeaderIdTemplate = this.config.end_header_id_template;
-  const systemMessageTemplate = this.config.system_message_template;
 
   const choices = possibleAnswers.map((answer, index) => `${index}. ${answer}`).join("\n");
   const elements = conditioning ? [conditioning] : [];
   elements.push(
-      `${startHeaderIdTemplate}${systemMessageTemplate}${endHeaderIdTemplate}`,
+      this.lollms.system_message(),
       "Answer this multi choices question.",
       "Answer with an id from the possible answers.",
       "Do not answer with an id outside this possible answers."
@@ -492,20 +702,20 @@ multichoiceQuestion(question, possibleAnswers, context = "", maxAnswerLength = 5
 
   if (context) {
       elements.push(
-          `${startHeaderIdTemplate}context${endHeaderIdTemplate}`,
+          this.lollms.custom_message("context"),
           context
       );
   }
 
   elements.push(
-      `${startHeaderIdTemplate}question${endHeaderIdTemplate}${question}`,
-      `${startHeaderIdTemplate}possible answers${endHeaderIdTemplate}`,
+      this.lollms.custom_message(`question`)+`$${question}`,
+      this.lollms.custom_message(`possible answers`),
       choices,
-      `${startHeaderIdTemplate}answer${endHeaderIdTemplate}`
+      this.lollms.custom_message("answer")
   );
 
   const prompt = this.buildPrompt(elements);
-  const gen = this.lollms.generate(prompt, {
+  let gen = await this.lollms.generate(prompt, {
       n_predict: maxAnswerLength,
       temperature: 0.1,
       top_k: 50,
@@ -513,7 +723,8 @@ multichoiceQuestion(question, possibleAnswers, context = "", maxAnswerLength = 5
       repeat_penalty: 1.0,
       repeat_last_n: 50,
       callback: this.sink
-  }).trim().replace("", "").replace("", "");
+  })
+  gen = gen.trim().replace("", "").replace("", "");
 
   const selection = gen.trim().split(" ")[0].replace(",", "").replace(".", "");
   this.printPrompt("Multi choice selection", prompt + gen);
@@ -537,10 +748,10 @@ buildPrompt(promptParts, sacrificeId = -1, contextSize = null, minimumSpareConte
    * @returns {string} - The built prompt.
    */
   if (contextSize === null) {
-      contextSize = this.config.ctxSize;
+      contextSize = this.lollms.ctxSize;
   }
   if (minimumSpareContextSize === null) {
-      minimumSpareContextSize = this.config.minNPredict;
+      minimumSpareContextSize = this.lollms.minNPredict;
   }
 
   if (sacrificeId === -1 || promptParts[sacrificeId].length < 50) {
@@ -683,60 +894,81 @@ updateCode(originalCode, queryString) {
   };
 }
 }
-
 class LOLLMSRAGClient {
-  constructor(baseURL, apiKey) {
-      this.baseURL = baseURL;
-      this.apiKey = apiKey;
+  constructor(lc) {
+    this.lc = lc;
+    this.key = lc.service_key || this.generateRandomKey();
+    console.log("Connecting to server with key:", this.key);
+  }
+
+  generateRandomKey() {
+    // Generate a random key (UUID v4)
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
   }
 
   async request(endpoint, method = 'GET', body = null) {
-      const headers = {
-          'Authorization': this.apiKey,
-          'Content-Type': 'application/json',
-      };
-
+    try {
       const options = {
-          method,
-          headers,
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body ? JSON.stringify(body) : null,
       };
 
-      if (body) {
-          options.body = JSON.stringify(body);
-      }
-
-      const response = await fetch(`${this.baseURL}${endpoint}`, options);
+      const response = await fetch(`${this.lc.host_address}${endpoint}`, options);
+      const data = await response.json();
 
       if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(`Error: ${errorData.detail || response.statusText}`);
+        throw new Error(`Error: ${data.detail || response.statusText}`);
       }
 
-      return response.json();
+      return data;
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw new Error(`Error: ${error.message}`);
+    }
   }
 
   async addDocument(title, content, path = "unknown") {
-      const document = { title, content, path };
-      return this.request('/add_document', 'POST', document);
+    const document = { title, content, path, key: this.key };
+    return this.request('/add_document', 'POST', document);
   }
 
   async removeDocument(documentId) {
-      return this.request(`/remove_document/${documentId}`, 'POST');
+    const body = { key: this.key };
+    return this.request(`/remove_document/${documentId}`, 'POST', body);
   }
 
   async indexDatabase() {
-      return this.request('/index_database', 'POST');
-  }
+    const body = { key: this.key };
+    console.log("Sending request to index database with body:", body);
 
+    try {
+        const response = await this.request('/index_database', 'POST', body, {
+            'Content-Type': 'application/json'
+        });
+        console.log("Index database response:", response);
+        return response;
+    } catch (error) {
+        console.error("Error indexing database:", error);
+        throw error;
+    }
+  }
   async search(query) {
-      const searchQuery = { query };
-      return this.request('/search', 'POST', searchQuery);
+    const searchQuery = { query, key: this.key };
+    return this.request('/search', 'POST', searchQuery);
   }
 
   async wipeDatabase() {
-      return this.request('/wipe_database', 'DELETE');
+    const body = { key: this.key };
+    return this.request('/wipe_database', 'DELETE', body);
   }
 }
+
 
 // Example usage:
 // const ragClient = new RAGClient('http://localhost:8000', 'your_bearer_token');

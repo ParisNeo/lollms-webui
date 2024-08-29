@@ -86,7 +86,7 @@ const tasksLibrary = new TasksLibrary(lollmsClient);
 const translatedText = await tasksLibrary.translateTextChunk("Hello, world!", "french");
 console.log(translatedText);
 
-const summary = await tasksLibrary.summarizeText("This is a long text that needs to be summarized.", "short");
+const summary = await tasksLibrary.summarizeText("This is a long text that needs to be summarized.", 512);
 console.log(summary);
 ```
 
@@ -119,6 +119,7 @@ console.log(searchResults);
 
 ### LollmsClient
 
+
 - **constructor(host_address, model_name, ctx_size, personality, n_predict, temperature, top_k, top_p, repeat_penalty, repeat_last_n, seed, n_threads, service_key, default_generation_mode)**: Initializes a new LollmsClient instance.
 - **generateText(prompt, options)**: Generates text from the LoLLMs server.
 - **tokenize(prompt)**: Tokenizes the given prompt.
@@ -130,12 +131,42 @@ console.log(searchResults);
 - **openai_generate(prompt, host_address, model_name, personality, n_predict, stream, temperature, top_k, top_p, repeat_penalty, repeat_last_n, seed, n_threads, ELF_COMPLETION_FORMAT, service_key, streamingCallback)**: Generates text using the OpenAI generation mode.
 - **listMountedPersonalities(host_address)**: Lists mounted personalities.
 - **listModels(host_address)**: Lists available models.
+- **updateSettings(settings)**: Updates multiple settings of the LollmsClient instance at once.
+  - Format: An object containing key-value pairs of settings to update.
+  - Important elements:
+    - `host_address` (string): The URL of the LoLLMs server (e.g., 'http://localhost:9600').
+    - `ctx_size` (number): The context size for the AI model, typically a power of 2 (e.g., 2048, 4096).
+    - `n_predict` (number): The number of tokens to predict, usually matching or smaller than the context size.
+  - Example usage:
+    ```javascript
+    lollmsClient.updateSettings({
+      host_address: 'http://localhost:9600',
+      ctx_size: 4096,
+      n_predict: 2048,
+      personality: 1,
+      temperature: 0.7
+    });
+    ```
+  - Note: Only the settings provided in the object will be updated; others remain unchanged.
+
+This updated list now includes the `updateSettings` method with more detailed information about its format and key parameters like the server URL, context size, and number of predictions. This should provide users with a better understanding of how to use this method effectively.
 
 ### TasksLibrary
 
 - **constructor(lollms)**: Initializes a new TasksLibrary instance.
 - **translateTextChunk(textChunk, outputLanguage, host_address, model_name, temperature, maxGenerationSize)**: Translates a text chunk to the specified language.
-- **summarizeText(textChunk, summaryLength, host_address, model_name, temperature, maxGenerationSize)**: Summarizes a text chunk.
+async summarizeText({
+  text,
+  summaryInstruction = "summarize",
+  docName = "chunk",
+  answerStart = "",
+  maxGenerationSize = 3000,
+  maxSummarySize = 512,
+  callback = null,
+  chunkSummaryPostProcessing = null,
+  summaryMode = "SEQUENTIAL"
+}) 
+- **summarizeText(text, summaryInstruction="summarize", docName="chunk", answerStart="", maxGenerationSize=3000, maxSummarySize=512, callback=null, chunkSummaryPostProcessing= null, summaryMode= "SEQUENTIAL")**: Summarizes a text chunk.
 - **yesNo(question, context, maxAnswerLength, conditioning)**: Determines if a question is asking for a yes/no answer.
 - **multichoiceQuestion(question, possibleAnswers, context, maxAnswerLength, conditioning)**: Interprets a multi-choice question.
 - **buildPrompt(promptParts, sacrificeId, contextSize, minimumSpareContextSize)**: Builds a prompt for code generation.
