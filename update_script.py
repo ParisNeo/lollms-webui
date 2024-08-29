@@ -1,4 +1,3 @@
-
 import os
 import sys
 import git
@@ -6,51 +5,91 @@ import subprocess
 import argparse
 from pathlib import Path
 from ascii_colors import ASCIIColors, trace_exception
+import tkinter as tk
+from tkinter import messagebox
+
+def show_error_dialog(message):
+    root = tk.Tk()
+    root.withdraw()  # Hide the main window
+    messagebox.showerror("Error", message)
+    root.destroy()
 
 def run_git_pull():
     try:
-        print("----------------> Updating the code <-----------------------")
+        ASCIIColors.info("----------------> Updating the code <-----------------------")
         
         repo = git.Repo(Path(__file__).parent)
         origin = repo.remotes.origin
-        origin.pull()
+        
+        # Fetch the latest changes
+        origin.fetch()
+        
+        # Check if there are any changes to pull
+        if repo.head.commit == origin.refs.main.commit:
+            ASCIIColors.success("Already up-to-date.")
+            return True
+        
+        # Discard local changes and force update
+        try:
+            repo.git.reset('--hard', 'origin/main')
+            repo.git.clean('-fd')
+            origin.pull()
+            ASCIIColors.success("Successfully updated the code.")
+        except git.GitCommandError as e:
+            error_message = f"Failed to update the code: {str(e)}"
+            ASCIIColors.error(error_message)
+            show_error_dialog(error_message)
+            return False
+
         print("Updating submodules")
         try:
-            repo.git.submodule('update', '--init')
+            repo.git.submodule('update', '--init', '--recursive', '--force')
             # Checkout the main branch on each submodule
             for submodule in repo.submodules:
                 try:
                     submodule_repo = submodule.module()
-                    submodule_repo.git.checkout('main')
-                    print(f"Checking out main from {submodule}")
-                    submodule.repo.git.submodule('update', '--remote', submodule.name)  # Force submodule update
-                    print(f"Forcing update on {submodule}")
-                    submodule_repo.git.checkout('main')
-
+                    submodule_repo.git.fetch('origin')
+                    submodule_repo.git.reset('--hard', 'origin/main')
+                    submodule_repo.git.clean('-fd')
+                    print(f"Updated submodule: {submodule}.\nPlease report the error to ParisNeo either on Discord or on github.")
                 except Exception as ex:
-                    print(f"Couldn't checkout module {submodule}")
-                    
+                    print(f"Couldn't update submodule {submodule}: {str(ex)}")
+            
             execution_path = Path(os.getcwd())
 
-            # Clone the repository to the target path
-            ASCIIColors.info("Lollms_core found in the app space.\nPulling last lollms_core")
-            subprocess.run(["git", "-C", str(execution_path/"lollms_core"), "pull"])            
-              
+            # Update lollms_core
+            ASCIIColors.info("Updating lollms_core")
+            lollms_core_path = execution_path / "lollms_core"
+            if lollms_core_path.exists():
+                subprocess.run(["git", "-C", str(lollms_core_path), "fetch", "origin"], check=True)
+                subprocess.run(["git", "-C", str(lollms_core_path), "reset", "--hard", "origin/main"], check=True)
+                subprocess.run(["git", "-C", str(lollms_core_path), "clean", "-fd"], check=True)
+                ASCIIColors.success("Successfully updated lollms_core")
+            else:
+                ASCIIColors.warning("lollms_core directory not found")
                     
         except Exception as ex:
-            print("Couldn't update submodules")
-            print(ex)
+            error_message = f"Couldn't update submodules: {str(ex)}"
+            ASCIIColors.error(error_message)
+            show_error_dialog(error_message)
+            return False
+
         return True
-    except git.GitCommandError as e:
-        print(f"Error during git pull: {e}")
+    except Exception as e:
+        error_message = f"Error during git operations: {str(e)}"
+        ASCIIColors.error(error_message)
+        show_error_dialog(error_message)
         return False
 
 def install_requirements():
     try:
-        subprocess.check_call(["pip", "install", "--upgrade", "-r", "requirements.txt"])
-        subprocess.check_call(["pip", "install", "--upgrade", "-e", "lollms_core"])
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "-r", "requirements.txt"])
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "-e", "lollms_core"])
+        ASCIIColors.success("Successfully installed requirements")
     except subprocess.CalledProcessError as e:
-        print(f"Error during pip install: {e}")
+        error_message = f"Error during pip install: {str(e)}"
+        ASCIIColors.error(error_message)
+        show_error_dialog(error_message)
 
 def main():
     parser = argparse.ArgumentParser()
@@ -60,24 +99,31 @@ def main():
     repo_path = args.repo
 
     # Perform git pull to update the repository
-    run_git_pull()
+    if run_git_pull():
+        # Install the new requirements
+        install_requirements()
 
-    # Install the new requirements
-    install_requirements()
-
-    # Reload the main script with the original arguments
-    temp_file = "temp_args.txt"
-    if os.path.exists(temp_file):
-        with open(temp_file, "r") as file:
-            args = file.read().split()
-        main_script = "app.py"  # Replace with the actual name of your main script
-        os.system(f"python {main_script} {' '.join(args)}")
-        try:
-            os.remove(temp_file)
-        except:
-            print(f"Couldn't remove temp file.\nTry to remove it manually.\nLe fichier se trouve ici: {temp_file}")
+        # Reload the main script with the original arguments
+        temp_file = "temp_args.txt"
+        if os.path.exists(temp_file):
+            with open(temp_file, "r") as file:
+                args = file.read().split()
+            main_script = "app.py"  # Replace with the actual name of your main script
+            os.system(f"{sys.executable} {main_script} {' '.join(args)}")
+            try:
+                os.remove(temp_file)
+            except Exception as e:
+                error_message = f"Couldn't remove temp file. Try to remove it manually.\nThe file is located here: {temp_file}\nError: {str(e)}"
+                ASCIIColors.warning(error_message)
+        else:
+            error_message = "Error: Temporary arguments file not found."
+            ASCIIColors.error(error_message)
+            show_error_dialog(error_message)
+            sys.exit(1)
     else:
-        print("Error: Temporary arguments file not found.")
+        error_message = "Update process failed. Please check the console for more details."
+        ASCIIColors.error(error_message)
+        show_error_dialog(error_message)
         sys.exit(1)
 
 if __name__ == "__main__":

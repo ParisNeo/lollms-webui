@@ -254,10 +254,10 @@ class LOLLMSWebUI(LOLLMSElfServer):
     def check_update_(self, branch_name="main"):
         try:
             # Open the repository
-            repo_path = str(Path(__file__).parent)
+            repo_path = str(Path(__file__).parent/"lollms_core")
             if self.check_module_update_(repo_path, branch_name):
                 return True
-            repo_path = str(Path(__file__).parent/"lollms_core")
+            repo_path = str(Path(__file__).parent)
             if self.check_module_update_(repo_path, branch_name):
                 return True
             return False
