@@ -2,7 +2,7 @@ colorama
 datasets
 einops
 jinja2==3.1.4
-numpy==1.24.*
+numpy>=1.26.*
 pandas
 Pillow>=9.5.0
 pyyaml
@@ -12,7 +12,7 @@ safetensors==0.4.1
 scipy
 sentencepiece
 tensorboard
-transformers==4.37.*
+transformers>=4.37.*
 tqdm
 setuptools
 tqdm
