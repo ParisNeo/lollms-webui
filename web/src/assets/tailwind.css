@@ -32,7 +32,7 @@
 }
 
 h1 {
-  @apply text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400;
+  @apply text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-400 dark:to-blue-500;
 }
 
 h2 {
@@ -90,20 +90,20 @@ textarea, input, select {
 }
 
 .background-color {
-  @apply bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 min-h-screen;
+  @apply bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-800 dark:to-blue-900 min-h-screen;
 }
 
 .toolbar-color {
   @apply  text-gray-700 dark:text-gray-50 bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg
 }
 .panels-color {
-  @apply  text-gray-700 dark:text-gray-50 bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded shadow-lg
+  @apply text-gray-700 dark:text-gray-50 bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-800 dark:to-blue-900 rounded shadow-lg;
 }
 .unicolor-panels-color {
   @apply bg-blue-200 dark:bg-blue-800
 }
 .chatbox-color {
-  @apply bg-gradient-to-br from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800
+  @apply bg-gradient-to-br from-blue-200 to-blue-300 dark:from-blue-800 dark:to-blue-900
 }
 .message {
   @apply relative w-full rounded-lg m-2 shadow-lg border-2 border-transparent 
@@ -114,18 +114,18 @@ textarea, input, select {
 }
 /* Light theme */
 .message:nth-child(even) {
-  @apply bg-gradient-to-br from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800;
+  @apply bg-gradient-to-br from-blue-200 to-blue-300 dark:from-blue-800 dark:to-blue-800;
 }
 
 .message:nth-child(odd) {
-  @apply bg-gradient-to-br from-blue-300 to-purple-300 dark:from-blue-900 dark:to-purple-900;
+  @apply bg-gradient-to-br from-blue-300 to-blue-400 dark:from-blue-800 dark:to-blue-900;
 }
 
 .discussion{
-  @apply mr-2 bg-gradient-to-r from-blue-300 to-purple-300 dark:from-blue-900 dark:to-purple-900 hover:from-blue-100 hover:to-purple-100 hover:dark:from-blue-700 hover:dark:to-purple-700
+  @apply mr-2 bg-gradient-to-r from-blue-300 to-blue-400 dark:from-blue-800 dark:to-blue-900 hover:from-blue-100 hover:to-purple-100 hover:dark:from-blue-700 hover:dark:to-purple-700
 }
 .discussion-hilighted{
-  @apply bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 hover:from-blue-100 hover:to-purple-100 hover:dark:from-blue-700 hover:dark:to-purple-700
+  @apply bg-gradient-to-r from-blue-200 to-blue-300 dark:from-blue-800 dark:to-blue-900 hover:from-blue-100 hover:to-purple-100 hover:dark:from-blue-700 hover:dark:to-purple-700
 }
 
 
@@ -185,20 +185,25 @@ body {
   @apply text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300;
 }
 .navbar-container {
-  @apply  text-gray-700 dark:text-gray-50 bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded shadow-lg
+  @apply  text-gray-700 dark:text-gray-50 bg-gradient-to-r from-blue-200 to-blue-300 dark:from-blue-800 dark:to-blue-900 rounded shadow-lg
 }
 
 .game-menu {
   @apply flex justify-center items-center relative;
 }
+
+.text-shadow-custom {
+  text-shadow: 1px 1px 0px white, -1px -1px 0px white, 1px -1px 0px white, -1px 1px 0px white;
+}
+
 .menu-item {
-  @apply px-4 py-2 text-gray-800 dark:text-gray-100 font-bold text-lg transition-all duration-300 ease-in-out;
+  @apply mb-2 px-4 py-2 text-red-600 dark:text-red-300 font-bold text-lg transition-all duration-300 ease-in-out;
   @apply hover:text-gray-500 hover:dark:text-gray-50 hover:transform hover:-translate-y-1;
 }
 
 .menu-item.active-link {
-  @apply px-4 py-2 text-gray-800 dark:text-gray-100 font-bold text-lg transition-all duration-300 ease-in-out scale-105;
-  @apply hover:text-gray-500 hover:dark:text-gray-50 hover:transform hover:-translate-y-1;
+  @apply rounded-t-md border-red-500 text-shadow-custom text-red-600 font-bold text-lg transition-all duration-300 ease-in-out scale-105;
+  @apply hover:text-red-600 hover:dark:text-gray-50 hover:transform hover:-translate-y-1;
   /* Glow effect on text */
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
@@ -237,7 +242,7 @@ body {
 
 
 .app-card {
-  @apply transition-all duration-300 ease-in-out bg-gradient-to-br from-blue-200 to-purple-300 dark:from-blue-800 dark:to-purple-800 text-gray-800 dark:text-gray-100 shadow-md hover:shadow-lg;
+  @apply transition-all duration-300 ease-in-out bg-gradient-to-br from-blue-200 to-blue-300 dark:from-blue-800 dark:to-blue-900 text-gray-800 dark:text-gray-100 shadow-md hover:shadow-lg;
 }
 
 .app-card:hover {

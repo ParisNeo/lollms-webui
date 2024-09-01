@@ -12,8 +12,9 @@
           <h3 class="font-bold text-xl text-gray-800 cursor-pointer" @click="toggleSelected">{{ personality.name }}</h3>
           <p class="text-sm text-gray-600">Author: {{ personality.author }}</p>
           <p class="text-sm text-gray-600">Version: {{ personality.version }}</p>
-          <p v-if="personality.language" class="text-sm text-gray-600">Language: {{ personality.language }}</p>
           <p class="text-sm text-gray-600">Category: {{ personality.category }}</p>
+          <p v-if="personality.creation_date" class="text-sm text-gray-600">Creation Date: {{ formatDate(personality.creation_date) }}</p>
+          <p v-if="personality.last_update_date" class="text-sm text-gray-600">Last update Date: {{ formatDate(personality.last_update_date) }}</p>
         </div>
       </div>
 
@@ -22,15 +23,6 @@
         <p class="text-sm text-gray-600 h-20 overflow-y-auto" v-html="personality.description"></p>
       </div>
 
-      <div v-if="personality.languages && select_language" class="mb-4">
-        <label for="languages" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select Language:</label>
-        <select v-if="!isMounted" id="languages" v-model="personality.language"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-          <option v-for="(item, index) in personality.languages" :key="index" :selected="item == personality.languages[0]">
-            {{ item }}
-          </option>
-        </select>
-      </div>
     </div>
 
     <div class="mt-auto pt-4 border-t">
@@ -134,6 +126,10 @@ export default {
     })
   },
   methods: {
+    formatDate(dateString) {
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+    },    
     showThumbnail() {
       this.thumbnailVisible = true;
     },

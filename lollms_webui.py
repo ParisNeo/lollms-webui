@@ -496,47 +496,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
         return mounted_personalities
     
 
-    def rebuild_extensions(self, reload_all=False):
-        if reload_all:
-            self.mounted_extensions=[]
-
-        loaded = self.mounted_extensions
-        loaded_names = [f"{p.category}/{p.extension_folder_name}" for p in loaded]
-        mounted_extensions=[]
-        ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
-        ASCIIColors.success(f" ║           Building mounted Extensions            ║ ")
-        ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
-        to_remove=[]
-        for i,extension in enumerate(self.config['extensions']):
-            ASCIIColors.yellow(f" {extension}")
-            if extension in loaded_names:
-                mounted_extensions.append(loaded[loaded_names.index(extension)])
-            else:
-                extension_path = self.lollms_paths.extensions_zoo_path/f"{extension}" 
-                try:
-                    extension = ExtensionBuilder().build_extension(extension_path,self.lollms_paths, self)
-                    mounted_extensions.append(extension)
-                except Exception as ex:
-                    ASCIIColors.error(f"Extension file not found or is corrupted ({extension_path}).\nReturned the following exception:{ex}\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure.")
-                    trace_exception(ex)
-                    ASCIIColors.info("Trying to force reinstall")
-                    if self.config["debug"]:
-                        print(ex)
-        ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
-        ASCIIColors.success(f" ║                      Done                        ║ ")
-        ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
-        # Sort the indices in descending order to ensure correct removal
-        to_remove.sort(reverse=True)
-
-        # Remove elements from the list based on the indices
-        for index in to_remove:
-            if 0 <= index < len(mounted_extensions):
-                mounted_extensions.pop(index)
-                self.config["extensions"].pop(index)
-                ASCIIColors.info(f"removed personality {extension_path}")
-
-            
-        return mounted_extensions
     # ================================== LOLLMSApp
 
     #properties

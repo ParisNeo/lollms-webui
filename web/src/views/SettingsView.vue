@@ -5278,7 +5278,7 @@ export default {
             await axios.post("/copy_to_custom_personas",{client_id:this.$store.state.client_id, category: pers.personality.category, name: pers.personality.name})
         },
         async handleOpenFolder(pers){
-            await axios.post("/open_personality_folder",{client_id:this.$store.state.client_id, personality_folder: pers.personality.folder})
+            await axios.post("/open_personality_folder",{client_id:this.$store.state.client_id, personality_folder: pers.personality.category/pers.personality.folder})
         },
         onCancelInstall() {
 
