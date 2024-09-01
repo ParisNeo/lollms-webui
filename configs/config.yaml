@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 135
+version: 136
 binding_name: null
 model_name: null
 model_variant: null
@@ -269,8 +269,8 @@ audio_silenceTimer: 5000
 
 # Data vectorization
 rag_databases: [] # This is the list of paths to database sources. Each database is a folder containing data
-rag_vectorizer: bert # possible values bert, tfidf, word2vec
-rag_vectorizer_model: bert-base-nli-mean-tokens # The model name if applicable
+rag_vectorizer: semantic # possible values semantic, tfidf, openai
+rag_vectorizer_model: sentence-transformers/bert-base-nli-mean-tokens # The model name if applicable
 rag_vectorizer_parameters: null # Parameters of the model in json format
 rag_chunk_size: 512 # number of tokens per chunk
 rag_overlap: 0 # number of tokens of overlap
@@ -285,6 +285,7 @@ rag_min_nb_tokens_in_chunk: 10 #this removed any useless junk ith less than x to
 rag_max_n_hops: 3 #We set the maximum number of hop in multi hops rag
 
 rag_deactivate: false # if you have a large context model, you can activate this to use your document as a whole
+rag_vectorizer_openai_key: "" # The open ai key (if not provided, this will use the environment varaible OPENAI_API_KEY)
 
 contextual_summary: false #If activated this will completely replace the rag and instead will use contextual summary
 

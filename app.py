@@ -64,9 +64,9 @@ def check_and_install_package(package: str, version: str):
         ASCIIColors.red(f"Error checking/installing {package}: {str(e)}")
 
 packages: List[Tuple[str, str]] = [
-    ("lollmsvectordb", "0.8.3"),
+    ("lollmsvectordb", "1.0.2"),
     ("freedom_search", "0.1.9"),
-    ("scrapemaster", "0.1.6"),
+    ("scrapemaster", "0.2.0"),
     ("lollms_client", "0.6.2")
 ]
 
@@ -210,6 +210,12 @@ if __name__ == "__main__":
 
 
     sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=allowed_origins, ping_timeout=1200, ping_interval=30)  # Enable CORS for selected origins
+
+
+    # A simple fix for v 11.0 to 12 alpha
+    if config.rag_vectorizer=="bert":
+        config.rag_vectorizer="semantic"
+        config.save_config()
 
     LOLLMSWebUI.build_instance(config=config, lollms_paths=lollms_paths, args=args, sio=sio)
     lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()

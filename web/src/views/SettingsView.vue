@@ -1134,15 +1134,15 @@
                             </td>
                             <td>
                                 <select
-                                id="rag_vectorizer"
-                                required
-                                v-model="configFile.rag_vectorizer"
-                                @change="settingsChanged=true"
-                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    id="rag_vectorizer"
+                                    required
+                                    v-model="configFile.rag_vectorizer"
+                                    @change="settingsChanged=true"
+                                    class="w-full mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
                                 >
-                                    <option value="bert">Bert Vectorizer</option>
+                                    <option value="semantic">Semantic Vectorizer</option>
                                     <option value="tfidf">TFIDF Vectorizer</option>
-                                    <option value="word2vec">Word2Vec Vectorizer</option>
+                                    <option value="openai">OpenAI Vectorizer</option>
                                 </select>
                             </td>
                         </tr>
@@ -1152,16 +1152,65 @@
                             </td>
                             <td>
                                 <select
-                                id="rag_vectorizer_model"
-                                required
-                                v-model="configFile.rag_vectorizer_model"
-                                @change="settingsChanged=true"
-                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    id="rag_vectorizer_model"
+                                    required
+                                    v-model="configFile.rag_vectorizer_model"
+                                    @change="settingsChanged=true"
+                                    class="w-full mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                    :disabled="configFile.rag_vectorizer === 'tfidf'"
                                 >
-                                    <option value="bert-base-nli-mean-tokens">bert-base-nli-mean-tokens</option>
+                                    <!-- Semantic Vectorizer Models -->
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="sentence-transformers/bert-base-nli-mean-tokens">sentence-transformers/bert-base-nli-mean-tokens</option>
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="bert-base-uncased">bert-base-uncased</option>
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="bert-base-multilingual-uncased">bert-base-multilingual-uncased</option>
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="bert-large-uncased">bert-large-uncased</option>
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="bert-large-uncased-whole-word-masking-finetuned-squad">bert-large-uncased-whole-word-masking-finetuned-squad</option>
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="distilbert-base-uncased">distilbert-base-uncased</option>
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="roberta-base">roberta-base</option>
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="roberta-large">roberta-large</option>
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="xlm-roberta-base">xlm-roberta-base</option>
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="xlm-roberta-large">xlm-roberta-large</option>
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="albert-base-v2">albert-base-v2</option>
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="albert-large-v2">albert-large-v2</option>
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="albert-xlarge-v2">albert-xlarge-v2</option>
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="albert-xxlarge-v2">albert-xxlarge-v2</option>
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="sentence-transformers/all-MiniLM-L6-v2">sentence-transformers/all-MiniLM-L6-v2</option>
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="sentence-transformers/all-MiniLM-L12-v2">sentence-transformers/all-MiniLM-L12-v2</option>
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="sentence-transformers/all-distilroberta-v1">sentence-transformers/all-distilroberta-v1</option>
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="sentence-transformers/all-mpnet-base-v2">sentence-transformers/all-mpnet-base-v2</option>
+
+                                    <!-- OpenAI Vectorizer Models -->
+                                    <option v-if="configFile.rag_vectorizer === 'openai'" value="text-embedding-ada-002">text-embedding-ada-002</option>
+                                    <option v-if="configFile.rag_vectorizer === 'openai'" value="text-embedding-babbage-001">text-embedding-babbage-001</option>
+                                    <option v-if="configFile.rag_vectorizer === 'openai'" value="text-embedding-curie-001">text-embedding-curie-001</option>
+                                    <option v-if="configFile.rag_vectorizer === 'openai'" value="text-embedding-davinci-001">text-embedding-davinci-001</option>
+
+                                    <!-- Disabled Option for TFIDF -->
+                                    <option v-if="configFile.rag_vectorizer === 'tfidf'" disabled>No models available for TFIDF</option>
                                 </select>
                             </td>
-                            </tr>                        
+                        </tr>                
+                        
+                        
+
+                        <tr>
+                            <td style="min-width: 200px;">
+                                <label for="rag_vectorizer_openai_key" class="text-sm font-bold" style="margin-right: 1rem;">Open AI key for open ai embedding method (if not provided I'll use OPENAI_API_KEY environment variable):</label>
+                            </td>
+                            <td>
+                                <div class="flex flex-row">
+                                <input
+                                type="text"
+                                id="rag_vectorizer_openai_key"
+                                required
+                                v-model="configFile.rag_vectorizer_openai_key"
+                                @change="settingsChanged=true"
+                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+                                </div>
+                            </td>
+                        </tr> 
+
                             <tr>
                             <td style="min-width: 200px;">
                                 <label for="rag_chunk_size" class="text-sm font-bold" style="margin-right: 1rem;">RAG chunk size:</label>

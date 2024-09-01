@@ -1,60 +1,64 @@
 <template>
-    <transition name="fade-and-fly">
-        <div v-if="!isReady" class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 overflow-hidden">
-        <!-- Falling stars -->
-        <div class="absolute inset-0 pointer-events-none overflow-hidden">
-            <div v-for="n in 50" :key="n" class="absolute animate-fall"
-                :style="{
-                left: `${Math.random() * 100}%`,
-                top: `-20px`,
-                animationDuration: `${3 + Math.random() * 7}s`,
-                animationDelay: `${Math.random() * 5}s`
-                }">
-            <svg class="w-2 h-2 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
-            </div>
-        </div>
-
-        <div class="flex flex-col items-center text-center max-w-4xl w-full px-4 relative z-10">
-            <div class="mb-8 w-full">
-            <h1 class="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 mb-2 animate-glow">
-                LoLLMS
-            </h1>
-            <p class="text-2xl text-gray-600 dark:text-gray-300 italic">
-                One tool to rule them all
-            </p>
-            <p class="text-xl text-gray-500 dark:text-gray-400 mb-6">
-                by ParisNeo
-            </p>
-            <p class="bottom-0 text-2xl text-gray-600 dark:text-gray-300 italic">
-                {{ version_info }}
-            </p>
-
-            <div class="w-full h-24 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg">
-                <img 
-                class="w-24 h-24 animate-glow rounded-full absolute top-0 transition-all duration-300 ease-linear"
-                :style="{ left: `calc(${loading_progress}% - 3rem)` }"
-                title="LoLLMS WebUI" 
-                src="@/assets/logo.png" 
-                alt="Logo"
-                >
-            </div>
-            </div>
-            
-            <div class="w-full max-w-2xl">
-            <div role="status" class="w-full">
-                <p class="text-xl text-gray-700 dark:text-gray-300">
-                {{ loading_infos }}...
-                </p>
-                <p class="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">
-                {{ Math.round(loading_progress) }}%
-                </p>
-            </div>
-            </div>
+<transition name="fade-and-fly">
+    <div v-if="!isReady" class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 overflow-hidden">
+    <!-- Falling strawberries -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden">
+        <div v-for="n in 50" :key="n" class="absolute animate-fall animate-giggle"
+            :style="{
+            left: `${Math.random() * 100}%`,
+            top: `-20px`,
+            animationDuration: `${3 + Math.random() * 7}s`,
+            animationDelay: `${Math.random() * 5}s`
+            }">
+        <img 
+            src="@/assets/strawberry.png" 
+            alt="Falling Strawberry" 
+            class="w-6 h-6"
+        />
         </div>
     </div>
-    </transition>
+
+    <div class="flex flex-col items-center text-center max-w-4xl w-full px-4 relative z-10">
+        <div class="mb-8 w-full">
+        <h1 class="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 mb-2 animate-glow">
+            LoLLMS
+        </h1>
+        <p class="text-2xl text-gray-600 dark:text-gray-300 italic">
+            One tool to rule them all
+        </p>
+        <p class="text-xl text-gray-500 dark:text-gray-400 mb-6">
+            by ParisNeo
+        </p>
+        <p class="bottom-0 text-2xl text-gray-600 dark:text-gray-300 italic">
+            {{ version_info }}
+        </p>
+
+        <div class="w-full h-24 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg">
+            <img 
+            class="w-24 h-24 animate-glow rounded-full absolute top-0 transition-all duration-300 ease-linear"
+            :style="{ left: `calc(${loading_progress}% - 3rem)` }"
+            title="LoLLMS WebUI" 
+            src="@/assets/strawberry.png" 
+            alt="Strawberry Logo"
+            >
+        </div>
+        </div>
+        
+        <div class="w-full max-w-2xl">
+        <div role="status" class="w-full">
+            <p class="text-xl text-gray-700 dark:text-gray-300">
+            {{ loading_infos }}...
+            </p>
+            <p class="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">
+            {{ Math.round(loading_progress) }}%
+            </p>
+        </div>
+        </div>
+    </div>
+</div>
+</transition>
+
+
 
     <button v-if="isReady" @click="togglePanel" class="absolute top-2 left-2 p-3 bg-white bg-opacity-0 cursor-pointer transition-all duration-300 hover:scale-110 hover:bg-opacity-20 hover:shadow-xl group">
                     <div v-show="leftPanelCollapsed" ><i data-feather='chevron-right'></i></div>
@@ -378,6 +382,25 @@
 
 
 <style scoped>
+@keyframes giggle {
+    0%, 100% {
+        transform: translateX(0) rotate(0deg) scale(1);
+    }
+    25% {
+        transform: translateX(-5px) rotate(-10deg) scale(1.05);
+    }
+    50% {
+        transform: translateX(5px) rotate(10deg) scale(0.95);
+    }
+    75% {
+        transform: translateX(-5px) rotate(-10deg) scale(1.05);
+    }
+}
+
+.animate-giggle {
+    animation: giggle 1.5s infinite ease-in-out;
+}
+
 .custom-scrollbar {
 scrollbar-width: thin;
 scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
