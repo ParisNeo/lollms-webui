@@ -19,7 +19,7 @@ echo "  \:\  \    \:\  /:/  /   \:\  \    \:\  \         /:/  /   \:\ \:\__\   "
 echo "   \:\  \    \:\/:/  /     \:\  \    \:\  \       /:/  /     \:\/:/  /   "
 echo "    \:\__\    \::/  /       \:\__\    \:\__\     /:/  /       \::/  /    "
 echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
-echo "V9.5"
+echo "V12"
 echo "-----------------"
 echo "By ParisNeo"
 echo "-----------------"
@@ -193,7 +193,7 @@ ln -s lollms-webui/scripts/macos/macos_run.sh macos_run.sh
 ln -s lollms-webui/scripts/macos/macos_conda_session.sh macos_conda_session.sh 
 
 echo "Select the default binding to be installed:"
-options=("None (install the binding later)" "Local binding - ollama" "Local binding - python_llama_cpp" "Local binding - bs_exllamav2" "Remote binding - open_router" "Remote binding - open_ai" "Remote binding - mistral_ai")
+options=("None (install the binding later)" "Local binding - ollama" "Local binding - python_llama_cpp" "Local binding - bs_exllamav2" "Remote binding - open_router" "Remote binding - open_ai" "Remote binding - mistral_ai" "Remote binding - gemini" "Remote binding - xAI" "Remote binding - groq")
 
 select opt in "${options[@]}"
 do
@@ -203,27 +203,39 @@ do
             break
             ;;
         "Local binding - ollama")
-            python3 zoos/bindings_zoo/ollama/__init__.py
+            python zoos/bindings_zoo/ollama/__init__.py
             break
             ;;
         "Local binding - python_llama_cpp")
-            python3 zoos/bindings_zoo/python_llama_cpp/__init__.py
+            python zoos/bindings_zoo/python_llama_cpp/__init__.py
             break
             ;;
         "Local binding - bs_exllamav2")
-            python3 zoos/bindings_zoo/bs_exllamav2/__init__.py
+            python zoos/bindings_zoo/bs_exllamav2/__init__.py
             break
             ;;
         "Remote binding - open_router")
-            python3 zoos/bindings_zoo/open_router/__init__.py
+            python zoos/bindings_zoo/open_router/__init__.py
             break
             ;;
         "Remote binding - open_ai")
-            python3 zoos/bindings_zoo/open_ai/__init__.py
+            python zoos/bindings_zoo/open_ai/__init__.py
             break
             ;;
         "Remote binding - mistral_ai")
-            python3 zoos/bindings_zoo/mistral_ai/__init__.py
+            python zoos/bindings_zoo/mistral_ai/__init__.py
+            break
+            ;;
+        "Remote binding - gemini")
+            python zoos/bindings_zoo/gemini/__init__.py
+            break
+            ;;
+        "Remote binding - xAI")
+            python zoos/bindings_zoo/xAI/__init__.py
+            break
+            ;;
+        "Remote binding - groq")
+            python zoos/bindings_zoo/xAI/__init__.py
             break
             ;;
         *) echo "Invalid option $REPLY";;

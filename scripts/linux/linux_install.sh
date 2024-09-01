@@ -14,7 +14,7 @@ echo "  \:\  \    \:\  /:/  /   \:\  \    \:\  \         /:/  /   \:\ \:\__\   "
 echo "   \:\  \    \:\/:/  /     \:\  \    \:\  \       /:/  /     \:\/:/  /   "
 echo "    \:\__\    \::/  /       \:\__\    \:\__\     /:/  /       \::/  /    "
 echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
-echo "V9.5"
+echo "V12"
 echo "-----------------"
 echo "By ParisNeo"
 echo "-----------------"
@@ -150,7 +150,7 @@ mkdir -p $INSTALL_ENV_DIR/bin
 
 
 echo "Select the default binding to be installed:"
-options=("None (install the binding later)" "Local binding - ollama" "Local binding - python_llama_cpp" "Local binding - bs_exllamav2" "Remote binding - open_router" "Remote binding - open_ai" "Remote binding - mistral_ai")
+options=("None (install the binding later)" "Local binding - ollama" "Local binding - python_llama_cpp" "Local binding - bs_exllamav2" "Remote binding - open_router" "Remote binding - open_ai" "Remote binding - mistral_ai" "Remote binding - gemini" "Remote binding - xAI" "Remote binding - groq")
 
 select opt in "${options[@]}"
 do
@@ -181,6 +181,18 @@ do
             ;;
         "Remote binding - mistral_ai")
             python zoos/bindings_zoo/mistral_ai/__init__.py
+            break
+            ;;
+        "Remote binding - gemini")
+            python zoos/bindings_zoo/gemini/__init__.py
+            break
+            ;;
+        "Remote binding - xAI")
+            python zoos/bindings_zoo/xAI/__init__.py
+            break
+            ;;
+        "Remote binding - groq")
+            python zoos/bindings_zoo/xAI/__init__.py
             break
             ;;
         *) echo "Invalid option $REPLY";;
