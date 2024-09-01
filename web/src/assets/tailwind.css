@@ -90,7 +90,7 @@ textarea, input, select {
 }
 
 .background-color {
-  @apply bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-800 dark:to-blue-900 min-h-screen;
+  @apply bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-900 min-h-screen;
 }
 
 .toolbar-color {
@@ -125,7 +125,7 @@ textarea, input, select {
   @apply mr-2 bg-gradient-to-r from-blue-300 to-blue-400 dark:from-blue-800 dark:to-blue-900 hover:from-blue-100 hover:to-purple-100 hover:dark:from-blue-700 hover:dark:to-purple-700
 }
 .discussion-hilighted{
-  @apply bg-gradient-to-r from-blue-200 to-blue-300 dark:from-blue-800 dark:to-blue-900 hover:from-blue-100 hover:to-purple-100 hover:dark:from-blue-700 hover:dark:to-purple-700
+  @apply bg-gradient-to-r from-blue-200 to-purple-300 dark:from-blue-800 dark:to-purple-900 hover:from-blue-100 hover:to-purple-100 hover:dark:from-blue-700 hover:dark:to-purple-700
 }
 
 
