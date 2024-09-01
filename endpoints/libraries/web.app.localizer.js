@@ -95,7 +95,7 @@ class WebAppLocalizer {
     // helper functions
     // A format prompt function
     formatPrompt(prompt_name, values) {
-        return this.translations[this.lang].promptTranslations[prompt_name].replace(/\{(\w+)\}/g, (match, key) => values[key] || match);
+        return this.translations[this.currentLang].promptTranslations[prompt_name].replace(/\{(\w+)\}/g, (match, key) => values[key] || match);
     }
 }
 
