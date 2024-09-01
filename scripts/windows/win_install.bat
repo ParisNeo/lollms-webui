@@ -126,9 +126,16 @@ echo 1) None (install the binding later)
 echo 2) Local binding - ollama
 echo 3) Local binding - python_llama_cpp
 echo 4) Local binding - bs_exllamav2
-echo 5) Remote binding - open_router
-echo 6) Remote binding - open_ai
-echo 7) Remote binding - mistral_ai
+echo 5) Remote binding - groq
+echo 6) Remote binding - open_router
+echo 7) Remote binding - open_ai
+echo 8) Remote binding - mistral_ai
+echo 9) Remote binding - gemini
+echo 10) Remote binding - vllm
+echo 11) Remote binding - xAI
+echo 12) Remote binding - elf
+echo 13) Remote binding - remote lollms
+
 echo.
 set /p choice="Type the number of your choice and press Enter: "
 
@@ -136,9 +143,17 @@ if "%choice%"=="1" goto :none
 if "%choice%"=="2" goto :ollama
 if "%choice%"=="3" goto :python_llama_cpp
 if "%choice%"=="4" goto :bs_exllamav2
-if "%choice%"=="5" goto :open_router
-if "%choice%"=="6" goto :open_ai
-if "%choice%"=="7" goto :mistral_ai
+if "%choice%"=="5" goto :groq
+if "%choice%"=="6" goto :open_router
+if "%choice%"=="7" goto :open_ai
+if "%choice%"=="8" goto :mistral_ai
+if "%choice%"=="9" goto :gemini
+if "%choice%"=="10" goto :vllm
+if "%choice%"=="11" goto :xAI
+if "%choice%"=="12" goto :elf
+if "%choice%"=="13" goto :remote_lollms
+
+
 goto :end
 
 :none
@@ -157,6 +172,10 @@ goto :end
 call python zoos/bindings_zoo/bs_exllamav2/__init__.py
 goto :end
 
+:groq
+call python zoos/bindings_zoo/groq/__init__.py
+goto :end
+
 :open_router
 call python zoos/bindings_zoo/open_router/__init__.py
 goto :end
@@ -167,6 +186,27 @@ goto :end
 
 :mistral_ai
 call python zoos/bindings_zoo/mistral_ai/__init__.py
+goto :end
+
+:gemini
+call python zoos/bindings_zoo/gemini/__init__.py
+goto :end
+
+:vllm
+call python zoos/bindings_zoo/vllm/__init__.py
+goto :end
+
+:xAI
+call python zoos/bindings_zoo/xAI/__init__.py
+goto :end
+
+
+:elf
+call python zoos/bindings_zoo/elf/__init__.py
+goto :end
+
+:remote_lollms
+call python zoos/bindings_zoo/remote_lollms/__init__.py
 goto :end
 
 

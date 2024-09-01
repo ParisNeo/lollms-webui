@@ -35,7 +35,6 @@ set SPCHARMESSAGE=
 
 cls
 
-
 @rem better isolation for virtual environment
 SET "CONDA_SHLVL="
 SET PYTHONNOUSERSITE=1
@@ -43,7 +42,6 @@ SET "PYTHONPATH="
 SET "PYTHONHOME="
 SET "TEMP=%cd%\installer_files\temp"
 SET "TMP=%cd%\installer_files\temp"
-
 
 IF EXIST "installer_files" (
     echo Removing folder: installer_files. Please wait ...
@@ -79,7 +77,6 @@ echo Activating conda environment
 @rem activate miniconda
 call "%MINICONDA_DIR%\Scripts\activate.bat" || ( echo Miniconda hook not found. && goto end )
 
-
 echo Creating new environment
 
 @rem create the installer env
@@ -93,7 +90,6 @@ if not exist "%INSTALL_ENV_DIR%\python.exe" ( echo. && echo Conda environment is
 
 @rem activate installer env
 call conda activate "%INSTALL_ENV_DIR%" || ( echo. && echo Conda environment activation failed. && goto end )
-
 
 echo "Cloning lollms-webui"
 git clone --depth 1  --recurse-submodules https://github.com/ParisNeo/lollms-webui.git
@@ -116,7 +112,6 @@ if exist ..\win_update.bat (
 ) else (
   copy scripts\windows\win_update.bat ..\
 )
-
 
 if exist ..\win_conda_session.bat (
     echo win conda session script found
@@ -144,9 +139,11 @@ echo *******************************************************************
 echo. && echo.
 exit /b
 goto end
+
 :failed
 echo Install failed
 goto endend
+
 :end
 
 echo Creating a bin dir (required for llamacpp binding)
@@ -196,6 +193,15 @@ if "%option%"=="--elf" (
 ) else if "%option%"=="--huggingface" (
     echo Installing huggingface binding
     call python zoos/bindings_zoo/huggingface/__init__.py
+) else if "%option%"=="--remote_lollms" (
+    echo Installing remote_lollms binding
+    call python zoos/bindings_zoo/remote_lollms/__init__.py
+) else if "%option%"=="--xAI" (
+    echo Installing xAI binding
+    call python zoos/bindings_zoo/xAI/__init__.py
+) else if "%option%"=="--gemini" (
+    echo Installing gemini binding
+    call python zoos/bindings_zoo/gemini/__init__.py
 ) else (
     echo No valid option selected
 )
@@ -205,3 +211,4 @@ if "%option%"=="--elf" (
 @rem cd ..
 echo Installation complete.
 :endend
+

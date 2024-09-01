@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Lollms"
-#define MyAppVersion "9.8"
+#define MyAppVersion "12"
 #define MyAppPublisher "ParisNeo"
 #define MyAppURL "https://www.lollms.com/"
 #define MyAppExeName "win_run.bat"
@@ -49,110 +49,120 @@ Source: "../uninstall.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "logo.ico"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
-
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\logo.ico"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
-
 [Code]
 var
-OptionsPage: TInputOptionWizardPage;
-ElfRadioButton: TRadioButton;
-OpenRouterRadioButton: TRadioButton;
-GroqRadioButton: TRadioButton;
-MistralAIRadioButton: TRadioButton;
-OpenAIRadioButton: TRadioButton;
-OllamaRadioButton: TRadioButton;
-VllmRadioButton: TRadioButton;
-LitellmRadioButton: TRadioButton;
-Exllamav2RadioButton: TRadioButton;
-PythonLlamaCppRadioButton: TRadioButton;
-HuggingfaceRadioButton: TRadioButton;
+  OptionsPage: TInputOptionWizardPage;
+  ElfRadioButton: TRadioButton;
+  OpenRouterRadioButton: TRadioButton;
+  GroqRadioButton: TRadioButton;
+  MistralAIRadioButton: TRadioButton;
+  OpenAIRadioButton: TRadioButton;
+  OllamaRadioButton: TRadioButton;
+  VllmRadioButton: TRadioButton;
+  LitellmRadioButton: TRadioButton;
+  Exllamav2RadioButton: TRadioButton;
+  PythonLlamaCppRadioButton: TRadioButton;
+  HuggingfaceRadioButton: TRadioButton;
+  RemoteLollmsRadioButton: TRadioButton;
+  XAIRadioButton: TRadioButton;
+  GeminiRadioButton: TRadioButton;
 
 procedure InitializeWizard;
 begin
-OptionsPage := CreateInputOptionPage(wpSelectTasks,
-'Custom Options', 'Select the desired binding to install by default',
-'Please select one of the following options:',
-False, False);
+  OptionsPage := CreateInputOptionPage(wpSelectTasks,
+    'Custom Options', 'Select the desired binding to install by default',
+    'Please select one of the following options:',
+    False, False);
 
-ElfRadioButton := TRadioButton.Create(OptionsPage);
-ElfRadioButton.Caption := 'elf';
-ElfRadioButton.Checked := True;
-ElfRadioButton.Parent := OptionsPage.Surface;
-ElfRadioButton.Top := 0;
+  ElfRadioButton := TRadioButton.Create(OptionsPage);
+  ElfRadioButton.Caption := 'elf';
+  ElfRadioButton.Checked := True;
+  ElfRadioButton.Parent := OptionsPage.Surface;
+  ElfRadioButton.Top := 0;
 
-OpenRouterRadioButton := TRadioButton.Create(OptionsPage);
-OpenRouterRadioButton.Caption := 'openrouter';
-OpenRouterRadioButton.Checked := False;
-OpenRouterRadioButton.Parent := OptionsPage.Surface;
-OpenRouterRadioButton.Top := ElfRadioButton.Top + ElfRadioButton.Height + 8;
+  OpenRouterRadioButton := TRadioButton.Create(OptionsPage);
+  OpenRouterRadioButton.Caption := 'openrouter';
+  OpenRouterRadioButton.Checked := False;
+  OpenRouterRadioButton.Parent := OptionsPage.Surface;
+  OpenRouterRadioButton.Top := ElfRadioButton.Top + ElfRadioButton.Height + 8;
 
-GroqRadioButton := TRadioButton.Create(OptionsPage);
-GroqRadioButton.Caption := 'groq';
-GroqRadioButton.Checked := False;
-GroqRadioButton.Parent := OptionsPage.Surface;
-GroqRadioButton.Top := OpenRouterRadioButton.Top + OpenRouterRadioButton.Height + 8;
+  GroqRadioButton := TRadioButton.Create(OptionsPage);
+  GroqRadioButton.Caption := 'groq';
+  GroqRadioButton.Checked := False;
+  GroqRadioButton.Parent := OptionsPage.Surface;
+  GroqRadioButton.Top := OpenRouterRadioButton.Top + OpenRouterRadioButton.Height + 8;
 
-MistralAIRadioButton := TRadioButton.Create(OptionsPage);
-MistralAIRadioButton.Caption := 'mistralai';
-MistralAIRadioButton.Checked := False;
-MistralAIRadioButton.Parent := OptionsPage.Surface;
-MistralAIRadioButton.Top := GroqRadioButton.Top + GroqRadioButton.Height + 8;
+  MistralAIRadioButton := TRadioButton.Create(OptionsPage);
+  MistralAIRadioButton.Caption := 'mistralai';
+  MistralAIRadioButton.Checked := False;
+  MistralAIRadioButton.Parent := OptionsPage.Surface;
+  MistralAIRadioButton.Top := GroqRadioButton.Top + GroqRadioButton.Height + 8;
 
-OpenAIRadioButton := TRadioButton.Create(OptionsPage);
-OpenAIRadioButton.Caption := 'openai';
-OpenAIRadioButton.Checked := False;
-OpenAIRadioButton.Parent := OptionsPage.Surface;
-OpenAIRadioButton.Top := GroqRadioButton.Top + GroqRadioButton.Height + 8;
+  OpenAIRadioButton := TRadioButton.Create(OptionsPage);
+  OpenAIRadioButton.Caption := 'openai';
+  OpenAIRadioButton.Checked := False;
+  OpenAIRadioButton.Parent := OptionsPage.Surface;
+  OpenAIRadioButton.Top := MistralAIRadioButton.Top + MistralAIRadioButton.Height + 8;
 
-OllamaRadioButton := TRadioButton.Create(OptionsPage);
-OllamaRadioButton.Caption := 'ollama';
-OllamaRadioButton.Checked := False;
-OllamaRadioButton.Parent := OptionsPage.Surface;
-OllamaRadioButton.Top := MistralAIRadioButton.Top + MistralAIRadioButton.Height + 8;
+  OllamaRadioButton := TRadioButton.Create(OptionsPage);
+  OllamaRadioButton.Caption := 'ollama';
+  OllamaRadioButton.Checked := False;
+  OllamaRadioButton.Parent := OptionsPage.Surface;
+  OllamaRadioButton.Top := OpenAIRadioButton.Top + OpenAIRadioButton.Height + 8;
 
-VllmRadioButton := TRadioButton.Create(OptionsPage);
-VllmRadioButton.Caption := 'vllm';
-VllmRadioButton.Checked := False;
-VllmRadioButton.Parent := OptionsPage.Surface;
-VllmRadioButton.Top := OllamaRadioButton.Top + OllamaRadioButton.Height + 8;
+  VllmRadioButton := TRadioButton.Create(OptionsPage);
+  VllmRadioButton.Caption := 'vllm';
+  VllmRadioButton.Checked := False;
+  VllmRadioButton.Parent := OptionsPage.Surface;
+  VllmRadioButton.Top := OllamaRadioButton.Top + OllamaRadioButton.Height + 8;
 
-LitellmRadioButton := TRadioButton.Create(OptionsPage);
-LitellmRadioButton.Caption := 'litellm';
-LitellmRadioButton.Checked := False;
-LitellmRadioButton.Parent := OptionsPage.Surface;
-LitellmRadioButton.Top := VllmRadioButton.Top + VllmRadioButton.Height + 8;
+  LitellmRadioButton := TRadioButton.Create(OptionsPage);
+  LitellmRadioButton.Caption := 'litellm';
+  LitellmRadioButton.Checked := False;
+  LitellmRadioButton.Parent := OptionsPage.Surface;
+  LitellmRadioButton.Top := VllmRadioButton.Top + VllmRadioButton.Height + 8;
 
-Exllamav2RadioButton := TRadioButton.Create(OptionsPage);
-Exllamav2RadioButton.Caption := 'exllamav2';
-Exllamav2RadioButton.Checked := False;
-Exllamav2RadioButton.Parent := OptionsPage.Surface;
-Exllamav2RadioButton.Top := LitellmRadioButton.Top + LitellmRadioButton.Height + 8;
+  Exllamav2RadioButton := TRadioButton.Create(OptionsPage);
+  Exllamav2RadioButton.Caption := 'exllamav2';
+  Exllamav2RadioButton.Checked := False;
+  Exllamav2RadioButton.Parent := OptionsPage.Surface;
+  Exllamav2RadioButton.Top := LitellmRadioButton.Top + LitellmRadioButton.Height + 8;
 
-PythonLlamaCppRadioButton := TRadioButton.Create(OptionsPage);
-PythonLlamaCppRadioButton.Caption := 'python_llama_cpp';
-PythonLlamaCppRadioButton.Checked := False;
-PythonLlamaCppRadioButton.Parent := OptionsPage.Surface;
-PythonLlamaCppRadioButton.Top := Exllamav2RadioButton.Top + Exllamav2RadioButton.Height + 8;
+  PythonLlamaCppRadioButton := TRadioButton.Create(OptionsPage);
+  PythonLlamaCppRadioButton.Caption := 'python_llama_cpp';
+  PythonLlamaCppRadioButton.Checked := False;
+  PythonLlamaCppRadioButton.Parent := OptionsPage.Surface;
+  PythonLlamaCppRadioButton.Top := Exllamav2RadioButton.Top + Exllamav2RadioButton.Height + 8;
 
-HuggingfaceRadioButton := TRadioButton.Create(OptionsPage);
-HuggingfaceRadioButton.Caption := 'huggingface';
-HuggingfaceRadioButton.Checked := False;
-HuggingfaceRadioButton.Parent := OptionsPage.Surface;
-HuggingfaceRadioButton.Top := PythonLlamaCppRadioButton.Top + PythonLlamaCppRadioButton.Height + 8;
+  HuggingfaceRadioButton := TRadioButton.Create(OptionsPage);
+  HuggingfaceRadioButton.Caption := 'huggingface';
+  HuggingfaceRadioButton.Checked := False;
+  HuggingfaceRadioButton.Parent := OptionsPage.Surface;
+  HuggingfaceRadioButton.Top := PythonLlamaCppRadioButton.Top + PythonLlamaCppRadioButton.Height + 8;
+
+  RemoteLollmsRadioButton := TRadioButton.Create(OptionsPage);
+  RemoteLollmsRadioButton.Caption := 'remote_lollms';
+  RemoteLollmsRadioButton.Checked := False;
+  RemoteLollmsRadioButton.Parent := OptionsPage.Surface;
+  RemoteLollmsRadioButton.Top := HuggingfaceRadioButton.Top + HuggingfaceRadioButton.Height + 8;
+
+  XAIRadioButton := TRadioButton.Create(OptionsPage);
+  XAIRadioButton.Caption := 'xAI';
+  XAIRadioButton.Checked := False;
+  XAIRadioButton.Parent := OptionsPage.Surface;
+  XAIRadioButton.Top := RemoteLollmsRadioButton.Top + RemoteLollmsRadioButton.Height + 8;
+
+  GeminiRadioButton := TRadioButton.Create(OptionsPage);
+  GeminiRadioButton.Caption := 'gemini';
+  GeminiRadioButton.Checked := False;
+  GeminiRadioButton.Parent := OptionsPage.Surface;
+  GeminiRadioButton.Top := XAIRadioButton.Top + XAIRadioButton.Height + 8;
 end;
 
-[Run]
-Filename: {app}\first_install.bat; Parameters: "{code:GetSelectedOption}"; Flags: postinstall
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: shellexec postinstall skipifsilent
-
-
-
-
-
-[Code]
 function GetSelectedOption(Param: string): string;
 begin
   if ElfRadioButton.Checked then
@@ -177,25 +187,28 @@ begin
     Result := '--python_llama_cpp'
   else if HuggingfaceRadioButton.Checked then
     Result := '--huggingface'
+  else if RemoteLollmsRadioButton.Checked then
+    Result := '--remote_lollms'
+  else if XAIRadioButton.Checked then
+    Result := '--xAI'
+  else if GeminiRadioButton.Checked then
+    Result := '--gemini'
   else
     Result := '';
 end;
 
-[Code]
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
-if (CurStep = ssPostInstall) and (GetSelectedOption('') = '') then
-begin
-MsgBox('An option must be selected for installation to continue.', mbError, MB_OK);
-Abort;
+  if (CurStep = ssPostInstall) and (GetSelectedOption('') = '') then
+  begin
+    MsgBox('An option must be selected for installation to continue.', mbError, MB_OK);
+    Abort;
+  end;
 end;
-end;
+
+[Run]
+Filename: {app}\first_install.bat; Parameters: "{code:GetSelectedOption}"; Flags: postinstall
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: shellexec postinstall skipifsilent
 
 [UninstallRun]
 Filename: {app}\uninstall.bat; RunOnceId: MyCustomUninstallAction
-
-
-
-
-
-

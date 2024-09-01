@@ -20,7 +20,8 @@
 
     <div class="flex flex-col items-center text-center max-w-4xl w-full px-4 relative z-10">
         <div class="mb-8 w-full">
-        <h1 class="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 mb-2 animate-glow">
+        <h1 class="text-6xl md:text-7xl font-bold text-red-600 mb-2"
+            style="text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;">
             LoLLMS
         </h1>
         <p class="text-2xl text-gray-600 dark:text-gray-300 italic">
@@ -35,7 +36,7 @@
 
         <div class="w-full h-24 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg">
             <img 
-            class="w-24 h-24 animate-glow rounded-full absolute top-0 transition-all duration-300 ease-linear"
+            class="w-24 h-24 rounded-full absolute top-0 transition-all duration-300 ease-linear"
             :style="{ left: `calc(${loading_progress}% - 3rem)` }"
             title="LoLLMS WebUI" 
             src="@/assets/strawberry.png" 
@@ -57,6 +58,9 @@
     </div>
 </div>
 </transition>
+
+
+
 
 
 
