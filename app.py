@@ -64,10 +64,10 @@ def check_and_install_package(package: str, version: str):
         ASCIIColors.red(f"Error checking/installing {package}: {str(e)}")
 
 packages: List[Tuple[str, str]] = [
-    ("lollmsvectordb", "1.0.2"),
     ("freedom_search", "0.1.9"),
     ("scrapemaster", "0.2.0"),
     ("lollms_client", "0.6.2")
+    ("lollmsvectordb", "1.0.3"),
 ]
 
 def main():
