@@ -37,7 +37,7 @@ def run_git_pull():
         except git.GitCommandError as e:
             error_message = f"Failed to update the code: {str(e)}"
             ASCIIColors.error(error_message)
-            show_error_dialog(error_message)
+            # show_error_dialog(error_message)
 
         print("Updating submodules")
         try:
@@ -45,7 +45,7 @@ def run_git_pull():
         except Exception as ex:
             error_message = f"Couldn't update submodules: {str(ex)}"
             ASCIIColors.error(error_message)
-            show_error_dialog(error_message)
+            # show_error_dialog(error_message)
         try:
             # Checkout the main branch on each submodule
             for submodule in repo.submodules:
@@ -62,7 +62,7 @@ def run_git_pull():
         except Exception as ex:
             error_message = f"Couldn't update submodules: {str(ex)}"
             ASCIIColors.error(error_message)
-            show_error_dialog(error_message)
+            # show_error_dialog(error_message)
         try:
             # Update lollms_core
             ASCIIColors.info("Updating lollms_core")
@@ -78,13 +78,13 @@ def run_git_pull():
         except Exception as ex:
             error_message = f"Couldn't update submodules: {str(ex)}"
             ASCIIColors.error(error_message)
-            show_error_dialog(error_message)
+            # show_error_dialog(error_message)
 
         return True
     except Exception as e:
         error_message = f"Error during git operations: {str(e)}"
         ASCIIColors.error(error_message)
-        show_error_dialog(error_message)
+        # show_error_dialog(error_message)
         return False
 def get_valid_input():
     while True:
