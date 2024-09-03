@@ -27,7 +27,6 @@ def run_git_pull():
         # Check if there are any changes to pull
         if repo.head.commit == origin.refs.main.commit:
             ASCIIColors.success("Already up-to-date.")
-            return True
         
         # Discard local changes and force update
         try:
