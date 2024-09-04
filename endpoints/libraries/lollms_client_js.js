@@ -452,7 +452,7 @@ async tokenize(text) {
   return await this.lollms.tokenize(text);
 }
 
-async summarizeText({
+async summarizeText(
   text,
   summaryInstruction = "summarize",
   docName = "chunk",
@@ -462,7 +462,10 @@ async summarizeText({
   callback = null,
   chunkSummaryPostProcessing = null,
   summaryMode = "SEQUENTIAL"
-}) {
+) {
+  console.log("Tokenizing:")
+  console.log(text)
+
   let tk = await this.tokenize(text);
   let prevLen = tk.length;
   let documentChunks = null;
