@@ -96,7 +96,7 @@ git clone --depth 1  --recurse-submodules https://github.com/ParisNeo/lollms-web
 git submodule update --init --recursive
 cd lollms-webui\lollms_core
 pip install -e .
-cd ..\..
+cd ..
 
 pip install -r requirements.txt
 

@@ -104,9 +104,6 @@ if [ -d "lollms-webui" ]; then
   cd lollms_core 
   pip install -e .
   cd ../..
-  cd utilities/pipmaster
-  pip install -e .
-  cd ../..
 
 else
   git clone --depth 1  --recurse-submodules "$REPO_URL"
@@ -115,6 +112,8 @@ else
   pip install -e .
   cd ../..
 fi
+
+cd lollms-webui
 
 # Loop through each "git+" requirement and uninstall it (workaround for inconsistent git package updating)
 while IFS= read -r requirement; do

@@ -11,10 +11,12 @@
         ref="menuItems"
       >
         {{ link.text }}
+        <span v-if="isRouteActive(link.route)" class="strawberry-emoji">🍓</span>
       </RouterLink>
     </nav>
   </div>
 </template>
+
 
 <script setup>
 import { computed, ref, onMounted, watch } from 'vue';

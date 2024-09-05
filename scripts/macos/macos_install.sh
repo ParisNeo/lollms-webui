@@ -165,11 +165,9 @@ else
   git submodule update --init --recursive
   cd $INSTALL_DIR/lollms-webui/lollms_core
   pip install -e .
-  cd $INSTALL_DIR/lollms-webui/utilities/pipmaster
-  pip install -e .
 
-  cd $INSTALL_DIR/lollms-webui || exit 1
 fi
+cd $INSTALL_DIR/lollms-webui || exit 1
 
 # Loop through each "git+" requirement and uninstall it (workaround for inconsistent git package updating)
 while IFS= read -r requirement; do

@@ -26,26 +26,31 @@
     scrollbar-width: none;
   }
 }
+/* Custom font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
 .display-none {
   @apply hidden;
 }
 
-h1 {
-  @apply text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-400 dark:to-blue-500;
-}
-
+h1 { @apply text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-6; }
 h2 {
-  @apply text-3xl font-semibold text-gray-800 dark:text-gray-200;
+@apply text-3xl font-semibold text-gray-800 dark:text-gray-200 mb-4;
 }
 
 h3 {
-  @apply text-2xl font-semibold text-gray-700 dark:text-gray-300;
+@apply text-2xl font-medium text-gray-700 dark:text-gray-300 mb-3;
 }
 
 h4 {
-  @apply text-xl font-semibold italic text-gray-600 dark:text-gray-400;
+@apply text-xl font-medium text-gray-600 dark:text-gray-400 mb-2;
 }
+
+/* Optional: Add a subtle bottom border to headers for added distinction */
+h1, h2, h3, h4 {
+@apply border-b border-gray-200 dark:border-gray-700 pb-2;
+}
+
 
 p {
   @apply text-base text-gray-600 dark:text-gray-300 break-words;
@@ -105,20 +110,44 @@ textarea, input, select {
 .chatbox-color {
   @apply bg-gradient-to-br from-blue-200 to-blue-300 dark:from-blue-800 dark:to-blue-900
 }
-.message {
-  @apply relative w-full rounded-lg m-2 shadow-lg border-2 border-transparent 
-         flex flex-col flex-grow flex-wrap overflow-visible p-4 pb-2;
-}
+
+/* Base message styling */ 
+.message { @apply relative w-full rounded-lg m-2 shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col flex-grow flex-wrap overflow-visible p-5 pb-3 text-lg; /* Increased from text-base to text-lg */ }
 .message:hover {
-  @apply border-primary border-solid;
+@apply border-blue-400 dark:border-blue-500;
 }
+
 /* Light theme */
+.message {
+@apply bg-blue-200 text-gray-800;
+}
+
+/* Dark theme */
+.dark .message {
+@apply bg-blue-800 text-gray-200;
+}
+
+/* Alternating backgrounds for better distinction */
 .message:nth-child(even) {
-  @apply bg-gradient-to-br from-blue-200 to-blue-300 dark:from-blue-800 dark:to-blue-800;
+@apply bg-blue-50 dark:bg-blue-700;
 }
 
 .message:nth-child(odd) {
-  @apply bg-gradient-to-br from-blue-300 to-blue-400 dark:from-blue-800 dark:to-blue-900;
+@apply bg-blue-200 dark:bg-blue-800;
+}
+
+/* Additional styling for more professional look */
+.message-header {
+@apply text-xl font-semibold mb-2; /* Increased from text-lg to text-xl */
+}
+
+.message-content {
+@apply text-lg leading-relaxed; /* Increased from text-base to text-lg */
+}
+
+/* Body styling */
+body {
+@apply bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 min-h-screen text-base; /* Added text-base for default body text */
 }
 
 .discussion{
@@ -128,10 +157,6 @@ textarea, input, select {
   @apply bg-gradient-to-r from-blue-200 to-purple-300 dark:from-blue-800 dark:to-purple-900 hover:from-blue-100 hover:to-purple-100 hover:dark:from-blue-700 hover:dark:to-purple-700
 }
 
-
-body {
-  @apply bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 min-h-screen;
-}
 
 .bg-gradient-welcome {
   @apply bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900;
@@ -195,36 +220,50 @@ body {
 .text-shadow-custom {
   text-shadow: 1px 1px 0px white, -1px -1px 0px white, 1px -1px 0px white, -1px 1px 0px white;
 }
-
 .menu-item {
-  @apply mb-2 px-4 py-2 text-red-600 dark:text-red-300 font-bold text-lg transition-all duration-300 ease-in-out;
-  @apply hover:text-gray-500 hover:dark:text-gray-50 hover:transform hover:-translate-y-1;
+  @apply mb-2 px-4 py-2 text-green-600 dark:text-green-300 font-bold text-lg transition-all duration-300 ease-in-out;
+  @apply hover:text-red-400 hover:dark:text-red-200 hover:transform hover:-translate-y-1;
 }
 
 .menu-item.active-link {
   @apply rounded-t-md border-red-500 text-shadow-custom text-red-600 font-bold text-lg transition-all duration-300 ease-in-out scale-105;
-  @apply hover:text-red-600 hover:dark:text-gray-50 hover:transform hover:-translate-y-1;
+  @apply hover:text-red-700 hover:dark:text-red-300 hover:transform hover:-translate-y-1;
   /* Glow effect on text */
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  text-shadow: 0 0 10px rgba(255, 100, 100, 0.5);
 }
 
-.menu-item.active-link::after {
+.menu-item.active-link::before {
   content: '';
   position: absolute;
   bottom: -5px;
   left: 0;
   width: 100%;
   height: 5px;
-  /* Lightsaber colors */
-  z-index: 10000;
-  background: linear-gradient(to right, #00ff00, #00ff00, #00ff00); /* Normal mode */
+  background: linear-gradient(to right, #ff3b3b, #ff7b7b, #ff3b3b); /* Strawberry colors */
   border-radius: 10px;
-  animation: lightsaber 2s infinite;
+  animation: shimmer 2s infinite;
 }
 
-.dark .menu-item.active-link::after {
-  background: linear-gradient(to right, #ff0000, #ff0000, #ff0000); /* Dark mode */
+.dark .menu-item.active-link::before {
+  background: linear-gradient(to right, #8b0000, #ff0000, #8b0000); /* Dark mode strawberry colors */
 }
+
+@keyframes shimmer {
+  0% { background-position: -100% 0; }
+  100% { background-position: 100% 0; }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+.strawberry-emoji {
+  display: inline-block;
+  margin-left: 5px;
+  animation: bounce 2s infinite;
+}
+
+
 
 @keyframes lightsaber {
   0% {
