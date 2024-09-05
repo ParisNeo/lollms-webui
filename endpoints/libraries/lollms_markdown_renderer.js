@@ -324,11 +324,71 @@ class MarkdownRenderer {
     }
   
     handleParagraphs(text) {
-      //return text.replace(/^(?!<[uo]l|<blockquote|<h\d|<pre|<hr|<table|<li|<button)(.+)$/gm, '<p class="mb-4">$1</p>');
-      // No need to handle paragraphs separately, they will be handled as the remaining content
-      return text;
-    }
-  
+        // Split the text into lines
+        let lines = text.split('\n');
+        let inList = false;
+        let inCodeBlock = false;
+        let result = [];
+      
+        for (let i = 0; i < lines.length; i++) {
+          let line = lines[i].trim();
+      
+          // Check for code blocks
+          if (line.startsWith('```')) {
+            inCodeBlock = !inCodeBlock;
+            result.push(line);
+            continue;
+          }
+      
+          // If we're in a code block, don't process the line
+          if (inCodeBlock) {
+            result.push(line);
+            continue;
+          }
+      
+          // Check for list items
+          if (line.match(/^[-*+]\s/) || line.match(/^\d+\.\s/)) {
+            if (!inList) {
+              result.push(inList ? '' : '<ul>');
+              inList = true;
+            }
+            result.push('<li>' + line.replace(/^[-*+]\s/, '').replace(/^\d+\.\s/, '') + '</li>');
+          } 
+          // Check for headers
+          else if (line.startsWith('#')) {
+            let level = line.match(/^#+/)[0].length;
+            result.push(`<h${level}>${line.replace(/^#+\s/, '')}</h${level}>`);
+          }
+          // Check for horizontal rules
+          else if (line.match(/^(-{3,}|\*{3,}|_{3,})$/)) {
+            result.push('<hr>');
+          }
+          // Handle empty lines
+          else if (line === '') {
+            if (inList) {
+              result.push('</ul>');
+              inList = false;
+            }
+            result.push('<br>');
+          }
+          // Regular paragraph
+          else {
+            if (inList) {
+              result.push('</ul>');
+              inList = false;
+            }
+            result.push('<p>' + line + '</p>');
+          }
+        }
+      
+        // Close any open list
+        if (inList) {
+          result.push('</ul>');
+        }
+      
+        return result.join('\n');
+      }
+      
     initMathJax() {
         // Configure MathJax
         window.MathJax = {
