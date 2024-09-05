@@ -77,7 +77,8 @@ export default {
     onEdit: Function,
     onReinstall: Function,
     onSettings: Function,
-    onCopyPersonalityName: Function
+    onCopyPersonalityName: Function,
+    onToggleFavorite: Function
   },
   components:{
     InteractiveMenu
@@ -147,6 +148,9 @@ export default {
     },
     defaultImg(event) {
       event.target.src = botImgPlaceholder
+    },
+    toggleFavorite() {
+      this.onToggleFavorite(this)
     },
     showFolder() {
       this.onOpenFolder(this)
