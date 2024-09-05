@@ -92,17 +92,16 @@ if exist lollms-webui\ (
   cd
   cd lollms_core 
   pip install -e .
-  cd ..\..
+  cd ..
 ) else (
   git clone --depth 1  --recurse-submodules https://github.com/ParisNeo/lollms-webui.git
   git submodule update --init --recursive
   cd lollms-webui\lollms_core
   pip install -e .
-  cd ..\..
-  cd utilities\pipmaster
-  pip install -e .
-  cd ..\..
+  cd ..
 )
+
+cd
 
 pip install -r requirements.txt
 
@@ -120,6 +119,7 @@ if exist ..\win_conda_session.bat (
   copy scripts\windows\win_conda_session.bat ..\
 )
 
+cd
 
 echo Select the default binding to be installed:
 echo 1) None (install the binding later)
