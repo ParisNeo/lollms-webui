@@ -36,9 +36,13 @@ Include the following in your HTML file:
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-javascript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-python.min.js"></script>
+    
+    <!-- needed for math rendering in markdown -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.js"></script>
     <!-- MarkdownRenderer -->
     <script src="/lollms_assets/js/lollms_markdown_renderer"></script>
-    <link rel="stylesheet" href="/lollms_assets/css/lollms_markdown_renderer">
+    <link rel="stylesheet" href="/lollms_assets/css/lollms_styles">
 </head>
 <body>
     <div id="markdown-content"></div>

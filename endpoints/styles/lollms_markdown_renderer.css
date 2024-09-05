@@ -234,3 +234,68 @@ display: inline;
 .code-line:hover {
 background-color: rgba(0, 0, 0, 0.05);
 }
+
+.math-display {
+    display: block;
+    margin: 1em 0;
+    text-align: center;
+  }
+  .math-inline {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+
+  .code-block {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 1em 0;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.code-header {
+    background-color: #e0e0e0;
+    padding: 0.5em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.copy-button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.code-content {
+    padding: 0.5em 0;
+    overflow-x: auto;
+    white-space: pre;
+}
+
+.code-line {
+    display: flex;
+    padding: 0 0.5em;
+}
+
+.line-number {
+    color: #999;
+    text-align: right;
+    padding-right: 1em;
+    user-select: none;
+    min-width: 2em;
+}
+
+.line-content {
+    flex: 1;
+}

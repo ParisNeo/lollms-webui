@@ -30,6 +30,9 @@
 // <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-java.min.js"></script>
 // <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-latex.min.js"></script>
 // When served with lollms, just use     <script src="/lollms_assets/js/lollms_markdown_renderer"></script>
+// <!-- Render math -->
+// <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css">
+// <script src="https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.js"></script>
 // Don't forget to get the css too <link rel="stylesheet" href="/lollms_assets/css/lollms_markdown_renderer">
 
 // Make sure there is a global variable called mr that instanciate MarkdownRenderer
@@ -37,7 +40,7 @@
 
 
 class MarkdownRenderer {
-  async renderMermaidDiagrams(text) {
+    async renderMermaidDiagrams(text) {
         const mermaidCodeRegex = /```mermaid\n([\s\S]*?)```/g;
         const matches = text.match(mermaidCodeRegex);
 
@@ -91,7 +94,7 @@ class MarkdownRenderer {
         return text;
     }
 
-async renderSVG(text) {
+    async renderSVG(text) {
         const svgCodeRegex = /```svg\n([\s\S]*?)```/g;
         const matches = text.match(svgCodeRegex);
     
@@ -144,51 +147,61 @@ async renderSVG(text) {
     
         return text;
     }
-  
-    async renderCodeBlocks(text) {
-      if (typeof Prism === 'undefined') {
-          throw new Error('Prism is not loaded. Please include Prism.js in your project.');
-      }
+    renderCodeBlocks(text) {
+        const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+        
+        return text.replace(codeBlockRegex, (match, language, code) => {
+            language = language || 'plaintext';
+            let highlightedCode;
+            
+            try {
+                highlightedCode = hljs.highlight(code.trim(), { language: language }).value;
+            } catch (error) {
+                console.warn(`Language '${language}' is not supported by highlight.js. Falling back to plaintext.`);
+                highlightedCode = hljs.highlight(code.trim(), { language: 'plaintext' }).value;
+            }
+            
+            const lines = highlightedCode.split('\n');
+            const numberedLines = lines.map((line, index) => 
+                `<div class="code-line">
+                    <span class="line-number">${(index + 1).toString().padStart(2, '0')}</span>
+                    <span class="line-content">${line}</span>
+                 </div>`
+            ).join('');
+            
+            return `
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">${language}</span>
+                        <button onclick="mr.copyCode(this)" class="copy-button">Copy</button>
+                    </div>
+                    <pre class="code-content"><code class="hljs language-${language}">${numberedLines}</code></pre>
+                </div>
+            `;
+        });
+    }
 
-      const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+    copyCode(button) {
+        const codeBlock = button.closest('.code-block');
+        const codeLines = codeBlock.querySelectorAll('.line-content');
+        const codeText = Array.from(codeLines).map(line => line.textContent).join('\n');
 
-      const renderedText = await text.replace(codeBlockRegex, (match, language, code) => {
-          language = language || 'plaintext';
+        navigator.clipboard.writeText(codeText).then(() => {
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = 'Copy';
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy text: ', err);
+            button.textContent = 'Failed';
+            setTimeout(() => {
+                button.textContent = 'Copy';
+            }, 2000);
+        });
+    }
+    
 
-          if (!Prism.languages[language]) {
-              console.warn(`Language '${language}' is not supported by Prism. Falling back to plaintext.`);
-              language = 'plaintext';
-          }
 
-          const highlightedCode = Prism.highlight(code.trim(), Prism.languages[language], language);
-
-          const lines = highlightedCode.split(/\r?\n/);
-          const numberedLines = lines.map((line, index) =>
-              `<span class="code-line"><span class="line-number">${index + 1}</span><span class="line-content">${line}</span></span>`
-          ).join('\n');
-
-          return `
-          <div class="code-block-wrapper bg-gray-100 rounded-lg shadow-md overflow-hidden my-4">
-              <div class="code-block-header bg-gray-200 px-4 py-2 flex justify-between items-center">
-                  <div class="language-label font-semibold text-gray-700">${language}</div>
-                  <button class="copy-button bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded" onclick="mr.copyCode(this)">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1">
-                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                      </svg>
-                      Copy
-                  </button>
-              </div>
-              <div class="code-content max-h-[500px] overflow-auto">
-                  <pre class="line-numbers text-sm leading-tight"><code class="language-${language}">${numberedLines}</code></pre>
-              </div>
-          </div>`;
-      });
-
-      return renderedText;
-  }
-
-      
     handleInlineCode(text) {
       return text.replace(/`([^`]+)`/g, function(match, code) {
           return `<b>${code}</b>`;
@@ -196,11 +209,29 @@ async renderSVG(text) {
     }
   
     handleMathEquations(text) {
-      return text.replace(/\\\[([\s\S]*?)\\\]|\$\$([\s\S]*?)\$\$|\$([^\n]+?)\$/g, function(match, p1, p2, p3) {
-          const equation = p1 || p2 || p3;
-          return '<span class="math">' + equation + '</span>';
-      });
+        if (typeof katex === 'undefined') {
+            console.error('KaTeX is not loaded. Make sure to include KaTeX scripts and CSS.');
+            return text;
+        }
+    
+        return text.replace(/\\\[([\s\S]*?)\\\]|\$\$([\s\S]*?)\$\$|\$([^\n]+?)\$/g, function(match, p1, p2, p3) {
+            const equation = p1 || p2 || p3;
+            const isDisplayMode = match.startsWith('\\[') || match.startsWith('$$');
+            
+            try {
+                return katex.renderToString(equation, {
+                    displayMode: isDisplayMode,
+                    throwOnError: false,
+                    output: 'html'
+                });
+            } catch (e) {
+                console.error("KaTeX rendering error:", e);
+                return `<span class="math-error">${match}</span>`; // Return error-marked original string if rendering fails
+            }
+        });
     }
+    
+      
   
     async handleTables(text) {
       let alignments = [];
@@ -298,6 +329,35 @@ async renderSVG(text) {
       return text;
     }
   
+    initMathJax() {
+        // Configure MathJax
+        window.MathJax = {
+          tex: {
+            inlineMath: [['$', '$']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          },
+          startup: {
+            ready: () => {
+              MathJax.startup.defaultReady();
+              MathJax.startup.promise.then(() => {
+                console.log('MathJax is loaded and ready');
+                // You can add any post-initialization logic here
+              });
+            }
+          }
+        };
+    
+        // Load MathJax
+        if (!window.MathJax) {
+          const script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
+          script.async = true;
+          document.head.appendChild(script);
+        }
+      }
     async renderMarkdown(text) {
       // Handle Mermaid graphs first
       text = await this.renderMermaidDiagrams(text);
@@ -413,35 +473,7 @@ async renderSVG(text) {
         svg.style.transform = `scale(${newScale})`;
     }
   
-    copyCode(button) {
-        const codeBlock = button.closest('.code-block-wrapper').querySelector('code');
-        const codeLines = codeBlock.querySelectorAll('.code-line');
-        let codeText = '';
-        
-        codeLines.forEach((line) => {
-            const lineNumber = line.querySelector('.line-number').textContent;
-            const lineContent = line.querySelector('.line-content').textContent;
-            codeText += `${lineNumber} ${lineContent}\n`;
-        });
 
-        navigator.clipboard.writeText(codeText.trim()).then(() => {
-            button.classList.add('copied');
-            button.querySelector('svg').style.display = 'none';
-            button.innerHTML = 'Copied!';
-            setTimeout(() => {
-            button.classList.remove('copied');
-            button.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                Copy
-            `;
-            }, 2000);
-        }).catch(err => {
-            console.error('Failed to copy text: ', err);
-        });
-    }  
     async highlightCode(code, language) {
         // Make sure the language is supported by your highlighting library
         const supportedLanguage = Prism.languages[language] ? language : 'plaintext';
