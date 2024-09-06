@@ -11,7 +11,7 @@
           <div class="flex flex-col justify-center">
             <div class="text-2xl md:text-2xl font-bold text-red-600 mb-2"
                 style="text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;">
-                LoLLMS
+                L🍓LLMS
           </div>
             <p class="text-gray-400 text-sm">One tool to rule them all</p>
           </div>
@@ -73,10 +73,11 @@
                 <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
               </svg>
             </div>
-            <span class="absolute hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap">
+            <span class="absolute hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap">
               Lollms News
             </span>
           </div>
+
           <div class="relative group">
               <div 
                 v-if="is_fun_mode" 

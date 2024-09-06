@@ -99,7 +99,7 @@
         />
       </div>
       
-      <h2 class="text-2xl font-bold mb-4">{{ currentCategoryName }}</h2>
+      <h2 class="text-2xl font-bold mb-4">{{ currentCategoryName }} ({{ sortedAndFilteredApps.length }})</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <app-card 
           v-for="app in sortedAndFilteredApps" 
@@ -167,7 +167,7 @@ export default {
   },
   computed: {
     currentCategoryName() {
-      return this.selectedCategory === 'all' ? 'All Apps' : this.selectedCategory;
+      return this.selectedCategory === 'all' ? 'All Apps': this.selectedCategory;
     },    
     combinedApps() {
       const installedAppNames = this.apps.map(app => app.name);

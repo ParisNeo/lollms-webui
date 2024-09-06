@@ -22,7 +22,7 @@
         <div class="mb-8 w-full">
         <div class="text-6xl md:text-7xl font-bold text-red-600 mb-2"
             style="text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;">
-            LoLLMS
+            L🍓LLMS
         </div>
         <p class="text-2xl text-gray-600 dark:text-gray-300 italic">
             One tool to rule them all
@@ -38,7 +38,7 @@
             <img 
             class="w-24 h-24 rounded-full absolute top-0 transition-all duration-300 ease-linear"
             :style="{ left: `calc(${loading_progress}% - 3rem)` }"
-            title="LoLLMS WebUI" 
+            title="L🍓LLMS WebUI" 
             src="@/assets/strawberry.png" 
             alt="Strawberry Logo"
             >

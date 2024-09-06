@@ -1,3 +1,5 @@
+/* Custom font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -26,8 +28,6 @@
     scrollbar-width: none;
   }
 }
-/* Custom font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
 .display-none {
   @apply hidden;
@@ -47,7 +47,7 @@ h4 {
 }
 
 /* Optional: Add a subtle bottom border to headers for added distinction */
-h1, h2, h3, h4 {
+h1, h2{
 @apply border-b border-gray-200 dark:border-gray-700 pb-2;
 }
 

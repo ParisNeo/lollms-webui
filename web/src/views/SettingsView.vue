@@ -217,8 +217,8 @@
                         <div v-show="smartrouterconf_collapsed" ><i data-feather='chevron-right'></i></div>
                         <div v-show="!smartrouterconf_collapsed" ><i data-feather='chevron-down'></i></div>
 
-                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
-                            Smart routing configurations</h3>
+                        <div class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            Smart routing configurations</div>
                     </button>
                 </div>
                 <div :class="{ 'hidden': smartrouterconf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
