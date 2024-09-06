@@ -67,7 +67,7 @@ packages: List[Tuple[str, str]] = [
     ("freedom_search", "0.1.9"),
     ("scrapemaster", "0.2.0"),
     ("lollms_client", "0.6.5"),
-    ("lollmsvectordb", "1.0.6"),
+    ("lollmsvectordb", "1.0.7"),
 ]
 
 def main():
