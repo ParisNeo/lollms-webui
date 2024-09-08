@@ -105,7 +105,7 @@
                   <line x1="15" y1="9" x2="15.01" y2="9"></line>
                 </svg>
               </div>
-              <span class="absolute hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap">
+              <span class="absolute hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 top-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap">
                 {{ is_fun_mode ? 'Turn off fun mode' : 'Turn on fun mode' }}
               </span>
             </div>          
@@ -503,7 +503,8 @@ export default {
             localStorage.setItem("theme", "dark")
             this.userTheme == "dark"
             this.iconToggle()
-
+            // Dispatch the themeChanged event
+            window.dispatchEvent(new Event('themeChanged'));
         },
         iconToggle() {
             this.sunIcon.classList.toggle("display-none");

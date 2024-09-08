@@ -1,0 +1,6 @@
+Hi there, fellow lollms enthusiasts!
+
+Today, we're diving into the magical world of lollms personalities, and boy, do I have a treat for you! We're unleashing a new personality that's so powerful, it might just make your computer grow legs and dance. Imagine having an AI sidekick that can whip up web applications faster than you can say "lollms"! It's like having a genie in a bottle, except instead of wishes, you get cool webapps. So, buckle up, grab your favorite coding snack, and let's embark on this wild ride of app creation. Remember, with lollms, you're not just building apps – you're building dreams... and maybe a few bugs along the way. But hey, that's part of the fun! Let's dive in and see what this AI can conjure up for us. Who knows, by the end of this video, you might be the proud parent of a brand new webapp! See ya on the other side of this coding adventure!
+
+Alright, the new lollms is too strawberry and I get it. Can you cound all the hidden strawberries? Leave a number in the comments.
+Now let's mount the Apps maker personality from the personalities zoo. As you can see, the zoo has now its own page and you can sort the apps by multiple criteria. You can find the lollms apps maker in the lollms category.

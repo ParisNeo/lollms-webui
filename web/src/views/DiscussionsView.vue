@@ -1921,14 +1921,14 @@ export default {
             if (item) {
                 if (item.id) {
                     const realTitle = item.title ? item.title === "untitled" ? "New discussion" : item.title : "New discussion"
-                    document.title = 'LoLLMS WebUI - ' + realTitle
+                    document.title = 'L🍓LLMS WebUI - ' + realTitle
                 } else {
                     const title = item || "Welcome"
-                    document.title = 'LoLLMS WebUI - ' + title
+                    document.title = 'L🍓LLMS WebUI - ' + title
                 }
             } else {
                 const title = item || "Welcome"
-                document.title = 'LoLLMS WebUI - ' + title
+                document.title = 'L🍓LLMS WebUI - ' + title
             }
 
         },

@@ -419,15 +419,15 @@ class MarkdownRenderer {
         }
       }
     async renderMarkdown(text) {
+      // Handle code blocks with syntax highlighting and copy button
+      text = await this.renderCodeBlocks(text);
+
       // Handle Mermaid graphs first
       text = await this.renderMermaidDiagrams(text);
 
       // Handle SVG graphs first
       text = await this.renderSVG(text);
-      
-      // Handle code blocks with syntax highlighting and copy button
-      text = await this.renderCodeBlocks(text);
-  
+        
       // Handle inline code
       text = this.handleInlineCode(text);
   

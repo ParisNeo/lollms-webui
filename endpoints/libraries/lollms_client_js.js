@@ -619,6 +619,88 @@ async generateCode(prompt, images = [], {
       return null;
   }
 }
+async generateCodes(prompt, images = [], {
+  n_predict = null,
+  stream = false,
+  temperature = 0.1,
+  top_k = 50,
+  top_p = 0.95,
+  repeat_penalty = 0.8,
+  repeat_last_n = 40,
+  seed = null,
+  n_threads = 8,
+  service_key = "",
+  streamingCallback = null
+} = {}) {
+  let response;
+  const systemHeader = this.custom_message("Generation infos");
+  const codeInstructions = "Generated code must be put inside the adequate markdown code tag. Use this template:\n```language name\nCode\n```\n";
+  const fullPrompt = systemHeader + codeInstructions + this.separatorTemplate + prompt;
+
+  if (images.length > 0) {
+    response = await this.generate_with_images(fullPrompt, images, {
+      n_predict,
+      temperature,
+      top_k,
+      top_p,
+      repeat_penalty,
+      repeat_last_n,
+      callback: streamingCallback
+    });
+  } else {
+    response = await this.generate(fullPrompt, {
+      n_predict,
+      temperature,
+      top_k,
+      top_p,
+      repeat_penalty,
+      repeat_last_n,
+      callback: streamingCallback
+    });
+  }
+
+  let codes = this.extractCodeBlocks(response);
+  let completeCodes = [];
+
+  while (codes.length > 0) {
+    let currentCode = codes.shift();
+    let codeContent = currentCode.content;
+
+    while (!currentCode.is_complete) {
+      console.warn("The AI did not finish the code, let's ask it to continue");
+      const continuePrompt = prompt + codeContent + this.userFullHeader + "continue the code. Rewrite last line and continue the code." + this.separatorTemplate + this.aiFullHeader;
+      
+      response = await this.generate(continuePrompt, {
+        n_predict,
+        temperature,
+        top_k,
+        top_p,
+        repeat_penalty,
+        repeat_last_n,
+        callback: streamingCallback
+      });
+
+      const newCodes = this.extractCodeBlocks(response);
+      if (newCodes.length === 0) break;
+
+      // Append the content of the first new code block
+      codeContent += '\n' + newCodes[0].content;
+      currentCode = newCodes[0];
+
+      // If there are more code blocks, add them to the codes array
+      if (newCodes.length > 1) {
+        codes = [...newCodes.slice(1), ...codes];
+      }
+    }
+
+    completeCodes.push({
+      language: currentCode.language,
+      content: codeContent
+    });
+  }
+
+  return completeCodes;
+}
 
 extractCodeBlocks(text) {
   const codeBlocks = [];

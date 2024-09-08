@@ -15,15 +15,9 @@ The `MarkdownRenderer` library is a JavaScript class for converting Markdown con
 
 ### Integration Steps
 
-Include the following in your HTML file:
+Include the following in your HTML file header (this must be added to the html to allow the rendering):
 
 ```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown Renderer Example</title>
     <!-- External Libraries -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
@@ -36,59 +30,52 @@ Include the following in your HTML file:
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-javascript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-python.min.js"></script>
-    
     <!-- needed for math rendering in markdown -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.js"></script>
+
     <!-- MarkdownRenderer -->
     <script src="/lollms_assets/js/lollms_markdown_renderer"></script>
-    <link rel="stylesheet" href="/lollms_assets/css/lollms_styles">
-</head>
-<body>
-    <div id="markdown-content"></div>
-    <script>
-        (async () => {
-            const mr = new MarkdownRenderer();
-            const markdownText = `
-            # Sample Markdown
-            **Bold** text, *italic* text.
-
-            ## Code Block
-            \`\`\`javascript
-            console.log('Hello, World!');
-            \`\`\`
-
-            ## Mermaid Diagram
-            \`\`\`mermaid
-            graph TD;
-                A-->B;
-                A-->C;
-                B-->D;
-                C-->D;
-            \`\`\`
-
-            ## Math Equation
-            $$E = mc^2$$
-
-            ## Table
-            | Name  | Age |
-            |-------|-----|
-            | Alice | 24  |
-            | Bob   | 30  |
-            `;
-            const renderedHtml = await mr.renderMarkdown(markdownText);
-            document.getElementById('markdown-content').innerHTML = renderedHtml;
-        })();
-    </script>
-</body>
-</html>
+    <link rel="stylesheet" href="/lollms_assets/css/lollms_markdown_renderer">
 ```
 
 ### Usage
+
+```javascript
+    const mr = new MarkdownRenderer();
+    const markdownText = `
+    # Sample Markdown
+    **Bold** text, *italic* text.
+
+    ## Code Block
+    \`\`\`javascript
+    console.log('Hello, World!');
+    \`\`\`
+
+    ## Mermaid Diagram
+    \`\`\`mermaid
+    graph TD;
+        A-->B;
+        A-->C;
+        B-->D;
+        C-->D;
+    \`\`\`
+
+    ## Math Equation
+    $$E = mc^2$$
+
+    ## Table
+    | Name  | Age |
+    |-------|-----|
+    | Alice | 24  |
+    | Bob   | 30  |
+    `;
+    const renderedHtml = await mr.renderMarkdown(markdownText);
+    document.getElementById('markdown-content').innerHTML = renderedHtml;
+```
+
 
 - **Code Blocks**: Use Prism.js for syntax highlighting by specifying the language (e.g., `javascript`).
 - **Mermaid Diagrams**: Use `mermaid` identifier in code blocks.
 - **Math Equations**: Use `$...$` for inline and `$$...$$` for block equations.
 - **Tables**: Automatically convert Markdown tables to HTML.
-
-This guide provides a concise overview for integrating and using the `MarkdownRenderer` library in web applications.

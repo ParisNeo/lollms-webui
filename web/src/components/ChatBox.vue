@@ -344,9 +344,7 @@
                                         title="Real-time audio mode"
                                     >
                                         <template #icon>
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 001.414 1.414m2.828-9.9a9 9 0 012.828-2.828"/>
-                                        </svg>
+                                            🍓
                                         </template>
                                     </ChatBarButton>
 

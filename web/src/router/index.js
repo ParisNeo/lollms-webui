@@ -73,12 +73,12 @@ const router = createRouter({
       component: DiscussionsView
     },
     {
-      path: '/',
+      path: '/interactive/',
       name: 'interactive',
       component: InteractiveView
     },
     {
-      path: '/',
+      path: '/nodes/',
       name: 'nodes',
       component: NodesView
     },

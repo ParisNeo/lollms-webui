@@ -11,7 +11,7 @@
           </div>
           <div class="flex flex-col items-start">
             <h1 class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
-              LoLLMS
+              L🍓LLMS
             </h1>
             <p class="text-2xl text-gray-600 dark:text-gray-300 italic mt-2">
               Lord of Large Language And Multimodal Systems
@@ -21,14 +21,14 @@
         
         <div class="space-y-8 animate-fade-in-up">
           <h2 class="text-4xl font-semibold text-gray-800 dark:text-gray-200">
-            Welcome to LoLLMS WebUI
+            Welcome to L🍓LLMS WebUI
           </h2>
           <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Embark on a journey through the realm of advanced AI with LoLLMS, your ultimate companion for intelligent conversations and multimodal interactions. Unleash the power of large language models and explore new frontiers in artificial intelligence.
+            Embark on a journey through the realm of advanced AI with L🍓LLMS, your ultimate companion for intelligent conversations and multimodal interactions. Unleash the power of large language models and explore new frontiers in artificial intelligence.
           </p>
           <div class="mt-12 space-y-6">
             <p class="text-lg text-gray-700 dark:text-gray-300">
-              Discover the capabilities of LoLLMS:
+              Discover the capabilities of L🍓LLMS:
             </p>
             <ul class="text-left list-disc list-inside text-gray-600 dark:text-gray-300 space-y-2">
               <li>Engage in natural language conversations</li>
