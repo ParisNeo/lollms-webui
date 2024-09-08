@@ -272,6 +272,7 @@ async def download_app(input_data: AppNameInput):
 @router.post("/upload_app")
 async def upload_app(client_id: str, file: UploadFile = File(...)):
     check_access(lollmsElfServer, client_id)
+    sanitize_path(file.filename)
     
     # Create a temporary directory to extract the zip file
     temp_dir = lollmsElfServer.lollms_paths.personal_path / "temp"
