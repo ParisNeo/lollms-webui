@@ -96,8 +96,8 @@
                         <div v-show="!sc_collapsed" ><i data-feather='chevron-down'></i></div>
 
 
-                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
-                            System status</h3>
+                        <p class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            System status</p>
                         <div class="mr-2">|</div>
 
                         <div class=" text-base font-semibold cursor-pointer select-none items-center">
@@ -109,10 +109,10 @@
                                             <!-- GPU IMAGE  -->
                                             <img :src="SVGGPU"  width="25" height="25">
 
-                                            <h3 class="font-bold font-large text-lg">
+                                            <p class="font-bold font-large text-lg">
                                                 <div>{{ computedFileSize(item.used_vram) }} / {{ computedFileSize(item.total_vram) }} ({{ item.percentage }}%)
                                                 </div>
-                                            </h3>
+                                            </p>
                                         </div>
                                     </div>
                                     <div v-if="vramUsage&& vramUsage.gpus && vramUsage.gpus.length >1">
@@ -120,23 +120,23 @@
 
                                             <!-- GPU IMAGE  -->
                                             <img :src="SVGGPU"  width="25" height="25">
-                                            <h3 class="font-bold font-large text-lg">
+                                            <p class="font-bold font-large text-lg">
                                                 <div> {{ vramUsage.gpus.length }}x
                                                 </div>
-                                            </h3>
+                                            </p>
 
                                         </div>
                                     </div>
                                 </div>
                                 <i data-feather="cpu" title="CPU Ram" class="w-5 h-5 mx-1 flex-shrink-0"></i>
-                                <h3 class="font-bold font-large text-lg">
+                                <p class="font-bold font-large text-lg">
                                     <div>{{ ram_usage }} / {{ ram_total_space }} ({{ ram_percent_usage }}%)</div>
-                                </h3>
+                                </p>
                                 <i data-feather="hard-drive" title="Hard drive" class="w-5 h-5 mx-1 flex-shrink-0"></i>
-                                <h3 class="font-bold font-large text-lg">
+                                <p class="font-bold font-large text-lg">
                                     <div> {{ disk_binding_models_usage }} / {{ disk_total_space }} ({{ disk_percent_usage
                                     }}%)</div>
-                                </h3>
+                                </p>
                             </div>
                         </div>
                     </button>
@@ -301,8 +301,8 @@
                         <div v-show="mainconf_collapsed" ><i data-feather='chevron-right'></i></div>
                         <div v-show="!mainconf_collapsed" ><i data-feather='chevron-down'></i></div>
 
-                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
-                            Main configurations</h3>
+                        <p class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            Main configurations</p>
                     </button>
                 </div>
                 <div :class="{ 'hidden': mainconf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
@@ -1101,8 +1101,8 @@
                         <div v-show="data_conf_collapsed" ><i data-feather='chevron-right'></i></div>
                         <div v-show="!data_conf_collapsed" ><i data-feather='chevron-down'></i></div>
 
-                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
-                            Data management settings</h3>
+                        <p class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            Data management settings</p>
                     </button>
                 </div>
                 <div :class="{ 'hidden': data_conf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
@@ -1577,8 +1577,8 @@
                         <div v-show="internet_conf_collapsed" ><i data-feather='chevron-right'></i></div>
                         <div v-show="!internet_conf_collapsed" ><i data-feather='chevron-down'></i></div>
 
-                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
-                            Internet</h3>
+                        <p class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            Internet</p>
                     </button>
                 </div>
 
@@ -1746,8 +1746,8 @@
                         <div v-show="servers_conf_collapsed" ><i data-feather='chevron-right'></i></div>
                         <div v-show="!servers_conf_collapsed" ><i data-feather='chevron-down'></i></div>
 
-                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
-                            Services Zoo</h3>
+                        <p class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            Services Zoo</p>
                     </button>
                 </div>
 
@@ -3564,8 +3564,8 @@
                         <div v-show="bzc_collapsed" ><i data-feather='chevron-right'></i></div>
                         <div v-show="!bzc_collapsed" ><i data-feather='chevron-down'></i></div>
 
-                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
-                            Binding zoo</h3>
+                        <p class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            Binding zoo</p>
                         <div v-if="!configFile.binding_name" class="text-base text-red-600 flex gap-3 items-center mr-2">
                             <i data-feather="alert-triangle" class="flex-shrink-0"></i>
                             No binding selected!
@@ -3578,10 +3578,10 @@
 
                             <div class="flex gap-1 items-center">
                                 <img :src="imgBinding" class="w-8 h-8 rounded-full object-fill text-blue-700">
-                                <h3 class="font-bold font-large text-lg line-clamp-1">
+                                <p class="font-bold font-large text-lg line-clamp-1">
                                     <!-- {{ configFile.binding_name }} -->
                                     {{ binding_name }}
-                                </h3>
+                                </p>
                             </div>
                         </div>
                     </button>
@@ -3632,8 +3632,8 @@
                         <div v-show="mzc_collapsed" ><i data-feather='chevron-right'></i></div>
                         <div v-show="!mzc_collapsed" ><i data-feather='chevron-down'></i></div>
 
-                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
-                            Models zoo</h3>
+                        <p class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            Models zoo</p>
                         <!-- SPINNER -->
                         <div class="flex flex-row items-center">
                             <div v-if="!configFile.binding_name"
@@ -3654,9 +3654,9 @@
                                 class="text-base font-semibold cursor-pointer select-none items-center">
                                 <div class="flex gap-1 items-center">
                                     <img :src="imgModel" class="w-8 h-8 rounded-lg object-fill">
-                                    <h3 class="font-bold font-large text-lg line-clamp-1">
+                                    <p class="font-bold font-large text-lg line-clamp-1">
                                         {{ configFile.model_name }}
-                                    </h3>
+                                    </p>
                                 </div>
                             </div>
 
@@ -3872,8 +3872,8 @@
                         class="text-2xl hover:text-primary  p-2 -m-2 text-left w-full  flex items-center">
                         <div v-show="pzc_collapsed" ><i data-feather='chevron-right'></i></div>
                         <div v-show="!pzc_collapsed" ><i data-feather='chevron-down'></i></div>
-                        <h3 class="text-lg font-semibold cursor-pointer select-none mr-2">
-                            Personalities zoo</h3>
+                        <p class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            Personalities zoo</p>
 
 
                         <div v-if="configFile.personalities" class="mr-2">|</div>
@@ -4049,8 +4049,8 @@
                         class="text-2xl hover:text-primary  p-2 -m-2 w-full text-left flex items-center">
                         <div v-show="mc_collapsed" ><i data-feather='chevron-right'></i></div>
                         <div v-show="!mc_collapsed" ><i data-feather='chevron-down'></i></div>
-                        <h3 class="text-lg font-semibold cursor-pointer select-none">
-                            Model Configuration</h3>
+                        <p class="text-lg font-semibold cursor-pointer select-none">
+                            Model Configuration</p>
                     </button>
                 </div>
                 <div :class="{ 'hidden': mc_collapsed }" class="flex flex-col mb-2 p-2">
