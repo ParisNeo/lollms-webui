@@ -1,5 +1,5 @@
 <template>
-  <div class="app-zoo background-color w-full p-6 overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+  <div class="app-zoo background-color w-full p-6 pb-20 overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
     <nav class="panels-color shadow-lg rounded-lg p-4 max-w-4xl mx-auto mb-50 pb-50">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center space-x-4">
@@ -161,8 +161,8 @@ export default {
       selectedFile: null,
       isUploading: false,
       error: '',
-      sortBy: 'name',
-      sortOrder: 'asc',
+      sortBy: 'update',
+      sortOrder: 'desc',
     };
   },
   computed: {
