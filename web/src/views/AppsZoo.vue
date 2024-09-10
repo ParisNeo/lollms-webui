@@ -1,5 +1,5 @@
 <template>
-  <div class="app-zoo background-color w-full p-6 pb-50 overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+  <div class="app-zoo background-color w-full p-6 overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
     <nav class="panels-color shadow-lg rounded-lg p-4 max-w-4xl mx-auto mb-50 pb-50">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center space-x-4">
@@ -57,7 +57,17 @@
             </option>
           </select>
         </div>
-        
+        <div class="flex items-center space-x-4">
+          <label for="installed-only" class="font-semibold">
+            <input 
+              id="installed-only" 
+              type="checkbox" 
+              v-model="showOnlyInstalled"
+              class="mr-2"
+            >
+            Show only installed apps
+          </label>
+        </div>        
         <div class="flex items-center space-x-4">
           <label for="sort-select" class="font-semibold">Sort by:</label>
           <select 
@@ -163,6 +173,7 @@ export default {
       error: '',
       sortBy: 'update',
       sortOrder: 'desc',
+      showOnlyInstalled: false,
     };
   },
   computed: {
@@ -190,7 +201,8 @@ export default {
                               app.description.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
                               app.author.toLowerCase().includes(this.searchQuery.toLowerCase());
         const matchesCategory = this.selectedCategory === 'all' || app.category === this.selectedCategory;
-        return matchesSearch && matchesCategory;
+        const matchesInstalled = !this.showOnlyInstalled || app.installed;
+        return matchesSearch && matchesCategory && matchesInstalled;
       });
     },
     sortedAndFilteredApps() {
