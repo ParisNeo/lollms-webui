@@ -1001,7 +1001,9 @@ export default {
           this.is_recording = false;
           this.pending = false;
           console.log(response)
-          this.text += response.data.text
+          this.text += response.data
+          console.log("text")
+          console.log(this.text)
 
           console.log(response.data)
           this.presets=response.data

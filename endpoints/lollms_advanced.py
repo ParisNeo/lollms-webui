@@ -507,7 +507,9 @@ def stop_recording(data:Identification):
     lollmsElfServer.info("Stopping audio capture")
     fn = lollmsElfServer.audioNinja.stop_recording()
     lollmsElfServer.audioNinja = None
-    if lollmsElfServer.stt:
+    if lollmsElfServer.stt and fn:
         text = lollmsElfServer.stt.transcribe(fn)
         return text
+    else:
+        return ""
 
