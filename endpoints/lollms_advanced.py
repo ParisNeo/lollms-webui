@@ -28,6 +28,11 @@ import re
 import subprocess   
 from typing import Optional
 
+from fastapi import FastAPI, Query, HTTPException
+from fastapi.responses import FileResponse, StreamingResponse
+from pydantic import BaseModel
+import io
+
 def validate_file_path(path):
     try:
         sanitized_path = sanitize_path(path, allow_absolute_path=False)
@@ -47,7 +52,11 @@ from utilities.execution_engines.graphviz_execution_engine import execute_graphv
 from utilities.execution_engines.svg_execution_engine import execute_svg
 
 
-
+import os
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import JSONResponse
+import tempfile
+import shutil
 
 # ----------------------- Defining router and main class ------------------------------
 
@@ -513,3 +522,61 @@ def stop_recording(data:Identification):
     else:
         return ""
 
+
+@router.post("/transcribe")
+async def transcribe_audio(file: UploadFile = File(...)):
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as temp_file:
+        # Copy the contents of the uploaded file to the temporary file
+        shutil.copyfileobj(file.file, temp_file)
+        temp_file_path = temp_file.name
+
+    try:
+        if hasattr(lollmsElfServer, 'stt') and lollmsElfServer.stt:
+            text = lollmsElfServer.stt.transcribe(temp_file_path)
+            return JSONResponse(content={"transcription": text})
+        else:
+            return JSONResponse(content={"error": "STT service not available"}, status_code=503)
+    finally:
+        # Clean up the temporary file
+        os.unlink(temp_file_path)
+
+
+
+class TTSRequest(BaseModel):
+    text: str
+    speaker: str = None
+    language: str = "en"
+
+@router.post("/tts/file")
+async def text_to_speech_file(request: TTSRequest):
+    try:
+        file_path = lollmsElfServer.tts.tts_file(
+            text=request.text,
+            file_name_or_path="output.wav",
+            speaker=request.speaker,
+            language=request.language
+        )
+        return FileResponse(file_path, media_type="audio/wav", filename="speech.wav")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/tts/stream")
+async def text_to_speech_stream(request: TTSRequest):
+    try:
+        audio_data = lollmsElfServer.tts.tts_audio(
+            text=request.text,
+            speaker=request.speaker,
+            language=request.language
+        )
+        return StreamingResponse(io.BytesIO(audio_data), media_type="audio/wav")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+@router.get("/tts/voices")
+async def get_available_voices():
+    try:
+        voices = lollmsElfServer.tts.get_voices()
+        return JSONResponse(content={"voices": voices})
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)

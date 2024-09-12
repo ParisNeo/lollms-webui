@@ -164,7 +164,7 @@ openai_tts_voice: "alloy"
 
 
 elevenlabs_tts_key: ""
-elevenlabs_tts_model_id: "eleven_monolingual_v2"
+elevenlabs_tts_model_id: "eleven_turbo_v2_5"
 elevenlabs_tts_voice_stability: 0.5
 elevenlabs_tts_voice_boost: 0.5
 elevenlabs_tts_voice_id: EXAVITQu4vr4xnSDxMaL
