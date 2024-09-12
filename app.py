@@ -89,7 +89,7 @@ from lollms.app import LollmsApplication
 from lollms.paths import LollmsPaths
 from lollms.main_config import LOLLMSConfig
 from lollms.utilities import trace_exception
-from lollms.security import sanitize_path, MultipartBoundaryCheck
+from lollms.security import sanitize_path
 from lollms_webui import LOLLMSWebUI
 from pathlib import Path
 from ascii_colors import ASCIIColors
@@ -124,9 +124,12 @@ def get_ip_addresses():
 app = FastAPI(title="LoLLMS", description="This is the LoLLMS-Webui API documentation")
 
 
-# Add the MultipartBoundaryCheck middleware
-app.add_middleware(MultipartBoundaryCheck)
-
+try:
+    from lollms.security import MultipartBoundaryCheck
+    # Add the MultipartBoundaryCheck middleware
+    app.add_middleware(MultipartBoundaryCheck)
+except:
+    print("Couldn't activate MultipartBoundaryCheck")
 
 #app.mount("/socket.io", StaticFiles(directory="path/to/socketio.js"))
 
