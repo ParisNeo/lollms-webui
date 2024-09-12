@@ -818,6 +818,108 @@ async listModels(host_address = this.host_address) {
 }
 }
 
+class TextChunker {
+  constructor(chunkSize = 512, overlap = 0, tokenizer = null, model = null) {
+    this.chunkSize = chunkSize;
+    this.overlap = overlap;
+    this.tokenizer = tokenizer || new TikTokenTokenizer();
+    this.model = model;
+  }
+
+  getTextChunks(text, doc, cleanChunk = true, minNbTokensInChunk = 10) {
+    const paragraphs = text.split('\n\n');
+    const chunks = [];
+    let currentChunk = [];
+    let currentTokens = 0;
+    let chunkId = 0;
+
+    for (const paragraph of paragraphs) {
+      const cleanedParagraph = cleanChunk ? paragraph.trim() : paragraph;
+      const paragraphTokens = this.tokenizer.tokenize(cleanedParagraph).length;
+
+      if (currentTokens + paragraphTokens > this.chunkSize) {
+        if (currentTokens > minNbTokensInChunk) {
+          let chunkText = currentChunk.join('\n\n');
+          if (cleanChunk) {
+            chunkText = TextChunker.removeUnnecessaryReturns(chunkText);
+          }
+          const chunk = new Chunk(doc, '', chunkText, currentTokens, chunkId);
+          chunkId++;
+          chunks.push(chunk);
+        }
+
+        if (this.overlap > 0) {
+          currentChunk = [...currentChunk.slice(-this.overlap), cleanedParagraph];
+        } else {
+          currentChunk = [cleanedParagraph];
+        }
+        currentTokens = currentChunk.reduce((sum, p) => sum + this.tokenizer.tokenize(p).length, 0);
+      } else {
+        currentChunk.push(cleanedParagraph);
+        currentTokens += paragraphTokens;
+      }
+    }
+
+    if (currentChunk.length > 0 && currentTokens > minNbTokensInChunk) {
+      let chunkText = currentChunk.join('\n\n');
+      if (cleanChunk) {
+        chunkText = TextChunker.removeUnnecessaryReturns(chunkText);
+      }
+      const chunk = new Chunk(doc, '', chunkText, currentTokens, chunkId);
+      chunks.push(chunk);
+    }
+
+    return chunks;
+  }
+
+  static removeUnnecessaryReturns(paragraph) {
+    const lines = paragraph.split('\n');
+    return lines.filter(line => line.trim()).join('\n');
+  }
+
+  static chunkText(text, tokenizer, chunkSize = 512, overlap = 0, cleanChunk = true, minNbTokensInChunk = 10) {
+    const paragraphs = text.split('\n\n');
+    const chunks = [];
+    let currentChunk = [];
+    let currentTokens = 0;
+
+    for (const paragraph of paragraphs) {
+      const cleanedParagraph = cleanChunk ? paragraph.trim() : paragraph;
+      const paragraphTokens = tokenizer.tokenize(cleanedParagraph).length;
+
+      if (currentTokens + paragraphTokens > chunkSize) {
+        if (currentTokens > minNbTokensInChunk) {
+          let chunkText = currentChunk.join('\n\n');
+          if (cleanChunk) {
+            chunkText = TextChunker.removeUnnecessaryReturns(chunkText);
+          }
+          chunks.push(chunkText);
+        }
+
+        if (overlap > 0) {
+          currentChunk = [...currentChunk.slice(-overlap), cleanedParagraph];
+        } else {
+          currentChunk = [cleanedParagraph];
+        }
+        currentTokens = currentChunk.reduce((sum, p) => sum + tokenizer.tokenize(p).length, 0);
+      } else {
+        currentChunk.push(cleanedParagraph);
+        currentTokens += paragraphTokens;
+      }
+    }
+
+    if (currentChunk.length > 0 && currentTokens > minNbTokensInChunk) {
+      let chunkText = currentChunk.join('\n\n');
+      if (cleanChunk) {
+        chunkText = TextChunker.removeUnnecessaryReturns(chunkText);
+      }
+      chunks.push(chunkText);
+    }
+
+    return chunks;
+  }
+}
+
 class TasksLibrary {
 constructor(lollms) {
   this.lollms = lollms;
