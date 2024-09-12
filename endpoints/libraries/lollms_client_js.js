@@ -1157,7 +1157,11 @@ async sequentialChunksSummary({
   return summaries.join("\n");
 }
 
-// Placeholder methods for stepStart, stepEnd, fastGen
+// Placeholder methods for step stepStart, stepEnd, fastGen
+step(message) {
+  console.log(message);
+}
+
 stepStart(message) {
   console.log(message);
 }
