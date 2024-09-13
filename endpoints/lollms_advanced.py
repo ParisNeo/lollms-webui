@@ -552,7 +552,7 @@ async def text_to_speech_file(request: TTSRequest):
     try:
         file_path = lollmsElfServer.tts.tts_file(
             text=request.text,
-            file_name_or_path="output.wav",
+            file_name_or_path=lollmsElfServer.lollms_paths.personal_outputs_path/"output.wav",
             speaker=request.speaker,
             language=request.language
         )
