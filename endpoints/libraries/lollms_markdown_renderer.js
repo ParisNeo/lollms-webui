@@ -33,6 +33,9 @@
 // <!-- Render math -->
 // <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css">
 // <script src="https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.js"></script>
+// <!-- Render graphviz -->
+// <script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/viz.js"></script>
+// <script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/full.render.js"></script>
 // Don't forget to get the css too <link rel="stylesheet" href="/lollms_assets/css/lollms_markdown_renderer">
 
 // Make sure there is a global variable called mr that instanciate MarkdownRenderer
@@ -93,6 +96,117 @@ class MarkdownRenderer {
 
         return text;
     }
+
+    async renderGraphvizDiagrams(text) {
+        // Check if viz.js is loaded
+        if (typeof Viz === 'undefined') {
+            console.warn('Viz.js is not loaded. Graphviz diagrams will not be rendered.');
+            return text;
+        }
+    
+        const graphvizCodeRegex = /```graphviz\n([\s\S]*?)```/g;
+        const matches = text.match(graphvizCodeRegex);
+    
+        if (!matches) return text;
+    
+        for (const match of matches) {
+            const graphvizCode = match.replace(/```graphviz\n/, '').replace(/```$/, '');
+            const uniqueId = 'graphviz-' + Math.random().toString(36).substr(2, 9);
+    
+            try {
+                const viz = new Viz();
+                const result = await viz.renderSVGElement(graphvizCode);
+                const svgString = new XMLSerializer().serializeToString(result);
+    
+                const htmlCode = `
+                    <div class="graphviz-container relative flex justify-center items-center mt-4 mb-4 w-full">
+                        <div class="graphviz-diagram bg-white p-4 rounded-lg shadow-md overflow-auto w-full" style="max-height: 80vh;">
+                            <div id="${uniqueId}" style="transform-origin: top left; transition: transform 0.3s;">
+                                ${svgString}
+                            </div>
+                        </div>
+                        <div class="absolute top-2 right-2 flex gap-1">
+                            <button onclick="gv.zoomGraphviz('${uniqueId}', 1.1)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    <line x1="11" y1="8" x2="11" y2="14"></line>
+                                    <line x1="8" y1="11" x2="14" y2="11"></line>
+                                </svg>
+                            </button>
+                            <button onclick="gv.zoomGraphviz('${uniqueId}', 0.9)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    <line x1="8" y1="11" x2="14" y2="11"></line>
+                                </svg>
+                            </button>
+                            <button onclick="gv.saveGraphvizAsPNG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                                PNG
+                            </button>
+                            <button onclick="gv.saveGraphvizAsSVG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                                SVG
+                            </button>
+                        </div>
+                    </div>
+                `;
+                text = text.replace(match, htmlCode);
+            } catch (error) {
+                console.error('Graphviz rendering failed:', error);
+                text = text.replace(match, `<div class="graphviz-error bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">Failed to render diagram</div>`);
+            }
+        }
+    
+        return text;
+    }
+    
+    // Helper object for Graphviz operations
+    gv = {
+        zoomGraphviz: function(id, factor) {
+            const element = document.getElementById(id);
+            if (element) {
+                const currentScale = element.style.transform ? parseFloat(element.style.transform.replace('scale(', '').replace(')', '')) : 1;
+                const newScale = currentScale * factor;
+                element.style.transform = `scale(${newScale})`;
+            }
+        },
+    
+        saveGraphvizAsPNG: function(id) {
+            const svg = document.getElementById(id).querySelector('svg');
+            if (svg) {
+                const svgData = new XMLSerializer().serializeToString(svg);
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                img.onload = function() {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    const pngUrl = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.href = pngUrl;
+                    link.download = 'graphviz_diagram.png';
+                    link.click();
+                };
+                img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+            }
+        },
+    
+        saveGraphvizAsSVG: function(id) {
+            const svg = document.getElementById(id).querySelector('svg');
+            if (svg) {
+                const svgData = new XMLSerializer().serializeToString(svg);
+                const blob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'graphviz_diagram.svg';
+                link.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+    };
+    
 
     async renderSVG(text) {
         const svgCodeRegex = /```svg\n([\s\S]*?)```/g;
@@ -421,6 +535,9 @@ class MarkdownRenderer {
     async renderMarkdown(text) {
       // Handle Mermaid graphs first
       text = await this.renderMermaidDiagrams(text);
+
+      text = await this.renderGraphvizDiagrams(text);
+      
 
       // Handle code blocks with syntax highlighting and copy button
       text = await this.renderCodeBlocks(text);
