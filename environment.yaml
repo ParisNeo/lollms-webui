@@ -1,0 +1,43 @@
+name: lollms_env
+channels:
+  - defaults
+  - conda-forge  # Adds a wider selection of packages, especially for less common ones
+dependencies:
+  - python=3.11
+  - numpy=1.26.*
+  - pandas
+  - pillow>=9.5.0
+  - pyyaml
+  - requests
+  - rich
+  - scipy
+  - tqdm
+  - setuptools
+  - wheel
+  - psutil
+  - pytest
+  - gitpython
+  - beautifulsoup4
+  - packaging
+  - fastapi
+  - uvicorn
+  - pydantic
+  - selenium
+  - aiofiles
+  - ffmpeg
+  - pip  # Conda will manage pip installation
+  - pip:
+    - colorama
+    - ascii-colors>=0.4.2
+    - python-multipart
+    - python-socketio
+    - python-socketio[client]
+    - python-socketio[asyncio_client]
+    - tiktoken
+    - pipmaster>=0.1.7
+    - lollmsvectordb>=1.1.0
+    - freedom-search>=0.1.9
+    - scrapemaster>=0.2.0
+    - lollms_client>=0.7.5
+    - zipfile36
+    - freedom_search

@@ -92,6 +92,20 @@ source activate "$INSTALL_ENV_DIR" || ( echo && echo "Conda environment activati
 # install conda
 conda install conda -y
 
+echo "Installing pytorch (Required for RAG)"
+# Check if CUDA-enabled device is available
+if command -v nvidia-smi &> /dev/null && nvidia-smi > /dev/null 2>&1; then
+    echo "CUDA-enabled device detected."
+    echo "Installing PyTorch with CUDA support..."
+    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+else
+    echo "No CUDA-enabled device detected."
+    echo "Installing PyTorch for CPU only..."
+    pip install torch torchvision torchaudio
+fi
+
+echo "PyTorch installation complete."
+
 # Set default cuda toolkit to the one in the environment
 export CUDA_PATH="$INSTALL_ENV_DIR"
 

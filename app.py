@@ -243,7 +243,11 @@ if __name__ == "__main__":
     
 
     from lollms.server.endpoints.lollms_user import router as lollms_user_router
-    from lollms.server.endpoints.lollms_tts import router as lollms_xtts_add_router
+    from lollms.server.endpoints.lollms_tts import router as lollms_tts_add_router
+
+    from lollms.server.endpoints.lollms_xtts import router as lollms_xtts_add_router
+    from lollms.server.endpoints.lollms_whisper import router as lollms_whisper
+
     from lollms.server.endpoints.lollms_sd import router as lollms_sd_router    
     from lollms.server.endpoints.lollms_diffusers import router as lollms_diffusers_router    
     
@@ -308,7 +312,10 @@ if __name__ == "__main__":
         
         app.include_router(chat_bar_router)
         app.include_router(help_router)
+        
+        app.include_router(lollms_tts_add_router)
         app.include_router(lollms_xtts_add_router)
+        app.include_router(lollms_whisper)
         
         app.include_router(lollms_sd_router)   
         app.include_router(lollms_diffusers_router)           

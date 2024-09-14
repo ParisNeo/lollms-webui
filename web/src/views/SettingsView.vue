@@ -2414,21 +2414,30 @@
                         <Card title="Whisper audio transcription" :is_subcard="true" class="pb-2  m-2">
                             <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <tr>
+                                    <td style="min-width: 200px;">
+                                        <label for="whisper_activate" class="text-sm font-bold" style="margin-right: 1rem;">Activate Whisper at startup:</label>
+                                    </td>
+                                    <td>
+                                        <div class="flex flex-row">
+                                        <input
+                                        type="checkbox"
+                                        id="whisper_activate"
+                                        required
+                                        v-model="configFile.whisper_activate"
+                                        @change="settingsChanged=true"
+                                        class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                        >
+                                        </div>
+                                    </td>                                        
+                                </tr>
+                                <tr>
                                 <td style="min-width: 200px;">
-                                    <label for="whisper_activate" class="text-sm font-bold" style="margin-right: 1rem;">Activate Whisper at startup:</label>
+                                    <label for="xtts_current_language" class="text-sm font-bold" style="margin-right: 1rem;"></label>
                                 </td>
                                 <td>
-                                    <div class="flex flex-row">
-                                    <input
-                                    type="checkbox"
-                                    id="whisper_activate"
-                                    required
-                                    v-model="configFile.whisper_activate"
-                                    @change="settingsChanged=true"
-                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                    >
-                                    </div>
-                                </td>                                        </tr>
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallWhisperService">install whisper</button>
+                                </td>
+                                </tr>                                     
                                 <tr>
                                 <td style="min-width: 200px;">
                                     <label for="whisper_model" class="text-sm font-bold" style="margin-right: 1rem;">Whisper model:</label>
@@ -2556,6 +2565,14 @@
                         </Card>                        
                         <Card title="XTTS service" :is_subcard="true" class="pb-2  m-2">
                             <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="xtts_current_language" class="text-sm font-bold" style="margin-right: 1rem;">Current language:</label>
+                                </td>
+                                <td>
+                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallXTTSService">install xtts service</button>
+                                </td>
+                                </tr>                                        
                                 <tr>
                                 <td style="min-width: 200px;">
                                     <label for="xtts_current_language" class="text-sm font-bold" style="margin-right: 1rem;">Current language:</label>
@@ -4621,7 +4638,27 @@ export default {
         },
 
         upgradeDiffusersService(){
-            axios.post('upgrade_sd', {client_id:this.$store.state.client_id}, this.posts_headers)
+            axios.post('install_diffusers', {client_id:this.$store.state.client_id}, this.posts_headers)
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+
+        },
+        reinstallXTTSService(){
+            axios.post('install_xtts', {client_id:this.$store.state.client_id}, this.posts_headers)
+            .then(response => {
+
+            })
+            .catch(error => {
+            console.error(error);
+            });
+
+        },
+        reinstallWhisperService(){
+            axios.post('install_whisper', {client_id:this.$store.state.client_id}, this.posts_headers)
             .then(response => {
 
             })

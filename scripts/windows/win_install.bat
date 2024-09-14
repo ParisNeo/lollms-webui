@@ -3,18 +3,8 @@
 @rem This script will install miniconda and git with all dependencies for this project
 @rem This enables a user to install this project without manually installing conda and git.
 
-echo "      ___       ___           ___       ___       ___           ___      "
-echo "     /\__\     /\  \         /\__\     /\__\     /\__\         /\  \     "
-echo "    /:/  /    /::\  \       /:/  /    /:/  /    /::|  |       /::\  \    "
-echo "   /:/  /    /:/\:\  \     /:/  /    /:/  /    /:|:|  |      /:/\ \  \   "
-echo "  /:/  /    /:/  \:\  \   /:/  /    /:/  /    /:/|:|__|__   _\:\~\ \  \  "
-echo " /:/__/    /:/__/ \:\__\ /:/__/    /:/__/    /:/ |::::\__\ /\ \:\ \ \__\ "
-echo " \:\  \    \:\  \ /:/  / \:\  \    \:\  \    \/__/~~/:/  / \:\ \:\ \/__/ "
-echo "  \:\  \    \:\  /:/  /   \:\  \    \:\  \         /:/  /   \:\ \:\__\   "
-echo "   \:\  \    \:\/:/  /     \:\  \    \:\  \       /:/  /     \:\/:/  /   "
-echo "    \:\__\    \::/  /       \:\__\    \:\__\     /:/  /       \::/  /    "
-echo "     \/__/     \/__/         \/__/     \/__/     \/__/         \/__/     "
-echo V12
+echo "L🍓LLMS: Lord of Large Language and Multimodal Systems"
+echo V12 Strawberry
 echo -----------------
 echo By ParisNeo
 echo -----------------
@@ -83,6 +73,19 @@ call conda activate "%INSTALL_ENV_DIR%" || ( echo. && echo Conda environment act
 @rem install conda library
 call conda install conda -y
 
+echo Installing pytorch (required for RAG)
+:: Check if CUDA-enabled device is available
+nvidia-smi >nul 2>&1
+
+IF %ERRORLEVEL% EQU 0 (
+    echo CUDA-enabled device detected.
+    echo Installing PyTorch with CUDA support...
+    conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia -y
+) ELSE (
+    echo No CUDA-enabled device detected.
+    echo Installing PyTorch for CPU only...
+    cconda install pytorch torchvision torchaudio cpuonly -c pytorch -y
+)
 
 @rem clone the repository
 if exist lollms-webui\ (
@@ -103,7 +106,7 @@ if exist lollms-webui\ (
 
 cd
 
-pip install -r requirements.txt
+conda env update --file environment.yml
 
 @rem create launcher
 if exist ..\win_run.bat (
