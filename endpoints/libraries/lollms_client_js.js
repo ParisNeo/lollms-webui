@@ -108,6 +108,9 @@ class LollmsClient {
     console.log('Settings updated:', settings);
   }
 
+  separatorTemplate(){
+    return this.template.separator_template;
+  }
   system_message(){
     return this.template.start_header_id_template+this.template.system_message_template+this.template.end_header_id_template
   }
@@ -560,8 +563,8 @@ async generateCode(prompt, images = [], {
 } = {}){
   let response;
   const systemHeader = this.custom_message("Generation infos");
-  const codeInstructions = "Generated code must be put inside the adequate markdown code tag. Use this template:\n```language name\nCode\n```\nMake sure only a single code tag is generated at each dialogue turn.";
-  const fullPrompt = systemHeader + codeInstructions + this.separatorTemplate + prompt;
+  const codeInstructions = "Generated code must be put inside the adequate markdown code tag. Use this template:\n```language name\nCode\n```\nMake sure only a single code tag is generated at each dialogue turn.\n";
+  const fullPrompt = systemHeader + codeInstructions + this.separatorTemplate() + prompt;
 
   if (images.length > 0) {
       response = await this.generate_with_images(fullPrompt, images, {
@@ -592,7 +595,7 @@ async generateCode(prompt, images = [], {
           code = codes[0].content.split('\n').slice(0, -1).join('\n');
           while (!codes[0].is_complete) {
               console.warn("The AI did not finish the code, let's ask it to continue")
-              const continuePrompt = prompt + code + this.userFullHeader + "continue the code. Rewrite last line and continue the code." + this.separatorTemplate + this.aiFullHeader;
+              const continuePrompt = prompt + code + this.userFullHeader + "continue the code. Rewrite last line and continue the code." + this.separatorTemplate() + this.aiFullHeader;
               response = await this.generate(fullPrompt, {
                   n_predict: n_predict,
                   temperature: temperature,
@@ -635,7 +638,7 @@ async generateCodes(prompt, images = [], {
   let response;
   const systemHeader = this.custom_message("Generation infos");
   const codeInstructions = "Generated code must be put inside the adequate markdown code tag. Use this template:\n```language name\nCode\n```\n";
-  const fullPrompt = systemHeader + codeInstructions + this.separatorTemplate + prompt;
+  const fullPrompt = systemHeader + codeInstructions + this.separatorTemplate() + prompt;
 
   if (images.length > 0) {
     response = await this.generate_with_images(fullPrompt, images, {
@@ -668,7 +671,7 @@ async generateCodes(prompt, images = [], {
 
     while (!currentCode.is_complete) {
       console.warn("The AI did not finish the code, let's ask it to continue");
-      const continuePrompt = prompt + codeContent + this.userFullHeader + "continue the code. Rewrite last line and continue the code." + this.separatorTemplate + this.aiFullHeader;
+      const continuePrompt = prompt + codeContent + this.userFullHeader + "continue the code. Rewrite last line and continue the code." + this.separatorTemplate() + this.aiFullHeader;
       
       response = await this.generate(continuePrompt, {
         n_predict,

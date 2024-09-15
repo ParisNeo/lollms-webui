@@ -13,6 +13,8 @@ import threading
 import time
 import sys
 from typing import List, Tuple
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 expected_ascii_colors_version = "0.4.2"
 print(f"Checking ascii_colors ({expected_ascii_colors_version}) ...", end="", flush=True)
 if not PackageManager.check_package_installed_with_version("ascii_colors", expected_ascii_colors_version):
