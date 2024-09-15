@@ -210,6 +210,7 @@ async def open_folder_in_vscode(request: OpenFolderRequest):
 
 @router.get("/apps/{app_name}/{file}")
 async def get_app_file(app_name: str, file: str):
+    app_name=sanitize_path(app_name)
     file=sanitize_path(file)
     app_path = lollmsElfServer.lollms_paths.apps_zoo_path / app_name / file
     if not app_path.exists():
