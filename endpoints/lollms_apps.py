@@ -339,6 +339,8 @@ def get_current_conda_env():
 @router.post("/install/{app_name}")
 async def install_app(app_name: str, auth: AuthRequest):
     check_access(lollmsElfServer, auth.client_id)
+    app_name=sanitize_path(app_name)
+
     REPO_DIR = lollmsElfServer.lollms_paths.personal_path/"apps_zoo_repo"
     
     # Create the app directory
@@ -410,6 +412,7 @@ async def install_app(app_name: str, auth: AuthRequest):
 
 @router.post("/uninstall/{app_name}")
 async def uninstall_app(app_name: str, auth: AuthRequest):
+    app_name=sanitize_path(app_name)
     app_path = lollmsElfServer.lollms_paths.apps_zoo_path / app_name
     if app_path.exists():
         shutil.rmtree(app_path)
@@ -486,6 +489,8 @@ def load_apps_data():
 
 @router.get("/lollms_assets/{asset_type}/{file_name}")
 async def lollms_assets(asset_type: str, file_name: str):
+    asset_type = sanitize_path(asset_type)
+    file_name = sanitize_path(file_name)
     # Define the base path
     base_path = Path(__file__).parent
 
