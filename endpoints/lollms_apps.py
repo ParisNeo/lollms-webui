@@ -591,7 +591,8 @@ def run_server(app_path: Path):
 @router.post("/apps/start_server")
 async def start_app_server(request: OpenFolderRequest):
     check_access(lollmsElfServer, request.client_id)
-    app_path = lollmsElfServer.lollms_paths.apps_zoo_path / request.app_name
+    app_name = sanitize_path(request.app_name)
+    app_path = lollmsElfServer.lollms_paths.apps_zoo_path / app_name
     
     if not app_path.exists():
         raise HTTPException(status_code=404, detail="App not found")
