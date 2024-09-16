@@ -15,6 +15,7 @@ import sys
 from typing import List, Tuple
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+
 expected_ascii_colors_version = "0.4.2"
 print(f"Checking ascii_colors ({expected_ascii_colors_version}) ...", end="", flush=True)
 if not PackageManager.check_package_installed_with_version("ascii_colors", expected_ascii_colors_version):
@@ -72,7 +73,7 @@ packages: List[Tuple[str, str]] = [
     ("lollmsvectordb", "1.0.7"),
 ]
 
-def main():
+def check_pn_libs():
     ASCIIColors.cyan("Checking ParisNeo libraries installation")
     print()
 
@@ -82,7 +83,6 @@ def main():
 
     ASCIIColors.green("All packages have been checked and are up to date!")
 
-main()
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse
@@ -152,6 +152,10 @@ if __name__ == "__main__":
     root_path = Path(__file__).parent
     lollms_paths = LollmsPaths.find_paths(force_local=True, custom_default_cfg_path="configs/config.yaml")
     config = LOLLMSConfig.autoload(lollms_paths)
+
+    if config.auto_update:
+        check_pn_libs()
+
 
     if config.debug_log_file_path!="":
         ASCIIColors.log_path = config.debug_log_file_path
