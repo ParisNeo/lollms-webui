@@ -974,7 +974,8 @@ async summarizeText(
   maxSummarySize = 512,
   callback = null,
   chunkSummaryPostProcessing = null,
-  summaryMode = "SEQUENTIAL"
+  summaryMode = "SEQUENTIAL",
+  reformat=false
 ) {
   console.log("Tokenizing:")
   console.log(text)
@@ -982,6 +983,7 @@ async summarizeText(
   let tk = await this.tokenize(text);
   let prevLen = tk.length;
   let documentChunks = null;
+  console.log(`Text size: ${prevLen}`)
 
   while (tk.length > maxSummarySize && (documentChunks === null || documentChunks.length > 1)) {
       this.stepStart(`Compressing ${docName}...`);
@@ -1003,6 +1005,18 @@ async summarizeText(
       this.step(`Current text size: ${prevLen}, max summary size: ${maxSummarySize}`);
       this.stepEnd(`Compressing ${docName}...`);
       if (dtkLn <= 10) break; // it is not summarizing
+  }
+  if(reformat){
+    text = await this.lollms.generate(
+      [
+          this.lollms.system_message(),
+          `${text}`,
+          this.lollms.system_message(),
+          summaryInstruction,
+          "Do not add any extra comments.",
+          this.lollms.system_message() + answerStart
+      ].join("\n"),
+    );
   }
   return text;
 }
