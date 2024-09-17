@@ -438,70 +438,95 @@ class MarkdownRenderer {
     }
   
     handleParagraphs(text) {
-        // Split the text into lines
         let lines = text.split('\n');
         let inList = false;
         let inCodeBlock = false;
         let result = [];
-      
+        let currentParagraph = '';
+
         for (let i = 0; i < lines.length; i++) {
-          let line = lines[i].trim();
-      
-          // Check for code blocks
-          if (line.startsWith('```')) {
-            inCodeBlock = !inCodeBlock;
-            result.push(line);
-            continue;
-          }
-      
-          // If we're in a code block, don't process the line
-          if (inCodeBlock) {
-            result.push(line);
-            continue;
-          }
-      
-          // Check for list items
-          if (line.match(/^[-*+]\s/) || line.match(/^\d+\.\s/)) {
-            if (!inList) {
-              result.push(inList ? '' : '<ul>');
-              inList = true;
+            let line = lines[i].trim();
+
+            // Check for code blocks
+            if (line.startsWith('```')) {
+                if (currentParagraph) {
+                    result.push('<p>' + currentParagraph + '</p>');
+                    currentParagraph = '';
+                }
+                inCodeBlock = !inCodeBlock;
+                result.push(line);
+                continue;
             }
-            result.push('<li>' + line.replace(/^[-*+]\s/, '').replace(/^\d+\.\s/, '') + '</li>');
-          } 
-          // Check for headers
-          else if (line.startsWith('#')) {
-            let level = line.match(/^#+/)[0].length;
-            result.push(`<h${level}>${line.replace(/^#+\s/, '')}</h${level}>`);
-          }
-          // Check for horizontal rules
-          else if (line.match(/^(-{3,}|\*{3,}|_{3,})$/)) {
-            result.push('<hr>');
-          }
-          // Handle empty lines
-          else if (line === '') {
-            if (inList) {
-              result.push('</ul>');
-              inList = false;
+
+            // If we're in a code block, don't process the line
+            if (inCodeBlock) {
+                result.push(line);
+                continue;
             }
-            result.push('<br>');
-          }
-          // Regular paragraph
-          else {
-            if (inList) {
-              result.push('</ul>');
-              inList = false;
+
+            // Check for list items
+            if (line.match(/^[-*+]\s/) || line.match(/^\d+\.\s/)) {
+                if (currentParagraph) {
+                    result.push('<p>' + currentParagraph + '</p>');
+                    currentParagraph = '';
+                }
+                if (!inList) {
+                    result.push('<ul>');
+                    inList = true;
+                }
+                result.push('<li>' + line.replace(/^[-*+]\s/, '').replace(/^\d+\.\s/, '') + '</li>');
+            } 
+            // Check for headers
+            else if (line.startsWith('#')) {
+                if (currentParagraph) {
+                    result.push('<p>' + currentParagraph + '</p>');
+                    currentParagraph = '';
+                }
+                let level = line.match(/^#+/)[0].length;
+                result.push(`<h${level}>${line.replace(/^#+\s/, '')}</h${level}>`);
             }
-            result.push('<p>' + line + '</p>');
-          }
+            // Check for horizontal rules
+            else if (line.match(/^(-{3,}|\*{3,}|_{3,})$/)) {
+                if (currentParagraph) {
+                    result.push('<p>' + currentParagraph + '</p>');
+                    currentParagraph = '';
+                }
+                result.push('<hr>');
+            }
+            // Handle empty lines
+            else if (line === '') {
+                if (inList) {
+                    result.push('</ul>');
+                    inList = false;
+                }
+                if (currentParagraph) {
+                    result.push('<p>' + currentParagraph + '</p>');
+                    currentParagraph = '';
+                }
+            }
+            // Regular text
+            else {
+                if (inList) {
+                    result.push('</ul>');
+                    inList = false;
+                }
+                currentParagraph += (currentParagraph ? ' ' : '') + line;
+            }
         }
-      
+
         // Close any open list
         if (inList) {
-          result.push('</ul>');
+            result.push('</ul>');
         }
-      
+
+        // Add any remaining paragraph
+        if (currentParagraph) {
+            result.push('<p>' + currentParagraph + '</p>');
+        }
+
         return result.join('\n');
-      }
+    }
+
       
     initMathJax() {
         // Configure MathJax
