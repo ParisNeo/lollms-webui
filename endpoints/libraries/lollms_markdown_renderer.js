@@ -321,14 +321,15 @@ class MarkdownRenderer {
           return `<b>${code}</b>`;
       });
     }
-  
-    handleMathEquations(text) {
+
+    handleLatexEquations(text) {
         if (typeof katex === 'undefined') {
             console.error('KaTeX is not loaded. Make sure to include KaTeX scripts and CSS.');
             return text;
         }
     
-        return text.replace(/\\\[([\s\S]*?)\\\]|\$\$([\s\S]*?)\$\$|\$([^\n]+?)\$/g, function(match, p1, p2, p3) {
+        // Function to render a single equation
+        function renderEquation(match, p1, p2, p3, offset, string) {
             const equation = p1 || p2 || p3;
             const isDisplayMode = match.startsWith('\\[') || match.startsWith('$$');
             
@@ -340,9 +341,18 @@ class MarkdownRenderer {
                 });
             } catch (e) {
                 console.error("KaTeX rendering error:", e);
-                return `<span class="math-error">${match}</span>`; // Return error-marked original string if rendering fails
+                return `<span class="math-error">${match}</span>`;
             }
-        });
+        }
+    
+        // Handle display equations: \[...\] and $$...$$
+        text = text.replace(/\\\[([\s\S]*?)\\\]|\$\$([\s\S]*?)\$\$/g, renderEquation);
+    
+        // Handle inline equations: \(...\) and $...$
+        // Be careful not to match single $ used for currency
+        text = text.replace(/\\\(([\s\S]*?)\\\)|\$(\S.*?\S|\S)\$/g, renderEquation);
+    
+        return text;
     }
     
       
@@ -574,7 +584,7 @@ class MarkdownRenderer {
       text = this.handleInlineCode(text);
   
       // Handle LaTeX-style math equations
-      text = this.handleMathEquations(text);
+      text = this.handleLatexEquations(text);
   
       // Handle tables
       text = await this.handleTables(text);
