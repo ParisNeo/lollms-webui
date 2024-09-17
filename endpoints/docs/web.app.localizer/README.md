@@ -63,6 +63,15 @@ Apply translations to all elements with the `data-translate` attribute.
 
 ### HTML Usage
 Add the `data-translate` attribute to elements you want to localize:
+If your translation is plain text, then use:
+```html
+<element data-translate="key"></element>
+```
+If your translation contains html, then add data-translate-html entry:
+```html
+<element data-translate="key" data-translate-html></element>
+```
+
 
 ```html
 <h1 data-translate="welcome-message"></h1>

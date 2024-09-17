@@ -56,7 +56,13 @@ class WebAppLocalizer {
         const elements = document.querySelectorAll('[data-translate]');
         elements.forEach(element => {
             const key = element.getAttribute('data-translate');
-            element.textContent = this.translate(key);
+            const useHTML = element.hasAttribute('data-translate-html');
+            
+            if (useHTML) {
+                element.innerHTML = this.translate(key);
+            } else {
+                element.textContent = this.translate(key);
+            }
         });
     }
 

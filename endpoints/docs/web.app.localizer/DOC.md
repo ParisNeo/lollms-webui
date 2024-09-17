@@ -36,9 +36,15 @@ const localizer = new WebAppLocalizer(translations, localStoragePrefix, language
 ```
 
 ## HTML Usage
+If your translation is plain text, then use:
 ```html
 <element data-translate="key"></element>
 ```
+If your translation contains html, then add data-translate-html entry:
+```html
+<element data-translate="key" data-translate-html></element>
+```
+
 
 Apply translations: `localizer.apply();`
 Get the translation of a prompt with options:
