@@ -989,6 +989,7 @@ async summarizeText(
       this.stepStart(`Compressing ${docName}...`);
       let chunkSize = Math.floor(this.lollms.ctxSize * 0.6);
       documentChunks = TextChunker.chunkText(text, this.lollms, chunkSize, 0, true);
+      console.log(`documentChunks: ${documentChunks}`)
       text = await this.summarizeChunks({
           chunks: documentChunks,
           summaryInstruction,
