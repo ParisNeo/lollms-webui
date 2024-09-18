@@ -829,7 +829,7 @@ class TextChunker {
     this.model = model;
   }
 
-  getTextChunks(text, doc, cleanChunk = true, minNbTokensInChunk = 10) {
+  async getTextChunks(text, doc, cleanChunk = true, minNbTokensInChunk = 10) {
     const paragraphs = text.split('\n\n');
     const chunks = [];
     let currentChunk = [];
@@ -838,7 +838,7 @@ class TextChunker {
 
     for (const paragraph of paragraphs) {
       const cleanedParagraph = cleanChunk ? paragraph.trim() : paragraph;
-      const paragraphTokens = this.tokenizer.tokenize(cleanedParagraph).length;
+      const paragraphTokens = (await this.tokenizer.tokenize(cleanedParagraph)).length;
 
       if (currentTokens + paragraphTokens > this.chunkSize) {
         if (currentTokens > minNbTokensInChunk) {
@@ -856,7 +856,7 @@ class TextChunker {
         } else {
           currentChunk = [cleanedParagraph];
         }
-        currentTokens = currentChunk.reduce((sum, p) => sum + this.tokenizer.tokenize(p).length, 0);
+        currentTokens = currentChunk.reduce(async (sum, p) => sum + await this.tokenizer.tokenize(p).length, 0);
       } else {
         currentChunk.push(cleanedParagraph);
         currentTokens += paragraphTokens;
@@ -880,15 +880,14 @@ class TextChunker {
     return lines.filter(line => line.trim()).join('\n');
   }
 
-  static chunkText(text, tokenizer, chunkSize = 512, overlap = 0, cleanChunk = true, minNbTokensInChunk = 10) {
+  static async chunkText(text, tokenizer, chunkSize = 512, overlap = 0, cleanChunk = true, minNbTokensInChunk = 10) {
     const paragraphs = text.split('\n\n');
     const chunks = [];
     let currentChunk = [];
     let currentTokens = 0;
-
     for (const paragraph of paragraphs) {
       const cleanedParagraph = cleanChunk ? paragraph.trim() : paragraph;
-      const paragraphTokens = tokenizer.tokenize(cleanedParagraph).length;
+      const paragraphTokens = (await tokenizer.tokenize(cleanedParagraph)).length;
 
       if (currentTokens + paragraphTokens > chunkSize) {
         if (currentTokens > minNbTokensInChunk) {
@@ -904,13 +903,12 @@ class TextChunker {
         } else {
           currentChunk = [cleanedParagraph];
         }
-        currentTokens = currentChunk.reduce((sum, p) => sum + tokenizer.tokenize(p).length, 0);
+        currentTokens = currentChunk.reduce(async (sum, p) => sum + await tokenizer.tokenize(p).length, 0);
       } else {
         currentChunk.push(cleanedParagraph);
         currentTokens += paragraphTokens;
       }
-    }
-
+    }    
     if (currentChunk.length > 0 && currentTokens > minNbTokensInChunk) {
       let chunkText = currentChunk.join('\n\n');
       if (cleanChunk) {
@@ -988,7 +986,7 @@ async summarizeText(
   while (tk.length > maxSummarySize && (documentChunks === null || documentChunks.length > 1)) {
       this.stepStart(`Compressing ${docName}...`);
       let chunkSize = Math.floor(this.lollms.ctxSize * 0.6);
-      documentChunks = TextChunker.chunkText(text, this.lollms, chunkSize, 0, true);
+      documentChunks = await TextChunker.chunkText(text, this.lollms, chunkSize, 0, true);
       console.log(`documentChunks: ${documentChunks}`)
       text = await this.summarizeChunks({
           chunks: documentChunks,
@@ -1039,7 +1037,7 @@ async smartDataExtraction({
 
   while (tk.length > maxSummarySize) {
       let chunkSize = Math.floor(this.lollms.ctxSize * 0.6);
-      let documentChunks = TextChunker.chunkText(text, this.lollms, chunkSize, 0, true);
+      let documentChunks = await TextChunker.chunkText(text, this.lollms, chunkSize, 0, true);
       text = await this.summarizeChunks({
           chunks: documentChunks,
           summaryInstruction: dataExtractionInstruction,
