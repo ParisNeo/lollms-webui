@@ -54,9 +54,9 @@ def run_git_pull():
                     submodule_repo.git.fetch('origin')
                     submodule_repo.git.reset('--hard', 'origin/main')
                     submodule_repo.git.clean('-fd')
-                    print(f"Updated submodule: {submodule}.\nPlease report the error to ParisNeo either on Discord or on github.")
+                    ASCIIColors.success(f"Updated submodule: {submodule}.")
                 except Exception as ex:
-                    print(f"Couldn't update submodule {submodule}: {str(ex)}")
+                    print(f"Couldn't update submodule {submodule}: {str(ex)}\nPlease report the error to ParisNeo either on Discord or on github.")
             
             execution_path = Path(os.getcwd())
         except Exception as ex:
