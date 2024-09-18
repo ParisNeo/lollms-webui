@@ -453,12 +453,13 @@ class MarkdownRenderer {
         let inCodeBlock = false;
         let result = [];
         let currentParagraph = '';
-
+    
         for (let i = 0; i < lines.length; i++) {
-            let line = lines[i].trim();
-
+            let line = lines[i];
+            let trimmedLine = line.trim();
+    
             // Check for code blocks
-            if (line.startsWith('```')) {
+            if (trimmedLine.startsWith('```')) {
                 if (currentParagraph) {
                     result.push('<p>' + currentParagraph + '</p>');
                     currentParagraph = '';
@@ -467,15 +468,15 @@ class MarkdownRenderer {
                 result.push(line);
                 continue;
             }
-
+    
             // If we're in a code block, don't process the line
             if (inCodeBlock) {
                 result.push(line);
                 continue;
             }
-
+    
             // Check for list items
-            if (line.match(/^[-*+]\s/) || line.match(/^\d+\.\s/)) {
+            if (trimmedLine.match(/^[-*+]\s/) || trimmedLine.match(/^\d+\.\s/)) {
                 if (currentParagraph) {
                     result.push('<p>' + currentParagraph + '</p>');
                     currentParagraph = '';
@@ -484,19 +485,19 @@ class MarkdownRenderer {
                     result.push('<ul>');
                     inList = true;
                 }
-                result.push('<li>' + line.replace(/^[-*+]\s/, '').replace(/^\d+\.\s/, '') + '</li>');
+                result.push('<li>' + trimmedLine.replace(/^[-*+]\s/, '').replace(/^\d+\.\s/, '') + '</li>');
             } 
             // Check for headers
-            else if (line.startsWith('#')) {
+            else if (trimmedLine.startsWith('#')) {
                 if (currentParagraph) {
                     result.push('<p>' + currentParagraph + '</p>');
                     currentParagraph = '';
                 }
-                let level = line.match(/^#+/)[0].length;
-                result.push(`<h${level}>${line.replace(/^#+\s/, '')}</h${level}>`);
+                let level = trimmedLine.match(/^#+/)[0].length;
+                result.push(`<h${level}>${trimmedLine.replace(/^#+\s/, '')}</h${level}>`);
             }
             // Check for horizontal rules
-            else if (line.match(/^(-{3,}|\*{3,}|_{3,})$/)) {
+            else if (trimmedLine.match(/^(-{3,}|\*{3,}|_{3,})$/)) {
                 if (currentParagraph) {
                     result.push('<p>' + currentParagraph + '</p>');
                     currentParagraph = '';
@@ -504,7 +505,7 @@ class MarkdownRenderer {
                 result.push('<hr>');
             }
             // Handle empty lines
-            else if (line === '') {
+            else if (trimmedLine === '') {
                 if (inList) {
                     result.push('</ul>');
                     inList = false;
@@ -513,6 +514,7 @@ class MarkdownRenderer {
                     result.push('<p>' + currentParagraph + '</p>');
                     currentParagraph = '';
                 }
+                result.push('<br>'); // Add a line break for empty lines
             }
             // Regular text
             else {
@@ -520,22 +522,23 @@ class MarkdownRenderer {
                     result.push('</ul>');
                     inList = false;
                 }
-                currentParagraph += (currentParagraph ? ' ' : '') + line;
+                currentParagraph += (currentParagraph ? '\n' : '') + line;
             }
         }
-
+    
         // Close any open list
         if (inList) {
             result.push('</ul>');
         }
-
+    
         // Add any remaining paragraph
         if (currentParagraph) {
             result.push('<p>' + currentParagraph + '</p>');
         }
-
+    
         return result.join('\n');
     }
+    
 
       
     initMathJax() {
