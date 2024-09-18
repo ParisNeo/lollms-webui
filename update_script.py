@@ -60,7 +60,7 @@ def run_git_pull():
             
             execution_path = Path(os.getcwd())
         except Exception as ex:
-            error_message = f"Couldn't update submodules: {str(ex)}"
+            error_message = f"Couldn't update submodules: {str(ex)}\nPlease report the error to ParisNeo either on Discord or on github."
             ASCIIColors.error(error_message)
             # show_error_dialog(error_message)
         try:
