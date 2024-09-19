@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 136
+version: 137
 binding_name: null
 model_name: null
 model_variant: null
@@ -101,7 +101,7 @@ copy_to_clipboard_add_all_details: false
 
 # -------------------- Services global configurations --------------------------
 # Select the active test to speach, text to image and speach to text services
-active_tts_service: "None" # xtts (offline), openai_tts (API key required), elevenlabs_tts (API key required)
+active_tts_service: "None" # xtts (offline), openai_tts (API key required), elevenlabs_tts, fish_tts (API key required)
 active_tti_service: "None" # autosd (offline), diffusers (offline), diffusers_client (online), dall-e (online), midjourney (online)
 active_stt_service: "None" # whisper (offline), asr (offline or online), openai_whiosper (API key required)
 active_ttm_service: "None" # musicgen (offline)
@@ -168,6 +168,10 @@ elevenlabs_tts_model_id: "eleven_turbo_v2_5"
 elevenlabs_tts_voice_stability: 0.5
 elevenlabs_tts_voice_boost: 0.5
 elevenlabs_tts_voice_id: EXAVITQu4vr4xnSDxMaL
+
+fish_tts_key: ""
+fish_tts_voice: "default"
+
 # ***************** TTI *****************
 
 use_negative_prompt: true

@@ -7,6 +7,7 @@
             <h3 class="font-bold text-xl text-gray-800">{{ app.name }}</h3>
             <p class="text-sm text-gray-600">Author: {{ app.author }}</p>
             <p class="text-sm text-gray-600">Version: {{ app.version }}</p>
+            <p class="text-sm text-gray-600">Category: {{ app.category }}</p>
             <p class="text-sm text-gray-600">Creation date: {{ formatDate(app.creation_date) }}</p>
             <p class="text-sm text-gray-600">Last update: {{ formatDate(app.last_update_date) }}</p>
             <p class="text-sm" :class="app.is_public ? 'text-green-600' : 'text-orange-600'">

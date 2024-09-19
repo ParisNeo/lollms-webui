@@ -1774,6 +1774,7 @@
                                     <option value="parler-tts">Parler-TTS</option>
                                     <option value="openai_tts">Open AI TTS</option>
                                     <option value="eleven_labs_tts">ElevenLabs TTS</option>
+                                    <option value="fish_tts">Fish TTS</option>
                                 </select>
                             </td>
                             </tr>
@@ -2940,7 +2941,45 @@
                                     </td>
                                 </tr>
                             </table>
-                        </Card>    
+                        </Card>
+                        <Card title="Fish TTS service" :is_subcard="true" class="pb-2 m-2">
+                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <tr>
+                                    <td style="min-width: 200px;">
+                                        <label for="fish_tts_key" class="text-sm font-bold" style="margin-right: 1rem;">Fish TTS key:</label>
+                                    </td>
+                                    <td>
+                                        <div class="flex flex-row">
+                                            <input
+                                                type="text"
+                                                id="fish_tts_key"
+                                                required
+                                                v-model="configFile.fish_tts_key"
+                                                @change="settingsChanged=true"
+                                                class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                            >
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="min-width: 200px;">
+                                        <label for="fish_tts_voice" class="text-sm font-bold" style="margin-right: 1rem;">Fish TTS voice:</label>
+                                    </td>
+                                    <td>
+                                        <div class="flex flex-row">
+                                            <input
+                                                type="text"
+                                                id="fish_tts_voice"
+                                                required
+                                                v-model="configFile.fish_tts_voice"
+                                                @change="settingsChanged=true"
+                                                class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                            >
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </Card>                        
                     </Card>
                 
                     <Card title="TTI services" :is_shrunk="true" :is_subcard="true" class="pb-2  m-2">
