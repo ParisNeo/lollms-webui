@@ -93,70 +93,73 @@ async def list_apps():
     else:
         remote_apps = []
     for app_name in apps_zoo_path.iterdir():
-        if app_name.is_dir():
-            icon_path = app_name / "icon.png"
-            description_path = app_name / "description.yaml"
-            description = ""
-            author = ""
-            current_version = ""
-            model_name = ""
-            disclaimer = ""
-            has_server = False
-            is_public = app_name.stem in remote_apps
-            
-            if description_path.exists():
-                with open(description_path, 'r') as file:
-                    data = yaml.safe_load(file)
-                    application_name = data.get('name', app_name.name)
-                    category = data.get('category', 'generic')
-                    description = data.get('description', '')
-                    author = data.get('author', '')
-                    current_version = data.get('version', '')
-                    creation_date = data.get('creation_date', 'unknown')
-                    last_update_date = data.get('last_update_date', '')
-                    current_version = data.get('version', '')
-                    model_name = data.get('model_name', '')
-                    disclaimer = data.get('disclaimer', 'No disclaimer provided.')
-                    has_server = data.get('has_server', False)
-                    installed = True
-            else:
-                installed = False
+        try:
+            if app_name.is_dir():
+                icon_path = app_name / "icon.png"
+                description_path = app_name / "description.yaml"
+                description = ""
+                author = ""
+                current_version = ""
+                model_name = ""
+                disclaimer = ""
+                has_server = False
+                is_public = app_name.stem in remote_apps
+                
+                if description_path.exists():
+                    with open(description_path, 'r') as file:
+                        data = yaml.safe_load(file)
+                        application_name = data.get('name', app_name.name)
+                        category = data.get('category', 'generic')
+                        description = data.get('description', '')
+                        author = data.get('author', '')
+                        current_version = data.get('version', '')
+                        creation_date = data.get('creation_date', 'unknown')
+                        last_update_date = data.get('last_update_date', '')
+                        current_version = data.get('version', '')
+                        model_name = data.get('model_name', '')
+                        disclaimer = data.get('disclaimer', 'No disclaimer provided.')
+                        has_server = data.get('has_server', False)
+                        installed = True
+                else:
+                    installed = False
 
-            if is_public:
-                try:
-                    with (REPO_DIR / app_name.stem / "description.yaml").open("r") as file:
-                        # Parse the YAML content
-                        yaml_content = yaml.safe_load(file)
-                        repo_version = yaml_content.get("version", "0")
-                        
-                        # Compare versions using packaging.version
-                        has_update = version.parse(str(repo_version)) > version.parse(str(current_version))
-                except (yaml.YAMLError, FileNotFoundError) as e:
-                    print(f"Error reading or parsing YAML file: {e}")
+                if is_public:
+                    try:
+                        with (REPO_DIR / app_name.stem / "description.yaml").open("r") as file:
+                            # Parse the YAML content
+                            yaml_content = yaml.safe_load(file)
+                            repo_version = yaml_content.get("version", "0")
+                            
+                            # Compare versions using packaging.version
+                            has_update = version.parse(str(repo_version)) > version.parse(str(current_version))
+                    except (yaml.YAMLError, FileNotFoundError) as e:
+                        print(f"Error reading or parsing YAML file: {e}")
+                        has_update = False
+                else:
                     has_update = False
-            else:
-                has_update = False
 
-            if icon_path.exists():
-                uid = str(uuid.uuid4())
-                apps.append(AppInfo(
-                    uid=uid,
-                    name=application_name,
-                    folder_name = app_name.name,
-                    icon=f"/apps/{app_name.name}/icon.png",
-                    category=category,
-                    description=description,
-                    author=author,
-                    version=current_version,
-                    creation_date=creation_date,
-                    last_update_date = last_update_date,
-                    model_name=model_name,
-                    disclaimer=disclaimer,
-                    has_server=has_server,
-                    is_public=is_public,
-                    has_update=has_update,
-                    installed=installed
-                ))
+                if icon_path.exists():
+                    uid = str(uuid.uuid4())
+                    apps.append(AppInfo(
+                        uid=uid,
+                        name=application_name,
+                        folder_name = app_name.name,
+                        icon=f"/apps/{app_name.name}/icon.png",
+                        category=category,
+                        description=description,
+                        author=author,
+                        version=current_version,
+                        creation_date=creation_date,
+                        last_update_date = last_update_date,
+                        model_name=model_name,
+                        disclaimer=disclaimer,
+                        has_server=has_server,
+                        is_public=is_public,
+                        has_update=has_update,
+                        installed=installed
+                    ))
+        except Exception as ex:
+            trace_exception(ex)
     
     return apps
 
