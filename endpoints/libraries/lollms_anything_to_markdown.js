@@ -77,17 +77,38 @@ class LollmsFileLoader {
             reader.readAsArrayBuffer(file);
         });
     }
-
     readPptxFile(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = async function(e) {
                 try {
-                    if (typeof PptxTextExtractor === 'undefined') {
-                        throw new Error('PptxTextExtractor is not defined. The library might not be loaded correctly.');
-                    }
-                    const text = await PptxTextExtractor.extractText(e.target.result);
-                    resolve(text.join('\n'));
+                    const arrayBuffer = e.target.result;
+                    const pptx2json = new PPTX2Json();
+                    
+                    // Create a Blob from the ArrayBuffer
+                    const blob = new Blob([arrayBuffer], { type: file.type });
+                    
+                    // Create a temporary URL for the Blob
+                    const url = URL.createObjectURL(blob);
+                    
+                    // Use the URL with toJson
+                    const result = await pptx2json.toJson(url);
+                    
+                    let text = '';
+                    result.slides.forEach((slide, index) => {
+                        text += `Slide ${index + 1}:\n`;
+                        slide.data.forEach(item => {
+                            if (item.type === 'text') {
+                                text += item.text + '\n';
+                            }
+                        });
+                        text += '\n';
+                    });
+                    
+                    // Clean up the temporary URL
+                    URL.revokeObjectURL(url);
+                    
+                    resolve(text);
                 } catch (error) {
                     console.error('Error extracting text from PPTX:', error);
                     reject(new Error('Unable to process PPTX file. ' + error.message));
@@ -97,7 +118,10 @@ class LollmsFileLoader {
             reader.readAsArrayBuffer(file);
         });
     }
-
+    
+    
+    
+    
     convertToMarkdown(content, fileExtension) {
         // Basic conversion to markdown
         // This can be extended for more sophisticated conversions
