@@ -33,6 +33,7 @@ Include the following in your HTML file header (this must be added to the html t
     <!-- needed for math rendering in markdown -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
 
     <!-- MarkdownRenderer -->
     <script src="/lollms_assets/js/lollms_markdown_renderer"></script>

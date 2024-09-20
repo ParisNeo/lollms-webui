@@ -47,6 +47,7 @@ To use the `MarkdownRenderer` library, you need to include several external libr
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-javascript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-python.min.js"></script>
     <!-- Add more languages as needed -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
 
     <!-- Include the MarkdownRenderer script -->
     <script src="/lollms_assets/js/lollms_markdown_renderer"></script>
