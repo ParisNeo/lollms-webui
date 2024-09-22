@@ -43,27 +43,215 @@
 
 
 class MarkdownRenderer {
+    constructor() {
+        this.svgState = {};
+        this.initDiagramZoomPan();
+    }    
+
+    initDiagramZoomPan = (id, type) => {
+        if (!this.diagramState) {
+            this.diagramState = {};
+        }
+        this.diagramState[id] = { scale: 1, translateX: 0, translateY: 0, isDragging: false, startX: 0, startY: 0, type: type };
+
+        setTimeout(() => {
+            const container = document.getElementById(id);
+            if (!container) return;
+
+            container.addEventListener('wheel', (e) => this.handleDiagramWheel(e, id));
+            container.addEventListener('mousedown', (e) => this.handleDiagramMouseDown(e, id));
+            container.addEventListener('mousemove', (e) => this.handleDiagramMouseMove(e, id));
+            container.addEventListener('mouseup', () => this.handleDiagramMouseUp(id));
+            container.addEventListener('mouseleave', () => this.handleDiagramMouseUp(id));
+        }, 100);
+    }
+
+    handleDiagramWheel = (e, id) => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        this.zoomDiagram(id, delta);
+    }
+
+    handleDiagramMouseDown = (e, id) => {
+        const state = this.diagramState[id];
+        if (!state) return;
+        state.isDragging = true;
+        state.startX = e.clientX - state.translateX;
+        state.startY = e.clientY - state.translateY;
+    }
+
+    handleDiagramMouseMove = (e, id) => {
+        const state = this.diagramState[id];
+        if (!state || !state.isDragging) return;
+        state.translateX = e.clientX - state.startX;
+        state.translateY = e.clientY - state.startY;
+        this.updateDiagramTransform(id);
+    }
+
+    handleDiagramMouseUp = (id) => {
+        if (this.diagramState[id]) {
+            this.diagramState[id].isDragging = false;
+        }
+    }
+
+    zoomDiagram = (id, delta) => {
+        const state = this.diagramState[id];
+        if (!state) return;
+        state.scale *= delta;
+        this.updateDiagramTransform(id);
+    }
+
+    resetDiagramZoomPan = (id) => {
+        const type = this.diagramState[id]?.type;
+        this.diagramState[id] = { scale: 1, translateX: 0, translateY: 0, isDragging: false, startX: 0, startY: 0, type: type };
+        this.updateDiagramTransform(id);
+    }
+
+    updateDiagramTransform = (id) => {
+        const container = document.getElementById(id);
+        if (!container) return;
+        const state = this.diagramState[id];
+        container.style.transform = `translate(${state.translateX}px, ${state.translateY}px) scale(${state.scale})`;
+    }
+    saveDiagramAsPNG(id) {
+        console.log('Starting saveDiagramAsPNG function');
+        const container = document.getElementById(id);
+        if (!container) {
+            console.error('Container element not found');
+            alert('Container element not found');
+            return;
+        }
+    
+        console.log('Container element found:', container);
+    
+        // Find the SVG element within the container
+        const svgElement = container.querySelector('svg');
+        if (!svgElement) {
+            console.error('SVG element not found within the container');
+            alert('SVG element not found within the container');
+            return;
+        }
+    
+        console.log('SVG element found:', svgElement);
+        console.log('SVG element outerHTML:', svgElement.outerHTML);
+    
+        try {
+            // Get SVG data
+            const svgData = new XMLSerializer().serializeToString(svgElement);
+            console.log('Serialized SVG data:', svgData);
+            
+            // Create a data URI
+            const svgDataUri = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+            console.log('SVG Data URI created');
+            
+            // Create image
+            const img = new Image();
+            img.onload = function() {
+                console.log('Image loaded successfully');
+                console.log('Image dimensions:', img.width, 'x', img.height);
+                
+                const promptResolution = prompt("Enter the desired scaling factor (e.g., 1.5 for 150% resolution):");
+                if (promptResolution) {
+                    const scaleFactor = parseFloat(promptResolution);
+                    if (!isNaN(scaleFactor) && scaleFactor > 0) {
+                        console.log('Scale factor:', scaleFactor);
+                        
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = img.width * scaleFactor;
+                        canvas.height = img.height * scaleFactor;
+                        
+                        console.log('Canvas dimensions:', canvas.width, 'x', canvas.height);
+                        
+                        ctx.fillStyle = 'white';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        
+                        // Convert canvas to blob and download
+                        canvas.toBlob(function(blob) {
+                            if (blob) {
+                                console.log('Blob created successfully');
+                                const link = document.createElement('a');
+                                link.download = 'graph.png';
+                                link.href = URL.createObjectURL(blob);
+                                link.click();
+                                URL.revokeObjectURL(link.href);
+                                console.log('Download link clicked');
+                            } else {
+                                console.error('Failed to create blob');
+                                alert('Failed to create image. Please try again.');
+                            }
+                        }, 'image/png');
+                    } else {
+                        console.error('Invalid scale factor:', promptResolution);
+                        alert("Invalid scaling factor. Please enter a positive number.");
+                    }
+                } else {
+                    console.log('User cancelled the prompt');
+                }
+            };
+            img.onerror = function() {
+                console.error('Error loading image');
+                console.log('SVG Data URI:', svgDataUri);
+                alert('Failed to load SVG image. Please check the console for more details.');
+            };
+            console.log('Setting image source');
+            img.src = svgDataUri;
+        } catch (error) {
+            console.error('Error saving diagram as PNG:', error);
+            alert('An error occurred while saving the diagram. Please try again.');
+        }
+    }
+    
+    
+        
+
+    saveDiagramAsSVG = (id) => {
+        const svgElement = document.getElementById(id);
+        if (!svgElement) {
+            console.error('SVG element not found');
+            return;
+        }
+
+        try {
+            const svgData = new XMLSerializer().serializeToString(svgElement);
+            const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+            const downloadLink = document.createElement('a');
+            downloadLink.href = URL.createObjectURL(svgBlob);
+            downloadLink.download = `diagram-${id}.svg`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(downloadLink.href);
+        } catch (error) {
+            console.error('Error saving diagram as SVG:', error);
+        }
+    }    
+
     async renderMermaidDiagrams(text) {
         const mermaidCodeRegex = /```mermaid\n([\s\S]*?)```/g;
-        const matches = text.match(mermaidCodeRegex);
+        let match;
+        let lastIndex = 0;
+        let result = '';
 
-        if (!matches) return text;
-
-        for (const match of matches) {
-            const mermaidCode = match.replace(/```mermaid\n/, '').replace(/```$/, '');
+        while ((match = mermaidCodeRegex.exec(text)) !== null) {
+            const mermaidCode = match[1];
             const uniqueId = 'mermaid-' + Math.random().toString(36).substr(2, 9);
 
+            // Add the text before the Mermaid diagram
+            result += text.slice(lastIndex, match.index);
+
             try {
-                const result = await mermaid.render(uniqueId, mermaidCode);
+                const renderResult = await mermaid.render(uniqueId, mermaidCode);
                 const htmlCode = `
                     <div class="mermaid-container relative flex justify-center items-center mt-4 mb-4 w-full">
-                        <div class="mermaid-diagram bg-white p-4 rounded-lg shadow-md overflow-auto w-full" style="max-height: 80vh;">
-                            <div id="${uniqueId}" style="transform-origin: top left; transition: transform 0.3s;">
-                                ${result.svg}
+                        <div class="mermaid-diagram bg-white p-4 rounded-lg shadow-md overflow-hidden w-full" style="max-height: 80vh;">
+                            <div id="${uniqueId}" class="mermaid-zoom-pan" style="transform-origin: 0 0; transition: transform 0.1s;">
+                                ${renderResult.svg}
                             </div>
                         </div>
                         <div class="absolute top-2 right-2 flex gap-1">
-                            <button onclick="mr.zoomMermaid('${uniqueId}', 1.1)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                            <button onclick="mr.zoomDiagram('${uniqueId}', 1.1)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="11" cy="11" r="8"></circle>
                                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -71,62 +259,75 @@ class MarkdownRenderer {
                                     <line x1="8" y1="11" x2="14" y2="11"></line>
                                 </svg>
                             </button>
-                            <button onclick="mr.zoomMermaid('${uniqueId}', 0.9)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                            <button onclick="mr.zoomDiagram('${uniqueId}', 0.9)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="11" cy="11" r="8"></circle>
                                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                                     <line x1="8" y1="11" x2="14" y2="11"></line>
                                 </svg>
                             </button>
-                            <button onclick="mr.saveMermaidAsPNG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                            <button onclick="mr.resetDiagramZoomPan('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                                Reset
+                            </button>
+                            <button onclick="mr.saveDiagramAsPNG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
                                 PNG
                             </button>
-                            <button onclick="mr.saveMermaidAsSVG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                            <button onclick="mr.saveDiagramAsSVG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
                                 SVG
                             </button>
                         </div>
                     </div>
                 `;
-                text = text.replace(match, htmlCode);
+                result += htmlCode;
+
+                // Initialize zoom and pan for this Mermaid diagram
+                this.initDiagramZoomPan(uniqueId);
             } catch (error) {
                 console.error('Mermaid rendering failed:', error);
-                text = text.replace(match, `<div class="mermaid-error bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">Failed to render diagram</div>`);
+                result += `<div class="mermaid-error bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">Failed to render diagram</div>`;
             }
+
+            lastIndex = mermaidCodeRegex.lastIndex;
         }
 
-        return text;
-    }
+        // Add any remaining text after the last Mermaid diagram
+        result += text.slice(lastIndex);
 
+        return result;
+    }
     async renderGraphvizDiagrams(text) {
         // Check if viz.js is loaded
         if (typeof Viz === 'undefined') {
             console.warn('Viz.js is not loaded. Graphviz diagrams will not be rendered.');
             return text;
         }
-    
+
         const graphvizCodeRegex = /```graphviz\n([\s\S]*?)```/g;
-        const matches = text.match(graphvizCodeRegex);
-    
-        if (!matches) return text;
-    
-        for (const match of matches) {
-            const graphvizCode = match.replace(/```graphviz\n/, '').replace(/```$/, '');
+        let match;
+        let lastIndex = 0;
+        let result = '';
+
+        while ((match = graphvizCodeRegex.exec(text)) !== null) {
+            const graphvizCode = match[1];
             const uniqueId = 'graphviz-' + Math.random().toString(36).substr(2, 9);
-    
+
+            // Add the text before the Graphviz diagram
+            result += text.slice(lastIndex, match.index);
+
             try {
                 const viz = new Viz();
-                const result = await viz.renderSVGElement(graphvizCode);
-                const svgString = new XMLSerializer().serializeToString(result);
-    
+                const svgElement = await viz.renderSVGElement(graphvizCode);
+                const svgString = new XMLSerializer().serializeToString(svgElement);
+
                 const htmlCode = `
                     <div class="graphviz-container relative flex justify-center items-center mt-4 mb-4 w-full">
-                        <div class="graphviz-diagram bg-white p-4 rounded-lg shadow-md overflow-auto w-full" style="max-height: 80vh;">
-                            <div id="${uniqueId}" style="transform-origin: top left; transition: transform 0.3s;">
+                        <div class="graphviz-diagram bg-white p-4 rounded-lg shadow-md overflow-hidden w-full" style="max-height: 80vh;">
+                            <div id="${uniqueId}" class="diagram-zoom-pan" style="transform-origin: 0 0; transition: transform 0.1s;">
                                 ${svgString}
                             </div>
                         </div>
                         <div class="absolute top-2 right-2 flex gap-1">
-                            <button onclick="gv.zoomGraphviz('${uniqueId}', 1.1)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                            <button onclick="mr.zoomDiagram('${uniqueId}', 1.1)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="11" cy="11" r="8"></circle>
                                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -134,101 +335,67 @@ class MarkdownRenderer {
                                     <line x1="8" y1="11" x2="14" y2="11"></line>
                                 </svg>
                             </button>
-                            <button onclick="gv.zoomGraphviz('${uniqueId}', 0.9)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                            <button onclick="mr.zoomDiagram('${uniqueId}', 0.9)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="11" cy="11" r="8"></circle>
                                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                                     <line x1="8" y1="11" x2="14" y2="11"></line>
                                 </svg>
                             </button>
-                            <button onclick="gv.saveGraphvizAsPNG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                            <button onclick="mr.resetDiagramZoomPan('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                                Reset
+                            </button>
+                            <button onclick="mr.saveDiagramAsPNG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
                                 PNG
                             </button>
-                            <button onclick="gv.saveGraphvizAsSVG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                            <button onclick="mr.saveDiagramAsSVG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
                                 SVG
                             </button>
                         </div>
                     </div>
                 `;
-                text = text.replace(match, htmlCode);
+                result += htmlCode;
+
+                // Initialize zoom and pan for this Graphviz diagram
+                this.initDiagramZoomPan(uniqueId, 'graphviz');
             } catch (error) {
                 console.error('Graphviz rendering failed:', error);
-                text = text.replace(match, `<div class="graphviz-error bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">Failed to render diagram</div>`);
+                result += `<div class="graphviz-error bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">Failed to render diagram</div>`;
             }
+
+            lastIndex = graphvizCodeRegex.lastIndex;
         }
-    
-        return text;
+
+        // Add any remaining text after the last Graphviz diagram
+        result += text.slice(lastIndex);
+
+        return result;
     }
     
-    // Helper object for Graphviz operations
-    gv = {
-        zoomGraphviz: function(id, factor) {
-            const element = document.getElementById(id);
-            if (element) {
-                const currentScale = element.style.transform ? parseFloat(element.style.transform.replace('scale(', '').replace(')', '')) : 1;
-                const newScale = currentScale * factor;
-                element.style.transform = `scale(${newScale})`;
-            }
-        },
-    
-        saveGraphvizAsPNG: function(id) {
-            const svg = document.getElementById(id).querySelector('svg');
-            if (svg) {
-                const svgData = new XMLSerializer().serializeToString(svg);
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const img = new Image();
-                img.onload = function() {
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
-                    const pngUrl = canvas.toDataURL('image/png');
-                    const link = document.createElement('a');
-                    link.href = pngUrl;
-                    link.download = 'graphviz_diagram.png';
-                    link.click();
-                };
-                img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
-            }
-        },
-    
-        saveGraphvizAsSVG: function(id) {
-            const svg = document.getElementById(id).querySelector('svg');
-            if (svg) {
-                const svgData = new XMLSerializer().serializeToString(svg);
-                const blob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = 'graphviz_diagram.svg';
-                link.click();
-                URL.revokeObjectURL(url);
-            }
-        }
-    };
-    
-
     async renderSVG(text) {
         const svgCodeRegex = /```svg\n([\s\S]*?)```/g;
-        const matches = text.match(svgCodeRegex);
-    
-        if (!matches) return text;
-    
-        for (const match of matches) {
-            const svgCode = match.replace(/```svg\n/, '').replace(/```$/, '');
+        let match;
+        let lastIndex = 0;
+        let result = '';
+
+        while ((match = svgCodeRegex.exec(text)) !== null) {
+            const svgCode = match[1];
             const uniqueId = 'svg-' + Math.random().toString(36).substr(2, 9);
-    
+
+            // Add the text before the SVG
+            result += text.slice(lastIndex, match.index);
+
             try {
                 // Wrap the SVG code in a div with a unique ID
                 const htmlCode = `
                     <div class="svg-container relative flex justify-center items-center mt-4 mb-4 w-full">
-                        <div class="svg-diagram bg-white p-4 rounded-lg shadow-md overflow-auto w-full" style="max-height: 80vh;">
-                            <div id="${uniqueId}" style="transform-origin: top left; transition: transform 0.3s;">
+                        <div class="svg-diagram bg-white p-4 rounded-lg shadow-md overflow-hidden w-full" style="max-height: 80vh;">
+                            <div id="${uniqueId}" class="svg-zoom-pan" style="transform-origin: 0 0; transition: transform 0.1s;">
                                 ${svgCode}
                             </div>
                         </div>
                         <div class="absolute top-2 right-2 flex gap-1">
-                            <button onclick="svgr.zoomSVG('${uniqueId}', 1.1)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                            <button onclick="mr.zoomDiagram('${uniqueId}', 1.1)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="11" cy="11" r="8"></circle>
                                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -236,30 +403,106 @@ class MarkdownRenderer {
                                     <line x1="8" y1="11" x2="14" y2="11"></line>
                                 </svg>
                             </button>
-                            <button onclick="svgr.zoomSVG('${uniqueId}', 0.9)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                            <button onclick="mr.zoomDiagram('${uniqueId}', 0.9)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="11" cy="11" r="8"></circle>
                                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                                     <line x1="8" y1="11" x2="14" y2="11"></line>
                                 </svg>
                             </button>
-                            <button onclick="svgr.saveSVGAsPNG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                            <button onclick="mr.resetDiagramZoomPan('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                                Reset
+                            </button>
+                            <button onclick="mr.saveDiagramAsPNG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
                                 PNG
                             </button>
-                            <button onclick="svgr.saveSVGAsSVG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
+                            <button onclick="mr.saveDiagramAsSVG('${uniqueId}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold p-1 rounded">
                                 SVG
                             </button>
                         </div>
                     </div>
                 `;
-                text = text.replace(match, htmlCode);
+                result += htmlCode;
+
+                // Initialize zoom and pan for this SVG
+                this.initZoomPan(uniqueId);
             } catch (error) {
                 console.error('SVG rendering failed:', error);
-                text = text.replace(match, `<div class="svg-error bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">Failed to render SVG</div>`);
+                result += `<div class="svg-error bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">Failed to render SVG</div>`;
             }
+
+            lastIndex = svgCodeRegex.lastIndex;
         }
-    
-        return text;
+
+        // Add any remaining text after the last SVG
+        result += text.slice(lastIndex);
+
+        return result;
+    }
+
+    initZoomPan(id) {
+        this.svgState[id] = { scale: 1, translateX: 0, translateY: 0, isDragging: false, startX: 0, startY: 0 };
+
+        // We'll add event listeners after a short delay to ensure the element is in the DOM
+        setTimeout(() => {
+            const container = document.getElementById(id);
+            if (!container) return;
+
+            container.addEventListener('wheel', (e) => this.handleWheel(e, id));
+            container.addEventListener('mousedown', (e) => this.handleMouseDown(e, id));
+            container.addEventListener('mousemove', (e) => this.handleMouseMove(e, id));
+            container.addEventListener('mouseup', () => this.handleMouseUp(id));
+            container.addEventListener('mouseleave', () => this.handleMouseUp(id));
+        }, 100);
+    }
+
+    handleWheel(e, id) {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        this.zoomSVG(id, delta);
+    }
+
+    handleMouseDown(e, id) {
+        const state = this.svgState[id];
+        state.isDragging = true;
+        state.startX = e.clientX - state.translateX;
+        state.startY = e.clientY - state.translateY;
+    }
+
+    handleMouseMove(e, id) {
+        const state = this.svgState[id];
+        if (!state.isDragging) return;
+
+        state.translateX = e.clientX - state.startX;
+        state.translateY = e.clientY - state.startY;
+        this.updateTransform(id);
+    }
+
+    handleMouseUp(id) {
+        if (this.svgState[id]) {
+            this.svgState[id].isDragging = false;
+        }
+    }
+
+    zoomSVG(id, delta) {
+        const state = this.svgState[id];
+        if (!state) return;
+
+        state.scale *= delta;
+        this.updateTransform(id);
+    }
+
+    resetZoomPan(id) {
+        this.svgState[id] = { scale: 1, translateX: 0, translateY: 0, isDragging: false, startX: 0, startY: 0 };
+        this.updateTransform(id);
+    }
+
+    updateTransform(id) {
+        const container = document.getElementById(id);
+        if (!container) return;
+
+        const state = this.svgState[id];
+        container.style.transform = `translate(${state.translateX}px, ${state.translateY}px) scale(${state.scale})`;
     }
     renderCodeBlocks(text) {
         const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
@@ -575,14 +818,15 @@ class MarkdownRenderer {
       text = await this.renderMermaidDiagrams(text);
 
       text = await this.renderGraphvizDiagrams(text);
-      
-
-      // Handle code blocks with syntax highlighting and copy button
-      text = await this.renderCodeBlocks(text);
+     
 
       // Handle SVG graphs first
       text = await this.renderSVG(text);
-        
+
+      
+      // Handle code blocks with syntax highlighting and copy button
+      text = await this.renderCodeBlocks(text);
+
       // Handle inline code
       text = this.handleInlineCode(text);
   
