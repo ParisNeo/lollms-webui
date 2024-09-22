@@ -905,7 +905,13 @@ export default {
         onclosedatabase_selectorDialog(){this.database_selectorDialogVisible=false;},
         async onvalidatedatabase_selectorChoice(choice){
             this.database_selectorDialogVisible=false;
-            const res = await axios.post("/select_database", {"client_id":this.client_id, "name": choice}, {headers: this.posts_headers});
+            const data = {
+                "client_id": this.client_id,
+                "name": typeof choice === 'string' ? choice : choice.name
+            };
+            console.log("data:")
+            console.log(data)
+            const res = await axios.post("/select_database", data, {headers: this.posts_headers});
             if(res.status){
                 console.log("Selected database")
                 this.$store.state.config = await axios.post("/get_config",{"client_id":this.client_id});

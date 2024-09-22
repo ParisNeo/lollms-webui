@@ -466,6 +466,14 @@ export default {
 
               }
               this.$store.dispatch('refreshMountedPersonalities');
+              const hostnameParts = window.location.href.split('/');
+
+              if(hostnameParts.length > 4){
+                  window.location.href='/'
+              }
+              else{
+                  window.location.reload(true);
+              }
           } else {
               pers.isMounted = false
               this.$store.state.toast.showToast("Could not mount personality\nError: " + res.error + "\nResponse:\n" + res, 4, false)
