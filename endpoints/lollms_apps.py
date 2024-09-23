@@ -61,7 +61,8 @@ class AppInfo:
             last_update_date:str,
             model_name:str, 
             disclaimer:str, 
-            has_server:bool, 
+            has_server:bool,
+            has_readme:bool,
             is_public:bool,
             has_update:bool,
             installed: bool
@@ -79,6 +80,7 @@ class AppInfo:
         self.model_name = model_name
         self.disclaimer = disclaimer
         self.has_server = has_server
+        self.has_readme = has_readme
         self.has_update = has_update
         self.is_public = is_public
         self.installed = installed
@@ -103,6 +105,7 @@ async def list_apps():
                 model_name = ""
                 disclaimer = ""
                 has_server = False
+                has_readme = False
                 is_public = app_name.stem in remote_apps
                 
                 if description_path.exists():
@@ -118,7 +121,8 @@ async def list_apps():
                         current_version = data.get('version', '')
                         model_name = data.get('model_name', '')
                         disclaimer = data.get('disclaimer', 'No disclaimer provided.')
-                        has_server = data.get('has_server', False)
+                        has_server = data.get('has_server', (Path(app_name)/"server.py").exists())
+                        has_readme = data.get('has_readme', (Path(app_name)/"README.md").exists())
                         installed = True
                 else:
                     installed = False
@@ -154,6 +158,7 @@ async def list_apps():
                         model_name=model_name,
                         disclaimer=disclaimer,
                         has_server=has_server,
+                        has_readme=has_readme,
                         is_public=is_public,
                         has_update=has_update,
                         installed=installed
@@ -373,7 +378,7 @@ async def install_app(app_name: str, auth: AuthRequest):
         if description_path.exists() and requirements.exists():
             with open(description_path, 'r') as file:
                 description_data = yaml.safe_load(file)
-                if description_data.get("has_server", False):
+                if description_data.get("has_server", (Path(app_path)/"README.md").exists()):
                     current_env = get_current_conda_env()
                     env_name = app_path.stem
                     import conda.cli
@@ -482,7 +487,8 @@ def load_apps_data():
                         last_update_date=description_data.get('last_update_date', 'unknown'),
                         model_name=description_data.get('model_name', ''),
                         disclaimer=description_data.get('disclaimer', 'No disclaimer provided.'),
-                        has_server=description_data.get('has_server', False),
+                        has_server=description_data.get('has_server', (Path(item_path)/"server.py").exists()),
+                        has_readme=description_data.get('has_readme', (Path(item_path)/"README.md").exists()),
                         is_public=True,
                         has_update=False,
                         installed=True

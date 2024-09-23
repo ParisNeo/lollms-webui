@@ -103,7 +103,7 @@
           @delete="deleteApp"
           @edit="editApp"
           @download="downloadApp"
-          @view="handleAppClick"
+          @help="handleAppClick"
           @open="openApp"
           @start-server="startServer"
         />
@@ -121,7 +121,7 @@
           @delete="deleteApp"
           @edit="editApp"
           @download="downloadApp"
-          @view="handleAppClick"
+          @help="handleAppClick"
           @open="openApp"
           @start-server="startServer"
         />
@@ -151,6 +151,8 @@
 <script>
 import axios from 'axios';
 import AppCard from '@/components/AppCard.vue'; // Create this component for individual app cards
+import { marked } from 'marked';
+
 
 export default {
   components: {
@@ -364,8 +366,8 @@ export default {
     async handleAppClick(app) {
       if (app.installed) {
         this.selectedApp = app;
-        const response = await axios.get(`/apps/${app.folder_name}/index.html`);
-        this.appCode = response.data;
+        const response = await axios.get(`/apps/${app.folder_name}/README.md`);
+        this.appCode = marked(response.data);
       } else {
         this.showMessage(`Please install ${app.folder_name} to view its code.`, false);
       }
