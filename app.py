@@ -70,7 +70,7 @@ packages: List[Tuple[str, str]] = [
     ("freedom_search", "0.1.9"),
     ("scrapemaster", "0.2.0"),
     ("lollms_client", "0.7.5"),
-    ("lollmsvectordb", "1.0.7"),
+    ("lollmsvectordb", "1.1.1"),
 ]
 
 def check_pn_libs():
@@ -226,7 +226,7 @@ if __name__ == "__main__":
 
     # A simple fix for v 11.0 to 12 alpha
     if config.rag_vectorizer=="bert":
-        config.rag_vectorizer="semantic"
+        config.rag_vectorizer="tfidf"
         config.save_config()
 
     LOLLMSWebUI.build_instance(config=config, lollms_paths=lollms_paths, args=args, sio=sio)
