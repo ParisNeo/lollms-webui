@@ -1,7 +1,7 @@
 @echo off
 
 echo "LoLLMS: Lord of Large Language and Multimodal Systems"
-echo V12 Strawberry
+echo V13 Feather
 echo -----------------
 echo By ParisNeo
 echo -----------------

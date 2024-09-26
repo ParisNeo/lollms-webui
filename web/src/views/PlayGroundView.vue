@@ -46,7 +46,7 @@
 
     <ChatBarButton @click="speak" :class="{ 'text-red-500': isTalking }" title="Convert text to audio (not saved, uses your browser's TTS service)">
       <template #icon>
-        🍓
+        🪶
       </template>
     </ChatBarButton>
 

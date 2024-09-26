@@ -412,26 +412,29 @@ export default {
       }
     },
     async mount_personality(pers) {
-            if (!pers) { return { 'status': false, 'error': 'no personality - mount_personality' } }
+        this.$store.state.messageBox.showMessage("Loading personality")
+          
+          if (!pers) { return { 'status': false, 'error': 'no personality - mount_personality' } }
 
-            try {
-                const obj = {
-                    client_id: this.$store.state.client_id,
-                    language: pers.language?pers.language:"",
-                    category: pers.category?pers.category:"",
-                    folder: pers.folder?pers.folder:"",
-                }
-                const res = await axios.post('/mount_personality', obj, {headers: this.posts_headers});
+          try {
+              const obj = {
+                  client_id: this.$store.state.client_id,
+                  language: pers.language?pers.language:"",
+                  category: pers.category?pers.category:"",
+                  folder: pers.folder?pers.folder:"",
+              }
+              const res = await axios.post('/mount_personality', obj, {headers: this.posts_headers});
 
-                if (res) {
+              if (res) {
 
-                    return res.data
+                  return res.data
 
-                }
-            } catch (error) {
-                console.log(error.message, 'mount_personality - settings')
-                return
-            }
+              }
+          } catch (error) {
+              console.log(error.message, 'mount_personality - settings')
+              return
+          }
+          this.$store.state.messageBox.hideMessage()
 
         },
 

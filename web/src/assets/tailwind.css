@@ -257,7 +257,7 @@ body {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-5px); }
 }
-.strawberry-emoji {
+.feather-emoji {
   display: inline-block;
   margin-left: 5px;
   animation: bounce 2s infinite;

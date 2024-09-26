@@ -3,8 +3,8 @@
 @rem This script will install miniconda and git with all dependencies for this project
 @rem This enables a user to install this project without manually installing conda and git.
 
-echo "L🍓LLMS: Lord of Large Language and Multimodal Systems"
-echo V12 Strawberry
+echo "L🪶LLMS: Lord of Large Language and Multimodal Systems"
+echo V13 Feather
 echo -----------------
 echo By ParisNeo
 echo -----------------

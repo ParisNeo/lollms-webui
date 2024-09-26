@@ -344,7 +344,7 @@
                                         title="Real-time audio mode"
                                     >
                                         <template #icon>
-                                            🍓
+                                            🪶
                                         </template>
                                     </ChatBarButton>
 

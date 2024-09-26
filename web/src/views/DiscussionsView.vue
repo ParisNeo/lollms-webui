@@ -10,20 +10,17 @@
             animationDuration: `${3 + Math.random() * 7}s`,
             animationDelay: `${Math.random() * 5}s`
             }">
-        <img 
-            src="@/assets/strawberry.png" 
-            alt="Falling Strawberry" 
-            class="w-6 h-6"
-        />
+        🪶
         </div>
     </div>
 
     <div class="flex flex-col items-center text-center max-w-4xl w-full px-4 relative z-10">
         <div class="mb-8 w-full">
-        <div class="text-6xl md:text-7xl font-bold text-red-600 mb-2"
-            style="text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;">
-            L🍓LLMS
-        </div>
+            <div class="text-6xl md:text-7xl font-bold text-amber-500 mb-2"
+                style="text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;">
+                L🪶LLMS
+            </div>
+
         <p class="text-2xl text-gray-600 dark:text-gray-300 italic">
             One tool to rule them all
         </p>
@@ -34,15 +31,10 @@
             {{ version_info }}
         </p>
 
-        <div class="w-full h-24 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg">
-            <img 
-            class="w-24 h-24 rounded-full absolute top-0 transition-all duration-300 ease-linear"
-            :style="{ left: `calc(${loading_progress}% - 3rem)` }"
-            title="L🍓LLMS WebUI" 
-            src="@/assets/strawberry.png" 
-            alt="Strawberry Logo"
-            >
+        <div class="w-full h-24 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg flex items-center justify-center">
+            <p style="font-size: 48px; line-height: 1;">🪶</p>
         </div>
+
         </div>
         
         <div class="w-full max-w-2xl">
@@ -1927,14 +1919,14 @@ export default {
             if (item) {
                 if (item.id) {
                     const realTitle = item.title ? item.title === "untitled" ? "New discussion" : item.title : "New discussion"
-                    document.title = 'L🍓LLMS WebUI - ' + realTitle
+                    document.title = 'L🪶LLMS WebUI - ' + realTitle
                 } else {
                     const title = item || "Welcome"
-                    document.title = 'L🍓LLMS WebUI - ' + title
+                    document.title = 'L🪶LLMS WebUI - ' + title
                 }
             } else {
                 const title = item || "Welcome"
-                document.title = 'L🍓LLMS WebUI - ' + title
+                document.title = 'L🪶LLMS WebUI - ' + title
             }
 
         },
