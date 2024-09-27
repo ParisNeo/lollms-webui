@@ -2,6 +2,10 @@ class LollmsTTI {
     constructor(baseUrl = 'http://localhost:9600') {
       this.baseUrl = baseUrl;
     }
+    
+    setBaseUrl(baseUrl){
+      this.baseUrl = baseUrl;
+    }
   
     async generateImage(prompt, negativePrompt = '', width = 512, height = 512) {
       const url = `${this.baseUrl}/generate_image`;
