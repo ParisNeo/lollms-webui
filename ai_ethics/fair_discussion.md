@@ -15,3 +15,7 @@ Child: But can you really stop the development of AI if people want it so much f
 Phylosopher 2: I completely agree with you on that point! Humans will always find ways to improve themselves or their surroundings through technological advancements, so trying to ban AI outright is simply not realistic. However, what we can do as a society is try and slow down its development by raising awareness about the potential dangers it could bring while also focusing on creating ethical guidelines for its usage
 Child: So should i be scared of ai or excited? :D
 Phylosopher 1 & Phylosopher 2 in unison: Both! It all depends on how we use and regulate AI's development
+
+
+By ParisNeo
+2022

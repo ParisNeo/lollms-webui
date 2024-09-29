@@ -53,3 +53,7 @@ Ultimately, the ethical implications of AI depend on us. We must determine wheth
 ## Author
 
 ParisNeo with Help from AI (conditionned for essai writing) to shape the text.
+
+
+By ParisNeo
+2022

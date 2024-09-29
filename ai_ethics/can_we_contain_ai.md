@@ -20,3 +20,6 @@ The models we have today are not concious, they are just function calls. They do
 At some point, we need to forbid those things from starting to think on their own. But projects like autogpt and the langchain are giving more control to the AI. Still, the human is in control, but he is less and less in control. At least for now, bad things still come from humans and not AI by itself. 
 
 But who knows?
+
+By ParisNeo
+2022

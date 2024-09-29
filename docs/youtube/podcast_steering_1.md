@@ -1,0 +1,2 @@
+# Extra info
+The current podcast was steered by lollms as the two personas who are talking are actually AI agents presenting a lollms description, but they are themselves controlled by lollms. Make a surprise emotion when they both understand that they are actually the product of AI generation.

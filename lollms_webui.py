@@ -814,6 +814,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                             'started_generating_at': client.discussion.current_message.started_generating_at,
                                             'finished_generating_at': client.discussion.current_message.finished_generating_at,
                                             'nb_tokens': client.discussion.current_message.nb_tokens,
+                                            'binding':                  self.config["binding_name"],
+                                            'model' :                   self.config["model_name"], 
+                                            'personality':              self.config["personalities"][self.config["active_personality_id"]],
                                         }, to=client_id
                                 )
         )
@@ -849,7 +852,11 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                             'finished_generating_at': client.discussion.current_message.finished_generating_at,
                                             'nb_tokens': client.discussion.current_message.nb_tokens,
                                             'parameters':parameters,
-                                            'metadata':metadata
+                                            'metadata':metadata,
+                                            'binding':                  self.config["binding_name"],
+                                            'model' :                   self.config["model_name"], 
+                                            'personality':              self.config["personalities"][self.config["active_personality_id"]],
+
                                         }, to=client_id
                                 )
         )
@@ -879,6 +886,10 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                             'started_generating_at': client.discussion.current_message.started_generating_at,
                                             'finished_generating_at': client.discussion.current_message.finished_generating_at,
                                             'nb_tokens': client.discussion.current_message.nb_tokens,
+                                            'binding':                  self.config["binding_name"],
+                                            'model' :                   self.config["model_name"], 
+                                            'personality':              self.config["personalities"][self.config["active_personality_id"]],
+
                                         }, to=client_id
                                 )
         )

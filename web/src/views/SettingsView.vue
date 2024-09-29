@@ -1851,6 +1851,8 @@
                                 >
                                     <option value="None">None</option>
                                     <option value="cog_video_x">Cog Video X</option>
+                                    <option value="diffusers">Diffusers</option>
+                                    <option value="lumalab">Lumalab</option>
                                 </select>
                             </td>
                             </tr>
@@ -3551,6 +3553,28 @@
                                 </tr> 
                             </table>                                
                         </Card>                        
+                    </Card>
+                    <Card title="TTV settings" :is_subcard="true" class="pb-2  m-2">
+                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <tr>
+                                <td style="min-width: 200px;">
+                                    <label for="lumalabs_key" class="text-sm font-bold" style="margin-right: 1rem;">Lumalabs key:</label>
+                                </td>
+                                <td>
+                                    <div class="flex flex-row">
+                                    <input
+                                    type="text"
+                                    id="lumalabs_key"
+                                    required
+                                    v-model="configFile.lumalabs_key"
+                                    @change="settingsChanged=true"
+                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    >
+                                    </div>
+                                </td>
+                                </tr>  
+                            </table>
+                        
                     </Card>
                     <Card title="Misc" :is_shrunk="true" :is_subcard="true" class="pb-2  m-2">
                         <Card title="Elastic search Service (under construction)" :is_subcard="true" class="pb-2  m-2">
@@ -7084,14 +7108,14 @@ export default {
     async beforeRouteLeave(to) {
         // console.log('did settings?',this.settingsChanged)
         await this.$router.isReady()
-        if (this.settingsChanged) {
-            const res = await this.$store.state.yesNoDialog.askQuestion("Did You forget to apply changes?\nYou need to apply changes before you leave, or else.", 'Apply configuration', 'Cancel')
-            if (res) {
-                this.applyConfiguration()
+        // if (this.settingsChanged) {
+        //     const res = await this.$store.state.yesNoDialog.askQuestion("Did You forget to apply changes?\nYou need to apply changes before you leave, or else.", 'Apply configuration', 'Cancel')
+        //     if (res) {
+        //         this.applyConfiguration()
 
-            }
-            return false
-        }
+        //     }
+        //     return false
+        // }
 
 
     },

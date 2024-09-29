@@ -1,29 +1,34 @@
-Certainly! I'll combine all the information into a comprehensive overview of lollms, including its history, features, and significance. Here's the full, consolidated version:
-
 # lollms: The Ever-Evolving AI Ecosystem That Rules Them All
 
 ## The Visionary Behind lollms
 
-lollms, short for "Lord of Large Language & Multimodal Systems," is the brainchild of ParisNeo, a visionary expert in AI and robotics. ParisNeo's journey in coding began at the tender age of 11, igniting a lifelong passion that has never waned. As the creator of lollms, ParisNeo's dream was to develop an accessible, free-of-charge tool that could "rule them all" - a sentiment that echoes throughout the project's philosophy.
+lollms, short for "Lord of Large Language & Multimodal Systems," is the brainchild of ParisNeo, a visionary expert in AI and robotics. ParisNeo's journey in coding began at the tender age of 11, igniting a lifelong passion that has never waned. As the creator of lollms, ParisNeo's dream was to develop an accessible, free-of-charge tool that could "rule them all" - a sentiment that echoes throughout the project's philosophy. Today ParisNeo, holds two Engineering degrees and a Ph.D. His passion lies in exploring the applications of Artificial Intelligence across various fields. ParisNeo's work focuses on practical implementations of AI technology, aiming to solve real-world problems and advance the field of machine learning and natural language processing. As a computer geek with a strong academic background, ParisNeo is very active in the open-source community, contributing significantly to AI projects and tools. His commitment to open-source development reflects a belief in collaborative innovation and the democratization of AI technology. Through these efforts, ParisNeo continues to make impactful contributions to the AI community, fostering the growth and accessibility of cutting-edge AI solutions.
 
 ## The Evolution of lollms: From Google chrome Plugin to Powerhouse
 
 The journey of lollms is a testament to rapid innovation and adaptability in the fast-paced world of AI development:
 
-### Early Beginnings: The ChatGPT chrome Plugin names chatgpt personality selector
-- ParisNeo's foray into AI tools began with a chrome plugin for ChatGPT called chatgpt personality selector, it adds buttons to the Chatgpt interface to condition the AI to be any personality out of the list that he developed.
+### Early Beginnings: The chrome Plugin named "chatgpt personality selector"
+- ParisNeo's foray into AI tools began with a chrome plugin called chatgpt personality selector, it adds buttons to the Chatgpt interface to condition the AI to be any personality out of the list that he developed.
 - Developed just months after ChatGPT's release
 - Demonstrated ParisNeo's quick recognition of AI's potential and his ability to build upon emerging technologies
 
-### The Standalone Application: GPT4All WebUI
-- Inspired by the release of LLaMA and early versions of GPT4All
-- ParisNeo saw the need for a more versatile, standalone application
-- Initially named "GPT4All WebUI," reflecting its origins and primary interface
+### The Standalone Application: GPT4All WebUI as a ui to interact with GPT4All model
+
+GPT4all is a model not built by ParisNeo. it is built by a company named Nomic AI. But ParisNeo built a ui that ccan interface this model.
+
+- 1st of april 2023, was the date ParisNeo moved from his chrome plugin, to a standalone app.
+- ParisNeo wanted to build a webui for a local AI instead of continuing to hijack the chatgpt page.
+- Inspired by the release of LLaMA and early versions of GPT4All (a model built by Nomic AI that was one of the first models trained on llama architecture)
+- ParisNeo built a web user interface named: GPT4AL Webui which is a webui for the GPT4All model (not to be confused with their own GPT4All application built using QT)
 
 ### The Birth of lollms
+- Parisneo felt the need to broaden the content of his tool and did not want people to get confused between his tool and the GPT4All tool, so he split from using GPT4All and instead changed the name to something way more ambitious and continued building it mainly alone.
+- At the beginning, he got some help in the UI development from few experts but then he went really solo mode
 - As the project grew in scope and capability, a new name was needed
 - Renamed to "lollms - Lord of Large Language Models"
 - The new name reflected the tool's expanding compatibility with various AI systems
+- One tool to rule them all.
 - Emphasized the project's ambition to be a comprehensive solution for language models
 
 ### Embracing Multimodality
@@ -110,6 +115,10 @@ ParisNeo's commitment to sharing lollms with the community goes beyond just open
 - Provides a platform for exploring AI's potential to benefit society
 - Demonstrates how passion-driven projects can have a significant impact in the tech world
 
+## Security
+
+Lollms was spot by huntr.com which is a bounty hunting platform. People get payed to find vulenerabilities in the system and ParisNeo gets notified to upgrade his system and fix the vulenerabilities. This leads to a better more secure tool.
+
 ## The Future of lollms: A Dream Realized
 
 As lollms continues to evolve and expand its ecosystem, it raises intriguing questions about the future of AI:
@@ -127,3 +136,15 @@ For podcasters, tech enthusiasts, researchers, and anyone interested in the futu
 
 Whether lollms leads us to utopia or raises important questions about potential dystopian futures, one thing is certain: it's a name we'll be hearing - and pronouncing - a lot more in the years to come. It represents not just the culmination of a childhood dream, but a powerful vision for the future of AI that has the potential to shape our world in profound and exciting ways.
 
+
+# Lollms age
+Lollms has now one year and a half of existance. From humble beggingings to the tool that rules them all.
+
+# Current development status
+
+ParisNeo is coding lollms in his free time, nights, weekends, holidays. Building stuff he likes. Just taking it as a hobby.
+
+# Problems that needs to be solved
+
+Lollms is built by a single person. Although some persons did contribute, it is mainly a one man show, which has its own limits as PerisNeo is not getting enough help.
+The install of lollms is still challenging as it is packing loads of uncompatible libraries and tools, and making them all work together is a huge work that ParisNeo is doing. But when a library upgrades, many times dependancies break, so ParisNeo has to spend a lot of time to fix all that. Which is exhausting sometimes.

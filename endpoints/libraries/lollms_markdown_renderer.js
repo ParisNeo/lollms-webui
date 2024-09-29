@@ -38,8 +38,6 @@
 // <script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/full.render.js"></script>
 // Don't forget to get the css too <link rel="stylesheet" href="/lollms_assets/css/lollms_markdown_renderer">
 
-// Make sure there is a global variable called mr that instanciate MarkdownRenderer
-// mr = new MarkdownRenderer()
 
 
 class MarkdownRenderer {
@@ -953,3 +951,5 @@ class MarkdownRenderer {
             .replace(/'/g, "&#039;");
     }
 }
+// Make sure there is a global variable called mr that instanciate MarkdownRenderer
+mr = new MarkdownRenderer()

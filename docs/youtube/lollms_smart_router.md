@@ -1,14 +1,14 @@
-Title: "LoLLMs Smart Router: Optimizing AI Performance and Efficiency"
+Title: "lollms Smart Router: Optimizing AI Performance and Efficiency"
 
-[Intro animation with LoLLMs logo]
+[Intro animation with lollms logo]
 
 [Upbeat background music]
 
-Host: "Welcome to LoLLMs, where we're revolutionizing the world of AI with our smart router technology. Today, we're diving into how our innovative system optimizes AI model selection for maximum efficiency and cost-effectiveness."
+Host: "Welcome to lollms, where we're revolutionizing the world of AI with our smart router technology. Today, we're diving into how our innovative system optimizes AI model selection for maximum efficiency and cost-effectiveness."
 
-[Animated diagram showing the LoLLMs smart router concept]
+[Animated diagram showing the lollms smart router concept]
 
-Host: "The LoLLMs smart router is a game-changer in AI task management. Here's how it works:"
+Host: "The lollms smart router is a game-changer in AI task management. Here's how it works:"
 
 Activation:
 [Animation of a user turning on the smart router]
@@ -40,9 +40,9 @@ Faster response times
 Optimal use of AI resources
 [Closing animation]
 
-Host: "With LoLLMs smart router, we're not just making AI smarter – we're making it smarter about how it uses its intelligence. One tool to rule them all, indeed!"
+Host: "With lollms smart router, we're not just making AI smarter – we're making it smarter about how it uses its intelligence. One tool to rule them all, indeed!"
 
 [Call to action]
-"Want to learn more about how LoLLMs can revolutionize your AI operations? Visit our website or contact us today for a demo."
+"Want to learn more about how lollms can revolutionize your AI operations? Visit our website or contact us today for a demo."
 
-[LoLLMs logo and contact information]
+[lollms logo and contact information]

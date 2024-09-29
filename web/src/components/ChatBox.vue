@@ -159,39 +159,51 @@
                                     </div>
 
                                 </div>                                    
-                                <div class="w-fit group relative" v-if="!loading" >
-                                    <div class= "hide top-50 hide opacity-0 group-hover:bottom-0 opacity-0 .group-hover:block fixed w-[1000px] group absolute  group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
+                                <div class="w-fit group relative" v-if="!loading">
+                                    <div class="hide top-50 hide opacity-0 group-hover:bottom-0 opacity-0 .group-hover:block fixed w-[1000px] group absolute group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
                                         <div class="w-fit flex-wrap flex bg-white bg-opacity-50 backdrop-blur-md rounded p-4">
-                                        <div class="w-fit h-fit"
-                                            v-for="(item, index) in installedModels" :key="index + '-' + item.name"
-                                            ref="installedModels"
-                                            @mouseover="showModelHoveredIn(index)" 
-                                            @mouseleave="showModelHoveredOut()"
+                                            <div class="w-fit h-fit"
+                                                v-for="(item, index) in installedModels" :key="index + '-' + item.name"
+                                                ref="installedModels"
+                                                @mouseover="showModelHoveredIn(index)" 
+                                                @mouseleave="showModelHoveredOut()"
                                             >
-                                            <div v-if="index!=model_name" class="items-center flex flex-row relative z-20  hover:-translate-y-8 duration-300"
-                                            :class="modelHoveredIndex === index?'scale-150':''"
-                                            >
-                                                <div class="relative">
-                                                    <button @click.prevent="setModel(item)" class="w-10 h-10 relative">
-                                                        <img :src="item.icon?item.icon:modelImgPlaceholder" @error="personalityImgPlacehodler"
-                                                        class="z-50 w-10 h-10 rounded-full object-fill text-red-700 border-2 border-gray-500 active:scale-90"
-                                                        :class="modelHoveredIndex === index?'scale-150  ':'' + item.name==model_name ? 'border-secondary' : 'border-transparent z-0'"
-                                                        :title="item.name">
-                                                    </button>
+                                                <div v-if="index!=model_name" class="items-center flex flex-row relative z-20 hover:-translate-y-8 duration-300"
+                                                    :class="modelHoveredIndex === index ? 'scale-150' : ''"
+                                                >
+                                                    <div class="relative flex items-center">
+                                                        <!-- Parent container for both buttons -->
+                                                        <div class="relative group">
+                                                            <button @click.prevent="setModel(item)" class="w-10 h-10 relative">
+                                                                <img :src="item.icon ? item.icon : modelImgPlaceholder" @error="personalityImgPlacehodler"
+                                                                    class="z-50 w-10 h-10 rounded-full object-fill text-red-700 border-2 border-gray-500 active:scale-90"
+                                                                    :class="modelHoveredIndex === index ? 'scale-150' : '' + item.name == model_name ? 'border-secondary' : 'border-transparent z-0'"
+                                                                    :title="item.name">
+                                                            </button>
+                                                            <!-- New copy button with SVG icon that appears on hover -->
+                                                            <button v-if="modelHoveredIndex === index" @click.prevent="copyModelNameFrom(item.name)"
+                                                                class="absolute -top-2 -right-2 bg-blue-500 text-white p-1 rounded-full hover:bg-blue-700 transition duration-300">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                                                    <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                                                                    <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
                                         </div>
                                     </div>
                                     <div class="group items-center flex flex-row">
                                         <button @click.prevent="copyModelName()" class="w-8 h-8">
                                             <img :src="currentModelIcon"
                                                 class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary hover:scale-110 hover:-translate-y-1 duration-400"
-                                                :title="currentModel?currentModel.name:'unknown'">
+                                                :title="currentModel ? currentModel.name : 'unknown'">
                                         </button>
                                     </div>
+                                </div>
 
-                                </div>    
+ 
                                 <div class="w-fit group relative" v-if="!loading">
                                     <!-- :onShowPersList="onShowPersListFun" -->
                                     <div class= "top-50 hide opacity-0 group-hover:bottom-0 .group-hover:block fixed w-[1000px] group absolute group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
@@ -640,6 +652,10 @@ export default {
         },
         copyModelName(){
             navigator.clipboard.writeText(this.binding_name + "::" + this.model_name);
+            this.$store.state.toast.showToast("Model name copyed to clipboard: "+this.binding_name + "::" + this.model_name, 4, true)
+        },
+        copyModelNameFrom(model){
+            navigator.clipboard.writeText(this.binding_name + "::" + model);
             this.$store.state.toast.showToast("Model name copyed to clipboard: "+this.binding_name + "::" + this.model_name, 4, true)
         },
         showModelConfig(){

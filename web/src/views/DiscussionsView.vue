@@ -1,55 +1,55 @@
 <template>
-<transition name="fade-and-fly">
-    <div v-if="!isReady" class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 overflow-hidden">
-    <!-- Falling strawberries -->
-    <div class="absolute inset-0 pointer-events-none overflow-hidden">
-        <div v-for="n in 50" :key="n" class="absolute animate-fall animate-giggle"
-            :style="{
-            left: `${Math.random() * 100}%`,
-            top: `-20px`,
-            animationDuration: `${3 + Math.random() * 7}s`,
-            animationDelay: `${Math.random() * 5}s`
-            }">
-        🪶
+    <transition name="fade-and-fly">
+        <div v-if="!isReady" class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 overflow-hidden">
+        <!-- Falling strawberries -->
+        <div class="absolute inset-0 pointer-events-none overflow-hidden">
+            <div v-for="n in 50" :key="n" class="absolute animate-fall animate-giggle"
+                :style="{
+                left: `${Math.random() * 100}%`,
+                top: `-20px`,
+                animationDuration: `${3 + Math.random() * 7}s`,
+                animationDelay: `${Math.random() * 5}s`
+                }">
+            🪶
+            </div>
         </div>
-    </div>
 
-    <div class="flex flex-col items-center text-center max-w-4xl w-full px-4 relative z-10">
-        <div class="mb-8 w-full">
-            <div class="text-6xl md:text-7xl font-bold text-amber-500 mb-2"
-                style="text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;">
-                L🪶LLMS
+        <div class="flex flex-col items-center text-center max-w-4xl w-full px-4 relative z-10">
+            <div class="mb-8 w-full">
+                <div class="text-6xl md:text-7xl font-bold text-amber-500 mb-2"
+                    style="text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;">
+                    L🪶LLMS
+                </div>
+
+            <p class="text-2xl text-gray-600 dark:text-gray-300 italic">
+                One tool to rule them all
+            </p>
+            <p class="text-xl text-gray-500 dark:text-gray-400 mb-6">
+                by ParisNeo
+            </p>
+            <p class="bottom-0 text-2xl text-gray-600 dark:text-gray-300 italic">
+                {{ version_info }}
+            </p>
+
+            <div class="w-full h-24 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg flex items-center justify-center">
+                <p style="font-size: 48px; line-height: 1;">🪶</p>
             </div>
 
-        <p class="text-2xl text-gray-600 dark:text-gray-300 italic">
-            One tool to rule them all
-        </p>
-        <p class="text-xl text-gray-500 dark:text-gray-400 mb-6">
-            by ParisNeo
-        </p>
-        <p class="bottom-0 text-2xl text-gray-600 dark:text-gray-300 italic">
-            {{ version_info }}
-        </p>
-
-        <div class="w-full h-24 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg flex items-center justify-center">
-            <p style="font-size: 48px; line-height: 1;">🪶</p>
-        </div>
-
-        </div>
-        
-        <div class="w-full max-w-2xl">
-        <div role="status" class="w-full">
-            <p class="text-xl text-gray-700 dark:text-gray-300">
-            {{ loading_infos }}...
-            </p>
-            <p class="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">
-            {{ Math.round(loading_progress) }}%
-            </p>
-        </div>
+            </div>
+            
+            <div class="w-full max-w-2xl">
+            <div role="status" class="w-full">
+                <p class="text-xl text-gray-700 dark:text-gray-300">
+                {{ loading_infos }}...
+                </p>
+                <p class="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">
+                {{ Math.round(loading_progress) }}%
+                </p>
+            </div>
+            </div>
         </div>
     </div>
-</div>
-</transition>
+    </transition>
 
 
 

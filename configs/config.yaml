@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 138
+version: 139
 binding_name: null
 model_name: null
 model_variant: null
@@ -105,7 +105,7 @@ active_tts_service: "None" # xtts (offline), openai_tts (API key required), elev
 active_tti_service: "None" # autosd (offline), diffusers (offline), diffusers_client (online), dall-e (online), midjourney (online)
 active_stt_service: "None" # whisper (offline), asr (offline or online), openai_whiosper (API key required)
 active_ttm_service: "None" # musicgen (offline)
-active_ttv_service: "None" # cog_video_x (offline)
+active_ttv_service: "None" # cog_video_x, diffusers, lumalab (offline)
 # -------------------- Services --------------------------
 
 # ***************** STT *****************
@@ -216,6 +216,9 @@ motion_ctrl_base_url: http://localhost:7861
 
 # ***************** TTV *****************
 cog_video_x_model: "THUDM/CogVideoX-5b"
+
+# lumalabs configuration
+lumalabs_key: ""
 
 # ***************** TTT *****************
 

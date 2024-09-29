@@ -22,3 +22,6 @@ The multitude of opensource models is a good thing. With enough luck, poison mod
 And for non certified models, maybe build a pool of judgement models that are trust worthy,  we give them the same prompts as the models to test and look at the statistics of their answers and check the ones that are out of concensus. Just like we do with science.
 
 I hope we figure out a way. I'm sure this community is full of smart people who can pull it off.
+
+By ParisNeo
+2023
