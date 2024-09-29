@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50">
-  <circle cx="25" cy="25" r="20" fill="none" stroke="black" stroke-width="3"></circle>
-  <line x1="25" y1="30" x2="25" y2="15" style="stroke:black;stroke-width:3"></line>
-  <circle cx="25" cy="35" r="3" fill="black"></circle>
-</svg>

@@ -747,9 +747,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
                             "id":                       msg.id,
                             "parent_message_id":        msg.parent_message_id,
 
-                            'binding':                  self.config["binding_name"],
-                            'model' :                   self.config["model_name"], 
-                            'personality':              self.config["personalities"][self.config["active_personality_id"]],
+                            'binding': self.binding.binding_folder_name,
+                            'model' : self.model.model_name, 
+                            'personality':self.personality.name,
 
                             'created_at':               client.discussion.current_message.created_at,
                             'started_generating_at': client.discussion.current_message.started_generating_at,
@@ -787,9 +787,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
                             "id":                       0,
                             "parent_message_id":        0,
 
-                            'binding':                  self.config["binding_name"],
-                            'model' :                   self.config["model_name"], 
-                            'personality':              self.config["personalities"][self.config["active_personality_id"]],
+                            'binding': self.binding.binding_folder_name,
+                            'model' : self.model.model_name, 
+                            'personality':self.personality.name,
 
                             'created_at':               client.discussion.current_message.created_at,
                             'started_generating_at': client.discussion.current_message.started_generating_at,
@@ -814,9 +814,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                             'started_generating_at': client.discussion.current_message.started_generating_at,
                                             'finished_generating_at': client.discussion.current_message.finished_generating_at,
                                             'nb_tokens': client.discussion.current_message.nb_tokens,
-                                            'binding':                  self.config["binding_name"],
-                                            'model' :                   self.config["model_name"], 
-                                            'personality':              self.config["personalities"][self.config["active_personality_id"]],
+                                            'binding': self.binding.binding_folder_name,
+                                            'model' : self.model.model_name, 
+                                            'personality':self.personality.name,
                                         }, to=client_id
                                 )
         )
@@ -853,9 +853,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                             'nb_tokens': client.discussion.current_message.nb_tokens,
                                             'parameters':parameters,
                                             'metadata':metadata,
-                                            'binding':                  self.config["binding_name"],
-                                            'model' :                   self.config["model_name"], 
-                                            'personality':              self.config["personalities"][self.config["active_personality_id"]],
+                                            'binding': self.binding.binding_folder_name,
+                                            'model' : self.model.model_name, 
+                                            'personality':self.personality.name,
 
                                         }, to=client_id
                                 )
@@ -886,9 +886,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                             'started_generating_at': client.discussion.current_message.started_generating_at,
                                             'finished_generating_at': client.discussion.current_message.finished_generating_at,
                                             'nb_tokens': client.discussion.current_message.nb_tokens,
-                                            'binding':                  self.config["binding_name"],
-                                            'model' :                   self.config["model_name"], 
-                                            'personality':              self.config["personalities"][self.config["active_personality_id"]],
+                                            'binding': self.binding.binding_folder_name,
+                                            'model' : self.model.model_name, 
+                                            'personality':self.personality.name,
 
                                         }, to=client_id
                                 )
@@ -978,9 +978,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                             "id": client.discussion.current_message.id,
                                             "content":client.generated_text,
 
-                                            'binding': self.config["binding_name"],
-                                            'model' : self.config["model_name"], 
-                                            'personality':self.config["personalities"][self.config["active_personality_id"]],
+                                            'binding': self.binding.binding_folder_name,
+                                            'model' : self.model.model_name, 
+                                            'personality':self.personality.name,
 
                                             'created_at': client.discussion.current_message.created_at,
                                             'started_generating_at': client.discussion.current_message.started_generating_at,

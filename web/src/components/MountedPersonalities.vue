@@ -42,8 +42,6 @@
     </div>  
     <UniversalForm ref="universalForm" class="z-50" />
 </template>
-<Toast ref="toast">
-</Toast>
 <script>
 import axios from "axios";
 import defaultPersonalityImgPlaceholder from "../assets/logo.svg"

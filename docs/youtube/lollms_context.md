@@ -117,7 +117,25 @@ ParisNeo's commitment to sharing lollms with the community goes beyond just open
 
 ## Security
 
-Lollms was spot by huntr.com which is a bounty hunting platform. People get payed to find vulenerabilities in the system and ParisNeo gets notified to upgrade his system and fix the vulenerabilities. This leads to a better more secure tool.
+Somehow, huntr.com, a bounty hunting platform did spot lollms and they added it to their catalogue of open source apps that they deemed worthy of being protected. So they listed lollms on their platform to increase the platform security.
+Parisneo did not ask for this, but he had to accept to do the fixes as he wants his tool to be secure.
+
+In huntr.com, pentesters and white hackers get payed to find vulenerabilities in the systems that are listed on their website.
+When a vulenerability is discovered, ParisNeo is notified by the platform and he has to fix the vulenerabilities before they get released. This leads to a better more secure tool.
+Listing lollms on huntr means more work for ParisNeo, but he did do the job and fixed all reported vulenerabilities.
+
+Also, the project has a dependabot that keeps checking for vulenerabilities in packages he is using and automatically upgrade to the more secure versions of the updates.
+
+Finally, ParisNeo buit a personality and an app for detecting vulenerabilities in his own code and fix them before they're even released.
+
+## Lollms
+
+Lollms is not built by a company. It is a work of love, built by ParisNeo as a way to give back to the community and to get satisfaction from being useful. As he came to a conclusion that hapiness doesn't come from wealth but from the feeling of being useful and embracing his own passions.
+
+
+## Extra information
+
+ParisNeo also loves space. He used to dream of becoming an astronaut. When he is not coding, he tryes to learn as much as he can about space, astrophisics, orbital mecanics, spacecfraft building, engines etc. He likes playing Kerbal space Program. Although he has reduced this in the advantage of lollms.
 
 ## The Future of lollms: A Dream Realized
 
