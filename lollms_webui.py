@@ -1011,33 +1011,34 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 return
         if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP:
             ASCIIColors.info("--> Step:"+data)
-        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_START:
+            self.update_message_step(client_id, data, operation_type)
+        elif operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_START:
             ASCIIColors.info("--> Step started:"+data)
             self.update_message_step(client_id, data, operation_type)
-        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS:
+        elif operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS:
             ASCIIColors.success("--> Step ended:"+data)
             self.update_message_step(client_id, data, operation_type)
-        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_FAILURE:
+        elif operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_FAILURE:
             ASCIIColors.success("--> Step ended:"+data)
             self.update_message_step(client_id, data, operation_type)
-        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_WARNING:
+        elif operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_WARNING:
             self.warning(data,client_id=client_id)
             ASCIIColors.error("--> Exception from personality:"+data)
-        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_EXCEPTION:
+        elif operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_EXCEPTION:
             self.error(data, client_id=client_id)
             ASCIIColors.error("--> Exception from personality:"+data)
             return
-        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_INFO:
+        elif operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_INFO:
             self.info(data, client_id=client_id)
             ASCIIColors.info("--> Info:"+data)
             return
-        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_UI:
+        elif operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_UI:
             self.update_message_ui(client_id, data)
             return
-        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_JSON_INFOS:
+        elif operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_JSON_INFOS:
             self.update_message_metadata(client_id, data)
             return
-        if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_NEW_MESSAGE:
+        elif operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_NEW_MESSAGE:
             self.nb_received_tokens = 0
             self.start_time = datetime.now()
             self.update_message_step(client_id, "🔥 warming up ...", MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_END_SUCCESS)
@@ -1149,6 +1150,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         binding, model_name = self.model_path_to_binding_model(self.config.smart_routing_models_by_power[output_id])
                         self.select_model(binding, model_name)
                         self.personality.step_end("Routing request")
+                        self.personality.step(f"Complexity level: {output_id}")
                         self.personality.step(f"Selected {self.config.smart_routing_models_by_power[output_id]}")
                 except Exception as ex:
                     self.error("Failed to route beceause of this error : " + str(ex))

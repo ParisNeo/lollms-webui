@@ -2029,6 +2029,11 @@ export default {
                 index = this.discussionArr.findIndex((x) => x.id == msgObj.id)
                 this.discussionArr[index].content = msgObj.content
                 this.discussionArr[index].finished_generating_at = msgObj.finished_generating_at
+                this.discussionArr[index].nb_tokens  = msgObj.nb_tokens
+                this.discussionArr[index].binding  = msgObj.binding
+                this.discussionArr[index].model  = msgObj.model
+                this.discussionArr[index].personality  = msgObj.personality
+
 
                 // const messageItem = this.discussionArr[index]
                 // if (messageItem) {
