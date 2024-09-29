@@ -70,7 +70,10 @@ def execute_python(code, client, message_id, build_file=True):
             return error_json
 
         # The child process was successful.
-        output_json = {"output": output.decode("utf8"), "execution_time": execution_time}
+        if output:
+            output_json = {"output": output.decode("utf8"), "execution_time": execution_time}
+        else:
+            output_json = {"output": "", "execution_time": execution_time}
         return output_json
 
     return spawn_process(code)
