@@ -6,7 +6,12 @@ class LollmsTTI {
     setBaseUrl(baseUrl){
       this.baseUrl = baseUrl;
     }
-  
+    updateSettings(settings) {
+      // Update each setting if it's provided in the settings object
+      if ('host_address' in settings) this.baseUrl = settings.host_address;
+      if ('baseUrl' in settings) this.baseUrl = settings.baseUrl;
+    }
+     
     async generateImage(prompt, negativePrompt = '', width = 512, height = 512) {
       const url = `${this.baseUrl}/generate_image`;
       const requestBody = {
