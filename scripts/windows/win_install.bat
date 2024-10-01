@@ -1,129 +1,110 @@
 @echo off
 
-@rem This script will install miniconda and git with all dependencies for this project
-@rem This enables a user to install this project without manually installing conda and git.
-
 echo "L🪶LLMS: Lord of Large Language and Multimodal Systems"
 echo V13 Feather
 echo -----------------
 echo By ParisNeo
 echo -----------------
 
-@rem workaround for broken Windows installs
-set PATH=%PATH%;%SystemRoot%\system32
-
 cd /D "%~dp0"
 
-echo "%cd%"| findstr /C:" " >nul && call :PrintBigMessage "This script relies on Miniconda which can not be silently installed under a path with spaces. Please put it in a path without spaces and try again" && goto failed
-call :PrintBigMessage "WARNING: This script relies on Miniconda which will fail to install if the path is too long."
-set "SPCHARMESSAGE="WARNING: Special characters were detected in the installation path!" "         This can cause the installation to fail!""
-echo "%CD%"| findstr /R /C:"[!#\$%&()\*+,;<=>?@\[\]\^`{|}~]" >nul && (
-  call :PrintBigMessage %SPCHARMESSAGE%
-)
-set SPCHARMESSAGE=
-
-pause
-cls
-
-md 
-
-@rem better isolation for virtual environment
-SET "CONDA_SHLVL="
-SET PYTHONNOUSERSITE=1
-SET "PYTHONPATH="
-SET "PYTHONHOME="
-SET "TEMP=%cd%\installer_files\temp"
-SET "TMP=%cd%\installer_files\temp"
-
-set MINICONDA_DIR=%cd%\installer_files\miniconda3
+set LOLLMSENV_DIR=%cd%\installer_files\lollmsenv
 set INSTALL_ENV_DIR=%cd%\installer_files\lollms_env
-set MINICONDA_DOWNLOAD_URL=https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe
 set REPO_URL=https://github.com/ParisNeo/lollms-webui.git
 
-set "PACKAGES_TO_INSTALL=python=3.11 git pip"
+REM Download LollmsEnv installer
+echo Downloading LollmsEnv installer...
+powershell -Command "Invoke-WebRequest -Uri 'https://github.com/ParisNeo/LollmsEnv/releases/download/V1.0/lollmsenv_installer.bat' -OutFile 'lollmsenv_installer.bat'"
 
-if not exist "%MINICONDA_DIR%\Scripts\conda.exe" (
-  @rem download miniconda
-  echo Downloading Miniconda installer from %MINICONDA_DOWNLOAD_URL%
-  call curl -LO "%MINICONDA_DOWNLOAD_URL%"
+REM Install LollmsEnv
+call lollmsenv_installer.bat --dir "%LOLLMSENV_DIR%"
 
-  @rem install miniconda
-  echo. && echo Installing Miniconda To "%MINICONDA_DIR%" && echo Please Wait... && echo.
-  start "" /W /D "%cd%" "Miniconda3-latest-Windows-x86_64.exe" /InstallationType=JustMe /NoShortcuts=1 /AddToPath=0 /RegisterPython=0 /NoRegistry=1 /S /D=%MINICONDA_DIR% || ( echo. && echo Miniconda installer not found. && goto failed )
-  del /q "Miniconda3-latest-Windows-x86_64.exe"
-  if not exist "%MINICONDA_DIR%\Scripts\activate.bat" ( echo. && echo Miniconda install failed. && goto end )
-)
-
-@rem activate miniconda
-call "%MINICONDA_DIR%\Scripts\activate.bat" || ( echo Miniconda hook not found. && goto end )
-
-
-@rem create the installer env
-if not exist "%INSTALL_ENV_DIR%" (
-  echo Packages to install: %PACKAGES_TO_INSTALL%
-  call conda create --no-shortcuts -y -k -p "%INSTALL_ENV_DIR%" %CHANNEL% %PACKAGES_TO_INSTALL% || ( echo. && echo Conda environment creation failed. && goto end )
-)
-
-@rem check if conda environment was actually created
-if not exist "%INSTALL_ENV_DIR%\python.exe" ( echo. && echo Conda environment is empty. && goto end )
-
-@rem activate installer env
-call conda activate "%INSTALL_ENV_DIR%" || ( echo. && echo Conda environment activation failed. && goto end )
-
-@rem install conda library
-call conda install conda -y
-
-echo Installing pytorch (required for RAG)
-:: Check if CUDA-enabled device is available
+REM Check for NVIDIA GPU and CUDA
+echo Checking for NVIDIA GPU and CUDA...
 nvidia-smi >nul 2>&1
+if %errorlevel% equ 0 (
+    echo NVIDIA GPU detected.
+    echo Querying GPU information...
+    nvidia-smi --query-gpu=name,driver_version,memory.total,utilization.gpu,temperature.gpu --format=csv,noheader > gpu_info.txt
+    echo Contents of gpu_info.txt:
+    type gpu_info.txt
+    echo Parsing GPU information...
+    for /f "tokens=1-5 delims=," %%a in (gpu_info.txt) do (
+        set "GPU_NAME=%%a"
+        set "DRIVER_VERSION=%%b"
+        set "TOTAL_MEMORY=%%c"
+        set "GPU_UTILIZATION=%%d"
+        set "GPU_TEMPERATURE=%%e"
+    )
+    echo GPU Name: %GPU_NAME%
+    echo Driver Version: %DRIVER_VERSION%
+    echo Total Memory: %TOTAL_MEMORY%
+    echo GPU Utilization: %GPU_UTILIZATION%
+    echo GPU Temperature: %GPU_TEMPERATURE%
+    
+    echo Extracting CUDA version...
+    for /f "tokens=9 delims= " %%x in ('nvidia-smi ^| findstr /C:"CUDA Version:"') do set "CUDA_VERSION=%%x"
+    echo CUDA Version: %CUDA_VERSION%
 
-IF %ERRORLEVEL% EQU 0 (
-    echo CUDA-enabled device detected.
-    echo Installing PyTorch with CUDA support...
-    conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia -y
-) ELSE (
-    echo No CUDA-enabled device detected.
-    echo Installing PyTorch for CPU only...
-    cconda install pytorch torchvision torchaudio cpuonly -c pytorch -y
+    if "%CUDA_VERSION%" lss "12.1" (
+        echo Your CUDA version is older than 12.1. For better performance, please consider updating.
+        echo Visit https://developer.nvidia.com/cuda-downloads to download the latest version.
+    )
+) else (
+    echo No NVIDIA GPU detected or nvidia-smi is not available.
 )
 
-@rem clone the repository
+REM Ask user about CUDA installation
+set /p INSTALL_CUDA="Do you want to install CUDA? (Only for NVIDIA GPUs, recommended for local AI) [Y/N]: "
+if /i "%INSTALL_CUDA%"=="Y" (
+    echo Please visit https://developer.nvidia.com/cuda-downloads to download and install CUDA.
+    pause
+)
+
+REM Ask about Visual Studio Code installation
+set /p INSTALL_VSCODE="Do you want to install Visual Studio Code? (Recommended for local AI development) [Y/N]: "
+if /i "%INSTALL_VSCODE%"=="Y" (
+    echo Please visit https://code.visualstudio.com/download to download and install Visual Studio Code.
+    pause
+)
+
+REM Install Python and create environment
+call "%LOLLMSENV_DIR%\bin\lollmsenv.bat" install-python 3.10.11
+call "%LOLLMSENV_DIR%\bin\lollmsenv.bat" create-env lollms_env 3.10.11
+
+REM Activate environment
+call "%LOLLMSENV_DIR%\bin\lollmsenv.bat" activate lollms_env
+
+REM Clone or update repository
 if exist lollms-webui\ (
-  cd lollms-webui
-  git pull
-  git submodule update --init --recursive
-  cd
-  cd lollms_core 
-  pip install -e .
-  cd ..
+    cd lollms-webui
+    git pull
+    git submodule update --init --recursive
+    cd ..
 ) else (
-  git clone --depth 1  --recurse-submodules https://github.com/ParisNeo/lollms-webui.git
-  git submodule update --init --recursive
-  cd lollms-webui\lollms_core
-  pip install -e .
-  cd ..
+    git clone --depth 1 --recurse-submodules %REPO_URL%
+    cd lollms-webui
+    git submodule update --init --recursive
+    cd ..
 )
 
-cd
+REM Install requirements
+cd lollms-webui
+pip install -r requirements.txt
+cd ..
 
-conda env update --file environment.yml
+REM Create launcher scripts
+echo @echo off > ..\win_run.bat
+echo call "%LOLLMSENV_DIR%\bin\lollmsenv.bat" activate lollms_env >> ..\win_run.bat
+echo cd lollms-webui >> ..\win_run.bat
+echo python app.py %%* >> ..\win_run.bat
 
-@rem create launcher
-if exist ..\win_run.bat (
-    echo Win run found
-) else (
-  copy scripts\windows\win_run.bat ..\
-)
+echo @echo off > ..\win_conda_session.bat
+echo call "%LOLLMSENV_DIR%\bin\lollmsenv.bat" activate lollms_env >> ..\win_conda_session.bat
+echo cd lollms-webui >> ..\win_conda_session.bat
+echo cmd /k >> ..\win_conda_session.bat
 
-
-if exist ..\win_conda_session.bat (
-    echo win conda session script found
-) else (
-  copy scripts\windows\win_conda_session.bat ..\
-)
-
-cd
-
+REM Binding selection menu (unchanged from original script)
 echo Select the default binding to be installed:
 echo 1) None (install the binding later)
 echo 2) Local binding - ollama
@@ -139,93 +120,23 @@ echo 11) Remote binding - xAI
 echo 12) Remote binding - elf
 echo 13) Remote binding - remote lollms
 
-echo.
 set /p choice="Type the number of your choice and press Enter: "
 
-if "%choice%"=="1" goto :none
-if "%choice%"=="2" goto :ollama
-if "%choice%"=="3" goto :python_llama_cpp
-if "%choice%"=="4" goto :bs_exllamav2
-if "%choice%"=="5" goto :groq
-if "%choice%"=="6" goto :open_router
-if "%choice%"=="7" goto :open_ai
-if "%choice%"=="8" goto :mistral_ai
-if "%choice%"=="9" goto :gemini
-if "%choice%"=="10" goto :vllm
-if "%choice%"=="11" goto :xAI
-if "%choice%"=="12" goto :elf
-if "%choice%"=="13" goto :remote_lollms
+REM Binding installation logic (unchanged from original script)
+if "%choice%"=="1" goto :end
+if "%choice%"=="2" call python zoos/bindings_zoo/ollama/__init__.py
+if "%choice%"=="3" call python zoos/bindings_zoo/python_llama_cpp/__init__.py
+if "%choice%"=="4" call python zoos/bindings_zoo/bs_exllamav2/__init__.py
+if "%choice%"=="5" call python zoos/bindings_zoo/groq/__init__.py
+if "%choice%"=="6" call python zoos/bindings_zoo/open_router/__init__.py
+if "%choice%"=="7" call python zoos/bindings_zoo/open_ai/__init__.py
+if "%choice%"=="8" call python zoos/bindings_zoo/mistral_ai/__init__.py
+if "%choice%"=="9" call python zoos/bindings_zoo/gemini/__init__.py
+if "%choice%"=="10" call python zoos/bindings_zoo/vllm/__init__.py
+if "%choice%"=="11" call python zoos/bindings_zoo/xAI/__init__.py
+if "%choice%"=="12" call python zoos/bindings_zoo/elf/__init__.py
+if "%choice%"=="13" call python zoos/bindings_zoo/remote_lollms/__init__.py
 
-
-goto :end
-
-:none
-echo You selected None. No binding will be installed now.
-goto :end
-
-:ollama
-call python zoos/bindings_zoo/ollama/__init__.py
-goto :end
-
-:python_llama_cpp
-call python zoos/bindings_zoo/python_llama_cpp/__init__.py
-goto :end
-
-:bs_exllamav2
-call python zoos/bindings_zoo/bs_exllamav2/__init__.py
-goto :end
-
-:groq
-call python zoos/bindings_zoo/groq/__init__.py
-goto :end
-
-:open_router
-call python zoos/bindings_zoo/open_router/__init__.py
-goto :end
-
-:open_ai
-call python zoos/bindings_zoo/open_ai/__init__.py
-goto :end
-
-:mistral_ai
-call python zoos/bindings_zoo/mistral_ai/__init__.py
-goto :end
-
-:gemini
-call python zoos/bindings_zoo/gemini/__init__.py
-goto :end
-
-:vllm
-call python zoos/bindings_zoo/vllm/__init__.py
-goto :end
-
-:xAI
-call python zoos/bindings_zoo/xAI/__init__.py
-goto :end
-
-
-:elf
-call python zoos/bindings_zoo/elf/__init__.py
-goto :end
-
-:remote_lollms
-call python zoos/bindings_zoo/remote_lollms/__init__.py
-goto :end
-
-
-:PrintBigMessage
-echo. && echo.
-echo *******************************************************************
-for %%M in (%*) do echo * %%~M
-echo *******************************************************************
-echo. && echo.
-exit /b
-goto end
-:failed
-echo Install failed
-goto endend
 :end
-
 echo Installation complete.
-:endend
 pause
