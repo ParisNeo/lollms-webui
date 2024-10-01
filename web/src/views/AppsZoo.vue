@@ -67,6 +67,15 @@
             >
             Show only installed apps
           </label>
+          <label for="installed-only" class="font-semibold">
+            <input 
+              id="uninstalled-only" 
+              type="checkbox" 
+              v-model="showOnlyUnInstalled"
+              class="mr-2"
+            >
+            Show only non installed apps
+          </label>
         </div>        
         <div class="flex items-center space-x-4">
           <label for="sort-select" class="font-semibold">Sort by:</label>
@@ -176,6 +185,7 @@ export default {
       sortBy: 'update',
       sortOrder: 'desc',
       showOnlyInstalled: false,
+      showOnlyUnInstalled: false,
     };
   },
   computed: {
@@ -199,14 +209,20 @@ export default {
     },
     filteredApps() {
       return this.combinedApps.filter(app => {
-        const matchesSearch = app.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        const matchesSearch = app.name.toLowerCase().includes(this.toLowerCase()) ||
                               app.description.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
                               app.author.toLowerCase().includes(this.searchQuery.toLowerCase());
         const matchesCategory = this.selectedCategory === 'all' || app.category === this.selectedCategory;
-        const matchesInstalled = !this.showOnlyInstalled || app.installed;
+
+        // Adjusting the installed logic to account for both showOnlyInstalled and showOnlyUnInstalled
+        const matchesInstalled = (this.showOnlyInstalled && app.installed) || 
+                                (this.showOnlyUnInstalled && !app.installed) || 
+                                (!this.showOnlyInstalled && !this.showOnlyUnInstalled);
+
         return matchesSearch && matchesCategory && matchesInstalled;
       });
     },
+
     sortedAndFilteredApps() {
       return this.filteredApps.sort((a, b) => {
         let comparison = 0;

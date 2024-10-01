@@ -225,6 +225,17 @@ async def get_app_file(app_name: str, file: str):
         raise HTTPException(status_code=404, detail="App file not found")
     return FileResponse(app_path)
 
+@router.get("/apps/{app_name}/{subfolder}/{file}")
+async def get_app_file(app_name: str, subfolder: str, file: str):
+    app_name=sanitize_path(app_name)
+    subfolder=sanitize_path(subfolder)
+    file=sanitize_path(file)
+    app_path = lollmsElfServer.lollms_paths.apps_zoo_path / app_name / subfolder / file
+    if not app_path.exists():
+        raise HTTPException(status_code=404, detail="App file not found")
+    return FileResponse(app_path)
+
+
 class AppNameInput(BaseModel):
     client_id: str
     app_name: str
