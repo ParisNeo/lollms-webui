@@ -1,5 +1,5 @@
 class LollmsTTI {
-    constructor(baseUrl = 'http://localhost:9600') {
+    constructor(baseUrl = '') {
       this.baseUrl = baseUrl;
     }
     
