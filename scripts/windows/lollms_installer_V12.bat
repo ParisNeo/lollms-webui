@@ -1,104 +1,129 @@
 @echo off
 
-echo "LoLLMS: Lord of Large Language and Multimodal Systems"
+echo "L🪶LLMS: Lord of Large Language and Multimodal Systems"
 echo V13 Feather
 echo -----------------
 echo By ParisNeo
 echo -----------------
 
+REM Store the current path
+set "ORIGINAL_PATH=%CD%"
+
 cd /D "%~dp0"
 
-echo "%cd%"| findstr /C:" " >nul && call :PrintBigMessage "This script cannot be run from a path with spaces. Please move it to a path without spaces and try again." && goto failed
+echo %CD%
 
-set "SPCHARMESSAGE="WARNING: Special characters were detected in the installation path!" "         This can cause the installation to fail!""
-echo "%CD%"| findstr /R /C:"[!#\$%&()\*+,;<=>?@\[\]\^`{|}~]" >nul && (
-  call :PrintBigMessage %SPCHARMESSAGE%
-)
-set SPCHARMESSAGE=
-
-pause
-cls
-
-SET "TEMP=%cd%\installer_files\temp"
-SET "TMP=%cd%\installer_files\temp"
-
-set LOLLMSENV_DIR=%cd%\installer_files\lollmsenv
-set INSTALL_ENV_DIR=%cd%\installer_files\lollms_env
+set LOLLMSENV_DIR=%CD%\installer_files\lollmsenv
+set INSTALL_ENV_DIR=%CD%\installer_files\lollms_env
 set REPO_URL=https://github.com/ParisNeo/lollms-webui.git
 
-REM Install LollmsEnv if not already installed
-if not exist "%LOLLMSENV_DIR%" (
-  echo Installing LollmsEnv...
-  mkdir "%LOLLMSENV_DIR%"
-  cd "%LOLLMSENV_DIR%"
-  git clone https://github.com/ParisNeo/LollmsEnv.git .
-  call install.bat --local
-  cd "%~dp0"
-) else (
-  echo LollmsEnv already installed.
-)
+REM Download LollmsEnv installer
+echo Downloading LollmsEnv installer...
+powershell -Command "Invoke-WebRequest -Uri 'https://github.com/ParisNeo/LollmsEnv/releases/download/V1.2.8/lollmsenv_installer.bat' -OutFile 'lollmsenv_installer.bat'"
 
-REM Activate LollmsEnv
-call "%LOLLMSENV_DIR%\activate.bat"
+REM Install LollmsEnv
+call lollmsenv_installer.bat --dir "%LOLLMSENV_DIR%" -y
 
-REM Install Python 3.11
-call lollmsenv install-python 3.11.0
-
-REM Create Lollms environment
-call lollmsenv create-env lollms_env 3.11.0
-
-REM Activate Lollms environment
-call lollmsenv activate lollms_env
-
-REM Install required packages
-call lollmsenv install git
-call lollmsenv install pip
-
-REM Install PyTorch
-echo Installing pytorch (required for RAG)
+REM Check for NVIDIA GPU and CUDA
+echo Checking for NVIDIA GPU and CUDA...
 nvidia-smi >nul 2>&1
-IF %ERRORLEVEL% EQU 0 (
-    echo CUDA-enabled device detected.
-    echo Installing PyTorch with CUDA support...
-    call lollmsenv install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu118
-) ELSE (
-    echo No CUDA-enabled device detected.
-    echo Installing PyTorch for CPU only...
-    call lollmsenv install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
+if %errorlevel% equ 0 (
+    echo NVIDIA GPU detected.
+    echo Querying GPU information...
+    
+    REM Use a temporary file to store nvidia-smi output
+    nvidia-smi --query-gpu=name,driver_version,memory.total,utilization.gpu,temperature.gpu --format=csv,noheader,nounits
+    nvidia-smi --query-gpu=name,driver_version,memory.total,utilization.gpu,temperature.gpu --format=csv,noheader,nounits > gpu_info.txt
+    
+    REM Read from the temporary file
+    for /f "tokens=1-5 delims=," %%a in (gpu_info.txt) do (
+        set "GPU_NAME=%%a"
+        set "DRIVER_VERSION=%%b"
+        set "TOTAL_MEMORY=%%c"
+        set "GPU_UTILIZATION=%%d"
+        set "GPU_TEMPERATURE=%%e"
+    )
+    
+    echo GPU Name: %GPU_NAME%
+    echo Driver Version: %DRIVER_VERSION%
+    echo Total Memory: %TOTAL_MEMORY% MiB
+    echo GPU Utilization: %GPU_UTILIZATION% %%
+    echo GPU Temperature: %GPU_TEMPERATURE% C
+    
+    echo Extracting CUDA version...
+    for /f "tokens=* delims=" %%a in ('nvidia-smi ^| findstr "CUDA Version"') do (
+        set "CUDA_LINE=%%a"
+    )
+    for /f "tokens=3 delims=:" %%a in ("%CUDA_LINE%") do (
+        set "CUDA_VERSION=%%a"
+    )
+    set "CUDA_VERSION=%CUDA_VERSION:~1%"
+    echo CUDA Version:%CUDA_VERSION%
+
+    echo For optimal performance, ensure you have CUDA version 12.1 or higher.
+    echo If you need to update, visit https://developer.nvidia.com/cuda-downloads
+    
+    REM Clean up temporary files
+    del gpu_info.txt
+    del cuda_version.txt
+) else ( 
+    echo No NVIDIA GPU detected or nvidia-smi is not available.
 )
 
-REM Clone or update the repository
+
+REM Ask user about CUDA installation
+set /p INSTALL_CUDA="Do you want to install CUDA? (Only for NVIDIA GPUs if your version is lower than 12.1 or if it wasn't already installed, recommended for local AI) [Y/N]: "
+if /i "%INSTALL_CUDA%"=="Y" (
+    echo Please visit https://developer.nvidia.com/cuda-downloads to download and install CUDA.
+    pause
+)
+
+REM Ask about Visual Studio Code installation
+set /p INSTALL_VSCODE="Do you want to install Visual Studio Code? (Recommended for local AI development) [Y/N]: "
+if /i "%INSTALL_VSCODE%"=="Y" (
+    echo Please visit https://code.visualstudio.com/download to download and install Visual Studio Code.
+    pause
+)
+
+echo %CD%
+
+REM Install Python and create environment
+echo activating lollmsenv
+call "%LOLLMSENV_DIR%\activate.bat"
+call "%LOLLMSENV_DIR%\bin\lollmsenv.bat" install-python 3.10.11
+call "%LOLLMSENV_DIR%\bin\lollmsenv.bat" create-env lollms_env 3.10.11
+pause
+REM Activate environment
+call "%LOLLMSENV_DIR%\bin\lollmsenv.bat" activate lollms_env
+
+REM Clone or update repository
 if exist lollms-webui\ (
-  cd lollms-webui
-  git pull
-  git submodule update --init --recursive
-  cd ..
+    cd lollms-webui
+    git pull
+    git submodule update --init --recursive
+    cd ..
 ) else (
-  git clone --depth 1 --recurse-submodules %REPO_URL%
-  cd lollms-webui
-  git submodule update --init --recursive
-  cd ..
+    git clone --depth 1 --recurse-submodules %REPO_URL%
+    cd lollms-webui
+    git submodule update --init --recursive
+    cd ..
 )
-
-REM Install lollms_core
-cd lollms-webui\lollms_core
-call lollmsenv install -e .
-cd ..\..
 
 REM Install requirements
-call lollmsenv install -r lollms-webui\requirements.txt
+cd lollms-webui
+pip install -r requirements.txt
+cd ..
 
 REM Create launcher scripts
-if not exist ..\win_run.bat (
-  copy lollms-webui\scripts\windows\win_run.bat ..\
-)
+echo @echo off > ..\win_run.bat
+echo call "%LOLLMSENV_DIR%\bin\lollmsenv.bat" activate lollms_env >> ..\lollms.bat
+echo cd lollms-webui >> ..\lollms.bat
+echo python app.py %%* >> ..\lollms.bat
 
-if not exist ..\win_lollmsenv_session.bat (
-  echo @echo off > ..\win_lollmsenv_session.bat
-  echo call "%LOLLMSENV_DIR%\activate.bat" >> ..\win_lollmsenv_session.bat
-  echo call lollmsenv activate lollms_env >> ..\win_lollmsenv_session.bat
-  echo cmd /k >> ..\win_lollmsenv_session.bat
-)
+echo @echo off > ..\win_conda_session.bat
+echo call "%LOLLMSENV_DIR%\bin\lollmsenv.bat" activate lollms_env >> ..\lollms_cmd.bat
+echo cd lollms-webui >> ..\lollms_cmd.bat
+echo cmd /k >> ..\lollms_cmd.bat
 
 REM Binding selection menu
 echo Select the default binding to be installed:
@@ -118,88 +143,26 @@ echo 13) Remote binding - remote lollms
 
 set /p choice="Type the number of your choice and press Enter: "
 
-if "%choice%"=="1" goto :none
-if "%choice%"=="2" goto :ollama
-if "%choice%"=="3" goto :python_llama_cpp
-if "%choice%"=="4" goto :bs_exllamav2
-if "%choice%"=="5" goto :groq
-if "%choice%"=="6" goto :open_router
-if "%choice%"=="7" goto :open_ai
-if "%choice%"=="8" goto :mistral_ai
-if "%choice%"=="9" goto :gemini
-if "%choice%"=="10" goto :vllm
-if "%choice%"=="11" goto :xAI
-if "%choice%"=="12" goto :elf
-if "%choice%"=="13" goto :remote_lollms
-
-goto :end
-
-:none
-echo You selected None. No binding will be installed now.
-goto :end
-
-:ollama
-call python lollms-webui\zoos\bindings_zoo\ollama\__init__.py
-goto :end
-
-:python_llama_cpp
-call python lollms-webui\zoos\bindings_zoo\python_llama_cpp\__init__.py
-goto :end
-
-:bs_exllamav2
-call python lollms-webui\zoos\bindings_zoo\bs_exllamav2\__init__.py
-goto :end
-
-:groq
-call python lollms-webui\zoos\bindings_zoo\groq\__init__.py
-goto :end
-
-:open_router
-call python lollms-webui\zoos\bindings_zoo\open_router\__init__.py
-goto :end
-
-:open_ai
-call python lollms-webui\zoos\bindings_zoo\open_ai\__init__.py
-goto :end
-
-:mistral_ai
-call python lollms-webui\zoos\bindings_zoo\mistral_ai\__init__.py
-goto :end
-
-:gemini
-call python lollms-webui\zoos\bindings_zoo\gemini\__init__.py
-goto :end
-
-:vllm
-call python lollms-webui\zoos\bindings_zoo\vllm\__init__.py
-goto :end
-
-:xAI
-call python lollms-webui\zoos\bindings_zoo\xAI\__init__.py
-goto :end
-
-:elf
-call python lollms-webui\zoos\bindings_zoo\elf\__init__.py
-goto :end
-
-:remote_lollms
-call python lollms-webui\zoos\bindings_zoo\remote_lollms\__init__.py
-goto :end
-
-:PrintBigMessage
-echo. && echo.
-echo *******************************************************************
-for %%M in (%*) do echo * %%~M
-echo *******************************************************************
-echo. && echo.
-exit /b
-
-:failed
-echo Install failed
-goto endend
+REM Binding installation logic
+if "%choice%"=="1" goto :end
+if "%choice%"=="2" call python zoos/bindings_zoo/ollama/__init__.py
+if "%choice%"=="3" call python zoos/bindings_zoo/python_llama_cpp/__init__.py
+if "%choice%"=="4" call python zoos/bindings_zoo/bs_exllamav2/__init__.py
+if "%choice%"=="5" call python zoos/bindings_zoo/groq/__init__.py
+if "%choice%"=="6" call python zoos/bindings_zoo/open_router/__init__.py
+if "%choice%"=="7" call python zoos/bindings_zoo/open_ai/__init__.py
+if "%choice%"=="8" call python zoos/bindings_zoo/mistral_ai/__init__.py
+if "%choice%"=="9" call python zoos/bindings_zoo/gemini/__init__.py
+if "%choice%"=="10" call python zoos/bindings_zoo/vllm/__init__.py
+if "%choice%"=="11" call python zoos/bindings_zoo/xAI/__init__.py
+if "%choice%"=="12" call python zoos/bindings_zoo/elf/__init__.py
+if "%choice%"=="13" call python zoos/bindings_zoo/remote_lollms/__init__.py
 
 :end
 echo Installation complete.
 
-:endend
+REM Restore the original path
+cd /D "%ORIGINAL_PATH%"
+echo Restored to original path: %CD%
+
 pause
