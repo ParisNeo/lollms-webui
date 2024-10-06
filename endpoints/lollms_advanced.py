@@ -558,6 +558,7 @@ async def text_to_speech_file(request: TTSRequest):
         )
         return FileResponse(file_path, media_type="audio/wav", filename="speech.wav")
     except Exception as e:
+        trace_exception(e)
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/tts/stream")
