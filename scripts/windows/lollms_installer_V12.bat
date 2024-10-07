@@ -20,7 +20,7 @@ set USE_MASTER=0
 if "%1"=="--use-master" set USE_MASTER=1
 
 if %USE_MASTER%==1 (
-    echo Using current master repo for LollmsEnv...
+    echo --- Using current master repo for LollmsEnv...
     git clone https://github.com/ParisNeo/LollmsEnv.git "%LOLLMSENV_DIR%"
     cd "%LOLLMSENV_DIR%"
     call install.bat --dir "%LOLLMSENV_DIR%" -y
@@ -28,13 +28,13 @@ if %USE_MASTER%==1 (
 ) else (
     REM Download LollmsEnv installer
     echo Downloading LollmsEnv installer...
-    powershell -Command "Invoke-WebRequest -Uri 'https://github.com/ParisNeo/LollmsEnv/releases/download/V1.2.9/lollmsenv_installer.bat' -OutFile 'lollmsenv_installer.bat'"
+    powershell -Command "Invoke-WebRequest -Uri 'https://github.com/ParisNeo/LollmsEnv/releases/download/V1.2.13/lollmsenv_installer.bat' -OutFile 'lollmsenv_installer.bat'"
     REM Install LollmsEnv
     call lollmsenv_installer.bat --dir "%LOLLMSENV_DIR%" -y
 )
 
 REM Check for NVIDIA GPU and CUDA
-echo Checking for NVIDIA GPU and CUDA...
+echo --- Checking for NVIDIA GPU and CUDA...
 nvidia-smi >nul 2>&1
 if %errorlevel% equ 0 (
     echo NVIDIA GPU detected.
@@ -94,20 +94,23 @@ if /i "%INSTALL_VSCODE%"=="Y" (
     pause
 )
 
+cd %ORIGINAL_PATH%
 echo %CD%
 
-REM Install Python and create environment
-echo activating lollmsenv
-call "%LOLLMSENV_DIR%\activate.bat"
-call "%LOLLMSENV_DIR%\bin\lollmsenv.bat" install-python 3.10.11
-call "%LOLLMSENV_DIR%\bin\lollmsenv.bat" create-env lollms_env 3.10.11
-pause
-REM Activate environment
-"%LOLLMSENV_DIR%\bin\lollmsenv.bat" activate lollms_env
-REM venv activate lollms_env
 
+REM Install Python and create environment
+:: echo ---   installing python
+:: call "%LOLLMSENV_DIR%\bin\lollmsenv.bat" install-python 3.11.9
+echo ---   creating environment
+call "%LOLLMSENV_DIR%\bin\lollmsenv.bat" create-env lollms_env
+echo ---   activating environment
+REM Activate environment
+call "%LOLLMSENV_DIR%\envs\lollms_env\Scripts\activate.bat" 
+REM venv activate lollms_env
+echo %ORIGINAL_PATH%
 cd "%ORIGINAL_PATH%"
- 
+ echo ---   cloning lollmw_webui
+
 REM Clone or update repository
 if exist lollms-webui\ (
     cd lollms-webui
@@ -122,22 +125,28 @@ if exist lollms-webui\ (
 )
 
 REM Install requirements
+echo --- Install requirements
 cd lollms-webui
-pip install -r requirements.txt
+call "%LOLLMSENV_DIR%\envs\lollms_env\Scripts\python.exe" -m pip install -r requirements.txt
+call "%LOLLMSENV_DIR%\envs\lollms_env\Scripts\python.exe" -m pip install -e lollms_core
 cd ..
 
 
 REM Create launcher scripts
-echo @echo off > ..\win_run.bat
-echo call "%LOLLMSENV_DIR%\bin\lollmsenv.bat" activate lollms_env >> ..\lollms.bat
-echo cd lollms-webui >> ..\lollms.bat
-echo python app.py %%* >> ..\lollms.bat
+echo @echo off > lollms.bat
+echo call "%LOLLMSENV_DIR%\envs\lollms_env\Scripts\activate.bat" >> lollms.bat
+echo cd lollms-webui >> lollms.bat
+echo python app.py %%* >> lollms.bat
+echo pause >> lollms.bat
 
-echo @echo off > ..\win_conda_session.bat
-echo call "%LOLLMSENV_DIR%\bin\lollmsenv.bat" activate lollms_env >> ..\lollms_cmd.bat
-echo cd lollms-webui >> ..\lollms_cmd.bat
-echo cmd /k >> ..\lollms_cmd.bat
+echo @echo off > lollms_cmd.bat
+echo call "%LOLLMSENV_DIR%\envs\lollms_env\Scripts\activate.bat" >> lollms_cmd.bat
+echo cd lollms-webui >> lollms_cmd.bat
+echo cmd /k >> lollms_cmd.bat
 
+cd lollms_webui
+echo --- current folder
+echo  %cd%
 REM Binding selection menu
 echo Select the default binding to be installed:
 echo 1) None (install the binding later)
