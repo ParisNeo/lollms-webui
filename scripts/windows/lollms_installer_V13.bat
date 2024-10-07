@@ -13,6 +13,25 @@ cd /D "%~dp0"
 
 echo %CD%
 
+REM Check if Git is installed
+where git >nul 2>nul
+if %errorlevel% neq 0 (
+    echo Git is not installed. Downloading and installing Git...
+    
+    REM Download Git for Windows
+    powershell -Command "Invoke-WebRequest -Uri 'https://github.com/git-for-windows/git/releases/download/v2.37.1.windows.1/Git-2.37.1-64-bit.exe' -OutFile 'GitInstaller.exe'"
+    
+    REM Install Git silently
+    start /wait GitInstaller.exe /VERYSILENT /NORESTART
+    
+    REM Clean up the installer
+    del GitInstaller.exe
+    
+    echo Git has been installed.
+) else (
+    echo Git is already installed.
+)
+
 set LOLLMSENV_DIR=%CD%\lollmsenv
 set REPO_URL=https://github.com/ParisNeo/lollms-webui.git
 
@@ -80,7 +99,6 @@ if %errorlevel% equ 0 (
     echo No NVIDIA GPU detected or nvidia-smi is not available.
 )
 
-
 REM Ask user about CUDA installation
 set /p INSTALL_CUDA="Do you want to install CUDA? (Only for NVIDIA GPUs if your version is lower than 12.1 or if it wasn't already installed, recommended for local AI) [Y/N]: "
 if /i "%INSTALL_CUDA%"=="Y" (
@@ -98,19 +116,15 @@ if /i "%INSTALL_VSCODE%"=="Y" (
 cd %ORIGINAL_PATH%
 echo %CD%
 
-
 REM Install Python and create environment
-:: echo ---   installing python
-:: call "%LOLLMSENV_DIR%\bin\lollmsenv.bat" install-python 3.11.9
 echo ---   creating environment
 call "%LOLLMSENV_DIR%\bin\lollmsenv.bat" create-env lollms_env
 echo ---   activating environment
 REM Activate environment
 call "%LOLLMSENV_DIR%\envs\lollms_env\Scripts\activate.bat" 
-REM venv activate lollms_env
 echo %ORIGINAL_PATH%
 cd "%ORIGINAL_PATH%"
- echo ---   cloning lollmw_webui
+echo ---   cloning lollmw_webui
 
 REM Clone or update repository
 if exist lollms-webui\ (
@@ -132,7 +146,6 @@ call "%LOLLMSENV_DIR%\envs\lollms_env\Scripts\python.exe" -m pip install -r requ
 call "%LOLLMSENV_DIR%\envs\lollms_env\Scripts\python.exe" -m pip install -e lollms_core
 cd ..
 
-
 REM Create launcher scripts
 echo @echo off > lollms.bat
 echo call "%LOLLMSENV_DIR%\envs\lollms_env\Scripts\activate.bat" >> lollms.bat
@@ -145,7 +158,9 @@ echo call "%LOLLMSENV_DIR%\envs\lollms_env\Scripts\activate.bat" >> lollms_cmd.b
 echo cd lollms-webui >> lollms_cmd.bat
 echo cmd /k >> lollms_cmd.bat
 
-cd lollms_webui
+cd lollms-webui
+
+echo --- current folder !cd!
 REM Binding selection menu
 echo Select the default binding to be installed:
 echo 1) None (install the binding later)

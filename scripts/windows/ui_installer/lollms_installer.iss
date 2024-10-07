@@ -1,9 +1,5 @@
-; InnoSetup Script for LOLLMS Installer
-; Created by ParisNeo
-; Licensed under Apache 2.0
-
 #define MyAppName "LOLLMS"
-#define MyAppVersion "V13 Feather"
+#define MyAppVersion "13.0"
 #define MyAppPublisher "ParisNeo"
 #define MyAppURL "https://github.com/ParisNeo/lollms-webui"
 
@@ -15,41 +11,39 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={userdocs}\LOLLMS
+DefaultDirName={userpf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 LicenseFile=LICENSE.txt
 OutputDir=.
-OutputBaseFilename=LOLLMS_Installer
+OutputBaseFilename=lollms_setup
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
 PrivilegesRequired=lowest
+DisableProgramGroupPage=auto
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
-[Files]
-Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "https://github.com/ParisNeo/LollmsEnv/releases/download/V1.3.2/lollmsenv_installer.bat"; DestDir: "{tmp}"; Flags: external
+[Tasks]
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
-[Dirs]
-Name: "{app}\lollms-webui"
+[Files]
+Source: "lollmsenv_installer.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+
+[Icons]
+Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\lollms.bat"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\lollms.bat"; Tasks: desktopicon
 
 [Run]
-; Download and run LollmsEnv installer
-Filename: "{tmp}\lollmsenv_installer.bat"; Parameters: "--dir ""{app}\lollmsenv"" -y"; StatusMsg: "Installing LollmsEnv..."; Flags: runhidden
-
-; Clone lollms-webui repository
-Filename: "git"; Parameters: "clone --depth 1 --recurse-submodules https://github.com/ParisNeo/lollms-webui.git ""{app}\lollms-webui"""; StatusMsg: "Cloning lollms-webui repository..."; Flags: runhidden
-
-; Create and activate virtual environment
-Filename: "{app}\lollmsenv\bin\lollmsenv.bat"; Parameters: "create-env lollms_env"; WorkingDir: "{app}"; StatusMsg: "Creating virtual environment..."; Flags: runhidden
-Filename: "{app}\lollmsenv\envs\lollms_env\Scripts\activate.bat"; WorkingDir: "{app}"; StatusMsg: "Activating virtual environment..."; Flags: runhidden
-
-; Install requirements
-Filename: "{app}\lollmsenv\envs\lollms_env\Scripts\python.exe"; Parameters: "-m pip install -r requirements.txt"; WorkingDir: "{app}\lollms-webui"; StatusMsg: "Installing requirements..."; Flags: runhidden
-Filename: "{app}\lollmsenv\envs\lollms_env\Scripts\python.exe"; Parameters: "-m pip install -e lollms_core"; WorkingDir: "{app}\lollms-webui"; StatusMsg: "Installing lollms_core..."; Flags: runhidden
+Filename: "{app}\lollmsenv_installer.bat"; Parameters: "--dir ""{app}\lollmsenv"" -y"; StatusMsg: "Installing LollmsEnv..."; Flags: runhidden
+Filename: "{app}\lollmsenv\bin\lollmsenv.bat"; Parameters: "create-env lollms_env"; StatusMsg: "Creating Python environment..."; Flags: runhidden
+Filename: "{app}\lollmsenv\envs\lollms_env\Scripts\activate.bat"; StatusMsg: "Activating Python environment..."; Flags: runhidden
+Filename: "git"; Parameters: "clone --depth 1 --recurse-submodules https://github.com/ParisNeo/lollms-webui.git ""{app}\lollms-webui"""; StatusMsg: "Cloning LOLLMS repository..."; Flags: runhidden
+Filename: "{app}\lollmsenv\envs\lollms_env\Scripts\python.exe"; Parameters: "-m pip install -r ""{app}\lollms-webui\requirements.txt"""; StatusMsg: "Installing Python requirements..."; Flags: runhidden
+Filename: "{app}\lollmsenv\envs\lollms_env\Scripts\python.exe"; Parameters: "-m pip install -e ""{app}\lollms-webui\lollms_core"""; StatusMsg: "Installing LOLLMS core..."; Flags: runhidden
 
 [Code]
 var
@@ -58,8 +52,8 @@ var
 procedure InitializeWizard;
 begin
   BindingPage := CreateInputOptionPage(wpSelectDir,
-    'Select Default Binding', 'Choose the default binding to be installed',
-    'Please select one of the following options:',
+    'Select Binding', 'Choose the default binding to install',
+    'Please select one of the following bindings:',
     True, False);
   BindingPage.Add('None (install the binding later)');
   BindingPage.Add('Local binding - ollama');
@@ -74,15 +68,15 @@ begin
   BindingPage.Add('Remote binding - xAI');
   BindingPage.Add('Remote binding - elf');
   BindingPage.Add('Remote binding - remote lollms');
+  BindingPage.SelectedValueIndex := 0;
 end;
 
-function NextButtonClick(CurPageID: Integer): Boolean;
+procedure CurStepChanged(CurStep: TSetupStep);
 var
   ResultCode: Integer;
   BindingScript: string;
 begin
-  Result := True;
-  if CurPageID = BindingPage.ID then
+  if CurStep = ssPostInstall then
   begin
     case BindingPage.SelectedValueIndex of
       1: BindingScript := 'ollama';
@@ -100,29 +94,25 @@ begin
     else
       BindingScript := '';
     end;
-    
+
     if BindingScript <> '' then
     begin
-      if not Exec(ExpandConstant('{app}\lollmsenv\envs\lollms_env\Scripts\python.exe'),
-                  ExpandConstant('zoos/bindings_zoo/' + BindingScript + '/__init__.py'),
-                  ExpandConstant('{app}\lollms-webui'),
-                  SW_HIDE,
-                  ewWaitUntilTerminated,
-                  ResultCode) then
-      begin
-        MsgBox('Error installing binding: ' + SysErrorMessage(ResultCode), mbError, MB_OK);
-      end;
+      Exec(ExpandConstant('{app}\lollmsenv\envs\lollms_env\Scripts\python.exe'),
+           ExpandConstant('"{app}\lollms-webui\zoos\bindings_zoo\' + BindingScript + '\__init__.py"'),
+           '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     end;
+
+    SaveStringToFile(ExpandConstant('{app}\lollms.bat'),
+      '@echo off' + #13#10 +
+      'call "' + ExpandConstant('{app}') + '\lollmsenv\envs\lollms_env\Scripts\activate.bat"' + #13#10 +
+      'cd "' + ExpandConstant('{app}') + '\lollms-webui"' + #13#10 +
+      'python app.py %*' + #13#10 +
+      'pause', False);
+
+    SaveStringToFile(ExpandConstant('{app}\lollms_cmd.bat'),
+      '@echo off' + #13#10 +
+      'call "' + ExpandConstant('{app}') + '\lollmsenv\envs\lollms_env\Scripts\activate.bat"' + #13#10 +
+      'cd "' + ExpandConstant('{app}') + '\lollms-webui"' + #13#10 +
+      'cmd /k', False);
   end;
 end;
-
-[Icons]
-Name: "{userdesktop}\{#MyAppName}"; Filename: "{app}\lollms.bat"; Tasks: desktopicon
-Name: "{group}\{#MyAppName}"; Filename: "{app}\lollms.bat"
-Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
-
-[Tasks]
-Name: desktopicon; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-
-[UninstallDelete]
-Type: filesandordirs; Name: "{app}"
