@@ -28,8 +28,9 @@ if %USE_MASTER%==1 (
 ) else (
     REM Download LollmsEnv installer
     echo Downloading LollmsEnv installer...
-    powershell -Command "Invoke-WebRequest -Uri 'https://github.com/ParisNeo/LollmsEnv/releases/download/V1.2.13/lollmsenv_installer.bat' -OutFile 'lollmsenv_installer.bat'"
+    powershell -Command "Invoke-WebRequest -Uri 'https://github.com/ParisNeo/LollmsEnv/releases/download/V1.3.0/lollmsenv_installer.bat' -OutFile 'lollmsenv_installer.bat'"
     REM Install LollmsEnv
+    echo --- Installing lollmsenv
     call lollmsenv_installer.bat --dir "%LOLLMSENV_DIR%" -y
 )
 
@@ -145,8 +146,6 @@ echo cd lollms-webui >> lollms_cmd.bat
 echo cmd /k >> lollms_cmd.bat
 
 cd lollms_webui
-echo --- current folder
-echo  %cd%
 REM Binding selection menu
 echo Select the default binding to be installed:
 echo 1) None (install the binding later)
