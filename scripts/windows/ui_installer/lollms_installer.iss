@@ -198,16 +198,12 @@ begin
 
     if BindingScript <> '' then
     begin
-      // Change the current working directory to {app}\lollms-webui
-      Exec(ExpandConstant('{app}\lollmsenv\envs\lollms_env\Scripts\python.exe'),
-           ExpandConstant('-c "import os; os.chdir(r''{app}\lollms-webui'')"'),
-           '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-
-      // Now execute the binding script
-      Exec(ExpandConstant('{app}\lollmsenv\envs\lollms_env\Scripts\python.exe'),
-           ExpandConstant('"{app}\lollms-webui\zoos\bindings_zoo\' + BindingScript + '\__init__.py"'),
+      // Execute the binding script in the correct directory
+      Exec(ExpandConstant('{cmd}'),
+           ExpandConstant('/c "cd /d "{app}\lollms-webui" && "{app}\lollmsenv\envs\lollms_env\Scripts\python.exe" "zoos\bindings_zoo\' + BindingScript + '\__init__.py""'),
            '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
     end;
+
 
 
     SaveStringToFile(ExpandConstant('{app}\lollms.bat'),
