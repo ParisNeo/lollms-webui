@@ -195,10 +195,17 @@ begin
 
     if BindingScript <> '' then
     begin
+      // Change the current working directory to {app}\lollms-webui
+      Exec(ExpandConstant('{app}\lollmsenv\envs\lollms_env\Scripts\python.exe'),
+           ExpandConstant('-c "import os; os.chdir(r''{app}\lollms-webui'')"'),
+           '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+
+      // Now execute the binding script
       Exec(ExpandConstant('{app}\lollmsenv\envs\lollms_env\Scripts\python.exe'),
            ExpandConstant('"{app}\lollms-webui\zoos\bindings_zoo\' + BindingScript + '\__init__.py"'),
            '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
     end;
+
 
     SaveStringToFile(ExpandConstant('{app}\lollms.bat'),
       '@echo off' + #13#10 +
@@ -214,20 +221,6 @@ begin
       'cmd /k', False);
   end;
 end;
-
-procedure InitializeUninstallProgressForm();
-begin
-  UninstallPersonalDataPage := CreateInputOptionPage(wpWelcome,
-    'Uninstall Personal Data', 'Do you want to remove your personal data?',
-    'WARNING: Your personal folder contains all your personal information and discussions with LOLLMS.' + #13#10#13#10 +
-    'Do you want to remove this folder?' + #13#10#13#10 +
-    'If you choose "No", your personal data will be kept for future use.',
-    True, False);
-  UninstallPersonalDataPage.Add('Yes, remove my personal data');
-  UninstallPersonalDataPage.Add('No, keep my personal data');
-  UninstallPersonalDataPage.SelectedValueIndex := 1;  // Default to keeping personal data
-end;
-
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   PersonalFolder: string;
@@ -259,25 +252,24 @@ begin
 
     if PersonalFolder <> '' then
     begin
-      if UninstallPersonalDataPage.SelectedValueIndex = 0 then
+      if MsgBox('Do you want to remove your personal data?' + #13#10 +
+                'WARNING: Your personal folder contains all your personal information and discussions with LOLLMS.' + #13#10 +
+                'If you choose Yes, this data will be permanently deleted.' + #13#10 +
+                'If you choose No, your personal data will be kept for future use.' + #13#10#13#10 +
+                'Personal data folder: ' + PersonalFolder + #13#10#13#10 +
+                'Do you want to delete this folder?', 
+                mbConfirmation, MB_YESNO) = IDYES then
       begin
-        // User chose to remove personal data
-        if MsgBox('Are you sure you want to delete all your personal data?' + #13#10 +
-                  'This action cannot be undone.', mbConfirmation, MB_YESNO) = IDYES then
-        begin
-          if DelTree(PersonalFolder, True, True, True) then
-            Log('Personal data folder deleted: ' + PersonalFolder)
-          else
-            Log('Failed to delete personal data folder: ' + PersonalFolder);
-        end;
+        if DelTree(PersonalFolder, True, True, True) then
+          Log('Personal data folder deleted: ' + PersonalFolder)
+        else
+          Log('Failed to delete personal data folder: ' + PersonalFolder);
       end
       else
       begin
-        // User chose to keep personal data
         MsgBox('Your personal data has been kept at: ' + PersonalFolder, mbInformation, MB_OK);
       end;
     end;
   end;
 end;
-
 
