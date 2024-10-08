@@ -6559,10 +6559,12 @@ export default {
         
         try{
             console.log("Getting comfyui models")
-            const res = await axios.get("/list_comfyui_models")
-            console.log("res is ",res)
-            if(res.data.status){
-                this.comfyui_models= res.data.models
+            if(this.configFile.activate_lollms_tti_server && this.configFile.active_tti_service=="comfyui"){
+                const res = await axios.get("/list_comfyui_models")
+                if(res.data.status){
+                    this.comfyui_models= res.data.models
+                }
+
             }
 
         }
