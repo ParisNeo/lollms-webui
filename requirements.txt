@@ -35,8 +35,6 @@ scrapemaster>=0.2.0
 freedom_search
 lollms_client>=0.7.5
 
-tk
-
 aiofiles
 python-multipart
 zipfile36
