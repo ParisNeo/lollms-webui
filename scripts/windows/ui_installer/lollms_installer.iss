@@ -40,6 +40,9 @@ Source: "logo.ico"; DestDir: "{app}"; Flags: ignoreversion
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\lollms.bat"; IconFilename: "{app}\logo.ico"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\lollms.bat"; IconFilename: "{app}\logo.ico"; Tasks: desktopicon
+Name: "{autoprograms}\{#MyAppName} CMD"; Filename: "{app}\lollms_cmd.bat"; IconFilename: "{app}\logo.ico"
+Name: "{autodesktop}\{#MyAppName} CMD"; Filename: "{app}\lollms_cmd.bat"; IconFilename: "{app}\logo.ico"; Tasks: desktopicon
+
 
 [Run]
 Filename: "{app}\lollmsenv_installer.bat"; Parameters: "--dir ""{app}\lollmsenv"" -y"; StatusMsg: "Installing LollmsEnv..."; Flags: runhidden
@@ -55,7 +58,7 @@ Type: files; Name: "{app}\lollms.bat"
 Type: files; Name: "{app}\lollms_cmd.bat"
 Type: filesandordirs; Name: "{app}\lollmsenv"
 Type: filesandordirs; Name: "{app}\lollms-webui"
-
+Type: filesandordirs; Name: "{app}\lollmsenv_install"
 [Code]
 var
   BindingPage: TInputOptionWizardPage;
