@@ -29,8 +29,8 @@ UninstallDisplayIcon={app}\logo.ico
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "runafterinstall"; Description: "Run LOLLMS after installation"; Flags: unchecked
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
+Name: "runafterinstall"; Description: "Run LOLLMS after installation"
 
 [Files]
 Source: "lollmsenv_installer.bat"; DestDir: "{app}"; Flags: ignoreversion
@@ -51,7 +51,8 @@ Filename: "{app}\lollmsenv\envs\lollms_env\Scripts\activate.bat"; StatusMsg: "Ac
 Filename: "git"; Parameters: "clone --depth 1 --recurse-submodules https://github.com/ParisNeo/lollms-webui.git ""{app}\lollms-webui"""; StatusMsg: "Cloning LOLLMS repository..."; Flags: runhidden
 Filename: "{app}\lollmsenv\envs\lollms_env\Scripts\python.exe"; Parameters: "-m pip install -r ""{app}\lollms-webui\requirements.txt"""; StatusMsg: "Installing Python requirements..."; Flags: runhidden
 Filename: "{app}\lollmsenv\envs\lollms_env\Scripts\python.exe"; Parameters: "-m pip install -e ""{app}\lollms-webui\lollms_core"""; StatusMsg: "Installing LOLLMS core..."; Flags: runhidden
-Filename: "{app}\lollms.bat"; Description: "Run LOLLMS"; Flags: postinstall nowait skipifsilent unchecked; Tasks: runafterinstall
+Filename: "{app}\lollms.bat"; Description: "Run LOLLMS"; Flags: postinstall nowait skipifsilent; Tasks: runafterinstall
+
 
 [UninstallDelete]
 Type: files; Name: "{app}\lollms.bat"
