@@ -348,11 +348,7 @@ async def upload_app(client_id: str, file: UploadFile = File(...)):
 import shutil
 from pathlib import Path
 import json
-# Function to get the current conda environment
-def get_current_conda_env():
-    result = subprocess.run(['conda', 'info', '--json'], capture_output=True, text=True)
-    conda_info = json.loads(result.stdout)
-    return conda_info['active_prefix_name']
+
 
 
 @router.post("/install/{app_name}")
@@ -390,40 +386,7 @@ async def install_app(app_name: str, auth: AuthRequest):
             with open(description_path, 'r') as file:
                 description_data = yaml.safe_load(file)
                 if description_data.get("has_server", (Path(app_path)/"server.py").exists()):
-                    pass
-                    # current_env = get_current_conda_env()
-                    # env_name = app_path.stem
-                    # ASCIIColors.info("Creating a new environment")
-                    # conda.cli.main('create', '-n', env_name, 'python=3.11', '-y')
-                    # # Activate the new conda environment
-                    # activate_command = f"conda activate {env_name}"
-                    # if os.name == 'nt':  # Windows
-                    #     activate_command = f"call activate {env_name}"
-
-                    # Install requirements
-                    # install_command = f"{activate_command} && pip install -r {requirements}"
-
-                    # try:
-                    #     ASCIIColors.info(f"Creating a new environment: {env_name}")
-                    #     subprocess.run(activate_command, shell=True, check=True)
-                        
-                    #     ASCIIColors.info("Installing requirements")
-                    #     subprocess.run(install_command, shell=True, check=True)
-                        
-                    #     ASCIIColors.success(f"Environment '{env_name}' created and requirements installed successfully.")
-                    # except subprocess.CalledProcessError as e:
-                    #     ASCIIColors.error(f"An error occurred: {str(e)}")
-                    # finally:
-                    #     # Switch back to the original environment
-                    #     if current_env:
-                    #         switch_back_command = f"conda activate {current_env}"
-                    #         if os.name == 'nt':  # Windows
-                    #             switch_back_command = f"call activate {current_env}"
-                            
-                    #         ASCIIColors.info(f"Switching back to the original environment: {current_env}")
-                    #         subprocess.run(switch_back_command, shell=True, check=True)
-                    #     else:
-                    #         ASCIIColors.warning("Could not determine the original environment. You may need to switch back manually.")                    
+                    pass                 
     except Exception as ex:
         trace_exception(ex)
 
