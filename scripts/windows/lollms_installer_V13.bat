@@ -47,7 +47,7 @@ if %USE_MASTER%==1 (
 ) else (
     REM Download LollmsEnv installer
     echo Downloading LollmsEnv installer...
-    powershell -Command "Invoke-WebRequest -Uri 'https://github.com/ParisNeo/LollmsEnv/releases/download/V1.3.2/lollmsenv_installer.bat' -OutFile 'lollmsenv_installer.bat'"
+    powershell -Command "Invoke-WebRequest -Uri 'https://github.com/ParisNeo/LollmsEnv/releases/download/V1.3.3/lollmsenv_installer.bat' -OutFile 'lollmsenv_installer.bat'"
     REM Install LollmsEnv
     echo --- Installing lollmsenv
     call lollmsenv_installer.bat --dir "%LOLLMSENV_DIR%" -y
