@@ -5,15 +5,17 @@ import subprocess
 import argparse
 from pathlib import Path
 from ascii_colors import ASCIIColors, trace_exception
-import tkinter as tk
-from tkinter import messagebox
 
 def show_error_dialog(message):
-    root = tk.Tk()
-    root.withdraw()  # Hide the main window
-    messagebox.showerror("Error", message)
-    root.destroy()
-
+    try:
+        import tkinter as tk
+        from tkinter import messagebox
+        root = tk.Tk()
+        root.withdraw()  # Hide the main window
+        messagebox.showerror("Error", message)
+        root.destroy()
+    except:
+        ASCIIColors.error(message)
 def run_git_pull():
     try:
         ASCIIColors.info("----------------> Updating the code <-----------------------")
