@@ -1,7 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 :: Version number
-set VERSION=1.3.2
+set VERSION=1.3.3
 set USE_MASTER=false
 
 :: Check for --use-master option
@@ -27,7 +27,6 @@ if "%USE_MASTER%"=="true" (
     echo Downloading LollmsEnv version %VERSION%...
     echo !RELEASE_URL!
     echo '%TEMP_DIR%'
-    pause
     powershell -Command "Invoke-WebRequest -Uri '!RELEASE_URL!' -OutFile '%TEMP_DIR%\lollmsenv.zip'"
     if %errorlevel% neq 0 (
         echo Error downloading LollmsEnv: %errorlevel%
