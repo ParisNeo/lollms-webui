@@ -7,7 +7,6 @@ This file is the entry point to the webui.
 """
 from lollms.utilities import PackageManager
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.base import BaseHTTPMiddleware
 
 import threading
 import time
@@ -71,7 +70,7 @@ packages: List[Tuple[str, str]] = [
     ("freedom_search", "0.1.9"),
     ("scrapemaster", "0.2.1"),
     ("lollms_client", "0.7.5"),
-    ("lollmsvectordb", "1.1.4"),
+    ("lollmsvectordb", "1.1.5"),
 ]
 
 def check_pn_libs():
@@ -87,8 +86,6 @@ def check_pn_libs():
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse
-from fastapi.responses import HTMLResponse
-from lollms.app import LollmsApplication
 from lollms.paths import LollmsPaths
 from lollms.main_config import LOLLMSConfig
 from lollms.utilities import trace_exception

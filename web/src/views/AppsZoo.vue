@@ -1,6 +1,6 @@
 <template>
-  <div class="app-zoo background-color w-full p-6 overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
-    <nav class="panels-color shadow-lg rounded-lg p-4 max-w-4xl mx-auto mb-50 pb-50">
+  <div class="app-zoo background-color w-full p-6 min-h-screen overflow-y-auto">
+    <nav class="panels-color shadow-lg rounded-lg p-4 max-w-4xl mx-auto mb-8">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center space-x-4">
           <button 
@@ -99,7 +99,7 @@
       <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
       <span class="text-xl text-gray-700 font-semibold">Loading...</span>
     </div>
-    <div v-else>
+    <div v-else class="pb-20">
       <h2 class="text-2xl font-bold mb-4">Favorite Apps</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
         <app-card 
@@ -134,7 +134,6 @@
           @open="openApp"
           @start-server="startServer"
         />
-
       </div>
     </div>
 
@@ -156,6 +155,7 @@
     </div>
   </div>
 </template>
+
 
 <script>
 import axios from 'axios';
