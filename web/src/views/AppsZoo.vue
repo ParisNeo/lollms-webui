@@ -209,7 +209,7 @@ export default {
     },
     filteredApps() {
       return this.combinedApps.filter(app => {
-        const matchesSearch = app.name.toLowerCase().includes(this.toLowerCase()) ||
+        const matchesSearch = app.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
                               app.description.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
                               app.author.toLowerCase().includes(this.searchQuery.toLowerCase());
         const matchesCategory = this.selectedCategory === 'all' || app.category === this.selectedCategory;
