@@ -23,8 +23,9 @@ if not PackageManager.check_package_installed_with_version("ascii_colors", expec
 from ascii_colors import ASCIIColors
 ASCIIColors.success("OK")
 
-ASCIIColors.yellow(f"Checking pipmaster ({expected_ascii_colors_version}) ...", end="", flush=True)
-if not PackageManager.check_package_installed_with_version("pipmaster", "0.2.4"):
+expected_pipmaster_version = "0.3.0"
+ASCIIColors.yellow(f"Checking pipmaster ({expected_pipmaster_version}) ...", end="", flush=True)
+if not PackageManager.check_package_installed_with_version("pipmaster", expected_pipmaster_version):
     PackageManager.install_or_update("pipmaster")
 import pipmaster as pm
 ASCIIColors.success("OK")
