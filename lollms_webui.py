@@ -51,9 +51,6 @@ if not PackageManager.check_package_installed("bs4"):
     PackageManager.install_package("beautifulsoup4")
 import requests
 
-from lollms.internet import scrape_and_save
-
-
 def terminate_thread(thread):
     if thread:
         if not thread.is_alive():
