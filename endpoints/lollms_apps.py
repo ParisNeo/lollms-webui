@@ -394,6 +394,7 @@ async def install_app(app_name: str, auth: AuthRequest):
 
 @router.post("/uninstall/{app_name}")
 async def uninstall_app(app_name: str, auth: AuthRequest):
+    check_access(lollmsElfServer, auth.client_id)
     app_name=sanitize_path(app_name)
     app_path = lollmsElfServer.lollms_paths.apps_zoo_path / app_name
     if app_path.exists():
