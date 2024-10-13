@@ -209,6 +209,7 @@ async def execute_code_in_new_tab(request: CodeRequest):
     
 
 class FilePath(BaseModel):
+    client_id: str
     path: Optional[str] = Field(None, max_length=500)
 
 @router.post("/open_file")
@@ -219,6 +220,8 @@ async def open_file(file_path: FilePath):
     :param file_path: The file path object.
     :return: A JSON response with the status of the operation.
     """
+    check_access(lollmsElfServer, client_id=file_path.client_id)
+    
     if lollmsElfServer.config.headless_server_mode:
         return {"status":False,"error":"Open file is blocked when in headless mode for obvious security reasons!"}
 
