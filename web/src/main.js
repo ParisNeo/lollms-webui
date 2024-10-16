@@ -43,9 +43,12 @@ export const store = createStore({
         posts_headers : {
           'accept': 'application/json',
           'Content-Type': 'application/json'
-        },   
+        },
+          
         client_id:"",    
         // count: 0,
+        leftPanelCollapsed:  false, // Default value
+        view_mode: localStorage.getItem('lollms_webui_view_mode') || 'compact', // Default value
         yesNoDialog:null,
         universalForm:null,
         toast:null,
@@ -81,6 +84,17 @@ export const store = createStore({
       }
     },
     mutations: {    
+     
+      setLeftPanelCollapsed(state, status) {
+        state.leftPanelCollapsed = status;
+        console.log(`Saving the status of left panel to ${status}`)
+        localStorage.setItem('lollms_webui_left_panel_collapsed', status); // Sync with localStorage
+      },
+
+      setViewMode(state, mode) {
+        state.view_mode = mode;
+        localStorage.setItem('lollms_webui_view_mode', mode); // Sync with localStorage
+      },
       
       setisRTOn(state, is_rt_on) {
         state.is_rt_on = is_rt_on;
@@ -159,6 +173,12 @@ export const store = createStore({
       }      
     },
     getters: {
+      getLeftPanelCollapsed(state) {
+        return state.leftPanelCollapsed;
+      },
+      getViewMode(state){
+        return state.view_mode;
+      },
       
       getisRTOn(state) {
         return state.is_rt_on;

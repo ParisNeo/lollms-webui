@@ -151,11 +151,12 @@ body {
 }
 
 .discussion{
-  @apply mr-2 bg-gradient-to-r from-blue-300 to-blue-400 dark:from-blue-800 dark:to-blue-900 hover:from-blue-100 hover:to-purple-100 hover:dark:from-blue-700 hover:dark:to-purple-700
+  @apply mr-2 bg-gradient-to-r from-blue-200 to-blue-200 dark:from-blue-900 dark:to-blue-900 text-xs
 }
 .discussion-hilighted{
-  @apply bg-gradient-to-r from-blue-200 to-purple-300 dark:from-blue-800 dark:to-purple-900 hover:from-blue-100 hover:to-purple-100 hover:dark:from-blue-700 hover:dark:to-purple-700
+  @apply bg-gradient-to-r from-blue-300 to-blue-200 dark:from-blue-800 dark:to-purple-900 text-xs
 }
+
 
 
 .bg-gradient-welcome {

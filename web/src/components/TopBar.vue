@@ -1,5 +1,5 @@
 <template>
-    <header class="top-0 shadow-lg navbar-container">
+    <header v-if="isFullMode" class="top-0 shadow-lg navbar-container">
       <nav class="container flex flex-col lg:flex-row items-center gap-2 pb-0">
         <!-- LOGO -->
         <RouterLink :to="{ name: 'discussions' }" class="flex items-center space-x-2"> <!-- Added space-x-2 -->
@@ -179,12 +179,16 @@ import fun_mode from "../assets/fun_mode.svg"
 import normal_mode from "../assets/normal_mode.svg"
 
 import axios from 'axios';
+import { store } from '../main';
 </script>
 <script>
 
 export default {
     name: 'TopBar',
     computed:{
+        isFullMode() {
+          return this.$store.state.view_mode === 'full'; // Accessing the mode directly
+        },      
         storeLogo(){
             if (this.$store.state.config){
                 return storeLogo
@@ -349,6 +353,9 @@ export default {
         this.moonIcon = document.querySelector(".moon");
         this.userTheme = localStorage.getItem("theme");
         this.systemTheme = window.matchMedia("prefers-color-scheme: dark").matches;
+        if (!localStorage.getItem('lollms_webui_view_mode')) {
+          localStorage.setItem('lollms_webui_view_mode', 'compact'); // Default to 'compact'
+        }        
     },
     
     methods: {

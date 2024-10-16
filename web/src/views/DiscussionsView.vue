@@ -50,16 +50,6 @@
         </div>
     </div>
     </transition>
-
-
-
-
-
-
-    <button v-if="isReady" @click="togglePanel" class="absolute top-2 left-2 p-3 bg-white bg-opacity-0 cursor-pointer transition-all duration-300 hover:scale-110 hover:bg-opacity-20 hover:shadow-xl group">
-                    <div v-show="leftPanelCollapsed" ><i data-feather='chevron-right'></i></div>
-                    <div v-show="!leftPanelCollapsed" ><i data-feather='chevron-left'></i></div>
-    </button>
     <!-- Robot SVG -->
     <button v-if="isReady" @click.stop="triggerRobotAction()" class="absolute z-50 bottom-20 right-2 p-3 bg-white bg-opacity-10 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 hover:bg-opacity-20 animate-pulse shadow-lg hover:shadow-xl group">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-blue-500 transition-colors duration-300 group-hover:text-yellow-400">
@@ -73,174 +63,143 @@
        
     <transition name="slide-right">
     <div  v-if="showLeftPanel"
-        class="relative flex flex-col no-scrollbar shadow-lg min-w-[24rem] max-w-[24rem] unicolor-panels-color dark:bg-bg-dark-tone"
+        class="relative flex flex-col no-scrollbar shadow-lg min-w-[12rem] max-w-[12rem] unicolor-panels-color dark:bg-bg-dark-tone"
         >
         <!-- LEFT SIDE PANEL -->
         <div id="leftPanel" class="flex flex-col flex-grow overflow-y-scroll no-scrollbar "
             @dragover.stop.prevent="setDropZoneDiscussion()">
-            <div class="text-light-text-panel dark:text-dark-text-panel panels-color sticky z-10 top-0 ">
+            <div class="toolbar">
+                <!-- Toolbar container -->
+                <div class="toolbar-container">
+                <!-- "+" button -->
+                <button 
+                    class="toolbar-button" 
+                    title="Create new discussion" 
+                    @click="createNewDiscussion"
+                >
+                    <i data-feather="plus"></i>
+                </button>
 
-                <!-- CONTROL PANEL -->
-                <div class="flex-row p-4  flex items-center gap-3 flex-0">
-                    <!-- MAIN BUTTONS -->
-                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Create new discussion"
-                        type="button" @click="createNewDiscussion()">
-                        <i data-feather="plus"></i>
+                <!-- Menu container -->
+                <div class="menu-container">
+                    <!-- Menu toggle button -->
+                    <button 
+                    class="toolbar-button" 
+                    title="Toggle menu" 
+                    @click="toggleMenu"
+                    >
+                    <i data-feather="menu"></i>
                     </button>
-                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Edit discussion list"
-                        type="button" @click="isCheckbox = !isCheckbox" :class="isCheckbox ? 'text-secondary' : ''">
+
+                    <!-- Expandable menu -->
+                    <div class="expandable-menu z-50" :class="{ 'menu-visible': isMenuVisible }">
+                        <!-- Menu items -->
+                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Edit discussion list" type="button" @click="isCheckbox = !isCheckbox" :class="isCheckbox ? 'text-secondary' : ''">
                         <i data-feather="check-square"></i>
-                    </button>
-                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                        title="Reset database, remove all discussions">
-                        <i data-feather="trash-2" @click.stop=""></i>
-                    </button>
-                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Export database"
-                        type="button" @click.stop="database_selectorDialogVisible=true">
+                        </button>                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Reset database, remove all discussions" @click.stop="">
+                        <i data-feather="trash-2"></i>
+                        </button>
+                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Export database" type="button" @click.stop="database_selectorDialogVisible=true">
                         <i data-feather="database"></i>
-                    </button>
-                    <input type="file" ref="fileDialog" style="display: none" @change="importDiscussions" />
-                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
-                        title="Import discussions" type="button" @click.stop="$refs.fileDialog.click()">
+                        </button>
+                        <input type="file" ref="fileDialog" style="display: none" @change="importDiscussions" />
+                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90" title="Import discussions" type="button" @click.stop="$refs.fileDialog.click()">
                         <i data-feather="log-in"></i>
-                    </button>
-                    <input type="file" ref="bundleLoadingDialog" style="display: none" @change="importDiscussionsBundle" />
-                    <button  v-if="!showSaveConfirmation" title="Import discussion bundle" @click.stop="$refs.bundleLoadingDialog.click()" 
-                        class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                        >
+                        </button>
+                        <input type="file" ref="bundleLoadingDialog" style="display: none" @change="importDiscussionsBundle" />
+                        <button v-if="!showSaveConfirmation" title="Import discussion bundle" @click.stop="$refs.bundleLoadingDialog.click()" class="text-2xl hover:text-secondary duration-75 active:scale-90">
                         <i data-feather="folder"></i>
-                    </button>
-                    
-                    <div v-if="isOpen" class="dropdown">
-                      <button @click="importDiscussions">LOLLMS</button> 
-                      <button @click="importChatGPT">ChatGPT</button>
-                    </div>
-                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Filter discussions"
-                        type="button" @click="isSearch = !isSearch" :class="isSearch ? 'text-secondary' : ''">
+                        </button>
+                        <div v-if="isOpen" class="flex flex-col space-y-2">
+                        <button @click="importDiscussions" class="text-sm hover:text-secondary">LOLLMS</button> 
+                        <button @click="importChatGPT" class="text-sm hover:text-secondary">ChatGPT</button>
+                        </div>
+                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Filter discussions" type="button" @click="isSearch = !isSearch" :class="isSearch ? 'text-secondary' : ''">
                         <i data-feather="search"></i>
-                    </button>
-                    <!-- SAVE CONFIG -->
-                    <div v-if="showSaveConfirmation" class="flex gap-3 flex-1 items-center duration-75">
-                        <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Cancel" type="button"
-                            @click.stop="showSaveConfirmation = false">
+                        </button>
+                        <div v-if="showSaveConfirmation" class="flex flex-col space-y-2">
+                        <button class="text-2xl hover:text-red-600 duration-75 active:scale-90" title="Cancel" type="button" @click.stop="showSaveConfirmation = false">
                             <i data-feather="x"></i>
                         </button>
-                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Confirm save changes"
-                            type="button" @click.stop="save_configuration()">
+                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Confirm save changes" type="button" @click.stop="save_configuration()">
                             <i data-feather="check"></i>
                         </button>
-                    </div>
-                    <button v-if="!loading" type="button" @click.stop="addDiscussion2SkillsLibrary" title="Add this discussion content to skills database"
-                        class=" w-6 hover:text-secondary duration-75 active:scale-90">
+                        </div>
+                        <button v-if="!loading" type="button" @click.stop="addDiscussion2SkillsLibrary" title="Add this discussion content to skills database" class="text-2xl hover:text-secondary duration-75 active:scale-90">
                         <i data-feather="hard-drive"></i>
-                    </button>
-                    <button v-if="!loading && $store.state.config.activate_skills_lib" type="button" @click.stop="toggleSkillsLib" title="Skills database is activated"
-                        class=" w-6 hover:text-secondary duration-75 active:scale-90">
+                        </button>
+                        <button v-if="!loading && $store.state.config.activate_skills_lib" type="button" @click.stop="toggleSkillsLib" title="Skills database is activated" class="text-2xl hover:text-secondary duration-75 active:scale-90">
                         <i data-feather="check-circle"></i>
-                    </button>
-                    <button v-if="!loading && !$store.state.config.activate_skills_lib" type="button" @click.stop="toggleSkillsLib" title="Skills database is deactivated"
-                        class=" w-6 hover:text-secondary duration-75 active:scale-90">
+                        </button>
+                        <button v-if="!loading && !$store.state.config.activate_skills_lib" type="button" @click.stop="toggleSkillsLib" title="Skills database is deactivated" class="text-2xl hover:text-secondary duration-75 active:scale-90">
                         <i data-feather="x-octagon"></i>
-                    </button>
-                    <button v-if="!loading" type="button" @click.stop="showSkillsLib" title="Show Skills database"
-                        class=" w-6 hover:text-secondary duration-75 active:scale-90">
+                        </button>
+                        <button v-if="!loading" type="button" @click.stop="showSkillsLib" title="Show Skills database" class="text-2xl hover:text-secondary duration-75 active:scale-90">
                         <i data-feather="book"></i>
-                    </button>
-   
-                    <div v-if="loading" title="Loading.." class="flex flex-row flex-grow justify-end">
-                        <!-- SPINNER -->
+                        </button>
+                        <div v-if="loading" title="Loading.." class="flex justify-center">
                         <div role="status">
-                            <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101"
-                                fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                    fill="currentColor" />
-                                <path
-                                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                    fill="currentFill" />
+                            <svg aria-hidden="true" class="w-6 h-6 animate-spin fill-secondary" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
                             </svg>
                             <span class="sr-only">Loading...</span>
                         </div>
                     </div>
                 </div>
-                <!-- SEARCH BAR -->
-                <!-- <Transition name="expand" > -->
-                <div v-if="isSearch" class="flex-row  items-center gap-3 flex-0 w-full">
-                    <div class="p-4 pt-2 ">
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                <div class="scale-75">
-                                    <i data-feather="search"></i>
-                                </div>
-                            </div>
-                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                                <div class="hover:text-secondary duration-75 active:scale-90"
-                                    :class="filterTitle ? 'visible' : 'invisible'" title="Clear" @click="filterTitle = ''">
-                                    <i data-feather="x"></i>
-                                </div>
-                            </div>
 
-                            <input type="search" id="default-search"
-                                class="block w-full p-2 pl-10 pr-10 text-sm border border-gray-300 rounded-lg bg-bg-light focus:ring-secondary focus:border-secondary dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-secondary dark:focus:border-secondary"
-                                placeholder="Search..." title="Filter discussions by title" v-model="filterTitle"
-                                @input="filterDiscussions()" />
+                <!-- Search bar -->
+                <div v-if="isSearch" class="absolute top-0 left-12 w-64 p-4 bg-bg-light dark:bg-bg-dark">
+                    <div class="relative">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <div class="scale-75">
+                        <i data-feather="search"></i>
                         </div>
                     </div>
-
-                </div>
-                <!-- </Transition> -->
-                <hr v-if="isCheckbox" class="h-px bg-bg-light p-0 mb-4 px-4 mx-4 border-0 dark:bg-bg-dark">
-                <div v-if="isCheckbox" class="flex flex-row flex-grow p-4 pt-0 items-center">
-
-                    <!-- CHECK BOX OPERATIONS -->
-                    <div class="flex flex-row flex-grow ">
-                        <p v-if="selectedDiscussions.length > 0">Selected: {{ selectedDiscussions.length }}</p>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                        <div class="hover:text-secondary duration-75 active:scale-90" :class="filterTitle ? 'visible' : 'invisible'" title="Clear" @click="filterTitle = ''">
+                        <i data-feather="x"></i>
+                        </div>
                     </div>
-                    <div class="flex flex-row ">
-
-                        <div v-if="selectedDiscussions.length > 0" class="flex gap-3">
-                            <!-- DELETE MULTIPLE -->
-                            <button v-if="!showConfirmation"
-                                class="flex mx-3 flex-1 text-2xl hover:text-red-600 duration-75 active:scale-90 "
-                                title="Remove selected" type="button" @click.stop="showConfirmation = true">
-                                <i data-feather="trash"></i>
-                            </button>
-                            <!-- DELETE CONFIRM -->
-                            <div v-if="showConfirmation"
-                                class="flex gap-3 mx-3 flex-1 items-center justify-end  group-hover:visible duration-75">
-                                <button class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                                    title="Confirm removal" type="button" @click.stop="deleteDiscussionMulti">
-                                    <i data-feather="check"></i>
-                                </button>
-                                <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 "
-                                    title="Cancel removal" type="button" @click.stop="showConfirmation = false">
-                                    <i data-feather="x"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="flex gap-3">
-
-                            <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
-                                title="Export selected to a json file" type="button" @click.stop="exportDiscussionsAsJson">
-                                <i data-feather="codepen"></i>
-                            </button>
-                            <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
-                                title="Export selected to a martkdown file" type="button" @click.stop="exportDiscussions">
-                                <i data-feather="folder"></i>
-                            </button>                            
-                            <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90"
-                                title="Export selected to a martkdown file" type="button" @click.stop="exportDiscussionsAsMarkdown">
-                                <i data-feather="bookmark"></i>
-                            </button>                            
-                            <button class="text-2xl hover:text-secondary duration-75 active:scale-90 " title="Select All"
-                                type="button" @click.stop="selectAllDiscussions">
-                                <i data-feather="list"></i>
-                            </button>
-
-                        </div>
+                    <input type="search" id="default-search" class="block w-full p-2 pl-10 pr-10 text-sm border border-gray-300 rounded-lg bg-bg-light focus:ring-secondary focus:border-secondary dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-secondary dark:focus:border-secondary" placeholder="Search..." title="Filter discussions by title" v-model="filterTitle" @input="filterDiscussions()" />
                     </div>
                 </div>
 
+                <!-- Checkbox operations -->
+                <div v-if="isCheckbox" class="absolute top-0 left-12 w-64 p-4 bg-bg-light dark:bg-bg-dark">
+                    <div class="flex flex-col space-y-2">
+                    <p v-if="selectedDiscussions.length > 0">Selected: {{ selectedDiscussions.length }}</p>
+                    <div v-if="selectedDiscussions.length > 0" class="flex space-x-2">
+                        <button v-if="!showConfirmation" class="text-2xl hover:text-red-600 duration-75 active:scale-90" title="Remove selected" type="button" @click.stop="showConfirmation = true">
+                        <i data-feather="trash"></i>
+                        </button>
+                        <div v-if="showConfirmation" class="flex space-x-2">
+                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Confirm removal" type="button" @click.stop="deleteDiscussionMulti">
+                            <i data-feather="check"></i>
+                        </button>
+                        <button class="text-2xl hover:text-red-600 duration-75 active:scale-90" title="Cancel removal" type="button" @click.stop="showConfirmation = false">
+                            <i data-feather="x"></i>
+                        </button>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90" title="Export selected to a json file" type="button" @click.stop="exportDiscussionsAsJson">
+                        <i data-feather="codepen"></i>
+                        </button>
+                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90" title="Export selected to a markdown file" type="button" @click.stop="exportDiscussions">
+                        <i data-feather="folder"></i>
+                        </button>
+                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90" title="Export selected to a markdown file" type="button" @click.stop="exportDiscussionsAsMarkdown">
+                        <i data-feather="bookmark"></i>
+                        </button>
+                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Select All" type="button" @click.stop="selectAllDiscussions">
+                        <i data-feather="list"></i>
+                        </button>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
             </div>
             <div class="relative flex flex-row flex-grow mb-10 z-0  w-full">
                 <!-- DISCUSSION LIST -->
@@ -270,8 +229,10 @@
                 </div>
             </div>
         </div>
-        <div class="absolute h-15 bottom-0 left-0 w-full unicolor-panels-color light-text-panel py-4 cursor-pointer text-light-text-panel dark:text-dark-text-panel hover:text-secondary" @click="showDatabaseSelector">
-            <p class="text-center font-large font-bold text-l drop-shadow-md align-middle">{{ formatted_database_name.replace("_"," ") }}</p>
+        <div class="flex flex-row">
+            <div class="absolute h-15 bottom-0 left-0 w-full unicolor-panels-color light-text-panel py-4 cursor-pointer text-light-text-panel dark:text-dark-text-panel hover:text-secondary" @click="showDatabaseSelector">
+                <p class="text-center font-large font-bold text-l drop-shadow-md align-middle">{{ formatted_database_name.replace("_"," ") }}</p>
+            </div>
         </div>
     </div>
     </transition>
@@ -582,6 +543,66 @@ animation: custom-pulse 2s infinite;
 .animate-roll {
   animation: roll 4s linear infinite;
 }
+
+
+.toolbar {
+  position: relative;
+  width: 100%;
+}
+
+.toolbar-container {
+  display: flex;
+  align-items: center;
+  background-color: #f0f0f0;
+  height: 40px; /* Adjust the height as needed */
+}
+
+.toolbar-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: #333;
+  transition: color 0.3s;
+}
+
+.toolbar-button:hover {
+  color: #007bff;
+}
+
+.menu-container {
+  position: relative;
+}
+
+.expandable-menu {
+  position: absolute;
+  top: 100%;
+  left: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  display: none;
+  flex-direction: column;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.menu-container:hover .expandable-menu,
+.menu-visible {
+  display: flex;
+}
+
+.menu-item {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: #333;
+  transition: background-color 0.3s;
+}
+
+.menu-item:hover {
+  background-color: #f0f0f0;
+}
 </style>
 <script>
 import SVGRedBrain from '@/assets/brain_red.svg';
@@ -600,6 +621,7 @@ export default {
     
     data() {
         return {
+            isMenuVisible: false,
             lastMessageHtml:"",
             defaultMessageHtml: `
         <!DOCTYPE html>
@@ -739,13 +761,15 @@ export default {
             database_selectorDialogVisible:false,
             isDragOverDiscussion: false,
             isDragOverChat: false,
-            leftPanelCollapsed: false, // left panel collapse
             rightPanelCollapsed: true, // right panel
             isOpen: false,
             discussion_id: 0,
         }
     },
-    methods: {      
+    methods: {        
+        toggleMenu() {
+            this.isMenuVisible = !this.isMenuVisible;
+        },
         getRandomEdgePosition() {
             const edge = Math.floor(Math.random() * 4);
             switch (edge) {
@@ -804,7 +828,7 @@ export default {
         async triggerRobotAction(){
             this.rightPanelCollapsed = !this.rightPanelCollapsed;
             if(!this.rightPanelCollapsed){
-                this.leftPanelCollapsed=true;
+                this.$store.commit('setleftPanelCollapsed', false); // Assuming you have a mutation to set the view mode
                 this.$nextTick(() => {
                 this.extractHtml()
                 });
@@ -973,12 +997,6 @@ export default {
             console.log("sending",text)
             this.$store.state.toast.showToast(text, duration, isok)
         },        
-        togglePanel() {
-            this.leftPanelCollapsed = !this.leftPanelCollapsed;
-            if (!this.leftPanelCollapsed){
-                this.rightPanelCollapsed = true;
-            }
-        },
         toggleDropdown() {
             this.isOpen = !this.isOpen;
         },
@@ -2684,7 +2702,9 @@ export default {
             return socket.id
         },
         showLeftPanel() {
-           return this.$store.state.ready && !this.leftPanelCollapsed;
+           console.log("showLeftPanel")
+           console.log(this.$store.state.leftPanelCollapsed)
+           return this.$store.state.ready && !this.$store.state.leftPanelCollapsed;
         },
         showRightPanel() {
            return this.$store.state.ready && !this.rightPanelCollapsed;

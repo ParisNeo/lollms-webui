@@ -111,6 +111,7 @@
                 </div>
 
                     <!-- CHAT BOX -->
+
                         <div v-if="selecting_model||selecting_binding" title="Selecting model" class="flex flex-row flex-grow justify-end panels-color">
                             <!-- SPINNER -->
                             <div role="status">
@@ -127,6 +128,68 @@
                                         <span class="sr-only">Loading...</span>
                                     </div>
                                 </div>
+
+                                <ChatBarButton 
+                                    @click="togglePanel" 
+                                    :class="{ 'text-red-500': leftPanelCollapsed }" 
+                                    title="Toggle View Mode"
+                                >
+                                    <div v-show="leftPanelCollapsed">
+                                        <!-- Chevron Right SVG -->
+                                        <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        >
+                                        <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </div>
+                                    <div v-show="!leftPanelCollapsed">
+                                        <!-- Chevron Left SVG -->
+                                        <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        >
+                                        <polyline points="15 18 9 12 15 6"></polyline>
+                                        </svg>
+                                    </div>
+                                </ChatBarButton>
+
+                                <ChatBarButton 
+                                    @click="toggleViewMode" 
+                                    :class="{ 'text-red-500': isCompactMode }" 
+                                    title="Toggle View Mode"
+                                >
+                                    <template #icon>
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path 
+                                                v-if="isCompactMode" 
+                                                stroke-linecap="round" 
+                                                stroke-linejoin="round" 
+                                                stroke-width="2" 
+                                                d="M3 12h18M3 6h18M3 18h18" 
+                                            />
+                                            <path 
+                                                v-else 
+                                                stroke-linecap="round" 
+                                                stroke-linejoin="round" 
+                                                stroke-width="2" 
+                                                d="M3 12h18M3 6h18M3 18h18M12 6v12" 
+                                            />
+                                        </svg>
+                                    </template>
+                                </ChatBarButton>                                
                                 <div class="w-fit group relative" v-if="!loading" >
                                     <div class= "hide top-50 hide opacity-0 group-hover:bottom-0 opacity-0 .group-hover:block fixed w-[1000px] group absolute  group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
                                         <div class="w-fit flex-wrap flex bg-white bg-opacity-50 backdrop-blur-md rounded p-4">
@@ -159,6 +222,7 @@
                                     </div>
 
                                 </div>                                    
+                                
                                 <div class="w-fit group relative" v-if="!loading">
                                     <div class="hide top-50 hide opacity-0 group-hover:bottom-0 opacity-0 .group-hover:block fixed w-[1000px] group absolute group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
                                         <div class="w-fit flex-wrap flex bg-white bg-opacity-50 backdrop-blur-md rounded p-4">
@@ -336,7 +400,6 @@
                                         </svg>
                                         </template>
                                     </ChatBarButton>
-
                                     <ChatBarButton 
                                         @click="startSpeechRecognition" 
                                         :class="{ 'text-red-500': isListeningToVoice }" 
@@ -518,6 +581,12 @@ export default {
         }
     },
     computed: {
+        leftPanelCollapsed(){
+            return this.$store.state.leftPanelCollapsed;
+        },
+        isCompactMode() {
+            return this.$store.state.view_mode === 'compact';
+        },
         isDataSourceNamesValid() {
             console.log('dataSourceNames:', this.dataSourceNames);
             console.log('Type of dataSourceNames:', typeof this.dataSourceNames);
@@ -600,6 +669,14 @@ export default {
         }
     },
     methods: { 
+        togglePanel(){
+            console.log(this.leftPanelCollapsed)
+            this.$store.commit('setLeftPanelCollapsed', ! this.leftPanelCollapsed); // Assuming you have a mutation to set the view mode
+        },
+        toggleViewMode() {
+            const newMode = this.isCompactMode ? 'full' : 'compact';
+            this.$store.commit('setViewMode', newMode); // Assuming you have a mutation to set the view mode
+        },        
         handlePaste(event) {
             const items = (event.clipboardData || event.originalEvent.clipboardData).items;
             let filesToUpload = [];

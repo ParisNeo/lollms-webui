@@ -1,7 +1,6 @@
 <template>
   <div  :class="currentTheme" class="flex flex-col h-screen font-sans background-color text-slate-950 dark:bg-bg-dark dark:text-slate-50 w-full overflow-hidden">
-    <TopBar />
-
+    <TopBar/>
     <div class="flex overflow-hidden flex-grow w-full">
       <!-- VIEW CONTAINER -->
       <RouterView v-slot="{ Component }">
