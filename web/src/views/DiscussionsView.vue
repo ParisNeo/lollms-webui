@@ -1,6 +1,6 @@
 <template>
     <transition name="fade-and-fly">
-        <div v-if="!isReady" class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 overflow-hidden">
+        <div v-if="!isReady" class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-gradient-to-br from-blue-400 to-purple-100 dark:from-blue-900 dark:to-purple-900 overflow-hidden">
         <!-- Falling strawberries -->
         <div class="absolute inset-0 pointer-events-none overflow-hidden">
             <div v-for="n in 50" :key="n" class="absolute animate-fall animate-giggle"

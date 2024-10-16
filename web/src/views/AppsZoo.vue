@@ -104,7 +104,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
         <app-card 
           v-for="app in favoriteApps" 
-          :key="app.uid" 
+          :key="app.appName" 
           :app="app" 
           @toggle-favorite="toggleFavorite"
           @install="installApp"
@@ -122,7 +122,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <app-card 
           v-for="app in sortedAndFilteredApps" 
-          :key="app.uid" 
+          :key="app.name" 
           :app="app" 
           @toggle-favorite="toggleFavorite"
           @install="installApp"
@@ -244,17 +244,19 @@ export default {
       });
     },
     favoriteApps() {
-      return this.combinedApps.filter(app => this.favorites.includes(app.uid));
+      return this.combinedApps.filter(app => this.favorites.includes(app.appName));
     },
   },
   methods: {
     toggleSortOrder() {
       this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
     },
-    toggleFavorite(appUid) {
-      const index = this.favorites.indexOf(appUid);
+    toggleFavorite(appName) {
+      console.log("Toggling favorite")
+      console.log(appName)
+      const index = this.favorites.indexOf(appName);
       if (index === -1) {
-        this.favorites.push(appUid);
+        this.favorites.push(appName);
       } else {
         this.favorites.splice(index, 1);
       }
