@@ -11,7 +11,7 @@
         ref="menuItems"
       >
         {{ link.text }}
-        <span v-if="isRouteActive(link.route)" class="feather-emoji">🪶</span>
+        <span v-if="isRouteActive(link.route)" class="feather-emoji">🌟</span>
       </RouterLink>
     </nav>
   </div>

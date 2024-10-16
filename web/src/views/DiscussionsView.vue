@@ -10,7 +10,7 @@
                 animationDuration: `${3 + Math.random() * 7}s`,
                 animationDelay: `${Math.random() * 5}s`
                 }">
-            🪶
+            🌟
             </div>
         </div>
 
@@ -18,7 +18,7 @@
             <div class="mb-8 w-full">
                 <div class="text-6xl md:text-7xl font-bold text-amber-500 mb-2"
                     style="text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;">
-                    L🪶LLMS
+                    L🌟LLMS
                 </div>
 
             <p class="text-2xl text-gray-600 dark:text-gray-300 italic">
@@ -32,7 +32,7 @@
             </p>
 
             <div class="w-full h-24 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg flex items-center justify-center">
-                <p style="font-size: 48px; line-height: 1;">🪶</p>
+                <p style="font-size: 48px; line-height: 1;">🌟</p>
             </div>
 
             </div>
@@ -50,25 +50,14 @@
         </div>
     </div>
     </transition>
-    <!-- Robot SVG -->
-    <button v-if="isReady" @click.stop="triggerRobotAction()" class="absolute z-50 bottom-20 right-2 p-3 bg-white bg-opacity-10 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 hover:bg-opacity-20 animate-pulse shadow-lg hover:shadow-xl group">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-blue-500 transition-colors duration-300 group-hover:text-yellow-400">
-        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-        <circle cx="12" cy="5" r="2"></circle>
-        <path d="M12 7v4"></path>
-        <line x1="8" y1="16" x2="8" y2="16"></line>
-        <line x1="16" y1="16" x2="16" y2="16"></line>
-    </svg>
-    </button>
-       
     <transition name="slide-right">
     <div  v-if="showLeftPanel"
-        class="relative flex flex-col no-scrollbar shadow-lg min-w-[12rem] max-w-[12rem] unicolor-panels-color dark:bg-bg-dark-tone"
+        class="relative flex flex-col no-scrollbar shadow-lg min-w-[12rem] max-w-[12rem]"
         >
         <!-- LEFT SIDE PANEL -->
         <div id="leftPanel" class="flex flex-col flex-grow overflow-y-scroll no-scrollbar "
             @dragover.stop.prevent="setDropZoneDiscussion()">
-            <div class="toolbar">
+            <div class="toolbar discussion">
                 <!-- Toolbar container -->
                 <div class="toolbar-container">
                 <!-- "+" button -->
@@ -92,61 +81,87 @@
                     </button>
 
                     <!-- Expandable menu -->
-                    <div class="expandable-menu z-50" :class="{ 'menu-visible': isMenuVisible }">
-                        <!-- Menu items -->
-                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Edit discussion list" type="button" @click="isCheckbox = !isCheckbox" :class="isCheckbox ? 'text-secondary' : ''">
-                        <i data-feather="check-square"></i>
-                        </button>                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Reset database, remove all discussions" @click.stop="">
-                        <i data-feather="trash-2"></i>
-                        </button>
-                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Export database" type="button" @click.stop="database_selectorDialogVisible=true">
-                        <i data-feather="database"></i>
-                        </button>
-                        <input type="file" ref="fileDialog" style="display: none" @change="importDiscussions" />
-                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90" title="Import discussions" type="button" @click.stop="$refs.fileDialog.click()">
-                        <i data-feather="log-in"></i>
-                        </button>
-                        <input type="file" ref="bundleLoadingDialog" style="display: none" @change="importDiscussionsBundle" />
-                        <button v-if="!showSaveConfirmation" title="Import discussion bundle" @click.stop="$refs.bundleLoadingDialog.click()" class="text-2xl hover:text-secondary duration-75 active:scale-90">
-                        <i data-feather="folder"></i>
-                        </button>
-                        <div v-if="isOpen" class="flex flex-col space-y-2">
-                        <button @click="importDiscussions" class="text-sm hover:text-secondary">LOLLMS</button> 
-                        <button @click="importChatGPT" class="text-sm hover:text-secondary">ChatGPT</button>
+                    <div class="expandable-menu z-50 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg" :class="{ 'menu-visible': isMenuVisible }">
+                        <div class="grid grid-cols-4 gap-4">
+                            <!-- Edit discussion list -->
+                            <button class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95" title="Edit discussion list" type="button" @click="isCheckbox = !isCheckbox" :class="isCheckbox ? 'text-secondary dark:text-secondary-light' : 'text-gray-700 dark:text-gray-300'">
+                            <i data-feather="check-square"></i>
+                            </button>
+
+                            <!-- Reset database -->
+                            <button class="text-3xl hover:text-red-500 dark:hover:text-red-400 duration-150 active:scale-95" title="Reset database, remove all discussions" @click.stop="">
+                            <i data-feather="trash-2"></i>
+                            </button>
+
+                            <!-- Export database -->
+                            <button class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95" title="Export database" type="button" @click.stop="database_selectorDialogVisible=true">
+                            <i data-feather="database"></i>
+                            </button>
+
+                            <!-- Import discussions -->
+                            <input type="file" ref="fileDialog" class="hidden" @change="importDiscussions" />
+                            <button class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95 rotate-90" title="Import discussions" type="button" @click.stop="$refs.fileDialog.click()">
+                            <i data-feather="log-in"></i>
+                            </button>
+
+                            <!-- Import discussion bundle -->
+                            <input type="file" ref="bundleLoadingDialog" class="hidden" @change="importDiscussionsBundle" />
+                            <button v-if="!showSaveConfirmation" title="Import discussion bundle" @click.stop="$refs.bundleLoadingDialog.click()" class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95">
+                            <i data-feather="folder"></i>
+                            </button>
+
+                            <!-- Filter discussions -->
+                            <button class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95" title="Filter discussions" type="button" @click="isSearch = !isSearch" :class="isSearch ? 'text-secondary dark:text-secondary-light' : 'text-gray-700 dark:text-gray-300'">
+                            <i data-feather="search"></i>
+                            </button>
+
+                            <!-- Add to skills database -->
+                            <button v-if="!loading" type="button" @click.stop="addDiscussion2SkillsLibrary" title="Add this discussion content to skills database" class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95">
+                            <i data-feather="hard-drive"></i>
+                            </button>
+
+                            <!-- Toggle skills database -->
+                            <button v-if="!loading && $store.state.config.activate_skills_lib" type="button" @click.stop="toggleSkillsLib" title="Skills database is activated" class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95">
+                            <i data-feather="check-circle"></i>
+                            </button>
+                            <button v-if="!loading && !$store.state.config.activate_skills_lib" type="button" @click.stop="toggleSkillsLib" title="Skills database is deactivated" class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95">
+                            <i data-feather="x-octagon"></i>
+                            </button>
+
+                            <!-- Show skills database -->
+                            <button v-if="!loading" type="button" @click.stop="showSkillsLib" title="Show Skills database" class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95">
+                            <i data-feather="book"></i>
+                            </button>
                         </div>
-                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Filter discussions" type="button" @click="isSearch = !isSearch" :class="isSearch ? 'text-secondary' : ''">
-                        <i data-feather="search"></i>
-                        </button>
-                        <div v-if="showSaveConfirmation" class="flex flex-col space-y-2">
-                        <button class="text-2xl hover:text-red-600 duration-75 active:scale-90" title="Cancel" type="button" @click.stop="showSaveConfirmation = false">
-                            <i data-feather="x"></i>
-                        </button>
-                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Confirm save changes" type="button" @click.stop="save_configuration()">
-                            <i data-feather="check"></i>
-                        </button>
-                        </div>
-                        <button v-if="!loading" type="button" @click.stop="addDiscussion2SkillsLibrary" title="Add this discussion content to skills database" class="text-2xl hover:text-secondary duration-75 active:scale-90">
-                        <i data-feather="hard-drive"></i>
-                        </button>
-                        <button v-if="!loading && $store.state.config.activate_skills_lib" type="button" @click.stop="toggleSkillsLib" title="Skills database is activated" class="text-2xl hover:text-secondary duration-75 active:scale-90">
-                        <i data-feather="check-circle"></i>
-                        </button>
-                        <button v-if="!loading && !$store.state.config.activate_skills_lib" type="button" @click.stop="toggleSkillsLib" title="Skills database is deactivated" class="text-2xl hover:text-secondary duration-75 active:scale-90">
-                        <i data-feather="x-octagon"></i>
-                        </button>
-                        <button v-if="!loading" type="button" @click.stop="showSkillsLib" title="Show Skills database" class="text-2xl hover:text-secondary duration-75 active:scale-90">
-                        <i data-feather="book"></i>
-                        </button>
-                        <div v-if="loading" title="Loading.." class="flex justify-center">
-                        <div role="status">
-                            <svg aria-hidden="true" class="w-6 h-6 animate-spin fill-secondary" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
-                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+
+                        <!-- Loading spinner -->
+                        <div v-if="loading" title="Loading.." class="flex justify-center mt-4">
+                            <div role="status">
+                            <svg aria-hidden="true" class="w-8 h-8 animate-spin fill-secondary dark:fill-secondary-light" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
                             </svg>
                             <span class="sr-only">Loading...</span>
+                            </div>
                         </div>
-                    </div>
-                </div>
+
+                        <!-- Save confirmation -->
+                        <div v-if="showSaveConfirmation" class="flex justify-center mt-4 space-x-4">
+                            <button class="text-3xl hover:text-red-500 dark:hover:text-red-400 duration-150 active:scale-95" title="Cancel" type="button" @click.stop="showSaveConfirmation = false">
+                            <i data-feather="x"></i>
+                            </button>
+                            <button class="text-3xl hover:text-green-500 dark:hover:text-green-400 duration-150 active:scale-95" title="Confirm save changes" type="button" @click.stop="save_configuration()">
+                            <i data-feather="check"></i>
+                            </button>
+                        </div>
+
+                        <!-- Import options -->
+                        <div v-if="isOpen" class="flex flex-col space-y-2 mt-4">
+                            <button @click="importDiscussions" class="text-sm hover:text-secondary dark:hover:text-secondary-light">LOLLMS</button> 
+                            <button @click="importChatGPT" class="text-sm hover:text-secondary dark:hover:text-secondary-light">ChatGPT</button>
+                        </div>
+                        </div>
+
 
                 <!-- Search bar -->
                 <div v-if="isSearch" class="absolute top-0 left-12 w-64 p-4 bg-bg-light dark:bg-bg-dark">
@@ -546,29 +561,20 @@ animation: custom-pulse 2s infinite;
 
 
 .toolbar {
-  position: relative;
-  width: 100%;
-}
+    @apply relative w-full;
+  }
 
-.toolbar-container {
-  display: flex;
-  align-items: center;
-  background-color: #f0f0f0;
-  height: 40px; /* Adjust the height as needed */
-}
+  .toolbar-container {
+    @apply flex items-center h-10; /* h-10 is equivalent to 40px */
+  }
 
-.toolbar-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  color: #333;
-  transition: color 0.3s;
-}
+  .toolbar-button {
+    @apply bg-transparent border-none cursor-pointer p-2 transition-colors duration-300;
+  }
 
-.toolbar-button:hover {
-  color: #007bff;
-}
+  .toolbar-button:hover {
+    @apply text-blue-500; /* Assuming #007bff is close to Tailwind's blue-500 */
+  }
 
 .menu-container {
   position: relative;
@@ -761,7 +767,6 @@ export default {
             database_selectorDialogVisible:false,
             isDragOverDiscussion: false,
             isDragOverChat: false,
-            rightPanelCollapsed: true, // right panel
             isOpen: false,
             discussion_id: 0,
         }
@@ -1937,14 +1942,14 @@ export default {
             if (item) {
                 if (item.id) {
                     const realTitle = item.title ? item.title === "untitled" ? "New discussion" : item.title : "New discussion"
-                    document.title = 'L🪶LLMS WebUI - ' + realTitle
+                    document.title = 'L🌟LLMS WebUI - ' + realTitle
                 } else {
                     const title = item || "Welcome"
-                    document.title = 'L🪶LLMS WebUI - ' + title
+                    document.title = 'L🌟LLMS WebUI - ' + title
                 }
             } else {
                 const title = item || "Welcome"
-                document.title = 'L🪶LLMS WebUI - ' + title
+                document.title = 'L🌟LLMS WebUI - ' + title
             }
 
         },
@@ -2707,8 +2712,10 @@ export default {
            return this.$store.state.ready && !this.$store.state.leftPanelCollapsed;
         },
         showRightPanel() {
-           return this.$store.state.ready && !this.rightPanelCollapsed;
-        },
+           console.log("showRightPanel")
+           console.log(this.$store.state.rightPanelCollapsed)
+           return this.$store.state.ready && !this.$store.state.rightPanelCollapsed;
+        },        
         socketConnected() {
             console.log(" --- > Websocket connected")
             this.$store.commit('setIsConnected', true);

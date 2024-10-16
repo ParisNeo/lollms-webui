@@ -48,6 +48,7 @@ export const store = createStore({
         client_id:"",    
         // count: 0,
         leftPanelCollapsed:  false, // Default value
+        rightPanelCollapsed:  true, // Default value
         view_mode: localStorage.getItem('lollms_webui_view_mode') || 'compact', // Default value
         yesNoDialog:null,
         universalForm:null,
@@ -89,6 +90,11 @@ export const store = createStore({
         state.leftPanelCollapsed = status;
         console.log(`Saving the status of left panel to ${status}`)
         localStorage.setItem('lollms_webui_left_panel_collapsed', status); // Sync with localStorage
+      },
+      setRightPanelCollapsed(state, status) {
+        state.rightPanelCollapsed = status;
+        console.log(`Saving the status of right panel to ${status}`)
+        localStorage.setItem('lollms_webui_right_panel_collapsed', status); // Sync with localStorage
       },
 
       setViewMode(state, mode) {
@@ -175,6 +181,9 @@ export const store = createStore({
     getters: {
       getLeftPanelCollapsed(state) {
         return state.leftPanelCollapsed;
+      },
+      getRightPanelCollapsed(state) {
+        return state.rightPanelCollapsed;
       },
       getViewMode(state){
         return state.view_mode;

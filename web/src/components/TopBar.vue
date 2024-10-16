@@ -11,7 +11,7 @@
           <div class="flex flex-col justify-center">
             <div class="text-6xl md:text-2xl font-bold text-amber-500 mb-2"
                 style="text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;">
-                L🪶LLMS
+                L🌟LLMS
           </div>
             <p class="text-gray-400 text-sm">One tool to rule them all</p>
           </div>

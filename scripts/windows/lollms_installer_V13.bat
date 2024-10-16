@@ -1,6 +1,6 @@
 @echo off
 
-echo "L🪶LLMS: Lord of Large Language and Multimodal Systems"
+echo "L🌟LLMS: Lord of Large Language and Multimodal Systems"
 echo V13 Feather
 echo -----------------
 echo By ParisNeo
