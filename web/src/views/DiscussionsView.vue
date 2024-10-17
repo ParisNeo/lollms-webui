@@ -81,8 +81,8 @@
                     </button>
 
                     <!-- Expandable menu -->
-                    <div class="expandable-menu z-50 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg" :class="{ 'menu-visible': isMenuVisible }">
-                        <div class="grid grid-cols-4 gap-4">
+                    <div class="expandable-menu discussion z-50 p-4 bg-white rounded-lg shadow-lg" :class="{ 'hidden': !isMenuVisible }">
+                        <div>
                             <!-- Edit discussion list -->
                             <button class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95" title="Edit discussion list" type="button" @click="isCheckbox = !isCheckbox" :class="isCheckbox ? 'text-secondary dark:text-secondary-light' : 'text-gray-700 dark:text-gray-300'">
                             <i data-feather="check-square"></i>
@@ -579,18 +579,10 @@ animation: custom-pulse 2s infinite;
 .menu-container {
   position: relative;
 }
-
 .expandable-menu {
-  position: absolute;
-  top: 100%;
-  left: 10px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  display: none;
-  flex-direction: column;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  @apply absolute top-full left-2.5 border border-gray-300 rounded flex-col shadow-md;
 }
+
 
 .menu-container:hover .expandable-menu,
 .menu-visible {
@@ -2643,10 +2635,10 @@ export default {
         version_info:{
             get(){
                 if(this.$store.state.version!=undefined && this.$store.state.version!="unknown"){
-                    return " v" + this.$store.state.version;
+                    return this.$store.state.version;
                 }
                 else{
-                    return "";
+                    return "...";
                 }
             }
         },

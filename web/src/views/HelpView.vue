@@ -1,67 +1,118 @@
 <template>
-  <div class="help-view">
-    <h1>Bienvenue dans l'aide de Lollms</h1>
-
-    <p>
-      **Lollms** (**L**ord **o**f **L**arge **L**anguage and **M**ultimodal **S**ystems), prononcé "lahms", est un outil puissant qui vous permet d'interagir avec une variété de modèles de langage et multimodaux. Il a été créé par **ParisNeo**, un expert en IA et en robotique passionné de programmation depuis son enfance, dans le but de rendre les modèles d'IA accessibles à tous, gratuitement. Son slogan : **"Un outil pour tous les gouverner"**. [1, 2] 
-    </p>
-
-    <h2>Composants clés de Lollms</h2>
-
-    <ul>
-      <li>
-        <b>Liaisons :</b> Essentiellement du code Python, les liaisons sont des modules intermédiaires permettant à Lollms d'interagir avec différents modèles d'IA.  Elles agissent comme des ponts entre l'interface utilisateur de Lollms et les bibliothèques logicielles qui exécutent ces modèles. [3-5]
-      </li>
-      <li>
-        <b>Services :</b> Lollms s'appuie sur des services supplémentaires créés par des développeurs tiers. Ces services, souvent open source, étendent les fonctionnalités de Lollms. Parmi eux, on trouve : [6]
-        <ul>
-          <li>**Services LLM :**  tels qu'ollama et vllm, dédiés à la génération de texte.</li>
-          <li>**Génération d'images :** comme Stable Diffusion, pour créer des images à partir de descriptions textuelles.</li>
-          <li>**Synthèse vocale :** comme Xtts, permettant de convertir du texte en parole.</li>
-        </ul>
-      </li>
-      <li>
-        <b>Modèles :</b> Au cœur de Lollms se trouvent les modèles de langage. Ces modèles, formés sur d'énormes ensembles de données textuelles, sont capables de : [6-8]
-        <ul>
-          <li>Générer du texte cohérent et contextuel.</li>
-          <li>Traduire des langues avec une précision remarquable.</li>
-          <li>Produire différents types de contenu créatif, tels que des poèmes, du code et des scripts.</li>
-          <li>Fournir des réponses informatives à vos questions.</li>
-        </ul>
-        La taille d'un modèle est un facteur déterminant de ses performances : plus le modèle est grand (c'est-à-dire plus il possède de paramètres), plus ses capacités sont généralement avancées. [8, 9]
-      </li>
-      <li>
-        <b>Personnalités :</b> Donnez vie à Lollms grâce aux personnalités. Ces agents virtuels, dotés de caractéristiques et de styles de communication uniques, sont créés par le biais de deux méthodes principales : [10, 11]
-        <ul>
-          <li>**Conditionnement de texte :** On fournit au modèle des exemples de conversations représentatifs de la personnalité souhaitée, l'entraînant à imiter ce style.</li>
-          <li>**Code Python personnalisé :** Des scripts Python permettent de définir des comportements plus complexes et d'intégrer des fonctionnalités spécifiques à une personnalité.</li>
-        </ul>
-        Avec plus de 250 personnalités disponibles, couvrant des domaines allant de la science à la fiction, vous trouverez forcément celle qui correspond à vos besoins. [10, 12, 13]
-      </li>
-    </ul>
-
-    <h2>Fonctionnalités de Lollms</h2>
-
-    <p>
-      Lollms offre un éventail impressionnant de fonctionnalités :
-    </p>
-
-    <ul>
-      <li>**Génération de texte :**  Écrivez des histoires, des articles, des poèmes et plus encore.</li>
-      <li>**Traduction linguistique :**  Brisez les barrières linguistiques en traduisant du texte dans différentes langues.</li>
-      <li>**Écriture créative :** Explorez votre côté artistique en générant des scripts, des poèmes et des paroles de chansons.</li>
-      <li>**Réponse aux questions :**  Obtenez des réponses à vos questions en puisant dans les connaissances des modèles de langage.</li>
-      <li>**Génération d'images :**  Créez des images uniques à partir de descriptions textuelles.</li>
-      <li>**Synthèse vocale :**  Donnez une voix à vos textes grâce à la synthèse vocale.</li>
-      <li>**Exécution de code :**  Générez et exécutez du code dans différents langages de programmation.</li>
-      <li>**Intégration Web :**  Intégrez Lollms à vos projets web pour des fonctionnalités dynamiques.</li>
-      <li>**Et bien plus encore! :**  Lollms est en constante évolution, avec de nouvelles fonctionnalités ajoutées régulièrement.</li>
-    </ul>
+  <div class="help-view background-color p-6 w-full">
+    <div class="big-card w-full">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-6">LoLLMs Help</h1>
+      <div class="help-sections-container">
+        <div class="help-sections space-y-4">
+          <div v-for="(section, index) in helpSections" :key="index" class="help-section message">
+            <h2 @click="toggleSection(index)" class="menu-item cursor-pointer flex justify-between items-center">
+              {{ section.title }}
+              <span class="toggle-icon">{{ section.isOpen ? '▼' : '▶' }}</span>
+            </h2>
+            <div v-if="section.isOpen" class="help-content mt-4">
+              <div v-html="section.content" class="prose dark:prose-invert"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import { marked } from 'marked';
+
 export default {
   name: 'HelpView',
-};
+  data() {
+    return {
+      helpSections: []
+    }
+  },
+  methods: {
+    toggleSection(index) {
+      this.helpSections[index].isOpen = !this.helpSections[index].isOpen;
+    },
+    async loadMarkdownFile(filename) {
+      try {
+        const response = await fetch(`/help/${filename}`);
+        const markdown = await response.text();
+        return marked(markdown);
+      } catch (error) {
+        console.error('Error loading markdown file:', error);
+        return 'Error loading help content.';
+      }
+    },
+    async loadHelpSections() {
+      const sectionFiles = [
+        { title: 'About LoLLMs', file: 'lollms-context.md' },
+        { title: 'Getting Started', file: 'getting-started.md' },
+        { title: 'Uploading Files', file: 'uploading-files.md' },
+        { title: 'Sending Images', file: 'sending-images.md' },
+        { title: 'Using Code Interpreter', file: 'code-interpreter.md' },
+        { title: 'Internet Search', file: 'internet-search.md' }
+      ];
+
+      for (const section of sectionFiles) {
+        const content = await this.loadMarkdownFile(section.file);
+        this.helpSections.push({
+          title: section.title,
+          content: content,
+          isOpen: false
+        });
+      }
+    }
+  },
+  mounted() {
+    this.loadHelpSections();
+  }
+}
 </script>
+
+<style scoped>
+.help-view {
+  @apply min-h-screen;
+}
+
+.big-card {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 mx-auto;
+}
+
+.help-sections-container {
+  @apply max-h-[70vh] overflow-y-auto pr-4;
+}
+
+.help-section {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+.help-content {
+  @apply text-gray-600 dark:text-gray-300;
+}
+
+/* Cute scrollbar styles */
+.help-sections-container::-webkit-scrollbar {
+  width: 12px;
+}
+
+.help-sections-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.help-sections-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+  border: 3px solid #f1f1f1;
+}
+
+.help-sections-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* For Firefox */
+.help-sections-container {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+</style>

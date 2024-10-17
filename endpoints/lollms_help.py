@@ -55,22 +55,3 @@ from utilities.execution_engines.svg_execution_engine import execute_svg
 
 router = APIRouter()
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
-
-@router.get("/help/{path:path}")
-async def serve_help(path: str):
-    """
-    Serve help file.
-
-    Args:
-        path (FilePath): The path of the help file to serve.
-
-    Returns:
-        FileResponse: The file response containing the requested personalities file.
-    """
-    path = sanitize_path_from_endpoint(path)    
-    file_path = lollmsElfServer.lollms_paths.lollms_core_path / "help" / "/".join(str(path).split("/")[1:])
-
-    if not Path(file_path).exists():
-        raise HTTPException(status_code=400, detail="File not found")
-
-    return FileResponse(str(file_path))

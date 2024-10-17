@@ -1590,7 +1590,7 @@
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <tr>
                             <td style="min-width: 200px;">
-                                <label for="activate_internet_search" class="text-sm font-bold" style="margin-right: 1rem;">Activate internet search:</label>
+                                <label for="activate_internet_search" class="text-sm font-bold" style="margin-right: 1rem;">Activate automatic internet search (for every prompt):</label>
                             </td>
                             <td>
                                 <div class="flex flex-row">
