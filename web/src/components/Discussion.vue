@@ -1,6 +1,6 @@
 <template>
     <div
-        :class="selected ? 'discussion-hilighted min-w-[11rem] max-w-[12rem]' : 'discussion min-w-[12rem] max-w-[12rem]'"
+        :class="selected ? 'discussion-hilighted min-w-[14rem] max-w-[14rem]' : 'discussion min-w-[14rem] max-w-[14rem]'"
         class="m-1 py-2 flex flex-row sm:flex-row flex-wrap flex-shrink-0 items-center rounded-md duration-75 group cursor-pointer relative"
         :id="'dis-' + id"
         @click.stop="selectEvent()"

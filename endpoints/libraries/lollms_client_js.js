@@ -928,14 +928,14 @@ constructor(lollms) {
 
 async translateTextChunk(textChunk, outputLanguage = "french", host_address = null, model_name = null, temperature = 0.1, maxGenerationSize = 3000) {
   const translationPrompt = [
-    `!@>system:`,
+    `${this.lollms.system_message()}`,
     `Translate the following text to ${outputLanguage}.`,
     `Be faithful to the original text and do not add or remove any information.`,
     `Respond only with the translated text.`,
     `Do not add comments or explanations.`,
-    `!@>text to translate:`,
+    `${this.lollms.user_message("text to translate")}`,
     `${textChunk}`,
-    `!@>translation:`,
+    `${this.lollms.ai_message("translation")}`,
   ].join("\n");
 
   const translated = await this.lollms.generateText(

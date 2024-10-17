@@ -68,7 +68,7 @@ def terminate_thread(thread):
         else:
             ASCIIColors.yellow("Canceled successfully")# The current version of the webui
 
-lollms_webui_version="Nova XIV 🌟"
+lollms_webui_version="v14 (code name Saïph 🌟)"
 
 
 
