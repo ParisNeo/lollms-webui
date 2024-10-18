@@ -71,9 +71,7 @@
                         </div>
                     </div>
                     <div v-if="filesList.length > 0" class="flex mx-1 w-500">
-
                         <!-- ADDITIONAL INFO PANEL -->
-
                         <div class="whitespace-nowrap flex flex-row gap-2">
                             <p class="font-bold ">
                                 Total size:
@@ -110,383 +108,382 @@
                     </div>
                 </div>
 
-                    <!-- CHAT BOX -->
-
-                        <div v-if="selecting_model||selecting_binding" title="Selecting model" class="flex flex-row flex-grow justify-end panels-color">
+                <!-- CHAT BOX -->
+                <div v-if="selecting_model||selecting_binding" title="Selecting model" class="flex flex-row flex-grow justify-end panels-color">
+                    <!-- SPINNER -->
+                    <div role="status">
+                        <img :src="loader_v0" class="w-50 h-50">
+                        <span class="sr-only">Selecting model...</span>
+                    </div>
+                </div>
+                <div class="flex w-fit relative grow w-full">
+                    <div class="relative text-light-text-panel dark:text-dark-text-panel grow flex h-12.5 cursor-pointer select-none items-center gap-2 chatbox-color p-1 shadow-sm hover:shadow-none dark:border-gray-800" tabindex="0">
+                        <div v-if="loading" title="Waiting for reply">
+                            <img :src="loader_v0">
                             <!-- SPINNER -->
                             <div role="status">
-                                <img :src="loader_v0" class="w-50 h-50">
-                                <span class="sr-only">Selecting model...</span>
+                                <span class="sr-only">Loading...</span>
                             </div>
                         </div>
-                        <div class="flex w-fit relative grow w-full">
-                            <div class="relative text-light-text-panel dark:text-dark-text-panel grow flex h-12.5 cursor-pointer select-none items-center gap-2 chatbox-color p-1 shadow-sm hover:shadow-none dark:border-gray-800" tabindex="0">
-                                <div v-if="loading" title="Waiting for reply">
-                                    <img :src="loader_v0">
-                                    <!-- SPINNER -->
-                                    <div role="status">
-                                        <span class="sr-only">Loading...</span>
+
+                        <ChatBarButton 
+                            @click="toggleLeftPanel" 
+                            :class="{ 'text-red-500': leftPanelCollapsed }" 
+                            title="Toggle View Mode"
+                        >
+                            <div v-show="leftPanelCollapsed">
+                                <!-- Chevron Right SVG -->
+                                <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                >
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                            </div>
+                            <div v-show="!leftPanelCollapsed">
+                                <!-- Chevron Left SVG -->
+                                <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                >
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                                </svg>
+                            </div>
+                        </ChatBarButton>
+
+                        <ChatBarButton 
+                            @click="toggleViewMode" 
+                            :class="{ 'text-red-500': isCompactMode }" 
+                            title="Toggle View Mode"
+                        >
+                            <template #icon>
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path 
+                                        v-if="isCompactMode" 
+                                        stroke-linecap="round" 
+                                        stroke-linejoin="round" 
+                                        stroke-width="2" 
+                                        d="M3 12h18M3 6h18M3 18h18" 
+                                    />
+                                    <path 
+                                        v-else 
+                                        stroke-linecap="round" 
+                                        stroke-linejoin="round" 
+                                        stroke-width="2" 
+                                        d="M3 12h18M3 6h18M3 18h18M12 6v12" 
+                                    />
+                                </svg>
+                            </template>
+                        </ChatBarButton>                                
+                        <div class="w-fit group relative" v-if="!loading" >
+                            <div class= "hide top-50 hide opacity-0 group-hover:bottom-0 opacity-0 .group-hover:block fixed w-[1000px] group absolute  group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
+                                <div class="w-fit flex-wrap flex bg-white bg-opacity-50 backdrop-blur-md rounded p-4">
+                                <div class="w-fit h-fit inset-0 opacity-100"
+                                    v-for="(item, index) in installedBindings" :key="index + '-' + item.name"
+                                    ref="installedBindings"
+                                    @mouseover="showBindingHoveredIn(index)" @mouseleave="showBindingHoveredOut()"
+                                    >
+                                    <div v-if="index!=binding_name" class="items-center flex flex-row relative z-20  hover:-translate-y-8 duration-300"
+                                    :class="bindingHoveredIndex === index?'scale-150':''"
+                                    >
+                                        <div class="relative">
+                                            <button @click.prevent="setBinding(item)" class="w-10 h-10 relative">
+                                                <img :src="item.icon?item.icon:modelImgPlaceholder" @error="modelImgPlaceholder"
+                                                class="z-50 w-10 h-10 rounded-full object-fill text-red-700 border-2 border-gray-500 active:scale-90"
+                                                :class="bindingHoveredIndex === index?'scale-150  ':'' + item.name==binding_name ? 'border-secondary' : 'border-transparent z-0'"
+                                                :title="item.name">
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
+                                </div>
+                            </div>
+                            <div class="group items-center flex flex-row">
+                                <button @click.prevent="showModelConfig()" class="w-8 h-8">
+                                    <img :src="currentBindingIcon"
+                                        class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary hover:scale-110 hover:-translate-y-1 duration-200"
+                                        :title="currentBinding?currentBinding.name:'unknown'">
+                                </button>
+                            </div>
 
-                                <ChatBarButton 
-                                    @click="toggleLeftPanel" 
-                                    :class="{ 'text-red-500': leftPanelCollapsed }" 
-                                    title="Toggle View Mode"
-                                >
-                                    <div v-show="leftPanelCollapsed">
-                                        <!-- Chevron Right SVG -->
-                                        <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
+                        </div>                                    
+                        
+                        <div class="w-fit group relative" v-if="!loading">
+                            <div class="hide top-50 hide opacity-0 group-hover:bottom-0 opacity-0 .group-hover:block fixed w-[1000px] group absolute group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
+                                <div class="w-fit flex-wrap flex bg-white bg-opacity-50 backdrop-blur-md rounded p-4">
+                                    <div class="w-fit h-fit"
+                                        v-for="(item, index) in installedModels" :key="index + '-' + item.name"
+                                        ref="installedModels"
+                                        @mouseover="showModelHoveredIn(index)" 
+                                        @mouseleave="showModelHoveredOut()"
+                                    >
+                                        <div v-if="index!=model_name" class="items-center flex flex-row relative z-20 hover:-translate-y-8 duration-300"
+                                            :class="modelHoveredIndex === index ? 'scale-150' : ''"
                                         >
-                                        <polyline points="9 18 15 12 9 6"></polyline>
-                                        </svg>
-                                    </div>
-                                    <div v-show="!leftPanelCollapsed">
-                                        <!-- Chevron Left SVG -->
-                                        <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        >
-                                        <polyline points="15 18 9 12 15 6"></polyline>
-                                        </svg>
-                                    </div>
-                                </ChatBarButton>
-
-                                <ChatBarButton 
-                                    @click="toggleViewMode" 
-                                    :class="{ 'text-red-500': isCompactMode }" 
-                                    title="Toggle View Mode"
-                                >
-                                    <template #icon>
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path 
-                                                v-if="isCompactMode" 
-                                                stroke-linecap="round" 
-                                                stroke-linejoin="round" 
-                                                stroke-width="2" 
-                                                d="M3 12h18M3 6h18M3 18h18" 
-                                            />
-                                            <path 
-                                                v-else 
-                                                stroke-linecap="round" 
-                                                stroke-linejoin="round" 
-                                                stroke-width="2" 
-                                                d="M3 12h18M3 6h18M3 18h18M12 6v12" 
-                                            />
-                                        </svg>
-                                    </template>
-                                </ChatBarButton>                                
-                                <div class="w-fit group relative" v-if="!loading" >
-                                    <div class= "hide top-50 hide opacity-0 group-hover:bottom-0 opacity-0 .group-hover:block fixed w-[1000px] group absolute  group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
-                                        <div class="w-fit flex-wrap flex bg-white bg-opacity-50 backdrop-blur-md rounded p-4">
-                                        <div class="w-fit h-fit inset-0 opacity-100"
-                                            v-for="(item, index) in installedBindings" :key="index + '-' + item.name"
-                                            ref="installedBindings"
-                                            @mouseover="showBindingHoveredIn(index)" @mouseleave="showBindingHoveredOut()"
-                                            >
-                                            <div v-if="index!=binding_name" class="items-center flex flex-row relative z-20  hover:-translate-y-8 duration-300"
-                                            :class="bindingHoveredIndex === index?'scale-150':''"
-                                            >
-                                                <div class="relative">
-                                                    <button @click.prevent="setBinding(item)" class="w-10 h-10 relative">
-                                                        <img :src="item.icon?item.icon:modelImgPlaceholder" @error="modelImgPlaceholder"
-                                                        class="z-50 w-10 h-10 rounded-full object-fill text-red-700 border-2 border-gray-500 active:scale-90"
-                                                        :class="bindingHoveredIndex === index?'scale-150  ':'' + item.name==binding_name ? 'border-secondary' : 'border-transparent z-0'"
-                                                        :title="item.name">
+                                            <div class="relative flex items-center">
+                                                <!-- Parent container for both buttons -->
+                                                <div class="relative group">
+                                                    <button @click.prevent="setModel(item)" class="w-10 h-10 relative">
+                                                        <img :src="item.icon ? item.icon : modelImgPlaceholder" @error="personalityImgPlacehodler"
+                                                            class="z-50 w-10 h-10 rounded-full object-fill text-red-700 border-2 border-gray-500 active:scale-90"
+                                                            :class="modelHoveredIndex === index ? 'scale-150' : '' + item.name == model_name ? 'border-secondary' : 'border-transparent z-0'"
+                                                            :title="item.name">
+                                                    </button>
+                                                    <!-- New copy button with SVG icon that appears on hover -->
+                                                    <button v-if="modelHoveredIndex === index" @click.prevent="copyModelNameFrom(item.name)"
+                                                        class="absolute -top-2 -right-2 bg-blue-500 text-white p-1 rounded-full hover:bg-blue-700 transition duration-300">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                                                            <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                                                        </svg>
                                                     </button>
                                                 </div>
                                             </div>
                                         </div>
-                                        </div>
-                                    </div>
-                                    <div class="group items-center flex flex-row">
-                                        <button @click.prevent="showModelConfig()" class="w-8 h-8">
-                                            <img :src="currentBindingIcon"
-                                                class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary hover:scale-110 hover:-translate-y-1 duration-200"
-                                                :title="currentBinding?currentBinding.name:'unknown'">
-                                        </button>
-                                    </div>
-
-                                </div>                                    
-                                
-                                <div class="w-fit group relative" v-if="!loading">
-                                    <div class="hide top-50 hide opacity-0 group-hover:bottom-0 opacity-0 .group-hover:block fixed w-[1000px] group absolute group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
-                                        <div class="w-fit flex-wrap flex bg-white bg-opacity-50 backdrop-blur-md rounded p-4">
-                                            <div class="w-fit h-fit"
-                                                v-for="(item, index) in installedModels" :key="index + '-' + item.name"
-                                                ref="installedModels"
-                                                @mouseover="showModelHoveredIn(index)" 
-                                                @mouseleave="showModelHoveredOut()"
-                                            >
-                                                <div v-if="index!=model_name" class="items-center flex flex-row relative z-20 hover:-translate-y-8 duration-300"
-                                                    :class="modelHoveredIndex === index ? 'scale-150' : ''"
-                                                >
-                                                    <div class="relative flex items-center">
-                                                        <!-- Parent container for both buttons -->
-                                                        <div class="relative group">
-                                                            <button @click.prevent="setModel(item)" class="w-10 h-10 relative">
-                                                                <img :src="item.icon ? item.icon : modelImgPlaceholder" @error="personalityImgPlacehodler"
-                                                                    class="z-50 w-10 h-10 rounded-full object-fill text-red-700 border-2 border-gray-500 active:scale-90"
-                                                                    :class="modelHoveredIndex === index ? 'scale-150' : '' + item.name == model_name ? 'border-secondary' : 'border-transparent z-0'"
-                                                                    :title="item.name">
-                                                            </button>
-                                                            <!-- New copy button with SVG icon that appears on hover -->
-                                                            <button v-if="modelHoveredIndex === index" @click.prevent="copyModelNameFrom(item.name)"
-                                                                class="absolute -top-2 -right-2 bg-blue-500 text-white p-1 rounded-full hover:bg-blue-700 transition duration-300">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                                                    <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
-                                                                    <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
-                                                                </svg>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="group items-center flex flex-row">
-                                        <button @click.prevent="copyModelName()" class="w-8 h-8">
-                                            <img :src="currentModelIcon"
-                                                class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary hover:scale-110 hover:-translate-y-1 duration-400"
-                                                :title="currentModel ? currentModel.name : 'unknown'">
-                                        </button>
                                     </div>
                                 </div>
-
- 
-                                <div class="w-fit group relative" v-if="!loading">
-                                    <!-- :onShowPersList="onShowPersListFun" -->
-                                    <div class= "top-50 hide opacity-0 group-hover:bottom-0 .group-hover:block fixed w-[1000px] group absolute group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
-                                        <div class="w-fit flex-wrap flex bg-white bg-opacity-50 backdrop-blur-md rounded p-4">
-                                        <div class="w-fit h-fit inset-0 opacity-100"
-                                            v-for="(item, index) in mountedPersonalities" :key="index + '-' + item.name"
-                                            ref="mountedPersonalities"
-                                            @mouseover="showPersonalityHoveredIn(index)" @mouseleave="showPersonalityHoveredOut()"
-                                            >
-                                            <div v-if="index!=personality_name" class="items-center flex flex-row relative z-20  hover:-translate-y-8 duration-300"
-                                            :class="personalityHoveredIndex === index?'scale-150':''"
-                                            >
-                                                <div class="relative">
-                                                    <button @click.prevent="onPersonalitySelected(item)" class="w-10 h-10 relative">
-                                                        <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
-                                                        class="z-50 w-10 h-10 rounded-full object-fill text-red-700 border-2 border-gray-500 active:scale-90"
-                                                        :class="personalityHoveredIndex === index?'scale-150  ':'' + this.$store.state.active_personality_id == this.$store.state.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
-                                                        :title="item.name">
-                                                    </button>
-                                                    <button @click.prevent="unmountPersonality(item)"  v-if="personalityHoveredIndex === index" >
-                                                        <span
-                                                            class="-top-6 -right-6 border-gray-500 absolute active:scale-90  w-7 h-7 hover:scale-150 transition bg-bg-light dark:bg-bg-dark rounded-full border-2" 
-                                                            title="Unmount personality">
-                                                            <!-- UNMOUNT BUTTON -->
-                                                            <svg aria-hidden="true" class="top-1 left-1 relative w-5 h-5 text-red-600 hover:text-red-500 "
-                                                                fill="currentColor" viewBox="0 0 20 20"  stroke-width="1"
-                                                                xmlns="http://www.w3.org/2000/svg">
-                                                                <path fill-rule="evenodd"
-                                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                                    clip-rule="evenodd"></path>
-                                                            </svg>
-                                                        </span>
-                                                    </button>        
-                                                    <button @click.prevent="remount_personality(item)" v-if="personalityHoveredIndex === index">
-                                                        <span
-                                                            class="-top-9 left-2 border-gray-500 active:scale-90 absolute items-center  w-7 h-7 hover:scale-150 transition text-red-200 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2"
-                                                            title="Remount">
-                                                            <!-- UNMOUNT BUTTON -->
-                                                            <svg xmlns="http://www.w3.org/2000/svg"  class="top-1 left-1 relative w-4 h-4 text-red-600 hover:text-red-500 " viewBox="0 0 30 30" width="2" height="2" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                                                                <g id="surface1">
-                                                                <path style=" " d="M 16 4 C 10.886719 4 6.617188 7.160156 4.875 11.625 L 6.71875 12.375 C 8.175781 8.640625 11.710938 6 16 6 C 19.242188 6 22.132813 7.589844 23.9375 10 L 20 10 L 20 12 L 27 12 L 27 5 L 25 5 L 25 8.09375 C 22.808594 5.582031 19.570313 4 16 4 Z M 25.28125 19.625 C 23.824219 23.359375 20.289063 26 16 26 C 12.722656 26 9.84375 24.386719 8.03125 22 L 12 22 L 12 20 L 5 20 L 5 27 L 7 27 L 7 23.90625 C 9.1875 26.386719 12.394531 28 16 28 C 21.113281 28 25.382813 24.839844 27.125 20.375 Z "/>
-                                                                </g>
-                                                            </svg>
-
-                                                        </span>
-                                                    </button>
-
-                                                    
-                                                    <button @click.prevent="handleOnTalk(item)" v-if="personalityHoveredIndex === index">
-                                                        <span
-                                                            class="-top-6 -left-6 border-gray-500 active:scale-90 absolute items-center  w-7 h-7 hover:scale-150 transition text-red-200 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2"
-                                                            title="Talk">
-                                                            <!-- UNMOUNT BUTTON -->
-                                                            <svg xmlns="http://www.w3.org/2000/svg"  class="top-1 left-1 relative w-4 h-4 text-red-600 hover:text-red-500 " viewBox="0 0 24 24" width="2" height="2" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                                                            <line x1="22" y1="2" x2="11" y2="13"></line>
-                                                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                                                            </svg>
-
-                                                        </span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </div>
-                
-                                    <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
-
-                                </div>                                
-                                <div class="w-fit">
-                                    <PersonalitiesCommands
-                                        v-if="personalities_ready && this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands!=''" 
-                                        :commandsList="this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands"
-                                        :sendCommand="sendCMDEvent"
-                                        :on-show-toast-message="onShowToastMessage"
-                                        ref="personalityCMD"
-                                    ></PersonalitiesCommands>
-                                </div>   
-                                <div class="w-fit">
-                                    <PersonalitiesCommands
-                                        v-if="isDataSourceNamesValid"
-                                        :icon="'feather:book'"
-                                        :commandsList="dataSourceNames"
-                                        :sendCommand="mountDB"
-                                        :on-show-toast-message="onShowToastMessage"
-                                        ref="databasesList"
-                                    ></PersonalitiesCommands>                                    
-                                </div>      
-                                <div class="relative grow">
-                                    <form>
-                                        <textarea
-                                            id="chat"
-                                            rows="1"
-                                            v-model="message"
-                                            @paste="handlePaste"
-                                            @keydown.enter.exact="submitOnEnter($event)"
-                                            class="w-full p-3 text-sm text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                                            placeholder="Send message..."
-                                        ></textarea>
-                                    </form>
-                                    </div>
-
-                                    <div class="flex items-center space-x-3">
-                                    <ChatBarButton
-                                        v-if="loading"
-                                        @click="stopGenerating"
-                                        class="bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700"
-                                    >
-                                        <template #icon>
-                                        <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                        </template>
-                                        <span>Stop</span>
-                                    </ChatBarButton>
-
-                                    <ChatBarButton v-else @click="submit" title="Send">
-                                        <template #icon>
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                                        </svg>
-                                        </template>
-                                    </ChatBarButton>
-
-                                    <ChatBarButton @click="submitWithInternetSearch" title="Send with internet search">
-                                        <template #icon>
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
-                                        </svg>
-                                        </template>
-                                    </ChatBarButton>
-                                    <ChatBarButton 
-                                        @click="startSpeechRecognition" 
-                                        :class="{ 'text-red-500': isListeningToVoice }" 
-                                        title="Voice input"
-                                    >
-                                        <template #icon>
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
-                                        </svg>
-                                        </template>
-                                    </ChatBarButton>
-
-                                    <ChatBarButton 
-                                        v-if="$store.state.config.active_tts_service != 'None' && $store.state.config.active_tts_service != null && this.$store.state.config.active_stt_service!='None' && this.$store.state.config.active_stt_service!=null"
-                                        @click="is_rt ? stopRTCom : startRTCom"
-                                        :class="is_rt ? 'bg-red-500 dark:bg-red-600' : 'bg-green-500 dark:bg-green-600'"
-                                        title="Real-time audio mode"
-                                    >
-                                        <template #icon>
-                                            🪶
-                                        </template>
-                                    </ChatBarButton>
-
-                                    <ChatBarButton @click="add_file" title="Send file">
-                                        <template #icon>
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                        </template>
-                                    </ChatBarButton>
-
-                                    <ChatBarButton @click="takePicture" title="Take picture">
-                                        <template #icon>
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        </svg>
-                                        </template>
-                                    </ChatBarButton>
-
-                                    <ChatBarButton @click="addWebLink" title="Add web link">
-                                        <template #icon>
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
-                                        </svg>
-                                        </template>
-                                    </ChatBarButton>
-
-                                    <ChatBarButton @click="makeAnEmptyUserMessage" title="New user message" class="text-gray-600 dark:text-gray-300">
-                                        <template #icon>
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                                        </svg>
-                                        </template>
-                                    </ChatBarButton>
-
-                                    <ChatBarButton @click="makeAnEmptyAIMessage" title="New AI message" class="text-red-400 dark:text-red-300">
-                                        <template #icon>
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                        </svg>
-                                        </template>
-                                    </ChatBarButton>
-                                    
-                                    <ChatBarButton 
-                                        @click="toggleRightPanel" 
-                                        :class="{ 'text-red-500': !rightPanelCollapsed }" 
-                                        title="Toggle View Mode"
-                                    >
-                                        <template #icon>
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                            <circle cx="12" cy="5" r="2"></circle>
-                                            <path d="M12 7v4"></path>
-                                            <line x1="8" y1="16" x2="8" y2="16"></line>
-                                            <line x1="16" y1="16" x2="16" y2="16"></line>
-                                            </svg>                                        </template>
-                                    </ChatBarButton>   
-
-                                    </div>
-                                    
-                                    <input type="file" ref="fileDialog" @change="addFiles" multiple style="display: none" />
-                            </div> 
-                            <div class="ml-auto gap-2"> 
-                                
+                            </div>
+                            <div class="group items-center flex flex-row">
+                                <button @click.prevent="copyModelName()" class="w-8 h-8">
+                                    <img :src="currentModelIcon"
+                                        class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary hover:scale-110 hover:-translate-y-1 duration-400"
+                                        :title="currentModel ? currentModel.name : 'unknown'">
+                                </button>
                             </div>
                         </div>
+
+
+                        <div class="w-fit group relative" v-if="!loading">
+                            <!-- :onShowPersList="onShowPersListFun" -->
+                            <div class= "top-50 hide opacity-0 group-hover:bottom-0 .group-hover:block fixed w-[1000px] group absolute group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
+                                <div class="w-fit flex-wrap flex bg-white bg-opacity-50 backdrop-blur-md rounded p-4">
+                                <div class="w-fit h-fit inset-0 opacity-100"
+                                    v-for="(item, index) in mountedPersonalities" :key="index + '-' + item.name"
+                                    ref="mountedPersonalities"
+                                    @mouseover="showPersonalityHoveredIn(index)" @mouseleave="showPersonalityHoveredOut()"
+                                    >
+                                    <div v-if="index!=personality_name" class="items-center flex flex-row relative z-20  hover:-translate-y-8 duration-300"
+                                    :class="personalityHoveredIndex === index?'scale-150':''"
+                                    >
+                                        <div class="relative">
+                                            <button @click.prevent="onPersonalitySelected(item)" class="w-10 h-10 relative">
+                                                <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
+                                                class="z-50 w-10 h-10 rounded-full object-fill text-red-700 border-2 border-gray-500 active:scale-90"
+                                                :class="personalityHoveredIndex === index?'scale-150  ':'' + this.$store.state.active_personality_id == this.$store.state.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
+                                                :title="item.name">
+                                            </button>
+                                            <button @click.prevent="unmountPersonality(item)"  v-if="personalityHoveredIndex === index" >
+                                                <span
+                                                    class="-top-6 -right-6 border-gray-500 absolute active:scale-90  w-7 h-7 hover:scale-150 transition bg-bg-light dark:bg-bg-dark rounded-full border-2" 
+                                                    title="Unmount personality">
+                                                    <!-- UNMOUNT BUTTON -->
+                                                    <svg aria-hidden="true" class="top-1 left-1 relative w-5 h-5 text-red-600 hover:text-red-500 "
+                                                        fill="currentColor" viewBox="0 0 20 20"  stroke-width="1"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd"
+                                                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                            clip-rule="evenodd"></path>
+                                                    </svg>
+                                                </span>
+                                            </button>        
+                                            <button @click.prevent="remount_personality(item)" v-if="personalityHoveredIndex === index">
+                                                <span
+                                                    class="-top-9 left-2 border-gray-500 active:scale-90 absolute items-center  w-7 h-7 hover:scale-150 transition text-red-200 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2"
+                                                    title="Remount">
+                                                    <!-- UNMOUNT BUTTON -->
+                                                    <svg xmlns="http://www.w3.org/2000/svg"  class="top-1 left-1 relative w-4 h-4 text-red-600 hover:text-red-500 " viewBox="0 0 30 30" width="2" height="2" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                                                        <g id="surface1">
+                                                        <path style=" " d="M 16 4 C 10.886719 4 6.617188 7.160156 4.875 11.625 L 6.71875 12.375 C 8.175781 8.640625 11.710938 6 16 6 C 19.242188 6 22.132813 7.589844 23.9375 10 L 20 10 L 20 12 L 27 12 L 27 5 L 25 5 L 25 8.09375 C 22.808594 5.582031 19.570313 4 16 4 Z M 25.28125 19.625 C 23.824219 23.359375 20.289063 26 16 26 C 12.722656 26 9.84375 24.386719 8.03125 22 L 12 22 L 12 20 L 5 20 L 5 27 L 7 27 L 7 23.90625 C 9.1875 26.386719 12.394531 28 16 28 C 21.113281 28 25.382813 24.839844 27.125 20.375 Z "/>
+                                                        </g>
+                                                    </svg>
+
+                                                </span>
+                                            </button>
+
+                                            
+                                            <button @click.prevent="handleOnTalk(item)" v-if="personalityHoveredIndex === index">
+                                                <span
+                                                    class="-top-6 -left-6 border-gray-500 active:scale-90 absolute items-center  w-7 h-7 hover:scale-150 transition text-red-200 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2"
+                                                    title="Talk">
+                                                    <!-- UNMOUNT BUTTON -->
+                                                    <svg xmlns="http://www.w3.org/2000/svg"  class="top-1 left-1 relative w-4 h-4 text-red-600 hover:text-red-500 " viewBox="0 0 24 24" width="2" height="2" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                                    </svg>
+
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+        
+                            <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
+
+                        </div>                                
+                        <div class="w-fit">
+                            <PersonalitiesCommands
+                                v-if="personalities_ready && this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands!=''" 
+                                :commandsList="this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands"
+                                :sendCommand="sendCMDEvent"
+                                :on-show-toast-message="onShowToastMessage"
+                                ref="personalityCMD"
+                            ></PersonalitiesCommands>
+                        </div>   
+                        <div class="w-fit">
+                            <PersonalitiesCommands
+                                v-if="isDataSourceNamesValid"
+                                :icon="'feather:book'"
+                                :commandsList="dataSourceNames"
+                                :sendCommand="mountDB"
+                                :on-show-toast-message="onShowToastMessage"
+                                ref="databasesList"
+                            ></PersonalitiesCommands>                                    
+                        </div>      
+                        <div class="relative grow">
+                            <form>
+                                <textarea
+                                    id="chat"
+                                    rows="1"
+                                    v-model="message"
+                                    @paste="handlePaste"
+                                    @keydown.enter.exact="submitOnEnter($event)"
+                                    class="w-full p-3 text-sm text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                    placeholder="Send message..."
+                                ></textarea>
+                            </form>
+                            </div>
+
+                            <div class="flex items-center space-x-3">
+                            <ChatBarButton
+                                v-if="loading"
+                                @click="stopGenerating"
+                                class="bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700"
+                            >
+                                <template #icon>
+                                <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                </template>
+                                <span>Stop</span>
+                            </ChatBarButton>
+
+                            <ChatBarButton v-else @click="submit" title="Send">
+                                <template #icon>
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                                </svg>
+                                </template>
+                            </ChatBarButton>
+
+                            <ChatBarButton @click="submitWithInternetSearch" title="Send with internet search">
+                                <template #icon>
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                                </svg>
+                                </template>
+                            </ChatBarButton>
+                            <ChatBarButton 
+                                @click="startSpeechRecognition" 
+                                :class="{ 'text-red-500': isListeningToVoice }" 
+                                title="Voice input"
+                            >
+                                <template #icon>
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                                </svg>
+                                </template>
+                            </ChatBarButton>
+
+                            <ChatBarButton 
+                                v-if="$store.state.config.active_tts_service != 'None' && $store.state.config.active_tts_service != null && this.$store.state.config.active_stt_service!='None' && this.$store.state.config.active_stt_service!=null"
+                                @click="is_rt ? stopRTCom : startRTCom"
+                                :class="is_rt ? 'bg-red-500 dark:bg-red-600' : 'bg-green-500 dark:bg-green-600'"
+                                title="Real-time audio mode"
+                            >
+                                <template #icon>
+                                    🪶
+                                </template>
+                            </ChatBarButton>
+
+                            <ChatBarButton @click="add_file" title="Send file">
+                                <template #icon>
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                </template>
+                            </ChatBarButton>
+
+                            <ChatBarButton @click="takePicture" title="Take picture">
+                                <template #icon>
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                </template>
+                            </ChatBarButton>
+
+                            <ChatBarButton @click="addWebLink" title="Add web link">
+                                <template #icon>
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                </svg>
+                                </template>
+                            </ChatBarButton>
+
+                            <ChatBarButton @click="makeAnEmptyUserMessage" title="New user message" class="text-gray-600 dark:text-gray-300">
+                                <template #icon>
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                </svg>
+                                </template>
+                            </ChatBarButton>
+
+                            <ChatBarButton @click="makeAnEmptyAIMessage" title="New AI message" class="text-red-400 dark:text-red-300">
+                                <template #icon>
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                </template>
+                            </ChatBarButton>
+                            
+                            <ChatBarButton 
+                                @click="toggleRightPanel" 
+                                :class="{ 'text-red-500': !rightPanelCollapsed }" 
+                                title="Toggle View Mode"
+                            >
+                                <template #icon>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <circle cx="12" cy="5" r="2"></circle>
+                                    <path d="M12 7v4"></path>
+                                    <line x1="8" y1="16" x2="8" y2="16"></line>
+                                    <line x1="16" y1="16" x2="16" y2="16"></line>
+                                    </svg>                                        </template>
+                            </ChatBarButton>   
+
+                            </div>
+                            
+                            <input type="file" ref="fileDialog" @change="addFiles" multiple style="display: none" />
+                    </div> 
+                    <div class="ml-auto gap-2"> 
+                        
+                    </div>
+                </div>
             </div>
         
     <UniversalForm ref="universalForm" class="z-20" />

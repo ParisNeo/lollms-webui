@@ -76,7 +76,7 @@ textarea, input, select {
 }
 
 .panels-color {
-  @apply text-blue-700 dark:text-blue-200 bg-blue-100 dark:bg-blue-800 rounded-lg shadow-md;
+  @apply text-blue-700 dark:text-blue-200 bg-blue-100 dark:bg-blue-800;
 }
 
 .unicolor-panels-color {
@@ -117,7 +117,7 @@ body {
 }
 
 .discussion {
-  @apply mr-2 bg-blue-100 dark:bg-blue-900 text-xs;
+  @apply mr-2 text-xs;
 }
 
 .discussion-hilighted {
