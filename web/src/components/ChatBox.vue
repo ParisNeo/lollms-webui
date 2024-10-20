@@ -165,7 +165,7 @@
                         <div class="relative" @mouseleave="hideBindingsMenu" v-if="!loading">
                             <div class="relative inline-block">
                                 <!-- Bindings menu positioned above the button -->
-                                <div v-show="isBindingsMenuVisible" @mouseenter="showBindingsMenu" class="absolute m-0 p-0 z-10 bottom-full left-1/2 transform -translate-x-1/2 w-60 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
+                                <div v-show="isBindingsMenuVisible" @mouseenter="showBindingsMenu" class="absolute m-0 p-0 z-10 bottom-full left-1/2 transform -translate-x-1/2 w-60 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
                                     <div class="p-8 m-0 grid grid-cols-4 gap-4 max-h-60 overflow-y-auto custom-scrollbar">
                                         <div v-for="(item, index) in installedBindings" :key="index" class="relative group/item">                             
                                             <button @click.prevent="setBinding(item)" :title="item.name" class="w-10 h-10 rounded-full overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none">
@@ -195,7 +195,7 @@
                         <div class="relative" @mouseleave="hideModelsMenu" v-if="!loading">
                             <div class="relative inline-block">
                                 <!-- Models menu positioned above the button -->
-                                <div v-show="isModelsMenuVisible" @mouseenter="showModelsMenu" class="absolute m-0 p-0 z-10 bottom-full left-1/2 transform -translate-x-1/2 w-60 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
+                                <div v-show="isModelsMenuVisible" @mouseenter="showModelsMenu" class="absolute m-0 p-0 z-10 bottom-full left-1/2 transform -translate-x-1/2 w-60 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
                                     <div class="p-8 m-0 grid grid-cols-4 gap-4 max-h-60 overflow-y-auto custom-scrollbar">
                                         <div v-for="(item, index) in installedModels" :key="index" class="relative group/item">                             
                                             <button @click.prevent="setModel(item)" :title="item.name" class="w-10 h-10 rounded-full overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none">
@@ -226,14 +226,14 @@
                         <div class="relative" @mouseleave="hidePersonalitiesMenu"  v-if="!loading">
                             <div class="relative inline-block ">
                                 <!-- Personalities menu positioned above the button -->
-                                <div v-show="isPersonalitiesMenuVisible"  @mouseenter="showPersonalitiesMenu" class="absolute  m-0 p-0 z-10 bottom-full left-1/2 transform -translate-x-1/2 w-60 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
+                                <div v-show="isPersonalitiesMenuVisible"  @mouseenter="showPersonalitiesMenu" class="absolute  m-0 p-0 z-10 bottom-full left-1/2 transform -translate-x-1/2 w-60 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
                                     <div class="p-8 m-0 grid grid-cols-4 gap-4 max-h-60 overflow-y-auto custom-scrollbar">
                                         <div v-for="(item, index) in mountedPersonalities" :key="index" class="relative group/item">                             
                                             <button @click.prevent="onPersonalitySelected(item)" :title="item.name" class="w-10 h-10 rounded-full overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none">
                                                 <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler" :alt="item.name" class="w-full h-full object-cover" :class="{'border-2 border-secondary': $store.state.active_personality_id == $store.state.personalities.indexOf(item.full_path)}">
                                             </button>
                                             
-                                            <div class="absolute -bottom-4 left-0 w-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white rounded-md shadow-md p-1">
+                                            <div class="absolute -bottom-4 left-0 w-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white dark:bg-gray-900 rounded-md shadow-md p-1">
                                                 <button @click.prevent="unmountPersonality(item)" class="p-1 bg-red-500 rounded-full text-white hover:bg-red-600 focus:outline-none" title="Unmount">
                                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                                                 </button>
@@ -341,13 +341,13 @@
                             <div class="relative" @mouseleave="hideSendMenu" v-if="!loading">
                                 <div class="relative inline-block">
                                     <!-- Send menu positioned above the button -->
-                                    <div v-show="isSendMenuVisible" @mouseenter="showSendMenu" class="absolute m-0 p-0 z-10 bottom-full left-1/2 transform -translate-x-1/2 w-60 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
-                                        <div class="p-4 m-0 flex flex-col gap-4 max-h-96 overflow-y-auto custom-scrollbar w-50">
+                                    <div v-show="isSendMenuVisible" @mouseenter="showSendMenu" class="absolute m-0 p-0 z-10 bottom-full left-1/2 transform -translate-x-1/2 w-25 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
+                                        <div class="p-4 m-0 flex flex-col gap-4 max-h-96 overflow-y-auto custom-scrollbar">
                                             <!-- Additional Buttons -->
                                             <div class="flex flex-col gap-2">
                                                 <ChatBarButton @click="add_file" title="Send file">
                                                     <template #icon>
-                                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24">
+                                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                                         </svg>
                                                     </template>
@@ -375,8 +375,8 @@
                                     </div>
 
                                     <div @mouseenter="showSendMenu">
-                                        <button @click.prevent="toggleSendMenu" class="w-8 h-8">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <button @click.prevent="toggleSendMenu" class="p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="black">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
                                         </button>
@@ -404,17 +404,38 @@
                             <ChatBarButton 
                                 @click="toggleRightPanel" 
                                 :class="{ 'text-red-500': !rightPanelCollapsed }" 
-                                title="Toggle View Mode"
+                                title="Toggle right Panel"
                             >
-                                <template #icon>
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                    <circle cx="12" cy="5" r="2"></circle>
-                                    <path d="M12 7v4"></path>
-                                    <line x1="8" y1="16" x2="8" y2="16"></line>
-                                    <line x1="16" y1="16" x2="16" y2="16"></line>
-                                    </svg>                                        
-                                </template>
+                                <div v-show="rightPanelCollapsed">
+                                    <!-- Chevron Left SVG -->
+                                    <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    >
+                                    <polyline points="15 18 9 12 15 6"></polyline>
+                                    </svg>
+                                </div>
+                                <div v-show="!rightPanelCollapsed">
+                                    <!-- Chevron Right SVG -->
+                                    <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    >
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                    </svg>
+                                </div>
                             </ChatBarButton>   
 
                             </div>
@@ -452,6 +473,9 @@
   border-radius: 20px;
   border: transparent;
 }
+
+
+
 .chat-bar {
   transition: all 0.3s ease;
 }
