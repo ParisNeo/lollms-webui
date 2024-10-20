@@ -1,5 +1,5 @@
 <template>
-  <div class="app-zoo background-color w-full p-6 min-h-screen overflow-y-auto">
+  <div class="app-zoo background-color w-full p-6 pt-12 min-h-screen overflow-y-auto">
     <nav class="panels-color shadow-lg rounded-lg p-4 max-w-4xl mx-auto mb-8">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center space-x-4">

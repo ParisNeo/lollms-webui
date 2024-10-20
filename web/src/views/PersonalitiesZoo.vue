@@ -1,5 +1,5 @@
 <template>
-  <div class="app-zoo mb-100 pb-100 background-color w-full p-6 overflow-y-auto h-screen scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+  <div class="app-zoo mb-100 pb-100 pt-12 background-color w-full p-6 overflow-y-auto h-screen scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
     <nav class="panels-color shadow-lg rounded-lg p-4 max-w-4xl mx-auto mb-8">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <p v-if="message">{{ message }}</p>
