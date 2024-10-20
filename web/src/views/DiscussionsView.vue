@@ -93,7 +93,7 @@
                     </button>
 
                     <!-- Expandable menu -->
-                    <div v-if="isMenuVisible" class="expandable-menu discussion z-50 p-4 bg-white dark:bg-bg-dark rounded-lg shadow-lg">
+                    <div v-if="isMenuVisible" @mouseleave="hideMenu" class="expandable-menu discussion z-50 p-4 bg-white dark:bg-bg-dark rounded-lg shadow-lg">
                         <!-- Edit discussion list -->
                         <button class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95" title="Edit discussion list" type="button" @click="isCheckbox = !isCheckbox" :class="isCheckbox ? 'text-secondary dark:text-secondary-light' : 'text-gray-700 dark:text-gray-300'">
                         <i data-feather="check-square"></i>
@@ -1047,6 +1047,14 @@ export default {
         }
     },
     methods: {        
+        handleShortcut(event) {
+            if (event.ctrlKey && event.key === 'd') {
+                event.preventDefault();
+                event.stopPropagation();                
+                this.createNewDiscussion();
+            } 
+        },
+
         toggleMenu() {
             this.isMenuVisible = !this.isMenuVisible;
             if (this.isMenuVisible){
@@ -1056,7 +1064,22 @@ export default {
                 feather.replace()
 
             })            
-        },      
+        },  
+        showMenu() {
+            this.isMenuVisible = true;
+            this.isinfosMenuVisible=false;
+            nextTick(() => {
+                feather.replace()
+
+            })            
+        },              
+        hideMenu() {
+            this.isMenuVisible = false;
+            nextTick(() => {
+                feather.replace()
+
+            })            
+        },              
         toggleInfosMenu() {
             this.isinfosMenuVisible = !this.isinfosMenuVisible;
             if (this.isinfosMenuVisible){
@@ -2972,6 +2995,7 @@ export default {
         window.removeEventListener('resize', this.adjustMenuPosition);
     },
     async mounted() {
+        window.addEventListener('keydown', this.handleShortcut);
         this.$store.state.toast = this.$refs.toast
         this.$store.state.news = this.$refs.news
         this.$store.state.messageBox = this.$refs.messageBox

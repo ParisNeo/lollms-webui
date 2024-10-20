@@ -1,5 +1,5 @@
 <template>
-  <div v-if="$store.state.ready" class="navbar-container z-60">
+  <div class="navbar-container z-60">
     <nav class="game-menu">
       <RouterLink
         v-for="(link, index) in filteredNavLinks"

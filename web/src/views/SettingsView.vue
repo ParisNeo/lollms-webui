@@ -574,6 +574,7 @@
                                                 <option value="bare">Bare, useful when in chat mode</option>
                                                 <option value="llama3">LLama3 communication template</option>
                                                 <option value="mistral">Mistral communication template</option>
+                                                <option value="deepseek">DeepSeek communication template</option>
                                             </select>
                                         </td>
                                         </tr>
@@ -4683,6 +4684,19 @@ export default {
                 this.configFile.start_ai_header_id_template = "[INST]"
                 this.configFile.end_ai_header_id_template = ": "
                 this.configFile.end_ai_message_id_template = "[/INST]"
+                this.settingsChanged=true
+            } else if (selectedOption === 'deepseek') {
+                console.log("Using deepseek template")
+                this.configFile.start_header_id_template = ""
+                this.configFile.system_message_template = " Using this information"
+                this.configFile.end_header_id_template = ": "
+                this.configFile.separator_template = "\n"
+                this.configFile.start_user_header_id_template = ""
+                this.configFile.end_user_header_id_template = ": "
+                this.configFile.end_user_message_id_template = ""
+                this.configFile.start_ai_header_id_template = ""
+                this.configFile.end_ai_header_id_template = ": "
+                this.configFile.end_ai_message_id_template = ""
                 this.settingsChanged=true
             }
         },

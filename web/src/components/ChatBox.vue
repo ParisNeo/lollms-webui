@@ -161,32 +161,7 @@
                                 <polyline points="15 18 9 12 15 6"></polyline>
                                 </svg>
                             </div>
-                        </ChatBarButton>
-
-                        <ChatBarButton 
-                            @click="toggleViewMode" 
-                            :class="{ 'text-red-500': isCompactMode }" 
-                            title="Toggle View Mode"
-                        >
-                            <template #icon>
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path 
-                                        v-if="isCompactMode" 
-                                        stroke-linecap="round" 
-                                        stroke-linejoin="round" 
-                                        stroke-width="2" 
-                                        d="M3 12h18M3 6h18M3 18h18" 
-                                    />
-                                    <path 
-                                        v-else 
-                                        stroke-linecap="round" 
-                                        stroke-linejoin="round" 
-                                        stroke-width="2" 
-                                        d="M3 12h18M3 6h18M3 18h18M12 6v12" 
-                                    />
-                                </svg>
-                            </template>
-                        </ChatBarButton>                                
+                        </ChatBarButton>                             
                         <div class="w-fit group relative" v-if="!loading" >
                             <div class= "hide top-50 hide opacity-0 group-hover:bottom-0 opacity-0 .group-hover:block fixed w-[1000px] group absolute  group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
                                 <div class="w-fit flex-wrap flex bg-white bg-opacity-50 backdrop-blur-md rounded p-4">
@@ -263,77 +238,37 @@
                                 </button>
                             </div>
                         </div>
-
-
-                        <div class="w-fit group relative" v-if="!loading">
-                            <!-- :onShowPersList="onShowPersListFun" -->
-                            <div class= "top-50 hide opacity-0 group-hover:bottom-0 .group-hover:block fixed w-[1000px] group absolute group-hover:opacity-100 transform group-hover:translate-y-[-50px] group-hover:translate-x-[0px] transition-all duration-300">
-                                <div class="w-fit flex-wrap flex bg-white bg-opacity-50 backdrop-blur-md rounded p-4">
-                                <div class="w-fit h-fit inset-0 opacity-100"
-                                    v-for="(item, index) in mountedPersonalities" :key="index + '-' + item.name"
-                                    ref="mountedPersonalities"
-                                    @mouseover="showPersonalityHoveredIn(index)" @mouseleave="showPersonalityHoveredOut()"
-                                    >
-                                    <div v-if="index!=personality_name" class="items-center flex flex-row relative z-20  hover:-translate-y-8 duration-300"
-                                    :class="personalityHoveredIndex === index?'scale-150':''"
-                                    >
-                                        <div class="relative">
-                                            <button @click.prevent="onPersonalitySelected(item)" class="w-10 h-10 relative">
-                                                <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler"
-                                                class="z-50 w-10 h-10 rounded-full object-fill text-red-700 border-2 border-gray-500 active:scale-90"
-                                                :class="personalityHoveredIndex === index?'scale-150  ':'' + this.$store.state.active_personality_id == this.$store.state.personalities.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
-                                                :title="item.name">
+                        <!-- Personalities menu positioned above the dock -->
+                        <div class="relative" @mouseleave="hidePersonalitiesMenu"  v-if="!loading">
+                            <div class="relative inline-block">
+                                <!-- Personalities menu positioned above the button -->
+                                <div v-show="isPersonalitiesMenuVisible" class="absolute z-10 bottom-full left-1/2 transform -translate-x-1/2 w-60 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
+                                    <div class="p-2 grid grid-cols-4 gap-4 max-h-60 overflow-y-auto custom-scrollbar">
+                                        <div v-for="(item, index) in mountedPersonalities" :key="index" class="relative group/item">                             
+                                            <button @click.prevent="onPersonalitySelected(item)" :title="item.name" class="w-10 h-10 rounded-full overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none">
+                                                <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler" :alt="item.name" class="w-full h-full object-cover" :class="{'border-2 border-secondary': $store.state.active_personality_id == $store.state.personalities.indexOf(item.full_path)}">
                                             </button>
-                                            <button @click.prevent="unmountPersonality(item)"  v-if="personalityHoveredIndex === index" >
-                                                <span
-                                                    class="-top-6 -right-6 border-gray-500 absolute active:scale-90  w-7 h-7 hover:scale-150 transition bg-bg-light dark:bg-bg-dark rounded-full border-2" 
-                                                    title="Unmount personality">
-                                                    <!-- UNMOUNT BUTTON -->
-                                                    <svg aria-hidden="true" class="top-1 left-1 relative w-5 h-5 text-red-600 hover:text-red-500 "
-                                                        fill="currentColor" viewBox="0 0 20 20"  stroke-width="1"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path fill-rule="evenodd"
-                                                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                            clip-rule="evenodd"></path>
-                                                    </svg>
-                                                </span>
-                                            </button>        
-                                            <button @click.prevent="remount_personality(item)" v-if="personalityHoveredIndex === index">
-                                                <span
-                                                    class="-top-9 left-2 border-gray-500 active:scale-90 absolute items-center  w-7 h-7 hover:scale-150 transition text-red-200 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2"
-                                                    title="Remount">
-                                                    <!-- UNMOUNT BUTTON -->
-                                                    <svg xmlns="http://www.w3.org/2000/svg"  class="top-1 left-1 relative w-4 h-4 text-red-600 hover:text-red-500 " viewBox="0 0 30 30" width="2" height="2" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                                                        <g id="surface1">
-                                                        <path style=" " d="M 16 4 C 10.886719 4 6.617188 7.160156 4.875 11.625 L 6.71875 12.375 C 8.175781 8.640625 11.710938 6 16 6 C 19.242188 6 22.132813 7.589844 23.9375 10 L 20 10 L 20 12 L 27 12 L 27 5 L 25 5 L 25 8.09375 C 22.808594 5.582031 19.570313 4 16 4 Z M 25.28125 19.625 C 23.824219 23.359375 20.289063 26 16 26 C 12.722656 26 9.84375 24.386719 8.03125 22 L 12 22 L 12 20 L 5 20 L 5 27 L 7 27 L 7 23.90625 C 9.1875 26.386719 12.394531 28 16 28 C 21.113281 28 25.382813 24.839844 27.125 20.375 Z "/>
-                                                        </g>
-                                                    </svg>
-
-                                                </span>
-                                            </button>
-
                                             
-                                            <button @click.prevent="handleOnTalk(item)" v-if="personalityHoveredIndex === index">
-                                                <span
-                                                    class="-top-6 -left-6 border-gray-500 active:scale-90 absolute items-center  w-7 h-7 hover:scale-150 transition text-red-200 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2"
-                                                    title="Talk">
-                                                    <!-- UNMOUNT BUTTON -->
-                                                    <svg xmlns="http://www.w3.org/2000/svg"  class="top-1 left-1 relative w-4 h-4 text-red-600 hover:text-red-500 " viewBox="0 0 24 24" width="2" height="2" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                                                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                                                    </svg>
-
-                                                </span>
-                                            </button>
+                                            <div class="absolute -bottom-4 left-0 w-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white rounded-md shadow-md p-1">
+                                                <button @click.prevent="unmountPersonality(item)" class="p-1 bg-red-500 rounded-full text-white hover:bg-red-600 focus:outline-none" title="Unmount">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                </button>
+                                                <button @click.prevent="remount_personality(item)" class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none ml-1" title="Remount">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                                </button>
+                                                <button @click.prevent="handleOnTalk(item)" class="p-1 bg-green-500 rounded-full text-white hover:bg-green-600 focus:outline-none ml-1" title="Talk">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+
+                                <div @mouseenter="showPersonalitiesMenu">
+                                <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
                                 </div>
                             </div>
-        
-                            <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
-
-                        </div>                                
+                        </div>                              
                         <div class="w-fit">
                             <PersonalitiesCommands
                                 v-if="personalities_ready && this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands!=''" 
@@ -489,6 +424,24 @@
     <UniversalForm ref="universalForm" class="z-20" />
 </template>
 <style scoped>
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 155, 155, 0.5);
+  border-radius: 20px;
+  border: transparent;
+}
 .chat-bar {
   transition: all 0.3s ease;
 }
@@ -567,6 +520,7 @@ export default {
     },
     data() {
         return {
+            isPersonalitiesMenuVisible: false,
             is_rt:false,
             bindingHoveredIndex:null,
             modelHoveredIndex:null,
@@ -685,13 +639,15 @@ export default {
         }
     },
     methods: { 
+        showPersonalitiesMenu() {
+        this.isPersonalitiesMenuVisible = true
+        },
+        hidePersonalitiesMenu() {
+        this.isPersonalitiesMenuVisible = false
+        },
         toggleLeftPanel(){
             console.log(this.leftPanelCollapsed)
             this.$store.commit('setLeftPanelCollapsed', ! this.leftPanelCollapsed); // Assuming you have a mutation to set the view mode
-        },
-        toggleViewMode() {
-            const newMode = this.isCompactMode ? 'full' : 'compact';
-            this.$store.commit('setViewMode', newMode); // Assuming you have a mutation to set the view mode
         },
         async toggleRightPanel(){
             console.log(this.rightPanelCollapsed)

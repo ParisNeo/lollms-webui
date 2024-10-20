@@ -1,47 +1,23 @@
 <template>
-    <!-- LIST OF MOUNTED PERSONALITIES -->
-
-    <div class="w-fit flex select-none">
-        <div class="w-fit flex select-none">
-            <div class="w-8 h-8 group relative" >
-                <img :src="bUrl + mountedPers.avatar" @error="personalityImgPlacehodler"
-                        class="w-8 h-8 rounded-full object-fill text-red-700 hover:scale-150 active:scale-90 hover:z-50 hover:-translate-y-2 duration-150  border-secondary cursor-pointer"
-                        :title="'Active personality: '+mountedPers.name" @click="onSettingsPersonality(mountedPers)">
-                <div class="opacity-0 group-hover:opacity-100">
-                    <button class="z-50 -top-1 group-hover:translate-x-5 border-gray-500 absolute active:scale-90  w-7 h-7 hover:scale-150 transition bg-bg-light dark:bg-bg-dark rounded-full border-2" @click.prevent="remount_personality()" v-if="personalityHoveredIndex === index">
-                        <span
-                            title="Remount">
-                            <!-- UNMOUNT BUTTON -->
-                            <svg xmlns="http://www.w3.org/2000/svg"  class="top-0 left-1 relative w-4 h-4 text-red-600 hover:text-red-500 " viewBox="0 0 30 30" width="2" height="2" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                                <g id="surface1">
-                                <path style=" " d="M 16 4 C 10.886719 4 6.617188 7.160156 4.875 11.625 L 6.71875 12.375 C 8.175781 8.640625 11.710938 6 16 6 C 19.242188 6 22.132813 7.589844 23.9375 10 L 20 10 L 20 12 L 27 12 L 27 5 L 25 5 L 25 8.09375 C 22.808594 5.582031 19.570313 4 16 4 Z M 25.28125 19.625 C 23.824219 23.359375 20.289063 26 16 26 C 12.722656 26 9.84375 24.386719 8.03125 22 L 12 22 L 12 20 L 5 20 L 5 27 L 7 27 L 7 23.90625 C 9.1875 26.386719 12.394531 28 16 28 C 21.113281 28 25.382813 24.839844 27.125 20.375 Z "/>
-                                </g>
-                            </svg>
-
-                        </span>
-                    </button>
-
-                    
-                    <button class="-top-1 group-hover:-translate-x-12 border-gray-500 active:scale-90 absolute items-center  w-7 h-7 hover:scale-150 transition text-red-200 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2" @click.prevent="handleOnTalk()" v-if="personalityHoveredIndex === index">
-                        <span
-                            title="Talk">
-                            <!-- UNMOUNT BUTTON -->
-                            <svg xmlns="http://www.w3.org/2000/svg"  class="left-1 relative w-4 h-4 text-red-600 hover:text-red-500 " viewBox="0 0 24 24" width="2" height="2" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="22" y1="2" x2="11" y2="13"></line>
-                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                            </svg>
-
-                        </span>
-                    </button>                    
-                    <div class="top-0 group-hover:-translate-x-8 group-hover:-translate-y-8 left-0 border-gray-500 active:scale-90 absolute items-center w-7 h-7 hover:scale-150 transition text-red-500 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2"
-                            @click.stop="toggleShowPersList" title="Click to show more">+{{ mountedPersArr.length - 1 }}</div>
-
-                </div>
-            </div>
-        </div>
-    </div>  
+    <div class="relative group/item">
+      <button @click.prevent="toggleShowPersList" class="w-10 h-10 rounded-full overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none">
+        <img :src="bUrl + mountedPers.avatar" @error="personalityImgPlacehodler" :alt="mountedPers.name" class="w-full h-full object-cover" :class="{'border-2 border-secondary': isActive}">
+      </button>
+      
+      <div class="absolute -bottom-4 left-0 w-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 p-1">
+        <button @click.prevent="remount_personality()" class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none" title="Remount">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        </button>
+        <button @click.prevent="handleOnTalk()" class="p-1 bg-green-500 rounded-full text-white hover:bg-green-600 focus:outline-none ml-1" title="Talk">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+        </button>
+        <button @click.prevent="toggleShowPersList" class="p-1 bg-gray-500 rounded-full text-white hover:bg-gray-600 focus:outline-none ml-1" title="Show more">
+          <span class="text-xs font-bold">+{{ mountedPersArr.length - 1 }}</span>
+        </button>
+      </div>
+    </div>
     <UniversalForm ref="universalForm" class="z-50" />
-</template>
+  </template>
 <script>
 import axios from "axios";
 import defaultPersonalityImgPlaceholder from "../assets/logo.svg"
