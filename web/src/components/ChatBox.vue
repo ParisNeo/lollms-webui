@@ -1,7 +1,7 @@
 <template>
 
             <div class="absolute bottom-0 left-0 w-fit min-w-96  w-full justify-center text-center">
-                <div v-if="filesList.length > 0 || showPersonalities" class="items-center gap-2 panels-color shadow-sm hover:shadow-none dark:border-gray-800  w-fit">
+                <div v-if="filesList.length > 0" class="items-center gap-2 panels-color shadow-sm hover:shadow-none dark:border-gray-800  w-fit">
                     <!-- EXPAND / COLLAPSE BUTTON -->
                     <div class="flex">
                         <button 
@@ -97,15 +97,6 @@
                             <i data-feather="download-cloud" class="w-5 h-5 "></i>
                         </button>                        
                     </div>
-                    <div v-if="showPersonalities" class="mx-1">
-                        <MountedPersonalitiesList ref="mountedPersList" 
-                            :onShowPersList="onShowPersListFun"
-                            :on-mounted="onMountFun"
-                            :on-un-mounted="onUnmountFun"
-                            :on-remounted="onRemountFun"
-                            :on-talk="handleOnTalk"
-                            :discussionPersonalities="allDiscussionPersonalities" />
-                    </div>
                 </div>
 
                 <!-- CHAT BOX -->
@@ -162,100 +153,13 @@
                                 </svg>
                             </div>
                         </ChatBarButton>                             
-                        <div class="relative" @mouseleave="hideBindingsMenu" v-if="!loading">
-                            <div class="relative inline-block">
-                                <!-- Bindings menu positioned above the button -->
-                                <div v-show="isBindingsMenuVisible" @mouseenter="showBindingsMenu" class="absolute m-0 p-0 z-10 bottom-full left-1/2 transform -translate-x-1/2 w-60 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
-                                    <div class="p-8 m-0 grid grid-cols-4 gap-4 max-h-60 overflow-y-auto custom-scrollbar">
-                                        <div v-for="(item, index) in installedBindings" :key="index" class="relative group/item">                             
-                                            <button @click.prevent="setBinding(item)" :title="item.name" class="w-10 h-10 rounded-full overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none">
-                                                <img :src="item.icon ? item.icon : modelImgPlaceholder" @error="modelImgPlaceholder" :alt="item.name" class="w-full h-full object-cover" :class="{'border-2 border-secondary': item.name == binding_name}">
-                                            </button>
-                                            
-                                            <div class="absolute -bottom-4 left-0 w-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white rounded-md shadow-md p-1">
-                                                <button @click.prevent="showModelConfig(item)" class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none" title="Configure Binding">
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div @mouseenter="showBindingsMenu" class="bindings-hover-area">
-                                    <button @click.prevent="showModelConfig()" class="w-8 h-8">
-                                        <img :src="currentBindingIcon"
-                                            class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary hover:scale-110 hover:-translate-y-1 duration-200"
-                                            :title="currentBinding ? currentBinding.name : 'unknown'">
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
                               
                         
-                        <div class="relative" @mouseleave="hideModelsMenu" v-if="!loading">
-                            <div class="relative inline-block">
-                                <!-- Models menu positioned above the button -->
-                                <div v-show="isModelsMenuVisible" @mouseenter="showModelsMenu" class="absolute m-0 p-0 z-10 bottom-full left-1/2 transform -translate-x-1/2 w-60 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
-                                    <div class="p-8 m-0 grid grid-cols-4 gap-4 max-h-60 overflow-y-auto custom-scrollbar">
-                                        <div v-for="(item, index) in installedModels" :key="index" class="relative group/item">                             
-                                            <button @click.prevent="setModel(item)" :title="item.name" class="w-10 h-10 rounded-full overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none">
-                                                <img :src="item.icon ? item.icon : modelImgPlaceholder" @error="personalityImgPlacehodler" :alt="item.name" class="w-full h-full object-cover" :class="{'border-2 border-secondary': item.name == model_name}">
-                                            </button>
-                                            
-                                            <div class="absolute -bottom-4 left-0 w-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white rounded-md shadow-md p-1">
-                                                <button @click.prevent="copyModelNameFrom(item.name)" class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none" title="Copy Model Name">
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                                                </button>
-                                                <!-- You can add more buttons here if needed -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div @mouseenter="showModelsMenu" class="models-hover-area">
-                                    <button @click.prevent="copyModelName()" class="w-8 h-8">
-                                        <img :src="currentModelIcon"
-                                            class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary hover:scale-110 hover:-translate-y-1 duration-400"
-                                            :title="currentModel ? currentModel.name : 'unknown'">
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Personalities menu positioned above the dock -->
-                        <div class="relative" @mouseleave="hidePersonalitiesMenu"  v-if="!loading">
-                            <div class="relative inline-block ">
-                                <!-- Personalities menu positioned above the button -->
-                                <div v-show="isPersonalitiesMenuVisible"  @mouseenter="showPersonalitiesMenu" class="absolute  m-0 p-0 z-10 bottom-full left-1/2 transform -translate-x-1/2 w-60 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
-                                    <div class="p-8 m-0 grid grid-cols-4 gap-4 max-h-60 overflow-y-auto custom-scrollbar">
-                                        <div v-for="(item, index) in mountedPersonalities" :key="index" class="relative group/item">                             
-                                            <button @click.prevent="onPersonalitySelected(item)" :title="item.name" class="w-10 h-10 rounded-full overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none">
-                                                <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler" :alt="item.name" class="w-full h-full object-cover" :class="{'border-2 border-secondary': $store.state.active_personality_id == $store.state.personalities.indexOf(item.full_path)}">
-                                            </button>
-                                            
-                                            <div class="absolute -bottom-4 left-0 w-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white dark:bg-gray-900 rounded-md shadow-md p-1">
-                                                <button @click.prevent="unmountPersonality(item)" class="p-1 bg-red-500 rounded-full text-white hover:bg-red-600 focus:outline-none" title="Unmount">
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                                </button>
-                                                <button @click.prevent="remount_personality(item)" class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none ml-1" title="Remount">
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                                                </button>
-                                                <button @click.prevent="handleOnTalk(item)" class="p-1 bg-green-500 rounded-full text-white hover:bg-green-600 focus:outline-none ml-1" title="Talk">
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div @mouseenter="showPersonalitiesMenu" class="personalities-hover-area">
-                                <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
-                                </div>
-                            </div>
-                        </div>                              
+                        
                         <div class="w-fit">
                             <PersonalitiesCommands
-                                v-if="personalities_ready && this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands!=''" 
+                                v-if="this.$store.state.personalities_ready && this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands!=''" 
                                 :commandsList="this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands"
                                 :sendCommand="sendCMDEvent"
                                 :on-show-toast-message="onShowToastMessage"
@@ -448,7 +352,6 @@
                 </div>
             </div>
         
-    <UniversalForm ref="universalForm" class="z-20" />
 </template>
 <style scoped>
 .personalities-hover-area {
@@ -515,19 +418,15 @@ import { nextTick, ref, TransitionGroup } from 'vue'
 import axios from "axios";
 import feather from 'feather-icons'
 import filesize from '../plugins/filesize'
-import MountedPersonalities from '@/components/MountedPersonalities.vue'
 import MountedPersonalitiesList from '@/components/MountedPersonalitiesList.vue'
 import PersonalitiesCommands from '@/components/PersonalitiesCommands.vue';
 import ChatBarButton from '@/components/ChatBarButton.vue'
 import socket from '@/services/websocket.js'
-import UniversalForm from '@/components/UniversalForm.vue';
-import modelImgPlaceholder from "../assets/default_model.png"
 import sendGlobe from "../assets/send_globe.svg"
 import loader_v0 from "../assets/loader_v0.svg"
-import InteractiveMenu from './InteractiveMenu.vue';
 
-console.log("modelImgPlaceholder:",modelImgPlaceholder)
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
+
 export default {
     name: 'ChatBox',
     emits: ["messageSentEvent", "sendCMDEvent", "stopGenerating", "loaded", "createEmptyUserMessage", "createEmptyAIMessage", "personalitySelected","addWebLink"],
@@ -541,9 +440,6 @@ export default {
 
     },
     components: {        
-        UniversalForm,
-        MountedPersonalities,
-        MountedPersonalitiesList,
         PersonalitiesCommands,
         ChatBarButton
     },
@@ -554,9 +450,6 @@ export default {
     },
     data() {
         return {
-            isBindingsMenuVisible: false,
-            isModelsMenuVisible:false,
-            isPersonalitiesMenuVisible: false,
             isSendMenuVisible:false,
             is_rt:false,
             bindingHoveredIndex:null,
@@ -564,7 +457,6 @@ export default {
             personalityHoveredIndex:null,
             loader_v0:loader_v0,
             sendGlobe:sendGlobe,
-            modelImgPlaceholder:modelImgPlaceholder,
             bUrl:bUrl,
             message: "",
             selecting_binding:false,
@@ -575,8 +467,6 @@ export default {
             isFileSentList: [],
             totalSize: 0,
             showfilesList: true,
-            showPersonalities: false,
-            personalities_ready: false,
             models_menu_icon:"",
             posts_headers : {
                 'accept': 'application/json',
@@ -622,58 +512,6 @@ export default {
             console.log("formatted data sources", formattedDataSources);
             return formattedDataSources;
         },    
-        currentBindingIcon(){
-            return this.currentBinding.icon || this.modelImgPlaceholder;
-        },
-        currentBinding(){
-            return this.$store.state.currentBinding || {};
-        },
-        currentModel() {
-            return this.$store.state.currentModel || {};
-        },
-        currentModelIcon() {
-            return this.currentModel.icon || this.modelImgPlaceholder;
-        },
-        installedBindings() {
-            return this.$store.state.installedBindings;
-        },
-        installedModels() {
-            return this.$store.state.installedModels;
-        },
-        mountedPersonalities() {
-            return this.$store.state.mountedPersArr;
-        },
-        binding_name(){
-            return this.$store.state.config.binding_name    
-        },
-        model_name(){
-            return this.$store.state.config.model_name    
-        },
-        personality_name(){
-            return this.$store.state.config.active_personality_id
-        },
-        config() {
-            return this.$store.state.config;
-        },
-        mountedPers(){
-            return this.$store.state.mountedPers;
-        },
-        allDiscussionPersonalities() {
-            if (this.discussionList.length > 0) {
-
-                let persArray = []
-                for (let i = 0; i < this.discussionList.length; i++) {
-                    if (!persArray.includes(this.discussionList[i].personality) && !this.discussionList[i].personality == "") {
-                        persArray.push(this.discussionList[i].personality)
-                    };
-                }
-
-                console.log('conputer pers', persArray)
-                console.log('dis conputer pers', this.discussionList)
-                return persArray
-            }
-            return null;
-        }
     },
     methods: { 
         showSendMenu() {
@@ -685,33 +523,7 @@ export default {
                 this.isSendMenuVisible = false;
             }, 300); // 300ms delay before hiding the menu            
         },
-        showBindingsMenu() {
-            clearTimeout(this.hideBindingsMenuTimeout);
-            this.isBindingsMenuVisible = true
-        },
-        hideBindingsMenu() {
-            this.hideBindingsMenuTimeout = setTimeout(() => {
-                this.isBindingsMenuVisible = false;
-            }, 300); // 300ms delay before hiding the menu            
-        },
-        showModelsMenu() {
-            clearTimeout(this.hideModelsMenuTimeout);
-            this.isModelsMenuVisible = true
-        },
-        hideModelsMenu() {
-            this.hideModelsMenuTimeout = setTimeout(() => {
-                this.isModelsMenuVisible = false;
-            }, 300); // 300ms delay before hiding the menu            
-        },
-        showPersonalitiesMenu() {
-            clearTimeout(this.hideMenuTimeout);
-            this.isPersonalitiesMenuVisible = true
-        },
-        hidePersonalitiesMenu() {
-            this.hideMenuTimeout = setTimeout(() => {
-                this.isPersonalitiesMenuVisible = false;
-            }, 300); // 300ms delay before hiding the menu            
-        },
+
         toggleLeftPanel(){
             console.log(this.leftPanelCollapsed)
             this.$store.commit('setLeftPanelCollapsed', ! this.leftPanelCollapsed); // Assuming you have a mutation to set the view mode
@@ -753,343 +565,8 @@ export default {
                 this.addFiles(filesToUpload);
             }
         },
-        toggleSwitch() {
-            this.$store.state.config.activate_internet_search = !this.$store.state.config.activate_internet_search;
-            this.isLoading = true;
-            axios.post('/apply_settings', {"config":this.$store.state.config}).then((res) => {
-                this.isLoading = false;
-                //console.log('apply-res',res)
-                if (res.data.status) {
-                    if(this.$store.state.config.activate_internet_search){
-                        this.$store.state.toast.showToast("Websearch activated.", 4, true)
-                    }
-                    else{
-                        this.$store.state.toast.showToast("Websearch deactivated.", 4, true)
-                    }
-                    this.settingsChanged = false
-                    //this.save_configuration()
-                } else {
-
-                    this.$store.state.toast.showToast("Configuration change failed.", 4, false)
-
-                }
-                nextTick(() => {
-                    feather.replace()
-
-                })
-            })
-        },
-        copyModelName(){
-            navigator.clipboard.writeText(this.binding_name + "::" + this.model_name);
-            this.$store.state.toast.showToast("Model name copyed to clipboard: "+this.binding_name + "::" + this.model_name, 4, true)
-        },
-        copyModelNameFrom(model){
-            navigator.clipboard.writeText(this.binding_name + "::" + model);
-            this.$store.state.toast.showToast("Model name copyed to clipboard: "+this.binding_name + "::" + this.model_name, 4, true)
-        },
-        showModelConfig(){
-            try {
-                this.isLoading = true
-                axios.get('/get_active_binding_settings').then(res => {
-                    this.isLoading = false
-                    if (res) {
-
-                        console.log('binding sett', res)
-
-                        if (res.data && Object.keys(res.data).length > 0) {
-
-                            // open form
-
-                            this.$refs.universalForm.showForm(res.data, "Binding settings ", "Save changes", "Cancel").then(res => {
-                                // send new data
-                                try {
-                                    axios.post('/set_active_binding_settings',
-                                    {client_id:this.$store.state.client_id, "settings":res}).then(response => {
-
-                                            if (response && response.data) {
-                                                console.log('binding set with new settings', response.data)
-                                                this.$store.state.toast.showToast("Binding settings updated successfully!", 4, true)
-
-                                            } else {
-                                                this.$store.state.toast.showToast("Did not get binding settings responses.\n" + response, 4, false)
-                                                this.isLoading = false
-                                            }
-
-
-                                        })
-                                } catch (error) {
-                                    this.$store.state.toast.showToast("Did not get binding settings responses.\n Endpoint error: " + error.message, 4, false)
-                                    this.isLoading = false
-                                }
-
-
-
-                            })
-                        } else {
-                            this.$store.state.toast.showToast("Binding has no settings", 4, false)
-                            this.isLoading = false
-                        }
-
-                    }
-                })
-
-            } catch (error) {
-                this.isLoading = false
-                this.$store.state.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
-            }
-        },
-        async remount_personality(pers) {
-            console.log("Remounting personality ", pers)
-            if (!pers) { return { 'status': false, 'error': 'no personality - mount_personality' } }
-            try {
-                console.log("before")
-                const obj = {
-                    client_id: this.$store.state.client_id,
-                    category: pers.category,
-                    folder: pers.folder,
-                    language: pers.language
-                }
-                console.log("after")
-                const res = await axios.post('/remount_personality', obj);
-                console.log("Remounting personality executed:",res)
-                
-
-                if (res) {
-                    console.log("Remounting personality res")
-                    this.$store.state.toast.showToast("Personality remounted", 4, true)
-
-                    return res.data
-
-                }
-                else{
-                    console.log("failed remount_personality")
-                }
-            } catch (error) {
-                console.log(error.message, 'remount_personality - settings')
-                return
-            }
-
-        },      
-        async unmountPersonality(pers) {
-            console.log("Unmounting personality:",pers)
-            if (!pers) { return }
-
-            const res = await this.unmount_personality(pers.personality || pers)
-
-            console.log(res)
-            if (res.status) {
-                this.$store.state.config.personalities = res.personalities
-                this.$store.state.toast.showToast("Personality unmounted", 4, true)
-
-                //pers.isMounted = false
-                this.$store.dispatch('refreshMountedPersonalities');
-                // Select some other personality
-                const lastPers = this.$store.state.mountedPersArr[this.$store.state.mountedPersArr.length - 1]
-
-                console.log(lastPers, this.$store.state.mountedPersArr.length)
-                // const res2 = await this.select_personality(lastPers.personality)
-                const res2 = await this.select_personality(pers.personality)
-                if (res2.status) {
-                    this.$store.state.toast.showToast("Selected personality:\n" + lastPers.name, 4, true)
-                }
-
-
-            } else {
-                this.$store.state.toast.showToast("Could not unmount personality\nError: " + res.error, 4, false)
-            }
-
-        },
-
-        async unmount_personality(pers) {
-            if (!pers) { return { 'status': false, 'error': 'no personality - unmount_personality' } }
-
-            const obj = {
-                client_id: this.$store.state.client_id,
-                language: pers.language,
-                category: pers.category,
-                folder: pers.folder
-            }
-
-
-            try {
-                const res = await axios.post('/unmount_personality', obj);
-
-                if (res) {
-                    return res.data
-
-                }
-            } catch (error) {
-                console.log(error.message, 'unmount_personality - settings')
-                return
-            }
-
-        },
-        async showBindingHoveredIn(index){
-            this.bindingHoveredIndex = index
-        },
-        async showBindingHoveredOut(){
-            this.bindingHoveredIndex = null
-        },
-
-        async showModelHoveredIn(index){
-            this.modelHoveredIndex = index
-        },
-        async showModelHoveredOut(){
-            this.modelHoveredIndex = null
-        },
-        async showPersonalityHoveredIn(index){
-            this.personalityHoveredIndex = index
-        },
-        async showPersonalityHoveredOut(){
-            this.personalityHoveredIndex = null
-        },
-        async onPersonalitySelected(pers) {
-            // eslint-disable-next-line no-unused-vars
-            if (pers) {
-
-                if (pers.selected) {
-                    this.$store.state.toast.showToast("Personality already selected", 4, true)
-                    return
-                }
-
-
-                //this.settingsChanged = true
-                const pers_path = pers.language===null?pers.full_path:pers.full_path+':'+pers.language
-                console.log("pers_path",pers_path)
-                console.log("this.$store.state.config.personalities",this.$store.state.config.personalities)
-                if (this.$store.state.config.personalities.includes(pers_path)) {
-
-                    const res = await this.select_personality(pers)
-                    await this.$store.dispatch('refreshConfig');    
-                    await this.$store.dispatch('refreshBindings');
-                    await this.$store.dispatch('refreshModelsZoo');
-                    await this.$store.dispatch('refreshModels');
-                    await this.$store.dispatch('refreshMountedPersonalities');
-                    await this.$store.dispatch('refreshConfig');    
-                    await this.$store.dispatch('fetchLanguages');
-                    await this.$store.dispatch('fetchLanguage');
-                    await this.$store.dispatch('fetchisRTOn');
-                    
-                    console.log('pers is mounted', res)
-
-                    if (res && res.status && res.active_personality_id > -1) {
-                        this.$store.state.toast.showToast("Selected personality:\n" + pers.name, 4, true)
-
-                    } else {
-                        this.$store.state.toast.showToast("Error on select personality:\n" + pers.name, 4, false)
-                    }
-
-                } else {
-                    console.log('mounting pers')
-                }
-
-                this.$emit('personalitySelected')
-            
-
-                nextTick(() => {
-                    feather.replace()
-
-                })
-
-            }
-
-        },    
-        async select_personality(pers) {
-            if (!pers) { return { 'status': false, 'error': 'no personality - select_personality' } }
-            const pers_path = pers.language===null?pers.full_path:pers.full_path+':'+pers.language
-            console.log("Selecting personality ",pers_path)
-            const id = this.$store.state.config.personalities.findIndex(item => item === pers_path)
-
-            const obj = {
-                client_id:this.$store.state.client_id,
-                id: id
-            }
-
-
-            try {
-                const res = await axios.post('/select_personality', obj);
-
-                if (res) {
-
-                    this.$store.dispatch('refreshConfig').then(() => {
-                        this.$store.dispatch('refreshPersonalitiesZoo').then(() => {
-                        this.$store.dispatch('refreshMountedPersonalities');                
-                        });
-                    });
-                    return res.data
-
-                }
-            } catch (error) {
-                console.log(error.message, 'select_personality - settings')
-                return
-            }
-
-        },    
         emitloaded(){
             this.$emit('loaded')
-        },
-        showModels(event){
-            // Prevent the default button behavior
-            event.preventDefault();
-
-            // Programmatically trigger the click event on the select element
-            const selectElement = this.$refs.modelsSelectionList;
-            console.log(selectElement)
-
-            const event_ = new MouseEvent("click");
-
-            selectElement.dispatchEvent(event_);
-        }, 
-        setBinding(selectedBinding){
-            console.log("Setting binding to "+selectedBinding.name);
-            this.selecting_binding=true
-            this.selectedBinding = selectedBinding
-            this.$store.state.messageBox.showBlockingMessage("Loading binding")
-
-            axios.post("/update_setting", {    
-                        client_id: this.$store.state.client_id,
-                        setting_name: "binding_name",
-                        setting_value: selectedBinding.name
-                    }).then(async (response) => {
-                this.$store.state.messageBox.hideMessage()
-                console.log("UPDATED");
-                console.log(response);
-                await this.$store.dispatch('refreshConfig');    
-                await this.$store.dispatch('refreshBindings');
-                await this.$store.dispatch('refreshModelsZoo');
-                await this.$store.dispatch('refreshModels');
-                
-                this.$store.state.toast.showToast(`Binding changed to ${this.currentBinding.name}`,4,true)
-                this.selecting_binding=false
-                }).catch(err=>{
-                this.$store.state.messageBox.hideMessage()
-                this.$store.state.toast.showToast(`Error ${err}`,4,true)
-                this.selecting_binding=false
-                });            
-        },
-        setModel(selectedModel){
-            console.log("Setting model to "+selectedModel.name);
-            this.selecting_model=true
-            this.selectedModel = selectedModel
-            this.$store.state.messageBox.showBlockingMessage("Loading model")
-            axios.post("/update_setting", {     
-                        client_id: this.$store.state.client_id,           
-                        setting_name: "model_name",
-                        setting_value: selectedModel.name
-                    }).then(async (response) => {
-                this.$store.state.messageBox.hideMessage()
-                console.log("UPDATED");
-                console.log(response);
-                await this.$store.dispatch('refreshConfig');    
-                await this.$store.dispatch('refreshModels');
-                this.$store.state.toast.showToast(`Model changed to ${this.currentModel.name}`,4,true)
-                this.selecting_model=false
-                }).catch(err=>{
-                this.$store.state.messageBox.hideMessage()
-                this.$store.state.toast.showToast(`Error ${err}`,4,true)
-                this.selecting_model=false
-                });
-        
         },
         download_files(){
             axios.get('/download_files')
@@ -1219,34 +696,6 @@ export default {
             } else {
                 console.error('Speech recognition is not supported in this browser.');
             }
-        },
-
-        onPersonalitiesReadyFun(){
-            this.personalities_ready = true;
-        },
-        onShowPersListFun(comp) {
-            this.showPersonalities = !this.showPersonalities
-
-        },
-        handleOnTalk(pers){
-            console.log("talking")
-            this.showPersonalities=false
-            this.$store.state.toast.showToast(`Personality ${pers.name} is Talking`, 4, true)
-            this.onTalk(pers)
-        },
-                            
-        onMountFun(comp) {
-            console.log('Mounting personality')
-            this.$refs.mountedPers.constructor()
-        },     
-        onUnmountFun(comp) {
-            console.log('Unmounting personality')
-            this.$refs.mountedPers.constructor()
-            
-        },
-        onRemount(comp){
-            console.log('Remounting chat')
-            this.$refs.mountedPers.constructor()
         },
         computedFileSize(size) {
             nextTick(() => {
