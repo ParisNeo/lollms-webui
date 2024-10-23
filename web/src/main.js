@@ -23,6 +23,7 @@ function copyObject(obj) {
 export const store = createStore({
     state () {
       return {
+        personalities_ready: false,
         is_rt_on:false,
         language: "english",
         languages: [],
@@ -102,6 +103,9 @@ export const store = createStore({
         localStorage.setItem('lollms_webui_view_mode', mode); // Sync with localStorage
       },
       
+      setpersonalitiesReady(state, personalities_ready) {
+        state.personalities_ready = personalities_ready;
+      },
       setisRTOn(state, is_rt_on) {
         state.is_rt_on = is_rt_on;
       },
@@ -189,6 +193,9 @@ export const store = createStore({
         return state.view_mode;
       },
       
+      getpersonalitiesReady(state){
+        return state.personalities_ready;
+      },
       getisRTOn(state) {
         return state.is_rt_on;
       },      

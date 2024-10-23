@@ -81,244 +81,285 @@
                         <i data-feather="plus"></i>
                     </button>
 
-                    <!-- Menu container -->
-                    <div class="menu-container">
-                    <!-- Menu toggle button -->
-                    <button 
-                    class="toolbar-button" 
-                    title="Toggle menu" 
-                    @click="toggleMenu"
-                    >
-                    <i data-feather="menu"></i>
-                    </button>
+                    <div class="toolbar-button" @mouseleave="hideMenu" v-if="!loading">
+                        <!-- Expandable menu positioned above the button -->
+                        <div v-show="isMenuVisible" @mouseenter="showMenu" class="absolute m-0 p-0 z-50 top-full left-0 transform bg-white dark:bg-bg-dark rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
+                            <div class="p-4 flex flex-wrap gap-2 items-center">
+                                <!-- Edit discussion list -->
+                                <button 
+                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95" 
+                                    title="Edit discussion list" 
+                                    type="button" 
+                                    @click="isCheckbox = !isCheckbox" 
+                                    :class="isCheckbox ? 'text-secondary dark:text-secondary-light' : 'text-gray-700 dark:text-gray-300'"
+                                >
+                                    <i data-feather="check-square"></i>
+                                </button>
 
-                    <!-- Expandable menu -->
-                    <div v-if="isMenuVisible" @mouseleave="hideMenu" class="expandable-menu discussion z-50 p-4 bg-white dark:bg-bg-dark rounded-lg shadow-lg">
-                        <!-- Edit discussion list -->
-                        <button class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95" title="Edit discussion list" type="button" @click="isCheckbox = !isCheckbox" :class="isCheckbox ? 'text-secondary dark:text-secondary-light' : 'text-gray-700 dark:text-gray-300'">
-                        <i data-feather="check-square"></i>
-                        </button>
+                                <!-- Reset database -->
+                                <button 
+                                    class="text-3xl hover:text-red-500 dark:hover:text-red-400 duration-150 active:scale-95" 
+                                    title="Reset database, remove all discussions" 
+                                    @click.stop=""
+                                >
+                                    <i data-feather="trash-2"></i>
+                                </button>
 
-                        <!-- Reset database -->
-                        <button class="text-3xl hover:text-red-500 dark:hover:text-red-400 duration-150 active:scale-95" title="Reset database, remove all discussions" @click.stop="">
-                        <i data-feather="trash-2"></i>
-                        </button>
+                                <!-- Export database -->
+                                <button 
+                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95" 
+                                    title="Export database" 
+                                    type="button" 
+                                    @click.stop="database_selectorDialogVisible=true"
+                                >
+                                    <i data-feather="database"></i>
+                                </button>
 
-                        <!-- Export database -->
-                        <button class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95" title="Export database" type="button" @click.stop="database_selectorDialogVisible=true">
-                        <i data-feather="database"></i>
-                        </button>
+                                <!-- Import discussions -->
+                                <div class="relative">
+                                    <input type="file" ref="fileDialog" class="hidden" @change="importDiscussions" />
+                                    <button 
+                                        class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95 rotate-90" 
+                                        title="Import discussions" 
+                                        type="button" 
+                                        @click.stop="$refs.fileDialog.click()"
+                                    >
+                                        <i data-feather="log-in"></i>
+                                    </button>
+                                </div>
 
-                        <!-- Import discussions -->
-                        <input type="file" ref="fileDialog" class="hidden" @change="importDiscussions" />
-                        <button class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95 rotate-90" title="Import discussions" type="button" @click.stop="$refs.fileDialog.click()">
-                        <i data-feather="log-in"></i>
-                        </button>
+                                <!-- Import discussion bundle -->
+                                <div class="relative">
+                                    <input type="file" ref="bundleLoadingDialog" class="hidden" @change="importDiscussionsBundle" />
+                                    <button 
+                                        v-if="!showSaveConfirmation" 
+                                        title="Import discussion bundle" 
+                                        @click.stop="$refs.bundleLoadingDialog.click()" 
+                                        class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95"
+                                    >
+                                        <i data-feather="folder"></i>
+                                    </button>
+                                </div>
 
-                        <!-- Import discussion bundle -->
-                        <input type="file" ref="bundleLoadingDialog" class="hidden" @change="importDiscussionsBundle" />
-                        <button v-if="!showSaveConfirmation" title="Import discussion bundle" @click.stop="$refs.bundleLoadingDialog.click()" class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95">
-                        <i data-feather="folder"></i>
-                        </button>
+                                <!-- Add to skills database -->
+                                <button 
+                                    v-if="!loading" 
+                                    type="button" 
+                                    @click.stop="addDiscussion2SkillsLibrary" 
+                                    title="Add this discussion content to skills database" 
+                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95"
+                                >
+                                    <i data-feather="hard-drive"></i>
+                                </button>
 
-                        <!-- Filter discussions -->
-                        <button class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95" title="Filter discussions" type="button" @click="isSearch = !isSearch" :class="isSearch ? 'text-secondary dark:text-secondary-light' : 'text-gray-700 dark:text-gray-300'">
-                        <i data-feather="search"></i>
-                        </button>
+                                <!-- Toggle skills database -->
+                                <button 
+                                    v-if="!loading && $store.state.config.activate_skills_lib" 
+                                    type="button" 
+                                    @click.stop="toggleSkillsLib" 
+                                    title="Skills database is activated" 
+                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95"
+                                >
+                                    <i data-feather="check-circle"></i>
+                                </button>
+                                <button 
+                                    v-if="!loading && !$store.state.config.activate_skills_lib" 
+                                    type="button" 
+                                    @click.stop="toggleSkillsLib" 
+                                    title="Skills database is deactivated" 
+                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95"
+                                >
+                                    <i data-feather="x-octagon"></i>
+                                </button>
 
-                        <!-- Add to skills database -->
-                        <button v-if="!loading" type="button" @click.stop="addDiscussion2SkillsLibrary" title="Add this discussion content to skills database" class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95">
-                        <i data-feather="hard-drive"></i>
-                        </button>
+                                <!-- Show skills database -->
+                                <button 
+                                    v-if="!loading" 
+                                    type="button" 
+                                    @click.stop="showSkillsLib" 
+                                    title="Show Skills database" 
+                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95"
+                                >
+                                    <i data-feather="book"></i>
+                                </button>
 
-                        <!-- Toggle skills database -->
-                        <button v-if="!loading && $store.state.config.activate_skills_lib" type="button" @click.stop="toggleSkillsLib" title="Skills database is activated" class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95">
-                        <i data-feather="check-circle"></i>
-                        </button>
-                        <button v-if="!loading && !$store.state.config.activate_skills_lib" type="button" @click.stop="toggleSkillsLib" title="Skills database is deactivated" class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95">
-                        <i data-feather="x-octagon"></i>
-                        </button>
+                                <!-- Loading spinner -->
+                                <div v-if="loading" title="Loading.." class="flex justify-center">
+                                    <div role="status">
+                                        <svg aria-hidden="true" class="w-8 h-8 animate-spin fill-secondary dark:fill-secondary-light" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+                                        </svg>
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
 
-                        <!-- Show skills database -->
-                        <button v-if="!loading" type="button" @click.stop="showSkillsLib" title="Show Skills database" class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95">
-                        <i data-feather="book"></i>
-                        </button>
+                                <!-- Save confirmation -->
+                                <div v-if="showSaveConfirmation" class="flex justify-center space-x-4">
+                                    <button class="text-3xl hover:text-red-500 dark:hover:text-red-400 duration-150 active:scale-95" title="Cancel" type="button" @click.stop="showSaveConfirmation = false">
+                                        <i data-feather="x"></i>
+                                    </button>
+                                    <button class="text-3xl hover:text-green-500 dark:hover:text-green-400 duration-150 active:scale-95" title="Confirm save changes" type="button" @click.stop="save_configuration()">
+                                        <i data-feather="check"></i>
+                                    </button>
+                                </div>
 
-                        <!-- Loading spinner -->
-                        <div v-if="loading" title="Loading.." class="flex justify-center mt-4">
-                            <div role="status">
-                            <svg aria-hidden="true" class="w-8 h-8 animate-spin fill-secondary dark:fill-secondary-light" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
-                                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
-                            </svg>
-                            <span class="sr-only">Loading...</span>
+                                <!-- Import options -->
+                                <div v-if="isOpen" class="flex flex-col space-y-2">
+                                    <button @click="importDiscussions" class="text-sm hover:text-secondary dark:hover:text-secondary-light">LOLLMS</button> 
+                                    <button @click="importChatGPT" class="text-sm hover:text-secondary dark:hover:text-secondary-light">ChatGPT</button>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Save confirmation -->
-                        <div v-if="showSaveConfirmation" class="flex justify-center mt-4 space-x-4">
-                            <button class="text-3xl hover:text-red-500 dark:hover:text-red-400 duration-150 active:scale-95" title="Cancel" type="button" @click.stop="showSaveConfirmation = false">
-                            <i data-feather="x"></i>
+                        <!-- Menu toggle button -->
+                        <div @mouseenter="showMenu" class="menu-hover-area">
+                            <button class="w-8 h-8" title="Toggle menu">
+                                <i data-feather="menu"></i>
                             </button>
-                            <button class="text-3xl hover:text-green-500 dark:hover:text-green-400 duration-150 active:scale-95" title="Confirm save changes" type="button" @click.stop="save_configuration()">
-                            <i data-feather="check"></i>
-                            </button>
-                        </div>
-
-                        <!-- Import options -->
-                        <div v-if="isOpen" class="flex flex-col space-y-2 mt-4">
-                            <button @click="importDiscussions" class="text-sm hover:text-secondary dark:hover:text-secondary-light">LOLLMS</button> 
-                            <button @click="importChatGPT" class="text-sm hover:text-secondary dark:hover:text-secondary-light">ChatGPT</button>
                         </div>
                     </div>
-                    <button @click="toggleInfosMenu" title="Infos">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25">
-                        <!-- Circle background -->
-                        <circle cx="12.5" cy="12.5" r="11.25" fill="#3498db"/>
-                        
-                        <!-- "i" stem -->
-                        <rect x="11.25" y="10" width="2.5" height="8.75" fill="white"/>
-                        
-                        <!-- "i" dot -->
-                        <circle cx="12.5" cy="6.25" r="1.25" fill="white"/>
-                        </svg>
-                    </button>
-                    <!-- Menu Content -->
-                    <nav v-if="isinfosMenuVisible" class="expandable-menu discussion z-50 p-4 bg-white dark:bg-bg-dark rounded-lg shadow-lg ">
-                        <div class="container flex flex-col lg:flex-row items-center gap-2 p-4">
-                        <!-- SYSTEM STATUS -->
-                        <div class="flex gap-3 flex-1 items-center justify-end">
-                            <div v-if="isModelOK" title="Model is ok" class="text-green-500 dark:text-green-400 cursor-pointer transition-transform hover:scale-110">
-                            <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            </div>
-                            <div v-else title="Model is not ok" class="text-red-500 dark:text-red-400 cursor-pointer transition-transform hover:scale-110">
-                            <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M15 9L9 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M9 9L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            </div>
-                            <div v-if="!isGenerating" title="Text is not being generated. Ready to generate" class="text-green-500 dark:text-green-400 cursor-pointer transition-transform hover:scale-110">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path>
-                            </svg>
-                            </div>
-                            <div v-else title="Generation in progress..." class="text-yellow-500 dark:text-yellow-400 cursor-pointer transition-transform hover:scale-110">
-                            <svg class="w-6 h-6 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                            </svg>
-                            </div>
-                            <div v-if="isConnected" title="Connection status: Connected" class="text-green-500 dark:text-green-400 cursor-pointer transition-transform hover:scale-110">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
-                            </div>
-                            <div v-else title="Connection status: Not connected" class="text-red-500 dark:text-red-400 cursor-pointer transition-transform hover:scale-110">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
-                            </svg>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <ActionButton @click="restartProgram" icon="power" title="restart program" />
-                            <ActionButton @click="refreshPage" icon="refresh-ccw" title="refresh page" />
-                            <ActionButton href="/docs" icon="file-text" title="Fast API doc" />
-                        </div>
 
-                        <!-- SOCIALS -->
-                        <SocialIcon href="https://github.com/ParisNeo/lollms-webui" icon="github" />
-                        <SocialIcon href="https://www.youtube.com/channel/UCJzrg0cyQV2Z30SQ1v2FdSQ" icon="youtube" />
-                        <SocialIcon href="https://x.com/ParisNeo_AI" icon="x" />
-                        <SocialIcon href="https://discord.com/channels/1092918764925882418" icon="discord" />
-                
-                        <div class="relative group" title="Lollms News">
-                            <div @click="showNews()" class="text-2xl w-8 h-8 cursor-pointer transition-colors duration-300 text-gray-600 hover:text-primary dark:text-gray-300 dark:hover:text-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full">
-                                <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
-                            </svg>
-                            </div>
-                            <span class="absolute hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap">
-                            Lollms News
-                            </span>
-                        </div>
 
-                            <div 
-                                v-if="is_fun_mode" 
-                                title="Fun mode is on, press to turn off" 
-                                class="w-8 h-8 cursor-pointer text-green-500 dark:text-green-400 hover:text-green-600 dark:hover:text-green-300 transition-colors duration-300"
-                                @click="fun_mode_off()"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full animate-bounce">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
-                                <line x1="9" y1="9" x2="9.01" y2="9"></line>
-                                <line x1="15" y1="9" x2="15.01" y2="9"></line>
-                                </svg>
-                            </div>
-                            <div 
-                                v-else 
-                                title="Fun mode is off, press to turn on" 
-                                class="w-8 h-8 cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-300"
-                                @click="fun_mode_on()"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="8" y1="15" x2="16" y2="15"></line>
-                                <line x1="9" y1="9" x2="9.01" y2="9"></line>
-                                <line x1="15" y1="9" x2="15.01" y2="9"></line>
-                                </svg>
-                            </div>
-                            <span class="absolute hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 top-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap">
-                                {{ is_fun_mode ? 'Turn off fun mode' : 'Turn on fun mode' }}
-                            </span>
-                        <div class="language-selector relative">
-                            <button @click="toggleLanguageMenu" class="bg-transparent text-black dark:text-white py-1 px-1 rounded font-bold uppercase transition-colors duration-300 hover:bg-blue-500">
-                            {{ $store.state.language.slice(0, 2) }}
-                            </button>
-                            <div v-if="isLanguageMenuVisible" ref="languageMenu" class="container language-menu absolute left-0 mt-1 bg-white dark:bg-bg-dark-tone rounded shadow-lg z-10 overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" style="position: absolute; top: 100%; width: 200px; max-height: 300px; overflow-y: auto;">
-                            <ul style="list-style-type: none; padding-left: 0; margin-left: 0;">
-                                <li v-for="language in languages" :key="language" class="relative flex items-center" style="padding-left: 0; margin-left: 0;">
-                                <button @click="deleteLanguage(language)" class="mr-2 text-red-500 hover:text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 rounded-full">✕</button>
-                                <div @click="selectLanguage(language)" :class="{'cursor-pointer hover:bg-blue-500 hover:text-white py-2 px-4 block whitespace-no-wrap': true, 'bg-blue-500 text-white': language === $store.state.language, 'flex-grow': true}">
-                                    {{ language }}
+
+
+                    <div class="toolbar-button"  @mouseleave="hideBindingsMenu" v-if="!loading">
+                        <div class="relative inline-block">
+                            <!-- Bindings menu positioned above the button -->
+                            <div v-show="isBindingsMenuVisible" @mouseenter="showBindingsMenu" class="absolute m-0 p-0 z-10 top-full left-0 transform w-60 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
+                                <div class="p-8 m-0 grid grid-cols-4 gap-4 max-h-60 overflow-y-auto custom-scrollbar">
+                                    <div v-for="(item, index) in installedBindings" :key="index" class="relative group/item">                             
+                                        <button @click.prevent="setBinding(item)" :title="item.name" class="w-10 h-10 rounded-full overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none">
+                                            <img :src="item.icon ? item.icon : modelImgPlaceholder" @error="modelImgPlaceholder" :alt="item.name" class="w-full h-full object-cover" :class="{'border-2 border-secondary': item.name == binding_name}">
+                                        </button>
+                                        
+                                        <div class="absolute -bottom-4 left-0 w-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white rounded-md shadow-md p-1">
+                                            <button @click.prevent="showModelConfig(item)" class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none" title="Configure Binding">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                                </li>
-                                <li class="cursor-pointer hover:text-white py-0 px-0 block whitespace-no-wrap">
-                                <input type="text" v-model="customLanguage" @keyup.enter.prevent="addCustomLanguage" placeholder="Enter language..." class="bg-transparent border border-gray-300 rounded py-0 px-0 mx-0 my-1 w-full">
-                                </li>
-                            </ul>
+                            </div>
+
+                            <div @mouseenter="showBindingsMenu" class="bindings-hover-area">
+                                <button @click.prevent="showModelConfig()" class="w-6 h-6">
+                                    <img :src="currentBindingIcon"
+                                        class="w-6 h-6 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary hover:scale-110 hover:-translate-y-1 duration-200"
+                                        :title="currentBinding ? currentBinding.name : 'unknown'">
+                                </button>
                             </div>
                         </div>
-                        <div class="sun text-2xl w-6 hover:text-primary duration-150 cursor-pointer" title="Switch to Light theme" @click="themeSwitch()">
-                            <i data-feather="sun"></i>
+                    </div>
+
+                    <div class="toolbar-button" @mouseleave="hideModelsMenu" v-if="!loading">
+                        <div class="relative inline-block">
+                            <!-- Models menu positioned above the button -->
+                            <div v-show="isModelsMenuVisible" @mouseenter="showModelsMenu" class="absolute m-0 p-0 z-10 top-full left-0 transform w-60 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
+                                <div class="p-8 m-0 grid grid-cols-4 gap-4 max-h-60 overflow-y-auto custom-scrollbar">
+                                    <div v-for="(item, index) in installedModels" :key="index" class="relative group/item">                             
+                                        <button @click.prevent="setModel(item)" :title="item.name" class="w-10 h-10 rounded-full overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none">
+                                            <img :src="item.icon ? item.icon : modelImgPlaceholder" @error="personalityImgPlacehodler" :alt="item.name" class="w-full h-full object-cover" :class="{'border-2 border-secondary': item.name == model_name}">
+                                        </button>
+                                        
+                                        <div class="absolute -bottom-4 left-0 w-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white rounded-md shadow-md p-1">
+                                            <button @click.prevent="copyModelNameFrom(item.name)" class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none" title="Copy Model Name">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                            </button>
+                                            <!-- You can add more buttons here if needed -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div @mouseenter="showModelsMenu" class="models-hover-area">
+                                <button @click.prevent="copyModelName()" class="w-6 h-6">
+                                    <img :src="currentModelIcon"
+                                        class="w-6 h-6 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary hover:scale-110 hover:-translate-y-1 duration-400"
+                                        :title="currentModel ? currentModel.name : 'unknown'">
+                                </button>
+                            </div>
                         </div>
-                        <div class="moon text-2xl w-6 hover:text-primary duration-150 cursor-pointer" title="Switch to Dark theme" @click="themeSwitch()">
-                            <i data-feather="moon"></i>
+                    </div>
+                    <!-- Personalities menu positioned above the dock -->
+                    <div class="toolbar-button" @mouseleave="hidePersonalitiesMenu"  v-if="!loading">
+                        <div class="relative inline-block ">
+                            <!-- Personalities menu positioned above the button -->
+                            <div v-show="isPersonalitiesMenuVisible"  @mouseenter="showPersonalitiesMenu" class="absolute m-0 p-0 z-10 top-full left-0 transform w-60 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
+                                <div class="p-8 m-0 grid grid-cols-4 gap-4 max-h-60 overflow-y-auto custom-scrollbar">
+                                    <div v-for="(item, index) in mountedPersonalities" :key="index" class="relative group/item">                             
+                                        <button @click.prevent="onPersonalitySelected(item)" :title="item.name" class="w-10 h-10 rounded-full overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none">
+                                            <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler" :alt="item.name" class="w-full h-full object-cover" :class="{'border-2 border-secondary': $store.state.active_personality_id == $store.state.personalities.indexOf(item.full_path)}">
+                                        </button>
+                                        
+                                        <div class="absolute -bottom-4 left-0 w-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white dark:bg-gray-900 rounded-md shadow-md p-1">
+                                            <button @click.prevent="unmountPersonality(item)" class="p-1 bg-red-500 rounded-full text-white hover:bg-red-600 focus:outline-none" title="Unmount">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            </button>
+                                            <button @click.prevent="remount_personality(item)" class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none ml-1" title="Remount">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                            </button>
+                                            <button @click.prevent="handleOnTalk(item)" class="p-1 bg-green-500 rounded-full text-white hover:bg-green-600 focus:outline-none ml-1" title="Talk">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div @mouseenter="showPersonalitiesMenu" class="personalities-hover-area">
+                            <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
+                            </div>
                         </div>
-                        </div>
-                    </nav>                        
-                </div>
+                    </div>      
+                    
             </div>
         </div>
         <!-- Search bar -->
-        <div v-if="isSearch" class="w-full p-4 bg-bg-light dark:bg-bg-dark">
-            <div class="relative">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <div class="scale-75">
-                <i data-feather="search"></i>
+        <div class="w-auto max-w-md mx-auto p-2">
+            <form @submit.prevent="handleSearch" class="relative">
+                <!-- Search input container -->
+                <div class="flex items-center">
+                    <div class="relative flex-grow">
+                        <!-- Search input -->
+                        <input 
+                            type="search" 
+                            id="default-search" 
+                            class="block w-full h-8 px-8 text-sm border border-gray-300 rounded-md
+                                bg-bg-light focus:ring-1 focus:ring-secondary focus:border-secondary 
+                                dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 
+                                dark:focus:ring-secondary dark:focus:border-secondary
+                                transition-all duration-200"
+                            placeholder="Search discussions..." 
+                            title="Filter discussions by title" 
+                            v-model="filterTitle"
+                            @keyup.enter="handleSearch"
+                        />
+
+                        <!-- Search icon -->
+                        <div class="absolute left-2 top-1/2 -translate-y-1/2">
+                            <i data-feather="search" class="w-4 h-4 text-gray-400"></i>
+                        </div>
+
+                        <!-- Submit button -->
+                        <button 
+                            type="submit"
+                            class="absolute right-2 top-1/2 -translate-y-1/2
+                                text-gray-600 hover:text-secondary 
+                                rounded-full hover:bg-gray-100 dark:hover:bg-gray-700
+                                focus:ring-1 focus:ring-secondary
+                                transition-all duration-150 active:scale-98"
+                            title="Search"
+                        >
+                            <i data-feather="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                <div class="hover:text-secondary duration-75 active:scale-90" :class="filterTitle ? 'visible' : 'invisible'" title="Clear" @click="filterTitle = ''">
-                <i data-feather="x"></i>
-                </div>
-            </div>
-            <input type="search" id="default-search" class="block w-full p-2 pl-10 pr-10 text-sm border border-gray-300 rounded-lg bg-bg-light focus:ring-secondary focus:border-secondary dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-secondary dark:focus:border-secondary" placeholder="Search..." title="Filter discussions by title" v-model="filterTitle" @input="filterDiscussions()" />
-            </div>
+            </form>
         </div>
+
+
+
 
         <!-- Checkbox operations -->
         <div v-if="isCheckbox" class="w-full p-4 bg-bg-light dark:bg-bg-dark">
@@ -872,14 +913,22 @@ import inactive_skills from "../assets/inactive.svg"
 import skillsRegistry from "../assets/registry.svg"
 import robot from "../assets/robot.svg"
 import { mapState } from 'vuex';
+import modelImgPlaceholder from "../assets/default_model.png"
+
+import MountedPersonalities from '@/components/MountedPersonalities.vue'
+
+const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
     
     setup() { },
     
     data() {
         return {
+            isSearching: false,
+            isPersonalitiesMenuVisible: false,
+            isModelsMenuVisible:false,
+            isBindingsMenuVisible: false,
             isMenuVisible: false,
-            isinfosMenuVisible: false,
             isNavMenuVisible: false,
             static_info: static_info,
             animated_info: animated_info,
@@ -888,9 +937,8 @@ export default {
             is_first_connection:true,
             discord:discord,
             FastAPI:FastAPI,
+            modelImgPlaceholder:modelImgPlaceholder,
             customLanguage: '', // Holds the value of the custom language input
-            selectedLanguage: '',
-            isLanguageMenuVisible: false,
             rebooting_audio: new Audio("rebooting.wav"),            
             connection_lost_audio: new Audio("connection_lost.wav"),
             connection_recovered_audio: new Audio("connection_recovered.wav"),
@@ -1035,7 +1083,6 @@ export default {
             showConfirmation: false,
             chime: new Audio("chime_aud.wav"),
             showToast: false,
-            isSearch: false,
             isDiscussionBottom: false,
             personalityAvatars: [], // object array of personality name: and avatar: props
             fileList: [],
@@ -1047,6 +1094,342 @@ export default {
         }
     },
     methods: {        
+        handleOnTalk(pers){
+            console.log("talking")
+            this.showPersonalities=false
+            this.$store.state.toast.showToast(`Personality ${pers.name} is Talking`, 4, true)
+            this.onTalk(pers)
+        },
+        onPersonalitiesReadyFun(){
+            this.$store.state.personalities_ready = true;
+        },
+        async showBindingHoveredIn(index){
+            this.bindingHoveredIndex = index
+        },
+        async showBindingHoveredOut(){
+            this.bindingHoveredIndex = null
+        },
+
+        async showModelHoveredIn(index){
+            this.modelHoveredIndex = index
+        },
+        async showModelHoveredOut(){
+            this.modelHoveredIndex = null
+        },
+        async showPersonalityHoveredIn(index){
+            this.personalityHoveredIndex = index
+        },
+        async showPersonalityHoveredOut(){
+            this.personalityHoveredIndex = null
+        },
+        async onPersonalitySelected(pers) {
+            this.hidePersonalitiesMenu()
+            // eslint-disable-next-line no-unused-vars
+            if (pers) {
+
+                if (pers.selected) {
+                    this.$store.state.toast.showToast("Personality already selected", 4, true)
+                    return
+                }
+
+
+                //this.settingsChanged = true
+                const pers_path = pers.language===null?pers.full_path:pers.full_path+':'+pers.language
+                console.log("pers_path",pers_path)
+                console.log("this.$store.state.config.personalities",this.$store.state.config.personalities)
+                if (this.$store.state.config.personalities.includes(pers_path)) {
+
+                    const res = await this.select_personality(pers)
+                    await this.$store.dispatch('refreshConfig');    
+                    await this.$store.dispatch('refreshBindings');
+                    await this.$store.dispatch('refreshModelsZoo');
+                    await this.$store.dispatch('refreshModels');
+                    await this.$store.dispatch('refreshMountedPersonalities');
+                    await this.$store.dispatch('refreshConfig');    
+                    await this.$store.dispatch('fetchLanguages');
+                    await this.$store.dispatch('fetchLanguage');
+                    await this.$store.dispatch('fetchisRTOn');
+                    
+                    console.log('pers is mounted', res)
+
+                    if (res && res.status && res.active_personality_id > -1) {
+                        this.$store.state.toast.showToast("Selected personality:\n" + pers.name, 4, true)
+
+                    } else {
+                        this.$store.state.toast.showToast("Error on select personality:\n" + pers.name, 4, false)
+                    }
+
+                } else {
+                    console.log('mounting pers')
+                }
+
+                this.$emit('personalitySelected')
+            
+
+                nextTick(() => {
+                    feather.replace()
+
+                })
+
+            }
+
+        },    
+        async select_personality(pers) {
+            if (!pers) { return { 'status': false, 'error': 'no personality - select_personality' } }
+            const pers_path = pers.language===null?pers.full_path:pers.full_path+':'+pers.language
+            console.log("Selecting personality ",pers_path)
+            const id = this.$store.state.config.personalities.findIndex(item => item === pers_path)
+
+            const obj = {
+                client_id:this.$store.state.client_id,
+                id: id
+            }
+
+
+            try {
+                const res = await axios.post('/select_personality', obj);
+
+                if (res) {
+
+                    this.$store.dispatch('refreshConfig').then(() => {
+                        this.$store.dispatch('refreshPersonalitiesZoo').then(() => {
+                        this.$store.dispatch('refreshMountedPersonalities');                
+                        });
+                    });
+                    return res.data
+
+                }
+            } catch (error) {
+                console.log(error.message, 'select_personality - settings')
+                return
+            }
+
+        },        
+        showPersonalitiesMenu() {
+            clearTimeout(this.hideMenuTimeout);
+            this.isPersonalitiesMenuVisible = true
+        },
+        hidePersonalitiesMenu() {
+            this.hideMenuTimeout = setTimeout(() => {
+                this.isPersonalitiesMenuVisible = false;
+            }, 300); // 300ms delay before hiding the menu            
+        },
+        copyModelName(){
+            navigator.clipboard.writeText(this.binding_name + "::" + this.model_name);
+            this.$store.state.toast.showToast("Model name copyed to clipboard: "+this.binding_name + "::" + this.model_name, 4, true)
+        },
+        copyModelNameFrom(model){
+            navigator.clipboard.writeText(this.binding_name + "::" + model);
+            this.$store.state.toast.showToast("Model name copyed to clipboard: "+this.binding_name + "::" + this.model_name, 4, true)
+        },        
+        showBindingsMenu() {
+            clearTimeout(this.hideBindingsMenuTimeout);
+            this.isBindingsMenuVisible = true
+        },
+        hideBindingsMenu() {
+            this.hideBindingsMenuTimeout = setTimeout(() => {
+                this.isBindingsMenuVisible = false;
+            }, 300); // 300ms delay before hiding the menu            
+        },        
+        setBinding(selectedBinding){
+            console.log("Setting binding to "+selectedBinding.name);
+            this.selecting_binding=true
+            this.selectedBinding = selectedBinding
+            this.$store.state.messageBox.showBlockingMessage("Loading binding")
+
+            axios.post("/update_setting", {    
+                        client_id: this.$store.state.client_id,
+                        setting_name: "binding_name",
+                        setting_value: selectedBinding.name
+                    }).then(async (response) => {
+                this.$store.state.messageBox.hideMessage()
+                console.log("UPDATED");
+                console.log(response);
+                await this.$store.dispatch('refreshConfig');    
+                await this.$store.dispatch('refreshBindings');
+                await this.$store.dispatch('refreshModelsZoo');
+                await this.$store.dispatch('refreshModels');
+                
+                this.$store.state.toast.showToast(`Binding changed to ${this.currentBinding.name}`,4,true)
+                this.selecting_binding=false
+                }).catch(err=>{
+                this.$store.state.messageBox.hideMessage()
+                this.$store.state.toast.showToast(`Error ${err}`,4,true)
+                this.selecting_binding=false
+                });            
+        },
+        showModelsMenu() {
+            clearTimeout(this.hideModelsMenuTimeout);
+            this.isModelsMenuVisible = true
+        },
+        hideModelsMenu() {
+            this.hideModelsMenuTimeout = setTimeout(() => {
+                this.isModelsMenuVisible = false;
+            }, 300); // 300ms delay before hiding the menu            
+        },
+
+        setModel(selectedModel){
+            console.log("Setting model to "+selectedModel.name);
+            this.selecting_model=true
+            this.selectedModel = selectedModel
+            this.$store.state.messageBox.showBlockingMessage("Loading model")
+            axios.post("/update_setting", {     
+                        client_id: this.$store.state.client_id,           
+                        setting_name: "model_name",
+                        setting_value: selectedModel.name
+                    }).then(async (response) => {
+                this.$store.state.messageBox.hideMessage()
+                console.log("UPDATED");
+                console.log(response);
+                await this.$store.dispatch('refreshConfig');    
+                await this.$store.dispatch('refreshModels');
+                this.$store.state.toast.showToast(`Model changed to ${this.currentModel.name}`,4,true)
+                this.selecting_model=false
+                }).catch(err=>{
+                this.$store.state.messageBox.hideMessage()
+                this.$store.state.toast.showToast(`Error ${err}`,4,true)
+                this.selecting_model=false
+                });
+        
+        },        
+        showModelConfig(){
+            try {
+                this.isLoading = true
+                axios.get('/get_active_binding_settings').then(res => {
+                    this.isLoading = false
+                    if (res) {
+
+                        console.log('binding sett', res)
+
+                        if (res.data && Object.keys(res.data).length > 0) {
+
+                            // open form
+
+                            this.$refs.universalForm.showForm(res.data, "Binding settings ", "Save changes", "Cancel").then(res => {
+                                // send new data
+                                try {
+                                    axios.post('/set_active_binding_settings',
+                                    {client_id:this.$store.state.client_id, "settings":res}).then(response => {
+
+                                            if (response && response.data) {
+                                                console.log('binding set with new settings', response.data)
+                                                this.$store.state.toast.showToast("Binding settings updated successfully!", 4, true)
+
+                                            } else {
+                                                this.$store.state.toast.showToast("Did not get binding settings responses.\n" + response, 4, false)
+                                                this.isLoading = false
+                                            }
+
+
+                                        })
+                                } catch (error) {
+                                    this.$store.state.toast.showToast("Did not get binding settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.isLoading = false
+                                }
+
+
+
+                            })
+                        } else {
+                            this.$store.state.toast.showToast("Binding has no settings", 4, false)
+                            this.isLoading = false
+                        }
+
+                    }
+                })
+
+            } catch (error) {
+                this.isLoading = false
+                this.$store.state.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
+            }
+        },
+        async remount_personality(pers) {
+            console.log("Remounting personality ", pers)
+            if (!pers) { return { 'status': false, 'error': 'no personality - mount_personality' } }
+            try {
+                console.log("before")
+                const obj = {
+                    client_id: this.$store.state.client_id,
+                    category: pers.category,
+                    folder: pers.folder,
+                    language: pers.language
+                }
+                console.log("after")
+                const res = await axios.post('/remount_personality', obj);
+                console.log("Remounting personality executed:",res)
+                
+
+                if (res) {
+                    console.log("Remounting personality res")
+                    this.$store.state.toast.showToast("Personality remounted", 4, true)
+
+                    return res.data
+
+                }
+                else{
+                    console.log("failed remount_personality")
+                }
+            } catch (error) {
+                console.log(error.message, 'remount_personality - settings')
+                return
+            }
+
+        },      
+        async unmountPersonality(pers) {
+            console.log("Unmounting personality:",pers)
+            if (!pers) { return }
+
+            const res = await this.unmount_personality(pers.personality || pers)
+
+            console.log(res)
+            if (res.status) {
+                this.$store.state.config.personalities = res.personalities
+                this.$store.state.toast.showToast("Personality unmounted", 4, true)
+
+                //pers.isMounted = false
+                this.$store.dispatch('refreshMountedPersonalities');
+                // Select some other personality
+                const lastPers = this.$store.state.mountedPersArr[this.$store.state.mountedPersArr.length - 1]
+
+                console.log(lastPers, this.$store.state.mountedPersArr.length)
+                // const res2 = await this.select_personality(lastPers.personality)
+                const res2 = await this.select_personality(pers.personality)
+                if (res2.status) {
+                    this.$store.state.toast.showToast("Selected personality:\n" + lastPers.name, 4, true)
+                }
+
+
+            } else {
+                this.$store.state.toast.showToast("Could not unmount personality\nError: " + res.error, 4, false)
+            }
+
+        },
+
+        async unmount_personality(pers) {
+            if (!pers) { return { 'status': false, 'error': 'no personality - unmount_personality' } }
+
+            const obj = {
+                client_id: this.$store.state.client_id,
+                language: pers.language,
+                category: pers.category,
+                folder: pers.folder
+            }
+
+
+            try {
+                const res = await axios.post('/unmount_personality', obj);
+
+                if (res) {
+                    return res.data
+
+                }
+            } catch (error) {
+                console.log(error.message, 'unmount_personality - settings')
+                return
+            }
+
+        },
+        
         handleShortcut(event) {
             if (event.ctrlKey && event.key === 'd') {
                 event.preventDefault();
@@ -1067,7 +1450,6 @@ export default {
         },  
         showMenu() {
             this.isMenuVisible = true;
-            this.isinfosMenuVisible=false;
             nextTick(() => {
                 feather.replace()
 
@@ -1079,17 +1461,7 @@ export default {
                 feather.replace()
 
             })            
-        },              
-        toggleInfosMenu() {
-            this.isinfosMenuVisible = !this.isinfosMenuVisible;
-            if (this.isinfosMenuVisible){
-                this.isMenuVisible=false;
-            }
-
-            nextTick(() => {
-                feather.replace()
-            })
-        },
+        },    
         adjustMenuPosition() {
             const menu = this.$refs.languageMenu;
             if(menu){
@@ -1111,21 +1483,6 @@ export default {
             this.customLanguage = ''; // Reset the input field after adding
             }
         },
-        async selectLanguage(language) {
-            await this.$store.dispatch('changeLanguage', language);
-            this.toggleLanguageMenu(); // Fermer le menu après le changement de langue
-            this.language = language
-        },
-        async deleteLanguage(language) {
-            await this.$store.dispatch('deleteLanguage', language);
-            this.toggleLanguageMenu(); // Fermer le menu après le changement de langue
-            this.language = language
-        },
-        
-        toggleLanguageMenu() {
-            console.log("Toggling language ",this.isLanguageMenuVisible)
-            this.isLanguageMenuVisible = !this.isLanguageMenuVisible;
-        },        
         restartProgram(event) {
             event.preventDefault();
             this.$store.state.api_post_req('restart_program', this.$store.state.client_id)
@@ -1158,77 +1515,6 @@ export default {
 
                 })
             })
-        },
-        fun_mode_on(){
-            console.log("Turning on fun mode")
-            this.$store.state.config.fun_mode=true;
-            this.applyConfiguration()
-        },
-        fun_mode_off(){
-            console.log("Turning off fun mode")
-            this.$store.state.config.fun_mode=false;
-            this.applyConfiguration()
-        },
-        showNews(){
-            this.$store.state.news.show()
-        },
-        themeCheck() {
-
-            if (this.userTheme == "dark" || (!this.userTheme && this.systemTheme)) {
-                document.documentElement.classList.add("dark");
-                this.moonIcon.classList.add("display-none");
-
-                nextTick(()=>{
-                    //import('highlight.js/styles/tokyo-night-dark.css');
-                    import('highlight.js/styles/stackoverflow-dark.css');
-
-                })
-
-                return
-            }
-
-            nextTick(()=>{
-                //import('highlight.js/styles/tomorrow-night-blue.css');
-                import('highlight.js/styles/stackoverflow-light.css');
-            })
-            this.sunIcon.classList.add("display-none")
-
-        },
-        themeSwitch() {
-            
-            if (document.documentElement.classList.contains("dark")) {
-                document.documentElement.classList.remove("dark");
-                localStorage.setItem("theme", "light")
-                this.userTheme == "light"
-                this.iconToggle()
-             
-                return
-
-            }
-            import('highlight.js/styles/tokyo-night-dark.css');
-            document.documentElement.classList.add("dark");
-            localStorage.setItem("theme", "dark")
-            this.userTheme == "dark"
-            this.iconToggle()
-            // Dispatch the themeChanged event
-            window.dispatchEvent(new Event('themeChanged'));
-        },
-        iconToggle() {
-            this.sunIcon.classList.toggle("display-none");
-            this.moonIcon.classList.toggle("display-none");
-        },        
-        refreshPage() {
-            const hostnameParts = window.location.href.split('/');
-
-            if(hostnameParts.length > 4){
-                window.location.href='/'
-            }
-            else{
-                window.location.reload(true);
-            }
-        },
-        handleOk(inputText) {
-            console.log("Input text:", inputText);
         },
 
         getRandomEdgePosition() {
@@ -1757,6 +2043,22 @@ export default {
                 return
             }
         },
+        handleSearch() {
+            if (!this.filterTitle.trim()) return
+            
+            this.isSearching = true
+            // Add debounce to prevent too frequent searches
+            clearTimeout(this.searchTimeout)
+            this.searchTimeout = setTimeout(() => {
+                this.filterDiscussions()
+                this.isSearching = false
+            }, 300)
+        },
+        
+        clearSearch() {
+            this.filterTitle = ''
+            this.searchResults = []
+        },        
         filterDiscussions() {
             // Search bar in for filtering discussions by title (serch)
 
@@ -3080,10 +3382,19 @@ export default {
         PersonalityEditor,
         PopupViewer,
         ActionButton,
-        SocialIcon
+        SocialIcon,
+        MountedPersonalities
 
     },
-    watch: {  
+    watch: {        
+        installedModels: {
+            immediate: true,
+            handler(newVal) {
+                this.$nextTick(() => {
+                this.installedModels = newVal;
+                });
+            },
+        },   
         '$store.state.config.fun_mode': function(newVal, oldVal) {
             console.log(`Fun mode changed from ${oldVal} to ${newVal}! 🎉`);
         },        
@@ -3142,15 +3453,46 @@ export default {
 
             })
         },
-        isSearch() {
-            nextTick(() => {
-                feather.replace()
-
-            })
-        },
         
     },
     computed: { 
+
+        currentModel() {
+            return this.$store.state.currentModel || {};
+        },
+        currentModelIcon() {
+            return this.currentModel.icon || this.modelImgPlaceholder;
+        },
+        binding_name(){
+            return this.$store.state.config.binding_name    
+        },
+        installedModels() {
+            return this.$store.state.installedModels;
+        },
+        model_name(){
+            return this.$store.state.config.model_name    
+        },
+        mountedPersonalities() {
+            return this.$store.state.mountedPersArr;
+        },
+        personality_name(){
+            return this.$store.state.config.active_personality_id
+        },
+        config() {
+            return this.$store.state.config;
+        },
+        mountedPers(){
+            return this.$store.state.mountedPers;
+        },      
+        installedBindings() {
+            return this.$store.state.installedBindings;
+        },
+        currentBindingIcon(){
+            return this.currentBinding.icon || this.modelImgPlaceholder;
+        },
+        currentBinding(){
+            return this.$store.state.currentBinding || {};
+        },        
         isFullMode() {
           return this.$store.state.view_mode === 'full'; // Accessing the mode directly
         },      
@@ -3160,18 +3502,6 @@ export default {
             }
             return this.$store.state.config.app_custom_logo!=''?'/user_infos/'+this.$store.state.config.app_custom_logo:storeLogo
         },        
-        languages: {
-            get(){
-                console.log("searching languages", this.$store.state.languages)
-                return this.$store.state.languages
-            }
-        },
-        language: {
-            get(){
-                console.log("searching language", this.$store.state.language)
-                return this.$store.state.language
-            }
-        },
         currentPersonConfig (){
             try{
                 return this.$store.state.currentPersonConfig
