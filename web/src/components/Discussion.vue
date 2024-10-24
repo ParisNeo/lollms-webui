@@ -1,7 +1,7 @@
 <template>
     <div
         :class="selected ? 'discussion-hilighted min-w-[14rem] max-w-[14rem]' : 'discussion min-w-[14rem] max-w-[14rem]'"
-        class="m-1 py-2 flex flex-row sm:flex-row flex-wrap flex-shrink-0 items-center rounded-md duration-75 group cursor-pointer relative"
+        class="m-1 py-2 flex flex-row sm:flex-row flex-wrap flex-shrink-0 items-center rounded-md duration-75 cursor-pointer relative"
         :id="'dis-' + id"
         @click.stop="selectEvent()"
     >
@@ -62,7 +62,7 @@
         </div>
         <!-- CONTROL BUTTONS AS SLIDING FLOATING MENU -->
         <div
-            class="absolute top-0 right-0 h-full flex items-center"
+            class="absolute top-0 right-0 h-full flex items-center group"
         >
             <div
                 class="flex gap-2 items-center bg-white dark:bg-gray-800 p-2 rounded-l-md shadow-md transform translate-x-full group-hover:translate-x-0 transition-transform duration-300"
