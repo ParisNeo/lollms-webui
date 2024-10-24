@@ -1,6 +1,6 @@
 
 <template>
-  <div class="topbar-container">
+  <div ref="topbar-container" :class="['topbar-container', {'h-0': !isPinned}]">
     <!-- Add a thin strip at the top that triggers the hover -->
     <div 
       class="hover-zone" 
@@ -30,7 +30,7 @@
         <div class="toolbar-button" @mouseleave="hideInfosMenu">
             <div class="relative inline-block">
                 <!-- Infos menu positioned above the button -->
-                <div v-show="isInfosMenuVisible" @mouseenter="showInfosMenu" class="absolute m-0 p-0 z-50 top-full right-0 transform bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
+                <div v-show="isInfosMenuVisible" @mouseenter="showInfosMenu" >
                     <div class="p-4 container flex flex-col lg:flex-row items-center gap-2">
                         <!-- SYSTEM STATUS -->
                         <div class="flex gap-3 flex-1 items-center justify-end">
@@ -95,7 +95,7 @@
 
                 <!-- Info Button -->
                 <div @mouseenter="showInfosMenu" class="infos-hover-area">
-                    <button class="w-8 h-8">
+                    <button class="w-6 h-6">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" class="w-full h-full">
                             <!-- Circle background -->
                             <circle cx="12.5" cy="12.5" r="11.25" fill="#3498db"/>
@@ -108,12 +108,11 @@
                 </div>
             </div>      
         </div>
-        <div 
-                v-if="is_fun_mode" 
+        <div v-if="is_fun_mode" 
                 title="Fun mode is on, press to turn off" 
                 class="w-8 h-8 cursor-pointer text-green-500 dark:text-green-400 hover:text-green-600 dark:hover:text-green-300 transition-colors duration-300"
                 @click="fun_mode_off()"
-            >
+        >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full animate-bounce">
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
@@ -262,9 +261,10 @@ export default {
     },        
 
     showInfosMenu() {
-      console.log("showing menu")
         this.isInfosMenuVisible = true;
-    },
+        console.log("showing menu")
+        console.log(this.isInfosMenuVisible)
+      },
     hideInfosMenu() {
         this.isInfosMenuVisible = false;
     },    
@@ -402,20 +402,6 @@ export default {
 .topbar-container {
   position: relative;
   width: 100%;
-}
-
-.topbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background-color: white; /* or your preferred background color */
-  transition: transform 0.3s ease-in-out;
-  z-index: 40;
-}
-
-.topbar-hidden {
-  transform: translateY(-100%);
 }
 
 .hover-zone {
