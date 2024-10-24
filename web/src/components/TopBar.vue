@@ -30,7 +30,7 @@
         <div class="toolbar-button" @mouseleave="hideInfosMenu">
             <div class="relative inline-block">
                 <!-- Infos menu positioned above the button -->
-                <div v-show="isInfosMenuVisible" @mouseenter="showInfosMenu" >
+                <div v-if="isInfosMenuVisible"  @mouseenter="showInfosMenu" class="absolute m-0 p-0 z-50 top-full right-0 transform bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
                     <div class="p-4 container flex flex-col lg:flex-row items-center gap-2">
                         <!-- SYSTEM STATUS -->
                         <div class="flex gap-3 flex-1 items-center justify-end">
@@ -175,7 +175,7 @@ export default {
   },
   data() {
     return {
-      isinfosMenuVisible: false,
+      isInfosMenuVisible: false,
       isVisible: false,
       isPinned: false,
       selectedLanguage: '',
@@ -262,11 +262,15 @@ export default {
 
     showInfosMenu() {
         this.isInfosMenuVisible = true;
-        console.log("showing menu")
-        console.log(this.isInfosMenuVisible)
+        nextTick(() => {
+            feather.replace()
+        })
       },
     hideInfosMenu() {
         this.isInfosMenuVisible = false;
+        nextTick(() => {
+                feather.replace()
+            })
     },    
     show() {
       this.isVisible = true
@@ -292,6 +296,9 @@ export default {
     },
     showNews(){
         this.$store.state.news.show()
+        nextTick(() => {
+            feather.replace()
+        })
     },
     themeCheck() {
 
