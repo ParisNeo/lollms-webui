@@ -16,10 +16,18 @@
 
             <div class="flex flex-col items-center text-center max-w-4xl w-full px-4 relative z-10">
                 <div class="mb-8 w-full">
-                    <div class="text-6xl md:text-7xl font-bold text-amber-500 mb-2"
-                        style="text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;">
-                        L🌟LLMS
+                    <div class="text-5xl md:text-6xl font-bold text-amber-500 mb-2 hover:scale-105 transition-transform"
+                        style="text-shadow: 2px 2px 4px rgba(0,0,0,0.2), 
+                                            2px 2px 0px white, 
+                                            -2px -2px 0px white, 
+                                            2px -2px 0px white, 
+                                            -2px 2px 0px white;
+                                background: linear-gradient(45deg, #f59e0b, #fbbf24);
+                                -webkit-background-clip: text;
+                                background-clip: text;">
+                        L<span class="animate-pulse">⭐</span>LLMS
                     </div>
+
 
                     <p class="text-2xl text-gray-600 dark:text-gray-300 italic">
                         One tool to rule them all
@@ -79,10 +87,18 @@
                     alt="Logo" title="LoLLMS WebUI">
                 </div>
                 <div class="flex flex-col justify-center">
-                <div class="text-6xl md:text-2xl font-bold text-amber-500 mb-2"
-                    style="text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;">
-                    L🌟LLMS
-                </div>
+                    <div class="text-sm md:text-xl font-bold text-amber-500 mb-2 hover:scale-105 transition-transform"
+                        style="text-shadow: 2px 2px 4px rgba(0,0,0,0.2), 
+                                            2px 2px 0px white, 
+                                            -2px -2px 0px white, 
+                                            2px -2px 0px white, 
+                                            -2px 2px 0px white;
+                                background: linear-gradient(45deg, #f59e0b, #fbbf24);
+                                -webkit-background-clip: text;
+                                background-clip: text;">
+                        L<span class="animate-pulse">⭐</span>LLMS
+                    </div>
+
                 <p class="text-gray-400 text-sm">One tool to rule them all</p>
                 </div>
             </RouterLink>

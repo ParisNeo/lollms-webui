@@ -340,7 +340,7 @@ export default {
       
       try {
         // Fetch and apply new theme CSS
-        const response = await axios.get(`/distthemes/${themeName}.css`, {
+        const response = await axios.get(`/themes/${themeName}.css`, {
           headers: {
             'Cache-Control': 'no-cache',
             'Pragma': 'no-cache',
