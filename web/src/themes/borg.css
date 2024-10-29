@@ -1,0 +1,265 @@
+/* Borg Collective Theme */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    font-family: 'Share Tech Mono', monospace;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+.display-none {
+  @apply hidden;
+}
+
+h1 { @apply text-4xl md:text-5xl font-bold text-green-400 font-['Orbitron'] mb-6; }
+h2 { @apply text-3xl font-semibold text-green-500 font-['Orbitron'] mb-4; }
+h3 { @apply text-2xl font-medium text-green-600 font-['Orbitron'] mb-3; }
+h4 { @apply text-xl font-medium text-green-400 font-['Orbitron'] mb-2; }
+
+h1, h2 { @apply border-b border-green-600 pb-2; }
+
+p { @apply text-base text-gray-300 break-words; }
+ul { @apply list-disc ml-0; }
+li { @apply list-disc ml-5; }
+ol { @apply list-decimal ml-5; }
+
+:root {
+  --color-primary: #00ff00;
+  --color-primary-light: #40ff40;
+  --color-secondary: #1a1a1a;
+  --color-accent: #00cc00;
+  --color-light-text-panel: #00ff00;
+  --color-dark-text-panel: #40ff40;
+  --color-bg-light-panel: #121212;
+  --color-bg-light: #0a0a0a;
+  --color-bg-light-tone: #1a1a1a;
+  --color-bg-light-code-block: #080808;
+  --color-bg-light-tone-panel: #151515;
+  --color-bg-light-discussion: #0f0f0f;
+  --color-bg-light-discussion-odd: #0d0d0d;
+  --color-bg-dark: #000000;
+  --color-bg-dark-tone: #0a0a0a;
+  --color-bg-dark-tone-panel: #101010;
+  --color-bg-dark-code-block: #080808;
+  --color-bg-dark-discussion: #050505;
+  --color-bg-dark-discussion-odd: #030303;
+}
+
+textarea, input, select {
+  @apply bg-gray-900 border-green-600 text-green-400;
+}
+
+.background-color {
+  @apply bg-gradient-to-br from-gray-900 to-black min-h-screen;
+}
+
+.toolbar-color {
+  @apply text-green-400 bg-gray-900 rounded-lg shadow-md border border-green-600;
+}
+
+.panels-color {
+  @apply text-green-400 bg-gray-900 border border-green-600;
+}
+
+.unicolor-panels-color {
+  @apply bg-gray-900 border border-green-600;
+}
+
+.chatbox-color {
+  @apply bg-black text-green-400;
+}
+
+.message {
+  @apply relative w-full rounded-lg border border-green-600 flex flex-col flex-grow flex-wrap overflow-visible p-5 pb-3 text-lg;
+  @apply bg-gray-900 text-green-400;
+}
+
+.message:hover {
+  @apply border-green-400;
+}
+
+.message:nth-child(even) {
+  @apply bg-gray-900;
+}
+
+.message:nth-child(odd) {
+  @apply bg-gray-800;
+}
+
+.message-header {
+  @apply text-xl font-['Orbitron'] font-semibold mb-2 text-green-400;
+}
+
+.message-content {
+  @apply text-lg leading-relaxed text-gray-300;
+}
+
+body {
+  @apply bg-black text-green-400 min-h-screen text-base;
+}
+
+.discussion {
+  @apply mr-2 text-xs text-green-400;
+}
+
+.discussion-hilighted {
+  @apply bg-gray-800 text-green-400 text-xs;
+}
+
+.bg-gradient-welcome {
+  @apply bg-gradient-to-br from-gray-900 to-black;
+}
+
+.bg-gradient-progress {
+  @apply bg-gradient-to-r from-green-900 to-green-700;
+}
+
+.text-gradient-title {
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600;
+}
+
+.text-subtitle {
+  @apply text-green-500;
+}
+
+.text-author {
+  @apply text-green-400;
+}
+
+.text-loading {
+  @apply text-green-400;
+}
+
+.text-progress {
+  @apply text-green-500;
+}
+
+.btn-primary {
+  @apply bg-green-700 hover:bg-green-600 text-black font-bold py-2 px-4 rounded;
+}
+
+.btn-secondary {
+  @apply bg-gray-800 hover:bg-gray-700 text-green-400 font-bold py-2 px-4 rounded border border-green-600;
+}
+
+.card {
+  @apply bg-gray-900 rounded-lg shadow-md p-6 border border-green-600;
+}
+
+.input {
+  @apply bg-gray-900 border border-green-600 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-green-400;
+}
+
+.label {
+  @apply block text-sm font-medium text-green-400 mb-1;
+}
+
+.link {
+  @apply text-green-400 hover:text-green-300;
+}
+
+.navbar-container {
+  @apply text-green-400 bg-gray-900 rounded shadow-lg border border-green-600;
+}
+
+.game-menu {
+  @apply flex justify-center items-center relative;
+}
+
+.text-shadow-custom {
+  text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+}
+
+.menu-item {
+  @apply mb-2 px-4 py-2 text-green-400 font-['Orbitron'] font-bold text-lg transition-all duration-300 ease-in-out;
+  @apply hover:text-green-300 hover:transform hover:-translate-y-1;
+}
+
+.menu-item.active-link {
+  @apply rounded-t-md border-green-500 text-green-300 font-['Orbitron'] font-bold text-lg transition-all duration-300 ease-in-out scale-105;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.menu-item.active-link::before {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(to right, #00ff00, #40ff40, #00ff00);
+  border-radius: 10px;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -100% 0; }
+  100% { background-position: 100% 0; }
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #00ff00 #1a1a1a;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  @apply w-2;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  @apply bg-gray-900 rounded-full;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  @apply bg-green-600 rounded-full;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  @apply bg-green-500;
+}
+
+.btn {
+  @apply font-['Orbitron'] font-semibold py-2 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-md flex items-center;
+}
+
+.search-input {
+  @apply w-full border-b-2 border-green-600 py-2 px-4 pl-10 transition-colors duration-300 ease-in-out focus:outline-none focus:border-green-400 bg-transparent text-green-400;
+}
+
+.card-title {
+  @apply text-xl font-['Orbitron'] font-bold text-green-400 mb-2;
+}
+
+.card-content {
+  @apply text-gray-300;
+}
+
+.subcard {
+  @apply bg-gray-900 rounded-lg shadow-md p-4 border border-green-600;
+}
+
+.subcard-title {
+  @apply text-lg font-['Orbitron'] font-bold text-green-400 mb-2;
+}
+
+.subcard-content {
+  @apply text-gray-300;
+}
