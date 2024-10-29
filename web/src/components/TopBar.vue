@@ -154,6 +154,31 @@
             </ul>
             </div>
         </div>
+        <select 
+          v-model="currentTheme" 
+          @change="loadTheme(currentTheme)"
+          class="inline-block w-[60px] px-3 py-1.5 text-sm
+                border border-gray-300 rounded-md
+                bg-white dark:bg-gray-800
+                text-gray-700 dark:text-gray-200
+                focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500
+                hover:border-gray-400
+                cursor-pointer
+                appearance-none
+                bg-no-repeat
+                bg-right
+                pr-8 mx-2"
+          style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M7%207l3-3%203%203m0%206l-3%203-3-3%22%20stroke%3D%22%239CA3AF%22%20fill%3D%22none%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E');"
+        >
+          <option 
+            v-for="theme in availableThemes" 
+            :key="theme" 
+            :value="theme"
+            class="py-1"
+          >
+            {{ theme }}
+          </option>
+        </select>
         <div v-if="isDarkMode" class="sun text-2xl w-6 hover:text-primary duration-150 cursor-pointer" title="Switch to Light theme" @click="themeSwitch()">
             <i data-feather="sun"></i>
         </div>
@@ -169,7 +194,7 @@
 import Navigation from '@/components/Navigation.vue';
 import ActionButton from '@/components/ActionButton.vue'
 import SocialIcon from '@/components/SocialIcon.vue'
-
+import axios from 'axios'
 import feather from 'feather-icons'
 export default {
   name: 'TopBar',
@@ -180,6 +205,10 @@ export default {
   },
   data() {
     return {
+      currentTheme: localStorage.getItem('preferred-theme') || 'default',
+      availableThemes: ['default', 'borg', 'amber', 'sober_gray', 'strawberry'],
+      isLoading: false,
+      error: null,      
       isInfosMenuVisible: false,
       isVisible: false,
       isPinned: false,
@@ -233,6 +262,27 @@ export default {
         return this.$store.state.isConnected;
     },     
   },
+  async mounted() {
+    try {
+      // Load saved theme preference
+      const savedTheme = localStorage.getItem('preferred-theme')
+      if (savedTheme && this.availableThemes.includes(savedTheme)) {
+        this.currentTheme = savedTheme
+      }
+      
+      // Load the initial theme
+      try {
+        await this.loadTheme(this.currentTheme)
+      } catch (err) {
+        this.error = 'Failed to initialize theme system'
+        console.error(err)
+      }
+      
+    } catch (err) {
+      this.error = 'Failed to initialize theme system'
+      console.error(err)
+    }
+  },  
   async created() {
     this.sunIcon = document.querySelector(".sun");
         this.moonIcon = document.querySelector(".moon");
@@ -247,6 +297,86 @@ export default {
 
   },
   methods: {
+    getSavedTheme() {
+      try {
+        return localStorage.getItem('preferred-theme')
+      } catch (e) {
+        console.warn('Failed to access localStorage:', e)
+        return null
+      }
+    },
+
+    // Safely save theme to localStorage
+    saveTheme(themeName) {
+      try {
+        // Clear some space first
+        this.clearOldStorageItems()
+        localStorage.setItem('preferred-theme', themeName)
+      } catch (e) {
+        console.warn('Failed to save theme preference:', e)
+        // Continue without saving to localStorage
+      }
+    },
+
+    // Helper method to clear space in localStorage
+    clearOldStorageItems() {
+      try {
+        // Remove old or unnecessary items
+        const itemsToKeep = ['preferred-theme'] // Add other critical items here
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i)
+          if (!itemsToKeep.includes(key)) {
+            localStorage.removeItem(key)
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to clear localStorage:', e)
+      }
+    },
+
+    async loadTheme(themeName) {
+      this.isLoading = true
+      this.error = null
+      
+      try {
+        // Fetch and apply new theme CSS
+        const response = await axios.get(`/distthemes/${themeName}.css`, {
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+          }
+        });
+        console.log(response)
+        // Remove any existing theme style element
+        const existingStyle = document.getElementById('theme-styles');
+        if (existingStyle) {
+          existingStyle.remove();
+        }
+
+        // Create and append new style element
+        const styleElement = document.createElement('style');
+        styleElement.id = 'theme-styles';
+        styleElement.textContent = response.data;
+        document.head.appendChild(styleElement);
+
+        // Apply theme class to body
+        // document.body.className = `theme-${themeName}`;
+
+        // Safely save theme preference
+        this.saveTheme(themeName);        
+      } catch (error) {
+        console.error(`Failed to load theme: ${themeName}`, error)
+        this.error = `Failed to load theme: ${themeName}`
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    reloadTheme() {
+      return this.loadTheme(this.currentTheme)
+    },
+      
     themeSwitch() {
         
         if (document.documentElement.classList.contains("dark")) {
@@ -341,7 +471,6 @@ export default {
             //import('highlight.js/styles/tomorrow-night-blue.css');
             import('highlight.js/styles/stackoverflow-light.css');
         })
-        this.sunIcon.classList.add("display-none")
 
     },
     iconToggle() {
@@ -435,5 +564,11 @@ export default {
 
 .hover-zone {
   opacity: 0;
+}
+
+
+.error {
+  color: red;
+  margin-left: 1rem;
 }
 </style>

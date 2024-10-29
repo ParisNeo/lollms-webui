@@ -7,7 +7,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "build:themes": "postcss src/themes/*.css --dir public/themes"
   },
   "dependencies": {
     "@monaco-editor/loader": "^1.4.0",
@@ -44,13 +45,14 @@
     "@rushstack/eslint-patch": "^1.2.0",
     "@vitejs/plugin-vue": "^5.1.4",
     "@vue/eslint-config-prettier": "^7.1.0",
-    "autoprefixer": "^10.4.14",
+    "autoprefixer": "^10.4.20",
     "eslint": "^8.34.0",
     "eslint-plugin-vue": "^9.9.0",
-    "postcss": "^8.4.31",
+    "postcss": "^8.4.47",
+    "postcss-cli": "^11.0.0",
     "prettier": "^2.8.4",
     "tailwind-scrollbar": "^3.0.1",
-    "tailwindcss": "^3.3.1",
+    "tailwindcss": "^3.4.14",
     "vite": "^5.1.8"
   }
 }

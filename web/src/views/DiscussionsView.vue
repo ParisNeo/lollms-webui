@@ -36,9 +36,10 @@
                         @click="updateRandomFact">
                         <p class="text-lg text-gray-700 dark:text-gray-300">
                             <span class="font-semibold text-blue-600 dark:text-blue-400">🤔 Fun Fact: </span>
-                            {{ randomFact }}
+                            <span v-html="randomFact"></span>
                         </p>
                     </div>
+
 
                     <!-- Animated Progress Bar -->
                     <div class="w-full h-24 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg">
@@ -1000,7 +1001,8 @@ export default {
                 "LoLLMs features a built-in code interpreter that can execute multiple programming languages.",
                 "Quantum computers can perform calculations in minutes that would take classical computers thousands of years.",
                 "LoLLMs supports multimodal interactions, allowing users to work with both text and images.",
-                "The name Saïph in Arabic (سيف) means 'sword', symbolizing cutting-edge AI technology."
+                "The name Saïph in Arabic (سيف) means 'sword', symbolizing cutting-edge AI technology.",
+                '<div class="flex items-center justify-center"><iframe width="560" height="315" src="https://www.youtube.com/embed/7pSXGj0dSzE?si=Ov0Y4F2mCRSB61xc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>'
             ],
             randomFact: "",            
             showPlaceholderModal: false,
@@ -2205,19 +2207,23 @@ export default {
             }
         },
         async selectDiscussion(item) {
+            console.log("Selecting a discussion")
             if(this.isGenerating){
                 this.$store.state.toast.showToast("You are currently generating a text. Please wait for text generation to finish or stop it before trying to select another discussion", 4, false)
                 return;
             }
 
             if (item) {
+                console.log(`Selecting discussion: ${this.currentDiscussion}`)
                 // When discussion is selected it loads the discussion array
                 if (this.currentDiscussion===undefined) {
+                    console.log(`Selecting discussion: ${this.currentDiscussion}`)
                     this.currentDiscussion = item
 
                     this.setPageTitle(item)
 
                     localStorage.setItem('selected_discussion', this.currentDiscussion.id)
+                    console.log(`Saved discussion to : ${this.currentDiscussion.id}`)
 
                     this.load_discussion(item.id, ()=>{
                         if (this.discussionArr.length > 1) {
@@ -2239,6 +2245,7 @@ export default {
                         this.setPageTitle(item)
 
                         localStorage.setItem('selected_discussion', this.currentDiscussion.id)
+                        console.log(`Saved discussion to : ${this.currentDiscussion.id}`)
 
                         this.load_discussion(item.id, ()=>{
                             if (this.discussionArr.length > 1) {
@@ -3252,6 +3259,7 @@ export default {
             if (this.currentDiscussion!=null){
                 this.setPageTitle(item)
                 localStorage.setItem('selected_discussion', this.currentDiscussion.id)
+                console.log(`Saved discussion to : ${this.currentDiscussion.id}`)
                 this.load_discussion(item.id, ()=>{
                     if (this.discussionArr.length > 1) {
                         if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
