@@ -167,11 +167,16 @@
 
 <script>
 import Navigation from '@/components/Navigation.vue';
+import ActionButton from '@/components/ActionButton.vue'
+import SocialIcon from '@/components/SocialIcon.vue'
 
+import feather from 'feather-icons'
 export default {
   name: 'TopBar',
   components: {
-    Navigation
+    Navigation,
+    ActionButton,
+    SocialIcon,
   },
   data() {
     return {
@@ -180,6 +185,10 @@ export default {
       isPinned: false,
       selectedLanguage: '',
       isLanguageMenuVisible: false,
+      sunIcon: document.querySelector(".sun"),
+      moonIcon: document.querySelector(".moon"),
+      userTheme: localStorage.getItem("theme"),
+      systemTheme: window.matchMedia("prefers-color-scheme: dark").matches,
 
     }
   },
@@ -224,6 +233,19 @@ export default {
         return this.$store.state.isConnected;
     },     
   },
+  async created() {
+    this.sunIcon = document.querySelector(".sun");
+        this.moonIcon = document.querySelector(".moon");
+        this.userTheme = localStorage.getItem("theme");
+        console.log(this.userTheme)
+        this.systemTheme = window.matchMedia("prefers-color-scheme: dark").matches;
+        this.themeCheck()
+
+        this.$nextTick(() => {
+            feather.replace()
+        })
+
+  },
   methods: {
     themeSwitch() {
         
@@ -262,13 +284,13 @@ export default {
 
     showInfosMenu() {
         this.isInfosMenuVisible = true;
-        nextTick(() => {
+        this.$nextTick(() => {
             feather.replace()
         })
       },
     hideInfosMenu() {
         this.isInfosMenuVisible = false;
-        nextTick(() => {
+        this.$nextTick(() => {
                 feather.replace()
             })
     },    
@@ -296,7 +318,7 @@ export default {
     },
     showNews(){
         this.$store.state.news.show()
-        nextTick(() => {
+        this.$nextTick(() => {
             feather.replace()
         })
     },
@@ -306,7 +328,7 @@ export default {
             document.documentElement.classList.add("dark");
             this.moonIcon.classList.add("display-none");
 
-            nextTick(()=>{
+            this.$nextTick(()=>{
                 //import('highlight.js/styles/tokyo-night-dark.css');
                 import('highlight.js/styles/stackoverflow-dark.css');
 
@@ -315,7 +337,7 @@ export default {
             return
         }
 
-        nextTick(()=>{
+        this.$nextTick(()=>{
             //import('highlight.js/styles/tomorrow-night-blue.css');
             import('highlight.js/styles/stackoverflow-light.css');
         })

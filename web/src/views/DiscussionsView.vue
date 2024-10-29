@@ -1,54 +1,71 @@
 <template>
     <transition name="fade-and-fly">
         <div v-if="!isReady" class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-gradient-to-br from-blue-400 to-purple-100 dark:from-blue-900 dark:to-purple-900 overflow-hidden">
-        <!-- Falling strawberries -->
-        <div class="absolute inset-0 pointer-events-none overflow-hidden">
-            <div v-for="n in 50" :key="n" class="absolute animate-fall animate-giggle"
-                :style="{
-                left: `${Math.random() * 100}%`,
-                top: `-20px`,
-                animationDuration: `${3 + Math.random() * 7}s`,
-                animationDelay: `${Math.random() * 5}s`
-                }">
-            🌟
-            </div>
-        </div>
-
-        <div class="flex flex-col items-center text-center max-w-4xl w-full px-4 relative z-10">
-            <div class="mb-8 w-full">
-                <div class="text-6xl md:text-7xl font-bold text-amber-500 mb-2"
-                    style="text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;">
-                    L🌟LLMS
+            <!-- Falling stars -->
+            <div class="absolute inset-0 pointer-events-none overflow-hidden">
+                <div v-for="n in 50" :key="n" class="absolute animate-fall animate-giggle"
+                    :style="{
+                    left: `${Math.random() * 100}%`,
+                    top: `-20px`,
+                    animationDuration: `${3 + Math.random() * 7}s`,
+                    animationDelay: `${Math.random() * 5}s`
+                    }">
+                🌟
                 </div>
-
-            <p class="text-2xl text-gray-600 dark:text-gray-300 italic">
-                One tool to rule them all
-            </p>
-            <p class="text-xl text-gray-500 dark:text-gray-400 mb-6">
-                by ParisNeo
-            </p>
-            <p class="bottom-0 text-2xl text-gray-600 dark:text-gray-300 italic">
-                {{ version_info }}
-            </p>
-
-            <div class="w-full h-24 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg flex items-center justify-center">
-                <p style="font-size: 48px; line-height: 1;">🌟</p>
             </div>
 
-            </div>
-            
-            <div class="w-full max-w-2xl">
-            <div role="status" class="w-full">
-                <p class="text-xl text-gray-700 dark:text-gray-300">
-                {{ loading_infos }}...
-                </p>
-                <p class="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">
-                {{ Math.round(loading_progress) }}%
-                </p>
-            </div>
+            <div class="flex flex-col items-center text-center max-w-4xl w-full px-4 relative z-10">
+                <div class="mb-8 w-full">
+                    <div class="text-6xl md:text-7xl font-bold text-amber-500 mb-2"
+                        style="text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;">
+                        L🌟LLMS
+                    </div>
+
+                    <p class="text-2xl text-gray-600 dark:text-gray-300 italic">
+                        One tool to rule them all
+                    </p>
+                    <p class="text-xl text-gray-500 dark:text-gray-400 mb-6">
+                        by ParisNeo
+                    </p>
+                    <p class="bottom-0 text-2xl text-gray-600 dark:text-gray-300 italic">
+                        {{ version_info }}
+                    </p>
+
+                    <!-- Clickable interesting fact card -->
+                    <div class="mt-6 mb-6 p-4 bg-white/80 dark:bg-gray-800/80 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+                        @click="updateRandomFact">
+                        <p class="text-lg text-gray-700 dark:text-gray-300">
+                            <span class="font-semibold text-blue-600 dark:text-blue-400">🤔 Fun Fact: </span>
+                            {{ randomFact }}
+                        </p>
+                    </div>
+
+                    <!-- Animated Progress Bar -->
+                    <div class="w-full h-24 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg">
+                        <!-- Progress Background -->
+                        <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-600 dark:to-purple-600 transition-all duration-300"
+                            :style="{ width: `${loading_progress}%` }">
+                        </div>
+                        <!-- Star that moves with progress -->
+                        <div class="absolute top-0 h-full flex items-center transition-all duration-300"
+                            :style="{ left: `${loading_progress}%`, transform: 'translateX(-50%)' }">
+                            <p style="font-size: 48px; line-height: 1;">🌟</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-full max-w-2xl">
+                    <div role="status" class="w-full">
+                        <p class="text-xl text-gray-700 dark:text-gray-300">
+                            {{ loading_infos }}...
+                        </p>
+                        <p class="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">
+                            {{ Math.round(loading_progress) }}%
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
     </transition>
     <transition name="slide-right">
     <div  v-if="showLeftPanel"
@@ -451,30 +468,74 @@
                         
                         <!-- REMOVED FOR NOW, NEED MORE TESTING -->
                         <!-- @click="scrollToElementInContainer($event.target, 'messages-list')"  -->
-                        <div  v-if="discussionArr.length < 2 && personality.prompts_list.length > 0"  class="w-full rounded-lg m-2 shadow-lg hover:border-primary dark:hover:border-primary hover:border-solid hover:border-2 border-2 border-transparent even:bg-bg-light-discussion-odd dark:even:bg-bg-dark-discussion-odd flex flex-col overflow-hidden p-4 pb-2 h-[600px]">
-                            <h2 class="text-2xl font-bold mb-4">Prompt examples</h2>
-                            <div v-if="discussionArr.length < 2 && personality.prompts_list.length > 0" 
-                                class="overflow-y-auto flex-grow pr-2 custom-scrollbar">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-2">
-                                <div 
-                                    v-for="(prompt, index) in personality.prompts_list" 
-                                    :key="index" 
-                                    @click="selectPrompt(prompt)"
-                                    class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 flex flex-col justify-between h-[220px] overflow-hidden group"
-                                >
+                        <div v-if="discussionArr.length < 2 && personality.prompts_list.length > 0" class="w-full rounded-lg m-2 shadow-lg hover:border-primary dark:hover:border-primary hover:border-solid hover:border-2 border-2 border-transparent even:bg-bg-light-discussion-odd dark:even:bg-bg-dark-discussion-odd flex flex-col overflow-hidden p-4 pb-2">
+
+                            <h2 class="text-xl font-semibold mb-4">Prompt examples</h2>
+                            <div class="overflow-x-auto flex-grow scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 scrollbar-track-gray-200 dark:scrollbar-track-gray-800 scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
+                                <div class="flex flex-nowrap gap-4 p-2 min-w-full">
                                     <div 
-                                    :title="prompt" 
-                                    class="text-base text-gray-700 dark:text-gray-300 overflow-hidden relative h-full"
+                                        v-for="(prompt, index) in personality.prompts_list" 
+                                        :key="index" 
+                                        @click="handlePromptSelection(prompt)"
+                                        class="flex-shrink-0 w-[300px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 flex flex-col justify-between h-[220px] overflow-hidden group"
                                     >
-                                    <div class="absolute inset-0 overflow-hidden">
-                                        {{ prompt }}
-                                    </div>
-                                    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white dark:to-gray-800 group-hover:opacity-0 transition-opacity duration-300"></div>
-                                    </div>
-                                    <div class="mt-2 text-sm text-gray-500 dark:text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    Click to select
+                                        <div 
+                                            :title="prompt" 
+                                            class="text-base text-gray-700 dark:text-gray-300 overflow-hidden relative h-full"
+                                        >
+                                            <div class="absolute inset-0 overflow-hidden">
+                                                {{ prompt }}
+                                            </div>
+                                            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white dark:to-gray-800 group-hover:opacity-0 transition-opacity duration-300"></div>
+                                        </div>
+                                        <div class="mt-2 text-sm text-gray-500 dark:text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            Click to select
+                                        </div>
                                     </div>
                                 </div>
+                            </div>
+
+                            <!-- Modal for placeholder inputs with live preview -->
+                            <div v-if="showPlaceholderModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-2xl w-full">
+                                    <h3 class="text-lg font-semibold mb-4">Fill in the placeholders</h3>
+                                    
+                                    <!-- Live Preview Section -->
+                                    <div class="mb-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                        <h4 class="text-sm font-medium mb-2 text-gray-600 dark:text-gray-400">Live Preview:</h4>
+                                        <div class="text-base">{{ previewPrompt }}</div>
+                                    </div>
+
+                                    <div class="space-y-4">
+                                        <div v-for="(placeholder, index) in placeholders" :key="index" class="flex flex-col">
+                                            <label :for="'placeholder-'+index" class="text-sm font-medium mb-1">
+                                                {{ placeholder.replace('[', '').replace(']', '') }}
+                                            </label>
+                                            <input 
+                                                :id="'placeholder-'+index"
+                                                v-model="placeholderValues[index]"
+                                                type="text"
+                                                class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
+                                                :placeholder="placeholder"
+                                                @input="updatePreview"
+                                            >
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6 flex justify-end space-x-4">
+                                        <button 
+                                            @click="cancelPlaceholders"
+                                            class="px-4 py-2 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button 
+                                            @click="applyPlaceholders"
+                                            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                                        >
+                                            Apply
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -924,6 +985,30 @@ export default {
     
     data() {
         return {
+            interestingFacts: [
+                "Saïph, the new version of LoLLMs, is named after a star in Orion's constellation (Kappa Orionis), representing bright guidance in AI!",
+                "Did you know? The first computer programmer was a woman - Ada Lovelace!",
+                "Large Language Models (LLMs) have evolved from having millions of parameters to hundreds of billions in just a few years.",
+                "LoLLMs (Lord of Large Language Multimodal Systems) is an open-source AI assistant platform created by ParisNeo.",
+                "Saïph (κ Orionis) is a blue-white supergiant star approximately 650 light-years away from Earth.",
+                "Neural networks were first proposed in 1943 by Warren McCulloch and Walter Pitts.",
+                "Modern LLMs like GPT-4 can understand and generate multiple languages, code, and even analyze images.",
+                "LoLLMs supports multiple AI models and can perform tasks like code interpretation, image analysis, and internet searches.",
+                "The term 'transformer' in AI, which powers most modern LLMs, was introduced in the 'Attention is All You Need' paper in 2017.",
+                "LoLLMs can generate various types of diagrams, including SVG, Graphviz, and Mermaid diagrams.",
+                "The Python programming language was named after Monty Python.",
+                "LoLLMs features a built-in code interpreter that can execute multiple programming languages.",
+                "Quantum computers can perform calculations in minutes that would take classical computers thousands of years.",
+                "LoLLMs supports multimodal interactions, allowing users to work with both text and images.",
+                "The name Saïph in Arabic (سيف) means 'sword', symbolizing cutting-edge AI technology."
+            ],
+            randomFact: "",            
+            showPlaceholderModal: false,
+            selectedPrompt: '',
+            placeholders: [],
+            placeholderValues: {},
+            previewPrompt: '',
+
             isSearching: false,
             isPersonalitiesMenuVisible: false,
             isModelsMenuVisible:false,
@@ -946,10 +1031,6 @@ export default {
             progress_visibility:false,
             progress_value:0,
             codeBlockStylesheet:'',
-            sunIcon: document.querySelector(".sun"),
-            moonIcon: document.querySelector(".moon"),
-            userTheme: localStorage.getItem("theme"),
-            systemTheme: window.matchMedia("prefers-color-scheme: dark").matches,
 
             lastMessageHtml:"",
             defaultMessageHtml: `
@@ -1094,6 +1175,15 @@ export default {
         }
     },
     methods: {        
+        updateRandomFact() {
+            // Get a new random fact different from the current one
+            let newFact;
+            do {
+                newFact = this.interestingFacts[Math.floor(Math.random() * this.interestingFacts.length)];
+            } while (newFact === this.randomFact && this.interestingFacts.length > 1);
+            
+            this.randomFact = newFact;
+        },        
         handleOnTalk(pers){
             console.log("talking")
             this.showPersonalities=false
@@ -1526,7 +1616,46 @@ export default {
                 case 3: return Math.random() * 100; // Bottom or left edge
             }
         },
-        selectPrompt(prompt){
+        handlePromptSelection(prompt) {
+            this.selectedPrompt = prompt;
+            this.previewPrompt = prompt; // Initialize preview
+            this.placeholders = this.extractPlaceholders(prompt);
+            
+            if (this.placeholders.length > 0) {
+                this.showPlaceholderModal = true;
+                this.placeholderValues = {};
+            } else {
+                this.setPromptInChatbox(prompt);
+            }
+        },
+
+        updatePreview() {
+            let updatedPrompt = this.selectedPrompt;
+            this.placeholders.forEach((placeholder, index) => {
+                const value = this.placeholderValues[index] || placeholder;
+                updatedPrompt = updatedPrompt.replace(placeholder, value);
+            });
+            this.previewPrompt = updatedPrompt;
+        },
+
+        cancelPlaceholders() {
+            this.showPlaceholderModal = false;
+            this.placeholders = [];
+            this.placeholderValues = {};
+            this.previewPrompt = '';
+        },
+
+        applyPlaceholders() {
+            this.setPromptInChatbox(this.previewPrompt);
+            this.showPlaceholderModal = false;
+        },
+
+        extractPlaceholders(prompt) {
+            const placeholderRegex = /\[(.*?)\]/g;
+            return [...prompt.matchAll(placeholderRegex)].map(match => match[0]);
+        },
+
+        setPromptInChatbox(prompt) {
             this.$refs.chatBox.message = prompt;
         },
         extractHtml() {
@@ -3113,6 +3242,7 @@ export default {
         },
     },
     async created() {
+        this.randomFact = this.interestingFacts[Math.floor(Math.random() * this.interestingFacts.length)];
         console.log("Created discussions view")
         const response = await axios.get('/get_versionID');
         const serverVersionId = response.data.versionId;
@@ -3305,43 +3435,13 @@ export default {
         this.$store.state.yesNoDialog = this.$refs.yesNoDialog
         this.$store.state.personality_editor = this.$refs.personality_editor
 
-        
-        this.sunIcon = document.querySelector(".sun");
-        this.moonIcon = document.querySelector(".moon");
-        this.userTheme = localStorage.getItem("theme");
-        this.systemTheme = window.matchMedia("prefers-color-scheme: dark").matches;
-        this.themeCheck()
-
-        nextTick(() => {
-            feather.replace()
-        })
 
         window.addEventListener('resize', this.adjustMenuPosition);
-
-        // let serverAddress = "http://localhost:9600/";
-        // try {
-        //     const response = await fetch('/get_server_address'); // Replace with the actual endpoint on your Flask server
-        //     serverAddress = await response.text();
-        //     if(serverAddress.includes('<')){
-        //         console.log(`Server address not found`)
-        //         serverAddress = "http://localhost:9600/"//process.env.VITE_LOLLMS_API
-                
-        //     }
-        //     console.log(`Server address: ${serverAddress}`)
-        // } catch (error) {
-        //     console.error('Error fetching server address:', error);
-            // Handle error if necessary
-        //     serverAddress = "http://localhost:9600/"
-        // }
-        // this.host = `${serverAddress}`; // Construct the full server address dynamically
-        // axios.defaults.baseURL = serverAddress
-        //console.log('chatbox mnt',this.$refs)
+        
         socket.on('refresh_files',()=>{
             this.recoverFiles()
         })
-        this.$nextTick(() => {
-            feather.replace();
-        });
+
     },
     async activated() {
         //console.log('settings changed acc', this.$store.state.settingsChanged)
