@@ -645,6 +645,7 @@
                                 <div class="flex flex-nowrap gap-6 p-4 min-w-full">
                                     <div 
                                         v-for="(prompt, index) in personality.prompts_list" 
+                                        :title="extractTitle(prompt)"
                                         :key="index" 
                                         @click="handlePromptSelection(prompt)"
                                         class="flex-shrink-0 w-[300px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-6 cursor-pointer hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 flex flex-col justify-between min-h-[220px] group"
@@ -652,6 +653,7 @@
                                         <div class="space-y-3">
                                             <h3 
                                                 class="font-bold text-lg text-gray-900 dark:text-gray-100 mb-2 truncate"
+                                                :title="extractTitle(prompt)"
                                             >
                                                 {{ extractTitle(prompt) }}
                                             </h3>
