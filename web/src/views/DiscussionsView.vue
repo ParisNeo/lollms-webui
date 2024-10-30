@@ -649,22 +649,14 @@
                                         @click="handlePromptSelection(prompt)"
                                         class="flex-shrink-0 w-[300px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 flex flex-col justify-between h-[220px] overflow-hidden group"
                                     >
-                                        <div class="flex flex-col h-full">
-                                            <!-- Title if exists -->
-                                            <h3 v-if="extractTitle(prompt)" class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
-                                                {{ extractTitle(prompt) }}
-                                            </h3>
-                                            
-                                            <!-- Content preview -->
-                                            <div 
-                                                :title="getPromptContent(prompt)" 
-                                                class="text-base text-gray-700 dark:text-gray-300 overflow-hidden relative flex-grow"
-                                            >
-                                                <div class="absolute inset-0 overflow-hidden">
-                                                    {{ getPromptContent(prompt) }}
-                                                </div>
-                                                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white dark:to-gray-800 group-hover:opacity-0 transition-opacity duration-300"></div>
+                                        <div 
+                                            :title="prompt" 
+                                            class="text-base text-gray-700 dark:text-gray-300 overflow-hidden relative h-full"
+                                        >
+                                            <div class="absolute inset-0 overflow-hidden">
+                                                {{ prompt }}
                                             </div>
+                                            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white dark:to-gray-800 group-hover:opacity-0 transition-opacity duration-300"></div>
                                         </div>
                                         <div class="mt-2 text-sm text-gray-500 dark:text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                             Click to select
@@ -690,6 +682,7 @@
                                                 {{ placeholder.label }}
                                             </label>
 
+                                            <!-- Single line text input -->
                                             <input 
                                                 v-if="placeholder.type === 'text'"
                                                 :id="'placeholder-'+index"
@@ -700,6 +693,7 @@
                                                 @input="updatePreview"
                                             >
 
+                                            <!-- Number input (int) -->
                                             <input 
                                                 v-if="placeholder.type === 'int'"
                                                 :id="'placeholder-'+index"
@@ -710,6 +704,7 @@
                                                 @input="updatePreview"
                                             >
 
+                                            <!-- Number input (float) -->
                                             <input 
                                                 v-if="placeholder.type === 'float'"
                                                 :id="'placeholder-'+index"
@@ -720,6 +715,7 @@
                                                 @input="updatePreview"
                                             >
 
+                                            <!-- Multiline text input -->
                                             <textarea 
                                                 v-if="placeholder.type === 'multiline'"
                                                 :id="'placeholder-'+index"
@@ -729,6 +725,7 @@
                                                 @input="updatePreview"
                                             ></textarea>
 
+                                            <!-- Code editor -->
                                             <div v-if="placeholder.type === 'code'" class="border rounded-md overflow-hidden">
                                                 <div class="bg-gray-200 dark:bg-gray-900 p-2 text-sm">
                                                     {{ placeholder.language || 'Plain text' }}
@@ -742,6 +739,7 @@
                                                 ></textarea>
                                             </div>
 
+                                            <!-- Options (dropdown) -->
                                             <select 
                                                 v-if="placeholder.type === 'options'"
                                                 :id="'placeholder-'+index"
@@ -1897,63 +1895,42 @@ export default {
                 case 3: return Math.random() * 100; // Bottom or left edge
             }
         },
-        // ---------------------------------------- extract title
-        extractTitle(prompt) {
-            const titleMatch = prompt.match(/@<(.*?)>@/);
-            return titleMatch ? titleMatch[1] : null;
-        },
-
-        getPromptContent(prompt) {
-            return prompt.replace(/@<.*?>@/, '').trim();
-        },
-
         handlePromptSelection(prompt) {
-            this.selectedPrompt = prompt; // Keep the full prompt with title
-            this.previewPrompt = prompt;
-            const promptContent = this.getPromptContent(prompt);
-            console.log(`promptContent:${promptContent}`)
-            const placeholders = this.extractPlaceholders(promptContent);
-            if (placeholders.length > 0) {
-                this.placeholderValues = {};
+            this.selectedPrompt = prompt;
+            this.previewPrompt = prompt; // Initialize preview
+            this.placeholders = this.extractPlaceholders(prompt);
+            
+            if (this.placeholders.length > 0) {
                 this.showPlaceholderModal = true;
+                this.placeholderValues = {};
             } else {
                 this.setPromptInChatbox(prompt);
             }
         },
 
-        extractPlaceholders(prompt) {
-            const placeholderRegex = /\[(.*?)\]/g;
-            return [...prompt.matchAll(placeholderRegex)].map(match => match[0]);
-        },
-
         updatePreview() {
             let preview = this.selectedPrompt;
-            const promptContent = this.getPromptContent(preview);
-            console.log(`promptContent:${promptContent}`)
-            // Start with the prompt content
-            let updatedContent = promptContent;
-            
-            // Update all placeholders
             this.parsedPlaceholders.forEach((placeholder, index) => {
                 const value = this.placeholderValues[index];
-                if (value !== undefined && value !== '') {
-                    const regex = new RegExp(this.escapeRegExp(placeholder.fullText), 'g');
-                    updatedContent = updatedContent.replace(regex, value);
-                }
+                // Replace all occurrences of the same placeholder
+                const regex = new RegExp(this.escapeRegExp(placeholder.fullText), 'g');
+                preview = preview.replace(regex, value || placeholder.fullText);
             });
-
-            // If there's a title, preserve it
-            const title = this.extractTitle(this.selectedPrompt);
-            if (title) {
-                this.previewPrompt = `@<${title}>@${updatedContent}`;
-            } else {
-                this.previewPrompt = updatedContent;
-            }
+            this.previewPrompt = preview;
+        },
+        escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        },
+        cancelPlaceholders() {
+            this.showPlaceholderModal = false;
+            this.placeholders = [];
+            this.placeholderValues = {};
+            this.previewPrompt = '';
         },
 
+        // When applying placeholders, make sure to update all instances
         applyPlaceholders() {
-            let finalPrompt = this.getPromptContent(this.selectedPrompt);
-            
+            let finalPrompt = this.selectedPrompt;
             this.parsedPlaceholders.forEach((placeholder, index) => {
                 const value = this.placeholderValues[index];
                 if (value) {
@@ -1961,22 +1938,15 @@ export default {
                     finalPrompt = finalPrompt.replace(regex, value);
                 }
             });
-
-            // Preserve the title if it exists
-            const title = this.extractTitle(this.selectedPrompt);
-            if (title) {
-                finalPrompt = `@<${title}>@${finalPrompt}`;
-            }
-
-            tthis.setPromptInChatbox(this.previewPrompt);
+            // Apply the final prompt and close modal
+            this.finalPrompt = finalPrompt;
             this.showPlaceholderModal = false;
+            this.setPromptInChatbox(this.previewPrompt);
         },
 
-        cancelPlaceholders() {
-            this.showPlaceholderModal = false;
-            this.placeholderValues = {};
-            this.selectedPrompt = '';
-            this.previewPrompt = '';
+        extractPlaceholders(prompt) {
+            const placeholderRegex = /\[(.*?)\]/g;
+            return [...prompt.matchAll(placeholderRegex)].map(match => match[0]);
         },
 
         setPromptInChatbox(prompt) {
@@ -3887,18 +3857,15 @@ export default {
         
     },
     computed: { 
-        placeholders() {
-            const promptContent = this.getPromptContent(this.selectedPrompt);
-            return this.extractPlaceholders(promptContent);
-        },
+        // Get unique placeholders while preserving order
         parsedPlaceholders() {
             const uniqueMap = new Map();
             this.placeholders.forEach(p => {
-                const parsed = this.parsePlaceholder(p);
+                const parsed = parsePlaceholder(p);
                 uniqueMap.set(parsed.fullText, parsed);
             });
             return Array.from(uniqueMap.values());
-        },
+        },       
         filteredBindings() {
             return this.installedBindings.filter(binding => 
             binding.name.toLowerCase().includes(this.bindingSearchQuery.toLowerCase())
