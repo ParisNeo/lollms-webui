@@ -305,7 +305,9 @@
                                             class="absolute top-0 left-0 w-full h-full opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white dark:bg-gray-900 rounded-md shadow-md p-2 flex flex-col items-center justify-center"
                                         >
                                             <!-- Full Name -->
-                                            <span class="text-xs font-medium mb-2 text-center">{{ item.name }}</span>
+                                            <span class="text-xs font-medium mb-2 text-center"
+                                            @click.prevent="setBinding(item)"                                             
+                                            >{{ item.name }}</span>
                                             
                                             <!-- Action Buttons -->
                                             <div class="flex space-x-1">
@@ -382,7 +384,9 @@
                                             class="absolute top-0 left-0 w-full h-full opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white dark:bg-gray-900 rounded-md shadow-md p-2 flex flex-col items-center justify-center"
                                         >
                                             <!-- Full Name -->
-                                            <span class="text-xs font-medium mb-2 text-center">{{ item.name }}</span>
+                                            <span class="text-xs font-medium mb-2 text-center"
+                                            @click.prevent="setModel(item)"                                             
+                                            >{{ item.name }}</span>
                                             
                                             <!-- Action Buttons -->
                                             <div class="flex space-x-1">
@@ -457,7 +461,9 @@
                                             class="absolute top-0 left-0 w-full h-full opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white dark:bg-gray-900 rounded-md shadow-md p-2 flex flex-col items-center justify-center"
                                         >
                                             <!-- Full Name -->
-                                            <span class="text-xs font-medium mb-2 text-center">{{ item.name }}</span>
+                                            <span class="text-xs font-medium mb-2 text-center" 
+                                            @click.prevent="onPersonalitySelected(item)"                                             
+                                            >{{ item.name }}</span>
                                             
                                             <!-- Action Buttons -->
                                             <div class="flex space-x-1">
