@@ -40,7 +40,7 @@
                     </p>
 
                     <!-- Clickable interesting fact card -->
-                    <div class="mt-6 mb-6 p-4 bg-white/80 dark:bg-gray-800/80 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+                    <div class="interesting-facts transition-transform duration-300 cursor-pointer"
                         @click="updateRandomFact">
                         <p class="text-lg text-gray-700 dark:text-gray-300">
                             <span class="font-semibold text-blue-600 dark:text-blue-400">🤔 Fun Fact: </span>
@@ -640,7 +640,6 @@
                         <!-- REMOVED FOR NOW, NEED MORE TESTING -->
                         <!-- @click="scrollToElementInContainer($event.target, 'messages-list')"  -->
                         <div v-if="discussionArr.length < 2 && personality.prompts_list.length > 0" class="w-full rounded-lg m-2 shadow-lg hover:border-primary dark:hover:border-primary hover:border-solid hover:border-2 border-2 border-transparent even:bg-bg-light-discussion-odd dark:even:bg-bg-dark-discussion-odd flex flex-col overflow-hidden p-4 pb-2">
-
                             <h2 class="text-xl font-semibold mb-4">Prompt examples</h2>
                             <div class="overflow-x-auto flex-grow scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 scrollbar-track-gray-200 dark:scrollbar-track-gray-800 scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
                                 <div class="flex flex-nowrap gap-4 p-2 min-w-full">
@@ -666,9 +665,9 @@
                                 </div>
                             </div>
 
-                            <!-- Modal for placeholder inputs with live preview -->
+                            <!-- Enhanced Modal for placeholder inputs with live preview -->
                             <div v-if="showPlaceholderModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-2xl w-full">
+                                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-4xl w-full">
                                     <h3 class="text-lg font-semibold mb-4">Fill in the placeholders</h3>
                                     
                                     <!-- Live Preview Section -->
@@ -677,19 +676,86 @@
                                         <div class="text-base">{{ previewPrompt }}</div>
                                     </div>
 
-                                    <div class="space-y-4">
-                                        <div v-for="(placeholder, index) in placeholders" :key="index" class="flex flex-col">
+                                    <div class="space-y-4 max-h-[60vh] overflow-y-auto">
+                                        <div v-for="(placeholder, index) in parsedPlaceholders" :key="placeholder.fullText" class="flex flex-col">
                                             <label :for="'placeholder-'+index" class="text-sm font-medium mb-1">
-                                                {{ placeholder.replace('[', '').replace(']', '') }}
+                                                {{ placeholder.label }}
                                             </label>
+
+                                            <!-- Single line text input -->
                                             <input 
+                                                v-if="placeholder.type === 'text'"
                                                 :id="'placeholder-'+index"
                                                 v-model="placeholderValues[index]"
                                                 type="text"
                                                 class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
-                                                :placeholder="placeholder"
+                                                :placeholder="placeholder.label"
                                                 @input="updatePreview"
                                             >
+
+                                            <!-- Number input (int) -->
+                                            <input 
+                                                v-if="placeholder.type === 'int'"
+                                                :id="'placeholder-'+index"
+                                                v-model.number="placeholderValues[index]"
+                                                type="number"
+                                                step="1"
+                                                class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
+                                                @input="updatePreview"
+                                            >
+
+                                            <!-- Number input (float) -->
+                                            <input 
+                                                v-if="placeholder.type === 'float'"
+                                                :id="'placeholder-'+index"
+                                                v-model.number="placeholderValues[index]"
+                                                type="number"
+                                                step="0.01"
+                                                class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
+                                                @input="updatePreview"
+                                            >
+
+                                            <!-- Multiline text input -->
+                                            <textarea 
+                                                v-if="placeholder.type === 'multiline'"
+                                                :id="'placeholder-'+index"
+                                                v-model="placeholderValues[index]"
+                                                rows="4"
+                                                class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
+                                                @input="updatePreview"
+                                            ></textarea>
+
+                                            <!-- Code editor -->
+                                            <div v-if="placeholder.type === 'code'" class="border rounded-md overflow-hidden">
+                                                <div class="bg-gray-200 dark:bg-gray-900 p-2 text-sm">
+                                                    {{ placeholder.language || 'Plain text' }}
+                                                </div>
+                                                <textarea 
+                                                    :id="'placeholder-'+index"
+                                                    v-model="placeholderValues[index]"
+                                                    rows="8"
+                                                    class="w-full p-2 font-mono bg-gray-100 dark:bg-gray-900 border-t"
+                                                    @input="updatePreview"
+                                                ></textarea>
+                                            </div>
+
+                                            <!-- Options (dropdown) -->
+                                            <select 
+                                                v-if="placeholder.type === 'options'"
+                                                :id="'placeholder-'+index"
+                                                v-model="placeholderValues[index]"
+                                                class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
+                                                @change="updatePreview"
+                                            >
+                                                <option value="" disabled>Select an option</option>
+                                                <option 
+                                                    v-for="option in placeholder.options" 
+                                                    :key="option" 
+                                                    :value="option"
+                                                >
+                                                    {{ option }}
+                                                </option>
+                                            </select>
                                         </div>
                                     </div>
                                     
@@ -1149,6 +1215,43 @@ import modelImgPlaceholder from "../assets/default_model.png"
 
 import MountedPersonalities from '@/components/MountedPersonalities.vue'
 
+
+const parsePlaceholder = (placeholder) => {
+    const parts = placeholder.replace('[', '').replace(']', '').split('::');
+    const label = parts[0];
+
+    if (parts.length === 1) {
+        return {
+            label,
+            type: 'text',
+            fullText: placeholder
+        };
+    }
+
+    const type = parts[1];
+    const result = {
+        label,
+        type,
+        fullText: placeholder
+    };
+
+    switch (type) {
+        case 'int':
+        case 'float':
+        case 'multiline':
+            break;
+        case 'code':
+            result.language = parts[2] || 'plaintext';
+            break;
+        case 'options':
+            result.options = parts[2] ? parts[2].split(',').map(o => o.trim()) : [];
+            break;
+        default:
+            result.type = 'text';
+    }
+    return result;
+};
+
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
     
@@ -1180,6 +1283,7 @@ export default {
             placeholders: [],
             placeholderValues: {},
             previewPrompt: '',
+            uniquePlaceholders: new Map(),
 
             bindingSearchQuery: '',
             modelSearchQuery: '',
@@ -1805,14 +1909,18 @@ export default {
         },
 
         updatePreview() {
-            let updatedPrompt = this.selectedPrompt;
-            this.placeholders.forEach((placeholder, index) => {
-                const value = this.placeholderValues[index] || placeholder;
-                updatedPrompt = updatedPrompt.replace(placeholder, value);
+            let preview = this.selectedPrompt;
+            this.parsedPlaceholders.forEach((placeholder, index) => {
+                const value = this.placeholderValues[index];
+                // Replace all occurrences of the same placeholder
+                const regex = new RegExp(this.escapeRegExp(placeholder.fullText), 'g');
+                preview = preview.replace(regex, value || placeholder.fullText);
             });
-            this.previewPrompt = updatedPrompt;
+            this.previewPrompt = preview;
         },
-
+        escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        },
         cancelPlaceholders() {
             this.showPlaceholderModal = false;
             this.placeholders = [];
@@ -1820,9 +1928,20 @@ export default {
             this.previewPrompt = '';
         },
 
+        // When applying placeholders, make sure to update all instances
         applyPlaceholders() {
-            this.setPromptInChatbox(this.previewPrompt);
+            let finalPrompt = this.selectedPrompt;
+            this.parsedPlaceholders.forEach((placeholder, index) => {
+                const value = this.placeholderValues[index];
+                if (value) {
+                    const regex = new RegExp(this.escapeRegExp(placeholder.fullText), 'g');
+                    finalPrompt = finalPrompt.replace(regex, value);
+                }
+            });
+            // Apply the final prompt and close modal
+            this.finalPrompt = finalPrompt;
             this.showPlaceholderModal = false;
+            this.setPromptInChatbox(this.previewPrompt);
         },
 
         extractPlaceholders(prompt) {
@@ -3738,6 +3857,15 @@ export default {
         
     },
     computed: { 
+        // Get unique placeholders while preserving order
+        parsedPlaceholders() {
+            const uniqueMap = new Map();
+            this.placeholders.forEach(p => {
+                const parsed = parsePlaceholder(p);
+                uniqueMap.set(parsed.fullText, parsed);
+            });
+            return Array.from(uniqueMap.values());
+        },       
         filteredBindings() {
             return this.installedBindings.filter(binding => 
             binding.name.toLowerCase().includes(this.bindingSearchQuery.toLowerCase())

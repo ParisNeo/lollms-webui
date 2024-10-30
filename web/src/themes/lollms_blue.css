@@ -377,3 +377,7 @@ button:hover {
 .subcard-footer-button {
   @apply bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded;
 }
+
+.interesting-facts{
+  @apply mt-6 mb-6 p-4 bg-white/80 dark:bg-gray-800/80 rounded-lg shadow-lg transform hover:scale-105 
+}

@@ -2380,9 +2380,6 @@ body {
 .bg-white\/50{
   background-color: rgb(255 255 255 / 0.5);
 }
-.bg-white\/80{
-  background-color: rgb(255 255 255 / 0.8);
-}
 .bg-yellow-100{
   --tw-bg-opacity: 1;
   background-color: rgb(253 246 178 / var(--tw-bg-opacity));
@@ -2855,6 +2852,9 @@ body {
 }
 .align-bottom{
   vertical-align: bottom;
+}
+.font-mono{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 .font-sans{
   font-family: PTSans, Roboto, sans-serif;
@@ -4831,9 +4831,6 @@ body{
 }
 .dark\:bg-gray-800\/50:is(.dark *){
   background-color: rgb(31 41 55 / 0.5);
-}
-.dark\:bg-gray-800\/80:is(.dark *){
-  background-color: rgb(31 41 55 / 0.8);
 }
 .dark\:bg-gray-900:is(.dark *){
   --tw-bg-opacity: 1;

@@ -1,6 +1,6 @@
 <template>
     <div
-        class="relative w-full group rounded-lg m-2 shadow-lg message hover:border-primary dark:hover:border-primary hover:border-solid hover:border-2 border-2 border-transparent flex flex-col flex-grow flex-wrap overflow-visible p-4 pb-2 ">
+        class="relative message w-full group rounded-lg m-2 shadow-lg  hover:border-primary dark:hover:border-primary hover:border-solid hover:border-2 border-2 border-transparent flex flex-col flex-grow flex-wrap overflow-visible p-4 pb-2 ">
         <div class="flex flex-row  gap-2 ">
             <div class=" flex-shrink-0">
                 <!-- AVATAR -->

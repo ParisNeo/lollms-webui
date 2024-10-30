@@ -263,3 +263,7 @@ body {
 .subcard-content {
   @apply text-gray-300;
 }
+
+.interesting-facts{
+  @apply mt-6 mb-6 p-4 bg-gray-800/80 dark:bg-gray-800/80 rounded-lg shadow-lg transform hover:scale-105 
+}

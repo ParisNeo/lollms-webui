@@ -88,7 +88,7 @@ textarea, input, select {
 }
 
 .message {
-  @apply relative w-full rounded-lg border border-blue-300 dark:border-blue-600 flex flex-col flex-grow flex-wrap overflow-visible p-5 pb-3 text-lg;
+  @apply relative w-full m-2 shadow-lg rounded-lg border border-blue-300 dark:border-blue-600 flex flex-col flex-grow flex-wrap overflow-visible p-5 pb-3 text-lg;
   @apply bg-blue-100 text-blue-900 dark:bg-gradient-to-br dark:from-blue-900 dark:to-blue-800 dark:text-blue-100; /* Added gradient for dark mode */
 }
 
