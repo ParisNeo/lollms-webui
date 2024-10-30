@@ -334,3 +334,11 @@ button:hover {
 .interesting-facts{
   @apply mt-6 mb-6 p-4 bg-gray-200 dark:bg-gray-800/80 rounded-lg shadow-lg transform hover:scale-105 
 }
+
+.animated-progressbar-bg {
+  @apply w-full h-12 relative overflow-hidden bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-full shadow-lg
+}
+
+.animated-progressbar-fg {
+  @apply absolute top-0 left-0 h-full bg-gradient-to-r from-gray-400 to-gray-500 dark:from-gray-500 dark:to-gray-600 transition-all duration-300
+}

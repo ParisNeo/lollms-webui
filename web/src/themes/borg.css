@@ -267,3 +267,12 @@ body {
 .interesting-facts{
   @apply mt-6 mb-6 p-4 bg-gray-800/80 dark:bg-gray-800/80 rounded-lg shadow-lg transform hover:scale-105 
 }
+
+.animated-progressbar-bg {
+  @apply w-full h-24 relative overflow-hidden bg-gradient-to-r from-zinc-900 to-slate-800 dark:from-black dark:to-zinc-900 rounded-none border-2 border-emerald-500/30 shadow-[inset_0_0_10px_rgba(16,185,129,0.3)]
+}
+
+.animated-progressbar-fg {
+  @apply absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-500 to-emerald-600 dark:from-emerald-400 dark:to-emerald-500 transition-all duration-300 
+  [background-image:repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,0,0,0.2)_10px,rgba(0,0,0,0.2)_20px)]
+}

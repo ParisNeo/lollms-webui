@@ -2425,11 +2425,6 @@ html{
   --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
-.from-blue-200{
-  --tw-gradient-from: #C3DDFD var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(195 221 253 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
 .from-blue-400{
   --tw-gradient-from: #76A9FA var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(118 169 250 / 0) var(--tw-gradient-to-position);
@@ -2597,9 +2592,6 @@ html{
 }
 .to-pink-700{
   --tw-gradient-to: #BF125D var(--tw-gradient-to-position);
-}
-.to-purple-200{
-  --tw-gradient-to: #DCD7FE var(--tw-gradient-to-position);
 }
 .to-purple-500{
   --tw-gradient-to: #9061F9 var(--tw-gradient-to-position);
@@ -4582,6 +4574,47 @@ button:hover{
 .interesting-facts:is(.dark *){
   background-color: rgb(31 41 55 / 0.8);
 }
+.animated-progressbar-bg{
+  position: relative;
+  height: 6rem;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 9999px;
+  background-image: linear-gradient(to right, var(--tw-gradient-stops));
+  --tw-gradient-from: #FDF2F8 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(253 242 248 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  --tw-gradient-to: #ffe4e6 var(--tw-gradient-to-position);
+  --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.animated-progressbar-bg:is(.dark *){
+  --tw-gradient-from: #F8B4D9 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(248 180 217 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  --tw-gradient-to: #fecdd3 var(--tw-gradient-to-position);
+}
+.animated-progressbar-fg{
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  background-image: linear-gradient(to right, var(--tw-gradient-stops));
+  --tw-gradient-from: #F8B4D9 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(248 180 217 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  --tw-gradient-to: #fb7185 var(--tw-gradient-to-position);
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+.animated-progressbar-fg:is(.dark *){
+  --tw-gradient-from: #F17EB8 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(241 126 184 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  --tw-gradient-to: #f43f5e var(--tw-gradient-to-position);
+}
 .last\:mb-0:last-child{
   margin-bottom: 0px;
 }
@@ -5463,16 +5496,6 @@ button:hover{
   --tw-gradient-to: rgb(118 169 250 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
-.dark\:from-blue-600:is(.dark *){
-  --tw-gradient-from: #1C64F2 var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(28 100 242 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
-.dark\:from-blue-800:is(.dark *){
-  --tw-gradient-from: #1E429F var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(30 66 159 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
 .dark\:from-indigo-400:is(.dark *){
   --tw-gradient-from: #8DA2FB var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(141 162 251 / 0) var(--tw-gradient-to-position);
@@ -5490,12 +5513,6 @@ button:hover{
 }
 .dark\:to-purple-400\/20:is(.dark *){
   --tw-gradient-to: rgb(172 148 250 / 0.2) var(--tw-gradient-to-position);
-}
-.dark\:to-purple-600:is(.dark *){
-  --tw-gradient-to: #7E3AF2 var(--tw-gradient-to-position);
-}
-.dark\:to-purple-800:is(.dark *){
-  --tw-gradient-to: #5521B5 var(--tw-gradient-to-position);
 }
 .dark\:fill-gray-300:is(.dark *){
   fill: #D1D5DB;

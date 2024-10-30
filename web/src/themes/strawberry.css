@@ -380,3 +380,11 @@ button:hover {
 .interesting-facts{
   @apply mt-6 mb-6 p-4 bg-red-200 dark:bg-gray-800/80 rounded-lg shadow-lg transform hover:scale-105 
 }
+
+.animated-progressbar-bg {
+  @apply w-full h-24 relative overflow-hidden bg-gradient-to-r from-pink-50 to-rose-100 dark:from-pink-300 dark:to-rose-200 rounded-full shadow-lg
+}
+
+.animated-progressbar-fg {
+  @apply absolute top-0 left-0 h-full bg-gradient-to-r from-pink-300 to-rose-400 dark:from-pink-400 dark:to-rose-500 transition-all duration-300
+}

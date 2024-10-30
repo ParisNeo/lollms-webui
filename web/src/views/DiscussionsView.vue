@@ -1895,9 +1895,26 @@ export default {
                 case 3: return Math.random() * 100; // Bottom or left edge
             }
         },
+        extractTitle(prompt) {
+            const titleMatch = prompt.match(/@<(.*?)>@/);
+            return titleMatch ? titleMatch[1] : null;
+        },
+        getPromptContent(prompt) {
+            // Remove the title tag if it exists and return the remaining content
+            return prompt.replace(/@<.*?>@/, '').trim();
+        },        
         handlePromptSelection(prompt) {
             this.selectedPrompt = prompt;
-            this.previewPrompt = prompt; // Initialize preview
+            const title = this.extractTitle(prompt)
+            console.log("title");
+            console.log(title);
+            if (title){
+                this.previewPrompt = this.getPromptContent(prompt); // Initialize preview
+            }
+            else{
+                this.previewPrompt = prompt; // Initialize preview
+
+            }
             this.placeholders = this.extractPlaceholders(prompt);
             
             if (this.placeholders.length > 0) {

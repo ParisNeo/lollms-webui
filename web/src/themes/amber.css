@@ -382,3 +382,12 @@ button:hover {
 .interesting-facts{
   @apply mt-6 mb-6 p-4 bg-white/80 dark:bg-gray-800/80 rounded-lg shadow-lg transform hover:scale-105 
 }
+
+.animated-progressbar-bg {
+  @apply w-full h-24 relative overflow-hidden bg-gradient-to-r from-amber-950 to-amber-900 dark:from-black dark:to-amber-950 rounded-sm shadow-[0_0_15px_rgba(245,158,11,0.2)]
+}
+
+.animated-progressbar-fg {
+  @apply absolute top-0 left-0 h-full bg-gradient-to-r from-amber-500 to-amber-400 dark:from-amber-400 dark:to-amber-500 transition-all duration-300
+  [background-image:repeating-linear-gradient(90deg,transparent,transparent_5px,rgba(0,0,0,0.1)_5px,rgba(0,0,0,0.1)_10px)]
+}

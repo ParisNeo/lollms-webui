@@ -331,3 +331,10 @@ button:hover {
 .interesting-facts{
   @apply mt-6 mb-6 p-4 bg-white/80 dark:bg-gray-800/80 rounded-lg shadow-lg transform hover:scale-105 
 }
+
+.animated-progressbar-bg{
+  @apply w-full h-24 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg
+}
+.animated-progressbar-fg{
+  @apply absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-600 dark:to-purple-600 transition-all duration-300
+}

@@ -2420,11 +2420,6 @@ body {
   --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
-.from-blue-200{
-  --tw-gradient-from: #C3DDFD var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(195 221 253 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
 .from-blue-400{
   --tw-gradient-from: #76A9FA var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(118 169 250 / 0) var(--tw-gradient-to-position);
@@ -2592,9 +2587,6 @@ body {
 }
 .to-pink-700{
   --tw-gradient-to: #BF125D var(--tw-gradient-to-position);
-}
-.to-purple-200{
-  --tw-gradient-to: #DCD7FE var(--tw-gradient-to-position);
 }
 .to-purple-500{
   --tw-gradient-to: #9061F9 var(--tw-gradient-to-position);
@@ -4079,6 +4071,50 @@ body{
 .interesting-facts:is(.dark *){
   background-color: rgb(31 41 55 / 0.8);
 }
+.animated-progressbar-bg{
+  position: relative;
+  height: 6rem;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 0px;
+  border-width: 2px;
+  border-color: rgb(16 185 129 / 0.3);
+  background-image: linear-gradient(to right, var(--tw-gradient-stops));
+  --tw-gradient-from: #18181b var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(24 24 27 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  --tw-gradient-to: #1e293b var(--tw-gradient-to-position);
+  --tw-shadow: inset 0 0 10px rgba(16,185,129,0.3);
+  --tw-shadow-colored: inset 0 0 10px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.animated-progressbar-bg:is(.dark *){
+  --tw-gradient-from: #000000 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(0 0 0 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  --tw-gradient-to: #18181b var(--tw-gradient-to-position);
+}
+.animated-progressbar-fg{
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  background-image: linear-gradient(to right, var(--tw-gradient-stops));
+  --tw-gradient-from: #10b981 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(16 185 129 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  --tw-gradient-to: #059669 var(--tw-gradient-to-position);
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+  background-image: repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(0,0,0,0.2) 10px,rgba(0,0,0,0.2) 20px);
+}
+.animated-progressbar-fg:is(.dark *){
+  --tw-gradient-from: #34d399 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(52 211 153 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  --tw-gradient-to: #10b981 var(--tw-gradient-to-position);
+}
 .last\:mb-0:last-child{
   margin-bottom: 0px;
 }
@@ -4960,16 +4996,6 @@ body{
   --tw-gradient-to: rgb(118 169 250 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
-.dark\:from-blue-600:is(.dark *){
-  --tw-gradient-from: #1C64F2 var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(28 100 242 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
-.dark\:from-blue-800:is(.dark *){
-  --tw-gradient-from: #1E429F var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(30 66 159 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
 .dark\:from-indigo-400:is(.dark *){
   --tw-gradient-from: #8DA2FB var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(141 162 251 / 0) var(--tw-gradient-to-position);
@@ -4987,12 +5013,6 @@ body{
 }
 .dark\:to-purple-400\/20:is(.dark *){
   --tw-gradient-to: rgb(172 148 250 / 0.2) var(--tw-gradient-to-position);
-}
-.dark\:to-purple-600:is(.dark *){
-  --tw-gradient-to: #7E3AF2 var(--tw-gradient-to-position);
-}
-.dark\:to-purple-800:is(.dark *){
-  --tw-gradient-to: #5521B5 var(--tw-gradient-to-position);
 }
 .dark\:fill-gray-300:is(.dark *){
   fill: #D1D5DB;
