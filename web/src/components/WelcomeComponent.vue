@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col items-center justify-center w-full h-full min-h-screen bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900 dark:to-purple-900 p-8">
+    <div class="flex flex-col items-center justify-center w-full h-full min-h-screen p-8">
       <div class="text-center max-w-4xl">
         <div class="flex items-center justify-center gap-8 mb-12">
           <div class="relative w-24 h-24">

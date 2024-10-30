@@ -154,6 +154,14 @@
             </ul>
             </div>
         </div>
+
+        <div v-if="isDarkMode" class="sun text-2xl w-6 hover:text-primary duration-150 cursor-pointer" title="Switch to Light theme" @click="themeSwitch()">
+            <i data-feather="sun"></i>
+        </div>
+        <div v-else class="moon text-2xl w-6 hover:text-primary duration-150 cursor-pointer" title="Switch to Dark theme" @click="themeSwitch()">
+            <i data-feather="moon"></i>
+        </div>    
+
         <div class="relative inline-flex">
           <!-- Custom button with enhanced styling -->
           <button 
@@ -227,14 +235,8 @@
               </a>
             </div>
           </div>
-        </div>
-
-        <div v-if="isDarkMode" class="sun text-2xl w-6 hover:text-primary duration-150 cursor-pointer" title="Switch to Light theme" @click="themeSwitch()">
-            <i data-feather="sun"></i>
-        </div>
-        <div v-else class="moon text-2xl w-6 hover:text-primary duration-150 cursor-pointer" title="Switch to Dark theme" @click="themeSwitch()">
-            <i data-feather="moon"></i>
-        </div>             
+        </div>        
+        
       </div>
     </div>
   </div>
@@ -257,7 +259,7 @@ export default {
     return {
       themeDropdownOpen: false,
       currentTheme: localStorage.getItem('preferred-theme') || 'default',
-      availableThemes: ['default', 'borg', 'amber', 'sober_gray', 'strawberry'],
+      availableThemes: ['default', 'strawberry_milkshake', 'red_dragon', 'matrix_reborn', 'borg', 'amber', 'sober_gray', 'strawberry'],
       isLoading: false,
       error: null,      
       isInfosMenuVisible: false,
