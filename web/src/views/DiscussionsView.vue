@@ -640,125 +640,139 @@
                         <!-- REMOVED FOR NOW, NEED MORE TESTING -->
                         <!-- @click="scrollToElementInContainer($event.target, 'messages-list')"  -->
                         <div v-if="discussionArr.length < 2 && personality.prompts_list.length > 0" class="w-full rounded-lg m-2 shadow-lg hover:border-primary dark:hover:border-primary hover:border-solid hover:border-2 border-2 border-transparent even:bg-bg-light-discussion-odd dark:even:bg-bg-dark-discussion-odd flex flex-col overflow-hidden p-4 pb-2">
-                            <h2 class="text-xl font-semibold mb-4">Prompt examples</h2>
+                            <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-200">Prompt Examples</h2>
                             <div class="overflow-x-auto flex-grow scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 scrollbar-track-gray-200 dark:scrollbar-track-gray-800 scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
-                                <div class="flex flex-nowrap gap-4 p-2 min-w-full">
+                                <div class="flex flex-nowrap gap-6 p-4 min-w-full">
                                     <div 
                                         v-for="(prompt, index) in personality.prompts_list" 
                                         :key="index" 
                                         @click="handlePromptSelection(prompt)"
-                                        class="flex-shrink-0 w-[300px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 flex flex-col justify-between h-[220px] overflow-hidden group"
+                                        class="flex-shrink-0 w-[300px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-6 cursor-pointer hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 flex flex-col justify-between min-h-[220px] group"
                                     >
-                                        <div 
-                                            :title="prompt" 
-                                            class="text-base text-gray-700 dark:text-gray-300 overflow-hidden relative h-full"
-                                        >
-                                            <div class="absolute inset-0 overflow-hidden">
-                                                {{ prompt }}
+                                        <div class="space-y-3">
+                                            <h3 
+                                                class="font-bold text-lg text-gray-900 dark:text-gray-100 mb-2 truncate"
+                                            >
+                                                {{ extractTitle(prompt) }}
+                                            </h3>
+                                            <div 
+                                                :title="prompt" 
+                                                class="text-base text-gray-700 dark:text-gray-300 overflow-hidden line-clamp-4"
+                                            >
+                                                {{ getPromptContent(prompt) }}
                                             </div>
-                                            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white dark:to-gray-800 group-hover:opacity-0 transition-opacity duration-300"></div>
                                         </div>
-                                        <div class="mt-2 text-sm text-gray-500 dark:text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <div class="mt-4 text-sm font-medium text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                             Click to select
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
+
                             <!-- Enhanced Modal for placeholder inputs with live preview -->
                             <div v-if="showPlaceholderModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-4xl w-full">
+                                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
                                     <h3 class="text-lg font-semibold mb-4">Fill in the placeholders</h3>
                                     
-                                    <!-- Live Preview Section -->
-                                    <div class="mb-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                                        <h4 class="text-sm font-medium mb-2 text-gray-600 dark:text-gray-400">Live Preview:</h4>
-                                        <div class="text-base">{{ previewPrompt }}</div>
-                                    </div>
-
-                                    <div class="space-y-4 max-h-[60vh] overflow-y-auto">
-                                        <div v-for="(placeholder, index) in parsedPlaceholders" :key="placeholder.fullText" class="flex flex-col">
-                                            <label :for="'placeholder-'+index" class="text-sm font-medium mb-1">
-                                                {{ placeholder.label }}
-                                            </label>
-
-                                            <!-- Single line text input -->
-                                            <input 
-                                                v-if="placeholder.type === 'text'"
-                                                :id="'placeholder-'+index"
-                                                v-model="placeholderValues[index]"
-                                                type="text"
-                                                class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
-                                                :placeholder="placeholder.label"
-                                                @input="updatePreview"
-                                            >
-
-                                            <!-- Number input (int) -->
-                                            <input 
-                                                v-if="placeholder.type === 'int'"
-                                                :id="'placeholder-'+index"
-                                                v-model.number="placeholderValues[index]"
-                                                type="number"
-                                                step="1"
-                                                class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
-                                                @input="updatePreview"
-                                            >
-
-                                            <!-- Number input (float) -->
-                                            <input 
-                                                v-if="placeholder.type === 'float'"
-                                                :id="'placeholder-'+index"
-                                                v-model.number="placeholderValues[index]"
-                                                type="number"
-                                                step="0.01"
-                                                class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
-                                                @input="updatePreview"
-                                            >
-
-                                            <!-- Multiline text input -->
-                                            <textarea 
-                                                v-if="placeholder.type === 'multiline'"
-                                                :id="'placeholder-'+index"
-                                                v-model="placeholderValues[index]"
-                                                rows="4"
-                                                class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
-                                                @input="updatePreview"
-                                            ></textarea>
-
-                                            <!-- Code editor -->
-                                            <div v-if="placeholder.type === 'code'" class="border rounded-md overflow-hidden">
-                                                <div class="bg-gray-200 dark:bg-gray-900 p-2 text-sm">
-                                                    {{ placeholder.language || 'Plain text' }}
-                                                </div>
-                                                <textarea 
-                                                    :id="'placeholder-'+index"
-                                                    v-model="placeholderValues[index]"
-                                                    rows="8"
-                                                    class="w-full p-2 font-mono bg-gray-100 dark:bg-gray-900 border-t"
-                                                    @input="updatePreview"
-                                                ></textarea>
+                                    <!-- Container with flex layout -->
+                                    <div class="flex-1 flex flex-col min-h-0">
+                                        <!-- Live Preview Section -->
+                                        <div class="mb-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                            <h4 class="text-sm font-medium mb-2 text-gray-600 dark:text-gray-400">Live Preview:</h4>
+                                            <div class="flex-1 h-[200px] overflow-y-auto scrollbar scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-500 scrollbar-track-gray-200 dark:scrollbar-track-gray-700 scrollbar-thin rounded-md">
+                                                <span class="text-base whitespace-pre-wrap">{{ getPromptContent(previewPrompt) }}</span>
                                             </div>
+                                        </div>
 
-                                            <!-- Options (dropdown) -->
-                                            <select 
-                                                v-if="placeholder.type === 'options'"
-                                                :id="'placeholder-'+index"
-                                                v-model="placeholderValues[index]"
-                                                class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
-                                                @change="updatePreview"
-                                            >
-                                                <option value="" disabled>Select an option</option>
-                                                <option 
-                                                    v-for="option in placeholder.options" 
-                                                    :key="option" 
-                                                    :value="option"
-                                                >
-                                                    {{ option }}
-                                                </option>
-                                            </select>
+                                        <!-- Scrollable Container for Placeholders -->
+                                        <div class="flex-1 overflow-y-auto">
+                                            <div class="space-y-4">
+                                                <div v-for="(placeholder, index) in parsedPlaceholders" :key="placeholder.fullText" class="flex flex-col">
+                                                    <label :for="'placeholder-'+index" class="text-sm font-medium mb-1">
+                                                        {{ placeholder.label }}
+                                                    </label>
+
+                                                    <!-- Single line text input -->
+                                                    <input 
+                                                        v-if="placeholder.type === 'text'"
+                                                        :id="'placeholder-'+index"
+                                                        v-model="placeholderValues[index]"
+                                                        type="text"
+                                                        class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
+                                                        :placeholder="placeholder.label"
+                                                        @input="updatePreview"
+                                                    >
+
+                                                    <!-- Number input (int) -->
+                                                    <input 
+                                                        v-if="placeholder.type === 'int'"
+                                                        :id="'placeholder-'+index"
+                                                        v-model.number="placeholderValues[index]"
+                                                        type="number"
+                                                        step="1"
+                                                        class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
+                                                        @input="updatePreview"
+                                                    >
+
+                                                    <!-- Number input (float) -->
+                                                    <input 
+                                                        v-if="placeholder.type === 'float'"
+                                                        :id="'placeholder-'+index"
+                                                        v-model.number="placeholderValues[index]"
+                                                        type="number"
+                                                        step="0.01"
+                                                        class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
+                                                        @input="updatePreview"
+                                                    >
+
+                                                    <!-- Multiline text input -->
+                                                    <textarea 
+                                                        v-if="placeholder.type === 'multiline'"
+                                                        :id="'placeholder-'+index"
+                                                        v-model="placeholderValues[index]"
+                                                        rows="4"
+                                                        class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
+                                                        @input="updatePreview"
+                                                    ></textarea>
+
+                                                    <!-- Code editor -->
+                                                    <div v-if="placeholder.type === 'code'" class="border rounded-md overflow-hidden">
+                                                        <div class="bg-gray-200 dark:bg-gray-900 p-2 text-sm">
+                                                            {{ placeholder.language || 'Plain text' }}
+                                                        </div>
+                                                        <textarea 
+                                                            :id="'placeholder-'+index"
+                                                            v-model="placeholderValues[index]"
+                                                            rows="8"
+                                                            class="w-full p-2 font-mono bg-gray-100 dark:bg-gray-900 border-t"
+                                                            @input="updatePreview"
+                                                        ></textarea>
+                                                    </div>
+
+                                                    <!-- Options (dropdown) -->
+                                                    <select 
+                                                        v-if="placeholder.type === 'options'"
+                                                        :id="'placeholder-'+index"
+                                                        v-model="placeholderValues[index]"
+                                                        class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
+                                                        @change="updatePreview"
+                                                    >
+                                                        <option value="" disabled>Select an option</option>
+                                                        <option 
+                                                            v-for="option in placeholder.options" 
+                                                            :key="option" 
+                                                            :value="option"
+                                                        >
+                                                            {{ option }}
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    
+
+                                    <!-- Footer with buttons -->
                                     <div class="mt-6 flex justify-end space-x-4">
                                         <button 
                                             @click="cancelPlaceholders"
@@ -775,6 +789,7 @@
                                     </div>
                                 </div>
                             </div>
+
                         </div>
 
 
