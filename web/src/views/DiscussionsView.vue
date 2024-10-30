@@ -87,17 +87,18 @@
                     alt="Logo" title="LoLLMS WebUI">
                 </div>
                 <div class="flex flex-col justify-center">
-                    <div class="text-sm md:text-xl font-bold text-amber-500 mb-2 hover:scale-105 transition-transform"
-                        style="text-shadow: 2px 2px 4px rgba(0,0,0,0.2), 
-                                            2px 2px 0px white, 
-                                            -2px -2px 0px white, 
-                                            2px -2px 0px white, 
-                                            -2px 2px 0px white;
-                                background: linear-gradient(45deg, #f59e0b, #fbbf24);
-                                -webkit-background-clip: text;
-                                background-clip: text;">
-                        L<span class="animate-pulse">⭐</span>LLMS
+                    <div class="text-center p-2">
+                        <div class="text-md relative inline-block">
+                            <span class="relative inline-block font-bold tracking-wide text-black dark:text-white">
+                                LoLLMS
+                            </span>
+                            <div class="absolute -bottom-0.5 left-0 w-full h-0.5 
+                                        bg-black dark:bg-white
+                                        transform origin-left transition-transform duration-300
+                                        hover:scale-x-100 scale-x-0"></div>
+                        </div>
                     </div>
+
 
                 <p class="text-gray-400 text-sm">One tool to rule them all</p>
                 </div>
@@ -257,20 +258,68 @@
 
 
 
-                    <div class="toolbar-button"  @mouseleave="hideBindingsMenu" v-if="!loading">
+                    <div class="toolbar-button" @mouseleave="hideBindingsMenu" v-if="!loading">
                         <div class="relative inline-block">
                             <!-- Bindings menu positioned above the button -->
-                            <div v-show="isBindingsMenuVisible" @mouseenter="showBindingsMenu" class="absolute m-0 p-0 z-10 top-full left-0 transform w-60 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
-                                <div class="p-8 m-0 grid grid-cols-4 gap-4 max-h-60 overflow-y-auto custom-scrollbar">
-                                    <div v-for="(item, index) in installedBindings" :key="index" class="relative group/item">                             
-                                        <button @click.prevent="setBinding(item)" :title="item.name" class="w-10 h-10 rounded-full overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none">
-                                            <img :src="item.icon ? item.icon : modelImgPlaceholder" @error="modelImgPlaceholder" :alt="item.name" class="w-full h-full object-cover" :class="{'border-2 border-secondary': item.name == binding_name}">
-                                        </button>
-                                        
-                                        <div class="absolute -bottom-4 left-0 w-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white rounded-md shadow-md p-1">
-                                            <button @click.prevent="showModelConfig(item)" class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none" title="Configure Binding">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <div v-show="isBindingsMenuVisible" @mouseenter="showBindingsMenu" class="absolute m-0 p-0 z-10 top-full left-0 transform w-80 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
+                                <!-- Search Bar -->
+                                <div class="p-2 border-b border-gray-200 dark:border-gray-700">
+                                    <input 
+                                        type="text" 
+                                        v-model="bindingSearchQuery" 
+                                        placeholder="Search bindings..." 
+                                        class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                </div>
+                                
+                                <div class="p-4 grid grid-cols-3 gap-4 max-h-80 overflow-y-auto custom-scrollbar">
+                                    <div 
+                                        v-for="(item, index) in filteredBindings" 
+                                        :key="index" 
+                                        class="relative group/item flex flex-col items-center"
+                                    >                             
+                                        <!-- Icon and Name Container -->
+                                        <div class="flex flex-col items-center hover:bg-blue-100 dark:hover:bg-blue-900 p-2 rounded-md w-full cursor-pointer">
+                                            <button 
+                                                @click.prevent="setBinding(item)" 
+                                                :title="item.name" 
+                                                class="w-12 h-12 rounded-md overflow-hidden transition-transform duration-200 transform group-hover/item:scale-105 focus:outline-none"
+                                            >
+                                                <img 
+                                                    :src="item.icon ? item.icon : modelImgPlaceholder" 
+                                                    @error="modelImgPlaceholder" 
+                                                    :alt="item.name" 
+                                                    class="w-full h-full object-cover" 
+                                                    :class="{'border-2 border-secondary': item.name == binding_name}"
+                                                >
                                             </button>
+                                            
+                                            <!-- Truncated Name -->
+                                            <span class="mt-1 text-xs text-center w-full truncate" :title="item.name">
+                                                {{ item.name }}
+                                            </span>
+                                        </div>
+
+                                        <!-- Hover Options -->
+                                        <div 
+                                            class="absolute top-0 left-0 w-full h-full opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white dark:bg-gray-900 rounded-md shadow-md p-2 flex flex-col items-center justify-center"
+                                        >
+                                            <!-- Full Name -->
+                                            <span class="text-xs font-medium mb-2 text-center">{{ item.name }}</span>
+                                            
+                                            <!-- Action Buttons -->
+                                            <div class="flex space-x-1">
+                                                <button 
+                                                    @click.prevent="showModelConfig(item)" 
+                                                    class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none" 
+                                                    title="Configure Binding"
+                                                >
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -289,18 +338,62 @@
                     <div class="toolbar-button" @mouseleave="hideModelsMenu" v-if="!loading">
                         <div class="relative inline-block">
                             <!-- Models menu positioned above the button -->
-                            <div v-show="isModelsMenuVisible" @mouseenter="showModelsMenu" class="absolute m-0 p-0 z-10 top-full left-0 transform w-60 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
-                                <div class="p-8 m-0 grid grid-cols-4 gap-4 max-h-60 overflow-y-auto custom-scrollbar">
-                                    <div v-for="(item, index) in installedModels" :key="index" class="relative group/item">                             
-                                        <button @click.prevent="setModel(item)" :title="item.name" class="w-10 h-10 rounded-full overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none">
-                                            <img :src="item.icon ? item.icon : modelImgPlaceholder" @error="personalityImgPlacehodler" :alt="item.name" class="w-full h-full object-cover" :class="{'border-2 border-secondary': item.name == model_name}">
-                                        </button>
-                                        
-                                        <div class="absolute -bottom-4 left-0 w-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white rounded-md shadow-md p-1">
-                                            <button @click.prevent="copyModelNameFrom(item.name)" class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none" title="Copy Model Name">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            <div v-show="isModelsMenuVisible" @mouseenter="showModelsMenu" class="absolute m-0 p-0 z-10 top-full left-0 transform w-80 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
+                                <!-- Search Bar -->
+                                <div class="p-2 border-b border-gray-200 dark:border-gray-700">
+                                    <input 
+                                        type="text" 
+                                        v-model="modelSearchQuery" 
+                                        placeholder="Search models..." 
+                                        class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                </div>
+                                
+                                <div class="p-4 grid grid-cols-3 gap-4 max-h-80 overflow-y-auto custom-scrollbar">
+                                    <div 
+                                        v-for="(item, index) in filteredModels" 
+                                        :key="index" 
+                                        class="relative group/item flex flex-col items-center"
+                                    >                             
+                                        <!-- Icon and Name Container -->
+                                        <div class="flex flex-col items-center hover:bg-blue-100 dark:hover:bg-blue-900 p-2 rounded-md w-full cursor-pointer">
+                                            <button 
+                                                @click.prevent="setModel(item)" 
+                                                :title="item.name" 
+                                                class="w-12 h-12 rounded-md overflow-hidden transition-transform duration-200 transform group-hover/item:scale-105 focus:outline-none"
+                                            >
+                                                <img 
+                                                    :src="item.icon ? item.icon : modelImgPlaceholder" 
+                                                    @error="personalityImgPlacehodler" 
+                                                    :alt="item.name" 
+                                                    class="w-full h-full object-cover" 
+                                                    :class="{'border-2 border-secondary': item.name == model_name}"
+                                                >
                                             </button>
-                                            <!-- You can add more buttons here if needed -->
+                                            
+                                            <!-- Truncated Name -->
+                                            <span class="mt-1 text-xs text-center w-full truncate" :title="item.name">
+                                                {{ item.name }}
+                                            </span>
+                                        </div>
+
+                                        <!-- Hover Options -->
+                                        <div 
+                                            class="absolute top-0 left-0 w-full h-full opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white dark:bg-gray-900 rounded-md shadow-md p-2 flex flex-col items-center justify-center"
+                                        >
+                                            <!-- Full Name -->
+                                            <span class="text-xs font-medium mb-2 text-center">{{ item.name }}</span>
+                                            
+                                            <!-- Action Buttons -->
+                                            <div class="flex space-x-1">
+                                                <button 
+                                                    @click.prevent="copyModelNameFrom(item.name)" 
+                                                    class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none" 
+                                                    title="Copy Model Name"
+                                                >
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -315,37 +408,92 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Personalities menu positioned above the dock -->
-                    <div class="toolbar-button" @mouseleave="hidePersonalitiesMenu"  v-if="!loading">
-                        <div class="relative inline-block ">
+
+                    <!-- Personalities menu positioned below the dock -->
+                    <div class="toolbar-button" @mouseleave="hidePersonalitiesMenu" v-if="!loading">
+                        <div class="relative inline-block">
                             <!-- Personalities menu positioned above the button -->
-                            <div v-show="isPersonalitiesMenuVisible"  @mouseenter="showPersonalitiesMenu" class="absolute m-0 p-0 z-10 top-full left-0 transform w-60 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
-                                <div class="p-8 m-0 grid grid-cols-4 gap-4 max-h-60 overflow-y-auto custom-scrollbar">
-                                    <div v-for="(item, index) in mountedPersonalities" :key="index" class="relative group/item">                             
-                                        <button @click.prevent="onPersonalitySelected(item)" :title="item.name" class="w-10 h-10 rounded-full overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none">
-                                            <img :src="bUrl + item.avatar" @error="personalityImgPlacehodler" :alt="item.name" class="w-full h-full object-cover" :class="{'border-2 border-secondary': $store.state.active_personality_id == $store.state.personalities.indexOf(item.full_path)}">
-                                        </button>
-                                        
-                                        <div class="absolute -bottom-4 left-0 w-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white dark:bg-gray-900 rounded-md shadow-md p-1">
-                                            <button @click.prevent="unmountPersonality(item)" class="p-1 bg-red-500 rounded-full text-white hover:bg-red-600 focus:outline-none" title="Unmount">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            <div v-show="isPersonalitiesMenuVisible" @mouseenter="showPersonalitiesMenu" class="absolute m-0 p-0 z-10 top-full left-0 transform w-80 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
+                                <!-- Search Bar -->
+                                <div class="p-2 border-b border-gray-200 dark:border-gray-700">
+                                    <input 
+                                        type="text" 
+                                        v-model="personalitySearchQuery" 
+                                        placeholder="Search personalities..." 
+                                        class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                </div>
+                                
+                                <div class="p-4 grid grid-cols-3 gap-4 max-h-80 overflow-y-auto custom-scrollbar">
+                                    <div 
+                                        v-for="(item, index) in filteredPersonalities" 
+                                        :key="index" 
+                                        class="relative group/item flex flex-col items-center"
+                                    >                             
+                                        <!-- Icon and Name Container -->
+                                        <div class="flex flex-col items-center hover:bg-blue-100 dark:hover:bg-blue-900 p-2 rounded-md w-full cursor-pointer">
+                                            <button 
+                                                @click.prevent="onPersonalitySelected(item)" 
+                                                :title="item.name" 
+                                                class="w-12 h-12 rounded-md overflow-hidden transition-transform duration-200 transform group-hover/item:scale-105 focus:outline-none"
+                                            >
+                                                <img 
+                                                    :src="bUrl + item.avatar" 
+                                                    @error="personalityImgPlacehodler" 
+                                                    :alt="item.name" 
+                                                    class="w-full h-full object-cover" 
+                                                    :class="{'border-2 border-secondary': $store.state.active_personality_id == $store.state.personalities.indexOf(item.full_path)}"
+                                                >
                                             </button>
-                                            <button @click.prevent="remount_personality(item)" class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none ml-1" title="Remount">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                                            </button>
-                                            <button @click.prevent="handleOnTalk(item)" class="p-1 bg-green-500 rounded-full text-white hover:bg-green-600 focus:outline-none ml-1" title="Talk">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-                                            </button>
+                                            
+                                            <!-- Truncated Name -->
+                                            <span class="mt-1 text-xs text-center w-full truncate" :title="item.name">
+                                                {{ item.name }}
+                                            </span>
+                                        </div>
+
+                                        <!-- Hover Options -->
+                                        <div 
+                                            class="absolute top-0 left-0 w-full h-full opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white dark:bg-gray-900 rounded-md shadow-md p-2 flex flex-col items-center justify-center"
+                                        >
+                                            <!-- Full Name -->
+                                            <span class="text-xs font-medium mb-2 text-center">{{ item.name }}</span>
+                                            
+                                            <!-- Action Buttons -->
+                                            <div class="flex space-x-1">
+                                                <button 
+                                                    @click.prevent="unmountPersonality(item)" 
+                                                    class="p-1 bg-red-500 rounded-full text-white hover:bg-red-600 focus:outline-none" 
+                                                    title="Unmount"
+                                                >
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                </button>
+                                                <button 
+                                                    @click.prevent="remount_personality(item)" 
+                                                    class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none" 
+                                                    title="Remount"
+                                                >
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                                </button>
+                                                <button 
+                                                    @click.prevent="handleOnTalk(item)" 
+                                                    class="p-1 bg-green-500 rounded-full text-white hover:bg-green-600 focus:outline-none" 
+                                                    title="Talk"
+                                                >
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div @mouseenter="showPersonalitiesMenu" class="personalities-hover-area">
-                            <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
+                                <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
                             </div>
                         </div>
-                    </div>      
+                    </div>
+ 
                     
             </div>
         </div>
@@ -1027,6 +1175,9 @@ export default {
             placeholderValues: {},
             previewPrompt: '',
 
+            bindingSearchQuery: '',
+            modelSearchQuery: '',
+            personalitySearchQuery: '',
             isSearching: false,
             isPersonalitiesMenuVisible: false,
             isModelsMenuVisible:false,
@@ -2233,13 +2384,14 @@ export default {
                 console.log(`Selecting discussion: ${this.currentDiscussion}`)
                 // When discussion is selected it loads the discussion array
                 if (this.currentDiscussion===undefined) {
-                    console.log(`Selecting discussion: ${this.currentDiscussion}`)
+                    console.log(`Selecting discussion: ${this.currentDiscussion.id}`)
                     this.currentDiscussion = item
 
                     this.setPageTitle(item)
 
                     localStorage.setItem('selected_discussion', this.currentDiscussion.id)
-                    console.log(`Saved discussion to : ${this.currentDiscussion.id}`)
+                    const discussion_id = localStorage.getItem('selected_discussion')
+                    console.log(`Saved discussion to : ${discussion_id}`)
 
                     this.load_discussion(item.id, ()=>{
                         if (this.discussionArr.length > 1) {
@@ -3580,7 +3732,21 @@ export default {
         
     },
     computed: { 
-
+        filteredBindings() {
+            return this.installedBindings.filter(binding => 
+            binding.name.toLowerCase().includes(this.bindingSearchQuery.toLowerCase())
+            )
+        },        
+        filteredModels() {
+            return this.installedModels.filter(model => 
+            model.name.toLowerCase().includes(this.modelSearchQuery.toLowerCase())
+            )
+        },
+        filteredPersonalities() {
+            return this.mountedPersonalities.filter(personality => 
+            personality.name.toLowerCase().includes(this.personalitySearchQuery.toLowerCase())
+            )
+        },
         currentModel() {
             return this.$store.state.currentModel || {};
         },

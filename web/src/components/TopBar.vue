@@ -154,31 +154,81 @@
             </ul>
             </div>
         </div>
-        <select 
-          v-model="currentTheme" 
-          @change="loadTheme(currentTheme)"
-          class="inline-block w-[60px] px-3 py-1.5 text-sm
-                border border-gray-300 rounded-md
-                bg-white dark:bg-gray-800
-                text-gray-700 dark:text-gray-200
-                focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500
-                hover:border-gray-400
-                cursor-pointer
-                appearance-none
-                bg-no-repeat
-                bg-right
-                pr-8 mx-2"
-          style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M7%207l3-3%203%203m0%206l-3%203-3-3%22%20stroke%3D%22%239CA3AF%22%20fill%3D%22none%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E');"
-        >
-          <option 
-            v-for="theme in availableThemes" 
-            :key="theme" 
-            :value="theme"
-            class="py-1"
+        <div class="relative inline-flex">
+          <!-- Custom button with enhanced styling -->
+          <button 
+            @click="themeDropdownOpen = !themeDropdownOpen"
+            class="inline-flex items-center justify-between min-w-[120px] px-4 py-2
+                  bg-gradient-to-r from-blue-500/10 to-purple-500/10
+                  dark:from-blue-400/20 dark:to-purple-400/20
+                  border border-blue-200 dark:border-blue-700
+                  rounded-lg shadow-sm
+                  text-gray-700 dark:text-gray-200
+                  hover:border-blue-300 dark:hover:border-blue-600
+                  hover:shadow-md
+                  focus:outline-none focus:ring-2 focus:ring-blue-500/50
+                  transition-all duration-300 ease-in-out
+                  backdrop-blur-sm"
           >
-            {{ theme }}
-          </option>
-        </select>
+            <div class="flex items-center space-x-2">
+              <!-- Theme Icon -->
+              <svg 
+                class="w-5 h-5 text-blue-500 dark:text-blue-400"
+                xmlns="http://www.w3.org/2000/svg" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+              </svg>
+              <span class="font-medium">{{ currentTheme }}</span>
+            </div>
+            <svg 
+              class="w-5 h-5 text-blue-500 dark:text-blue-400 transition-transform duration-300"
+              :class="{ 'rotate-180': themeDropdownOpen }"
+              xmlns="http://www.w3.org/2000/svg" 
+              viewBox="0 0 20 20" 
+              fill="currentColor"
+            >
+              <path fill-rule="evenodd" 
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" 
+                    clip-rule="evenodd" />
+            </svg>
+          </button>
+
+          <!-- Enhanced Dropdown menu with animations -->
+          <div 
+            v-if="themeDropdownOpen"
+            class="absolute left-0 z-50 w-full mt-2 
+                  overflow-hidden
+                  bg-white dark:bg-gray-800 
+                  border border-blue-200 dark:border-blue-700
+                  rounded-lg shadow-lg
+                  transform origin-top
+                  animate-dropdown"
+          >
+            <div class="max-h-60 overflow-y-auto">
+              <a
+                v-for="theme in availableThemes"
+                :key="theme"
+                @click="loadTheme(theme); currentTheme = theme; themeDropdownOpen = false"
+                class="flex items-center space-x-2 px-4 py-3
+                      text-gray-700 dark:text-gray-200
+                      hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50
+                      dark:hover:from-blue-900/30 dark:hover:to-purple-900/30
+                      cursor-pointer
+                      transition-colors duration-150
+                      group"
+              >
+                <div class="w-2 h-2 rounded-full bg-blue-400 group-hover:bg-blue-500 
+                            transition-colors duration-150"></div>
+                <span class="font-medium">{{ theme }}</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
         <div v-if="isDarkMode" class="sun text-2xl w-6 hover:text-primary duration-150 cursor-pointer" title="Switch to Light theme" @click="themeSwitch()">
             <i data-feather="sun"></i>
         </div>
@@ -205,6 +255,7 @@ export default {
   },
   data() {
     return {
+      themeDropdownOpen: false,
       currentTheme: localStorage.getItem('preferred-theme') || 'default',
       availableThemes: ['default', 'borg', 'amber', 'sober_gray', 'strawberry'],
       isLoading: false,
@@ -264,6 +315,7 @@ export default {
   },
   async mounted() {
     try {
+      document.addEventListener('click', this.handleClickOutside)
       // Load saved theme preference
       const savedTheme = localStorage.getItem('preferred-theme')
       if (savedTheme && this.availableThemes.includes(savedTheme)) {
@@ -283,6 +335,9 @@ export default {
       console.error(err)
     }
   },  
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleClickOutside)
+  },
   async created() {
     this.sunIcon = document.querySelector(".sun");
         this.moonIcon = document.querySelector(".moon");
@@ -297,6 +352,12 @@ export default {
 
   },
   methods: {
+    handleClickOutside(e) {
+      const dropdown = this.$el
+      if (!dropdown.contains(e.target)) {
+        this.themeDropdownOpen = false
+      }
+    },
     getSavedTheme() {
       try {
         return localStorage.getItem('preferred-theme')
