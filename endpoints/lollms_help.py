@@ -38,17 +38,6 @@ def validate_file_path(path):
         print(f"Path validation error: {str(e)}")
         return False
 
-from utilities.execution_engines.python_execution_engine import execute_python
-from utilities.execution_engines.latex_execution_engine import execute_latex
-from utilities.execution_engines.shell_execution_engine import execute_bash
-from utilities.execution_engines.javascript_execution_engine import execute_javascript
-from utilities.execution_engines.html_execution_engine import execute_html
-
-from utilities.execution_engines.mermaid_execution_engine import execute_mermaid
-from utilities.execution_engines.graphviz_execution_engine import execute_graphviz
-from utilities.execution_engines.svg_execution_engine import execute_svg
-
-
 
 
 # ----------------------- Defining router and main class ------------------------------

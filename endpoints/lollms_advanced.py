@@ -51,6 +51,8 @@ from utilities.execution_engines.mermaid_execution_engine import execute_mermaid
 from utilities.execution_engines.graphviz_execution_engine import execute_graphviz
 from utilities.execution_engines.svg_execution_engine import execute_svg
 
+from utilities.execution_engines.lilypond_execution_engine import execute_lilypond
+
 
 import os
 from fastapi import FastAPI, UploadFile, File
@@ -115,6 +117,11 @@ async def execute_code(request: CodeRequest):
             ASCIIColors.info("Executing svg code:")
             ASCIIColors.yellow(code)
             return execute_svg(sanitize_svg(code), client, message_id)
+        if language=="lilypond":
+            ASCIIColors.info("Executing svg code:")
+            ASCIIColors.yellow(code)
+            return execute_lilypond(code, client, message_id)
+            
         if language=="javascript":
             ASCIIColors.info("Executing javascript code:")
             ASCIIColors.yellow(code)
