@@ -1951,6 +1951,8 @@ export default {
                 preview = preview.replace(regex, value || placeholder.fullText);
             });
             this.previewPrompt = preview;
+            console.log("previewPrompt")
+            console.log(this.previewPrompt)
         },
         escapeRegExp(string) {
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -1975,7 +1977,10 @@ export default {
             // Apply the final prompt and close modal
             this.finalPrompt = finalPrompt;
             this.showPlaceholderModal = false;
-            this.setPromptInChatbox(this.previewPrompt);
+            console.log("previewPrompt apply")
+            console.log(this.previewPrompt)
+
+            this.setPromptInChatbox(this.getPromptContent(this.previewPrompt));
         },
 
         extractPlaceholders(prompt) {
