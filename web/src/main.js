@@ -357,9 +357,11 @@ export const store = createStore({
           const language = response.data;
           console.log("language", language)
           commit('setLanguage', language);
+          await this.dispatch('refreshMountedPersonalities');
 
-          console.log('Language changed successfully:', response.data.message);
+          console.log('Language changed successfully:', language);
       },
+      
       async deleteLanguage({ commit }, new_language) {
         console.log("Deleting ", new_language)
           let response = await axios.post('/del_personality_language', {

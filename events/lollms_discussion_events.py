@@ -29,6 +29,7 @@ import yaml
 from lollms.databases.discussions_database import Discussion
 from lollms.security import forbid_remote_access
 from datetime import datetime
+import shutil
 
 router = APIRouter()
 lollmsElfServer = LOLLMSWebUI.get_instance()
@@ -76,18 +77,26 @@ def add_events(sio:socketio):
             if lollmsElfServer.config.current_language and  current_language!= default_language:
                 language_path = lollmsElfServer.lollms_paths.personal_configuration_path/"personalities"/lollmsElfServer.personality.name/f"languages_{current_language}.yaml"
                 if not language_path.exists():
-                    lollmsElfServer.ShowBlockingMessage(f"This is the first time this personality speaks {current_language}\nLollms is reconditionning the persona in that language.\nThis will be done just once. Next time, the personality will speak {current_language} out of the box")
-                    language_path.parent.mkdir(exist_ok=True, parents=True)
-                    # Translating
-                    conditionning = lollmsElfServer.tasks_library.translate_conditionning(lollmsElfServer.personality._personality_conditioning, lollmsElfServer.personality.language, current_language)
-                    welcome_message = lollmsElfServer.tasks_library.translate_message(lollmsElfServer.personality.welcome_message, lollmsElfServer.personality.language, current_language)
-                    with open(language_path,"w",encoding="utf-8", errors="ignore") as f:
-                        yaml.safe_dump({"conditionning":conditionning,"welcome_message":welcome_message}, f)
-                    lollmsElfServer.HideBlockingMessage()
+                    #checking if there is already a translation in the personality folder
+                    persona_language_path = lollmsElfServer.lollms_paths.personalities_zoo_path/lollmsElfServer.personality.category/lollmsElfServer.personality.name.replace(" ","_")/"languages"/f"{current_language}.yaml"
+                    if persona_language_path.exists():
+                        shutil.copy(persona_language_path, language_path)
+                        with open(language_path,"r",encoding="utf-8", errors="ignore") as f:
+                            language_pack = yaml.safe_load(f)
+                            conditionning = language_pack["personality_conditioning"]
+                    else:
+                        lollmsElfServer.ShowBlockingMessage(f"This is the first time this personality speaks {current_language}\nLollms is reconditionning the persona in that language.\nThis will be done just once. Next time, the personality will speak {current_language} out of the box")
+                        language_path.parent.mkdir(exist_ok=True, parents=True)
+                        # Translating
+                        conditionning = lollmsElfServer.tasks_library.translate_conditionning(lollmsElfServer.personality._personality_conditioning, lollmsElfServer.personality.language, current_language)
+                        welcome_message = lollmsElfServer.tasks_library.translate_message(lollmsElfServer.personality.welcome_message, lollmsElfServer.personality.language, current_language)
+                        with open(language_path,"w",encoding="utf-8", errors="ignore") as f:
+                            yaml.safe_dump({"personality_conditioning":conditionning,"welcome_message":welcome_message}, f)
+                        lollmsElfServer.HideBlockingMessage()
                 else:
                     with open(language_path,"r",encoding="utf-8", errors="ignore") as f:
                         language_pack = yaml.safe_load(f)
-                        welcome_message = language_pack["welcome_message"]
+                        welcome_message = language_pack.get("welcome_message", lollmsElfServer.personality.welcome_message)
             else:
                 welcome_message = lollmsElfServer.personality.welcome_message
 

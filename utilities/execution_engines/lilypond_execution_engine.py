@@ -49,7 +49,7 @@ def execute_lilypond(code, client:Client, message_id):
         
         # Create LilyPond file
         ly_file = root_folder/f"score_{message_id}.ly"
-        ly_file.write_text(code)
+        ly_file.write_text(code,encoding="utf8")
 
         # Get the PDF and MIDI outputs
         pdf_file = ly_file.with_suffix('.pdf')

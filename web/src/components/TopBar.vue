@@ -354,6 +354,13 @@ export default {
 
   },
   methods: {
+    
+    addCustomLanguage() {
+        if (this.customLanguage.trim() !== '') {
+        this.selectLanguage(this.customLanguage);
+        this.customLanguage = ''; // Reset the input field after adding
+        }
+    },
     handleClickOutside(e) {
       const dropdown = this.$el
       if (!dropdown.contains(e.target)) {
@@ -460,6 +467,7 @@ export default {
         window.dispatchEvent(new Event('themeChanged'));
     },
     async selectLanguage(language) {
+        await this.$store.dispatch('changeLanguage', language);
         await this.$store.dispatch('changeLanguage', language);
         this.toggleLanguageMenu(); // Fermer le menu après le changement de langue
         this.language = language

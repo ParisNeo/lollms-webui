@@ -1894,12 +1894,6 @@ export default {
                 }
             }
         },
-        addCustomLanguage() {
-            if (this.customLanguage.trim() !== '') {
-            this.selectLanguage(this.customLanguage);
-            this.customLanguage = ''; // Reset the input field after adding
-            }
-        },
         restartProgram(event) {
             event.preventDefault();
             this.$store.state.api_post_req('restart_program', this.$store.state.client_id)

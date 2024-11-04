@@ -33,6 +33,10 @@ import CodeBlock from './CodeBlock.vue';
 import hljs from 'highlight.js';
 import mathjax from 'markdown-it-mathjax';
 
+
+import texmath from 'markdown-it-texmath';
+import katex from 'katex';
+
 function escapeHtml(unsafe) {
   return unsafe
     .replace(/&/g, "&amp;")
@@ -80,7 +84,7 @@ export default {
         return hljs.highlight(validLanguage, code).value;
       },
       renderInline: true,
-      breaks: true,
+      breaks: false, // Prevent newlines from being converted to <br> tags
     })
       .use(emoji)
       .use(anchor)
@@ -100,10 +104,68 @@ export default {
         multilineCellEndMarker: '<|',
         multilineCellPadding: ' ',
         multilineCellJoiner: '\n',
-      }).use(mathjax({
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        blockMath: [['$$', '$$'], ['\\[', '\\]']]
-      }))
+      });
+
+    // Add a custom rule to escape backslashes before LaTeX delimiters
+    md.core.ruler.before('normalize', 'escape_latex_delimiters', state => {
+      state.src = state.src.replace(/(?<!\\)(\\[\(\)\[\]])/g, '\\$1');
+    });
+
+    // Modify the inline LaTeX rule to ensure it only triggers once
+    md.inline.ruler.before('escape', 'inline_latex', function(state, silent) {
+      const start = state.pos;
+      const max = state.posMax;
+
+      if (state.src.slice(start, start + 2) !== '\\(') return false;
+
+      let end = start + 2;
+      while (end < max) {
+        if (state.src.slice(end, end + 2) === '\\)') {
+          end += 2;
+          break;
+        }
+        end++;
+      }
+
+      if (end === max) return false;
+
+      if (!silent) {
+        const token = state.push('latex_inline', 'latex', 0);
+        token.content = state.src.slice(start + 2, end - 2);
+        token.markup = '\\(\\)';
+      }
+
+      state.pos = end;
+      return true;
+    });
+
+    // Ensure the LaTeX is rendered only once
+    md.renderer.rules.latex_inline = function(tokens, idx) {
+      return '<span class="inline-latex">' + katex.renderToString(tokens[idx].content, {displayMode: true}) + '</span>';
+    };
+
+    // Enhance list rendering
+    md.renderer.rules.list_item_open = function (tokens, idx, options, env, self) {
+      const token = tokens[idx];
+      if (token.markup === '1.') {
+        // This is an ordered list item
+        const start = token.attrGet('start');
+        if (start) {
+          return `<li value="${start}">`;
+        }
+      }
+      return self.renderToken(tokens, idx, options);
+    };
+
+    md.use(texmath, {
+      engine: katex,
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false},
+        {left: '\\[', right: '\\]', display: true}
+      ],
+      katexOptions: { macros: { "\\RR": "\\mathbb{R}" } }
+    });
 
     const markdownItems = ref([]);
     const updateMarkdown = () => {
@@ -164,4 +226,16 @@ export default {
 
 <style>
 /* Your existing styles */
+.katex-display {
+  display: inline-block;
+  margin: 0;
+}
+
+.katex {
+  display: inline-block;
+  white-space: nowrap;
+}
+.inline-latex {
+  display: inline !important;
+}
 </style>
