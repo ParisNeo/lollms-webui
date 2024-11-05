@@ -86,7 +86,15 @@ export const store = createStore({
       }
     },
     mutations: {    
-     
+      updatePersonality(state, newPersonality){
+        const index = state.personalities.findIndex(p => p.full_path === newPersonality.full_path);
+        if (index !== -1) {
+            state.personalities[index]=newPersonality;
+        }
+        else{
+          console.log("Can't uipdate personality beceause it was Not found")
+        }
+      },
       setLeftPanelCollapsed(state, status) {
         state.leftPanelCollapsed = status;
         console.log(`Saving the status of left panel to ${status}`)
@@ -374,44 +382,29 @@ export const store = createStore({
                       {client_id: this.state.client_id}
                     );
               
-          console.log("response", response)
           const languages = response.data;
-          console.log("languages", languages)
           commit('setLanguages', languages);          
           response = await axios.post(
                       '/get_personality_language',
                       {client_id: this.state.client_id}
                     );
               
-          console.log("response", response)
           const language = response.data;
-          console.log("language", language)
           commit('setLanguage', language);
-
-          console.log('Language changed successfully:', response.data.message);
       },
       async refreshPersonalitiesZoo({ commit }) {
           let personalities = []
           const catdictionary = await api_get_req("get_all_personalities")
           const catkeys = Object.keys(catdictionary); // returns categories
-          console.log("Personalities recovered:"+this.state.config.personalities)
 
           for (let j = 0; j < catkeys.length; j++) {
               const catkey = catkeys[j];
               const personalitiesArray = catdictionary[catkey];
               const modPersArr = personalitiesArray.map((item) => {
                   let isMounted = false;
-
                   for(const personality of this.state.config.personalities){
                     if(personality.includes(catkey + '/' + item.folder)){
                       isMounted = true;
-                      if(personality.includes(":")){
-                        const parts = personality.split(':');
-                        item.language = parts[1];
-                      }
-                      else{
-                        item.language = null
-                      }
                     }
                   }
                   // if (isMounted) {
@@ -444,17 +437,12 @@ export const store = createStore({
           this.state.config.active_personality_id=0;
         }
         let mountedPersArr = []
-        // console.log('perrs listo',this.state.personalities)
         const indicesToRemove = [];
         for (let i = 0; i < this.state.config.personalities.length; i++) {
             const full_path_item = this.state.config.personalities[i]
-            const parts = full_path_item.split(':')
-            const index = this.state.personalities.findIndex(item => item.full_path == full_path_item || item.full_path == parts[0])
+            const index = this.state.personalities.findIndex(item => item.full_path == full_path_item)
             if(index>=0){
               let pers = copyObject(this.state.personalities[index])
-              if(parts.length>1){
-                pers.language = parts[1]
-              }
               // console.log(`Personality : ${JSON.stringify(pers)}`)
               if (pers) {
                   mountedPersArr.push(pers)
@@ -470,7 +458,6 @@ export const store = createStore({
         }
         // Remove the broken personalities using the collected indices
         for (let i = indicesToRemove.length - 1; i >= 0; i--) {
-          console.log("Removing personality : ",this.state.config.personalities[indicesToRemove[i]])
           this.state.config.personalities.splice(indicesToRemove[i], 1);
           
           if(this.state.config.active_personality_id>indicesToRemove[i]){
@@ -480,9 +467,7 @@ export const store = createStore({
 
         commit('setMountedPersArr', mountedPersArr);
         
-        this.state.mountedPers = this.state.personalities[this.state.personalities.findIndex(item => item.full_path == this.state.config.personalities[this.state.config.active_personality_id] || item.full_path+':'+item.language ==this.state.config.personalities[this.state.config.active_personality_id])]
-        // console.log(`${this.state.config.personalities[this.state.config.active_personality_id]}`)
-        // console.log(`Mounted personality: ${this.state.mountedPers}`)
+        this.state.mountedPers = this.state.personalities[this.state.personalities.findIndex(item => item.full_path == this.state.config.personalities[this.state.config.active_personality_id])]
       },
       async refreshBindings({ commit }) {
           let bindingsZoo = await api_get_req("list_bindings")
@@ -497,10 +482,8 @@ export const store = createStore({
   
       },
       async refreshModelsZoo({ commit }) {
-        console.log("Fetching models")
         const response = await axios.get('/get_available_models');
         const models_zoo = response.data.filter(model => model.variants &&  model.variants.length>0)
-        console.log(`get_available_models: ${models_zoo}`)
         commit('setModelsZoo', models_zoo)
       },
       async refreshModelStatus({ commit }) {
@@ -508,17 +491,12 @@ export const store = createStore({
         commit('setIsModelOk',modelstatus["status"])
       },
       async refreshModels({ commit }) {
-        console.log("Fetching models")
         let modelsArr = await api_get_req("list_models");
-        console.log(`Found ${modelsArr}`)
         let selectedModel = await api_get_req('get_active_model');
-        console.log("Selected model ", selectedModel);
         if(selectedModel!=undefined){
           commit('setselectedModel',selectedModel["model"])
         }
         commit('setModelsArr',modelsArr)
-        console.log("setModelsArr",modelsArr)
-        console.log("this.state.modelsZoo",this.state.modelsZoo)
         this.state.modelsZoo.map((item)=>{
           item.isInstalled=modelsArr.includes(item.name)
         })

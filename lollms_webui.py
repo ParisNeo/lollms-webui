@@ -390,7 +390,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             self.mounted_personalities=[]
 
         loaded = self.mounted_personalities
-        loaded_names = [f"{p.category}/{p.personality_folder_name}:{p.selected_language}" if p.selected_language else f"{p.category}/{p.personality_folder_name}" for p in loaded if p is not None]
+        loaded_names = [f"{p.category}/{p.personality_folder_name}" for p in loaded if p is not None]
         mounted_personalities=[]
         ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
         ASCIIColors.success(f" ║           Building mounted Personalities         ║ ")
@@ -405,14 +405,14 @@ class LOLLMSWebUI(LOLLMSElfServer):
             if personality in loaded_names:
                 mounted_personalities.append(loaded[loaded_names.index(personality)])
             else:
-                personality_path = f"{personality}" if not ":" in personality else f"{personality.split(':')[0]}"
+                personality_path = f"{personality}"
                 try:
                     personality = AIPersonality(personality_path,
                                                 self.lollms_paths, 
                                                 self.config,
                                                 model=self.model,
                                                 app=self,
-                                                selected_language=personality.split(":")[1] if ":" in personality else None,
+                                                selected_language=self.config.current_language,
                                                 run_scripts=True)
 
                     mounted_personalities.append(personality)
@@ -448,7 +448,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                                     self.model, 
                                                     app = self,
                                                     run_scripts=True,                                                    
-                                                    selected_language=personality.split(":")[1] if ":" in personality else None,
+                                                    selected_language= self.config.current_language,
                                                     installation_option=InstallOption.FORCE_INSTALL)
                         mounted_personalities.append(personality)
                         if personality.processor:

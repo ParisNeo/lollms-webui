@@ -127,3 +127,4 @@ def check_update():
         return {'update_availability':res}
     else:
         return {'update_availability':False}
+

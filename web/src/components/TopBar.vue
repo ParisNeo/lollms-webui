@@ -468,7 +468,23 @@ export default {
     },
     async selectLanguage(language) {
         await this.$store.dispatch('changeLanguage', language);
-        await this.$store.dispatch('changeLanguage', language);
+        const current_personality_name = this.$store.state.config.personalities[this.$store.state.config.active_personality_id]
+        let personality = this.$store.state.personalities.find(personality => personality.full_path === current_personality_name);
+        console.log("personality", personality)
+        console.log("this.$store.state.language", personality.language)
+        console.log("personality.language", personality.language)
+        
+        if (this.$store.state.language != personality.language) {
+            console.log("getting personality");
+            const pers = await axios.get("/get_personality");
+            console.log(pers);
+            personality = pers.data;
+            console.log(personality);
+            
+            // Appel de la mutation pour mettre à jour l'état
+            this.$store.commit('updatePersonality', personality);
+        }
+        console.log("personality:", personality);
         this.toggleLanguageMenu(); // Fermer le menu après le changement de langue
         this.language = language
     },

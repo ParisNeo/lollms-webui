@@ -1296,7 +1296,7 @@ export default {
                 "LoLLMs' version naming often contains clever easter eggs and references to AI advancements.",
                 "The 'Strawberry' version of LoLLMs was a playful nod to ChatGPT's internal codename for one of its versions.",
                 "The 'Saïph' version name was an intentional reference to Orion, anticipating OpenAI's rumored AGI-capable model codenamed 'Orion'.",
-                "LoLLMs' evolution can be traced through its version names: Warp, Starship, Robot, Brainwave, Strawberry, and Saïph.",
+                "LoLLMs' evolution can be traced through its version names: Warp, Starship, Robot, Brainwave, Strawberry, Feather and Saïph.",
                 "Each LoLLMs version name reflects either technological advancement or pays homage to significant developments in AI.",
                 "'Warp' and 'Starship' versions symbolized the quantum leap in AI capabilities and speed improvements.",
                 "'Robot' represented the system's growing autonomy and ability to perform complex tasks.",
@@ -1551,7 +1551,7 @@ export default {
 
 
                 //this.settingsChanged = true
-                const pers_path = pers.language===null?pers.full_path:pers.full_path+':'+pers.language
+                const pers_path = pers.full_path
                 console.log("pers_path",pers_path)
                 console.log("this.$store.state.config.personalities",this.$store.state.config.personalities)
                 if (this.$store.state.config.personalities.includes(pers_path)) {
@@ -1593,7 +1593,7 @@ export default {
         },    
         async select_personality(pers) {
             if (!pers) { return { 'status': false, 'error': 'no personality - select_personality' } }
-            const pers_path = pers.language===null?pers.full_path:pers.full_path+':'+pers.language
+            const pers_path = pers.full_path
             console.log("Selecting personality ",pers_path)
             const id = this.$store.state.config.personalities.findIndex(item => item === pers_path)
 
@@ -4081,15 +4081,11 @@ export default {
             }
         },
         personality(){
-            console.log("personality:", this.$store.state.config.personalities[this.$store.state.config.active_personality_id])
-            const current_personality_name = this.$store.state.config.personalities[this.$store.state.config.active_personality_id]
-            console.log("peronslities", this.$store.state.personalities[0])
+            const current_personality_name = this.$store.state.config.personalities[this.$store.state.config.active_personality_id].split(":")[0]
             const personality = this.$store.state.personalities.find(personality => personality.full_path === current_personality_name);
-            console.log("personality:", personality)
             return personality
         },
         prompts_list() {
-            console.log(this.personality.prompts_list)
             return this.personality.prompts_list;
         },
         formatted_database_name() {
