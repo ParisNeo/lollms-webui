@@ -92,7 +92,7 @@ export const store = createStore({
             state.personalities[index]=newPersonality;
         }
         else{
-          console.log("Can't uipdate personality beceause it was Not found")
+          console.log("Can't uipdate personality beceause it was Not found:",newPersonality.full_path)
         }
       },
       setLeftPanelCollapsed(state, status) {
