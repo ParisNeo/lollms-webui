@@ -841,20 +841,10 @@
       @close-dialog="onclosedatabase_selectorDialog"
       @choice-validated="onvalidatedatabase_selectorChoice"
     />      
-    <div v-show="progress_visibility" role="status" class="fixed m-0 p-2 left-2 bottom-2  min-w-[24rem] max-w-[24rem] h-20 flex flex-col justify-center items-center pb-4 bg-blue-500 rounded-lg shadow-lg z-50 background-a">
-        <ProgressBar ref="progress" :progress="progress_value" class="w-full h-4"></ProgressBar>
-        <p class="text-2xl animate-pulse mt-2 text-light-text-panel dark:text-dark-text-panel">{{ loading_infos }} ...</p>
-    </div>
-    <InputBox prompt-text="Enter the url to the page to use as discussion support" @ok="addWebpage" ref="web_url_input_box"></InputBox>   
-    <SkillsLibraryViewer ref="skills_lib" ></SkillsLibraryViewer>
-    <Toast ref="toast" />
-    <MessageBox ref="messageBox" />
     <div v-show="progress_visibility" role="status" class="fixed m-0 p-2 left-2 bottom-2 min-w-[24rem] max-w-[24rem] h-20 flex flex-col justify-center items-center pb-4 bg-blue-500 rounded-lg shadow-lg z-50 background-a">
     <ProgressBar ref="progress" :progress="progress_value" class="w-full h-4"></ProgressBar>
     <p class="text-2xl animate-pulse mt-2 text-white">{{ loading_infos }} ...</p>
     </div>     
-    <UniversalForm ref="universalForm" class="z-20" />
-    <YesNoDialog ref="yesNoDialog" class="z-20" />
     <PersonalityEditor ref="personality_editor" :config="currentPersonConfig" :personality="selectedPersonality"></PersonalityEditor>
     <div id="app">
     <PopupViewer ref="news"/>
@@ -1193,11 +1183,6 @@ animation: bounce 1s infinite;
 }
 </style>
 <script>
-import Toast from '@/components/Toast.vue'
-import MessageBox from "@/components/MessageBox.vue";
-import ProgressBar from "@/components/ProgressBar.vue";
-import UniversalForm from '../components/UniversalForm.vue';
-import YesNoDialog from '../components/YesNoDialog.vue';
 import PersonalityEditor from "@/components/PersonalityEditor.vue"
 import PopupViewer from '@/components/PopupViewer.vue';
 import ActionButton from '@/components/ActionButton.vue'
@@ -3793,11 +3778,7 @@ export default {
     },
     async mounted() {
         window.addEventListener('keydown', this.handleShortcut);
-        this.$store.state.toast = this.$refs.toast
         this.$store.state.news = this.$refs.news
-        this.$store.state.messageBox = this.$refs.messageBox
-        this.$store.state.universalForm = this.$refs.universalForm
-        this.$store.state.yesNoDialog = this.$refs.yesNoDialog
         this.$store.state.personality_editor = this.$refs.personality_editor
 
 
@@ -3838,11 +3819,6 @@ export default {
         ProgressBar,
         InputBox,
         SkillsLibraryViewer,
-        Toast,
-        MessageBox,
-        ProgressBar,
-        UniversalForm,
-        YesNoDialog,
         
         PersonalityEditor,
         PopupViewer,

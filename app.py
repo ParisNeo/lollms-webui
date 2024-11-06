@@ -70,7 +70,7 @@ packages: List[Tuple[str, str]] = [
     ("freedom_search", "0.1.9"),
     ("scrapemaster", "0.2.1"),
     ("lollms_client", "0.7.5"),
-    ("lollmsvectordb", "1.1.5"),
+    ("lollmsvectordb", "1.1.6"),
 ]
 
 def check_pn_libs():
