@@ -1,7 +1,7 @@
 <template>
     <div class="relative group/item">
       <button @click.prevent="onSettingsPersonality" class="w-6 h-6 rounded-full overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none">
-        <img :src="bUrl + mountedPers.avatar" @error="personalityImgPlacehodler" :alt="mountedPers.name" class="w-full h-full object-cover" :class="{'border-2 border-secondary': isActive}">
+        <img :src="mountedPers.avatar" @error="personalityImgPlacehodler" :alt="mountedPers.name" class="w-full h-full object-cover" :class="{'border-2 border-secondary': isActive}">
       </button>
       
       <div class="absolute bottom-6 left-0 w-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 p-1">
