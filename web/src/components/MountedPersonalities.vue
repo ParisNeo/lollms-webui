@@ -76,6 +76,7 @@ export default {
         },
         mountedPers:{
             get() {
+                console.log("asked for:", this.$store.state.mountedPers)
                 return this.$store.state.mountedPers;
             },
             set(value) {

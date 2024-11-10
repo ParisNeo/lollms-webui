@@ -466,8 +466,9 @@ export const store = createStore({
         }
 
         commit('setMountedPersArr', mountedPersArr);
-        
-        this.state.mountedPers = this.state.personalities[this.state.personalities.findIndex(item => item.full_path == this.state.config.personalities[this.state.config.active_personality_id])]
+        const current_personality = this.state.personalities[this.state.personalities.findIndex(item => item.full_path == this.state.config.personalities[this.state.config.active_personality_id])]
+        console.log("Setting current mounted personality: ",current_personality)
+        this.state.mountedPers = current_personality
       },
       async refreshBindings({ commit }) {
           let bindingsZoo = await api_get_req("list_bindings")
