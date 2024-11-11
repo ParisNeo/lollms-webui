@@ -1,0 +1,336 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    font-family: 'Share Tech Mono', monospace;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+.display-none {
+  @apply hidden;
+}
+
+h1 { @apply text-4xl md:text-5xl font-bold text-green-400 dark:text-green-300 mb-6; }
+h2 { @apply text-3xl font-semibold text-green-400 dark:text-green-400 mb-4; }
+h3 { @apply text-2xl font-medium text-green-500 dark:text-green-500 mb-3; }
+h4 { @apply text-xl font-medium text-green-600 dark:text-green-600 mb-2; }
+
+h1, h2 { @apply border-b border-green-500 dark:border-green-600 pb-2; }
+
+p { @apply text-base text-green-400 dark:text-green-300 break-words; }
+ul { @apply list-disc ml-0; }
+li { @apply list-disc ml-5; }
+ol { @apply list-decimal ml-5; }
+
+:root {
+  --color-primary: #00ff00;
+  --color-primary-light: #33ff33;
+  --color-secondary: #00cc00;
+  --color-accent: #008000;
+  --color-light-text-panel: #00ff00;
+  --color-dark-text-panel: #33ff33;
+  --color-bg-light-panel: #000000;
+  --color-bg-light: #000000;
+  --color-bg-light-tone: #001100;
+  --color-bg-light-code-block: #001a00;
+  --color-bg-light-tone-panel: #002200;
+  --color-bg-light-discussion: #001100;
+  --color-bg-light-discussion-odd: #002200;
+  --color-bg-dark: #000000;
+  --color-bg-dark-tone: #001100;
+  --color-bg-dark-tone-panel: #002200;
+  --color-bg-dark-code-block: #001a00;
+  --color-bg-dark-discussion: #001100;
+  --color-bg-dark-discussion-odd: #002200;
+}
+
+textarea, input, select {
+  @apply bg-black dark:bg-black border-green-500 text-green-400;
+}
+
+.background-color {
+  @apply bg-gradient-to-br from-black to-green-900 dark:from-black dark:to-green-900 min-h-screen;
+}
+
+.toolbar-color {
+  @apply text-green-400 dark:text-green-300 bg-black dark:bg-black rounded-lg shadow-md border border-green-500;
+}
+
+.panels-color {
+  @apply text-green-400 dark:text-green-300 bg-black dark:bg-black border border-green-500;
+}
+
+.unicolor-panels-color {
+  @apply bg-black dark:bg-black border border-green-500;
+}
+
+.chatbox-color {
+  @apply bg-black dark:bg-black border border-green-500;
+}
+
+.message {
+  @apply relative w-full rounded-lg border border-green-500 dark:border-green-500 flex flex-col flex-grow flex-wrap overflow-visible p-5 pb-3 text-lg;
+  @apply bg-black text-green-400 dark:bg-black dark:text-green-300;
+}
+
+.message:hover {
+  @apply border-green-400 dark:border-green-400;
+}
+
+.message:nth-child(even) {
+  @apply bg-black dark:bg-black;
+}
+
+.message:nth-child(odd) {
+  @apply bg-gradient-to-r from-black to-green-900 dark:from-black dark:to-green-900;
+}
+
+.message-header {
+  @apply text-xl font-semibold mb-2 text-green-400;
+}
+
+.message-content {
+  @apply text-lg leading-relaxed text-green-300;
+}
+
+body {
+  @apply bg-black dark:bg-black min-h-screen text-base text-green-400;
+}
+
+.discussion {
+  @apply mr-2 text-xs text-green-400;
+}
+
+.discussion-hilighted {
+  @apply bg-green-900 dark:bg-green-900 text-xs text-green-300;
+}
+
+.bg-gradient-welcome {
+  @apply bg-gradient-to-br from-black to-green-900 dark:from-black dark:to-green-900;
+}
+
+.bg-gradient-progress {
+  @apply bg-gradient-to-r from-green-900 to-green-800 dark:from-green-900 dark:to-green-800;
+}
+
+.text-gradient-title {
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-500 dark:from-green-300 dark:to-green-400;
+}
+
+.text-subtitle {
+  @apply text-green-400 dark:text-green-300;
+}
+
+.text-author {
+  @apply text-green-500 dark:text-green-400;
+}
+
+.text-loading {
+  @apply text-green-400 dark:text-green-300;
+}
+
+.text-progress {
+  @apply text-green-400 dark:text-green-300;
+}
+
+.btn-primary {
+  @apply bg-green-600 hover:bg-green-700 text-black font-bold py-2 px-4 rounded;
+}
+
+.btn-secondary {
+  @apply bg-green-700 hover:bg-green-800 text-green-300 font-bold py-2 px-4 rounded;
+}
+
+.card {
+  @apply bg-black dark:bg-black rounded-lg shadow-md p-6 border border-green-500;
+}
+
+.input {
+  @apply bg-black dark:bg-black border border-green-500 dark:border-green-500 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 text-green-400;
+}
+
+.label {
+  @apply block text-sm font-medium text-green-400 dark:text-green-300 mb-1;
+}
+
+.link {
+  @apply text-green-400 hover:text-green-300 dark:text-green-400 dark:hover:text-green-300;
+}
+
+.navbar-container {
+  @apply text-green-400 dark:text-green-300 bg-black dark:bg-black rounded shadow-lg border border-green-500;
+}
+
+.game-menu {
+  @apply flex justify-center items-center relative;
+}
+
+.text-shadow-custom {
+  text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+}
+
+.menu-item {
+  @apply mb-2 px-4 py-2 text-green-400 dark:text-green-300 font-bold text-lg transition-all duration-300 ease-in-out;
+  @apply hover:text-green-300 hover:dark:text-green-200 hover:transform hover:-translate-y-1;
+}
+
+.menu-item.active-link {
+  @apply rounded-t-md border-green-500 dark:text-green-300 text-shadow-custom text-green-400 font-bold text-lg transition-all duration-300 ease-in-out scale-105;
+  @apply hover:text-green-300 hover:dark:text-green-200 hover:transform hover:-translate-y-1;
+  text-shadow: 0 0 10px #00ff00;
+}
+
+.menu-item.active-link::before {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(to right, #00ff00, #33ff33, #00ff00);
+  border-radius: 10px;
+  animation: shimmer 2s infinite;
+}
+
+.dark .menu-item.active-link::before {
+  background: linear-gradient(to right, #33ff33, #00ff00, #33ff33);
+}
+
+@keyframes shimmer {
+  0% { background-position: -100% 0; }
+  100% { background-position: 100% 0; }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.feather-emoji {
+  display: inline-block;
+  margin-left: 5px;
+  animation: bounce 2s infinite;
+}
+
+.app-card {
+  @apply transition-all duration-300 ease-in-out bg-black dark:bg-black text-green-400 dark:text-green-300 rounded-xl shadow-lg p-6 hover:shadow-xl border border-green-500 ;
+}
+
+.app-card:hover {
+  @apply transform -translate-y-1;
+}
+
+button {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+button:hover {
+  @apply transform -translate-y-0.5;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.green.400') theme('colors.green.900');
+}
+
+.dark .scrollbar-thin {
+  scrollbar-color: theme('colors.green.400') theme('colors.green.900');
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  @apply w-2;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  @apply bg-black dark:bg-black rounded-full;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  @apply bg-green-600 dark:bg-green-600 rounded-full;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  @apply bg-green-500 dark:bg-green-500;
+}
+
+.btn {
+  @apply font-semibold py-2 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-md flex items-center;
+}
+
+.btn-primary {
+  @apply bg-green-600 text-black hover:bg-green-700 focus:ring-4 focus:ring-green-500 dark:focus:ring-green-600;
+}
+
+.btn-secondary {
+  @apply bg-green-900 text-green-400 hover:bg-green-800 focus:ring-4 focus:ring-green-700 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800 dark:focus:ring-green-700;
+}
+
+.search-input {
+  @apply w-full border-b-2 border-green-500 dark:border-green-500 py-2 px-4 pl-10 transition-colors duration-300 ease-in-out focus:outline-none focus:border-green-400 dark:focus:border-green-400 bg-transparent text-green-400 dark:text-green-300;
+}
+
+.scrollbar {
+  @apply scrollbar-thin scrollbar-track-green-900 scrollbar-thumb-green-600 hover:scrollbar-thumb-green-500 dark:scrollbar-track-green-900 dark:scrollbar-thumb-green-600 dark:hover:scrollbar-thumb-green-500;
+}
+
+.card-title {
+  @apply text-xl font-bold text-green-400 dark:text-green-300 mb-2;
+}
+
+.card-content {
+  @apply text-green-400 dark:text-green-300;
+}
+
+.card-footer {
+  @apply mt-4 flex justify-between items-center;
+}
+
+.card-footer-button {
+  @apply bg-green-600 hover:bg-green-700 text-black font-bold py-2 px-4 rounded;
+}
+
+.subcard {
+  @apply bg-black dark:bg-black rounded-lg shadow-md p-4 border border-green-500;
+}
+
+.subcard-title {
+  @apply text-lg font-bold text-green-400 dark:text-green-300 mb-2;
+}
+
+.subcard-content {
+  @apply text-green-400 dark:text-green-300;
+}
+
+.subcard-footer {
+  @apply mt-4 flex justify-between items-center;
+}
+
+.subcard-footer-button {
+  @apply bg-green-600 hover:bg-green-700 text-black font-bold py-2 px-4 rounded;
+}
+
+.animated-progressbar-bg {
+  @apply w-full h-24 relative overflow-hidden bg-gradient-to-r from-green-900 to-green-800 dark:from-black dark:to-green-950 rounded-full shadow-[0_0_15px_rgba(0,255,0,0.3)]
+}
+
+.animated-progressbar-fg {
+  @apply absolute top-0 left-0 h-full bg-gradient-to-r from-green-400 to-green-500 dark:from-green-300 dark:to-green-400 transition-all duration-300 animate-pulse
+}
