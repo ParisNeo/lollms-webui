@@ -282,7 +282,7 @@ body {
 }
 
 .app-card {
-  @apply transition-all duration-300 ease-in-out bg-gradient-to-br from-amber-50 to-amber-100 dark:from-gray-800 dark:to-gray-700 text-gray-800 dark:text-gray-200 shadow-md hover:shadow-lg;
+  @apply transition-all duration-300 ease-in-out bg-gradient-to-br from-amber-50 to-amber-100 dark:from-gray-800 dark:to-gray-700 text-gray-800 dark:text-gray-200 border rounded-xl shadow-lg p-6 hover:shadow-xl;
 }
 
 .app-card:hover {

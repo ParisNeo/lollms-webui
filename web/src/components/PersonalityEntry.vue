@@ -1,5 +1,5 @@
 <template>
-  <div class="personality-card bg-white border rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300 ease-in-out flex flex-col h-full"
+  <div class="app-card flex flex-col h-full"
     :class="selected_computed ? 'border-primary-light' : 'border-transparent', isMounted ? 'bg-blue-200 dark:bg-blue-700' : ''"
     :title="!personality.installed ? 'Not installed' : ''">
     <div class="flex-grow">

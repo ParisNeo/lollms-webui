@@ -163,25 +163,27 @@
         </div>    
 
         <div class="relative inline-flex">
-          <!-- Custom button with enhanced styling -->
+          <!-- Enhanced custom button -->
           <button 
-            @click="themeDropdownOpen = !themeDropdownOpen"
-            class="inline-flex items-center justify-between min-w-[120px] px-4 py-2
+            @click.stop="toggleThemeDropDown"
+            class="inline-flex items-center justify-between w-40 px-4 py-2
                   bg-gradient-to-r from-blue-500/10 to-purple-500/10
                   dark:from-blue-400/20 dark:to-purple-400/20
                   border border-blue-200 dark:border-blue-700
                   rounded-lg shadow-sm
                   text-gray-700 dark:text-gray-200
+                  hover:from-blue-500/20 hover:to-purple-500/20
+                  dark:hover:from-blue-400/30 dark:hover:to-purple-400/30
                   hover:border-blue-300 dark:hover:border-blue-600
                   hover:shadow-md
                   focus:outline-none focus:ring-2 focus:ring-blue-500/50
                   transition-all duration-300 ease-in-out
                   backdrop-blur-sm"
           >
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2 overflow-hidden">
               <!-- Theme Icon -->
               <svg 
-                class="w-5 h-5 text-blue-500 dark:text-blue-400"
+                class="w-5 h-5 flex-shrink-0 text-blue-500 dark:text-blue-400"
                 xmlns="http://www.w3.org/2000/svg" 
                 fill="none" 
                 viewBox="0 0 24 24" 
@@ -190,10 +192,10 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                       d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
               </svg>
-              <span class="font-medium">{{ currentTheme }}</span>
+              <span class="font-medium truncate">{{ currentTheme }}</span>
             </div>
             <svg 
-              class="w-5 h-5 text-blue-500 dark:text-blue-400 transition-transform duration-300"
+              class="w-5 h-5 flex-shrink-0 text-blue-500 dark:text-blue-400 transition-transform duration-300"
               :class="{ 'rotate-180': themeDropdownOpen }"
               xmlns="http://www.w3.org/2000/svg" 
               viewBox="0 0 20 20" 
@@ -206,36 +208,43 @@
           </button>
 
           <!-- Enhanced Dropdown menu with animations -->
-          <div 
-            v-if="themeDropdownOpen"
-            class="absolute left-0 z-50 w-full mt-2 
-                  overflow-hidden
-                  bg-white dark:bg-gray-800 
-                  border border-blue-200 dark:border-blue-700
-                  rounded-lg shadow-lg
-                  transform origin-top
-                  animate-dropdown"
+          <transition
+            enter-active-class="transition duration-200 ease-out"
+            enter-from-class="transform scale-95 opacity-0"
+            enter-to-class="transform scale-100 opacity-100"
+            leave-active-class="transition duration-75 ease-in"
+            leave-from-class="transform scale-100 opacity-100"
+            leave-to-class="transform scale-95 opacity-0"
           >
-            <div class="max-h-60 overflow-y-auto">
-              <a
-                v-for="theme in availableThemes"
-                :key="theme"
-                @click="loadTheme(theme); currentTheme = theme; themeDropdownOpen = false"
-                class="flex items-center space-x-2 px-4 py-3
-                      text-gray-700 dark:text-gray-200
-                      hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50
-                      dark:hover:from-blue-900/30 dark:hover:to-purple-900/30
-                      cursor-pointer
-                      transition-colors duration-150
-                      group"
-              >
-                <div class="w-2 h-2 rounded-full bg-blue-400 group-hover:bg-blue-500 
-                            transition-colors duration-150"></div>
-                <span class="font-medium">{{ theme }}</span>
-              </a>
+            <div 
+              v-if="themeDropdownOpen"
+              class="absolute left-0 z-50 w-48 mt-2 
+                    overflow-hidden
+                    bg-white dark:bg-gray-800 
+                    border border-blue-200 dark:border-blue-700
+                    rounded-lg shadow-lg"
+            >
+              <div class="max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-blue-100">
+                <a
+                  v-for="theme in availableThemes"
+                  :key="theme"
+                  @click="loadTheme(theme); currentTheme = theme; themeDropdownOpen = false"
+                  class="flex items-center space-x-3 px-4 py-3
+                        text-gray-700 dark:text-gray-200
+                        hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50
+                        dark:hover:from-blue-900/30 dark:hover:to-purple-900/30
+                        cursor-pointer
+                        transition-colors duration-150
+                        group"
+                >
+                  <div class="w-2 h-2 rounded-full bg-blue-400 group-hover:bg-blue-500 
+                              transition-colors duration-150"></div>
+                  <span class="font-medium truncate">{{ theme }}</span>
+                </a>
+              </div>
             </div>
-          </div>
-        </div>        
+          </transition>
+        </div>    
         
       </div>
     </div>
@@ -382,7 +391,12 @@ export default {
 
   },
   methods: {
-    
+    toggleThemeDropDown()
+    {
+      console.log("Toggling theme down:", this.themeDropdownOpen)
+      this.themeDropdownOpen = !this.themeDropdownOpen;
+      console.log("Toggled theme down:", this.themeDropdownOpen)
+    },
     addCustomLanguage() {
         if (this.customLanguage.trim() !== '') {
         this.selectLanguage(this.customLanguage);
@@ -393,6 +407,7 @@ export default {
       const dropdown = this.$el
       if (!dropdown.contains(e.target)) {
         this.themeDropdownOpen = false
+        console.log("Outside click detected")
       }
     },
     getSavedTheme() {

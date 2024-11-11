@@ -1,5 +1,5 @@
 <template>
-    <div class="app-card bg-white border rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300 ease-in-out flex flex-col h-full">
+    <div class="app-card flex flex-col h-full">
       <div class="flex-grow">
         <div class="flex items-center mb-4">
           <img :src="app.icon" alt="App Icon" class="w-16 h-16 rounded-full border border-gray-300 mr-4" />

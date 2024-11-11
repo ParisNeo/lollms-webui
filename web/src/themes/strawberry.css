@@ -281,7 +281,7 @@ body {
 
 
 .app-card {
-  @apply transition-all duration-300 ease-in-out bg-gradient-to-br from-blue-200 to-blue-300 dark:from-blue-800 dark:to-blue-900 text-gray-800 dark:text-gray-100 shadow-md hover:shadow-lg;
+  @apply transition-all duration-300 ease-in-out bg-gradient-to-br from-blue-200 to-blue-300 dark:from-blue-800 dark:to-blue-900 text-gray-800 dark:text-gray-100 border rounded-xl shadow-lg p-6 hover:shadow-xl;
 }
 
 .app-card:hover {

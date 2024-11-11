@@ -215,6 +215,24 @@ body {
   100% { background-position: 100% 0; }
 }
 
+
+.app-card {
+  @apply transition-all duration-300 ease-in-out bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100 border rounded-xl shadow-lg p-6 hover:shadow-xl ;
+}
+
+.app-card:hover {
+  @apply transform -translate-y-1;
+}
+
+button {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+button:hover {
+  @apply transform -translate-y-0.5;
+}
+
+
 .scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: #00ff00 #1a1a1a;
@@ -276,3 +294,17 @@ body {
   @apply absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-500 to-emerald-600 dark:from-emerald-400 dark:to-emerald-500 transition-all duration-300 
   [background-image:repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,0,0,0.2)_10px,rgba(0,0,0,0.2)_20px)]
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

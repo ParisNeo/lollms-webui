@@ -1,5 +1,5 @@
 #define MyAppName "LOLLMS"
-#define MyAppVersion "13.0"
+#define MyAppVersion "14.0"
 #define MyAppPublisher "ParisNeo"
 #define MyAppURL "https://github.com/ParisNeo/lollms-webui"
 
@@ -43,7 +43,6 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\lollms.bat"; IconFilename: 
 Name: "{autoprograms}\{#MyAppName} CMD"; Filename: "{app}\lollms_cmd.bat"; IconFilename: "{app}\logo.ico"
 Name: "{autodesktop}\{#MyAppName} CMD"; Filename: "{app}\lollms_cmd.bat"; IconFilename: "{app}\logo.ico"; Tasks: desktopicon
 
-
 [Run]
 Filename: "{app}\lollmsenv_installer.bat"; Parameters: "--dir ""{app}\lollmsenv"" -y"; StatusMsg: "Installing LollmsEnv..."; Flags: runhidden
 Filename: "{app}\lollmsenv\bin\lollmsenv.bat"; Parameters: "create-env lollms_env"; StatusMsg: "Creating Python environment..."; Flags: runhidden
@@ -53,18 +52,17 @@ Filename: "{app}\lollmsenv\envs\lollms_env\Scripts\python.exe"; Parameters: "-m 
 Filename: "{app}\lollmsenv\envs\lollms_env\Scripts\python.exe"; Parameters: "-m pip install -e ""{app}\lollms-webui\lollms_core"""; StatusMsg: "Installing LOLLMS core..."; Flags: runhidden
 Filename: "{app}\lollms.bat"; Description: "Run LOLLMS"; Flags: postinstall nowait skipifsilent; Tasks: runafterinstall
 
-
 [UninstallDelete]
 Type: files; Name: "{app}\lollms.bat"
 Type: files; Name: "{app}\lollms_cmd.bat"
 Type: filesandordirs; Name: "{app}\lollmsenv"
 Type: filesandordirs; Name: "{app}\lollms-webui"
 Type: filesandordirs; Name: "{app}\lollmsenv_install"
+
 [Code]
 var
   BindingPage: TInputOptionWizardPage;
   PersonalFolderPage: TInputDirWizardPage;
-  UninstallPersonalDataPage: TInputOptionWizardPage;
 
 function IsGitInstalled: Boolean;
 var
@@ -177,7 +175,7 @@ begin
     
     // Create global_paths_cfg.yaml file
     YamlContent := 'lollms_path: ' + ExpandConstant('{app}\lollms-webui\lollms_core\lollms') + #13#10 +
-                   'lollms_personal_path: ' + PersonalFolder;
+                   'lollms_personal_path: ' + PersonalFolder ;
     SaveStringToFile(ExpandConstant('{app}\lollms-webui\global_paths_cfg.yaml'), YamlContent, False);
 
     case BindingPage.SelectedValueIndex of
@@ -205,22 +203,21 @@ begin
            '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
     end;
 
-
-
     SaveStringToFile(ExpandConstant('{app}\lollms.bat'),
       '@echo off' + #13#10 +
-      'call "' + ExpandConstant('{app}') + '\lollmsenv\envs\lollms_env\Scripts\activate.bat"' + #13#10 +
-      'cd "' + ExpandConstant('{app}') + '\lollms-webui"' + #13#10 +
+      'call "lollmsenv\envs\lollms_env\Scripts\activate.bat"' + #13#10 +
+      'cd /d "lollms-webui"' + #13#10 +
       'python app.py %*' + #13#10 +
       'pause', False);
 
     SaveStringToFile(ExpandConstant('{app}\lollms_cmd.bat'),
       '@echo off' + #13#10 +
-      'call "' + ExpandConstant('{app}') + '\lollmsenv\envs\lollms_env\Scripts\activate.bat"' + #13#10 +
-      'cd "' + ExpandConstant('{app}') + '\lollms-webui"' + #13#10 +
+      'call "lollmsenv\envs\lollms_env\Scripts\activate.bat"' + #13#10 +
+      'cd /d "lollms-webui"' + #13#10 +
       'cmd /k', False);
   end;
 end;
+
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   PersonalFolder: string;
@@ -242,6 +239,9 @@ begin
           if Pos('lollms_personal_path:', YamlContent[I]) = 1 then
           begin
             PersonalFolder := Trim(Copy(YamlContent[I], Length('lollms_personal_path:') + 1, MaxInt));
+            // Remove surrounding quotes if present
+            if (Length(PersonalFolder) > 1) and (PersonalFolder[1] = '"') and (PersonalFolder[Length(PersonalFolder)] = '"') then
+              PersonalFolder := Copy(PersonalFolder, 2, Length(PersonalFolder) - 2);
             Break;
           end;
         end;
@@ -272,4 +272,3 @@ begin
     end;
   end;
 end;
-

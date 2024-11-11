@@ -232,7 +232,7 @@ body {
 }
 
 .app-card {
-  @apply transition-all duration-300 ease-in-out bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100 shadow-md hover:shadow-lg;
+  @apply transition-all duration-300 ease-in-out bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100 border rounded-xl shadow-lg p-6 hover:shadow-xl ;
 }
 
 .app-card:hover {

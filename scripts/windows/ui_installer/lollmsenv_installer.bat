@@ -1,12 +1,17 @@
 @echo off
 setlocal enabledelayedexpansion
 :: Version number
-set VERSION=1.3.3
+set VERSION=1.4.2
 set USE_MASTER=false
 
 :: Check for --use-master option
+set ARGS=
 for %%a in (%*) do (
-    if "%%a"=="--use-master" set USE_MASTER=true
+    if "%%a"=="--use-master" (
+        set USE_MASTER=true
+    ) else (
+        set ARGS=!ARGS! %%a
+    )
 )
 
 :: Temporary directory for downloading and extraction
@@ -40,10 +45,6 @@ if "%USE_MASTER%"=="true" (
     :: Change to the extracted directory
     cd /d "%TEMP_DIR%\LollmsEnv-%VERSION%"
 )
-
-:: Remove --use-master from arguments
-set ARGS=%*
-set ARGS=%ARGS:--use-master=%
 
 :: Run the install script with forwarded parameters
 echo Running installation...

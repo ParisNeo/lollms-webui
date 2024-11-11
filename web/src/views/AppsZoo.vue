@@ -222,9 +222,8 @@ export default {
         return matchesSearch && matchesCategory && matchesInstalled;
       });
     },
-
     sortedAndFilteredApps() {
-      return this.filteredApps.sort((a, b) => {
+      return [...this.filteredApps].sort((a, b) => {
         let comparison = 0;
         switch (this.sortBy) {
           case 'name':
@@ -234,20 +233,27 @@ export default {
             comparison = a.author.localeCompare(b.author);
             break;
           case 'date':
-            comparison = new Date(a.creation_date) - new Date(b.creation_date);
+            comparison = this.getDateValue(a.creation_date) - this.getDateValue(b.creation_date);
             break;
           case 'update':
-            comparison = new Date(a.last_update_date) - new Date(b.last_update_date);
+            comparison = this.getDateValue(a.last_update_date) - this.getDateValue(b.last_update_date);
             break;
         }
         return this.sortOrder === 'asc' ? comparison : -comparison;
       });
     },
+
     favoriteApps() {
       return this.combinedApps.filter(app => this.favorites.includes(app.appName));
     },
   },
   methods: {
+    getDateValue(dateString) {
+        if (!dateString) return 0; // Gère les valeurs manquantes
+        const date = new Date(dateString);
+        return isNaN(date.getTime()) ? 0 : date.getTime();
+    },
+
     toggleSortOrder() {
       this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
     },
