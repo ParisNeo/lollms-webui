@@ -133,6 +133,7 @@ class LollmsClient {
        * @param {string} prompt - The input prompt to be tokenized.
        * @returns {Array} A list of tokens representing the tokenized prompt.
        */
+      console.log("Tokenizing",prompt)
       const output = await axios.post("/lollms_tokenize", {"prompt": prompt});
       return output.data.named_tokens
     }
