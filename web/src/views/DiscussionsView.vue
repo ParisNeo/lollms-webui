@@ -1707,7 +1707,7 @@ export default {
 
                             // open form
 
-                            this.$refs.universalForm.showForm(res.data, "Binding settings ", "Save changes", "Cancel").then(res => {
+                            this.$store.state.universalForm.showForm(res.data, "Binding settings ", "Save changes", "Cancel").then(res => {
                                 // send new data
                                 try {
                                     axios.post('/set_active_binding_settings',
