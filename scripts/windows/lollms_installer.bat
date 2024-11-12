@@ -148,14 +148,12 @@ cd ..
 
 REM Create launcher scripts
 echo @echo off > lollms.bat
-echo lollmsenv\activate.bat >> lollms.bat
 echo call ".\lollmsenv\envs\lollms_env\Scripts\activate.bat" >> lollms.bat
 echo cd lollms-webui >> lollms.bat
 echo python app.py %%* >> lollms.bat
 echo pause >> lollms.bat
 
 echo @echo off > lollms_cmd.bat
-echo lollmsenv\activate.bat >> lollms.bat
 echo call ".\lollmsenv\envs\lollms_env\Scripts\activate.bat" >> lollms_cmd.bat
 echo cd lollms-webui >> lollms_cmd.bat
 echo cmd /k >> lollms_cmd.bat
