@@ -179,23 +179,21 @@ export default {
 
                                             if (response && response.data) {
                                                 console.log('personality set with new settings', response.data)
-                                                this.$refs.toast.showToast("Personality settings updated successfully!", 4, true)
+                                                this.$store.state.toast.showToast("Personality settings updated successfully!", 4, true)
 
                                             } else {
-                                                this.$refs.toast.showToast("Did not get Personality settings responses.\n" + response, 4, false)
+                                                this.$store.state.toast.showToast("Did not get Personality settings responses.\n" + response, 4, false)
 
                                             }
-
-
                                         })
                                 } catch (error) {
-                                    this.$refs.toast.showToast("Did not get Personality settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.$store.state.toast.showToast("Did not get Personality settings responses.\n Endpoint error: " + error.message, 4, false)
 
                                 }
 
                             })
                         } else {
-                            this.$refs.toast.showToast("Personality has no settings", 4, false)
+                            this.$store.state.toast.showToast("Personality has no settings", 4, false)
 
                         }
 
@@ -204,7 +202,7 @@ export default {
 
             } catch (error) {
 
-                this.$refs.toast.showToast("Could not open personality settings. Endpoint error: " + error.message, 4, false)
+                this.$store.state.toast.showToast("Could not open personality settings. Endpoint error: " + error.message, 4, false)
             }
 
         },
