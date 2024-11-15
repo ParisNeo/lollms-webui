@@ -16,6 +16,10 @@
           <p v-if="personality.creation_date" class="text-sm text-gray-600">Creation Date: {{ formatDate(personality.creation_date) }}</p>
           <p v-if="personality.last_update_date" class="text-sm text-gray-600">Last update Date: {{ formatDate(personality.last_update_date) }}</p>
         </div>
+        <!-- Add the help icon if help is available -->
+        <button v-if="personality.help" @click="showHelp" class="ml-2 text-blue-500 hover:text-blue-600 transition duration-300 ease-in-out" title="Help">
+          <i data-feather="help-circle" class="h-6 w-6"></i>
+        </button>
       </div>
 
       <div class="mb-4">
@@ -50,15 +54,29 @@
       class="fixed z-50 w-20 h-20 rounded-full overflow-hidden">
       <img :src="getImgUrl()" class="w-full h-full object-fill">
     </div>
+
+    <!-- Help Popup -->
+    <div v-if="showHelpPopup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+      <div class="bg-white p-4 rounded-lg shadow-lg w-[500px] h-[400px] flex flex-col">
+        <div class="flex justify-between items-center mb-2">
+          <h2 class="text-lg font-bold">Help</h2>
+          <button @click="closeHelp" class="text-red-500 hover:text-red-600">Close</button>
+        </div>
+        <div class="flex-grow overflow-auto">
+          <div v-html="renderedHelp"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { nextTick } from 'vue'
-import feather from 'feather-icons'
-import botImgPlaceholder from "../assets/logo.svg"
-import userImgPlaceholder from "../assets/default_user.svg"
-import InteractiveMenu from "@/components/InteractiveMenu.vue"
+import { nextTick } from "vue";
+import feather from "feather-icons";
+import { marked } from "marked"; // Correct import for marked
+import botImgPlaceholder from "../assets/logo.svg";
+import userImgPlaceholder from "../assets/default_user.svg";
+import InteractiveMenu from "@/components/InteractiveMenu.vue";
 
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 export default {
@@ -88,7 +106,9 @@ export default {
       isMounted: false,
       name: this.personality.name,
       thumbnailVisible: false,
-      thumbnailPosition: { x: 0, y: 0 }
+      thumbnailPosition: { x: 0, y: 0 },
+      showHelpPopup: false, // State for help popup visibility
+      renderedHelp: '' // Rendered markdown content
     };
   },
   computed:{
@@ -117,13 +137,11 @@ export default {
     }
   },
   mounted() {
-
     this.isMounted = this.personality.isMounted
+    console.log(this.personality)
 
     nextTick(() => {
       feather.replace()
-
-
     })
   },
   methods: {
@@ -192,14 +210,18 @@ export default {
     toggleReinstall() {
       this.onReinstall(this)
     },
-
+    showHelp() {
+      this.renderedHelp = marked(this.personality.help); // Render markdown
+      this.showHelpPopup = true;
+    },
+    closeHelp() {
+      this.showHelpPopup = false;
+    }
   },
   watch: {
     selected() {
       nextTick(() => {
         feather.replace()
-
-
       })
     }
   }

@@ -29,7 +29,7 @@
     "markdown-it-mathjax": "^2.0.0",
     "markdown-it-multimd-table": "^4.2.3",
     "markdown-it-texmath": "^1.0.0",
-    "marked": "^14.1.2",
+    "marked": "^14.1.4",
     "mathjax": "^3.2.2",
     "mermaid": "^11.2.1",
     "monaco-editor": "^0.51.0",
