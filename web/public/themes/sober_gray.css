@@ -1358,6 +1358,9 @@ body {
 .h-\[200px\]{
   height: 200px;
 }
+.h-\[400px\]{
+  height: 400px;
+}
 .h-auto{
   height: auto;
 }
@@ -1519,6 +1522,9 @@ body {
 }
 .w-\[300px\]{
   width: 300px;
+}
+.w-\[500px\]{
+  width: 500px;
 }
 .w-auto{
   width: auto;
@@ -3552,6 +3558,13 @@ body {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+:root {
+  --lollms-title: "LoLLMS";
+  --falling-object: "";
+  --activate-dropping-animation: 0;
+  --lollms-welcome-short-message: "Welcome to LoLLMS";
+  --lollms-welcome-message: "Embark on a journey through the realm of advanced AI with LoLLMS, your ultimate companion for intelligent conversations and multimodal interactions. Unleash the power of large language models and explore new frontiers in artificial intelligence.";
+}
 .display-none{
   display: none;
 }

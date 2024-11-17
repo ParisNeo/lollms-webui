@@ -477,7 +477,38 @@ export default {
         // document.body.className = `theme-${themeName}`;
 
         // Safely save theme preference
-        this.saveTheme(themeName);        
+        this.saveTheme(themeName);      
+        
+        // Update the main rapameters
+        const styles = getComputedStyle(document.documentElement);
+        const lollms_title = styles.getPropertyValue('--lollms-title').trim();
+        const activate_dropping_animation = styles.getPropertyValue('--activate-dropping-animation').trim() === '1';
+        const falling_object = styles.getPropertyValue('--falling-object').trim();
+        const lollms_welcome_short_message = styles.getPropertyValue('--lollms-welcome-short-message').trim();
+        const lollms_welcome_message = styles.getPropertyValue('--lollms-welcome-message').trim();
+        
+        
+        let theme_vars = this.$store.state.theme_vars;
+        if (lollms_title){
+          theme_vars.lollms_title = lollms_title
+        }
+        if (activate_dropping_animation){
+          theme_vars.activate_dropping_animation = activate_dropping_animation
+        }
+        if (falling_object){
+          theme_vars.falling_object = falling_object
+        }
+
+        if (lollms_welcome_short_message){
+          theme_vars.lollms_welcome_short_message = lollms_welcome_short_message
+        }
+        if (lollms_welcome_message){
+          theme_vars.lollms_welcome_message = lollms_welcome_message
+        }
+
+        this.$store.commit('setThemeVars', theme_vars);
+
+
       } catch (error) {
         console.error(`Failed to load theme: ${themeName}`, error)
         this.error = `Failed to load theme: ${themeName}`

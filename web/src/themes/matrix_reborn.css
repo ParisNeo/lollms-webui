@@ -4,6 +4,14 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --lollms-title: "LoLLMS";
+  --falling-object: "";
+  --activate-dropping-animation: 0;
+  --lollms-welcome-short-message: "Welcome to LoLLMS";
+  --lollms-welcome-message: "Embark on a journey through the realm of advanced AI with LoLLMS, your ultimate companion for intelligent conversations and multimodal interactions. Unleash the power of large language models and explore new frontiers in artificial intelligence.";
+}
+
 @layer base {
   html {
     @apply scroll-smooth;
@@ -75,7 +83,7 @@ textarea, input, select {
 }
 
 .panels-color {
-  @apply text-green-400 dark:text-green-300 bg-black dark:bg-black border border-green-500;
+  @apply text-green-400 dark:text-green-300 bg-black dark:bg-black;
 }
 
 .unicolor-panels-color {

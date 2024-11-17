@@ -1363,6 +1363,9 @@ html{
 .h-\[200px\]{
   height: 200px;
 }
+.h-\[400px\]{
+  height: 400px;
+}
 .h-auto{
   height: auto;
 }
@@ -1524,6 +1527,9 @@ html{
 }
 .w-\[300px\]{
   width: 300px;
+}
+.w-\[500px\]{
+  width: 500px;
 }
 .w-auto{
   width: auto;
@@ -3557,6 +3563,13 @@ html{
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+:root {
+  --lollms-title: "L🍓LLMS";
+  --falling-object: "🍓";
+  --activate-dropping-animation: 1;
+  --lollms-welcome-short-message: "Welcome to LoLLMs";
+  --lollms-welcome-message:  "Dive into the sweet world of LoLLMs - where AI meets delicious innovation! 🍓🤖 We're here to make your digital experience as juicy and satisfying as a perfectly ripe strawberry. From natural language processing to multimodal tasks, LoLLMs is your one-stop AI assistant. Let's cultivate brilliant ideas together!";
+}
 .display-none{
   display: none;
 }

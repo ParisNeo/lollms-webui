@@ -2,7 +2,7 @@
     <transition name="fade-and-fly">
         <div v-if="!isReady" class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center overflow-hidden">
             <!-- Falling stars -->
-            <div class="absolute inset-0 pointer-events-none overflow-hidden">
+            <div v-if="$store.state.theme_vars.activate_dropping_animation" class="absolute inset-0 pointer-events-none overflow-hidden">
                 <div v-for="n in 50" :key="n" class="absolute animate-fall animate-giggle"
                     :style="{
                     left: `${Math.random() * 100}%`,
@@ -10,7 +10,7 @@
                     animationDuration: `${3 + Math.random() * 7}s`,
                     animationDelay: `${Math.random() * 5}s`
                     }">
-                🌟
+                {{$store.state.theme_vars.falling_object}}
                 </div>
             </div>
 
@@ -25,7 +25,7 @@
                                 background: linear-gradient(45deg, #f59e0b, #fbbf24);
                                 -webkit-background-clip: text;
                                 background-clip: text;">
-                        L<span class="animate-pulse">⭐</span>LLMS
+                        {{$store.state.theme_vars.lollms_title}}
                     </div>
 
 
@@ -58,7 +58,6 @@
                         <!-- Star that moves with progress -->
                         <div class="absolute top-0 h-full flex items-center transition-all duration-300"
                             :style="{ left: `${loading_progress}%`, transform: 'translateX(-50%)' }">
-                            <p style="font-size: 48px; line-height: 1;">🌟</p>
                         </div>
                     </div>
                 </div>

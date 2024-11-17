@@ -1,3 +1,6 @@
+# V 15:
+Enhanced theming system
+New Smart routing system
 # V 7.0:
 Added changelog
 Separated images from text in file upload

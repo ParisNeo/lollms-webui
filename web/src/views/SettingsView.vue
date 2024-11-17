@@ -224,14 +224,10 @@
                 <div :class="{ 'hidden': smartrouterconf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
                     <div class="flex flex-col mb-2 px-3 pb-2">
                         <Card title="Smart Routing Settings" :is_shrunk="false" :is_subcard="true" class="pb-2 m-2">
-                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <tr>
-                                    <td style="min-width: 200px;">
-                                        <!-- ? Label for the checkbox to enable/disable smart routing -->
-                                        <label for="use_smart_routing" class="text-sm font-bold" style="margin-right: 1rem;">Use Smart Routing:</label>
-                                    </td>
-                                    <td style="width: 100%;">
-                                        <!-- ? Checkbox input to toggle smart routing on/off -->
+                            <div class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <div class="flex flex-col space-y-4">
+                                    <div class="flex items-center">
+                                        <label for="use_smart_routing" class="text-sm font-bold w-64">Use Smart Routing:</label>
                                         <input
                                             type="checkbox"
                                             id="use_smart_routing"
@@ -239,15 +235,10 @@
                                             @change="settingsChanged=true"
                                             class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
                                         >
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="min-width: 200px;">
-                                        <!-- ? Label for the checkbox to enable/disable smart routing -->
-                                        <label for="restore_model_after_smart_routing" class="text-sm font-bold" style="margin-right: 1rem;">Restore model after smart routing:</label>
-                                    </td>
-                                    <td style="width: 100%;">
-                                        <!-- ? Checkbox input to toggle smart routing on/off -->
+                                    </div>
+                                    
+                                    <div class="flex items-center">
+                                        <label for="restore_model_after_smart_routing" class="text-sm font-bold w-64">Restore model after smart routing:</label>
                                         <input
                                             type="checkbox"
                                             id="restore_model_after_smart_routing"
@@ -255,40 +246,34 @@
                                             @change="settingsChanged=true"
                                             class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
                                         >
-                                    </td>
-                                </tr>                                
-                                <tr>
-                                    <td style="min-width: 200px;">
-                                        <!-- ? Label for the input field to specify the router model -->
-                                        <label for="smart_routing_router_model" class="text-sm font-bold" style="margin-right: 1rem;">Router Model:</label>
-                                    </td>
-                                    <td style="width: 100%;">
-                                        <!-- ? Input field to enter the name of the model used for routing decisions -->
+                                    </div>
+                                    
+                                    <div class="flex items-center">
+                                        <label for="smart_routing_router_model" class="text-sm font-bold w-64">Router Model:</label>
                                         <input
                                             type="text"
                                             id="smart_routing_router_model"
                                             v-model="configFile.smart_routing_router_model"
                                             @change="settingsChanged=true"
-                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                            class="flex-grow mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
                                         >
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="min-width: 200px;">
-                                        <!-- ? Label for the list of models ordered by their processing power -->
-                                        <label for="smart_routing_models_by_power" class="text-sm font-bold" style="margin-right: 1rem;">Models by Power:</label>
-                                    </td>
-                                    <td style="width: 100%;">
-                                        <!-- ? Custom component to manage a list of model names, ordered by their processing capability -->
-                                        <StringListManager
-                                            v-model="configFile.smart_routing_models_by_power"
+                                    </div>
+                                    
+                                    <div class="flex items-start">
+                                        <label for="smart_routing_models_description" class="text-sm font-bold w-64 mt-1">Models with description:</label>
+                                        <DictManager
+                                            v-model="configFile.smart_routing_models_description"
                                             @change="settingsChanged = true"
+                                            key-name="Model Path"
+                                            value-name="Model description"
                                             placeholder="Enter model name"
+                                            class="flex-grow"
                                         />
-                                    </td>
-                                </tr>
-                            </table>
+                                    </div>
+                                </div>
+                            </div>
                         </Card>
+
                     </div>
                 </div>
             </div>
@@ -4425,6 +4410,7 @@ import storeLogo from '@/assets/logo.png'
 import SVGGPU from '@/assets/gpu.svg';
 
 import StringListManager from '@/components/StringListManager.vue';
+import DictManager from '@/components/DictManager.vue';
 
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
 axios.defaults.baseURL = import.meta.env.VITE_LOLLMS_API_BASEURL
@@ -4439,6 +4425,7 @@ export default {
         ChoiceDialog,
         Card,
         StringListManager,
+        DictManager,
         RadioOptions,
     },
     data() {

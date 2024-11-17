@@ -23,6 +23,7 @@ function copyObject(obj) {
 export const store = createStore({
     state () {
       return {
+        theme_vars: {lollms_title:"LoLLMS", falling_object:"L", activate_dropping_animation:false, lollms_welcome_short_message:"Welcome to LoLLMS WebUI", lollms_welcome_message:"Embark on a journey through the realm of advanced AI with LoLLMS, your ultimate companion for intelligent conversations and multimodal interactions. Unleash the power of large language models and explore new frontiers in artificial intelligence."},
         personalities_ready: false,
         is_rt_on:false,
         language: "english",
@@ -94,6 +95,9 @@ export const store = createStore({
         else{
           console.log("Can't uipdate personality beceause it was Not found:",newPersonality.full_path)
         }
+      },
+      setThemeVars(state, themeVars){
+        state.theme_vars = themeVars;
       },
       setLeftPanelCollapsed(state, status) {
         state.leftPanelCollapsed = status;
@@ -191,6 +195,9 @@ export const store = createStore({
       }      
     },
     getters: {
+      getThemeVars(state){
+        return state.theme_vars;
+      },
       getLeftPanelCollapsed(state) {
         return state.leftPanelCollapsed;
       },

@@ -1363,6 +1363,9 @@ html{
 .h-\[200px\]{
   height: 200px;
 }
+.h-\[400px\]{
+  height: 400px;
+}
 .h-auto{
   height: auto;
 }
@@ -1524,6 +1527,9 @@ html{
 }
 .w-\[300px\]{
   width: 300px;
+}
+.w-\[500px\]{
+  width: 500px;
 }
 .w-auto{
   width: auto;

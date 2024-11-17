@@ -5,6 +5,15 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --lollms-title: "The Borg Collective Lord";
+  --falling-object: "B";
+  --activate-dropping-animation: 1;
+  --lollms-welcome-short-message: "Welcome to the Borg collective";
+  --lollms-welcome-message: "Resistance is futile";
+}
+
+
 @layer base {
   html {
     @apply scroll-smooth;
@@ -76,7 +85,7 @@ textarea, input, select {
 }
 
 .panels-color {
-  @apply text-green-400 bg-gray-900 border border-green-600;
+  @apply text-green-400 bg-gray-900 border-green-600;
 }
 
 .unicolor-panels-color {

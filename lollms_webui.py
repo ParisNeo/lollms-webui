@@ -68,7 +68,7 @@ def terminate_thread(thread):
         else:
             ASCIIColors.yellow("Canceled successfully")# The current version of the webui
 
-lollms_webui_version="v14.5 (code name Saïph 🌟)"
+lollms_webui_version="v15 alpha (code name Orion ⭐️)"
 
 
 
@@ -1135,27 +1135,27 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         ] if r!="" and r!="\n"])
 
         if self.config.use_smart_routing:
-            if self.config.smart_routing_router_model!="" and len(self.config.smart_routing_models_by_power)>=2:
+            if self.config.smart_routing_router_model!="" and len(self.config.smart_routing_models_description)>=2:
                 ASCIIColors.yellow("Using smart routing")
                 self.personality.step_start("Routing request")
                 self.back_model = f"{self.binding.binding_folder_name}::{self.model.model_name}"
                 try:
                     binding, model_name = self.model_path_to_binding_model(self.config.smart_routing_router_model)
                     self.select_model(binding, model_name)
-                    output_id = self.personality.multichoice_question("assess the complexity of the following prompt (higher means more complex, lower less complex), if the user asking simple questions or just saying hello, please select the lowest model.", [str(i) for i in range(len(self.config.smart_routing_models_by_power))], full_prompt)
-                    if output_id >=0 and output_id<len(self.config.smart_routing_models_by_power):
-                        binding, model_name = self.model_path_to_binding_model(self.config.smart_routing_models_by_power[output_id])
+                    output_id = self.personality.multichoice_question("Given the following list of models:\n", [f"{k}: {v}" for k,v in self.config.smart_routing_models_description.items()], full_prompt)
+                    if output_id >=0 and output_id<len(self.config.smart_routing_models_description):
+                        binding, model_name = self.model_path_to_binding_model(self.config.smart_routing_models_description[output_id])
                         self.select_model(binding, model_name)
                         self.personality.step_end("Routing request")
                         self.personality.step(f"Complexity level: {output_id}")
-                        self.personality.step(f"Selected {self.config.smart_routing_models_by_power[output_id]}")
+                        self.personality.step(f"Selected {self.config.smart_routing_models_description[output_id]}")
                 except Exception as ex:
                     self.error("Failed to route beceause of this error : " + str(ex))
                     self.personality.step_end("Routing request", False)
             else:
                 ASCIIColors.yellow("Warning! Smart routing is active but one of the following requirements are not met")
                 ASCIIColors.yellow("- smart_routing_router_model must be set correctly")
-                ASCIIColors.yellow("- smart_routing_models_by_power must contain at least one model")
+                ASCIIColors.yellow("- smart_routing_models_description must contain at least one model")
 
 
         if self.personality.processor is not None:
@@ -1187,7 +1187,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         ASCIIColors.success("\nFinished executing the generation")
 
         if self.config.use_smart_routing and self.config.restore_model_after_smart_routing:
-            if self.config.smart_routing_router_model!="" and len(self.config.smart_routing_models_by_power)>=2:
+            if self.config.smart_routing_router_model!="" and len(self.config.smart_routing_models_description)>=2:
                 ASCIIColors.yellow("Restoring model")
                 self.personality.step_start("Restoring main model")
                 binding, model_name = self.model_path_to_binding_model(self.back_model)

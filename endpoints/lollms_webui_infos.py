@@ -32,7 +32,16 @@ router = APIRouter()
 async def get_lollms_version():
    """Get the version of the LoLLMs Web UI application."""
    # Return the version string
-   return {"id":4}
+   return {"id":9}
+
+@router.get("/get_changeLog")
+async def get_lollms_version():
+   """Get the changelog."""
+   # Return the version string
+   with open("CHANGELOG.md","r",encoding="utf8") as f:
+       infos = f.read()
+   return infos
+
 
 @router.get("/get_lollms_webui_version")
 async def get_lollms_webui_version():

@@ -4,14 +4,14 @@
         <input
           type="text"
           v-model="newKey"
-          placeholder="Enter key"
+          :placeholder="keyName"
           @keyup.enter="addItem"
           class="flex-grow px-4 py-2 border border-gray-300 rounded dark:bg-gray-700 dark:text-white text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         >
         <input
           type="text"
           v-model="newValue"
-          :placeholder="placeholder"
+          :placeholder="valueName"
           @keyup.enter="addItem"
           class="flex-grow px-4 py-2 border border-gray-300 rounded dark:bg-gray-700 dark:text-white text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         >
@@ -25,14 +25,18 @@
           :class="{ 'bg-gray-100 dark:bg-gray-700': draggingKey === key }"
         >
           <div class="flex-grow mb-2 sm:mb-0 sm:mr-4 w-full sm:w-auto">
+            <label :for="'key-' + key" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ keyName }}</label>
             <input
+              :id="'key-' + key"
               :value="key"
               @input="updateKey(key, $event.target.value)"
               class="w-full px-3 py-2 border border-gray-300 rounded dark:bg-gray-600 dark:text-white text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
           </div>
           <div class="flex-grow mb-2 sm:mb-0 sm:mr-4 w-full sm:w-auto">
+            <label :for="'value-' + key" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ valueName }}</label>
             <input
+              :id="'value-' + key"
               :value="value"
               @input="updateValue(key, $event.target.value)"
               class="w-full px-3 py-2 border border-gray-300 rounded dark:bg-gray-600 dark:text-white text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -80,9 +84,13 @@
         type: Object,
         default: () => ({}),
       },
-      placeholder: {
+      keyName: {
         type: String,
-        default: 'Enter a value',
+        default: 'Key',
+      },
+      valueName: {
+        type: String,
+        default: 'Value',
       },
     },
     emits: ['update:modelValue', 'change'],
@@ -95,9 +103,9 @@
     },
     methods: {
       addItem() {
-        if (this.newKey.trim() && this.newValue.trim()) {
+        if (this.newKey.trim()) {
           const updatedDict = { ...this.modelValue };
-          updatedDict[this.newKey.trim()] = this.newValue.trim();
+          updatedDict[this.newKey.trim()] = this.newValue;
           this.$emit('update:modelValue', updatedDict);
           this.$emit('change');
           this.newKey = '';
@@ -125,7 +133,7 @@
       },
       updateValue(key, newValue) {
         const updatedDict = { ...this.modelValue };
-        updatedDict[key] = newValue.trim();
+        updatedDict[key] = newValue;
         this.$emit('update:modelValue', updatedDict);
         this.$emit('change');
       },

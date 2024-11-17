@@ -1358,6 +1358,9 @@ body {
 .h-\[200px\]{
   height: 200px;
 }
+.h-\[400px\]{
+  height: 400px;
+}
 .h-auto{
   height: auto;
 }
@@ -1519,6 +1522,9 @@ body {
 }
 .w-\[300px\]{
   width: 300px;
+}
+.w-\[500px\]{
+  width: 500px;
 }
 .w-auto{
   width: auto;
@@ -3552,6 +3558,13 @@ body {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+:root {
+  --lollms-title: "The Borg Collective Lord";
+  --falling-object: "B";
+  --activate-dropping-animation: 1;
+  --lollms-welcome-short-message: "Welcome to the Borg collective";
+  --lollms-welcome-message: "Resistance is futile";
+}
 .display-none{
   display: none;
 }
@@ -3673,7 +3686,6 @@ textarea, input, select{
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 .panels-color{
-  border-width: 1px;
   --tw-border-opacity: 1;
   border-color: rgb(5 122 85 / var(--tw-border-opacity));
   --tw-bg-opacity: 1;
