@@ -1142,13 +1142,14 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 try:
                     binding, model_name = self.model_path_to_binding_model(self.config.smart_routing_router_model)
                     self.select_model(binding, model_name)
-                    output_id = self.personality.multichoice_question("Given the following list of models:\n", [f"{k}: {v}" for k,v in self.config.smart_routing_models_description.items()], full_prompt)
-                    if output_id >=0 and output_id<len(self.config.smart_routing_models_description):
-                        binding, model_name = self.model_path_to_binding_model(self.config.smart_routing_models_description[output_id])
+                    models = [f"{k}" for k,v in self.config.smart_routing_models_description.items()]
+                    output_id = self.personality.multichoice_question("Select most suitable model to answer the user request given the context:\n", [f"{k}: {v}" for k,v in self.config.smart_routing_models_description.items()], "user request:" + prompt)
+                    if output_id >=0 and output_id<len(models):
+                        binding, model_name = self.model_path_to_binding_model(models[output_id])
                         self.select_model(binding, model_name)
                         self.personality.step_end("Routing request")
                         self.personality.step(f"Complexity level: {output_id}")
-                        self.personality.step(f"Selected {self.config.smart_routing_models_description[output_id]}")
+                        self.personality.step(f"Selected {models[output_id]}")
                 except Exception as ex:
                     self.error("Failed to route beceause of this error : " + str(ex))
                     self.personality.step_end("Routing request", False)
