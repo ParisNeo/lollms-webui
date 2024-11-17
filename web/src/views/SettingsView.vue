@@ -5619,7 +5619,7 @@ export default {
                 if (binding_object.disclaimer){
                     this.$store.state.yesNoDialog.askQuestion(binding_object.disclaimer, 'Proceed', 'Cancel')
                 }
-                axios.post('/install_binding', { name: binding_object.binding.folder }).then((res) => {
+                axios.post('/install_binding', {client_id:this.$store.state.client_id, name: binding_object.binding.folder }).then((res) => {
 
                 if (res) {
                     this.isLoading = false
@@ -5651,7 +5651,7 @@ export default {
         },
         onUnInstallBinding(binding_object){
             this.isLoading = true
-            axios.post('/unInstall_binding', { name: binding_object.binding.folder }).then((res) => {
+            axios.post('/unInstall_binding', {client_id:this.$store.state.client_id, name: binding_object.binding.folder }).then((res) => {
                 
                 if (res) {
                     this.isLoading = false
@@ -5689,7 +5689,7 @@ export default {
         },
         onReinstallBinding(binding_object) {
             this.isLoading = true
-            axios.post('/reinstall_binding', { name: binding_object.binding.folder }).then((res) => {
+            axios.post('/reinstall_binding', {client_id:this.$store.state.client_id, name: binding_object.binding.folder }).then((res) => {
 
                 if (res) {
                     this.isLoading = false
