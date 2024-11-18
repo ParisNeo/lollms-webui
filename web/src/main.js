@@ -491,7 +491,7 @@ export const store = createStore({
       },
       async refreshModelsZoo({ commit }) {
         const response = await axios.get('/get_available_models');
-        const models_zoo = response.data.filter(model => model.variants &&  model.variants.length>0)
+        const models_zoo = response.data;//.filter(model => model.variants &&  model.variants.length>0)
         commit('setModelsZoo', models_zoo)
       },
       async refreshModelStatus({ commit }) {
