@@ -65,7 +65,7 @@
             class="absolute top-0 right-0 h-full flex items-center group"
         >
             <div
-                class="flex gap-2 items-center bg-white dark:bg-gray-800 p-2 rounded-l-md shadow-md transform translate-x-full group-hover:translate-x-0 transition-transform duration-300"
+                class="discussion-toolbox"
             >
                 <!-- EDIT TITLE CONFIRM -->
                 <div v-if="showConfirmation" class="flex gap-2 items-center">

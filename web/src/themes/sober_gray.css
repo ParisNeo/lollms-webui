@@ -350,3 +350,8 @@ button:hover {
 .animated-progressbar-fg {
   @apply absolute top-0 left-0 h-full bg-gradient-to-r from-gray-400 to-gray-500 dark:from-gray-500 dark:to-gray-600 transition-all duration-300
 }
+
+
+.discussion-toolbox{
+  @apply flex gap-2 items-center bg-white dark:bg-gray-800 p-2 rounded-l-md shadow-md transform translate-x-full group-hover:translate-x-0 transition-transform duration-300
+}

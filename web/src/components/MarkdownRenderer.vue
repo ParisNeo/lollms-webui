@@ -33,10 +33,6 @@ import CodeBlock from './CodeBlock.vue';
 import hljs from 'highlight.js';
 import mathjax from 'markdown-it-mathjax';
 
-
-import texmath from 'markdown-it-texmath';
-import katex from 'katex';
-
 function escapeHtml(unsafe) {
   return unsafe
     .replace(/&/g, "&amp;")
@@ -79,12 +75,12 @@ export default {
   setup(props) {
     const md = new MarkdownIt({
       html: true,
+      breaks: true, // Enable single line breaks
       highlight: (code, language) => {
         const validLanguage = language && hljs.getLanguage(language) ? language : 'plaintext';
         return hljs.highlight(validLanguage, code).value;
       },
-      renderInline: true,
-      breaks: false, // Prevent newlines from being converted to <br> tags
+      renderInline: false,
     })
       .use(emoji)
       .use(anchor)
@@ -104,7 +100,8 @@ export default {
         multilineCellEndMarker: '<|',
         multilineCellPadding: ' ',
         multilineCellJoiner: '\n',
-      });
+      })
+      .use(mathjax); // Ensure mathjax is used for inline LaTeX
 
     const markdownItems = ref([]);
     const updateMarkdown = () => {
@@ -142,6 +139,9 @@ export default {
       }
       nextTick(() => {
         feather.replace();
+        if (window.MathJax) {
+          window.MathJax.typesetPromise(); // Ensure MathJax typesets after rendering
+        }
       });
     };
 
@@ -152,11 +152,6 @@ export default {
     watch(() => props.markdownText, updateMarkdown);
     onMounted(() => {
       updateMarkdown();
-      nextTick(() => {
-        if (window.MathJax) {
-          window.MathJax.typesetPromise();
-        }
-      });
     });
     return { markdownItems, updateCode };
   },

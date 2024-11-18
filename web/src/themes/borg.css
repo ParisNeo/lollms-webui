@@ -6,11 +6,11 @@
 @tailwind utilities;
 
 :root {
-  --lollms-title: "The Borg Collective Lord";
-  --falling-object: "B";
+  --lollms-title: The Borg Collective Lord;
+  --falling-object: B;
   --activate-dropping-animation: 1;
-  --lollms-welcome-short-message: "Welcome to the Borg collective";
-  --lollms-welcome-message: "Resistance is futile";
+  --lollms-welcome-short-message: Welcome to the Borg collective;
+  --lollms-welcome-message: Resistance is futile;
 }
 
 
@@ -305,7 +305,9 @@ button:hover {
 }
 
 
-
+.discussion-toolbox{
+  @apply flex gap-2 items-center bg-green-700 dark:bg-gray-800 p-2 rounded-l-md shadow-md transform translate-x-full group-hover:translate-x-0 transition-transform duration-300
+}
 
 
 

@@ -5,11 +5,11 @@
 @tailwind utilities;
 
 :root {
-  --lollms-title: "LoLLMS";
-  --falling-object: "";
-  --activate-dropping-animation: 0;
-  --lollms-welcome-short-message: "Welcome to LoLLMS";
-  --lollms-welcome-message: "Embark on a journey through the realm of advanced AI with LoLLMS, your ultimate companion for intelligent conversations and multimodal interactions. Unleash the power of large language models and explore new frontiers in artificial intelligence.";
+  --lollms-title: DragonForge AI;
+  --falling-object: "🐉";
+  --activate-dropping-animation: 1;
+  --lollms-welcome-short-message: Welcome to the Dragon's Lair;
+  --lollms-welcome-message: Ignite your imagination in the fiery realm of DragonForge AI, where ancient wisdom meets cutting-edge technology. Harness the power of the crimson dragon to breathe life into your ideas and scorch through the boundaries of what's possible in artificial intelligence.;
 }
 
 @layer base {
@@ -345,4 +345,9 @@ button:hover {
 
 .animated-progressbar-fg {
   @apply absolute top-0 left-0 h-full bg-gradient-to-r from-red-600 to-red-800 dark:from-red-700 dark:to-red-800 transition-all duration-300
+}
+
+
+.discussion-toolbox{
+  @apply flex gap-2 items-center bg-white dark:bg-gray-800 p-2 rounded-l-md shadow-md transform translate-x-full group-hover:translate-x-0 transition-transform duration-300
 }

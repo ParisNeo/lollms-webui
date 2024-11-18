@@ -5,11 +5,11 @@
 @tailwind utilities;
 
 :root {
-  --lollms-title: "L🍓LLMS";
-  --falling-object: "🍓";
+  --lollms-title: L🍓LLMS;
+  --falling-object: 🍓;
   --activate-dropping-animation: 1;
-  --lollms-welcome-short-message: "Welcome to LoLLMs";
-  --lollms-welcome-message:  "Dive into the sweet world of LoLLMs - where AI meets delicious innovation! 🍓🤖 We're here to make your digital experience as juicy and satisfying as a perfectly ripe strawberry. From natural language processing to multimodal tasks, LoLLMs is your one-stop AI assistant. Let's cultivate brilliant ideas together!";
+  --lollms-welcome-short-message: Welcome to LoLLMs;
+  --lollms-welcome-message:  Dive into the sweet world of LoLLMs - where AI meets delicious innovation! 🍓🤖 We're here to make your digital experience as juicy and satisfying as a perfectly ripe strawberry. From natural language processing to multimodal tasks, LoLLMs is your one-stop AI assistant. Let's cultivate brilliant ideas together!;
 }
 
 @layer base {
@@ -395,4 +395,9 @@ button:hover {
 
 .animated-progressbar-fg {
   @apply absolute top-0 left-0 h-full bg-gradient-to-r from-pink-300 to-rose-400 dark:from-pink-400 dark:to-rose-500 transition-all duration-300
+}
+
+
+.discussion-toolbox{
+  @apply flex gap-2 items-center bg-white dark:bg-gray-800 p-2 rounded-l-md shadow-md transform translate-x-full group-hover:translate-x-0 transition-transform duration-300
 }

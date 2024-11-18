@@ -327,3 +327,8 @@ button:hover {
 .subcard-footer-button {
   @apply bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded;
 }
+
+
+.discussion-toolbox{
+  @apply flex gap-2 items-center bg-white dark:bg-gray-800 p-2 rounded-l-md shadow-md transform translate-x-full group-hover:translate-x-0 transition-transform duration-300
+}

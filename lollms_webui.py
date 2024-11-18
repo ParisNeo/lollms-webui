@@ -1140,8 +1140,13 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 self.personality.step_start("Routing request")
                 self.back_model = f"{self.binding.binding_folder_name}::{self.model.model_name}"
                 try:
-                    binding, model_name = self.model_path_to_binding_model(self.config.smart_routing_router_model)
-                    self.select_model(binding, model_name)
+                    if not hasattr(self,"routing_model") or self.routing_model is None:
+                        binding, model_name = self.model_path_to_binding_model(self.config.smart_routing_router_model)
+                        self.select_model(binding, model_name)
+                        self.routing_model = self.model
+                    else:
+                        self.set_active_model(self.routing_model)
+
                     models = [f"{k}" for k,v in self.config.smart_routing_models_description.items()]
                     output_id = self.personality.multichoice_question("Select most suitable model to answer the user request given the context:\n", [f"{k}: {v}" for k,v in self.config.smart_routing_models_description.items()], "user request:" + prompt)
                     if output_id >=0 and output_id<len(models):
