@@ -1,0 +1,348 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --lollms-title: LoLLMS;
+  --falling-object: "";
+  --activate-dropping-animation: 0;
+  --lollms-welcome-short-message: Welcome to LoLLMS;
+  --lollms-welcome-message: Embark on a journey through the realm of advanced AI with LoLLMS, your ultimate companion for intelligent conversations and multimodal interactions. Unleash the power of large language models and explore new frontiers in artificial intelligence.;
+}
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    font-family: 'Roboto', sans-serif;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+.display-none {
+  @apply hidden;
+}
+
+h1 { @apply text-4xl md:text-5xl font-bold text-pink-800 dark:text-pink-100 mb-6; }
+h2 { @apply text-3xl font-semibold text-pink-700 dark:text-pink-200 mb-4; }
+h3 { @apply text-2xl font-medium text-pink-600 dark:text-pink-300 mb-3; }
+h4 { @apply text-xl font-medium text-pink-500 dark:text-pink-400 mb-2; }
+
+h1, h2 { @apply border-b border-pink-300 dark:border-pink-600 pb-2; }
+
+p { @apply text-base text-pink-600 dark:text-pink-300 break-words; }
+ul { @apply list-disc ml-0; }
+li { @apply list-disc ml-5; }
+ol { @apply list-decimal ml-5; }
+
+:root {
+  --color-primary: #ff4d8c;
+  --color-primary-light: #ff80ab;
+  --color-secondary: #ffb3c1;
+  --color-accent: #ff1a66;
+  --color-light-text-panel: #ffffff;
+  --color-dark-text-panel: #ffe0e0;
+  --color-bg-light-panel: #fff0f5;
+  --color-bg-light: #ffffff;
+  --color-bg-light-tone: #ffe0f0;
+  --color-bg-light-code-block: #fff5fa;
+  --color-bg-light-tone-panel: #ffd0e0;
+  --color-bg-light-discussion: #fff8fa;
+  --color-bg-light-discussion-odd: #fff0f5;
+  --color-bg-dark: #1a0a0f;
+  --color-bg-dark-tone: #211515;
+  --color-bg-dark-tone-panel: #2a1c1c;
+  --color-bg-dark-code-block: #211515;
+  --color-bg-dark-discussion: #1a0e0e;
+  --color-bg-dark-discussion-odd: #1a0d0d;
+}
+
+textarea, input, select {
+  @apply bg-pink-100 dark:bg-pink-900;
+}
+
+.background-color {
+  @apply bg-gradient-to-br from-pink-100 to-red-300 dark:from-pink-800 dark:to-red-900 min-h-screen;
+}
+
+.toolbar-color {
+  @apply text-pink-700 dark:text-pink-200 bg-pink-200 dark:bg-pink-800 rounded-lg shadow-md;
+}
+
+.panels-color {
+  @apply text-pink-700 dark:text-pink-200 bg-pink-100 dark:bg-pink-800;
+}
+
+.unicolor-panels-color {
+  @apply bg-pink-200 dark:bg-pink-700;
+}
+
+.chatbox-color {
+  @apply bg-pink-50 dark:bg-pink-800;
+}
+
+.message {
+  @apply relative w-full rounded-lg border border-pink-300 dark:border-pink-600 flex flex-col flex-grow flex-wrap overflow-visible p-5 pb-3 text-lg;
+  @apply bg-pink-100 text-pink-900 dark:bg-gradient-to-br dark:from-pink-900 dark:to-pink-800 dark:text-pink-100;
+}
+
+.message:hover {
+  @apply border-pink-400 dark:border-pink-500;
+}
+
+.message:nth-child(even) {
+  @apply bg-pink-50 dark:bg-pink-900;
+}
+
+.message:nth-child(odd) {
+  @apply bg-pink-100 dark:bg-pink-800;
+}
+
+.message-header {
+  @apply text-xl font-semibold mb-2;
+}
+
+.message-content {
+  @apply text-lg leading-relaxed;
+}
+
+body {
+  @apply bg-pink-100 dark:bg-pink-900 min-h-screen text-base;
+}
+
+.discussion {
+  @apply mr-2 text-xs;
+}
+
+.discussion-hilighted {
+  @apply bg-pink-200 dark:bg-pink-800 text-xs;
+}
+
+.bg-gradient-welcome {
+  @apply bg-gradient-to-br from-pink-100 to-red-300 dark:from-pink-800 dark:to-red-900;
+}
+
+.bg-gradient-progress {
+  @apply bg-gradient-to-r from-pink-200 to-pink-300 dark:from-pink-700 dark:to-pink-600;
+}
+
+.text-gradient-title {
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-pink-700 to-pink-500 dark:from-pink-300 dark:to-pink-500;
+}
+
+.text-subtitle {
+  @apply text-pink-600 dark:text-pink-400;
+}
+
+.text-author {
+  @apply text-pink-500 dark:text-pink-400;
+}
+
+.text-loading {
+  @apply text-pink-700 dark:text-pink-300;
+}
+
+.text-progress {
+  @apply text-pink-600 dark:text-pink-400;
+}
+
+.btn-primary {
+  @apply bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded;
+}
+
+.btn-secondary {
+  @apply bg-pink-400 hover:bg-pink-500 text-white font-bold py-2 px-4 rounded;
+}
+
+.card {
+  @apply bg-white dark:bg-pink-800 rounded-lg shadow-md p-6;
+}
+
+.input {
+  @apply bg-pink-100 dark:bg-pink-700 border border-pink-300 dark:border-pink-600 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500 dark:focus:ring-pink-400;
+}
+
+.label {
+  @apply block text-sm font-medium text-pink-700 dark:text-pink-300 mb-1;
+}
+
+.link {
+  @apply text-pink-600 hover:text-pink-800 dark:text-pink-400 dark:hover:text-pink-200;
+}
+
+.navbar-container {
+  @apply text-pink-700 dark:text-pink-200 bg-pink-200 dark:bg-pink-800 rounded shadow-lg;
+}
+
+.game-menu {
+  @apply flex justify-center items-center relative;
+}
+
+.text-shadow-custom {
+  text-shadow: 1px 1px 0px #ffe0e0, -1px -1px 0px #ffe0e0, 1px -1px 0px #ffe0e0, -1px 1px 0px #ffe0e0;
+}
+
+.menu-item {
+  @apply mb-2 px-4 py-2 text-pink-600 dark:text-pink-300 font-bold text-lg transition-all duration-300 ease-in-out;
+  @apply hover:text-pink-800 hover:dark:text-pink-200 hover:transform hover:-translate-y-1;
+}
+
+.menu-item.active-link {
+  @apply rounded-t-md border-pink-500 dark:text-pink-300 text-shadow-custom text-pink-800 font-bold text-lg transition-all duration-300 ease-in-out scale-105;
+  @apply hover:text-pink-900 hover:dark:text-pink-200 hover:transform hover:-translate-y-1;
+  text-shadow: 0 0 10px rgba(128, 128, 128, 0.5);
+}
+
+.menu-item.active-link::before {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(to right, #ff4d8c, #ffb3c1, #ff4d8c);
+  border-radius: 10px;
+  animation: shimmer 2s infinite;
+}
+
+.dark .menu-item.active-link::before {
+  background: linear-gradient(to right, #ff80ab, #aaaaaa, #ff80ab);
+}
+
+@keyframes shimmer {
+  0% { background-position: -100% 0; }
+  100% { background-position: 100% 0; }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.feather-emoji {
+  display: inline-block;
+  margin-left: 5px;
+  animation: bounce 2s infinite;
+}
+
+.app-card {
+  @apply transition-all duration-300 ease-in-out bg-pink-100 dark:bg-pink-800 text-pink-800 dark:text-pink-100 border rounded-xl shadow-lg p-6 hover:shadow-xl;
+}
+
+.app-card:hover {
+  @apply transform -translate-y-1;
+}
+
+button {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+button:hover {
+  @apply transform -translate-y-0.5;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.pink.400') theme('colors.pink.200');
+}
+
+.dark .scrollbar-thin {
+  scrollbar-color: theme('colors.pink.600') theme('colors.pink.800');
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  @apply w-2;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  @apply bg-pink-200 dark:bg-pink-800 rounded-full;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  @apply bg-pink-400 dark:bg-pink-600 rounded-full;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  @apply bg-pink-500 dark:bg-pink-500;
+}
+
+.btn {
+  @apply font-semibold py-2 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-md flex items-center;
+}
+
+.btn-primary {
+  @apply bg-pink-600 text-white hover:bg-pink-700 focus:ring-4 focus:ring-pink-300 dark:focus:ring-pink-600;
+}
+
+.btn-secondary {
+  @apply bg-pink-200 text-pink-700 hover:bg-pink-300 focus:ring-4 focus:ring-pink-200 dark:bg-pink-700 dark:text-pink-200 dark:hover:bg-pink-600 dark:focus:ring-pink-600;
+}
+
+.search-input {
+  @apply w-full border-b-2 border-pink-300 dark:border-pink-600 py-2 px-4 pl-10 transition-colors duration-300 ease-in-out focus:outline-none focus:border-pink-500 dark:focus:border-pink-400 bg-transparent text-pink-800 dark:text-pink-100;
+}
+
+.scrollbar {
+  @apply scrollbar-thin scrollbar-track-pink-200 scrollbar-thumb-pink-400 hover:scrollbar-thumb-pink-500 dark:scrollbar-track-pink-700 dark:scrollbar-thumb-pink-600 dark:hover:scrollbar-thumb-pink-500;
+}
+
+.card-title {
+  @apply text-xl font-bold text-pink-800 dark:text-pink-100 mb-2;
+}
+
+.card-content {
+  @apply text-pink-600 dark:text-pink-300;
+}
+
+.card-footer {
+  @apply mt-4 flex justify-between items-center;
+}
+
+.card-footer-button {
+  @apply bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded;
+}
+
+.subcard {
+  @apply bg-pink-50 dark:bg-pink-800 rounded-lg shadow-md p-4;
+}
+
+.subcard-title {
+  @apply text-lg font-bold text-pink-800 dark:text-pink-100 mb-2;
+}
+
+.subcard-content {
+  @apply text-pink-600 dark:text-pink-300;
+}
+
+.subcard-footer {
+  @apply mt-4 flex justify-between items-center;
+}
+
+.subcard-footer-button {
+  @apply bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded;
+}
+
+.interesting-facts{
+  @apply mt-6 mb-6 p-4 bg-red-200 dark:bg-gray-800/80 rounded-lg shadow-lg transform hover:scale-105 
+}
+
+.animated-progressbar-bg {
+  @apply w-full h-12 relative overflow-hidden bg-gradient-to-r from-pink-50 to-rose-100 dark:from-pink-300 dark:to-rose-200 rounded-full shadow-lg
+}
+
+.animated-progressbar-fg {
+  @apply absolute top-0 left-0 h-full bg-gradient-to-r from-pink-300 to-rose-400 dark:from-pink-400 dark:to-rose-500 transition-all duration-300
+}
