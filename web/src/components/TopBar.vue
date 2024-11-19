@@ -254,7 +254,6 @@
         <p class="text-2xl animate-pulse mt-2 text-light-text-panel dark:text-dark-text-panel">{{ loading_infos }} ...</p>
   </div>
   <InputBox prompt-text="Enter the url to the page to use as discussion support" @ok="addWebpage" ref="web_url_input_box"></InputBox>   
-  <SkillsLibraryViewer ref="skills_lib" ></SkillsLibraryViewer>
   <Toast ref="toast" />
   <MessageBox ref="messageBox" />
   <YesNoDialog ref="yesNoDialog" class="z-20" />

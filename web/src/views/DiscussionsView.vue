@@ -846,8 +846,10 @@
     </div>     
     <PersonalityEditor ref="personality_editor" :config="currentPersonConfig" :personality="selectedPersonality"></PersonalityEditor>
     <div id="app">
-    <PopupViewer ref="news"/>
+    <PopupViewer ref="news"/>    
     </div>    
+    
+    <SkillsLibraryViewer ref="skills_lib" ></SkillsLibraryViewer>
 </template>
 
 
