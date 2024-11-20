@@ -1308,7 +1308,6 @@ export default {
                 "LoLLMs includes advanced natural language processing capabilities in over 100 languages.",
                 "The system can perform sentiment analysis on social media trends and customer feedback in real-time.",
                 "LoLLMs features a unique 'time-aware' context system that understands and reasons about temporal relationships.",
-                "The platform includes specialized tools for quantum computing simulation and algorithm development."
 
             ],
             randomFact: "",            

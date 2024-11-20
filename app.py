@@ -69,7 +69,7 @@ def check_and_install_package(package: str, version: str):
 packages: List[Tuple[str, str]] = [
     ("freedom_search", "0.1.9"),
     ("scrapemaster", "0.2.1"),
-    ("lollms_client", "0.7.6"),
+    ("lollms_client", "0.7.7"),
     ("lollmsvectordb", "1.1.6"),
 ]
 

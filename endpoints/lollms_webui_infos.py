@@ -43,6 +43,13 @@ async def get_lollms_version():
    return infos
 
 
+@router.get("/get_news")
+async def get_lollms_version():
+    """Get the changelog."""
+    base_path = Path(__file__).parent
+    infos = base_path/"news"/"current.html"
+    return infos.read_text()
+
 @router.get("/get_lollms_webui_version")
 async def get_lollms_webui_version():
    """Get the version of the LoLLMs Web UI application."""
