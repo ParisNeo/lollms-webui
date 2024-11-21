@@ -16,15 +16,7 @@
 
             <div class="flex flex-col items-center text-center max-w-4xl w-full px-4 relative z-10">
                 <div class="mb-8 w-full">
-                    <div class="text-5xl md:text-6xl font-bold text-amber-500 mb-2 hover:scale-105 transition-transform"
-                        style="text-shadow: 2px 2px 4px rgba(0,0,0,0.2), 
-                                            2px 2px 0px white, 
-                                            -2px -2px 0px white, 
-                                            2px -2px 0px white, 
-                                            -2px 2px 0px white;
-                                background: linear-gradient(45deg, #f59e0b, #fbbf24);
-                                -webkit-background-clip: text;
-                                background-clip: text;">
+                    <div class="text-5xl md:text-6xl font-bold text-amber-500 mb-2 hover:scale-105 transition-transform lollms-title-style">
                         {{$store.state.theme_vars.lollms_title}}
                     </div>
 
@@ -605,16 +597,13 @@
                             class="gap-2 py-2 my-2 hover:shadow-md hover:bg-primary-light dark:hover:bg-primary rounded-md p-2 duration-75 group cursor-pointer">
                             <p class="px-3">No discussions are found</p>
                         </div>
-                        <div
-                            class="sticky bottom-0 bg-gradient-to-t pointer-events-none from-bg-light-tone dark:from-bg-dark-tone flex flex-grow">
-                            <!-- FADING DISCUSSION LIST END ELEMENT -->
-                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
         <div class="flex flex-row panels-color">
-            <div class="h-15 w-full  py-4 cursor-pointer text-light-text-panel dark:text-dark-text-panel hover:text-secondary" @click="showDatabaseSelector">
+            <div class="chat-bar text-center " @click="showDatabaseSelector">
                 <p class="text-center font-large font-bold text-l drop-shadow-md align-middle">{{ formatted_database_name.replace("_"," ") }}</p>
             </div>
         </div>
@@ -1308,7 +1297,26 @@ export default {
                 "LoLLMs includes advanced natural language processing capabilities in over 100 languages.",
                 "The system can perform sentiment analysis on social media trends and customer feedback in real-time.",
                 "LoLLMs features a unique 'time-aware' context system that understands and reasons about temporal relationships.",
-
+                "The world's first computer programmer was a woman named Ada Lovelace.",
+                "There are more possible iterations of a game of chess than there are atoms in the known universe.",
+                "The first AI program was written in 1951 to play checkers.",
+                "The Internet was originally called ARPANET and was developed by the US Department of Defense.",
+                "The concept of zero as a number was developed in ancient India, with the earliest known text using it dating to 458 CE.",
+                "Light from the Sun takes about 8 minutes and 20 seconds to reach Earth.",
+                "The first mobile phone call was made in 1973 by Martin Cooper.",
+                "The human brain processes images 60,000 times faster than text.",
+                "The most powerful supercomputer today can perform about 442 quadrillion calculations per second.",
+                "The ancient Egyptians invented the 365-day calendar we still use today.",
+                "Mathematicians have calculated pi to over 62 trillion digits.",
+                "Quantum computers can theoretically solve certain problems in seconds that would take classical computers billions of years.",
+                "The first email was sent in 1971 by Ray Tomlinson.",
+                "The Hubble Space Telescope can see galaxies so far away, it's like looking back in time billions of years.",
+                "The largest known prime number has over 24 million digits.",
+                "AI can now generate realistic images, music, and even write stories.",
+                "The Great Wall of China is not visible from space with the naked eye, contrary to popular belief.",
+                "There are more possible ways to shuffle a deck of 52 cards than there are atoms on Earth.",
+                "The first computer virus was created in 1983 as an experiment.",
+                "The speed of light in a vacuum is exactly 299,792,458 meters per second."
             ],
             randomFact: "",            
             showPlaceholderModal: false,

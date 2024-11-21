@@ -346,3 +346,26 @@ button:hover {
 .animated-progressbar-fg {
   @apply absolute top-0 left-0 h-full bg-gradient-to-r from-pink-300 to-rose-400 dark:from-pink-400 dark:to-rose-500 transition-all duration-300
 }
+
+
+.lollms-title-style {
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2), 
+               2px 2px 0px #fce7f3, 
+               -2px -2px 0px #fce7f3, 
+               2px -2px 0px #fce7f3, 
+               -2px 2px 0px #fce7f3;
+  background: linear-gradient(45deg, #ec4899, #fbcfe8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.chat-bar {
+  @apply relative text-pink-900 dark:text-pink-100 grow flex cursor-pointer select-none items-center gap-2 bg-pink-50 dark:bg-pink-800 p-1 shadow-sm hover:shadow-none dark:border-pink-900;
+  height: 50px;
+  transition: all 0.3s ease;
+}
+
+.chat-bar:hover {
+  box-shadow: 0 4px 6px -1px rgba(236, 72, 153, 0.1), 0 2px 4px -1px rgba(236, 72, 153, 0.06);
+}

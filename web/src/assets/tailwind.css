@@ -83,10 +83,6 @@ textarea, input, select {
   @apply bg-blue-200 dark:bg-blue-700;
 }
 
-.chatbox-color {
-  @apply bg-blue-50 dark:bg-blue-800;
-}
-
 .message {
   @apply relative w-full m-2 shadow-lg rounded-lg border border-blue-300 dark:border-blue-600 flex flex-col flex-grow flex-wrap overflow-visible p-5 pb-3 text-lg;
   @apply bg-blue-100 text-blue-900 dark:bg-gradient-to-br dark:from-blue-900 dark:to-blue-800 dark:text-blue-100; /* Added gradient for dark mode */
@@ -331,4 +327,25 @@ button:hover {
 
 .discussion-toolbox{
   @apply flex gap-2 items-center bg-white dark:bg-gray-800 p-2 rounded-l-md shadow-md transform translate-x-full group-hover:translate-x-0 transition-transform duration-300
+}
+
+.lollms-title-style{
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2), 
+  2px 2px 0px white, 
+  -2px -2px 0px white, 
+  2px -2px 0px white, 
+  -2px 2px 0px white;
+background: linear-gradient(45deg, #f59e0b, #fbbf24);
+-webkit-background-clip: text;
+background-clip: text;
+}
+
+.chat-bar{
+  @apply relative text-light-text-panel dark:text-dark-text-panel grow flex cursor-pointer select-none items-center gap-2 bg-blue-50 dark:bg-blue-800 p-1 shadow-sm hover:shadow-none dark:border-gray-800;
+  height: 50px;
+  transition: all 0.3s ease;
+}
+
+.chat-bar:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }

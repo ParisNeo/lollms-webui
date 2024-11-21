@@ -398,3 +398,26 @@ button:hover {
   @apply absolute top-0 left-0 h-full bg-gradient-to-r from-amber-500 to-amber-400 dark:from-amber-400 dark:to-amber-500 transition-all duration-300
   [background-image:repeating-linear-gradient(90deg,transparent,transparent_5px,rgba(0,0,0,0.1)_5px,rgba(0,0,0,0.1)_10px)]
 }
+
+.lollms-title-style {
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2), 
+               2px 2px 0px #fffbeb, 
+               -2px -2px 0px #fffbeb, 
+               2px -2px 0px #fffbeb, 
+               -2px 2px 0px #fffbeb;
+  background: linear-gradient(45deg, #d97706, #fbbf24);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+
+.chat-bar {
+  @apply relative text-amber-900 dark:text-amber-100 grow flex cursor-pointer select-none items-center gap-2 bg-amber-50 dark:bg-amber-800 p-1 shadow-sm hover:shadow-none dark:border-amber-900;
+  height: 50px;
+  transition: all 0.3s ease;
+}
+
+.chat-bar:hover {
+  box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.1), 0 2px 4px -1px rgba(217, 119, 6, 0.06);
+}

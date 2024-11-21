@@ -350,3 +350,13 @@ button:hover {
 .discussion-toolbox{
   @apply flex gap-2 items-center bg-white dark:bg-gray-800 p-2 rounded-l-md shadow-md transform translate-x-full group-hover:translate-x-0 transition-transform duration-300
 }
+.lollms-title-style{
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2), 
+  2px 2px 0px white, 
+  -2px -2px 0px white, 
+  2px -2px 0px white, 
+  -2px 2px 0px white;
+background: linear-gradient(45deg, #f59e0b, #fbbf24);
+-webkit-background-clip: text;
+background-clip: text;
+}

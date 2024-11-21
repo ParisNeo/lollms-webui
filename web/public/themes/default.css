@@ -1767,12 +1767,6 @@ body {
 .resize{
   resize: both;
 }
-.list-inside{
-  list-style-position: inside;
-}
-.list-disc{
-  list-style-type: disc;
-}
 .list-none{
   list-style-type: none;
 }
@@ -1902,11 +1896,6 @@ body {
   --tw-space-y-reverse: 0;
   margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(1rem * var(--tw-space-y-reverse));
-}
-.space-y-6 > :not([hidden]) ~ :not([hidden]){
-  --tw-space-y-reverse: 0;
-  margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
 }
 .space-y-8 > :not([hidden]) ~ :not([hidden]){
   --tw-space-y-reverse: 0;
@@ -4582,6 +4571,16 @@ button:hover{
 .discussion-toolbox:is(.dark *){
   --tw-bg-opacity: 1;
   background-color: rgb(31 41 55 / var(--tw-bg-opacity));
+}
+.lollms-title-style{
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2), 
+  2px 2px 0px white, 
+  -2px -2px 0px white, 
+  2px -2px 0px white, 
+  -2px 2px 0px white;
+background: linear-gradient(45deg, #f59e0b, #fbbf24);
+-webkit-background-clip: text;
+background-clip: text;
 }
 .last\:mb-0:last-child{
   margin-bottom: 0px;

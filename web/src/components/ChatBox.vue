@@ -108,7 +108,7 @@
                     </div>
                 </div>
                 <div class="flex w-fit relative grow w-full">
-                    <div class="relative text-light-text-panel dark:text-dark-text-panel grow flex h-12.5 cursor-pointer select-none items-center gap-2 chatbox-color p-1 shadow-sm hover:shadow-none dark:border-gray-800" tabindex="0">
+                    <div class="chat-bar" tabindex="0">
                         <div v-if="loading" title="Waiting for reply">
                             <img :src="loader_v0">
                             <!-- SPINNER -->
@@ -379,13 +379,7 @@
 
 
 
-.chat-bar {
-  transition: all 0.3s ease;
-}
 
-.chat-bar:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
 /* THESE ARE FOR TransitionGroup components */
 .list-move,
 /* apply transition to moving elements */

@@ -346,3 +346,26 @@ button:hover {
 .discussion-toolbox{
   @apply flex gap-2 items-center bg-green-700 dark:bg-gray-800 p-2 rounded-l-md shadow-md transform translate-x-full group-hover:translate-x-0 transition-transform duration-300
 }
+
+.lollms-title-style {
+  text-shadow: 2px 2px 4px rgba(0,255,0,0.5), 
+               2px 2px 0px #003300, 
+               -2px -2px 0px #003300, 
+               2px -2px 0px #003300, 
+               -2px 2px 0px #003300;
+  background: linear-gradient(45deg, #00ff00, #39ff14);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: #00ff00;
+}
+
+
+.chat-bar {
+  @apply relative text-green-400 dark:text-green-300 grow flex cursor-pointer select-none items-center gap-2 bg-gray-900 dark:bg-black p-1 shadow-sm hover:shadow-none dark:border-green-700;
+  height: 50px;
+  transition: all 0.3s ease;
+}
+
+.chat-bar:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 255, 0, 0.1), 0 2px 4px -1px rgba(0, 255, 0, 0.06);
+}
