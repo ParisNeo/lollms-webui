@@ -2435,11 +2435,6 @@ html{
   --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
-.from-bg-light-tone{
-  --tw-gradient-from: var(--color-bg-light-tone) var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
 .from-blue-400{
   --tw-gradient-from: #76A9FA var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(118 169 250 / 0) var(--tw-gradient-to-position);
@@ -5304,9 +5299,6 @@ button:hover{
 .focus\:ring-opacity-50:focus{
   --tw-ring-opacity: 0.5;
 }
-.focus\:ring-offset-2:focus{
-  --tw-ring-offset-width: 2px;
-}
 .active\:scale-75:active{
   --tw-scale-x: .75;
   --tw-scale-y: .75;
@@ -5321,10 +5313,6 @@ button:hover{
   --tw-scale-x: .95;
   --tw-scale-y: .95;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-.active\:bg-gray-300:active{
-  --tw-bg-opacity: 1;
-  background-color: rgb(209 213 219 / var(--tw-bg-opacity));
 }
 .active\:scrollbar-thumb-secondary{
   --scrollbar-thumb-active: var(--color-secondary) !important;
@@ -5558,11 +5546,6 @@ button:hover{
 }
 .dark\:from-bg-dark:is(.dark *){
   --tw-gradient-from: var(--color-bg-dark) var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
-.dark\:from-bg-dark-tone:is(.dark *){
-  --tw-gradient-from: var(--color-bg-dark-tone) var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
@@ -6100,10 +6083,6 @@ button:hover{
 }
 .dark\:focus\:ring-offset-gray-700:focus:is(.dark *){
   --tw-ring-offset-color: #374151;
-}
-.dark\:active\:bg-gray-600:active:is(.dark *){
-  --tw-bg-opacity: 1;
-  background-color: rgb(75 85 99 / var(--tw-bg-opacity));
 }
 @media (min-width: 640px){
   .sm\:mb-0{

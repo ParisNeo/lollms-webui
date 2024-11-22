@@ -279,8 +279,8 @@
                                     </div>
 
                                     <div @mouseenter="showSendMenu">
-                                        <button @click.prevent="toggleSendMenu" class="p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="black">
+                                        <button @click.prevent="toggleSendMenu" class="chat-bar-button">
+                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
                                         </button>
@@ -289,7 +289,7 @@
                             </div>
 
 
-                            <ChatBarButton @click="makeAnEmptyUserMessage" title="New user message" class="text-gray-600 dark:text-gray-300">
+                            <ChatBarButton @click="makeAnEmptyUserMessage" title="New user message">
                                 <template #icon>
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>

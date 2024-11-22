@@ -9,11 +9,9 @@
               v-for="(link, index) in filteredNavLinks"
               :key="index"
               :to="{ name: link.route }"
-              class="px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out
-                     hover:bg-gray-100 dark:hover:bg-gray-700
-                     text-gray-700 dark:text-gray-300"
+              class="nav-button"
               :class="{
-                'bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700': 
+                'nav-button-active': 
                   isRouteActive(link.route)
               }"
               @click="setActiveIndex(index)"

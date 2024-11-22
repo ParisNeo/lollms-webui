@@ -374,3 +374,13 @@ button:hover {
 .chat-bar:hover {
   box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.1), 0 2px 4px -1px rgba(220, 38, 38, 0.06);
 }
+.chat-bar-button{
+  @apply text-red-600 dark:text-red-300  p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+}
+
+.chat-bar-button:hover{
+  @apply bg-gray-200 dark:bg-gray-700
+}
+.chat-bar-button:active{
+  @apply bg-gray-300 dark:bg-gray-600
+}

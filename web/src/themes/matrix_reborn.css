@@ -369,3 +369,22 @@ button:hover {
 .chat-bar:hover {
   box-shadow: 0 4px 6px -1px rgba(0, 255, 0, 0.1), 0 2px 4px -1px rgba(0, 255, 0, 0.06);
 }
+
+.chat-bar-button{
+  @apply text-gray-200 dark:text-gray-100  p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+}
+
+.chat-bar-button:hover{
+  @apply bg-gray-200 dark:bg-gray-700
+}
+.chat-bar-button:active{
+  @apply bg-gray-300 dark:bg-gray-600
+}
+
+.nav-button{
+  @apply  px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 text-gray-200 dark:text-gray-100
+}
+
+.nav-button-active{
+  @apply  bg-blue-500 text-gray-100 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700
+}
