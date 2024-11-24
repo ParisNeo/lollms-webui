@@ -1,0 +1,478 @@
+:root {
+    --lollms-title: "LoLLMs Christmas";
+    --falling-object: "❄️";
+    --activate-dropping-animation: 1;
+    --lollms-welcome-short-message: "Ho Ho Ho! Welcome to LoLLMs Christmas!";
+    --lollms-welcome-message: "Merry Christmas! Enjoy the festive AI magic with LoLLMs!";
+    
+    /* Light mode colors */
+    --color-primary: #c41e3a;
+    --color-primary-light: #ff4d6a;
+    --color-secondary: #165b33;
+    --color-accent: #f8b229;
+    --color-light-text-panel: #333333;
+    --color-bg-light: #f0f0f0;
+    --color-bg-light-tone: #ffffff;
+    --color-bg-light-code-block: #e6e6e6;
+    --color-bg-light-tone-panel: #f9f9f9;
+    --color-bg-light-discussion: #f5f5f5;
+    --color-bg-light-discussion-odd: #ebebeb;
+    
+    /* Dark mode colors */
+    --color-dark-text-panel: #f0f0f0;
+    --color-bg-dark: #1a1a1a;
+    --color-bg-dark-tone: #2a2a2a;
+    --color-bg-dark-code-block: #333333;
+    --color-bg-dark-tone-panel: #222222;
+    --color-bg-dark-discussion: #2c2c2c;
+    --color-bg-dark-discussion-odd: #323232;
+  }
+  
+  body {
+    font-family: 'Arial', sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  body.light-mode {
+    background-color: var(--color-bg-light);
+    color: var(--color-light-text-panel);
+  }
+  
+  body.dark-mode {
+    background-color: var(--color-bg-dark);
+    color: var(--color-dark-text-panel);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Georgia', serif;
+    color: var(--color-primary);
+  }
+  
+  a {
+    color: var(--color-secondary);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  
+  a:hover {
+    color: var(--color-primary);
+  }
+  
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .display-none {
+    display: none !important;
+  }
+  
+  .text-shadow-custom {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .menu-item {
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  .menu-item:hover {
+    background-color: var(--color-primary-light);
+  }
+  
+  .active-link {
+    background-color: var(--color-primary);
+    color: white;
+  }
+  
+  .feather-emoji {
+    font-size: 1.2em;
+    margin-right: 5px;
+  }
+  
+  .app-card {
+    background-color: var(--color-bg-light-tone);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .dark-mode .app-card {
+    background-color: var(--color-bg-dark-tone);
+  }
+  
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+  }
+  
+  .btn-secondary {
+    background-color: var(--color-secondary);
+    color: white;
+  }
+  
+  .search-input {
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid var(--color-primary);
+    background-color: var(--color-bg-light-tone);
+  }
+  
+  .dark-mode .search-input {
+    background-color: var(--color-bg-dark-tone);
+    color: var(--color-dark-text-panel);
+  }
+  
+  .scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-primary) var(--color-bg-light-tone);
+  }
+  
+  .dark-mode .scrollbar {
+    scrollbar-color: var(--color-primary) var(--color-bg-dark-tone);
+  }
+  
+  .card-title, .subcard-title {
+    font-size: 1.2em;
+    color: var(--color-primary);
+    margin-bottom: 10px;
+  }
+  
+  .card-content, .subcard-content {
+    margin-bottom: 15px;
+  }
+  
+  .card-footer, .subcard-footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .card-footer-button, .subcard-footer-button {
+    padding: 5px 10px;
+    background-color: var(--color-secondary);
+    color: white;
+    border-radius: 3px;
+    transition: background-color 0.3s;
+  }
+  
+  .card-footer-button:hover, .subcard-footer-button:hover {
+    background-color: var(--color-primary);
+  }
+  
+  .animated-progressbar-bg {
+    background-color: var(--color-bg-light-tone);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .animated-progressbar-fg {
+    background-color: var(--color-primary);
+    height: 100%;
+    transition: width 0.5s ease-in-out;
+  }
+  
+  .discussion-toolbox {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--color-bg-light-tone);
+    border-radius: 5px;
+  }
+  
+  .dark-mode .discussion-toolbox {
+    background-color: var(--color-bg-dark-tone);
+  }
+  
+  .lollms-title-style {
+    font-family: 'Courier New', monospace;
+    font-size: 2em;
+    color: var(--color-primary);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .chat-bar {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--color-bg-light-tone);
+    border-radius: 20px;
+  }
+  
+  .dark-mode .chat-bar {
+    background-color: var(--color-bg-dark-tone);
+  }
+  
+  .svg-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  
+  .svg-button:hover {
+    transform: scale(1.1);
+  }
+  
+  .nav-button {
+    padding: 10px 15px;
+    background-color: var(--color-bg-light-tone);
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  .nav-button-active {
+    background-color: var(--color-primary);
+    color: white;
+  }
+  
+  .btn-on {
+    background-color: var(--color-secondary);
+    color: white;
+  }
+  
+  .btn-off {
+    background-color: var(--color-bg-light-tone);
+    color: var(--color-light-text-panel);
+  }
+  
+  .interesting-facts {
+    font-style: italic;
+    color: var(--color-accent);
+    margin: 10px 0;
+  }
+  
+  .toolbar-button {
+    padding: 5px 10px;
+    background-color: var(--color-bg-light-tone);
+    border: 1px solid var(--color-primary);
+    border-radius: 3px;
+    transition: background-color 0.3s;
+  }
+  
+  .toolbar-button:hover {
+    background-color: var(--color-primary-light);
+  }
+  
+  .background-color {
+    background-color: var(--color-bg-light);
+  }
+  
+  .dark-mode .background-color {
+    background-color: var(--color-bg-dark);
+  }
+  
+  .toolbar-color {
+    background-color: var(--color-bg-light-tone);
+  }
+  
+  .dark-mode .toolbar-color {
+    background-color: var(--color-bg-dark-tone);
+  }
+  
+  .panels-color {
+    background-color: var(--color-bg-light-tone);
+  }
+  
+  .dark-mode .panels-color {
+    background-color: var(--color-bg-dark-tone);
+  }
+  
+  .unicolor-panels-color {
+    background-color: var(--color-bg-light);
+  }
+  
+  .dark-mode .unicolor-panels-color {
+    background-color: var(--color-bg-dark);
+  }
+  
+  .chatbox-color {
+    background-color: var(--color-bg-light-discussion);
+  }
+  
+  .dark-mode .chatbox-color {
+    background-color: var(--color-bg-dark-discussion);
+  }
+  
+  .message {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: var(--color-bg-light-discussion);
+  }
+  
+  .dark-mode .message {
+    background-color: var(--color-bg-dark-discussion);
+  }
+  
+  .message-header {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .message-content {
+    line-height: 1.4;
+  }
+  
+  .discussion {
+    padding: 20px;
+    background-color: var(--color-bg-light-discussion);
+    border-radius: 10px;
+  }
+  
+  .dark-mode .discussion {
+    background-color: var(--color-bg-dark-discussion);
+  }
+  
+  .discussion-hilighted {
+    background-color: var(--color-bg-light-discussion-odd);
+  }
+  
+  .dark-mode .discussion-hilighted {
+    background-color: var(--color-bg-dark-discussion-odd);
+  }
+  
+  .bg-gradient-welcome {
+    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+  }
+  
+  .bg-gradient-progress {
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  }
+  
+  .text-gradient-title {
+    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .text-subtitle {
+    font-size: 1.2em;
+    color: var(--color-secondary);
+  }
+  
+  .text-author {
+    font-style: italic;
+    color: var(--color-accent);
+  }
+  
+  .text-loading {
+    color: var(--color-primary);
+    font-weight: bold;
+  }
+  
+  .text-progress {
+    color: var(--color-secondary);
+  }
+  
+  .card {
+    background-color: var(--color-bg-light-tone);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .dark-mode .card {
+    background-color: var(--color-bg-dark-tone);
+  }
+  
+  input {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--color-primary);
+    background-color: var(--color-bg-light-tone);
+  }
+  
+  .dark-mode input {
+    background-color: var(--color-bg-dark-tone);
+    color: var(--color-dark-text-panel);
+  }
+  
+  label {
+    color: var(--color-primary);
+    font-weight: bold;
+  }
+  
+  .link {
+    color: var(--color-secondary);
+    text-decoration: underline;
+    transition: color 0.3s;
+  }
+  
+  .link:hover {
+    color: var(--color-primary);
+  }
+  
+  .navbar-container {
+    background-color: var(--color-bg-light-tone);
+    padding: 10px;
+    border-bottom: 2px solid var(--color-primary);
+  }
+  
+  .dark-mode .navbar-container {
+    background-color: var(--color-bg-dark-tone);
+  }
+  
+  .game-menu {
+    background-color: var(--color-bg-light-tone);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  
+  .dark-mode .game-menu {
+    background-color: var(--color-bg-dark-tone);
+  }
+  
+  @keyframes snowfall {
+    0% {
+      transform: translateY(-100%) rotate(0deg);
+    }
+    100% {
+      transform: translateY(100vh) rotate(360deg);
+    }
+  }
+  
+  .snowflake {
+    position: fixed;
+    top: -10px;
+    color: white;
+    font-size: 20px;
+    animation: snowfall 5s linear infinite;
+    z-index: 9999;
+  }
+  
+  .snowflake::after {
+    content: var(--falling-object);
+  }
+  
+  @media (max-width: 768px) {
+    .card, .app-card {
+      padding: 15px;
+    }
+  
+    .btn {
+      padding: 8px 16px;
+    }
+  
+    .lollms-title-style {
+      font-size: 1.5em;
+    }
+  }
