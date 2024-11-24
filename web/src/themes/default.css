@@ -358,10 +358,11 @@ background-clip: text;
 }
 
 .chat-bar {
-  @apply relative text-green-400 dark:text-green-300 grow flex cursor-pointer select-none items-center gap-2 bg-gray-900 dark:bg-black p-1 shadow-sm hover:shadow-none dark:border-green-700;
+  @apply relative text-blue-700 dark:text-blue-300 grow flex cursor-pointer select-none items-center gap-2 bg-blue-100 dark:bg-blue-900 p-1 shadow-sm hover:shadow-none dark:border-purple-300;
   height: 50px;
   transition: all 0.3s ease;
 }
+
 
 .chat-bar:hover {
   box-shadow: 0 4px 6px -1px rgba(0, 255, 0, 0.1), 0 2px 4px -1px rgba(0, 255, 0, 0.06);
@@ -404,4 +405,103 @@ background-clip: text;
   
 .toolbar-button:hover {
 @apply text-blue-500; /* Assuming #007bff is close to Tailwind's blue-500 */
+}
+
+
+.context-menu {
+  position: absolute;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  padding: 8px 0;
+  min-width: 150px;
+  z-index: 1000;
+}
+
+.context-menu-item {
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #333333;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.context-menu-item:hover {
+  background-color: #f5f5f5;
+}
+
+.context-menu-separator {
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 4px 0;
+}
+
+.context-menu-item-disabled {
+  color: #999999;
+  cursor: not-allowed;
+}
+
+.context-menu-item-icon {
+  margin-right: 8px;
+}
+@keyframes matrix-rain {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 1000px; }
+}
+@layer components {
+  .context-menu {
+    @apply absolute bg-opacity-90 bg-green-900 border border-green-500 shadow-lg shadow-green-500/50 rounded-none py-2 min-w-[150px] z-[1000] font-mono;
+    
+    @apply dark:bg-opacity-90 dark:bg-green-950 dark:border-green-400 dark:shadow-green-400/50;
+  }
+
+  .context-menu::before {
+    @apply content-[''] absolute inset-0 bg-gradient-to-b from-green-500/10 via-green-500/5 to-transparent bg-[length:100%_1000px] opacity-30 -z-10;
+  }
+
+  .context-menu-item {
+    @apply px-4 py-2 text-sm text-green-500 cursor-pointer transition-all duration-300 ease-in-out shadow-green-500/70;
+    
+    @apply hover:bg-green-500/20 hover:scale-105;
+    
+    @apply dark:text-green-400 dark:hover:bg-green-400/20;
+  }
+
+  .context-menu-separator {
+    @apply h-px bg-green-500 my-1 shadow-green-500;
+    
+    @apply dark:bg-green-400 dark:shadow-green-400;
+  }
+
+  .context-menu-item-disabled {
+    @apply text-green-800 cursor-not-allowed shadow-none;
+    
+    @apply dark:text-green-700;
+  }
+
+  .context-menu-item-icon {
+    @apply mr-2 text-green-500;
+    
+    @apply dark:text-green-400;
+  }
+
+  .context-menu-item::after {
+    @apply content-[''] absolute left-0 bottom-0 w-full h-px bg-gradient-to-r from-transparent via-green-500 to-transparent scale-x-0 origin-center transition-transform duration-300 ease-in-out;
+    
+    @apply dark:via-green-400;
+  }
+
+  .context-menu-item:hover::after {
+    @apply scale-x-100;
+  }
+}
+
+@keyframes matrix-rain {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 1000px;
+  }
 }

@@ -606,13 +606,13 @@ async generateCode(prompt, images = [], {
                   repeat_last_n: repeat_last_n,
                   callback: streamingCallback
               });
-              const newCodes = this.extractCodeBlocks(response);
-              if (newCodes.length === 0) break;
+              const codes = this.extractCodeBlocks(response);
+              if (codes.length === 0) break;
               
-              if (!newCodes[0].is_complete) {
-                  code += '\n' + newCodes[0].content.split('\n').slice(0, -1).join('\n');
+              if (!codes[0].is_complete) {
+                  code += '\n' + codes[0].content.split('\n').slice(0, -1).join('\n');
               } else {
-                  code += '\n' + newCodes[0].content;
+                  code += '\n' + codes[0].content;
               }
           }
       } else {

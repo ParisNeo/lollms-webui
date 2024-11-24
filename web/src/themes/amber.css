@@ -391,7 +391,7 @@ button:hover {
 }
 
 .animated-progressbar-bg {
-  @apply w-full h-24 relative overflow-hidden bg-gradient-to-r from-amber-950 to-amber-900 dark:from-black dark:to-amber-950 rounded-sm shadow-[0_0_15px_rgba(245,158,11,0.2)]
+  @apply w-full h-10 relative overflow-hidden bg-gradient-to-r from-amber-950 to-amber-900 dark:from-black dark:to-amber-950 rounded-sm shadow-[0_0_15px_rgba(245,158,11,0.2)]
 }
 
 .animated-progressbar-fg {
@@ -408,7 +408,7 @@ button:hover {
   background: linear-gradient(45deg, #d97706, #fbbf24);
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
+  color: #f59e0b;
 }
 
 .chat-bar {
@@ -479,4 +479,59 @@ button:hover {
   
 .toolbar-button:hover {
   @apply text-amber-500;
+}
+
+.context-menu {
+  @apply absolute bg-opacity-90 bg-amber-900 border border-amber-500 shadow-lg shadow-amber-500/50 rounded-none py-2 min-w-[150px] z-[1000] font-mono;
+  
+  @apply dark:bg-opacity-90 dark:bg-amber-950 dark:border-amber-400 dark:shadow-amber-400/50;
+}
+
+.context-menu::before {
+  @apply content-[''] absolute inset-0 bg-gradient-to-b from-amber-500/10 via-amber-500/5 to-transparent bg-[length:100%_1000px]  opacity-30 -z-10;
+}
+
+.context-menu-item {
+  @apply px-4 py-2 text-sm text-amber-500 cursor-pointer transition-all duration-300 ease-in-out shadow-amber-500/70;
+  
+  @apply hover:bg-amber-500/20 hover:scale-105;
+  
+  @apply dark:text-amber-400 dark:hover:bg-amber-400/20;
+}
+
+.context-menu-separator {
+  @apply h-px bg-amber-500 my-1 shadow-amber-500;
+  
+  @apply dark:bg-amber-400 dark:shadow-amber-400;
+}
+
+.context-menu-item-disabled {
+  @apply text-amber-800 cursor-not-allowed shadow-none;
+  
+  @apply dark:text-amber-700;
+}
+
+.context-menu-item-icon {
+  @apply mr-2 text-amber-500;
+  
+  @apply dark:text-amber-400;
+}
+
+.context-menu-item::after {
+  @apply content-[''] absolute left-0 bottom-0 w-full h-px bg-gradient-to-r from-transparent via-amber-500 to-transparent scale-x-0 origin-center transition-transform duration-300 ease-in-out;
+  
+  @apply dark:via-amber-400;
+}
+
+.context-menu-item:hover::after {
+  @apply scale-x-100;
+}
+
+@keyframes matrix-rain {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 1000px;
+  }
 }

@@ -1261,6 +1261,7 @@ export default {
     data() {
         return {
             interestingFacts: [
+                "ParisNeo, the creator of LoLLMs, originally built his high-performance PC to play Cyberpunk 2077. However, his passion for AI took an unexpected turn, leading him to develop LoLLMs instead. Ironically, he never found the time to actually play the game that inspired his powerful setup!",
                 "Saïph, the new version of LoLLMs, is named after a star in Orion's constellation (Kappa Orionis), representing bright guidance in AI!",
                 "Did you know? The first computer programmer was a woman - Ada Lovelace!",
                 "Large Language Models (LLMs) have evolved from having millions of parameters to hundreds of billions in just a few years.",

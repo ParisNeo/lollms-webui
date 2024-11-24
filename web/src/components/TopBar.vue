@@ -136,14 +136,14 @@
             <span class="absolute hidden group-hover:block text-xs rounded py-1 px-2 top-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap">
                 {{ is_fun_mode ? 'Turn off fun mode' : 'Turn on fun mode' }}
             </span>
-        <div v-if="isDarkMode" class="text-2xl svg-button w-6 hover:text-primary duration-150 cursor-pointer  ml-2" title="Switch to Light theme" @click="themeSwitch()">
+        <div v-if="isDarkMode" class="text-2xl svg-button hover:text-primary duration-150 cursor-pointer  w-50 h-50 ml-2" title="Switch to Light theme" @click="themeSwitch()">
             <i data-feather="sun"></i>
         </div>
-        <div v-else class="text-2xl svg-button w-6 hover:text-primary duration-150 cursor-pointer  ml-2" title="Switch to Dark theme" @click="themeSwitch()">
+        <div v-else class="text-2xl svg-button hover:text-primary duration-150 cursor-pointer w-50 h-50  ml-2" title="Switch to Dark theme" @click="themeSwitch()">
             <i data-feather="moon"></i>
         </div>               
         <div class="relative ml-2">
-            <button @click="toggleLanguageMenu" class="bg-transparent svg-button py-1 px-1 rounded font-bold uppercase transition-colors duration-300 hover:bg-blue-500">
+            <button @click="toggleLanguageMenu" class="svg-button">
             {{ $store.state.language.slice(0, 2) }}
             </button>
             <div v-if="isLanguageMenuVisible" ref="languageMenu" class="container context-menu absolute left-0 mt-1 rounded shadow-lg z-10 overflow-y-auto scrollbar-thin" style="position: absolute; top: 100%; width: 200px; max-height: 300px; overflow-y: auto;">
@@ -290,7 +290,7 @@ export default {
     return {
       themeDropdownOpen: false,
       currentTheme: localStorage.getItem('preferred-theme') || 'default',
-      availableThemes: ['default', 'strawberry_milkshake', 'red_dragon', 'matrix_reborn', 'borg', 'amber', 'sober_gray', 'strawberry'],
+      availableThemes: [],
       isLoading: false,
       error: null,      
       isInfosMenuVisible: false,
@@ -378,14 +378,24 @@ export default {
     this.userTheme = localStorage.getItem("theme");
     console.log(this.userTheme)
     this.systemTheme = window.matchMedia("prefers-color-scheme: dark").matches;
+    this.fetchThemes();    
     this.themeCheck()
-
     this.$nextTick(() => {
         feather.replace()
     })
 
   },
   methods: {
+    async fetchThemes() {
+      try {
+        const response = await axios.get('/get_themes');
+        this.availableThemes = response.data;
+      } catch (error) {
+        console.error('Error fetching themes:', error);
+        // Optionally, you can set a default list of themes in case the API call fails
+        this.availableThemes = ['default', 'strawberry_milkshake', 'red_dragon', 'matrix_reborn', 'borg', 'amber', 'sober_gray', 'strawberry'];
+      }
+    },    
     toggleThemeDropDown()
     {
       console.log("Toggling theme down:", this.themeDropdownOpen)
@@ -504,7 +514,9 @@ export default {
         this.$store.commit('setThemeVars', theme_vars);
         this.isDarkMode =  document.documentElement.classList.contains("dark");
 
-
+        this.$nextTick(() => {
+            feather.replace()
+        })
       } catch (error) {
         console.error(`Failed to load theme: ${themeName}`, error)
         this.error = `Failed to load theme: ${themeName}`

@@ -1,478 +1,365 @@
+/* Custom Christmas font */
+@import url('https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
-    --lollms-title: "LoLLMs Christmas";
-    --falling-object: "❄️";
-    --activate-dropping-animation: 1;
-    --lollms-welcome-short-message: "Ho Ho Ho! Welcome to LoLLMs Christmas!";
-    --lollms-welcome-message: "Merry Christmas! Enjoy the festive AI magic with LoLLMs!";
-    
-    /* Light mode colors */
-    --color-primary: #c41e3a;
-    --color-primary-light: #ff4d6a;
-    --color-secondary: #165b33;
-    --color-accent: #f8b229;
-    --color-light-text-panel: #333333;
-    --color-bg-light: #f0f0f0;
-    --color-bg-light-tone: #ffffff;
-    --color-bg-light-code-block: #e6e6e6;
-    --color-bg-light-tone-panel: #f9f9f9;
-    --color-bg-light-discussion: #f5f5f5;
-    --color-bg-light-discussion-odd: #ebebeb;
-    
-    /* Dark mode colors */
-    --color-dark-text-panel: #f0f0f0;
-    --color-bg-dark: #1a1a1a;
-    --color-bg-dark-tone: #2a2a2a;
-    --color-bg-dark-code-block: #333333;
-    --color-bg-dark-tone-panel: #222222;
-    --color-bg-dark-discussion: #2c2c2c;
-    --color-bg-dark-discussion-odd: #323232;
+  --lollms-title: LoLLMS: Christmas Edition;
+  --falling-object: ❄;
+  --activate-dropping-animation: 1;
+  --lollms-welcome-short-message: "Merry AI-mas!";
+  --lollms-welcome-message: "Welcome to the festive world of LoLLMs - where AI meets holiday cheer! 🎄🤖 We're here to make your digital experience as merry and bright as a perfectly decorated Christmas tree. From natural language processing to multimodal tasks, LoLLMs is your one-stop AI assistant for the holiday season. Let's spread joy and cultivate brilliant ideas together!";
+  
+  /* Light mode colors */
+  --color-primary: #c41e3a;
+  --color-primary-light: #e63946;
+  --color-secondary: #165b33;
+  --color-accent: #f8b229;
+  --color-bg-light: #f1f8e9;
+  --color-bg-light-tone: #e8f5e9;
+  --color-bg-light-tone-panel: #c8e6c9;
+  --color-light-text-panel: #1b5e20;
+  
+  /* Dark mode colors */
+  --color-bg-dark: #1a2c38;
+  --color-bg-dark-tone: #234454;
+  --color-bg-dark-tone-panel: #2c5364;
+  --color-dark-text-panel: #e0f2f1;
+}
+
+@layer base {
+  html {
+    @apply scroll-smooth;
   }
   
   body {
-    font-family: 'Arial', sans-serif;
-    transition: background-color 0.3s, color 0.3s;
+    font-family: 'Mountains of Christmas', cursive;
   }
-  
-  body.light-mode {
-    background-color: var(--color-bg-light);
-    color: var(--color-light-text-panel);
-  }
-  
-  body.dark-mode {
-    background-color: var(--color-bg-dark);
-    color: var(--color-dark-text-panel);
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Georgia', serif;
-    color: var(--color-primary);
-  }
-  
-  a {
-    color: var(--color-secondary);
-    text-decoration: none;
-    transition: color 0.3s;
-  }
-  
-  a:hover {
-    color: var(--color-primary);
-  }
-  
-  .no-scrollbar {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  
-  .display-none {
-    display: none !important;
-  }
-  
-  .text-shadow-custom {
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  }
-  
-  .menu-item {
-    padding: 10px 15px;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-  }
-  
-  .menu-item:hover {
-    background-color: var(--color-primary-light);
-  }
-  
-  .active-link {
-    background-color: var(--color-primary);
-    color: white;
-  }
-  
-  .feather-emoji {
-    font-size: 1.2em;
-    margin-right: 5px;
-  }
-  
-  .app-card {
-    background-color: var(--color-bg-light-tone);
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-bottom: 20px;
-  }
-  
-  .dark-mode .app-card {
-    background-color: var(--color-bg-dark-tone);
-  }
-  
-  .scrollbar-thin {
-    scrollbar-width: thin;
-  }
-  
-  .btn {
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: background-color 0.3s, color 0.3s;
-  }
-  
-  .btn-primary {
-    background-color: var(--color-primary);
-    color: white;
-  }
-  
-  .btn-secondary {
-    background-color: var(--color-secondary);
-    color: white;
-  }
-  
-  .search-input {
-    padding: 10px;
-    border-radius: 20px;
-    border: 1px solid var(--color-primary);
-    background-color: var(--color-bg-light-tone);
-  }
-  
-  .dark-mode .search-input {
-    background-color: var(--color-bg-dark-tone);
-    color: var(--color-dark-text-panel);
-  }
-  
-  .scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-primary) var(--color-bg-light-tone);
-  }
-  
-  .dark-mode .scrollbar {
-    scrollbar-color: var(--color-primary) var(--color-bg-dark-tone);
-  }
-  
-  .card-title, .subcard-title {
-    font-size: 1.2em;
-    color: var(--color-primary);
-    margin-bottom: 10px;
-  }
-  
-  .card-content, .subcard-content {
-    margin-bottom: 15px;
-  }
-  
-  .card-footer, .subcard-footer {
-    display: flex;
-    justify-content: flex-end;
-  }
-  
-  .card-footer-button, .subcard-footer-button {
-    padding: 5px 10px;
-    background-color: var(--color-secondary);
-    color: white;
-    border-radius: 3px;
-    transition: background-color 0.3s;
-  }
-  
-  .card-footer-button:hover, .subcard-footer-button:hover {
-    background-color: var(--color-primary);
+}
+
+.background-color {
+  @apply bg-gradient-to-br from-green-50 to-red-100 dark:from-gray-900 dark:to-gray-800 min-h-screen;
+}
+
+.toolbar-color {
+  @apply text-white bg-gradient-to-r from-red-600 to-green-600 dark:from-red-800 dark:to-green-800 rounded-full shadow-lg;
+}
+
+.panels-color {
+  @apply text-gray-800 dark:text-gray-200 bg-gradient-to-r from-red-100 to-green-100 dark:from-gray-800 dark:to-gray-700 rounded shadow-lg;
+}
+
+.unicolor-panels-color {
+  @apply bg-red-100 dark:bg-gray-800;
+}
+
+.chatbox-color {
+  @apply bg-gradient-to-br from-red-100 to-green-100 dark:from-gray-800 dark:to-gray-700;
+}
+
+.message {
+  @apply bg-white dark:bg-gray-800 border-2 border-red-500 dark:border-green-500;
+}
+
+.message:nth-child(even) {
+  @apply bg-red-50 dark:bg-gray-700;
+}
+
+.message:nth-child(odd) {
+  @apply bg-green-50 dark:bg-gray-800;
+}
+
+.discussion {
+  @apply mr-2 bg-gradient-to-r from-red-200 to-green-200 dark:from-gray-700 dark:to-gray-600 hover:from-red-100 hover:to-green-100 hover:dark:from-gray-600 hover:dark:to-gray-500;
+}
+
+.discussion-hilighted {
+  @apply bg-gradient-to-r from-red-100 to-green-100 dark:from-gray-700 dark:to-gray-600 hover:from-red-50 hover:to-green-50 hover:dark:from-gray-600 hover:dark:to-gray-500;
+}
+
+.bg-gradient-welcome {
+  @apply bg-gradient-to-br from-red-50 to-green-100 dark:from-gray-900 dark:to-gray-800;
+}
+
+.bg-gradient-progress {
+  @apply bg-gradient-to-r from-red-100 to-green-200 dark:from-gray-800 dark:to-gray-700;
+}
+
+.text-gradient-title {
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-green-600 dark:from-red-400 dark:to-green-400;
+}
+
+.btn-primary {
+  @apply bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded;
+}
+
+.btn-secondary {
+  @apply bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded;
+}
+
+.card {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-2 border-red-500 dark:border-green-500;
+}
+
+.input {
+  @apply bg-red-50 dark:bg-gray-700 border border-red-300 dark:border-green-600 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-green-400;
+}
+
+.link {
+  @apply text-red-600 hover:text-red-700 dark:text-green-400 dark:hover:text-green-300;
+}
+
+.menu-item.active-link::before {
+  background: linear-gradient(to right, #c41e3a, #165b33, #c41e3a);
+}
+
+.dark .menu-item.active-link::before {
+  background: linear-gradient(to right, #e63946, #2a9d8f, #e63946);
+}
+
+.app-card {
+  @apply transition-all duration-300 ease-in-out bg-gradient-to-br from-red-50 to-green-100 dark:from-gray-800 dark:to-gray-700 text-gray-800 dark:text-gray-200 border-2 border-red-500 dark:border-green-500 rounded-xl shadow-lg p-6 hover:shadow-xl;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.red.300') theme('colors.green.100');
+}
+
+.dark .scrollbar-thin {
+  scrollbar-color: theme('colors.green.600') theme('colors.gray.800');
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  @apply bg-red-100 dark:bg-gray-800 rounded-full;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  @apply bg-green-300 dark:bg-red-600 rounded-full;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  @apply bg-green-400 dark:bg-red-500;
+}
+
+.interesting-facts {
+  @apply mt-6 mb-6 p-4 bg-red-50/80 dark:bg-green-900/80 rounded-lg shadow-lg transform hover:scale-105 border-2 border-green-500 dark:border-red-500;
+}
+@layer components {
+    .snowfall-bg {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Ccircle cx='5' cy='5' r='1' fill='white' opacity='0.7'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+    }
   }
   
   .animated-progressbar-bg {
-    background-color: var(--color-bg-light-tone);
-    border-radius: 10px;
-    overflow: hidden;
+    @apply w-full h-16 relative overflow-hidden bg-gradient-to-r from-green-900 via-red-900 to-green-900 dark:from-green-950 dark:via-red-950 dark:to-green-950 rounded-full shadow-[0_0_20px_rgba(255,0,0,0.4)] border-2 border-yellow-300;
   }
   
   .animated-progressbar-fg {
-    background-color: var(--color-primary);
-    height: 100%;
-    transition: width 0.5s ease-in-out;
+    @apply absolute top-0 left-0 h-full bg-gradient-to-r from-green-500 via-red-500 to-green-500 dark:from-green-600 dark:via-red-600 dark:to-green-600 transition-all duration-500 ease-out
+    [background-image:repeating-linear-gradient(-45deg,transparent,transparent_10px,rgba(255,255,255,0.2)_10px,rgba(255,255,255,0.2)_20px)]
+    [animation:candy-cane_3s_linear_infinite];
   }
   
-  .discussion-toolbox {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: var(--color-bg-light-tone);
-    border-radius: 5px;
+  .animated-progressbar-fg::before {
+    @apply content-[''] absolute inset-0 snowfall-bg [animation:snow-fall_10s_linear_infinite];
   }
   
-  .dark-mode .discussion-toolbox {
-    background-color: var(--color-bg-dark-tone);
+  .animated-progressbar-fg::after {
+    @apply content-[''] absolute top-0 right-0 bottom-0 left-0 bg-gradient-to-r from-transparent via-yellow-300/30 to-transparent [animation:tinsel-shine_2s_ease-in-out_infinite];
+  }
+  
+  @keyframes candy-cane {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 40px 40px;
+    }
+  }
+  
+  @keyframes snow-fall {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 50px 50px;
+    }
+  }
+  
+  @keyframes tinsel-shine {
+    0%, 100% {
+      transform: translateX(-100%) rotate(45deg);
+    }
+    50% {
+      transform: translateX(100%) rotate(45deg);
+    }
+  }
+  
+  .animated-progressbar-text {
+    @apply absolute inset-0 flex items-center justify-center text-white font-bold text-2xl z-10 [text-shadow:1px_1px_2px_rgba(0,0,0,0.7)] [animation:jingle_0.5s_ease-in-out_infinite_alternate];
+  }
+  
+  @keyframes jingle {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-2px);
+    }
+  }
+  
+  .christmas-icon {
+    @apply absolute top-1/2 -translate-y-1/2 w-12 h-12 text-yellow-300 z-20 [animation:bounce_1s_ease-in-out_infinite];
+  }
+  
+  .christmas-icon-left {
+    @apply left-2;
+  }
+  
+  .christmas-icon-right {
+    @apply right-2;
+  }
+  
+   
+  .animated-progressbar-text {
+    @apply absolute inset-0 flex items-center justify-center text-white font-bold text-2xl z-10 [text-shadow:1px_1px_2px_rgba(0,0,0,0.7)] [animation:jingle_0.5s_ease-in-out_infinite_alternate];
+  }
+  
+  @keyframes jingle {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-2px);
+    }
+  }
+  
+  .christmas-icon {
+    @apply absolute top-1/2 -translate-y-1/2 w-12 h-12 text-yellow-300 z-20 [animation:bounce_1s_ease-in-out_infinite];
+  }
+  
+  .christmas-icon-left {
+    @apply left-2;
+  }
+  
+  .christmas-icon-right {
+    @apply right-2;
+  }
+  
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(-50%) scale(1);
+    }
+    50% {
+      transform: translateY(-60%) scale(1.1);
+    }
   }
   
   .lollms-title-style {
-    font-family: 'Courier New', monospace;
-    font-size: 2em;
-    color: var(--color-primary);
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2), 
+               2px 2px 0px #f1f8e9, 
+               -2px -2px 0px #f1f8e9, 
+               2px -2px 0px #f1f8e9, 
+               -2px 2px 0px #f1f8e9;
+  background: linear-gradient(45deg, #c41e3a, #165b33);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: red;
+}
+
+.chat-bar {
+  @apply relative text-red-300 dark:text-green-100 grow flex cursor-pointer select-none items-center gap-2 bg-green-100 dark:bg-red-900 p-1 shadow-sm hover:shadow-none dark:border-red-700;
+  height: 50px;
+  transition: all 0.3s ease;
+}
+
+.chat-bar:hover {
+  box-shadow: 0 4px 6px -1px rgba(255, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 255, 0, 0.06);
+}
+
+@keyframes snowfall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
   }
-  
-  .chat-bar {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    background-color: var(--color-bg-light-tone);
-    border-radius: 20px;
+  100% {
+    transform: translateY(100vh) rotate(360deg);
   }
-  
-  .dark-mode .chat-bar {
-    background-color: var(--color-bg-dark-tone);
+}
+
+.snowflake {
+  position: fixed;
+  top: -10vh;
+  animation: snowfall 10s linear infinite;
+  color: white;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+  z-index: 1000;
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 1;
   }
-  
-  .svg-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.3s;
+  50% {
+    opacity: 0.5;
   }
+}
+
+.twinkle {
+  animation: twinkle 1.5s ease-in-out infinite;
+}
+
+.context-menu {
+    @apply absolute bg-opacity-90 bg-red-900 border border-green-500 shadow-lg shadow-red-500/50 rounded-md py-2 min-w-[150px] z-[1000] font-serif;
+    
+    @apply dark:bg-opacity-90 dark:bg-red-950 dark:border-green-400 dark:shadow-red-400/50;
+}
+
+.context-menu-item {
+    @apply px-4 py-2 text-sm text-white cursor-pointer transition-all duration-300 ease-in-out shadow-red-500/70;
+    
+    @apply hover:bg-green-500/20 hover:scale-105;
+    
+    @apply dark:text-green-100 dark:hover:bg-green-400/20;
+}
+
+.context-menu-separator {
+    @apply h-px bg-gradient-to-r from-red-500 via-green-500 to-red-500 my-1 shadow-white;
+    
+    @apply dark:from-red-400 dark:via-green-400 dark:to-red-400 dark:shadow-green-100;
+}
+
+.context-menu-item-disabled {
+    @apply text-gray-400 cursor-not-allowed shadow-none;
+    
+    @apply dark:text-gray-500;
+}
+
+.context-menu-item-icon {
+    @apply mr-2 text-green-500;
+    
+    @apply dark:text-green-400;
+}
+
+.context-menu-item::after {
+    @apply content-[''] absolute left-0 bottom-0 w-full h-px bg-gradient-to-r from-red-500 via-green-500 to-red-500 scale-x-0 origin-center transition-transform duration-300 ease-in-out;
+    
+    @apply dark:from-red-400 dark:via-green-400 dark:to-red-400;
+}
+
+.context-menu-item:hover::after {
+    @apply scale-x-100;
+}
+
+
+@keyframes snowfall {
+0% {
+    background-position: 0 0;
+}
+100% {
+    background-position: 100px 1000px;
+}
+}
   
-  .svg-button:hover {
-    transform: scale(1.1);
-  }
-  
-  .nav-button {
-    padding: 10px 15px;
-    background-color: var(--color-bg-light-tone);
-    border-radius: 5px;
-    transition: background-color 0.3s;
-  }
-  
-  .nav-button-active {
-    background-color: var(--color-primary);
-    color: white;
-  }
-  
-  .btn-on {
-    background-color: var(--color-secondary);
-    color: white;
-  }
-  
-  .btn-off {
-    background-color: var(--color-bg-light-tone);
-    color: var(--color-light-text-panel);
-  }
-  
-  .interesting-facts {
-    font-style: italic;
-    color: var(--color-accent);
-    margin: 10px 0;
-  }
-  
-  .toolbar-button {
-    padding: 5px 10px;
-    background-color: var(--color-bg-light-tone);
-    border: 1px solid var(--color-primary);
-    border-radius: 3px;
-    transition: background-color 0.3s;
-  }
-  
-  .toolbar-button:hover {
-    background-color: var(--color-primary-light);
-  }
-  
-  .background-color {
-    background-color: var(--color-bg-light);
-  }
-  
-  .dark-mode .background-color {
-    background-color: var(--color-bg-dark);
-  }
-  
-  .toolbar-color {
-    background-color: var(--color-bg-light-tone);
-  }
-  
-  .dark-mode .toolbar-color {
-    background-color: var(--color-bg-dark-tone);
-  }
-  
-  .panels-color {
-    background-color: var(--color-bg-light-tone);
-  }
-  
-  .dark-mode .panels-color {
-    background-color: var(--color-bg-dark-tone);
-  }
-  
-  .unicolor-panels-color {
-    background-color: var(--color-bg-light);
-  }
-  
-  .dark-mode .unicolor-panels-color {
-    background-color: var(--color-bg-dark);
-  }
-  
-  .chatbox-color {
-    background-color: var(--color-bg-light-discussion);
-  }
-  
-  .dark-mode .chatbox-color {
-    background-color: var(--color-bg-dark-discussion);
-  }
-  
-  .message {
-    margin-bottom: 15px;
-    padding: 10px;
-    border-radius: 10px;
-    background-color: var(--color-bg-light-discussion);
-  }
-  
-  .dark-mode .message {
-    background-color: var(--color-bg-dark-discussion);
-  }
-  
-  .message-header {
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  
-  .message-content {
-    line-height: 1.4;
-  }
-  
-  .discussion {
-    padding: 20px;
-    background-color: var(--color-bg-light-discussion);
-    border-radius: 10px;
-  }
-  
-  .dark-mode .discussion {
-    background-color: var(--color-bg-dark-discussion);
-  }
-  
-  .discussion-hilighted {
-    background-color: var(--color-bg-light-discussion-odd);
-  }
-  
-  .dark-mode .discussion-hilighted {
-    background-color: var(--color-bg-dark-discussion-odd);
-  }
-  
-  .bg-gradient-welcome {
-    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
-  }
-  
-  .bg-gradient-progress {
-    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
-  }
-  
-  .text-gradient-title {
-    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  
-  .text-subtitle {
-    font-size: 1.2em;
-    color: var(--color-secondary);
-  }
-  
-  .text-author {
-    font-style: italic;
-    color: var(--color-accent);
-  }
-  
-  .text-loading {
-    color: var(--color-primary);
-    font-weight: bold;
-  }
-  
-  .text-progress {
-    color: var(--color-secondary);
-  }
-  
-  .card {
-    background-color: var(--color-bg-light-tone);
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-bottom: 20px;
-  }
-  
-  .dark-mode .card {
-    background-color: var(--color-bg-dark-tone);
-  }
-  
-  input {
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid var(--color-primary);
-    background-color: var(--color-bg-light-tone);
-  }
-  
-  .dark-mode input {
-    background-color: var(--color-bg-dark-tone);
-    color: var(--color-dark-text-panel);
-  }
-  
-  label {
-    color: var(--color-primary);
-    font-weight: bold;
-  }
-  
-  .link {
-    color: var(--color-secondary);
-    text-decoration: underline;
-    transition: color 0.3s;
-  }
-  
-  .link:hover {
-    color: var(--color-primary);
-  }
-  
-  .navbar-container {
-    background-color: var(--color-bg-light-tone);
-    padding: 10px;
-    border-bottom: 2px solid var(--color-primary);
-  }
-  
-  .dark-mode .navbar-container {
-    background-color: var(--color-bg-dark-tone);
-  }
-  
-  .game-menu {
-    background-color: var(--color-bg-light-tone);
-    border-radius: 10px;
-    padding: 20px;
-  }
-  
-  .dark-mode .game-menu {
-    background-color: var(--color-bg-dark-tone);
-  }
-  
-  @keyframes snowfall {
-    0% {
-      transform: translateY(-100%) rotate(0deg);
-    }
-    100% {
-      transform: translateY(100vh) rotate(360deg);
-    }
-  }
-  
-  .snowflake {
-    position: fixed;
-    top: -10px;
-    color: white;
-    font-size: 20px;
-    animation: snowfall 5s linear infinite;
-    z-index: 9999;
-  }
-  
-  .snowflake::after {
-    content: var(--falling-object);
-  }
-  
-  @media (max-width: 768px) {
-    .card, .app-card {
-      padding: 15px;
-    }
-  
-    .btn {
-      padding: 8px 16px;
-    }
-  
-    .lollms-title-style {
-      font-size: 1.5em;
-    }
-  }

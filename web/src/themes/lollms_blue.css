@@ -391,7 +391,7 @@ button:hover {
 }
 
 .animated-progressbar-bg{
-  @apply w-full h-24 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg
+  @apply w-full h-10 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg
 }
 .animated-progressbar-fg{
   @apply absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-600 dark:to-purple-600 transition-all duration-300
@@ -413,10 +413,11 @@ button:hover {
   color: transparent;
 }
 .chat-bar {
-  @apply relative text-blue-300 dark:text-blue-200 grow flex cursor-pointer select-none items-center gap-2 bg-blue-900 dark:bg-blue-950 p-1 shadow-sm hover:shadow-none dark:border-blue-700;
+  @apply relative text-blue-700 dark:text-blue-300 grow flex cursor-pointer select-none items-center gap-2 bg-blue-100 dark:bg-blue-900 p-1 shadow-sm hover:shadow-none dark:border-purple-300;
   height: 50px;
   transition: all 0.3s ease;
 }
+
 
 .chat-bar:hover {
   box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1), 0 2px 4px -1px rgba(59, 130, 246, 0.06);
@@ -480,4 +481,88 @@ button:hover {
   
 .toolbar-button:hover {
   @apply text-blue-500;
+}
+:root {
+  --lollms-primary: #0056b3;
+  --lollms-secondary: #007bff;
+  --lollms-light: #e6f2ff;
+  --lollms-dark: #004085;
+  --lollms-text: #333333;
+}
+
+.context-menu {
+  position: absolute;
+  background-color: var(--lollms-light);
+  border: 1px solid var(--lollms-secondary);
+  box-shadow: 0 2px 10px rgba(0, 123, 255, 0.2);
+  border-radius: 6px;
+  padding: 8px 0;
+  min-width: 180px;
+  z-index: 1000;
+  font-family: 'Arial', sans-serif;
+}
+
+.context-menu-item {
+  padding: 10px 16px;
+  font-size: 14px;
+  color: var(--lollms-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.context-menu-item:hover {
+  background-color: var(--lollms-secondary);
+  color: white;
+}
+
+.context-menu-separator {
+  height: 1px;
+  background-color: var(--lollms-secondary);
+  margin: 6px 0;
+  opacity: 0.5;
+}
+
+.context-menu-item-disabled {
+  color: #999999;
+  cursor: not-allowed;
+}
+
+.context-menu-item-icon {
+  margin-right: 10px;
+  color: var(--lollms-primary);
+}
+
+.context-menu-item:hover .context-menu-item-icon {
+  color: white;
+}
+
+/* LoLLMs branding */
+.context-menu::before {
+  content: "LoLLMs";
+  position: absolute;
+  top: -20px;
+  left: 10px;
+  font-size: 12px;
+  color: var(--lollms-primary);
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* Subtle AI-inspired background pattern */
+.context-menu::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle, var(--lollms-secondary) 1px, transparent 1px),
+    radial-gradient(circle, var(--lollms-secondary) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+  opacity: 0.05;
+  pointer-events: none;
 }

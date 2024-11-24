@@ -361,7 +361,7 @@ button:hover {
   background: linear-gradient(45deg, #dc2626, #ef4444);
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
+  color: red;
 }
 .chat-bar {
   @apply relative text-red-300 dark:text-red-200 grow flex cursor-pointer select-none items-center gap-2 bg-gray-900 dark:bg-black p-1 shadow-sm hover:shadow-none dark:border-red-800;
@@ -442,4 +442,97 @@ button:hover {
 .toolbar-button:hover {
   @apply text-yellow-400;
   text-shadow: 0 0 5px rgba(255, 165, 0, 0.7);
+}
+@keyframes fire-flicker {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
+}
+
+.context-menu {
+  position: absolute;
+  background: linear-gradient(135deg, #2a0000 0%, #8b0000 100%);
+  border: 2px solid #ff4500;
+  box-shadow: 0 0 20px rgba(255, 69, 0, 0.6);
+  border-radius: 8px;
+  padding: 8px 0;
+  min-width: 200px;
+  z-index: 1000;
+  font-family: 'Trajan Pro', 'Cinzel', serif;
+}
+
+.context-menu::before {
+  content: "🐉";
+  position: absolute;
+  top: -25px;
+  left: 10px;
+  font-size: 24px;
+  filter: drop-shadow(0 0 5px #ff4500);
+}
+
+.context-menu-item {
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #ffd700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 5px rgba(255, 69, 0, 0.7);
+  position: relative;
+  overflow: hidden;
+}
+
+.context-menu-item:hover {
+  background-color: rgba(255, 69, 0, 0.3);
+  transform: translateX(5px);
+}
+
+.context-menu-item::after {
+  content: "";
+  position: absolute;
+  left: -100%;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 69, 0, 0.4), transparent);
+  transition: 0.5s;
+}
+
+.context-menu-item:hover::after {
+  left: 100%;
+}
+
+.context-menu-separator {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ff4500, transparent);
+  margin: 6px 0;
+  animation: fire-flicker 2s infinite;
+}
+
+.context-menu-item-disabled {
+  color: #a0522d;
+  cursor: not-allowed;
+  text-shadow: none;
+}
+
+.context-menu-item-icon {
+  margin-right: 10px;
+  color: #ff4500;
+}
+
+/* Dragon scale background */
+.context-menu::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(255, 69, 0, 0.1) 20%, transparent 20%),
+    radial-gradient(circle at 50% 50%, rgba(255, 69, 0, 0.1) 20%, transparent 20%);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: -1;
 }

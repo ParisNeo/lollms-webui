@@ -872,6 +872,49 @@ body {
     max-width: 1536px;
   }
 }
+.context-menu{
+  position: absolute;
+  z-index: 1000;
+  min-width: 150px;
+  border-radius: 0px;
+  border-width: 1px;
+  --tw-border-opacity: 1;
+  border-color: rgb(14 159 110 / var(--tw-border-opacity));
+  background-color: rgb(1 71 55 / var(--tw-bg-opacity));
+  --tw-bg-opacity: 0.9;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  --tw-shadow-color: rgb(14 159 110 / 0.5);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+.context-menu:is(.dark *){
+  --tw-border-opacity: 1;
+  border-color: rgb(49 196 141 / var(--tw-border-opacity));
+  background-color: rgb(5 46 22 / var(--tw-bg-opacity));
+  --tw-bg-opacity: 0.9;
+  --tw-shadow-color: rgb(49 196 141 / 0.5);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+.context-menu::before{
+  position: absolute;
+  inset: 0px;
+  z-index: -10;
+  background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
+  --tw-gradient-from: rgb(14 159 110 / 0.1) var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(14 159 110 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  --tw-gradient-to: rgb(14 159 110 / 0)  var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), rgb(14 159 110 / 0.05) var(--tw-gradient-via-position), var(--tw-gradient-to);
+  --tw-gradient-to: transparent var(--tw-gradient-to-position);
+  background-size: 100% 1000px;
+  opacity: 0.3;
+  --tw-content: '';
+  content: var(--tw-content);
+}
 .sr-only{
   position: absolute;
   width: 1px;
@@ -4565,10 +4608,10 @@ background-clip: text;
   align-items: center;
   gap: 0.5rem;
   --tw-bg-opacity: 1;
-  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+  background-color: rgb(225 239 254 / var(--tw-bg-opacity));
   padding: 0.25rem;
   --tw-text-opacity: 1;
-  color: rgb(49 196 141 / var(--tw-text-opacity));
+  color: rgb(26 86 219 / var(--tw-text-opacity));
   --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
@@ -4580,11 +4623,11 @@ background-clip: text;
 }
 .chat-bar:is(.dark *){
   --tw-border-opacity: 1;
-  border-color: rgb(4 108 78 / var(--tw-border-opacity));
+  border-color: rgb(202 191 253 / var(--tw-border-opacity));
   --tw-bg-opacity: 1;
-  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
+  background-color: rgb(35 56 118 / var(--tw-bg-opacity));
   --tw-text-opacity: 1;
-  color: rgb(132 225 188 / var(--tw-text-opacity));
+  color: rgb(164 202 254 / var(--tw-text-opacity));
 }
 .chat-bar {
   height: 50px;
@@ -4724,6 +4767,48 @@ background-clip: text;
 .toolbar-button:hover{
   --tw-text-opacity: 1;
   color: rgb(63 131 248 / var(--tw-text-opacity)); /* Assuming #007bff is close to Tailwind's blue-500 */
+}
+.context-menu {
+  position: absolute;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  padding: 8px 0;
+  min-width: 150px;
+  z-index: 1000;
+}
+.context-menu-item {
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #333333;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.context-menu-item:hover {
+  background-color: #f5f5f5;
+}
+.context-menu-separator {
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 4px 0;
+}
+.context-menu-item-disabled {
+  color: #999999;
+  cursor: not-allowed;
+}
+.context-menu-item-icon {
+  margin-right: 8px;
+}
+@keyframes matrix-rain {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 1000px; }
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 1000px;
+  }
 }
 .last\:mb-0:last-child{
   margin-bottom: 0px;

@@ -318,7 +318,7 @@ button:hover {
   background: linear-gradient(45deg, #00ff00, #39ff14);
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
+  color: greenyellow;
 }
 .chat-bar {
   @apply relative text-green-400 dark:text-green-300 grow flex cursor-pointer select-none items-center gap-2 bg-gray-900 dark:bg-black p-1 shadow-sm hover:shadow-none dark:border-green-800;
@@ -388,4 +388,59 @@ button:hover {
   
 .toolbar-button:hover {
   @apply text-green-400;
+}
+.context-menu {
+  @apply absolute bg-opacity-90 bg-black border border-green-500 shadow-lg shadow-green-500/50 rounded-none py-2 min-w-[150px] z-[1000] font-mono;
+  
+  @apply dark:bg-opacity-90 dark:bg-gray-900 dark:border-green-400 dark:shadow-green-400/50;
+}
+
+.context-menu::before {
+  @apply content-[''] absolute inset-0 bg-gradient-to-b from-green-500/10 via-green-500/5 to-transparent bg-[length:100%_1000px] opacity-30 -z-10;
+}
+
+.context-menu-item {
+  @apply px-4 py-2 text-sm text-green-500 cursor-pointer transition-all duration-300 ease-in-out shadow-green-500/70;
+  
+  @apply hover:bg-green-900/40 hover:scale-105;
+  
+  @apply dark:text-green-400 dark:hover:bg-green-700/40;
+}
+
+.context-menu-separator {
+  @apply h-px bg-green-500 my-1 shadow-green-500;
+  
+  @apply dark:bg-green-400 dark:shadow-green-400;
+}
+
+.context-menu-item-disabled {
+  @apply text-gray-600 cursor-not-allowed shadow-none;
+  
+  @apply dark:text-gray-500;
+}
+
+.context-menu-item-icon {
+  @apply mr-2 text-green-500;
+  
+  @apply dark:text-green-400;
+}
+
+.context-menu-item::after {
+  @apply content-[''] absolute left-0 bottom-0 w-full h-px bg-gradient-to-r from-transparent via-green-500 to-transparent scale-x-0 origin-center transition-transform duration-300 ease-in-out;
+  
+  @apply dark:via-green-400;
+}
+
+.context-menu-item:hover::after {
+  @apply scale-x-100;
+}
+
+
+@keyframes borg-scan {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 1000px;
+  }
 }
