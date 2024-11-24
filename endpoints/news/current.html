@@ -1,108 +1,86 @@
 <div class="mb-6">
-    <div class="bg-gradient-to-r from-purple-500 to-indigo-600 p-6 rounded-lg shadow-lg">
-        <h3 class="text-3xl font-bold mb-4 text-white">🚀 Exciting Updates! 🚀</h3>
+    <div class="bg-gradient-welcome card p-6 rounded-lg shadow-lg">
+        <h3 class="text-gradient-title text-3xl font-bold mb-4">🚀 Exciting Updates! 🚀</h3>
         
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6 transition-all duration-300 hover:shadow-xl">
+        <div class="card mb-6 transition-all duration-300 hover:shadow-xl">
             <div class="flex items-center gap-3 mb-4">
                 <span class="text-3xl">🎨</span>
-                <h4 class="text-2xl font-bold text-indigo-700 dark:text-indigo-400">Remote Stable Diffusion Integration</h4>
+                <h4 class="text-subtitle text-2xl font-bold">Remote Stable Diffusion Integration</h4>
             </div>
             
             <div class="space-y-4 text-left">
-                <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                <p class="text-progress leading-relaxed">
                     LoLLMs can now seamlessly connect to any remote Stable Diffusion WebUI, expanding your creative possibilities! Simply ensure the remote instance is accessible and launched with the <code>--api</code> option.
                 </p>
             </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6 transition-all duration-300 hover:shadow-xl">
+        <div class="card mb-6 transition-all duration-300 hover:shadow-xl">
             <div class="flex items-center gap-3 mb-4">
                 <span class="text-3xl">🧠</span>
-                <h4 class="text-2xl font-bold text-indigo-700 dark:text-indigo-400">Smart Router Enhancement</h4>
+                <h4 class="text-subtitle text-2xl font-bold">Smart Router Enhancement</h4>
             </div>
             
             <div class="space-y-4 text-left">
-                <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                <p class="text-progress leading-relaxed">
                     Our new smart router now selects the most appropriate model based on its description, not just prompt complexity. This ensures more accurate and context-aware responses for your queries.
                 </p>
             </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="card mb-6 hover:shadow-xl transition-all duration-300">
             <div class="flex items-center gap-3 mb-4">
                 <span class="text-3xl">🛠️</span>
-                <h4 class="text-2xl font-bold text-indigo-700 dark:text-indigo-400">New Apps in the Zoo</h4>
+                <h4 class="text-subtitle text-2xl font-bold">New Apps in the Zoo</h4>
             </div>
         
             <div class="space-y-4 text-left">
-                <p class="text-gray-700 dark:text-gray-300 text-lg leading-relaxed">
+                <p class="text-progress text-lg leading-relaxed">
                     Explore our latest additions to the LoLLMs app ecosystem:
                 </p>
         
-                <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 pl-4">
+                <ul class="list-disc list-inside space-y-2 pl-4 text-progress">
                     <li>LLM Fine-tuning App (supporting LoRA and full fine-tuning)</li>
                     <li>Model Downloader</li>
                     <li>Database Management Tools (use different local and remote databases, fuse databases, reformat, etc.)</li>
                 </ul>
 
-                <div class="bg-indigo-50 dark:bg-indigo-900/30 p-4 rounded-md border-l-4 border-indigo-500 mt-4">
-                    <p class="text-gray-600 dark:text-gray-400 italic">
+                <div class="bg-gradient-progress p-4 rounded-md border-l-4 border-current mt-4">
+                    <p class="text-progress italic">
                         "Empowering users with advanced AI tools and customization options!"
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card hover:shadow-xl transition-all duration-300">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="text-3xl">🎥</span>
+                <h4 class="text-subtitle text-2xl font-bold">New Video Release Feature</h4>
+            </div>
+        
+            <div class="space-y-4 text-left">
+                <p class="text-progress text-lg leading-relaxed">
+                    We're excited to introduce a new feature for video releases:
+                </p>
+        
+                <ul class="list-disc list-inside space-y-2 pl-4 text-progress">
+                    <li>When a new video is released, you'll see a play button.</li>
+                    <li>After watching the video, the play button won't appear again for that specific video.</li>
+                    <li>This helps you easily identify new, unwatched videos in your feed.</li>
+                </ul>
+
+                <div class="bg-gradient-progress p-4 rounded-md border-l-4 border-current mt-4">
+                    <p class="text-progress italic">
+                        "Never miss a new release and keep track of your watched content effortlessly!"
                     </p>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<a href="https://www.youtube.com/watch?v=avaixPtHUIc" target="_blank" class="floating-button">
-    <img src="/new_video.png" alt="New Video" class="w-full h-full object-cover">
-</a>
 
-<style>
-    .floating-button {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background-color: rgba(79, 70, 229, 0.9);  /* Added slight transparency */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        box-shadow: 0 0 20px rgba(79, 70, 229, 0.6);
-        animation: pulse 1.5s infinite, glow 2s infinite;
-        overflow: hidden;
-        z-index: 9999;
-        transition: all 0.3s ease;
-    }
-
-    .floating-button:hover {
-        transform: scale(1.1);
-        background-color: rgba(79, 70, 229, 1);  /* Full opacity on hover */
-    }
-
-    @keyframes pulse {
-        0% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(1.1);
-        }
-        100% {
-            transform: scale(1);
-        }
-    }
-
-    @keyframes glow {
-        0% {
-            box-shadow: 0 0 20px rgba(79, 70, 229, 0.6);
-        }
-        50% {
-            box-shadow: 0 0 40px rgba(79, 70, 229, 0.8), 0 0 60px rgba(79, 70, 229, 0.4);
-        }
-        100% {
-            box-shadow: 0 0 20px rgba(79, 70, 229, 0.6);
-        }
-    }
-</style>
+<div class="text-center mt-6">
+    <p class="text-xl font-bold text-gradient-title">Thank you for watching and staying updated with LoLLMs!</p>
+    <p class="text-lg text-progress">We appreciate your continued support and engagement with our platform.</p>
+</div>

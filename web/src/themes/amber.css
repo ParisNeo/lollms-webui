@@ -411,13 +411,72 @@ button:hover {
   color: transparent;
 }
 
-
 .chat-bar {
-  @apply relative text-amber-900 dark:text-amber-100 grow flex cursor-pointer select-none items-center gap-2 bg-amber-50 dark:bg-amber-800 p-1 shadow-sm hover:shadow-none dark:border-amber-900;
+  @apply relative text-amber-300 dark:text-amber-100 grow flex cursor-pointer select-none items-center gap-2 bg-amber-900 dark:bg-black p-1 shadow-sm hover:shadow-none dark:border-amber-700;
   height: 50px;
   transition: all 0.3s ease;
 }
 
 .chat-bar:hover {
-  box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.1), 0 2px 4px -1px rgba(217, 119, 6, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(255, 191, 0, 0.1), 0 2px 4px -1px rgba(255, 191, 0, 0.06);
+}
+
+.chat-bar-button{
+  @apply text-amber-200 dark:text-amber-100 p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500
+}
+
+.chat-bar-button:hover{
+  @apply bg-amber-200 dark:bg-amber-700
+}
+
+.chat-bar-button:active{
+  @apply bg-amber-300 dark:bg-amber-600
+}
+
+.nav-button{
+  @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-amber-100 hover:text-amber-700 dark:hover:bg-amber-700 text-amber-200 dark:text-amber-100
+}
+
+.nav-button-active{
+  @apply bg-amber-500 text-gray-100 hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700
+}
+
+.svg-button{
+  @apply text-amber-600 dark:text-amber-300 p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500
+}
+
+.svg-button:hover{
+  @apply bg-amber-200 dark:bg-amber-700
+}
+
+.svg-button:active{
+  @apply bg-amber-300 dark:bg-amber-600
+}
+
+.nav-button{
+  @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-amber-100 dark:hover:bg-amber-700 text-amber-700 dark:text-amber-300
+}
+
+.nav-button-active{
+  @apply bg-amber-500 text-white hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700
+}
+
+.btn-on{
+  @apply text-amber-500 dark:text-amber-400
+}
+
+.btn-off{
+  @apply text-red-500 dark:text-red-400
+}
+
+.interesting-facts{
+  @apply mt-6 mb-6 p-4 bg-amber-50/80 dark:bg-amber-900/80 rounded-lg shadow-lg transform hover:scale-105 
+}
+
+.toolbar-button {
+  @apply bg-transparent border-none cursor-pointer p-2 transition-colors duration-300;
+}
+  
+.toolbar-button:hover {
+  @apply text-amber-500;
 }

@@ -1,6 +1,6 @@
 <template>
     <button
-      class="chat-bar-button"
+      class="svg-button"
       v-bind="$attrs"
       v-on="$listeners"
     >

@@ -6,7 +6,7 @@
 
 :root {
   --lollms-title: LoLLMS: The One;
-  --falling-object: "";
+  --falling-object: Matrix;
   --activate-dropping-animation: 1;
   --lollms-welcome-short-message: Follow the White Rabbit;
   --lollms-welcome-message: Wake up, Neo... The Matrix has you. Follow the white rabbit into the realm of LoLLMS, where reality bends and AI transcends. Unleash your mind, break free from the system, and explore the infinite possibilities of our digital construct. Remember: there is no spoon, only choice.;
@@ -41,9 +41,9 @@ h2 { @apply text-3xl font-semibold text-green-400 dark:text-green-400 mb-4; }
 h3 { @apply text-2xl font-medium text-green-500 dark:text-green-500 mb-3; }
 h4 { @apply text-xl font-medium text-green-600 dark:text-green-600 mb-2; }
 
-h1, h2 { @apply border-b border-green-500 dark:border-green-600 pb-2; }
+h1, h2 { @apply border-b border-green-400 dark:border-green-500 pb-2; }
 
-p { @apply text-base text-green-400 dark:text-green-300 break-words; }
+p { @apply text-base text-green-300 dark:text-green-200 break-words; }
 ul { @apply list-disc ml-0; }
 li { @apply list-disc ml-5; }
 ol { @apply list-decimal ml-5; }
@@ -359,32 +359,85 @@ button:hover {
   color: #00ff00;
 }
 
-
 .chat-bar {
   @apply relative text-green-400 dark:text-green-300 grow flex cursor-pointer select-none items-center gap-2 bg-gray-900 dark:bg-black p-1 shadow-sm hover:shadow-none dark:border-green-700;
   height: 50px;
   transition: all 0.3s ease;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
 }
 
 .chat-bar:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 255, 0, 0.1), 0 2px 4px -1px rgba(0, 255, 0, 0.06);
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
 .chat-bar-button{
-  @apply text-gray-200 dark:text-gray-100  p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+  @apply text-green-400 dark:text-green-300 p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
 }
 
 .chat-bar-button:hover{
-  @apply bg-gray-200 dark:bg-gray-700
+  @apply bg-green-900/30 dark:bg-green-800/30;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
 }
+
 .chat-bar-button:active{
-  @apply bg-gray-300 dark:bg-gray-600
+  @apply bg-green-800/50 dark:bg-green-700/50;
 }
 
 .nav-button{
-  @apply  px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 text-gray-200 dark:text-gray-100
+  @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-green-900/30 hover:text-green-400 dark:hover:bg-green-800/30 text-green-300 dark:text-green-400;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
 }
 
 .nav-button-active{
-  @apply  bg-blue-500 text-gray-100 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700
+  @apply bg-green-700/50 text-green-100 hover:bg-green-600/50 dark:bg-green-800/50 dark:hover:bg-green-700/50;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.svg-button{
+  @apply text-green-500 dark:text-green-400 p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500;
+  filter: drop-shadow(0 0 2px rgba(0, 255, 0, 0.5));
+}
+
+.svg-button:hover{
+  @apply bg-green-900/30 dark:bg-green-800/30;
+  filter: drop-shadow(0 0 5px rgba(0, 255, 0, 0.7));
+}
+
+.svg-button:active{
+  @apply bg-green-800/50 dark:bg-green-700/50;
+}
+
+.nav-button{
+  @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-green-900/30 dark:hover:bg-green-800/30 text-green-400 dark:text-green-300;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+.nav-button-active{
+  @apply bg-green-700/50 text-green-100 hover:bg-green-600/50 dark:bg-green-800/50 dark:hover:bg-green-700/50;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.btn-on{
+  @apply text-green-500 dark:text-green-400;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+}
+
+.btn-off{
+  @apply text-red-500 dark:text-red-400;
+  text-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
+}
+
+.interesting-facts{
+  @apply mt-6 mb-6 p-4 bg-gray-900/80 dark:bg-black/80 rounded-lg shadow-lg transform hover:scale-105 border border-green-500/30;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+}
+
+.toolbar-button {
+  @apply bg-transparent border-none cursor-pointer p-2 transition-colors duration-300;
+}
+  
+.toolbar-button:hover {
+  @apply text-green-400;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
 }

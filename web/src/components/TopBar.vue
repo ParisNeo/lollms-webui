@@ -30,39 +30,39 @@
         <div class="toolbar-button" @mouseleave="hideInfosMenu">
             <div class="relative inline-block">
                 <!-- Infos menu positioned above the button -->
-                <div v-if="isInfosMenuVisible"  @mouseenter="showInfosMenu" class="absolute m-0 p-0 z-50 top-full right-0 transform bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
+                <div v-if="isInfosMenuVisible"  @mouseenter="showInfosMenu" class="absolute context-menu m-0 p-0 z-50 top-full right-0 transform rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
                     <div class="p-4 container flex flex-col lg:flex-row items-center gap-2">
                         <!-- SYSTEM STATUS -->
                         <div class="flex gap-3 flex-1 items-center justify-end">
-                            <div v-if="isModelOK" title="Model is ok" class="text-green-500 dark:text-green-400 cursor-pointer transition-transform hover:scale-110">
+                            <div v-if="isModelOK" title="Model is ok" class="btn-on cursor-pointer transition-transform hover:scale-110">
                             <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                             </div>
-                            <div v-else title="Model is not ok" class="text-red-500 dark:text-red-400 cursor-pointer transition-transform hover:scale-110">
+                            <div v-else title="Model is not ok" class="btn-off cursor-pointer transition-transform hover:scale-110">
                             <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M15 9L9 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M9 9L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                             </div>
-                            <div v-if="!isGenerating" title="Text is not being generated. Ready to generate" class="text-green-500 dark:text-green-400 cursor-pointer transition-transform hover:scale-110">
+                            <div v-if="!isGenerating" title="Text is not being generated. Ready to generate" class="btn-on cursor-pointer transition-transform hover:scale-110">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path>
                             </svg>
                             </div>
-                            <div v-else title="Generation in progress..." class="text-yellow-500 dark:text-yellow-400 cursor-pointer transition-transform hover:scale-110">
+                            <div v-else title="Generation in progress..." class="svg-button cursor-pointer transition-transform hover:scale-110">
                             <svg class="w-6 h-6 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                             </svg>
                             </div>
-                            <div v-if="isConnected" title="Connection status: Connected" class="text-green-500 dark:text-green-400 cursor-pointer transition-transform hover:scale-110">
+                            <div v-if="isConnected" title="Connection status: Connected" class="btn-on cursor-pointer transition-transform hover:scale-110">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                             </svg>
                             </div>
-                            <div v-else title="Connection status: Not connected" class="text-red-500 dark:text-red-400 cursor-pointer transition-transform hover:scale-110">
+                            <div v-else title="Connection status: Not connected" class="btn-off cursor-pointer transition-transform hover:scale-110">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
                             </svg>
@@ -81,12 +81,12 @@
                         <SocialIcon href="https://discord.com/channels/1092918764925882418" icon="discord" />
                 
                         <div class="relative group" title="Lollms News">
-                            <div @click="showNews()" class="text-2xl w-8 h-8 cursor-pointer transition-colors duration-300 text-gray-600 hover:text-primary dark:text-gray-300 dark:hover:text-primary">
+                            <div @click="showNews()" class="text-2xl w-8 h-8 cursor-pointer transition-colors duration-300 svg-button">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full">
                                 <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
                             </svg>
                             </div>
-                            <span class="absolute hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap">
+                            <span class="absolute hidden group-hover:block text-xs rounded py-1 px-2 top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap">
                             Lollms News
                             </span>
                         </div>
@@ -110,7 +110,7 @@
         </div>
         <div v-if="is_fun_mode" 
                 title="Fun mode is on, press to turn off" 
-                class="w-8 h-8 cursor-pointer text-green-500 dark:text-green-400 hover:text-green-600 dark:hover:text-green-300 transition-colors duration-300"
+                class="w-8 h-8 cursor-pointer btn-on transition-colors duration-300"
                 @click="fun_mode_off()"
         >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full animate-bounce">
@@ -120,12 +120,12 @@
                 <line x1="15" y1="9" x2="15.01" y2="9"></line>
                 </svg>
             </div>
-            <div 
-                v-else 
-                title="Fun mode is off, press to turn on" 
-                class="w-8 h-8 cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-300"
-                @click="fun_mode_on()"
-            >
+        <div 
+            v-else 
+            title="Fun mode is off, press to turn on" 
+            class="w-8 h-8 cursor-pointer btn-off transition-colors duration-300"
+            @click="fun_mode_on()"
+        >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full">
                 <circle cx="12" cy="12" r="10"></circle>
                 <line x1="8" y1="15" x2="16" y2="15"></line>
@@ -133,36 +133,35 @@
                 <line x1="15" y1="9" x2="15.01" y2="9"></line>
                 </svg>
             </div>
-            <span class="absolute hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 top-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap">
+            <span class="absolute hidden group-hover:block text-xs rounded py-1 px-2 top-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap">
                 {{ is_fun_mode ? 'Turn off fun mode' : 'Turn on fun mode' }}
             </span>
-        <div class="language-selector relative">
-            <button @click="toggleLanguageMenu" class="bg-transparent text-black dark:text-white py-1 px-1 rounded font-bold uppercase transition-colors duration-300 hover:bg-blue-500">
+        <div v-if="isDarkMode" class="text-2xl svg-button w-6 hover:text-primary duration-150 cursor-pointer  ml-2" title="Switch to Light theme" @click="themeSwitch()">
+            <i data-feather="sun"></i>
+        </div>
+        <div v-else class="text-2xl svg-button w-6 hover:text-primary duration-150 cursor-pointer  ml-2" title="Switch to Dark theme" @click="themeSwitch()">
+            <i data-feather="moon"></i>
+        </div>               
+        <div class="language-selector relative ml-2">
+            <button @click="toggleLanguageMenu" class="bg-transparent svg-button py-1 px-1 rounded font-bold uppercase transition-colors duration-300 hover:bg-blue-500">
             {{ $store.state.language.slice(0, 2) }}
             </button>
-            <div v-if="isLanguageMenuVisible" ref="languageMenu" class="container language-menu absolute left-0 mt-1 bg-white dark:bg-bg-dark-tone rounded shadow-lg z-10 overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" style="position: absolute; top: 100%; width: 200px; max-height: 300px; overflow-y: auto;">
-            <ul style="list-style-type: none; padding-left: 0; margin-left: 0;">
-                <li v-for="language in languages" :key="language" class="relative flex items-center" style="padding-left: 0; margin-left: 0;">
-                <button @click="deleteLanguage(language)" class="mr-2 text-red-500 hover:text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 rounded-full">✕</button>
-                <div @click="selectLanguage(language)" :class="{'cursor-pointer hover:bg-blue-500 hover:text-white py-2 px-4 block whitespace-no-wrap': true, 'bg-blue-500 text-white': language === $store.state.language, 'flex-grow': true}">
-                    {{ language }}
-                </div>
-                </li>
-                <li class="cursor-pointer hover:text-white py-0 px-0 block whitespace-no-wrap">
-                <input type="text" v-model="customLanguage" @keyup.enter.prevent="addCustomLanguage" placeholder="Enter language..." class="bg-transparent border border-gray-300 rounded py-0 px-0 mx-0 my-1 w-full">
-                </li>
-            </ul>
+            <div v-if="isLanguageMenuVisible" ref="languageMenu" class="container context-menu absolute left-0 mt-1 rounded shadow-lg z-10 overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" style="position: absolute; top: 100%; width: 200px; max-height: 300px; overflow-y: auto;">
+              <ul style="list-style-type: none; padding-left: 0; margin-left: 0;">
+                  <li v-for="language in languages" :key="language" class="relative flex items-center" style="padding-left: 0; margin-left: 0;">
+                  <button @click="deleteLanguage(language)" class="mr-2 text-red-500 hover:text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 rounded-full">✕</button>
+                  <div @click="selectLanguage(language)" :class="{'cursor-pointer hover:bg-blue-500 hover:text-white py-2 px-4 block whitespace-no-wrap': true, 'bg-blue-500 text-white': language === $store.state.language, 'flex-grow': true}">
+                      {{ language }}
+                  </div>
+                  </li>
+                  <li class="cursor-pointer py-0 px-0 block whitespace-no-wrap">
+                  <input type="text" v-model="customLanguage" @keyup.enter.prevent="addCustomLanguage" placeholder="Enter language..." class="bg-transparent border border-gray-300 rounded py-0 px-0 mx-0 my-1 w-full">
+                  </li>
+              </ul>
             </div>
         </div>
 
-        <div v-if="isDarkMode" class="sun text-2xl w-6 hover:text-primary duration-150 cursor-pointer" title="Switch to Light theme" @click="themeSwitch()">
-            <i data-feather="sun"></i>
-        </div>
-        <div v-else class="moon text-2xl w-6 hover:text-primary duration-150 cursor-pointer" title="Switch to Dark theme" @click="themeSwitch()">
-            <i data-feather="moon"></i>
-        </div>    
-
-        <div class="relative inline-flex">
+        <div class="relative inline-flex ml-2">
           <!-- Enhanced custom button -->
           <button 
             @click.stop="toggleThemeDropDown"
@@ -171,7 +170,6 @@
                   dark:from-blue-400/20 dark:to-purple-400/20
                   border border-blue-200 dark:border-blue-700
                   rounded-lg shadow-sm
-                  text-gray-700 dark:text-gray-200
                   hover:from-blue-500/20 hover:to-purple-500/20
                   dark:hover:from-blue-400/30 dark:hover:to-purple-400/30
                   hover:border-blue-300 dark:hover:border-blue-600
@@ -183,7 +181,7 @@
             <div class="flex items-center space-x-2 overflow-hidden">
               <!-- Theme Icon -->
               <svg 
-                class="w-5 h-5 flex-shrink-0 text-blue-500 dark:text-blue-400"
+                class="w-5 h-5 flex-shrink-0"
                 xmlns="http://www.w3.org/2000/svg" 
                 fill="none" 
                 viewBox="0 0 24 24" 
@@ -219,6 +217,7 @@
             <div 
               v-if="themeDropdownOpen"
               class="absolute left-0 z-50 w-48 mt-2 
+                    context-menu
                     overflow-hidden
                     bg-white dark:bg-gray-800 
                     border border-blue-200 dark:border-blue-700
@@ -303,16 +302,13 @@ export default {
       moonIcon: document.querySelector(".moon"),
       userTheme: localStorage.getItem("theme"),
       systemTheme: window.matchMedia("prefers-color-scheme: dark").matches,
-
+      isDarkMode: false
     }
   },
   computed:{
     isModelOK(){
       return this.$store.state.isModelOk;
     },
-    isDarkMode(){
-      return document.documentElement.classList.contains("dark");
-    },        
     languages: {
         get(){
             console.log("searching languages", this.$store.state.languages)
@@ -378,15 +374,15 @@ export default {
   },
   async created() {
     this.sunIcon = document.querySelector(".sun");
-        this.moonIcon = document.querySelector(".moon");
-        this.userTheme = localStorage.getItem("theme");
-        console.log(this.userTheme)
-        this.systemTheme = window.matchMedia("prefers-color-scheme: dark").matches;
-        this.themeCheck()
+    this.moonIcon = document.querySelector(".moon");
+    this.userTheme = localStorage.getItem("theme");
+    console.log(this.userTheme)
+    this.systemTheme = window.matchMedia("prefers-color-scheme: dark").matches;
+    this.themeCheck()
 
-        this.$nextTick(() => {
-            feather.replace()
-        })
+    this.$nextTick(() => {
+        feather.replace()
+    })
 
   },
   methods: {
@@ -506,6 +502,7 @@ export default {
         }
 
         this.$store.commit('setThemeVars', theme_vars);
+        this.isDarkMode =  document.documentElement.classList.contains("dark");
 
 
       } catch (error) {
@@ -525,9 +522,7 @@ export default {
         if (document.documentElement.classList.contains("dark")) {
             document.documentElement.classList.remove("dark");
             localStorage.setItem("theme", "light")
-            this.userTheme == "light"
-            this.iconToggle()
-          
+            this.userTheme == "light"          
             return
 
         }
@@ -535,9 +530,12 @@ export default {
         document.documentElement.classList.add("dark");
         localStorage.setItem("theme", "dark")
         this.userTheme == "dark"
-        this.iconToggle()
         // Dispatch the themeChanged event
         window.dispatchEvent(new Event('themeChanged'));
+        this.isDarkMode =  document.documentElement.classList.contains("dark");
+        this.$nextTick(() => {
+            feather.replace()
+        })
     },
     async selectLanguage(language) {
         await this.$store.dispatch('changeLanguage', language);
@@ -632,11 +630,7 @@ export default {
             import('highlight.js/styles/stackoverflow-light.css');
         })
 
-    },
-    iconToggle() {
-        this.sunIcon.classList.toggle("display-none");
-        this.moonIcon.classList.toggle("display-none");
-    },        
+    },   
     refreshPage() {
         const hostnameParts = window.location.href.split('/');
 
@@ -709,13 +703,6 @@ export default {
 }
 
 
-.toolbar-button {
-@apply bg-transparent border-none cursor-pointer p-2 transition-colors duration-300;
-}
-
-.toolbar-button:hover {
-@apply text-blue-500; /* Assuming #007bff is close to Tailwind's blue-500 */
-}
 
 .topbar-container {
   position: relative;

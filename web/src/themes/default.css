@@ -336,10 +336,6 @@ button:hover {
   @apply bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded;
 }
 
-.interesting-facts{
-  @apply mt-6 mb-6 p-4 bg-white/80 dark:bg-gray-800/80 rounded-lg shadow-lg transform hover:scale-105 
-}
-
 .animated-progressbar-bg{
   @apply w-full h-24 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg
 }
@@ -361,14 +357,24 @@ background: linear-gradient(45deg, #f59e0b, #fbbf24);
 background-clip: text;
 }
 
-.chat-bar-button{
+.chat-bar {
+  @apply relative text-green-400 dark:text-green-300 grow flex cursor-pointer select-none items-center gap-2 bg-gray-900 dark:bg-black p-1 shadow-sm hover:shadow-none dark:border-green-700;
+  height: 50px;
+  transition: all 0.3s ease;
+}
+
+.chat-bar:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 255, 0, 0.1), 0 2px 4px -1px rgba(0, 255, 0, 0.06);
+}
+
+.svg-button{
   @apply text-gray-600 dark:text-gray-300  p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
 }
 
-.chat-bar-button:hover{
+.svg-button:hover{
   @apply bg-gray-200 dark:bg-gray-700
 }
-.chat-bar-button:active{
+.svg-button:active{
   @apply bg-gray-300 dark:bg-gray-600
 }
 .nav-button{
@@ -377,4 +383,25 @@ background-clip: text;
 
 .nav-button-active{
   @apply  bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700
+}
+
+.btn-on{
+  @apply text-green-500 dark:text-green-400
+}
+
+.btn-off{
+  @apply text-red-500 dark:text-red-400
+}
+
+.interesting-facts{
+  @apply mt-6 mb-6 p-4 bg-white/80 dark:bg-gray-800/80 rounded-lg shadow-lg transform hover:scale-105 
+}
+
+
+.toolbar-button {
+@apply bg-transparent border-none cursor-pointer p-2 transition-colors duration-300;
+}
+  
+.toolbar-button:hover {
+@apply text-blue-500; /* Assuming #007bff is close to Tailwind's blue-500 */
 }

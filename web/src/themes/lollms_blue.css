@@ -412,32 +412,72 @@ button:hover {
   background-clip: text;
   color: transparent;
 }
-
 .chat-bar {
-  @apply relative text-blue-900 dark:text-blue-100 grow flex cursor-pointer select-none items-center gap-2 bg-blue-50 dark:bg-blue-800 p-1 shadow-sm hover:shadow-none dark:border-blue-900;
+  @apply relative text-blue-300 dark:text-blue-200 grow flex cursor-pointer select-none items-center gap-2 bg-blue-900 dark:bg-blue-950 p-1 shadow-sm hover:shadow-none dark:border-blue-700;
   height: 50px;
   transition: all 0.3s ease;
 }
 
 .chat-bar:hover {
-  box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.1), 0 2px 4px -1px rgba(2, 132, 199, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1), 0 2px 4px -1px rgba(59, 130, 246, 0.06);
 }
 
-
 .chat-bar-button{
-  @apply text-gray-600 dark:text-gray-300  p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+  @apply text-blue-200 dark:text-blue-100 p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
 }
 
 .chat-bar-button:hover{
-  @apply bg-gray-200 dark:bg-gray-700
+  @apply bg-blue-800 dark:bg-blue-700
 }
+
 .chat-bar-button:active{
-  @apply bg-gray-300 dark:bg-gray-600
+  @apply bg-blue-700 dark:bg-blue-600
 }
+
 .nav-button{
-  @apply  px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300
+  @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-800 text-blue-200 dark:text-blue-100
 }
 
 .nav-button-active{
-  @apply  bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700
+  @apply bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800
+}
+
+.svg-button{
+  @apply text-blue-600 dark:text-blue-300 p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+}
+
+.svg-button:hover{
+  @apply bg-blue-200 dark:bg-blue-700
+}
+
+.svg-button:active{
+  @apply bg-blue-300 dark:bg-blue-600
+}
+
+.nav-button{
+  @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-blue-100 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300
+}
+
+.nav-button-active{
+  @apply bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800
+}
+
+.btn-on{
+  @apply text-blue-500 dark:text-blue-400
+}
+
+.btn-off{
+  @apply text-red-500 dark:text-red-400
+}
+
+.interesting-facts{
+  @apply mt-6 mb-6 p-4 bg-blue-50/80 dark:bg-blue-900/80 rounded-lg shadow-lg transform hover:scale-105 
+}
+
+.toolbar-button {
+  @apply bg-transparent border-none cursor-pointer p-2 transition-colors duration-300;
+}
+  
+.toolbar-button:hover {
+  @apply text-blue-500;
 }
