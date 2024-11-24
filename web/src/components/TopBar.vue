@@ -142,11 +142,11 @@
         <div v-else class="text-2xl svg-button w-6 hover:text-primary duration-150 cursor-pointer  ml-2" title="Switch to Dark theme" @click="themeSwitch()">
             <i data-feather="moon"></i>
         </div>               
-        <div class="language-selector relative ml-2">
+        <div class="relative ml-2">
             <button @click="toggleLanguageMenu" class="bg-transparent svg-button py-1 px-1 rounded font-bold uppercase transition-colors duration-300 hover:bg-blue-500">
             {{ $store.state.language.slice(0, 2) }}
             </button>
-            <div v-if="isLanguageMenuVisible" ref="languageMenu" class="container context-menu absolute left-0 mt-1 rounded shadow-lg z-10 overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary" style="position: absolute; top: 100%; width: 200px; max-height: 300px; overflow-y: auto;">
+            <div v-if="isLanguageMenuVisible" ref="languageMenu" class="container context-menu absolute left-0 mt-1 rounded shadow-lg z-10 overflow-y-auto scrollbar-thin" style="position: absolute; top: 100%; width: 200px; max-height: 300px; overflow-y: auto;">
               <ul style="list-style-type: none; padding-left: 0; margin-left: 0;">
                   <li v-for="language in languages" :key="language" class="relative flex items-center" style="padding-left: 0; margin-left: 0;">
                   <button @click="deleteLanguage(language)" class="mr-2 text-red-500 hover:text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 rounded-full">✕</button>

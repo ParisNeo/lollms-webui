@@ -1330,7 +1330,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                     self.discussion_messages, 
                                     self.current_message,
                                     context_details=context_details,
-                                    n_predict = min(self.config.ctx_size-len(tokens)-1,self.config.max_n_predict),
+                                    n_predict = min(self.config.ctx_size-len(tokens)-1,self.config.max_n_predict if self.config.max_n_predict else self.config.ctx_size-len(tokens)-1),
                                     client_id=client_id,
                                     callback=partial(self.process_data,client_id = client_id)
                                 )
@@ -1544,7 +1544,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
         )
         client.generated_text = ""
         ASCIIColors.info(f"prompt has {self.config.ctx_size-context_details['available_space']} tokens")
-        ASCIIColors.info(f"warmup for generating up to {min(context_details['available_space'],self.config.max_n_predict)} tokens")
-        self.generate(discussion_messages, current_message, context_details, min(self.config.ctx_size-len(tokens)-1, self.config.max_n_predict), client.client_id, callback if callback else partial(self.process_data, client_id=client.client_id))
+        ASCIIColors.info(f"warmup for generating up to {min(context_details['available_space'],self.config.max_n_predict if self.config.max_n_predict else self.config.ctx_size)} tokens")
+        self.generate(discussion_messages, current_message, context_details, min(self.config.ctx_size-len(tokens)-1,self.config.max_n_predict if self.config.max_n_predict else self.config.ctx_size-len(tokens)-1), client.client_id, callback if callback else partial(self.process_data, client_id=client.client_id))
         self.close_message(client.client_id)        
         return client.generated_text

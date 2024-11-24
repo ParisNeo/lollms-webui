@@ -27,9 +27,9 @@ class LollmsClient {
   constructor(
     host_address = null,
     model_name = null,
-    ctx_size = 4096,
+    ctx_size = null,
     personality = -1,
-    n_predict = 4096,
+    n_predict = null,
     temperature = 0.1,
     top_k = 50,
     top_p = 0.95,
@@ -46,7 +46,7 @@ class LollmsClient {
     this.host_address = host_address;
     this.model_name = model_name;
     this.ctx_size = ctx_size;
-    this.n_predict = n_predict?n_predict:4096;
+    this.n_predict = n_predict?n_predict:null;
     this.personality = personality;
     this.temperature = temperature;
     this.top_k = top_k;
@@ -597,7 +597,7 @@ async generateCode(prompt, images = [], {
           while (!codes[0].is_complete) {
               console.warn("The AI did not finish the code, let's ask it to continue")
               const continuePrompt = prompt + code + this.userFullHeader + "continue the code. Rewrite last line and continue the code. Don't forget to put the code inside a markdown code tag." + this.separatorTemplate() + this.aiFullHeader;
-              response = await this.generate(fullPrompt, {
+              response = await this.generate(continuePrompt, {
                   n_predict: n_predict,
                   temperature: temperature,
                   top_k: top_k,
