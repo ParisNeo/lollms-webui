@@ -149,13 +149,13 @@
             <div v-if="isLanguageMenuVisible" ref="languageMenu" class="container context-menu absolute left-0 mt-1 rounded shadow-lg z-10 overflow-y-auto scrollbar-thin" style="position: absolute; top: 100%; width: 200px; max-height: 300px; overflow-y: auto;">
               <ul style="list-style-type: none; padding-left: 0; margin-left: 0;">
                   <li v-for="language in languages" :key="language" class="relative flex items-center" style="padding-left: 0; margin-left: 0;">
-                  <button @click="deleteLanguage(language)" class="mr-2 text-red-500 hover:text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 rounded-full">✕</button>
+                  <button @click="deleteLanguage(language)" class="mr-2 ml-2 text-red-500 hover:text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 rounded-full">✕</button>
                   <div @click="selectLanguage(language)" :class="{'cursor-pointer hover:bg-blue-500 hover:text-white py-2 px-4 block whitespace-no-wrap': true, 'bg-blue-500 text-white': language === $store.state.language, 'flex-grow': true}">
                       {{ language }}
                   </div>
                   </li>
                   <li class="cursor-pointer py-0 px-0 block whitespace-no-wrap">
-                  <input type="text" v-model="customLanguage" @keyup.enter.prevent="addCustomLanguage" placeholder="Enter language..." class="bg-transparent border border-gray-300 rounded py-0 px-0 mx-0 my-1 w-full">
+                  <input type="text" v-model="customLanguage" @keyup.enter.prevent="addCustomLanguage" placeholder="Enter language..." class="bg-transparent mr-2 ml-2 border border-gray-300 rounded py-0 px-0 mx-0 my-1 w-full">
                   </li>
               </ul>
             </div>
