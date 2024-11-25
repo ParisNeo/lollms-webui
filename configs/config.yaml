@@ -1,5 +1,9 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 140
+version: 141
+
+# video viewing and news recovering
+last_viewed_video: null
+
 binding_name: null
 model_name: null
 model_variant: null

@@ -10,7 +10,7 @@ description:
 """
 
 from fastapi import APIRouter, Request
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import pkg_resources
 from lollms_webui import LOLLMSWebUI
 from ascii_colors import ASCIIColors
@@ -26,6 +26,10 @@ import time
 # Create an instance of the LoLLMSWebUI class
 lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()
 router = APIRouter()
+
+class LastViewedVideoUrlRequest(BaseModel):
+    client_id: str  = Field(...)
+    last_viewed_video_url: str = Field(..., description="Last viewed model")
 
 
 @router.get("/get_versionID")
@@ -49,14 +53,45 @@ async def get_lollms_version():
     base_path = Path(__file__).parent
     infos = base_path/"news"/"current.html"
     return infos.read_text(encoding="utf8")
+from pathlib import Path
+import json
 
 @router.get("/get_last_video_url")
 async def get_last_video_url():
+    """Get the URL and type of the last video."""
+    base_path = Path(__file__).parent
+    info_file = base_path / "news" / "latest_video.json"
+    
+    try:
+        with open(info_file, 'r', encoding='utf-8') as file:
+            video_info = json.load(file)
+        
+        return {
+            "url": video_info["url"],
+            "type": video_info["type"]
+        }
+    except FileNotFoundError:
+        return {"error": "Video information not found"}
+    except json.JSONDecodeError:
+        return {"error": "Invalid JSON format in the video information file"}
+    except KeyError as e:
+        return {"error": f"Missing key in JSON: {str(e)}"}
+
+
+@router.get("/get_last_viewed_video_url")
+async def get_last_video_url():
     """Get the URL of the last video."""
     # This is a static URL for demonstration purposes
-    base_path = Path(__file__).parent
-    infos = base_path/"news"/"latest_video.txt"
-    return infos.read_text(encoding="utf8")
+    return lollmsElfServer.config.last_viewed_video
+
+
+@router.post("/set_last_viewed_video_url")
+async def set_last_video_url(req:LastViewedVideoUrlRequest):
+    """Get the URL of the last video."""
+    # This is a static URL for demonstration purposes
+    check_access(lollmsElfServer,req.client_id)
+    lollmsElfServer.config.last_viewed_video = req.last_viewed_video_url
+    lollmsElfServer.config.save_config()
 
 @router.get("/get_themes")
 async def get_themes():

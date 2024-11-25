@@ -40,7 +40,11 @@
     <div v-if="showVideoButton" class="floating-button-container">
       <a :href="videoUrl" target="_blank" class="floating-button" @click="handleClick">
         <span class="tooltip">New ParisNeo Video!</span>
-        <img src="/play_video.png" alt="New Video" class="w-full h-full object-cover">
+        <img 
+          :src="getImageForVideoType" 
+          :alt="'New ' + videoType" 
+          class="w-full h-full object-cover"
+        >
       </a>
     </div>
   </div>
@@ -55,6 +59,7 @@ export default {
   data() {
     return {
       videoUrl: "",
+      videoType: "",
       latestNews: "",
       error: "",
       showVideoButton: false,
@@ -62,6 +67,20 @@ export default {
     }
   },
   computed: {
+    getImageForVideoType() {
+      switch (this.videoType.toLowerCase()) {
+        case 'podcast':
+          return '/podcast.png';
+        case 'music':
+          return '/music.png';
+        case 'movie':
+          return '/movie.png';
+        case 'tutorial':
+          return '/tutorial.png';
+        default:
+          return '/play_video.png'; // fallback to default image
+      }
+    },    
     logoSrc() {
       if (!this.$store.state.config) return storeLogo
       return this.$store.state.config.app_custom_logo 
@@ -72,37 +91,41 @@ export default {
   methods: {
     async fetchLatestNews() {
       try {
-        const response = await axios.get('/get_news')
-        this.latestNews = response.data
+        const response = await axios.get('/get_news');
+        this.latestNews = response.data;
       } catch (err) {
-        console.error('Failed to fetch latest news:', err)
-        this.error = 'Unable to fetch the latest news. Please try again later.'
+        console.error('Failed to fetch latest news:', err);
+        this.error = 'Unable to fetch the latest news. Please try again later.';
       }
     },
     async fetchVideoUrl() {
       try {
-        const response = await axios.get('/get_last_video_url')
-        this.videoUrl = response.data
-        this.checkVideoUpdate()
+        const response = await axios.get('/get_last_video_url');
+        this.videoUrl = response.data.url;
+        this.videoType = response.data.type;
+        this.checkVideoUpdate();
       } catch (err) {
-        console.error('Failed to fetch video URL:', err)
-        this.error = 'Unable to fetch the latest video URL. Please try again later.'
+        console.error('Failed to fetch video information:', err);
+        this.error = 'Unable to fetch the latest video information. Please try again later.';
       }
     },
-    handleClick() {
-      localStorage.setItem('lastVideoUrl', this.videoUrl)
-      this.showVideoButton = false
+    async handleClick() {
+      await axios.post("/set_last_viewed_video_url",{client_id:this.$store.state.client_id, last_viewed_video_url:this.videoUrl});
+      this.showVideoButton = false;
     },
-    checkVideoUpdate() {
-      const storedVideoUrl = localStorage.getItem('lastVideoUrl')
+    async checkVideoUpdate() {
+      const response = await axios.get("/get_last_viewed_video_url");
+      const storedVideoUrl = response.data
+      console.log("storedVideoUrl");
+      console.log(storedVideoUrl);
       if (this.videoUrl !== storedVideoUrl) {
-        this.showVideoButton = true
+        this.showVideoButton = true;
       }
     }
   },
   mounted() {
-    this.fetchLatestNews()
-    this.fetchVideoUrl()
+    this.fetchLatestNews();
+    this.fetchVideoUrl();
   }
 }
 </script>

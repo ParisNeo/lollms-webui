@@ -1262,7 +1262,10 @@ export default {
         return {
             interestingFacts: [
                 "ParisNeo, the creator of LoLLMs, originally built his high-performance PC to play Cyberpunk 2077. However, his passion for AI took an unexpected turn, leading him to develop LoLLMs instead. Ironically, he never found the time to actually play the game that inspired his powerful setup!",
-                "Saïph, the new version of LoLLMs, is named after a star in Orion's constellation (Kappa Orionis), representing bright guidance in AI!",
+                "Saïph, version 14 of LoLLMs, is named after a star in Orion's constellation (Kappa Orionis), representing bright guidance in AI!",
+                "At 12, ParisNeo coded 'Saif14' in BASIC on a Tandy 1000, an 'all-in-one' suite named with a friend. LoLLMs v14 'Saïph' - a star in Orion - echoes this BASIC creation's spirit and hints at OpenAI's future.",
+                "The new AI Village app in LoLLMs, simulating AI agents believing they're human, mirrors \"The Hitchhiker's Guide to the Galaxy\" (ParisNeo's favorite) where Earth was a simulation to compute the Ultimate Question. Both explore the idea of unsuspecting inhabitants participating in a grand cosmic calculation!",
+                "Once upon a time, young ParisNeo dove so deep into \"The Matrix\" that he watched it 60 times in two months, practically becoming a human DVD player! Fast forward to today, and this same Matrix-obsessed kid grew up to create LoLLMs, where AI personas are like digital kung-fu masters, and users are the chosen ones. Talk about life imitating art - ParisNeo went from \"I know kung fu\" to \"I code AI\"! Who knew binge-watching could lead to bending the rules of AI reality?",
                 "Did you know? The first computer programmer was a woman - Ada Lovelace!",
                 "Large Language Models (LLMs) have evolved from having millions of parameters to hundreds of billions in just a few years.",
                 "LoLLMs (Lord of Large Language Multimodal Systems) is an open-source AI assistant platform created by ParisNeo.",

@@ -126,7 +126,7 @@ class LollmsClient {
   updateServerAddress(newAddress) {
       this.serverAddress = newAddress;
     }    
-  async tokenize(prompt) {
+  async tokenize(prompt, return_named=false) {
       /**
        * Tokenizes the given prompt using the model's tokenizer.
        *
@@ -134,17 +134,17 @@ class LollmsClient {
        * @returns {Array} A list of tokens representing the tokenized prompt.
        */
       console.log("Tokenizing",prompt)
-      const output = await axios.post("/lollms_tokenize", {"prompt": prompt});
+      const output = await axios.post("/lollms_tokenize", {"prompt": prompt, "return_named": return_named});
       return output.data.named_tokens
     }
-  async detokenize(tokensList) {
+  async detokenize(tokensList, return_named=false) {
       /**
        * Detokenizes the given list of tokens using the model's tokenizer.
        *
        * @param {Array} tokensList - A list of tokens to be detokenized.
        * @returns {string} The detokenized text as a string.
        */
-      const output = await axios.post("/lollms_detokenize", {"tokens": tokensList});
+      const output = await axios.post("/lollms_detokenize", {"tokens": tokensList, "return_named": return_named});
       console.log(output.data.text)
       return output.data.text
   }
