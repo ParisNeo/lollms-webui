@@ -148,6 +148,10 @@ class LollmsClient {
       console.log(output.data.text)
       return output.data.text
   }
+cancel_generation() {
+  // TODO: implement
+}
+
   generate(prompt, {
       n_predict = null,
       stream = false,
