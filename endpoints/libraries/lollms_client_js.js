@@ -135,7 +135,13 @@ class LollmsClient {
        */
       console.log("Tokenizing",prompt)
       const output = await axios.post("/lollms_tokenize", {"prompt": prompt, "return_named": return_named});
-      return output.data.named_tokens
+      if(return_named)
+      {
+        return output.data.named_tokens  
+      }
+      else{
+        return output.data
+      }
     }
   async detokenize(tokensList, return_named=false) {
       /**
@@ -145,8 +151,15 @@ class LollmsClient {
        * @returns {string} The detokenized text as a string.
        */
       const output = await axios.post("/lollms_detokenize", {"tokens": tokensList, "return_named": return_named});
-      console.log(output.data.text)
-      return output.data.text
+      if(return_named)
+        {
+         console.log(output.data.text)
+         return output.data.text
+        }
+        else{
+          console.log(output.data)
+          return output.data
+        }
   }
 cancel_generation() {
   // TODO: implement
