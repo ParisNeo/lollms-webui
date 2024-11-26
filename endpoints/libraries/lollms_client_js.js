@@ -137,7 +137,7 @@ class LollmsClient {
       const output = await axios.post("/lollms_tokenize", {"prompt": prompt, "return_named": return_named});
       if(return_named)
       {
-        return output.data.named_tokens  
+        return output.data  
       }
       else{
         return output.data
