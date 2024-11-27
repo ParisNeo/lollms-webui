@@ -1290,7 +1290,6 @@ export default {
                 "'Robot' represented the system's growing autonomy and ability to perform complex tasks.",
                 "'Brainwave' highlighted the neural network aspects and cognitive capabilities of the system.",
                 "LoLLMs' version naming shows ParisNeo's keen awareness of industry trends and playful approach to development.",   
-                // New facts to add to the interestingFacts array
                 "LoLLMs can generate and visualize mathematical equations using LaTeX, making it a powerful tool for scientific documentation.",
                 "The system's multimodel capabilities allow it to analyze medical images, architectural blueprints, and technical diagrams.",
                 "LoLLMs includes a unique feature called 'personality system' that allows it to adapt its communication style and expertise.",
@@ -1518,7 +1517,6 @@ export default {
             this.randomFact = newFact;
         },        
         handleOnTalk(pers){
-            console.log("talking")
             this.showPersonalities=false
             this.$store.state.toast.showToast(`Personality ${pers.name} is Talking`, 4, true)
             this.onTalk(pers)
@@ -1558,8 +1556,6 @@ export default {
 
                 //this.settingsChanged = true
                 const pers_path = pers.full_path
-                console.log("pers_path",pers_path)
-                console.log("this.$store.state.config.personalities",this.$store.state.config.personalities)
                 if (this.$store.state.config.personalities.includes(pers_path)) {
 
                     const res = await this.select_personality(pers)
@@ -1573,7 +1569,6 @@ export default {
                     await this.$store.dispatch('fetchLanguage');
                     await this.$store.dispatch('fetchisRTOn');
                     
-                    console.log('pers is mounted', res)
 
                     if (res && res.status && res.active_personality_id > -1) {
                         this.$store.state.toast.showToast("Selected personality:\n" + pers.name, 4, true)
@@ -1583,7 +1578,6 @@ export default {
                     }
 
                 } else {
-                    console.log('mounting pers')
                 }
 
                 this.$emit('personalitySelected')
@@ -1600,7 +1594,6 @@ export default {
         async select_personality(pers) {
             if (!pers) { return { 'status': false, 'error': 'no personality - select_personality' } }
             const pers_path = pers.full_path
-            console.log("Selecting personality ",pers_path)
             const id = this.$store.state.config.personalities.findIndex(item => item === pers_path)
 
             const obj = {
@@ -1655,7 +1648,6 @@ export default {
             }, 300); // 300ms delay before hiding the menu            
         },        
         setBinding(selectedBinding){
-            console.log("Setting binding to "+selectedBinding.name);
             this.selecting_binding=true
             this.selectedBinding = selectedBinding
             this.$store.state.messageBox.showBlockingMessage("Loading binding")
@@ -1666,8 +1658,6 @@ export default {
                         setting_value: selectedBinding.name
                     }).then(async (response) => {
                 this.$store.state.messageBox.hideMessage()
-                console.log("UPDATED");
-                console.log(response);
                 await this.$store.dispatch('refreshConfig');    
                 await this.$store.dispatch('refreshBindings');
                 await this.$store.dispatch('refreshModelsZoo');
@@ -1692,7 +1682,6 @@ export default {
         },
 
         setModel(selectedModel){
-            console.log("Setting model to "+selectedModel.name);
             this.selecting_model=true
             this.selectedModel = selectedModel
             this.$store.state.messageBox.showBlockingMessage("Loading model")
@@ -1702,8 +1691,6 @@ export default {
                         setting_value: selectedModel.name
                     }).then(async (response) => {
                 this.$store.state.messageBox.hideMessage()
-                console.log("UPDATED");
-                console.log(response);
                 await this.$store.dispatch('refreshConfig');    
                 await this.$store.dispatch('refreshModels');
                 this.$store.state.toast.showToast(`Model changed to ${this.currentModel.name}`,4,true)
@@ -1721,9 +1708,6 @@ export default {
                 axios.get('/get_active_binding_settings').then(res => {
                     this.isLoading = false
                     if (res) {
-
-                        console.log('binding sett', res)
-
                         if (res.data && Object.keys(res.data).length > 0) {
 
                             // open form
@@ -1735,7 +1719,6 @@ export default {
                                     {client_id:this.$store.state.client_id, "settings":res}).then(response => {
 
                                             if (response && response.data) {
-                                                console.log('binding set with new settings', response.data)
                                                 this.$store.state.toast.showToast("Binding settings updated successfully!", 4, true)
 
                                             } else {
@@ -1767,23 +1750,18 @@ export default {
             }
         },
         async remount_personality(pers) {
-            console.log("Remounting personality ", pers)
             if (!pers) { return { 'status': false, 'error': 'no personality - mount_personality' } }
             try {
-                console.log("before")
                 const obj = {
                     client_id: this.$store.state.client_id,
                     category: pers.category,
                     folder: pers.folder,
                     language: pers.language
                 }
-                console.log("after")
                 const res = await axios.post('/remount_personality', obj);
-                console.log("Remounting personality executed:",res)
                 
 
                 if (res) {
-                    console.log("Remounting personality res")
                     this.$store.state.toast.showToast("Personality remounted", 4, true)
 
                     return res.data
@@ -1799,12 +1777,9 @@ export default {
 
         },      
         async unmountPersonality(pers) {
-            console.log("Unmounting personality:",pers)
             if (!pers) { return }
 
             const res = await this.unmount_personality(pers.personality || pers)
-
-            console.log(res)
             if (res.status) {
                 this.$store.state.config.personalities = res.personalities
                 this.$store.state.toast.showToast("Personality unmounted", 4, true)
@@ -1814,7 +1789,6 @@ export default {
                 // Select some other personality
                 const lastPers = this.$store.state.mountedPersArr[this.$store.state.mountedPersArr.length - 1]
 
-                console.log(lastPers, this.$store.state.mountedPersArr.length)
                 // const res2 = await this.select_personality(lastPers.personality)
                 const res2 = await this.select_personality(pers.personality)
                 if (res2.status) {
@@ -1906,17 +1880,14 @@ export default {
             this.rebooting_audio.play()
             this.$store.state.toast.showToast("Rebooting the app. Please wait...", 410, false)
             //this.$store.state.toast.showToast("Rebooting the app. Please wait...", 50, true);
-            console.log("this.$store.state.api_get_req",this.$store.state.api_get_req)
             setTimeout(()=>{
                 window.close();
             },2000)
         },  
         applyConfiguration() {
             this.isLoading = true;
-            console.log(this.$store.state.config)
             axios.post('/apply_settings', {"client_id":this.$store.state.client_id, "config":this.$store.state.config}, {headers: this.posts_headers}).then((res) => {
                 this.isLoading = false;
-                //console.log('apply-res',res)
                 if (res.data.status) {
 
                     this.$store.state.toast.showToast("Configuration changed successfully.", 4, true)
@@ -1954,8 +1925,6 @@ export default {
         handlePromptSelection(prompt) {
             this.selectedPrompt = prompt;
             const title = this.extractTitle(prompt)
-            console.log("title");
-            console.log(title);
             if (title){
                 this.previewPrompt = this.getPromptContent(prompt); // Initialize preview
             }
@@ -1982,8 +1951,6 @@ export default {
                 preview = preview.replace(regex, value || placeholder.fullText);
             });
             this.previewPrompt = preview;
-            console.log("previewPrompt")
-            console.log(this.previewPrompt)
         },
         escapeRegExp(string) {
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -2008,8 +1975,6 @@ export default {
             // Apply the final prompt and close modal
             this.finalPrompt = finalPrompt;
             this.showPlaceholderModal = false;
-            console.log("previewPrompt apply")
-            console.log(this.previewPrompt)
 
             this.setPromptInChatbox(this.getPromptContent(this.previewPrompt));
         },
@@ -2074,17 +2039,14 @@ export default {
                 });
 
             }
-            console.log(this.rightPanelCollapsed)
         }, 
         add_webpage(){
-            console.log("addWebLink received")
             this.$refs.web_url_input_box.showPanel();
         },
         addWebpage(){
 
             axios.post('/add_webpage', {"client_id":this.client_id, "url": this.$refs.web_url_input_box.inputText}, {headers: this.posts_headers}).then(response => {
                 if (response && response.status){
-                    console.log("Done")
                     this.recoverFiles()
                 }
             });
@@ -2097,7 +2059,6 @@ export default {
             this.progress_visibility_val = false;
         },
         update_progress(data){
-            console.log("Progress update")
             this.progress_value = data.value;
         },
         onSettingsBinding() {
@@ -2117,7 +2078,6 @@ export default {
                                     {client_id:this.$store.state.client_id, "settings":res}).then(response => {
 
                                             if (response && response.data) {
-                                                console.log('binding set with new settings', response.data)
                                                 this.$store.state.toast.showToast("Binding settings updated successfully!", 4, true)
 
                                             } else {
@@ -2165,18 +2125,11 @@ export default {
                 "client_id": this.client_id,
                 "name": typeof choice === 'string' ? choice : choice.name
             };
-            console.log("data:")
-            console.log(data)
             const res = await axios.post("/select_database", data, {headers: this.posts_headers});
             if(res.status){
-                console.log("Selected database")
                 this.$store.state.config = await axios.post("/get_config",{"client_id":this.client_id});
-                console.log("new config loaded :",this.$store.state.config)
                 let dbs = await axios.get("/list_databases")["data"];
-                console.log("New list of database: ",dbs)
-
                 this.$store.state.databases = dbs
-                console.log("New list of database: ",this.$store.state.databases)
                 location.reload();
             }
         
@@ -2227,14 +2180,12 @@ export default {
                     }
                 })
                 .catch(error => {
-                    console.log(error.message, 'save_configuration')
                     this.$store.state.messageBox.showMessage("Couldn't save settings!")
                     return { 'status': false }
                 });
 
         },        
         showToastMessage(text, duration, isok){
-            console.log("sending",text)
             this.$store.state.toast.showToast(text, duration, isok)
         },        
         toggleDropdown() {
@@ -2273,14 +2224,12 @@ export default {
         },
         load_discussion(id, next) {
             if (id) {
-                console.log("Loading discussion", id)
                 this.loading = true
                 this.discussionArr=[]
                 this.setDiscussionLoading(id, this.loading)
 
 
                 socket.on('discussion', (data)=>{
-                    console.log("Discussion recovered")
                     this.loading = false
                     this.setDiscussionLoading(id, this.loading)
                     if (data) {
@@ -2293,8 +2242,6 @@ export default {
                             item.status_message = "Done";
                         });                          
                         
-                        console.log("this.discussionArr")
-                        console.log(this.discussionArr)
                         if(next){
                             next()
                         }
@@ -2309,13 +2256,11 @@ export default {
             }
         },
         recoverFiles(){
-            console.log("Recovering files")
             axios.post('/get_discussion_files_list', {"client_id":this.$store.state.client_id}).then(res=>{
                 this.$refs.chatBox.filesList = res.data.files;
                 this.$refs.chatBox.isFileSentList= res.data.files.map(file => {
                     return true;
                 });
-                console.log(`Files recovered: ${this.$refs.chatBox.filesList}`)
             })
         },
         new_discussion(title) {
@@ -2338,7 +2283,6 @@ export default {
                         })
                     });
                 });
-                console.log("new_discussion ", title)
                 socket.emit('new_discussion', {title:title});
             } catch (error) {
                 console.log("Error: Could not create new discussion", error.message)
@@ -2397,7 +2341,6 @@ export default {
                         client_id: this.client_id,
                         id: id,
                     }, {headers: this.posts_headers})
-                    console.log("Making title:",res)
 
                     this.loading = false
                     this.setDiscussionLoading(id, this.loading)
@@ -2417,10 +2360,6 @@ export default {
         },        
         async delete_message(id) {
             try {
-                console.log(typeof id)
-                console.log(typeof this.client_id)
-                console.log(id)
-                console.log(this.client_id)
                 const res = await axios.post('/delete_message', { client_id: this.client_id, id: id }, {headers: this.posts_headers})
 
                 if (res) {
@@ -2477,10 +2416,6 @@ export default {
         },
         async edit_message(id, message, audio_url) {
             try {
-                console.log(typeof this.client_id)
-                console.log(typeof id)
-                console.log(typeof message)
-                console.log(typeof {audio_url:audio_url})
                 const res = await axios.post('/edit_message', {
                                                             client_id: this.client_id, 
                                                             id: id, 
@@ -2519,14 +2454,12 @@ export default {
         async import_multiple_discussions(jArray_) {
             try {
                 if (jArray_.length > 0) {
-                    console.log('sending import', jArray_)
                     const res = await axios.post('/import_multiple_discussions', {
                         client_id: this.$store.state.client_id,
                         jArray: jArray_
                     }, {headers: this.posts_headers})
 
                     if (res) {
-                        console.log('import response', res.data)
                         return res.data
                     }
                 }
@@ -2569,24 +2502,20 @@ export default {
             }
         },
         async selectDiscussion(item) {
-            console.log("Selecting a discussion")
             if(this.isGenerating){
                 this.$store.state.toast.showToast("You are currently generating a text. Please wait for text generation to finish or stop it before trying to select another discussion", 4, false)
                 return;
             }
 
             if (item) {
-                console.log(`Selecting discussion: ${this.currentDiscussion}`)
                 // When discussion is selected it loads the discussion array
                 if (this.currentDiscussion===undefined) {
-                    console.log(`Selecting discussion: ${this.currentDiscussion.id}`)
                     this.currentDiscussion = item
 
                     this.setPageTitle(item)
 
                     localStorage.setItem('selected_discussion', this.currentDiscussion.id)
                     const discussion_id = localStorage.getItem('selected_discussion')
-                    console.log(`Saved discussion to : ${discussion_id}`)
 
                     this.load_discussion(item.id, ()=>{
                         if (this.discussionArr.length > 1) {
@@ -2600,16 +2529,10 @@ export default {
                 }
                 else{
                     if (this.currentDiscussion.id != item.id) {
-                        console.log("item",item)
-                        console.log("this.currentDiscussion",this.currentDiscussion)
                         this.currentDiscussion = item
-                        console.log("this.currentDiscussion",this.currentDiscussion)
-
                         this.setPageTitle(item)
 
                         localStorage.setItem('selected_discussion', this.currentDiscussion.id)
-                        console.log(`Saved discussion to : ${this.currentDiscussion.id}`)
-
                         this.load_discussion(item.id, ()=>{
                             if (this.discussionArr.length > 1) {
                                 if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
@@ -2760,8 +2683,6 @@ export default {
             if(msgObj.sender_type==this.SENDER_TYPES_AI){
                 this.isGenerating = true
             }
-            console.log("Making a new message")
-            console.log('New message', msgObj);
             
             let responseMessage = {
                 sender:                 msgObj.sender,
@@ -2790,34 +2711,22 @@ export default {
             }
             
             responseMessage.status_message = "Warming up"
-            console.log(responseMessage)
             this.discussionArr.push(responseMessage)
-            // nextTick(() => {
-            //     const msgList = document.getElementById('messages-list')
+            nextTick(() => {
+                 const msgList = document.getElementById('messages-list')
 
-            //     this.scrollBottom(msgList)
-
-            // })
+                 this.scrollBottom(msgList)
+            });
 
             if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
                 this.changeTitleUsingUserMSG(this.currentDiscussion.id, msgObj.message)
             }
-            console.log("infos", msgObj)
-            /*
-            }
-            else {
-                this.$store.state.toast.showToast("It seems that no model has been loaded. Please download and install a model first, then try again.", 4, false)
-                this.isGenerating = false
-                this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
-                this.chime.play()
-            }*/
         },
         async talk(pers){
             this.isGenerating = true;
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
             let res = await axios.get('/get_generation_status', {})
             if (res) {
-                //console.log(res.data.status);
                 if (!res.data.status) {
                     const id = this.$store.state.config.personalities.findIndex(item => item === pers.full_path)
                     const obj = {
@@ -2825,8 +2734,6 @@ export default {
                     id: id
                     }
                     res = await axios.post('/select_personality', obj);
-
-                    console.log('Generating message from ',res.data.status);
                     socket.emit('generate_msg_from', { id: -1 });
                 }
                 else {
@@ -2850,7 +2757,6 @@ export default {
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
             axios.get('/get_generation_status', {}).then((res) => {
                 if (res) {
-                    //console.log(res.data.status);
                     if (!res.data.status) {
                         if(type=="internet"){
                             socket.emit('generate_msg_with_internet', { prompt: msg });
@@ -2909,24 +2815,7 @@ export default {
             });
         },
         sendCmd(cmd){
-            this.isGenerating = true;
-            // axios.post('/execute_personality_command', {command: cmd, parameters:[]})
-            //     .then((res) => {
-            //         if (res) {
-            //             if (res.status) {
-            //                 this.$store.state.toast.showToast("Command executed",4,true)
-            //             }
-            //             else
-            //                 this.$store.state.messageBox.showMessage("Error: Couldn't execute command!")
-            //             return res.data;
-            //         }
-            //     })
-            //     .catch(error => {
-            //         console.log(error.message, 'save_configuration')
-            //         this.$store.state.messageBox.showMessage("Couldn't save settings!")
-                    
-            //     });
-            
+            this.isGenerating = true;            
             socket.emit('execute_command', { command: cmd, parameters: [] });            
         },
         notify(notif){
@@ -2958,14 +2847,11 @@ export default {
             this.chime.play()
         },
         update_message(msgObj) {
-            console.log("update_message trigged")
-            console.log(msgObj)
             // Streams response message content from binding
             this.discussion_id = msgObj.discussion_id
             this.setDiscussionLoading(this.discussion_id, true);
 
             if (this.currentDiscussion.id == this.discussion_id) {
-                console.log("discussion ok")
                 //this.isGenerating = true;
                 const index = this.discussionArr.findIndex((x) => x.id == msgObj.id)
                 const messageItem = this.discussionArr[index]
@@ -2973,7 +2859,6 @@ export default {
                     messageItem && (msgObj.operation_type==this.operationTypes.MSG_OPERATION_TYPE_SET_CONTENT ||
                     msgObj.operation_type==this.operationTypes.MSG_OPERATION_TYPE_SET_CONTENT_INVISIBLE_TO_AI)
                 ) {
-                    console.log("Content triggered")
                     this.isGenerating = true;
                     messageItem.content = msgObj.content
                     messageItem.created_at = msgObj.created_at
@@ -2985,9 +2870,6 @@ export default {
                 else if(messageItem && msgObj.operation_type==this.operationTypes.MSG_OPERATION_TYPE_ADD_CHUNK){
                     this.isGenerating = true;
                     messageItem.content += msgObj.content
-                    console.log("Chunk triggered")
-                    //console.log("content")
-                    //console.log(messageItem.content)
                     messageItem.created_at              = msgObj.created_at
                     messageItem.started_generating_at   = msgObj.started_generating_at
                     messageItem.nb_tokens               = msgObj.nb_tokens
@@ -2996,16 +2878,12 @@ export default {
                 } else if (msgObj.operation_type == this.operationTypes.MSG_OPERATION_TYPE_STEP || msgObj.operation_type == this.operationTypes.MSG_OPERATION_TYPE_STEP_START || msgObj.operation_type == this.operationTypes.MSG_OPERATION_TYPE_STEP_END_SUCCESS || msgObj.operation_type == this.operationTypes.MSG_OPERATION_TYPE_STEP_END_FAILURE){
                     if (Array.isArray(msgObj.steps)) {
                         messageItem.status_message = msgObj.steps[msgObj.steps.length - 1]["text"]
-                        console.log("step Content: ", messageItem.status_message)
                         messageItem.steps = msgObj.steps;
-                        console.log("steps: ", msgObj.steps)
                     } else {
                         console.error("Invalid steps data:", msgObj.steps);
                     }
 
                 } else if (msgObj.operation_type == this.operationTypes.MSG_OPERATION_TYPE_JSON_INFOS) {
-                    console.log("metadata triggered", msgObj.operation_type)
-                    console.log("metadata", msgObj.metadata)
                     if (typeof msgObj.metadata === 'string') {
                         try {
                             messageItem.metadata = JSON.parse(msgObj.metadata);
@@ -3019,8 +2897,6 @@ export default {
                         messageItem.metadata = { value: msgObj.metadata }; // For any other type, wrap in an object
                     }
                 } else if (msgObj.operation_type == this.operationTypes.MSG_OPERATION_TYPE_UI) {
-                    console.log("UI triggered",msgObj.operation_type)
-                    console.log("UI", msgObj.ui)
                     messageItem.ui = msgObj.ui
                 } else if (msgObj.operation_type == this.operationTypes.MSG_OPERATION_TYPE_EXCEPTION) {
                     this.$store.state.toast.showToast(msgObj.content, 5, false)
@@ -3059,9 +2935,7 @@ export default {
         },
         loadLastUsedDiscussion() {
             // Checks local storage for last selected discussion
-            console.log("Loading last discussion")
             const id = localStorage.getItem('selected_discussion')
-            console.log("Last discussion id: ",id)
             if (id) {
                 const index = this.list.findIndex((x) => x.id == id)
                 const discussionItem = this.list[index]
@@ -3107,7 +2981,6 @@ export default {
             this.isCheckbox = false
             this.$store.state.toast.showToast("Removed (" + deleteList.length + ") items", 4, true)
             this.showConfirmation = false
-            console.log("Multi delete done")
         },
         async deleteMessage(msgId) {
 
@@ -3123,7 +2996,6 @@ export default {
         },
         async openFolder(id){
             const json = JSON.stringify({ 'client_id': this.$store.state.client_id, 'discussion_id': id.id })   
-            console.log(json)     
             await axios.post(`/open_discussion_folder`, json, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -3295,14 +3167,12 @@ export default {
             this.stop_gen()
             this.isGenerating = false
             this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating)
-            console.log("Stopped generating")
             nextTick(() => {
                 const msgList = document.getElementById('messages-list')
                 this.scrollBottom(msgList)
             })
         },
         finalMsgEvent(msgObj) {
-            console.log("Received message close order")
             let index=0;
             // Last message contains halucination suppression so we need to update the message content too
             this.discussion_id = msgObj.discussion_id
@@ -3334,7 +3204,6 @@ export default {
             index = this.discussionArr.findIndex((x) => x.id == msgObj.id)
             const messageItem = this.discussionArr[index]            
             messageItem.status_message = "Done"
-            console.log("final", msgObj)
             if(this.$store.state.config.auto_speak && (this.$store.state.config.xtts_enable && this.$store.state.config.xtts_use_streaming_mode)){
                 index = this.discussionArr.findIndex((x) => x.id == msgObj.id)
                 let message_component = this.$refs['msg-' + msgObj.id][0]
@@ -3447,7 +3316,6 @@ export default {
             })
 
             if (discussionIdArr.length > 0) {
-                console.log("export", discussionIdArr)
                 let dateObj = new Date()
 
                 const year = dateObj.getFullYear();
@@ -3495,7 +3363,6 @@ export default {
             })
 
             if (discussionIdArr.length > 0) {
-                console.log("export", discussionIdArr)
                 let dateObj = new Date()
 
                 const year = dateObj.getFullYear();
@@ -3570,7 +3437,6 @@ export default {
             const index = this.personalityAvatars.findIndex((x) => x.name === sender)
             const pers = this.personalityAvatars[index]
             if (pers) {
-                console.log("Avatar",pers.avatar)
                 return pers.avatar
             }
 
@@ -3613,16 +3479,13 @@ export default {
     },
     async created() {
         this.randomFact = this.interestingFacts[Math.floor(Math.random() * this.interestingFacts.length)];
-        console.log("Created discussions view")
         const response = await axios.get('/get_versionID');
         const serverVersionId = response.data.versionId;
 
         socket.onopen = () => {
-            console.log('WebSocket connection established.');
             if (this.currentDiscussion!=null){
                 this.setPageTitle(item)
                 localStorage.setItem('selected_discussion', this.currentDiscussion.id)
-                console.log(`Saved discussion to : ${this.currentDiscussion.id}`)
                 this.load_discussion(item.id, ()=>{
                     if (this.discussionArr.length > 1) {
                         if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
@@ -3643,8 +3506,6 @@ export default {
         this.$nextTick(() => {
             feather.replace();
         });           
-
-        console.log("Connected to socket io")
         
         try{
         this.$store.state.loading_infos = "Getting version"
@@ -3652,7 +3513,7 @@ export default {
         await this.$store.dispatch('getVersion');
         }
         catch (ex){
-        console.log("Error cought:", ex)
+            console.log("Error cought:", ex)
         }
 
 
@@ -3662,9 +3523,7 @@ export default {
             await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for 100ms
         }
         this.$store.state.client_id = socket.id
-        console.log(this.$store.state.client_id)
         await this.$store.dispatch('refreshConfig');
-        console.log("Config ready")
         }
         catch (ex){
         console.log("Error cought:", ex)
@@ -3738,7 +3597,6 @@ export default {
 
         this.$store.state.isConnected=true;
         this.$store.state.client_id = socket.id
-        console.log("Ready")
         // Constructor
         this.setPageTitle()
         await this.list_discussions()
@@ -3749,7 +3607,6 @@ export default {
 
         socket.on('connected',this.socketIOConnected)
         socket.on('disconnected',this.socketIODisconnected)
-        console.log("Added events")
 
         // socket responses
         socket.on('show_progress', this.show_progress)
@@ -3762,7 +3619,6 @@ export default {
         socket.on('close_message', this.finalMsgEvent)
 
         socket.on('disucssion_renamed',(event)=>{
-            console.log('Received new title', event.discussion_id, event.title);
             const index = this.list.findIndex((x) => x.id == event.discussion_id)
             const discussionItem = this.list[index]
             discussionItem.title = event.title
@@ -3774,7 +3630,6 @@ export default {
             }*/
         })
         socket.onclose = (event) => {
-            console.log('WebSocket connection closed:', event.code, event.reason);
             this.socketIODisconnected();
         };
         socket.on("connect_error", (error) => {
@@ -3811,8 +3666,6 @@ export default {
 
     },
     async activated() {
-        //console.log('settings changed acc', this.$store.state.settingsChanged)
-        // await this.getPersonalityAvatars()
         while (this.isReady === false) {
                 await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for 100ms
             }  
@@ -3860,20 +3713,15 @@ export default {
             },
         },   
         '$store.state.config.fun_mode': function(newVal, oldVal) {
-            console.log(`Fun mode changed from ${oldVal} to ${newVal}! 🎉`);
         },        
         '$store.state.isConnected': function(newVal, oldVal) {
             if (!this.isConnected){
                 this.$store.state.messageBox.showBlockingMessage("Server suddenly disconnected. Please reboot the server to recover the connection")
                 this.is_first_connection = false
-                console.log("this.is_first_connection set to false")
-                console.log(this.is_first_connection)
                 if(this.$store.state.config.activate_audio_infos)
                     this.connection_lost_audio.play()
             }
             else{
-                console.log("this.is_first_connection")
-                console.log(this.is_first_connection)
                 if(!this.is_first_connection){
                     this.$store.state.messageBox.hideMessage()
                     this.$store.state.messageBox.showMessage("Server connected.")
