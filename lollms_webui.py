@@ -68,7 +68,7 @@ def terminate_thread(thread):
         else:
             ASCIIColors.yellow("Canceled successfully")# The current version of the webui
 
-lollms_webui_version="v15 alpha (code name Orion ⭐️)"
+lollms_webui_version="v16 alpha (codename Nexus 🌀)"
 
 
 
@@ -1118,7 +1118,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
         return True
 
 
-    def generate(self, full_prompt, prompt, context_details, n_predict, client_id, callback=None):
+    def generate(self, context_details, is_continue, client_id,  callback=None):
+        full_prompt, tokens = self.personality.build_context(context_details, is_continue, True)
+        n_predict = self.personality.compute_n_predict(tokens)
         if self.config.debug and self.config.debug_show_final_full_prompt:
             ASCIIColors.highlight(full_prompt,[r for r in [
                         self.config.discussion_prompt_separator,
@@ -1181,7 +1183,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 self.personality.text_files = client.discussion.text_files
                 self.personality.image_files = client.discussion.image_files
                 self.personality.audio_files = client.discussion.audio_files
-                output = self.personality.processor.run_workflow(prompt, full_prompt, callback, context_details,client=client)
+                output = self.personality.processor.run_workflow(context_details, client, callback)
             except Exception as ex:
                 trace_exception(ex)
                 # Catch the exception and get the traceback as a list of strings
@@ -1319,20 +1321,18 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     self.update_message_step(client_id, "🔥 warming up ...", MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_START)
 
                 # prepare query and reception
-                self.discussion_messages, self.current_message, tokens, context_details, internet_search_infos = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type, force_using_internet=force_using_internet, previous_chunk = client.generated_text if is_continue else "")
+                context_details  = self.prepare_query(client_id, message_id, is_continue, n_tokens=self.config.min_n_predict, generation_type=generation_type, force_using_internet=force_using_internet, previous_chunk = client.generated_text if is_continue else "")
+                
                 ASCIIColors.info(f"prompt has {self.config.ctx_size-context_details['available_space']} tokens")
                 ASCIIColors.info(f"warmup for generating up to {min(context_details['available_space'],self.config.max_n_predict)} tokens")
                 self.prepare_reception(client_id)
                 self.generating = True
                 client.processing=True
                 try:
-                    self.generate(
-                                    self.discussion_messages, 
-                                    self.current_message,
-                                    context_details=context_details,
-                                    n_predict = min(self.config.ctx_size-len(tokens)-1,self.config.max_n_predict if self.config.max_n_predict else self.config.ctx_size-len(tokens)-1),
-                                    client_id=client_id,
-                                    callback=partial(self.process_data,client_id = client_id)
+                    self.generate( context_details,
+                                client_id=client_id,
+                                is_continue=is_continue,
+                                callback=partial(self.process_data,client_id = client_id)
                                 )
                     if self.tts and self.config.auto_read and len(self.personality.audio_samples)>0:
                         try:
@@ -1427,7 +1427,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                     '''
 
-                    for source in internet_search_infos:
+                    for source in context_details["internet_search_infos"]:
                         url = source["url"]
                         title = source["title"]
                         brief = source["brief"]
@@ -1535,7 +1535,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             parent_message_id=self.message_id,
             nb_tokens=nb_tokens
         )
-        discussion_messages, current_message, tokens, context_details, internet_search_infos = self.prepare_query(client.client_id, client.discussion.current_message.id, False, n_tokens=self.config.min_n_predict, force_using_internet=False)
+        context_details = self.prepare_query(client.client_id, client.discussion.current_message.id, False, n_tokens=self.config.min_n_predict, force_using_internet=False)
         self.new_message(
                         client.client_id, 
                         self.personality.name,
@@ -1545,6 +1545,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
         client.generated_text = ""
         ASCIIColors.info(f"prompt has {self.config.ctx_size-context_details['available_space']} tokens")
         ASCIIColors.info(f"warmup for generating up to {min(context_details['available_space'],self.config.max_n_predict if self.config.max_n_predict else self.config.ctx_size)} tokens")
-        self.generate(discussion_messages, current_message, context_details, min(self.config.ctx_size-len(tokens)-1,self.config.max_n_predict if self.config.max_n_predict else self.config.ctx_size-len(tokens)-1), client.client_id, callback if callback else partial(self.process_data, client_id=client.client_id))
+        self.generate(context_details, client.client_id, False, callback if callback else partial(self.process_data, client_id=client.client_id))
         self.close_message(client.client_id)        
         return client.generated_text
