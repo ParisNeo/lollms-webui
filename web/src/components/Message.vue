@@ -34,7 +34,7 @@
 
                 </div>
 
-                <div class="overflow-x-auto w-full overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+                <div class="overflow-x-auto w-full overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary space-y-2">
                     <!-- MESSAGE CONTENT -->
                     
                     <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :host="host" :markdown-text="message.content" :message_id="message.id" :discussion_id="message.discussion_id" :client_id="this.$store.state.client_id">
@@ -59,49 +59,44 @@
                         Your browser does not support the audio element.
                     </audio>
                     <div class="message-details">
-                    <details 
-                    v-if="message && message.steps && message.steps.length > 0" 
-                    class="flex w-full cursor-pointer rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 mb-3.5 max-w-full transition-all duration-300 ease-in-out"
-                    >
-                    <summary class="grid min-w-80 select-none grid-cols-[50px,1fr] items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
-                        <div class="relative grid aspect-square place-content-center overflow-hidden rounded-full bg-gradient-to-br from-blue-400 to-purple-500 transform transition-transform duration-300 hover:scale-105">
-                        <StatusIcon :status="message.status_message" />
+                        <div v-if="message.steps.length > 0" class="steps-container">
+                            <div class="steps-header" @click="toggleExpanded">
+                            <div class="steps-icon">
+                                <StatusIcon :status="message.status_message" :icon="true" />
+                            </div>
+                            <div class="steps-summary">
+                                <h3 class="steps-title">Processing Info</h3>
+                                <p class="steps-status">{{ message.status_message }}</p>
+                            </div>
+                            <span class="toggle-icon">{{ expanded ? '▲' : '▼' }}</span>
+                            </div>
+                            <transition name="fade">
+                            <div v-if="expanded" class="steps-content">
+                                <ul class="steps-list">
+                                <li v-for="(step, index) in message.steps" :key="`step-${message.id}-${index}`" class="step-item">
+                                    <Step 
+                                    :done="step.done"
+                                    :text="step.text"
+                                    :status="step.status"
+                                    :description="step.description"
+                                    />
+                                </li>
+                                </ul>
+                            </div>
+                            </transition>
                         </div>
-                        <dl class="leading-5">
-                        <dd class="text-lg font-semibold text-gray-800 dark:text-gray-200">Processing Info</dd>
-                        <dt class="flex items-center gap-1 truncate whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            <StatusIndicator :status="message.status_message" />
-                            {{ message.status_message }}
-                        </dt>
-                        </dl>
-                    </summary>
 
-                    <div class="px-5 pb-5 pt-4 transition-all duration-300 ease-in-out">
-                        <ol class="list-none">
-                        <li 
-                            v-for="(step, index) in message.steps" 
-                            :key="`step-${message.id}-${index}`" 
-                            class="group border-l pb-6 last:!border-transparent last:pb-0 dark:border-gray-800 transition-all duration-300 ease-in-out"
-                            :class="{ 'bg-transparent': step.done }"
-                            :style="{ animationDelay: `${index * 100}ms` }"
-                        >
-                            <Step :done="step.done" :text="step.text" :status="step.status" :step_type="step.step_type" />
-                        </li>
-                        </ol>
+                        <div class="flex flex-col items-start w-full overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+                            <div 
+                                v-for="(html_js, index) in message.html_js_s" 
+                                :key="`htmljs-${message.id}-${index}`" 
+                                class="font-bold animate-fadeIn"
+                                :style="{ animationDelay: `${index * 200}ms` }"
+                            >
+                                <RenderHTMLJS :htmlContent="html_js" />
+                            </div>
+                        </div>
                     </div>
-                    </details>
-
-                    <div class="flex flex-col items-start w-full overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
-                    <div 
-                        v-for="(html_js, index) in message.html_js_s" 
-                        :key="`htmljs-${message.id}-${index}`" 
-                        class="font-bold animate-fadeIn"
-                        :style="{ animationDelay: `${index * 200}ms` }"
-                    >
-                        <RenderHTMLJS :htmlContent="html_js" />
-                    </div>
-                    </div>
-                </div>
                 </div>
                 <!-- MESSAGE CONTROLS -->
                 <div class="flex-row justify-end mx-2">
@@ -406,6 +401,9 @@ export default {
 
     }, 
     methods: {
+        toggleExpanded() {
+        this.expanded = !this.expanded
+        },
         computeTimeDiff(startTime, endTime){
             let timeDiff = endTime.getTime() - startTime.getTime();
 
@@ -974,4 +972,5 @@ details summary::-webkit-details-marker {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
 </style>

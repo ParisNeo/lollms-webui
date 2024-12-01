@@ -1,8 +1,18 @@
 <template>
     <div class="relative group/item">
-      <button @click.prevent="onSettingsPersonality" class="w-6 h-6 rounded-full overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none">
-        <img :src="mountedPers.avatar" @error="personalityImgPlacehodler" :alt="mountedPers.name" class="w-full h-full object-cover" :class="{'border-2 border-secondary': isActive}">
-      </button>
+        <button 
+            @click.prevent="onSettingsPersonality" 
+            class="w-6 h-6 rounded-full overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none relative"
+            :class="{'glow-effect': $store.state.config.activate_skills_lib}"
+        >
+            <img 
+            :src="mountedPers.avatar" 
+            @error="personalityImgPlacehodler" 
+            :alt="mountedPers.name" 
+            class="w-full h-full object-cover" 
+            :class="{'border-2 border-secondary': isActive}"
+            >
+        </button>
       
       <div class="absolute bottom-6 left-0 w-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 p-1">
         <button @click.prevent="remount_personality()" class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none" title="Remount">
@@ -244,3 +254,18 @@ export default {
 }
 </script>
 
+<style scoped>
+.glow-effect {
+  box-shadow: 0 0 5px 2px rgba(0, 255, 255, 0.7);
+  animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 5px 2px rgba(0, 255, 255, 0.7);
+  }
+  to {
+    box-shadow: 0 0 20px 2px rgba(0, 255, 255, 0.7);
+  }
+}
+</style>

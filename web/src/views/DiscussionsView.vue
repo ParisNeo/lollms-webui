@@ -69,7 +69,7 @@
     </transition>
     <transition name="slide-right">
     <div  v-if="showLeftPanel"
-        class="relative flex flex-col no-scrollbar shadow-lg min-w-[15rem] max-w-[15rem]"
+        class="relative flex flex-col no-scrollbar shadow-lg w-[16rem] "
         >
             <RouterLink :to="{ name: 'discussions' }" class="flex items-center space-x-2"> <!-- Added space-x-2 -->
                 <div class="logo-container"> <!-- Removed mr-1 -->
@@ -106,7 +106,63 @@
                     >
                         <i data-feather="plus"></i>
                     </button>
+                    <div class="toolbar-button" @mouseleave="hideSkillsLibraryMenu" v-if="!loading">
+                        <!-- Expandable menu positioned above the button -->
+                        <div v-show="isSkillsLibraryMenuVisible" @mouseenter="showSkillsLibraryMenu" class="absolute m-0 p-0 z-50 top-full left-0 transform bg-white dark:bg-bg-dark rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
+                            <div class="p-4 flex flex-wrap gap-2 items-center">
+                                <!-- Add to skills database -->
+                                <button 
+                                    v-if="!loading" 
+                                    type="button" 
+                                    @click.stop="addDiscussion2SkillsLibrary" 
+                                    title="Add this discussion content to skills database" 
+                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95"
+                                >
+                                    <i data-feather="plus"></i>
+                                </button>
 
+                                <!-- Toggle skills database -->
+                                <button 
+                                    v-if="!loading && $store.state.config.activate_skills_lib" 
+                                    type="button" 
+                                    @click.stop="toggleSkillsLib" 
+                                    title="Skills database is activated" 
+                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95"
+                                >
+                                    <i data-feather="check-circle"></i>
+                                </button>
+                                <button 
+                                    v-if="!loading && !$store.state.config.activate_skills_lib" 
+                                    type="button" 
+                                    @click.stop="toggleSkillsLib" 
+                                    title="Skills database is deactivated" 
+                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95"
+                                >
+                                    <i data-feather="x-octagon"></i>
+                                </button>
+                                
+                                <!-- Show skills database -->
+                                <button 
+                                    v-if="!loading" 
+                                    type="button" 
+                                    @click.stop="showSkillsLib" 
+                                    title="Show Skills database" 
+                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95"
+                                >
+                                    <i data-feather="book"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Menu toggle button -->
+                        <div @mouseenter="showSkillsLibraryMenu" class="menu-hover-area">
+                            <button class="w-8 h-8" title="Toggle Skills library menu">
+                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 4v16h16V4H4zm2 2h12v12H6V6zm2 2h2v8H8V8zm3 0h2v8h-2V8zm3 0h2v8h-2V8z" fill="currentColor"/>
+                                </svg>
+
+                            </button>
+                        </div>                        
+                    </div>
                     <div class="toolbar-button" @mouseleave="hideMenu" v-if="!loading">
                         <!-- Expandable menu positioned above the button -->
                         <div v-show="isMenuVisible" @mouseenter="showMenu" class="absolute m-0 p-0 z-50 top-full left-0 transform bg-white dark:bg-bg-dark rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
@@ -167,47 +223,6 @@
                                     </button>
                                 </div>
 
-                                <!-- Add to skills database -->
-                                <button 
-                                    v-if="!loading" 
-                                    type="button" 
-                                    @click.stop="addDiscussion2SkillsLibrary" 
-                                    title="Add this discussion content to skills database" 
-                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95"
-                                >
-                                    <i data-feather="hard-drive"></i>
-                                </button>
-
-                                <!-- Toggle skills database -->
-                                <button 
-                                    v-if="!loading && $store.state.config.activate_skills_lib" 
-                                    type="button" 
-                                    @click.stop="toggleSkillsLib" 
-                                    title="Skills database is activated" 
-                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95"
-                                >
-                                    <i data-feather="check-circle"></i>
-                                </button>
-                                <button 
-                                    v-if="!loading && !$store.state.config.activate_skills_lib" 
-                                    type="button" 
-                                    @click.stop="toggleSkillsLib" 
-                                    title="Skills database is deactivated" 
-                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95"
-                                >
-                                    <i data-feather="x-octagon"></i>
-                                </button>
-
-                                <!-- Show skills database -->
-                                <button 
-                                    v-if="!loading" 
-                                    type="button" 
-                                    @click.stop="showSkillsLib" 
-                                    title="Show Skills database" 
-                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95"
-                                >
-                                    <i data-feather="book"></i>
-                                </button>
 
                                 <!-- Loading spinner -->
                                 <div v-if="loading" title="Loading.." class="flex justify-center">
@@ -485,8 +500,10 @@
                                 </div>
                             </div>
 
-                            <div @mouseenter="showPersonalitiesMenu" class="personalities-hover-area">
-                                <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
+                            <div class="personalities-container">
+                                <div @mouseenter="showPersonalitiesMenu" class="personalities-hover-area">
+                                <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersList" :onReady="onPersonalitiesReady"/>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -585,7 +602,8 @@
                         <TransitionGroup v-if="list.length > 0" name="list">
                             <Discussion v-for="(item, index) in list" :key="item.id" :id="item.id" :title="item.title"
                                 :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"
-                                :checkBoxValue="item.checkBoxValue" 
+                                :checkBoxValue="item.checkBoxValue"
+                                :openfolder_enabled="true"
                                 @select="selectDiscussion(item)"
                                 @delete="deleteDiscussion(item.id)" 
                                 @openFolder="openFolder"
@@ -851,6 +869,24 @@
 
 
 <style scoped>
+.personalities-container {
+  position: relative;
+}
+
+.skills-lib-icon {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  z-index: 10;
+  font-size: 5px; /* Adjust this value to change the icon size */
+  width: 2px; /* Match this to the font-size */
+  height: 2px; /* Match this to the font-size */
+}
+
+.skills-lib-icon i {
+  width: 2px;
+  height: 2px;
+}
 @keyframes giggle {
     0%, 100% {
         transform: translateX(0) rotate(0deg) scale(1);
@@ -1343,6 +1379,7 @@ export default {
             personalitySearchQuery: '',
             isSearching: false,
             isPersonalitiesMenuVisible: false,
+            isSkillsLibraryMenuVisible: false,
             isModelsMenuVisible:false,
             isBindingsMenuVisible: false,
             isMenuVisible: false,
@@ -1624,6 +1661,15 @@ export default {
         showPersonalitiesMenu() {
             clearTimeout(this.hideMenuTimeout);
             this.isPersonalitiesMenuVisible = true
+        },
+        showSkillsLibraryMenu() {
+            clearTimeout(this.hideSkillsLibraryMenuTimeout);
+            this.isSkillsLibraryMenuVisible = true
+        },
+        hideSkillsLibraryMenu() {
+            this.hideMenuTimeout = setTimeout(() => {
+                this.isSkillsLibraryMenuVisible = false;
+            }, 300); // 300ms delay before hiding the menu            
         },
         hidePersonalitiesMenu() {
             this.hideMenuTimeout = setTimeout(() => {
@@ -2877,6 +2923,7 @@ export default {
                     this.extractHtml()
                 } else if (msgObj.operation_type == this.operationTypes.MSG_OPERATION_TYPE_STEP || msgObj.operation_type == this.operationTypes.MSG_OPERATION_TYPE_STEP_START || msgObj.operation_type == this.operationTypes.MSG_OPERATION_TYPE_STEP_END_SUCCESS || msgObj.operation_type == this.operationTypes.MSG_OPERATION_TYPE_STEP_END_FAILURE){
                     if (Array.isArray(msgObj.steps)) {
+                        console.log("Received steps:", msgObj.steps)
                         messageItem.status_message = msgObj.steps[msgObj.steps.length - 1]["text"]
                         messageItem.steps = msgObj.steps;
                     } else {
@@ -3996,17 +4043,11 @@ import Message from '../components/Message.vue'
 import ChatBox from '../components/ChatBox.vue'
 import WelcomeComponent from '../components/WelcomeComponent.vue'
 
-import feather from 'feather-icons'
-
-import axios from 'axios'
-import { nextTick, TransitionGroup } from 'vue'
-
 import socket from '@/services/websocket.js'
 
 
 import { onMounted } from 'vue'
 import { initFlowbite } from 'flowbite'
-import { store } from '../main'
 
 
 

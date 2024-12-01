@@ -113,7 +113,7 @@ body {
 }
 
 .discussion {
-  @apply mr-2 text-xs;
+  @apply mr-2 text-xs hover:bg-blue-300;
 }
 
 .discussion-hilighted {
@@ -182,6 +182,15 @@ body {
 
 .text-shadow-custom {
   text-shadow: 1px 1px 0px #e0e0e0, -1px -1px 0px #e0e0e0, 1px -1px 0px #e0e0e0, -1px 1px 0px #e0e0e0;
+}
+
+
+.animated-progressbar-bg {
+  @apply w-full h-10 relative overflow-hidden bg-gradient-to-r from-blue-950 to-blue-900 dark:from-black dark:to-blue-950 rounded-sm shadow-[0_0_15px_rgba(245,158,11,0.2)]
+}
+
+.animated-progressbar-fg {
+  @apply absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-blue-400 dark:from-blue-400 dark:to-blue-500 transition-all duration-300
 }
 
 .menu-item {
@@ -425,4 +434,158 @@ background-clip: text;
 
 .context-menu-item-icon {
   margin-right: 8px;
+}
+
+
+/* Steps theming */
+/* steps.css */
+
+/* Steps Container Styles */
+.steps-container {
+  @apply border border-gray-200 rounded-md mb-4;
+}
+
+.steps-header {
+  @apply flex items-center p-4 bg-gray-50 dark:bg-gray-900 cursor-pointer;
+}
+
+.steps-icon {
+  @apply mr-4;
+}
+
+.steps-summary {
+  @apply flex-grow;
+}
+
+.steps-title {
+  @apply m-0 text-base font-semibold;
+}
+
+.steps-status {
+  @apply m-0 text-sm text-gray-600;
+}
+
+.toggle-icon {
+  @apply text-sm text-gray-500;
+}
+
+.steps-content {
+  @apply p-4;
+}
+
+.steps-list {
+  @apply list-none p-0 m-0;
+}
+
+.step-item {
+  @apply mb-2 pl-4 border-l-2 border-gray-200 last:mb-0;
+}
+
+/* Step Component Styles */
+/* Steps Container Styles */
+.steps-container {
+  @apply border border-gray-200 rounded-md mb-4 bg-gray-50 dark:bg-gray-800;
+}
+
+.steps-header {
+  @apply flex items-center p-4 cursor-pointer border-b border-gray-200 dark:border-gray-700;
+}
+
+.steps-icon {
+  @apply mr-4;
+}
+
+.steps-summary {
+  @apply flex-grow;
+}
+
+.steps-title {
+  @apply m-0 text-base font-semibold text-gray-700 dark:text-gray-300;
+}
+
+.steps-status {
+  @apply m-0 text-sm text-gray-600 dark:text-gray-400;
+}
+
+.toggle-icon {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+.steps-content {
+  @apply p-4;
+}
+
+.steps-list {
+  @apply list-none p-0 m-0;
+}
+
+.step-item {
+  @apply mb-2 pl-4 border-l-2 border-gray-300 dark:border-gray-600 last:mb-0;
+}
+
+/* Step Component Styles */
+.step-container {
+  @apply mb-4 transition-all duration-300 ease-in-out;
+}
+
+.step-wrapper {
+  @apply flex items-start p-3 rounded-md bg-white dark:bg-gray-800;
+}
+
+.step-icon {
+  @apply flex-shrink-0 w-6 h-6 mr-3;
+}
+
+.icon-success {
+  @apply w-6 h-6 text-green-500 dark:text-green-400;
+}
+
+.icon-fail {
+  @apply w-6 h-6 text-red-500 dark:text-red-400;
+}
+
+.icon-spinner {
+  @apply w-6 h-6 border-2 border-blue-500 dark:border-blue-400 border-t-transparent rounded-full animate-spin;
+}
+
+.step-content {
+  @apply flex-grow;
+}
+
+.step-text {
+  @apply text-base font-medium text-gray-700 dark:text-gray-300;
+}
+
+.step-description {
+  @apply mt-1 text-sm text-gray-600 dark:text-gray-400;
+}
+
+/* Transition Styles */
+.fade-enter-active, .fade-leave-active {
+  @apply transition-opacity duration-300;
+}
+
+.fade-enter, .fade-leave-to {
+  @apply opacity-0;
+}
+
+/* Status Icon Styles */
+.status-icon {
+  @apply cursor-pointer transition-colors duration-300;
+}
+
+.icon {
+  @apply w-6 h-6;
+}
+
+.icon-success {
+  @apply text-green-500 dark:text-green-400;
+}
+
+.icon-fail {
+  @apply text-red-500 dark:text-red-400;
+}
+
+.icon-text {
+  @apply text-xl font-bold text-gray-700 dark:text-gray-300;
 }

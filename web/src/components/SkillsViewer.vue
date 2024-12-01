@@ -2,17 +2,29 @@
   <div :class="{ 'hidden': !isVisible }" class="absolute flex flex-col no-scrollbar shadow-lg bg-bg-light dark:bg-bg-dark top-20 left-20 bottom-20 right-20 shadow-lg rounded">
     
     <div id="leftPanel" class="flex flex-row h-full flex-grow shadow-lg rounded">
-      <div class="min-w-[23rem] max-w-[23rem] z-10 top-0 bg-bg-light-tone dark:bg-bg-dark-tone shadow-md overflow-y-scroll  no-scrollbar">
-        <div class="search p-4">
-          <input type="text" v-model="searchQuery" placeholder="Search skills" class="border border-gray-300 rounded px-2 py-1 mr-2">
-          <button @click="searchSkills" class="bg-blue-500 text-white rounded px-4 py-1">Search</button>
-        </div>
-        <div classclass="absolute flex flex-col no-scrollbar shadow-lg min-w-[24rem] max-w-[24rem] bg-bg-light-tone dark:bg-bg-dark-tone top-20 left-20 bottom-20 right-20 bg-bg-light shadow-lg rounded">
+      <div class="w-[15rem] z-10 top-0 bg-bg-light-tone dark:bg-bg-dark-tone shadow-md overflow-y-scroll  no-scrollbar">
+        <!-- Search input -->
+        <input 
+            type="search" 
+            id="default-search" 
+            class="block w-full h-8 px-8 text-sm border border-gray-300 rounded-md
+                bg-bg-light focus:ring-1 focus:ring-secondary focus:border-secondary 
+                dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 
+                dark:focus:ring-secondary dark:focus:border-secondary
+                transition-all duration-200"
+            placeholder="Search discussions..." 
+            title="Filter skills by title" 
+            v-model="searchQuery"
+            @keyup.enter="searchSkills"
+        />        
+     
+        <div classclass="absolute flex flex-col no-scrollbar shadow-lg w-[15rem] bg-bg-light-tone dark:bg-bg-dark-tone top-20 left-20 bottom-20 right-20 bg-bg-light shadow-lg rounded">
           <h2 class="text-xl font-bold m-4">Titles</h2>
           <TransitionGroup v-if="titles.length > 0" name="list">
               <Discussion v-for="title in titles" :key="title.id" :id="title.id" :title="title.title"
                   :selected="fetchContent(title.id)" :loading="loading" :isCheckbox="isCheckbox"
                   :checkBoxValue="false" 
+                  :openfolder_enabled="false"
                   @select="fetchContent(title.id)"
                   @delete="deleteSkill(title.id)" 
                   @editTitle="editTitle" 
@@ -92,6 +104,7 @@ export default {
         });
     },
     fetchContent(skillId) {
+      console.log("loading skill", skillId)
       axios.post('/get_skills_library_content', { client_id: this.$store.state.client_id, skill_id: skillId })
         .then(response => {
           const skill = response.data.contents[0];

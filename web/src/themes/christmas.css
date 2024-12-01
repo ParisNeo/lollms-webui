@@ -363,3 +363,124 @@
 }
 }
   
+/* Step Component Styles */
+.step-container {
+  @apply mb-4 transition-all duration-300 ease-in-out;
+}
+
+.step-wrapper {
+  @apply flex items-start p-4 rounded-md border-2 border-red-500 dark:border-green-500;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(255, 0, 0, 0.1) 0px 10px,
+    rgba(0, 255, 0, 0.1) 10px 20px
+  );
+}
+
+.step-icon {
+  @apply flex-shrink-0 w-8 h-8 mr-3;
+}
+
+.icon-success {
+  @apply w-8 h-8 text-green-600 dark:text-green-400;
+}
+
+.icon-fail {
+  @apply w-8 h-8 text-red-600 dark:text-red-400;
+}
+
+.icon-spinner {
+  @apply w-8 h-8 border-4 border-red-500 dark:border-green-500 border-t-transparent rounded-full animate-spin;
+}
+
+.step-content {
+  @apply flex-grow;
+}
+
+.step-text {
+  @apply text-lg font-bold text-red-700 dark:text-green-300;
+}
+
+.step-description {
+  @apply mt-2 text-base text-green-700 dark:text-red-300;
+}
+
+/* Transition Styles */
+.fade-enter-active, .fade-leave-active {
+  @apply transition-opacity duration-300;
+}
+
+.fade-enter, .fade-leave-to {
+  @apply opacity-0;
+}
+
+/* Status Icon Styles */
+.status-icon {
+  @apply cursor-pointer transition-colors duration-300;
+}
+
+.icon {
+  @apply w-8 h-8;
+}
+
+.icon-success {
+  @apply text-green-600 dark:text-green-400;
+}
+
+.icon-fail {
+  @apply text-red-600 dark:text-red-400;
+}
+
+.icon-text {
+  @apply text-2xl font-bold text-red-700 dark:text-green-300;
+}
+
+/* Christmas Decorations */
+.step-container::before {
+  content: '🎄';
+  @apply absolute -left-6 text-2xl;
+}
+
+.step-container::after {
+  content: '🎅';
+  @apply absolute -right-6 text-2xl;
+}
+
+/* Snowfall Animation */
+@keyframes snowfall {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+  }
+}
+
+.snowflake {
+  @apply fixed text-white opacity-70 pointer-events-none;
+  animation: snowfall 5s linear infinite;
+}
+
+/* Add multiple snowflakes with different sizes and speeds */
+.snowflake:nth-child(2n) {
+  font-size: 0.8em;
+  animation-duration: 6s;
+}
+
+.snowflake:nth-child(3n) {
+  font-size: 1.2em;
+  animation-duration: 4s;
+}
+
+/* Dark mode adjustments */
+.dark .step-wrapper {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(0, 100, 0, 0.2) 0px 10px,
+    rgba(139, 0, 0, 0.2) 10px 20px
+  );
+}
+
+.dark .snowflake {
+  @apply text-gray-300;
+}

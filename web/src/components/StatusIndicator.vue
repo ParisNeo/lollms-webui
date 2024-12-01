@@ -1,24 +1,25 @@
 <template>
-    <div :title="title" :class="['text-2xl cursor-pointer', isOk ? 'text-green-500' : 'text-red-500']">
-      <i v-if="typeof icon === 'string'" :data-feather="icon"></i>
-      <b v-else class="text-2xl">{{ icon }}</b>
-    </div>
-  </template>
-  
-  <script>
-  import feather from 'feather-icons'
-  export default {
-    props: {
-      isOk: Boolean,
-      icon: [String, Object],
-      title: String
-    },
-    mounted() {
-      if (typeof this.icon === 'string') {
-        this.$nextTick(() => {
-          feather.replace()
-        })
-      }
-    }
+  <div :title="title" :class="['cursor-pointer', isOk ? 'text-green-500' : 'text-red-500']">
+    <i v-if="isStringIcon" :data-feather="icon" class="w-6 h-6"></i>
+    <span v-else class="text-xl font-bold">{{ icon }}</span>
+  </div>
+</template>
+
+<script setup>
+import { computed, onMounted, nextTick } from 'vue';
+import feather from 'feather-icons';
+
+const props = defineProps({
+  isOk: Boolean,
+  icon: [String, Object],
+  title: String
+});
+
+const isStringIcon = computed(() => typeof props.icon === 'string');
+
+onMounted(() => {
+  if (isStringIcon.value) {
+    nextTick(() => feather.replace());
   }
-  </script>
+});
+</script>

@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 141
+version: 142
 
 # video viewing and news recovering
 last_viewed_video: null
@@ -285,6 +285,7 @@ rag_vectorizer_model: sentence-transformers/bert-base-nli-mean-tokens # The mode
 rag_vectorizer_parameters: null # Parameters of the model in json format
 rag_chunk_size: 512 # number of tokens per chunk
 rag_overlap: 0 # number of tokens of overlap
+rag_min_correspondance: 0 # minimum correspondance between the query and the content
 
 rag_n_chunks: 4 #Number of chunks to recover from the database
 rag_clean_chunks: true #Removed all uinecessary spaces and line returns

@@ -1,7 +1,7 @@
 <template>
     <div
-        :class="selected ? 'discussion-hilighted min-w-[14rem] max-w-[14rem]' : 'discussion min-w-[14rem] max-w-[14rem]'"
-        class="m-1 py-2 flex flex-row sm:flex-row flex-wrap flex-shrink-0 items-center rounded-md duration-75 cursor-pointer relative"
+        :class="selected ? 'discussion-hilighted' : 'discussion'"
+        class="m-1 py-2 flex flex-row sm:flex-row flex-wrap flex-shrink-0 items-center rounded-md duration-75 cursor-pointer relative w-[15rem]"
         :id="'dis-' + id"
         @click.stop="selectEvent()"
     >
@@ -88,7 +88,7 @@
                 </div>
                 <!-- EDIT AND REMOVE -->
                 <div v-if="!showConfirmation" class="flex gap-2 items-center">
-                    <button
+                    <button v-if="openfolder_enabled"
                         class="text-2xl hover:text-secondary duration-75 active:scale-90"
                         title="Open folder"
                         type="button"
@@ -139,7 +139,8 @@ export default {
         selected: Boolean,
         loading: Boolean,
         isCheckbox: Boolean,
-        checkBoxValue: Boolean
+        checkBoxValue: Boolean,
+        openfolder_enabled: Boolean
     },
     setup() {
 
