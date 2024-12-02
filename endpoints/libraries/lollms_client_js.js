@@ -1037,7 +1037,7 @@ async summarizeText(
   return text;
 }
 
-async smartDataExtraction({
+async smartDataExtraction(
   text,
   dataExtractionInstruction = "summarize the current chunk.",
   finalTaskInstruction = "reformulate with better wording",
@@ -1048,7 +1048,7 @@ async smartDataExtraction({
   callback = null,
   chunkSummaryPostProcessing = null,
   summaryMode = "SEQUENTIAL"
-}) {
+) {
   let tk = await this.tokenize(text);
   let prevLen = tk.length;
 
