@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 142
+version: 143
 
 # video viewing and news recovering
 last_viewed_video: null
@@ -280,7 +280,7 @@ audio_silenceTimer: 5000
 
 # Data vectorization
 rag_databases: [] # This is the list of paths to database sources. Each database is a folder containing data
-rag_vectorizer: tfidf # possible values semantic, tfidf, openai
+rag_vectorizer: semantic # possible values semantic, tfidf, openai
 rag_vectorizer_model: sentence-transformers/bert-base-nli-mean-tokens # The model name if applicable
 rag_vectorizer_parameters: null # Parameters of the model in json format
 rag_chunk_size: 512 # number of tokens per chunk
@@ -309,7 +309,7 @@ data_vectorization_visualize_on_vectorization: false
 data_vectorization_activate: true # To activate/deactivate data vectorization
 data_vectorization_method: "tfidf_vectorizer" #"model_embedding" or "tfidf_vectorizer"
 data_visualization_method: "PCA" #"PCA" or "TSNE"
-data_vectorization_sentense_transformer_model: "all-MiniLM-L6-v2" # you can use another model by setting its name here or its path
+data_vectorization_sentense_transformer_model: "BAAI/bge-m3" # you can use another model by setting its name here or its path
 
 data_vectorization_save_db: true # For each new session, new files
 data_vectorization_chunk_size: 512 # chunk size

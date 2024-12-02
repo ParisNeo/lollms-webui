@@ -1146,20 +1146,8 @@
                                     :disabled="configFile.rag_vectorizer === 'tfidf'"
                                 >
                                     <!-- Semantic Vectorizer Models -->
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="sentence-transformers/bert-base-nli-mean-tokens">sentence-transformers/bert-base-nli-mean-tokens</option>
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="bert-base-uncased">bert-base-uncased</option>
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="bert-base-multilingual-uncased">bert-base-multilingual-uncased</option>
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="bert-large-uncased">bert-large-uncased</option>
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="bert-large-uncased-whole-word-masking-finetuned-squad">bert-large-uncased-whole-word-masking-finetuned-squad</option>
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="distilbert-base-uncased">distilbert-base-uncased</option>
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="roberta-base">roberta-base</option>
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="roberta-large">roberta-large</option>
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="xlm-roberta-base">xlm-roberta-base</option>
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="xlm-roberta-large">xlm-roberta-large</option>
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="albert-base-v2">albert-base-v2</option>
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="albert-large-v2">albert-large-v2</option>
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="albert-xlarge-v2">albert-xlarge-v2</option>
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="albert-xxlarge-v2">albert-xxlarge-v2</option>
+                                    
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="BAAI/bge-m3">BAAI/bge-m3</option>
                                     <option v-if="configFile.rag_vectorizer === 'semantic'" value="sentence-transformers/all-MiniLM-L6-v2">sentence-transformers/all-MiniLM-L6-v2</option>
                                     <option v-if="configFile.rag_vectorizer === 'semantic'" value="sentence-transformers/all-MiniLM-L12-v2">sentence-transformers/all-MiniLM-L12-v2</option>
                                     <option v-if="configFile.rag_vectorizer === 'semantic'" value="sentence-transformers/all-distilroberta-v1">sentence-transformers/all-distilroberta-v1</option>

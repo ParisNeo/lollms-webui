@@ -60,7 +60,7 @@ Thank you for all users who tested this tool and helped making it more user frie
 
 ## Installation
 ### Automatic installation (UI)
-If you are using Windows, just visit the release page, download the windows installer and install it.
+If you are using Windows, just visit the release page, download the lollms_installer.bat.
 
 ### Automatic installation (Console)
 Download the installation script from scripts folder and run it.
