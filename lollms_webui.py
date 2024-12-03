@@ -1308,9 +1308,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
             return
         ASCIIColors.info(f"Text generation requested by client: {client_id}")
         # send the message to the bot
-        print(f"Received message : {message.content}")
         if client.discussion:
             try:
+                ASCIIColors.info(f"Received message : {message.content} ({len(self.model.tokenize(message.content))})")
                 # First we need to send the new message ID to the client
                 if is_continue:
                     client.discussion.load_message(message_id)
