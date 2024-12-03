@@ -1407,10 +1407,10 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     for skill in context_details["skills"]:
                         sources_text += f'''
                             <div class="source-item">
-                                <button onclick="var details = document.getElementById('source-details-{ind}'); details.style.display = details.style.display === 'none' ? 'block' : 'none';" style="text-align: left; font-weight: bold;"><strong>Memory {ind}</strong></button>
+                                <button onclick="var details = document.getElementById('source-details-{ind}'); details.style.display = details.style.display === 'none' ? 'block' : 'none';" style="text-align: left; font-weight: bold;"><strong>Memory {ind}: {skill['title']}</strong> - ({skill['similarity']*100:.2f}%)</button>
                                 <div id="source-details-{ind}" style="display:none;">
                                     <div style="max-height: 200px; overflow-y: auto;">
-                                        <pre>{skill}</pre>
+                                        <pre>{skill['content']}</pre>
                                     </div>    
                                 </div>
                             </div>
