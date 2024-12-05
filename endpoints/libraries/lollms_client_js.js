@@ -9,7 +9,8 @@ const ELF_GENERATION_FORMAT = {
   LOLLMS: 0,
   OPENAI: 1,
   OLLAMA: 2,
-  LITELLM: 2
+  LITELLM: 3,
+  VLLM: 4
 };
 
 // JavaScript equivalent of the ELF_COMPLETION_FORMAT enum
@@ -186,6 +187,8 @@ cancel_generation() {
           return this.ollama_generate(prompt, this.host_address, this.model_name, -1, n_predict, stream, temperature, top_k, top_p, repeat_penalty, repeat_last_n, seed, n_threads, ELF_COMPLETION_FORMAT.INSTRUCT, service_key, streamingCallback);
         case ELF_GENERATION_FORMAT.LITELLM:
           return this.litellm_generate(prompt, this.host_address, this.model_name, -1, n_predict, stream, temperature, top_k, top_p, repeat_penalty, repeat_last_n, seed, n_threads, ELF_COMPLETION_FORMAT.INSTRUCT, service_key, streamingCallback);
+        case ELF_GENERATION_FORMAT.VLLM:
+          return this.vllm_generate(prompt, this.host_address, this.model_name, -1, n_predict, stream, temperature, top_k, top_p, repeat_penalty, repeat_last_n, seed, n_threads, ELF_COMPLETION_FORMAT.INSTRUCT, service_key, streamingCallback);
         default:
           throw new Error('Invalid generation mode');
       }
@@ -407,6 +410,7 @@ async openai_generate(prompt, host_address = this.host_address, model_name = thi
     }
 }
 
+
 async openai_generate_with_images(prompt, images, options = {}) {
   const {
     host_address = this.host_address,
@@ -525,6 +529,133 @@ async openai_generate_with_images(prompt, images, options = {}) {
   } catch (error) {
     console.error("Error in openai_generate_with_images:", error);
     throw error;
+  }
+}
+
+
+async vllm_generate({
+  prompt,
+  host_address = null,
+  model_name = null,
+  personality = null,
+  n_predict = null,
+  stream = false,
+  temperature = null,
+  top_k = null,
+  top_p = null,
+  repeat_penalty = null,
+  repeat_last_n = null,
+  seed = null,
+  n_threads = null,
+  completion_format = ELF_COMPLETION_FORMAT.Instruct, // Instruct or Chat
+  service_key = "",
+  streaming_callback = null
+}) {
+  // Set default values to instance variables if optional arguments are null
+  host_address = host_address || this.host_address;
+  model_name = model_name || this.model_name;
+  n_predict = n_predict || this.n_predict || this.minNPredict;
+  personality = personality !== null ? personality : this.personality;
+  temperature = temperature !== null ? temperature : this.temperature;
+  top_k = top_k !== null ? top_k : this.top_k;
+  top_p = top_p !== null ? top_p : this.top_p;
+  repeat_penalty = repeat_penalty !== null ? repeat_penalty : this.repeat_penalty;
+  repeat_last_n = repeat_last_n !== null ? repeat_last_n : this.repeat_last_n;
+  seed = seed || this.seed;
+  n_threads = n_threads || this.n_threads;
+
+  const headers = {
+    "Content-Type": "application/json",
+    ...(service_key && { Authorization: `Bearer ${service_key}` })
+  };
+
+  let data;
+  let completionFormatPath;
+
+  if (completion_format === ELF_COMPLETION_FORMAT.Instruct) {
+    data = {
+      model: model_name,
+      prompt: prompt,
+      stream: stream,
+      temperature: parseFloat(temperature),
+      max_tokens: n_predict
+    };
+    completionFormatPath = "/v1/completions";
+  } else if (completion_format === ELF_COMPLETION_FORMAT.Chat) {
+    data = {
+      model: model_name,
+      messages: [
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      stream: stream,
+      temperature: parseFloat(temperature),
+      max_tokens: n_predict
+    };
+    completionFormatPath = "/v1/chat/completions";
+  }
+
+  if (host_address.endsWith("/")) {
+    host_address = host_address.slice(0, -1);
+  }
+
+  const url = `${host_address}${completionFormatPath}`;
+
+  try {
+    const response = await axios.post(url, data, {
+      headers: headers,
+      responseType: stream ? "stream" : "json",
+      httpsAgent: this.verifySslCertificate
+        ? undefined
+        : new (require("https").Agent)({ rejectUnauthorized: false })
+    });
+
+    if (stream) {
+      let text = "";
+      response.data.on("data", (chunk) => {
+        const decoded = chunk.toString("utf-8");
+        if (decoded.startsWith("data: ")) {
+          try {
+            const jsonData = JSON.parse(decoded.slice(5).trim());
+            let chunkContent = "";
+            if (completion_format === ELF_COMPLETION_FORMAT.Chat) {
+              chunkContent = jsonData.choices[0]?.delta?.content || "";
+            } else {
+              chunkContent = jsonData.choices[0]?.text || "";
+            }
+            text += chunkContent;
+            if (streaming_callback) {
+              if (!streaming_callback(chunkContent, "MSG_TYPE_CHUNK")) {
+                response.data.destroy();
+              }
+            }
+          } catch (error) {
+            response.data.destroy();
+          }
+        }
+      });
+
+      return new Promise((resolve, reject) => {
+        response.data.on("end", () => resolve(text));
+        response.data.on("error", (err) => reject(err));
+      });
+    } else {
+      return response.data;
+    }
+  } catch (error) {
+    if (error.response) {
+      const errorMessage =
+        error.response.data?.error?.message ||
+        error.response.data?.message ||
+        "Unknown error occurred";
+      console.error(errorMessage);
+      throw new Error(errorMessage);
+    } else {
+      console.error(error.message);
+      throw error;
+    }
   }
 }
 
@@ -998,15 +1129,15 @@ async summarizeText(
   let tk = await this.tokenize(text);
   let prevLen = tk.length;
   let documentChunks = null;
-  console.log(`Text size: ${prevLen}`)
+  console.log(`Text size: ${prevLen}/${maxSummarySize}`)
 
   while (tk.length > maxSummarySize && (documentChunks === null || documentChunks.length > 1)) {
       this.stepStart(`Compressing ${docName}...`);
       let chunkSize = Math.floor(this.lollms.ctxSize * 0.6);
       documentChunks = await TextChunker.chunkText(text, this.lollms, chunkSize, 0, true);
       console.log(`documentChunks: ${documentChunks}`)
-      text = await this.summarizeChunks({
-          chunks: documentChunks,
+      text = await this.summarizeChunks(
+          documentChunks,
           summaryInstruction,
           docName,
           answerStart,
@@ -1014,7 +1145,7 @@ async summarizeText(
           callback,
           chunkSummaryPostProcessing,
           summaryMode
-      });
+      );
       tk = await this.tokenize(text);
       let dtkLn = prevLen - tk.length;
       prevLen = tk.length;
@@ -1055,16 +1186,16 @@ async smartDataExtraction(
   while (tk.length > maxSummarySize) {
       let chunkSize = Math.floor(this.lollms.ctxSize * 0.6);
       let documentChunks = await TextChunker.chunkText(text, this.lollms, chunkSize, 0, true);
-      text = await this.summarizeChunks({
-          chunks: documentChunks,
-          summaryInstruction: dataExtractionInstruction,
+      text = await this.summarizeChunks(          
+          documentChunks,
+          dataExtractionInstruction,
           docName,
           answerStart,
           maxGenerationSize,
           callback,
           chunkSummaryPostProcessing,
           summaryMode
-      });
+      );
       tk = await this.tokenize(text);
       let dtkLn = prevLen - tk.length;
       prevLen = tk.length;
@@ -1073,21 +1204,22 @@ async smartDataExtraction(
   }
 
   this.stepStart("Rewriting ...");
-  text = await this.summarizeChunks({
-      chunks: [text],
-      summaryInstruction: finalTaskInstruction,
+  text = await this.summarizeChunks(
+      [text],
+      finalTaskInstruction,
       docName,
       answerStart,
       maxGenerationSize,
       callback,
-      chunkSummaryPostProcessing
-  });
+      chunkSummaryPostProcessing,
+      summaryMode
+  );
   this.stepEnd("Rewriting ...");
 
   return text;
 }
 
-async summarizeChunks({
+async summarizeChunks(
   chunks,
   summaryInstruction = "summarize the current chunk.",
   docName = "chunk",
@@ -1096,7 +1228,7 @@ async summarizeChunks({
   callback = null,
   chunkSummaryPostProcessing = null,
   summaryMode = "SEQUENTIAL"
-}) {
+) {
   if (summaryMode === "SEQUENTIAL") {
       let summary = "";
       for (let i = 0; i < chunks.length; i++) {
