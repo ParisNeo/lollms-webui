@@ -281,7 +281,7 @@ audio_silenceTimer: 5000
 # Data vectorization
 rag_databases: [] # This is the list of paths to database sources. Each database is a folder containing data
 rag_vectorizer: semantic # possible values semantic, tfidf, openai
-rag_vectorizer_model: sentence-transformers/bert-base-nli-mean-tokens # The model name if applicable
+rag_vectorizer_model:  "BAAI/bge-m3" # The model name if applicable
 rag_vectorizer_parameters: null # Parameters of the model in json format
 rag_chunk_size: 512 # number of tokens per chunk
 rag_overlap: 0 # number of tokens of overlap
@@ -305,20 +305,9 @@ activate_skills_lib: false # Activate vectorizing previous conversations
 skills_lib_database_name: "default" # Default skills database
 
 max_summary_size: 512 # in tokens
-data_vectorization_visualize_on_vectorization: false
-data_vectorization_activate: true # To activate/deactivate data vectorization
-data_vectorization_method: "tfidf_vectorizer" #"model_embedding" or "tfidf_vectorizer"
-data_visualization_method: "PCA" #"PCA" or "TSNE"
-data_vectorization_sentense_transformer_model: "BAAI/bge-m3" # you can use another model by setting its name here or its path
 
-data_vectorization_save_db: true # For each new session, new files
-data_vectorization_chunk_size: 512 # chunk size
-data_vectorization_overlap_size: 128 # overlap between chunks size
-data_vectorization_nb_chunks: 2 # number of chunks to use
-data_vectorization_put_chunk_informations_into_context: false # if true then each chunk will be preceded by its information which may waste some context space but allow the ai to point where it found th einformation
-data_vectorization_build_keys_words: true # If true, when querrying the database, we use keywords generated from the user prompt instead of the prompt itself.
-data_vectorization_force_first_chunk: false # If true, the first chunk of the document will systematically be used
-data_vectorization_make_persistance: false # If true, the data will be persistant webween runs
+rag_put_chunk_informations_into_context: false # if true then each chunk will be preceded by its information which may waste some context space but allow the ai to point where it found th einformation
+rag_build_keys_words: true # If true, when querrying the database, we use keywords generated from the user prompt instead of the prompt itself.
 
 # Activate internet search
 activate_internet_search: false
