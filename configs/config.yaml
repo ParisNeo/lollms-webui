@@ -51,7 +51,7 @@ use_continue_message: true
 
 seed: -1
 ctx_size: 4084
-max_n_predict: None
+max_n_predict: 4084
 min_n_predict: 1024
 temperature: 0.9
 top_k: 50
