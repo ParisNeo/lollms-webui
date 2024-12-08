@@ -12,7 +12,6 @@ from lollms.databases.discussions_database import DiscussionsDB, Discussion
 from pathlib import Path
 from lollms.config import InstallOption
 from lollms.types import MSG_TYPE, MSG_OPERATION_TYPE, MSG_OPERATION_TYPE, CONTENT_OPERATION_TYPES, SENDER_TYPES
-from lollms.extension import LOLLMSExtension, ExtensionBuilder
 from lollms.personality import AIPersonality, PersonalityBuilder
 from lollms.binding import LOLLMSConfig, BindingBuilder, LLMBinding, ModelBuilder, BindingType
 from lollms.paths import LollmsPaths
