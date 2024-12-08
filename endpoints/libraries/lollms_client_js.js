@@ -1661,8 +1661,13 @@ class LOLLMSRAGClient {
         },
         body: body ? JSON.stringify(body) : null,
       };
-
-      const response = await fetch(`${this.lc.host_address}${endpoint}`, options);
+      let response ="";
+      if (this.lc.host_address!=null){
+        response = await fetch(`${this.lc.host_address}${endpoint}`, options);
+      }
+      else{
+        response = await fetch(`${endpoint}`, options);        
+      }
       const data = await response.json();
 
       if (!response.ok) {

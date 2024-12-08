@@ -59,19 +59,25 @@ As an all-encompassing tool with access to over 500 AI expert conditioning acros
 Thank you for all users who tested this tool and helped making it more user friendly.
 
 ## Installation
-### Automatic installation (UI)
-If you are using Windows, just visit the release page, download the lollms_installer.bat.
 
 ### Automatic installation (Console)
 Download the installation script from scripts folder and run it.
 The installation scripts are:
-- `win_install.bat` for Windows.
-- `linux_install.sh`for Linux.
-- `mac_install.sh`for Mac.
+- `lollms_installer.bat` for Windows.
+- `lollms_installer.sh`for Linux.
+- `lollms_installer_macos.sh`for Mac.
 
 ### Manual install:
-Since v 9.4, it is not advised to do manual install as many services require the creation of a separate environment and lollms needs to have complete control on the environments. So If you install it using your own conda setup, you will not be able to install any service and reduce the use of lollms to the chat interface (no xtts, no comfyui, no fast generation through vllm or petals or soever)
+Since v 10.14, manual installation os back:
+make sure you have python 3.11 is installed or to have a python 3.11 conda environment or other way.
+clone the repo at: `https://github.com/ParisNeo/lollms-webui.git`
+better create an environment  for lollms and activate it
+in the repo folder, make sure you pull all submodules:  `git submodule update --init --recursive`
+install lollms by going to lollms_core then do: `pip install -e .`
+go back to the root of the lollms_webui folder
+install all requirements: `pip install -r requirements.txt` 
 
+now you are ready to run lolmms: `python app.py` 
 ## Smart Routing: Optimizing for Money and Speed
 
 Lollms' Smart Routing feature goes beyond just selecting the right model for accuracy. It empowers you to optimize your text generation process for two key factors: **money** and **speed**.

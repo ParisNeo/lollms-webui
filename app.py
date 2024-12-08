@@ -387,10 +387,17 @@ if __name__ == "__main__":
     @app.exception_handler(ValidationError)
     async def validation_exception_handler(request: Request, exc: ValidationError):
         print(f"Error: {exc.errors()}")  # Print the validation error details
-        return JSONResponse(
-            status_code=422,
-            content=jsonable_encoder({"detail": exc.errors(), "body": await exc.body}),  # Send the error details and the original request body
-        )
+        if (hasattr(exc,"body")):
+            return JSONResponse(
+                status_code=422,
+                content=jsonable_encoder({"detail": exc.errors(), "body": await exc.body}),  # Send the error details and the original request body
+            )
+        else:
+            return JSONResponse(
+                status_code=422,
+                content=jsonable_encoder({"detail": exc.errors(), "body": ""}),  # Send the error details and the original request body
+            )
+        
 
     app = ASGIApp(socketio_server=sio, other_asgi_app=app)
 
