@@ -1129,6 +1129,7 @@
                                     <option value="semantic">Semantic Vectorizer</option>
                                     <option value="tfidf">TFIDF Vectorizer</option>
                                     <option value="openai">OpenAI Vectorizer</option>
+                                    <option value="ollama">Ollama Vectorizer</option>
                                 </select>
                             </td>
                         </tr>
@@ -1146,7 +1147,6 @@
                                     :disabled="configFile.rag_vectorizer === 'tfidf'"
                                 >
                                     <!-- Semantic Vectorizer Models -->
-                                    
                                     <option v-if="configFile.rag_vectorizer === 'semantic'" value="BAAI/bge-m3">BAAI/bge-m3</option>
                                     <option v-if="configFile.rag_vectorizer === 'semantic'" value="sentence-transformers/all-MiniLM-L6-v2">sentence-transformers/all-MiniLM-L6-v2</option>
                                     <option v-if="configFile.rag_vectorizer === 'semantic'" value="sentence-transformers/all-MiniLM-L12-v2">sentence-transformers/all-MiniLM-L12-v2</option>
@@ -1159,14 +1159,33 @@
                                     <option v-if="configFile.rag_vectorizer === 'openai'" value="text-embedding-curie-001">text-embedding-curie-001</option>
                                     <option v-if="configFile.rag_vectorizer === 'openai'" value="text-embedding-davinci-001">text-embedding-davinci-001</option>
 
+                                    <!-- Semantic Vectorizer Models -->
+                                    <option v-if="configFile.rag_vectorizer === 'ollama'" value="bge-m3">bge-m3</option>
+                                    <option v-if="configFile.rag_vectorizer === 'ollama'" value="nomic-embed-text">nomic-embed-text</option>
+                                    <option v-if="configFile.rag_vectorizer === 'ollama'" value="mxbai-embed-large">mxbai-embed-large</option>
+                                    <option v-if="configFile.rag_vectorizer === 'ollama'" value="mxbai-embed-large">mxbai-embed-large</option>
+                                    <option v-if="configFile.rag_vectorizer === 'ollama'" value="snowflake-arctic-embed">snowflake-arctic-embed</option>
+                                    <option v-if="configFile.rag_vectorizer === 'ollama'" value="snowflake-arctic-embed">snowflake-arctic-embed</option>
+                                    
+                                    
+                                    <option v-if="configFile.rag_vectorizer === 'ollama'" value="all-minilm">all-minilm</option>
+                                    <option v-if="configFile.rag_vectorizer === 'ollama'" value="bge-large">bge-large</option>
+                                    
+                                    
+
                                     <!-- Disabled Option for TFIDF -->
                                     <option v-if="configFile.rag_vectorizer === 'tfidf'" disabled>No models available for TFIDF</option>
                                 </select>
                             </td>
                         </tr>                
-                        
-                        
-
+                        <tr>
+                            <td style="min-width: 200px;">
+                                <label for="rag_service_url" class="text-sm font-bold" style="margin-right: 1rem;">Rag service url:</label>
+                            </td>
+                            <td>
+                                <input v-model="configFile.rag_service_url">
+                            </td>
+                        </tr>
                         <tr>
                             <td style="min-width: 200px;">
                                 <label for="rag_vectorizer_openai_key" class="text-sm font-bold" style="margin-right: 1rem;">Open AI key for open ai embedding method (if not provided I'll use OPENAI_API_KEY environment variable):</label>
