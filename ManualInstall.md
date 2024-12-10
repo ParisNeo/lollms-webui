@@ -1,14 +1,12 @@
-Certainly! I'll create a cross-platform installation guide for LoLLMS WebUI that covers Windows, macOS, and Linux. This guide will provide step-by-step instructions for each platform, highlighting the differences where necessary.
-
 # LoLLMS WebUI Cross-Platform Installation Guide
 
 ## Introduction
 
-LoLLMS (Lord of Large Language and Multimodal Systems) is a powerful tool for working with large language models. This guide will walk you through the installation process for the LoLLMS WebUI on Windows, macOS, and Linux.
+LoLLMS (Lord of Large Language and Multimodal Systems) is a powerful tool for working with large language models. This guide will walk you through the installation process for the LoLLMS WebUI on Windows, macOS, and Linux, including the installation of Python 3.11.
 
 ## Prerequisites
 
-Before you begin, ensure you have the following:
+Before you begin, ensure you have:
 
 - Internet connection
 - Administrator/sudo privileges on your system
@@ -37,24 +35,36 @@ Before you begin, ensure you have the following:
   sudo apt-get install git
   ```
 
-### 2. Install Python
-
-Ensure you have Python 3.11. You can use conda to install the python version along with a separate environment, or use another environment management tool that allows you to install with python 3.11 as this is important.
+### 2. Install Python 3.11
 
 #### Windows
-- Download and install from https://www.python.org/downloads/windows/
+1. Download the Python 3.11 installer from https://www.python.org/downloads/release/python-3110/
+2. Run the installer
+3. Check "Add Python 3.11 to PATH"
+4. Click "Install Now"
 
 #### macOS
-- Install using Homebrew:
-  ```
-  brew install python
-  ```
+1. Install Homebrew if not already installed (see Git installation step)
+2. Install Python 3.11:
+   ```
+   brew install python@3.11
+   ```
+3. Add Python 3.11 to your PATH:
+   ```
+   echo 'export PATH="/usr/local/opt/python@3.11/bin:$PATH"' >> ~/.zshrc
+   source ~/.zshrc
+   ```
 
-#### Linux
-- Most distributions come with Python pre-installed. If not, use your package manager. For Ubuntu:
-  ```
-  sudo apt-get install python3 python3-pip
-  ```
+#### Linux (Ubuntu/Debian)
+1. Add the deadsnakes PPA:
+   ```
+   sudo add-apt-repository ppa:deadsnakes/ppa
+   sudo apt-get update
+   ```
+2. Install Python 3.11:
+   ```
+   sudo apt-get install python3.11 python3.11-venv python3.11-dev
+   ```
 
 ### 3. Clone the LoLLMS WebUI Repository
 
@@ -70,13 +80,13 @@ git submodule update --init --recursive
 
 #### Windows
 ```
-python -m venv lollms_env
+python3.11 -m venv lollms_env
 lollms_env\Scripts\activate
 ```
 
 #### macOS and Linux
 ```
-python3 -m venv lollms_env
+python3.11 -m venv lollms_env
 source lollms_env/bin/activate
 ```
 
@@ -85,6 +95,7 @@ source lollms_env/bin/activate
 With the virtual environment activated, run:
 
 ```
+pip install --upgrade pip
 pip install -r requirements.txt
 pip install -e lollms_core
 ```
@@ -165,13 +176,13 @@ Run the `lollms.sh` script:
 
 If you encounter any issues during installation or running the WebUI, please check the following:
 
-1. Ensure all prerequisites are correctly installed.
+1. Ensure Python 3.11 is correctly installed:
+   ```
+   python3.11 --version
+   ```
 2. Verify that your Python environment is activated before running any commands.
 3. Check that all required packages are installed correctly.
 4. Make sure you have selected and installed a compatible binding.
 5. For platform-specific issues, consult the documentation for your operating system.
 
 For further assistance, please refer to the official LoLLMS documentation or seek help in the project's support channels.
-
-This cross-platform guide provides instructions for installing LoLLMS WebUI on Windows, macOS, and Linux. It covers the installation of prerequisites, setting up the environment, cloning the repository, installing dependencies, selecting a binding, and creating launcher scripts. The guide also includes optional steps for CUDA installation (where applicable) and Visual Studio Code installation, as well as basic troubleshooting tips.
-
