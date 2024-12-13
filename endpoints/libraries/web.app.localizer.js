@@ -58,9 +58,14 @@ class WebAppLocalizer {
             const key = element.getAttribute('data-translate');
             const useHTML = element.hasAttribute('data-translate-html');
             
-            if (useHTML) {
+            if (key.includes('placeholder')) {
+                // If the key contains "placeholder", set the translation as the placeholder attribute
+                element.setAttribute('placeholder', this.translate(key));
+            } else if (useHTML) {
+                // If data-translate-html is present, set the translation as innerHTML
                 element.innerHTML = this.translate(key);
             } else {
+                // Otherwise, set the translation as textContent
                 element.textContent = this.translate(key);
             }
         });
