@@ -1383,7 +1383,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         path = source["document_path"]
                         content = source["chunk_content"]
                         size = source["chunk_size"]
-                        distance = source["distance"]
+                        similarity = source["similarity"]
                         sources_text += f'''
                             <div class="source-item">
                                 <button onclick="var details = document.getElementById('source-details-{title}'); details.style.display = details.style.display === 'none' ? 'block' : 'none';" style="text-align: left; font-weight: bold;"><strong>{title}</strong></button>
@@ -1392,7 +1392,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                         <p><strong>Path:</strong> {path}</p>
                                         <p><strong>Content:</strong> {content}</p>
                                         <p><strong>Size:</strong> {size}</p>
-                                        <p><strong>Distance:</strong> {distance}</p>
+                                        <p><strong>Similarity:</strong> {similarity}</p>
                                     </div>
                                 </div>
                             </div>
