@@ -1401,14 +1401,14 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     self.personality.ui(sources_text)  
                 if len(context_details["skills"]) > 0:
                     sources_text += '<div class="text-gray-400 mr-10px">Memories:</div>'
-                    sources_text += '<div class="mt-4 flex flex-col items-start gap-x-2 gap-y-1.5 text-sm" style="max-height: 500px; overflow-y: auto;">'
+                    sources_text += '<div class="mt-4 w-full flex flex-col items-start gap-x-2 gap-y-1.5 text-sm" style="max-height: 500px; overflow-y: auto;">'
                     ind = 0
                     for skill in context_details["skills"]:
                         sources_text += f'''
                             <div class="source-item">
                                 <button onclick="var details = document.getElementById('source-details-{ind}'); details.style.display = details.style.display === 'none' ? 'block' : 'none';" style="text-align: left; font-weight: bold;"><strong>Memory {ind}: {skill['title']}</strong> - ({skill['similarity']*100:.2f}%)</button>
                                 <div id="source-details-{ind}" style="display:none;">
-                                    <div style="max-height: 200px; overflow-y: auto;">
+                                    <div class="w-full" style="max-height: 200px; overflow-y: auto;">
                                         <pre>{skill['content']}</pre>
                                     </div>    
                                 </div>

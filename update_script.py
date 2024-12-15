@@ -6,16 +6,24 @@ import argparse
 from pathlib import Path
 from ascii_colors import ASCIIColors, trace_exception
 
+import pipmaster as pm
+if not pm.is_installed("PyQt5"):
+    pm.install("PyQt5")
+    
+import sys
+from PyQt5.QtWidgets import QApplication, QMessageBox
+
 def show_error_dialog(message):
     try:
-        import tkinter as tk
-        from tkinter import messagebox
-        root = tk.Tk()
-        root.withdraw()  # Hide the main window
-        messagebox.showerror("Error", message)
-        root.destroy()
+        app = QApplication(sys.argv)
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Critical)
+        msg.setText(message)
+        msg.setWindowTitle("Error")
+        msg.exec_()
     except:
         ASCIIColors.error(message)
+
 def run_git_pull():
     try:
         ASCIIColors.info("----------------> Updating the code <-----------------------")
@@ -88,6 +96,7 @@ def run_git_pull():
         ASCIIColors.error(error_message)
         # show_error_dialog(error_message)
         return False
+    
 def get_valid_input():
     while True:
         update_prompt = "New code is updated. Do you want to update the requirements? (y/n): "
