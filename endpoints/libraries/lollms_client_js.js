@@ -737,6 +737,7 @@ async generateCode(prompt, images = [], {
   }
 
   const codes = this.extractCodeBlocks(response);
+  console.log(codes)
   if (codes.length > 0) {
       let code = '';
       if (!codes[0].is_complete) {
@@ -852,94 +853,84 @@ async generateCodes(prompt, images = [], {
 
   return completeCodes;
 }
-
-extractCodeBlocks(text) {
-  const codeBlocks = [];
-  let remaining = text;
-  let blocIndex = 0;
-  let firstIndex = 0;
-  const indices = [];
-
-  // Find all code block delimiters
-  while (remaining.length > 0) {
-    const index = remaining.indexOf("```");
-    if (index === -1) {
-      if (blocIndex % 2 === 1) {
-        indices.push(remaining.length + firstIndex);
+extractCodeBlocks(text, return_remaining_text = false) {
+  const codes = [];
+  let remainingText = text;
+  let currentIndex = 0;
+  
+  while (true) {
+      // Find next code block start
+      const startPos = remainingText.indexOf('```');
+      if (startPos === -1) {
+          break;
       }
-      break;
-    }
-    indices.push(index + firstIndex);
-    remaining = remaining.slice(index + 3);
-    firstIndex += index + 3;
-    blocIndex++;
-  }
-
-  let isStart = true;
-  for (let i = 0; i < indices.length; i++) {
-    if (isStart) {
-      const blockInfo = {
-        index: i,
-        file_name: "",
-        section: "",
-        content: "",
-        type: "",
-        is_complete: false
-      };
-
-      // Check for file name in preceding line
-      const precedingText = text.slice(0, indices[i]).trim().split('\n');
-      if (precedingText.length > 0) {
-        const lastLine = precedingText[precedingText.length - 1].trim();
-        if (lastLine.startsWith("<file_name>") && lastLine.endsWith("</file_name>")) {
-          blockInfo.file_name = lastLine.slice("<file_name>".length, -"</file_name>".length).trim();
-        } else if (lastLine.startsWith("## filename:")) {
-          blockInfo.file_name = lastLine.slice("## filename:".length).trim();
-        }
-        if (lastLine.startsWith("<section>") && lastLine.endsWith("</section>")) {
-          blockInfo.section = lastLine.slice("<section>".length, -"</section>".length).trim();
-        }
-      }
-
-      const subText = text.slice(indices[i] + 3);
-      if (subText.length > 0) {
-        const findSpace = subText.indexOf(" ");
-        const findReturn = subText.indexOf("\n");
-        let nextIndex = Math.min(findSpace === -1 ? Infinity : findSpace, findReturn === -1 ? Infinity : findReturn);
-        if (subText.slice(0, nextIndex).includes('{')) {
-          nextIndex = 0;
-        }
-        const startPos = nextIndex;
-
-        if (text[indices[i] + 3] === "\n" || text[indices[i] + 3] === " " || text[indices[i] + 3] === "\t") {
-          blockInfo.type = 'language-specific';
-        } else {
-          blockInfo.type = subText.slice(0, nextIndex);
-        }
-
-        if (i + 1 < indices.length) {
-          const nextPos = indices[i + 1] - indices[i];
-          if (nextPos - 3 < subText.length && subText[nextPos - 3] === "`") {
-            blockInfo.content = subText.slice(startPos, nextPos - 3).trim();
-            blockInfo.is_complete = true;
-          } else {
-            blockInfo.content = subText.slice(startPos, nextPos).trim();
-            blockInfo.is_complete = false;
+          
+      // Check for file name before code block
+      let fileName = '';
+      const fileNameMatch = remainingText.slice(0, startPos).lastIndexOf('<file_name>');
+      if (fileNameMatch !== -1) {
+          const fileNameEnd = remainingText.slice(0, startPos).lastIndexOf('</file_name>');
+          if (fileNameEnd !== -1 && fileNameMatch < fileNameEnd) {
+              fileName = remainingText.slice(fileNameMatch + 11, fileNameEnd).trim();
           }
-        } else {
-          blockInfo.content = subText.slice(startPos).trim();
-          blockInfo.is_complete = false;
-        }
-
-        codeBlocks.push(blockInfo);
       }
-      isStart = false;
-    } else {
-      isStart = true;
-    }
+      
+      // Get code type if specified
+      let codeType = '';
+      const nextNewline = remainingText.indexOf('\n', startPos + 3);
+      let contentStart;
+      
+      if (nextNewline !== -1) {
+          const potentialType = remainingText.slice(startPos + 3, nextNewline).trim();
+          if (potentialType) {
+              codeType = potentialType;
+              contentStart = nextNewline + 1;
+          } else {
+              contentStart = startPos + 3;
+          }
+      } else {
+          contentStart = startPos + 3;
+      }
+          
+      // Find matching end tag
+      let pos = contentStart;
+      let is_complete = false;
+      
+      // Find the closing backticks
+      const endPos = remainingText.indexOf('```', contentStart);
+      
+      if (endPos !== -1) {
+          // Found matching end tag
+          const content = remainingText.slice(contentStart, endPos).trim();
+          is_complete = true;
+          codes.push({
+              index: currentIndex,
+              fileName: fileName,
+              content: content,
+              type: codeType,
+              is_complete: true
+          });
+          remainingText = remainingText.slice(endPos + 3);
+      } else {
+          // Handle incomplete code block
+          const content = remainingText.slice(contentStart).trim();
+          codes.push({
+              index: currentIndex,
+              fileName: fileName,
+              content: content,
+              type: codeType,
+              is_complete: false
+          });
+          remainingText = '';
+      }
+          
+      currentIndex++;
   }
-
-  return codeBlocks;
+  
+  if (return_remaining_text) {
+      return { codes, remainingText };
+  }
+  return codes;
 }
 
 
@@ -1462,96 +1453,6 @@ buildPrompt(promptParts, sacrificeId = -1, contextSize = null, minimumSpareConte
       return promptParts.filter(s => s !== "").join("\n");
   }
 }
-
-extractCodeBlocks(text) {
-  const codeBlocks = [];
-  let remaining = text;
-  let blocIndex = 0;
-  let firstIndex = 0;
-  const indices = [];
-
-  // Find all code block delimiters
-  while (remaining.length > 0) {
-    const index = remaining.indexOf("```");
-    if (index === -1) {
-      if (blocIndex % 2 === 1) {
-        indices.push(remaining.length + firstIndex);
-      }
-      break;
-    }
-    indices.push(index + firstIndex);
-    remaining = remaining.slice(index + 3);
-    firstIndex += index + 3;
-    blocIndex++;
-  }
-
-  let isStart = true;
-  for (let i = 0; i < indices.length; i++) {
-    if (isStart) {
-      const blockInfo = {
-        index: i,
-        file_name: "",
-        section: "",
-        content: "",
-        type: "",
-        is_complete: false
-      };
-
-      // Check for file name in preceding line
-      const precedingText = text.slice(0, indices[i]).trim().split('\n');
-      if (precedingText.length > 0) {
-        const lastLine = precedingText[precedingText.length - 1].trim();
-        if (lastLine.startsWith("<file_name>") && lastLine.endsWith("</file_name>")) {
-          blockInfo.file_name = lastLine.slice("<file_name>".length, -"</file_name>".length).trim();
-        } else if (lastLine.startsWith("## filename:")) {
-          blockInfo.file_name = lastLine.slice("## filename:".length).trim();
-        }
-        if (lastLine.startsWith("<section>") && lastLine.endsWith("</section>")) {
-          blockInfo.section = lastLine.slice("<section>".length, -"</section>".length).trim();
-        }
-      }
-
-      const subText = text.slice(indices[i] + 3);
-      if (subText.length > 0) {
-        const findSpace = subText.indexOf(" ");
-        const findReturn = subText.indexOf("\n");
-        let nextIndex = Math.min(findSpace === -1 ? Infinity : findSpace, findReturn === -1 ? Infinity : findReturn);
-        if (subText.slice(0, nextIndex).includes('{')) {
-          nextIndex = 0;
-        }
-        const startPos = nextIndex;
-
-        if (text[indices[i] + 3] === "\n" || text[indices[i] + 3] === " " || text[indices[i] + 3] === "\t") {
-          blockInfo.type = 'language-specific';
-        } else {
-          blockInfo.type = subText.slice(0, nextIndex);
-        }
-
-        if (i + 1 < indices.length) {
-          const nextPos = indices[i + 1] - indices[i];
-          if (nextPos - 3 < subText.length && subText[nextPos - 3] === "`") {
-            blockInfo.content = subText.slice(startPos, nextPos - 3).trim();
-            blockInfo.is_complete = true;
-          } else {
-            blockInfo.content = subText.slice(startPos, nextPos).trim();
-            blockInfo.is_complete = false;
-          }
-        } else {
-          blockInfo.content = subText.slice(startPos).trim();
-          blockInfo.is_complete = false;
-        }
-
-        codeBlocks.push(blockInfo);
-      }
-      isStart = false;
-    } else {
-      isStart = true;
-    }
-  }
-
-  return codeBlocks;
-}
-
 
 /**
  * Updates the given code based on the provided query string.

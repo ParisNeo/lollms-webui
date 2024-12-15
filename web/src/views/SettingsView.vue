@@ -1148,6 +1148,7 @@
                                 >
                                     <!-- Semantic Vectorizer Models -->
                                     <option v-if="configFile.rag_vectorizer === 'semantic'" value="BAAI/bge-m3">BAAI/bge-m3</option>
+                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="nvidia/NV-Embed-v2">nvidia/NV-Embed-v2</option>
                                     <option v-if="configFile.rag_vectorizer === 'semantic'" value="sentence-transformers/all-MiniLM-L6-v2">sentence-transformers/all-MiniLM-L6-v2</option>
                                     <option v-if="configFile.rag_vectorizer === 'semantic'" value="sentence-transformers/all-MiniLM-L12-v2">sentence-transformers/all-MiniLM-L12-v2</option>
                                     <option v-if="configFile.rag_vectorizer === 'semantic'" value="sentence-transformers/all-distilroberta-v1">sentence-transformers/all-distilroberta-v1</option>
