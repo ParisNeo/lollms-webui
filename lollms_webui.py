@@ -1386,7 +1386,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         similarity = source["similarity"]
                         sources_text += f'''
                             <div class="source-item">
-                                <button onclick="var details = document.getElementById('source-details-{title}'); details.style.display = details.style.display === 'none' ? 'block' : 'none';" style="text-align: left; font-weight: bold;"><strong>{title}</strong></button>
+                                <button onclick="var details = document.getElementById('source-details-{title}'); details.style.display = details.style.display === 'none' ? 'block' : 'none';" style="text-align: left; font-weight: bold;"><strong>{title}</strong> - ({similarity*100:.2f}%)</button>
                                 <div id="source-details-{title}" style="display:none;">
                                     <div style="max-height: 200px; overflow-y: auto;">
                                         <p><strong>Path:</strong> {path}</p>
