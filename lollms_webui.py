@@ -1386,8 +1386,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         similarity = source["similarity"]
                         sources_text += f'''
                             <div class="source-item">
-                                <button onclick="var details = document.getElementById('source-details-{title}'); details.style.display = details.style.display === 'none' ? 'block' : 'none';" style="text-align: left; font-weight: bold;"><strong>{title}</strong> - ({similarity*100:.2f}%)</button>
-                                <div id="source-details-{title}" style="display:none;">
+                                <button onclick="var details = document.getElementById('source-details-{title}-{message_id}'); details.style.display = details.style.display === 'none' ? 'block' : 'none';" style="text-align: left; font-weight: bold;"><strong>{title}</strong> - ({similarity*100:.2f}%)</button>
+                                <div id="source-details-{title}-{message_id}" style="display:none;">
                                     <div style="max-height: 200px; overflow-y: auto;">
                                         <p><strong>Path:</strong> {path}</p>
                                         <p><strong>Content:</strong> {content}</p>
@@ -1406,8 +1406,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     for skill in context_details["skills"]:
                         sources_text += f'''
                             <div class="source-item">
-                                <button onclick="var details = document.getElementById('source-details-{ind}'); details.style.display = details.style.display === 'none' ? 'block' : 'none';" style="text-align: left; font-weight: bold;"><strong>Memory {ind}: {skill['title']}</strong> - ({skill['similarity']*100:.2f}%)</button>
-                                <div id="source-details-{ind}" style="display:none;">
+                                <button onclick="var details = document.getElementById('source-details-{ind}-{message_id}'); details.style.display = details.style.display === 'none' ? 'block' : 'none';" style="text-align: left; font-weight: bold;"><strong>Memory {ind}: {skill['title']}</strong> - ({skill['similarity']*100:.2f}%)</button>
+                                <div id="source-details-{ind}-{message_id}" style="display:none;">
                                     <div class="w-full" style="max-height: 200px; overflow-y: auto;">
                                         <pre>{skill['content']}</pre>
                                     </div>    
