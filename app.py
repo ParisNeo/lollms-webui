@@ -30,6 +30,7 @@ import pipmaster as pm
 ASCIIColors.success("OK")
 
 
+
 def animate(text: str, stop_event: threading.Event):
     animation = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
     idx = 0
@@ -70,8 +71,14 @@ packages: List[Tuple[str, str]] = [
     ("freedom_search", "0.1.9"),
     ("scrapemaster", "0.2.1"),
     ("lollms_client", "0.7.7"),
-    ("lollmsvectordb", "1.2.7"),
+    ("lollmsvectordb", "1.2.8"),
 ]
+
+if pm.is_installed("einops"):
+    pm.install("einops")
+if pm.is_installed("datasets"):
+    pm.install("datasets")
+#einops datasets
 
 def check_pn_libs():
     ASCIIColors.cyan("Checking ParisNeo libraries installation")

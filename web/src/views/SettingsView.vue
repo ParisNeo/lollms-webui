@@ -1133,6 +1133,20 @@
                                 </select>
                             </td>
                         </tr>
+                        
+                        <tr>
+                            <td style="min-width: 200px;">
+                                <label for="rag_vectorizer_execute_remote_code" class="text-sm font-bold" style="margin-right: 1rem;">Allow executing remote code:</label>
+                            </td>
+                            <td>
+                                <input v-model="configFile.rag_vectorizer_execute_remote_code"
+                                type="checkbox"
+                                @change="settingsChanged=true"
+                                class="w-5 mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                >
+
+                            </td>
+                        </tr>
                         <tr>
                             <td style="min-width: 200px;">
                                 <label for="rag_vectorizer_model" class="text-sm font-bold" style="margin-right: 1rem;">RAG Vectorizer model:</label>

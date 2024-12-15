@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 145
+version: 146
 
 # video viewing and news recovering
 last_viewed_video: null
@@ -283,6 +283,7 @@ rag_databases: [] # This is the list of paths to database sources. Each database
 rag_vectorizer: semantic # possible values semantic, tfidf, openai, ollama
 rag_service_url: "http://localhost:11434" # rag service url for ollama
 rag_vectorizer_model:  "BAAI/bge-m3" # The model name if applicable
+rag_vectorizer_execute_remote_code:  false # do not execute remote code or do
 rag_vectorizer_parameters: null # Parameters of the model in json format
 rag_chunk_size: 512 # number of tokens per chunk
 rag_overlap: 0 # number of tokens of overlap
