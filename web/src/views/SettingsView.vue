@@ -1176,6 +1176,7 @@
 
                                     <!-- Semantic Vectorizer Models -->
                                     <option v-if="configFile.rag_vectorizer === 'ollama'" value="bge-m3">bge-m3</option>
+                                    <option v-if="configFile.rag_vectorizer === 'ollama'" value="NV-Embed-v2">nvidia/NV-Embed-v2</option>
                                     <option v-if="configFile.rag_vectorizer === 'ollama'" value="nomic-embed-text">nomic-embed-text</option>
                                     <option v-if="configFile.rag_vectorizer === 'ollama'" value="mxbai-embed-large">mxbai-embed-large</option>
                                     <option v-if="configFile.rag_vectorizer === 'ollama'" value="mxbai-embed-large">mxbai-embed-large</option>
