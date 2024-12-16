@@ -1191,6 +1191,7 @@
                                     <!-- Disabled Option for TFIDF -->
                                     <option v-if="configFile.rag_vectorizer === 'tfidf'" disabled>No models available for TFIDF</option>
                                 </select>
+                                <input v-model="configFile.rag_vectorizer_model" class="w-full mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600">
                             </td>
                         </tr>                
                         <tr>
@@ -1198,7 +1199,7 @@
                                 <label for="rag_service_url" class="text-sm font-bold" style="margin-right: 1rem;">Rag service url:</label>
                             </td>
                             <td>
-                                <input v-model="configFile.rag_service_url">
+                                <input v-model="configFile.rag_service_url" class="w-full mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600">
                             </td>
                         </tr>
                         <tr>
