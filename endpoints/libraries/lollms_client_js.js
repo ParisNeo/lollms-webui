@@ -115,6 +115,9 @@ class LollmsClient {
   system_message(){
     return this.template.start_header_id_template+this.template.system_message_template+this.template.end_header_id_template
   }
+  custom_system_message(msg){
+    return this.template.start_header_id_template+msg+this.template.end_header_id_template
+  }
   ai_message(ai_name="assistant"){
     return this.template.start_ai_header_id_template+ai_name+this.template.end_ai_header_id_template
   }
@@ -1291,11 +1294,13 @@ async summarizeChunks(
       let summary = "";
       for (let i = 0; i < chunks.length; i++) {
           this.stepStart(`Summary of ${docName} - Processing chunk: ${i + 1}/${chunks.length}`);
+          console.log(`chunk:${i}`);
+          console.log(chunks[i]);
           summary = `${answerStart}` + await this.fastGen(
               [
-                  this.lollms.system_message(),
+                  this.lollms.custom_system_message("Previous chunks summary:"),
                   `${summary}`,
-                  this.lollms.system_message(),
+                  this.lollms.custom_system_message("Current text chunk"),
                   `${chunks[i]}`,
                   this.lollms.system_message(),
                   summaryInstruction,
