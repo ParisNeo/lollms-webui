@@ -961,7 +961,7 @@ async listModels(host_address = this.host_address) {
 }
 
 class TextChunker {
-  constructor(chunkSize = 512, overlap = 0, tokenizer = null, model = null) {
+  constructor(chunkSize = 1024, overlap = 0, tokenizer = null, model = null) {
     this.chunkSize = chunkSize;
     this.overlap = overlap;
     this.tokenizer = tokenizer || new TikTokenTokenizer();
@@ -1019,45 +1019,108 @@ class TextChunker {
     return lines.filter(line => line.trim()).join('\n');
   }
 
-  static async chunkText(text, tokenizer, chunkSize = 512, overlap = 0, cleanChunk = true, minNbTokensInChunk = 10) {
+  static async chunkText(text, tokenizer, chunkSize = 1024, overlap = 0, cleanChunk = true, minNbTokensInChunk = 10) {
+    // Validate chunkSize
+    if (isNaN(chunkSize) || chunkSize <= 0) {
+        console.warn(`Invalid chunkSize: ${chunkSize}. Resetting to default value of 1024.`);
+        chunkSize = 1024;
+    }
+
     const paragraphs = text.split('\n\n');
     const chunks = [];
     let currentChunk = [];
     let currentTokens = 0;
+
+    console.log("Starting text chunking...");
+    console.log(`Using chunkSize: ${chunkSize}, overlap: ${overlap}, minNbTokensInChunk: ${minNbTokensInChunk}`);
+
     for (const paragraph of paragraphs) {
-      const cleanedParagraph = cleanChunk ? paragraph.trim() : paragraph;
-      const paragraphTokens = (await tokenizer.tokenize(cleanedParagraph)).length;
+        const cleanedParagraph = cleanChunk ? paragraph.trim() : paragraph;
+        const paragraphTokens = (await tokenizer.tokenize(cleanedParagraph)).length;
 
-      if (currentTokens + paragraphTokens > chunkSize) {
-        if (currentTokens > minNbTokensInChunk) {
-          let chunkText = currentChunk.join('\n\n');
-          if (cleanChunk) {
-            chunkText = TextChunker.removeUnnecessaryReturns(chunkText);
-          }
-          chunks.push(chunkText);
+        console.log(`Processing paragraph: "${cleanedParagraph}"`);
+        console.log(`Paragraph tokens: ${paragraphTokens}`);
+        console.log(`Current tokens before adding: ${currentTokens}`);
+
+        // Handle case where a single paragraph exceeds chunkSize
+        if (paragraphTokens > chunkSize) {
+            console.log(`Paragraph exceeds chunk size. Splitting...`);
+            const splitParagraphs = await this.splitLargeParagraph(cleanedParagraph, tokenizer, chunkSize, overlap);
+            for (const subChunk of splitParagraphs) {
+                chunks.push(subChunk);
+                console.log(`Chunk created from large paragraph: "${subChunk}"`);
+            }
+            continue;
         }
 
-        if (overlap > 0) {
-          currentChunk = [...currentChunk.slice(-overlap), cleanedParagraph];
+        // If adding this paragraph exceeds the chunk size
+        if (currentTokens + paragraphTokens > chunkSize) {
+            if (currentTokens >= minNbTokensInChunk) {
+                let chunkText = currentChunk.join('\n\n');
+                if (cleanChunk) {
+                    chunkText = TextChunker.removeUnnecessaryReturns(chunkText);
+                }
+                chunks.push(chunkText);
+                console.log(`Intermediate chunk created and added: "${chunkText}"`);
+            } else {
+                console.log("Skipping chunk creation due to insufficient tokens.");
+            }
+
+            // Handle overlap
+            if (overlap > 0) {
+                currentChunk = currentChunk.slice(-overlap); // Keep only the overlapping part
+            } else {
+                currentChunk = [];
+            }
+
+            currentChunk.push(cleanedParagraph);
+            currentTokens = paragraphTokens; // Reset token count to the new paragraph's tokens
         } else {
-          currentChunk = [cleanedParagraph];
+            // Add paragraph to the current chunk
+            currentChunk.push(cleanedParagraph);
+            currentTokens += paragraphTokens;
         }
-        currentTokens = currentChunk.reduce(async (sum, p) => sum + await tokenizer.tokenize(p).length, 0);
-      } else {
-        currentChunk.push(cleanedParagraph);
-        currentTokens += paragraphTokens;
-      }
-    }    
-    if (currentChunk.length > 0 && currentTokens > minNbTokensInChunk) {
-      let chunkText = currentChunk.join('\n\n');
-      if (cleanChunk) {
-        chunkText = TextChunker.removeUnnecessaryReturns(chunkText);
-      }
-      chunks.push(chunkText);
+
+        console.log(`Current chunk after processing: ${currentChunk.join(' | ')}`);
+        console.log(`Current tokens after processing: ${currentTokens}`);
+    }
+
+    // Add the last chunk if it meets the minimum token requirement
+    if (currentChunk.length > 0 && currentTokens >= minNbTokensInChunk) {
+        let chunkText = currentChunk.join('\n\n');
+        if (cleanChunk) {
+            chunkText = TextChunker.removeUnnecessaryReturns(chunkText);
+        }
+        chunks.push(chunkText);
+        console.log(`Final chunk created and added: "${chunkText}"`);
+    } else {
+        console.log("No final chunk created due to insufficient tokens.");
+    }
+
+    console.log("Final Chunks:");
+    console.log(chunks);
+    return chunks;
+  }
+
+  // Helper function to split a large paragraph into smaller chunks
+  static async splitLargeParagraph(paragraph, tokenizer, chunkSize, overlap) {
+    const tokens = await tokenizer.tokenize(paragraph);
+    const chunks = [];
+    let start = 0;
+
+    while (start < tokens.length) {
+        const end = Math.min(start + chunkSize, tokens.length);
+        const chunkTokens = tokens.slice(start, end);
+        const chunkText = tokenizer.detokenize(chunkTokens);
+        chunks.push(chunkText);
+
+        start += chunkSize - overlap; // Move start forward with overlap
     }
 
     return chunks;
   }
+
+
 }
 
 class TasksLibrary {
@@ -1108,15 +1171,13 @@ async summarizeText(
   docName = "chunk",
   answerStart = "",
   maxGenerationSize = 3000,
-  maxSummarySize = 512,
+  maxSummarySize = 1024,
   callback = null,
   chunkSummaryPostProcessing = null,
   summaryMode = "SEQUENTIAL",
   reformat=false
 ) {
-  console.log("Tokenizing:")
-  console.log(text)
-
+  console.log("Tokenizing incoming text:")
   let tk = await this.tokenize(text);
   let prevLen = tk.length;
   let documentChunks = null;
@@ -1124,9 +1185,14 @@ async summarizeText(
 
   while (tk.length > maxSummarySize && (documentChunks === null || documentChunks.length > 1)) {
       this.stepStart(`Compressing ${docName}...`);
-      let chunkSize = Math.floor(this.lollms.ctxSize * 0.6);
+      let chunkSize=1024;
+      if(this.lollms.ctxSize){
+        chunkSize = Math.floor(this.lollms.ctxSize * 0.6);
+      }
+      console.log("Chunk size:",chunkSize)
       documentChunks = await TextChunker.chunkText(text, this.lollms, chunkSize, 0, true);
-      console.log(`documentChunks: ${documentChunks}`)
+      console.log(`documentChunks:`)
+      console.log(documentChunks)
       text = await this.summarizeChunks(
           documentChunks,
           summaryInstruction,
@@ -1166,7 +1232,7 @@ async smartDataExtraction(
   docName = "chunk",
   answerStart = "",
   maxGenerationSize = 3000,
-  maxSummarySize = 512,
+  maxSummarySize = 1024,
   callback = null,
   chunkSummaryPostProcessing = null,
   summaryMode = "SEQUENTIAL"
@@ -1175,8 +1241,11 @@ async smartDataExtraction(
   let prevLen = tk.length;
 
   while (tk.length > maxSummarySize) {
-      let chunkSize = Math.floor(this.lollms.ctxSize * 0.6);
-      let documentChunks = await TextChunker.chunkText(text, this.lollms, chunkSize, 0, true);
+    let chunkSize=1024;
+    if(this.lollms.ctxSize){
+      chunkSize = Math.floor(this.lollms.ctxSize * 0.6);
+    }
+    let documentChunks = await TextChunker.chunkText(text, this.lollms, chunkSize, 0, true);
       text = await this.summarizeChunks(          
           documentChunks,
           dataExtractionInstruction,
