@@ -68,14 +68,15 @@ The installation scripts are:
 - `lollms_installer_macos.sh`for Mac.
 
 ### Manual install:
-Since v 10.14, manual installation os back:
-make sure you have python 3.11 is installed or to have a python 3.11 conda environment or other way.
-clone the repo at: `https://github.com/ParisNeo/lollms-webui.git`
-better create an environment  for lollms and activate it
-in the repo folder, make sure you pull all submodules:  `git submodule update --init --recursive`
-install lollms by going to lollms_core then do: `pip install -e .`
-go back to the root of the lollms_webui folder
-install all requirements: `pip install -r requirements.txt` 
+Since v 10.14, manual installation is back:
+
+- Make sure you have python 3.11 is installed or to have a python 3.11 conda environment or other way.
+- clone the repo at: `https://github.com/ParisNeo/lollms-webui.git`
+- better create an environment  for lollms and activate it
+- in the repo folder, make sure you pull all submodules:  `git submodule update --init --recursive`
+- install lollms by going to lollms_core then do: `pip install -e .`
+- go back to the root of the lollms_webui folder
+- install all requirements: `pip install -r requirements.txt` 
 
 now you are ready to run lolmms: `python app.py` 
 ## Smart Routing: Optimizing for Money and Speed
