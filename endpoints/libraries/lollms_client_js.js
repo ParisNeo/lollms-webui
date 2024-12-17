@@ -1298,17 +1298,18 @@ async summarizeChunks(
           console.log(chunks[i]);
           summary = `${answerStart}` + await this.fastGen(
               [
-                  this.lollms.custom_system_message("Previous chunks summary:"),
+                  this.lollms.custom_system_message("Previous chunks summary"),
                   `${summary}`,
                   this.lollms.custom_system_message("Current text chunk"),
                   `${chunks[i]}`,
-                  this.lollms.system_message(),
+                  this.lollms.user_message(),
                   summaryInstruction,
-                  "Keep only information relevant to the context",
-                  "The output must keep information from the previous chunk analysis and add the current chunk extracted information.",
-                  "Be precise and do not invent information that does not exist in the previous chunks analysis or the current chunk.",
-                  "Do not add any extra comments.",
-                  this.lollms.system_message() + answerStart
+                  this.lollms.custom_system_message("important"),
+                  "Keep only information relevant to the context provided by the user",
+                  "The output must keep information from the previous chunks summary and add the current chunk extracted information.",
+                  "Be precise and do not invent information that does not exist in the previous chunks summary or the current chunk.",
+                  "Do not add any extra comments and start your message directly by the summary.",
+                  this.lollms.ai_message() + answerStart
               ].join("\n"),
               maxGenerationSize,
               callback
