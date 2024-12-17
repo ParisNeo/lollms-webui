@@ -1191,8 +1191,6 @@ async summarizeText(
       }
       console.log("Chunk size:",chunkSize)
       documentChunks = await TextChunker.chunkText(text, this.lollms, chunkSize, 0, true);
-      console.log(`documentChunks:`)
-      console.log(documentChunks)
       text = await this.summarizeChunks(
           documentChunks,
           summaryInstruction,
