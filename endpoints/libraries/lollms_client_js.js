@@ -1114,7 +1114,7 @@ class TextChunker {
     while (start < tokens.length) {
         const end = Math.min(start + chunkSize, tokens.length);
         const chunkTokens = tokens.slice(start, end);
-        const chunkText = tokenizer.detokenize(chunkTokens);
+        const chunkText = await tokenizer.detokenize(chunkTokens);
         chunks.push(chunkText);
 
         start += chunkSize - overlap; // Move start forward with overlap
