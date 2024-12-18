@@ -1149,7 +1149,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         self.set_active_model(self.routing_model)
 
                     models = [f"{k}" for k,v in self.config.smart_routing_models_description.items()]
-                    output_id, explanation = self.personality.multichoice_question("Select most suitable model to answer the user request given the context. Answer with the selected model index followed by an explanation in a new line.", [f"{k}: {v}" for k,v in self.config.smart_routing_models_description.items()], "user request:" + prompt, return_explanation=True)
+                    output_id, explanation = self.personality.multichoice_question("Select most suitable model to answer the user request given the context. Answer with the selected model index followed by an explanation in a new line.", [f"{k}: {v}" for k,v in self.config.smart_routing_models_description.items()], "!@>user prompt:" + context_details["prompt"], return_explanation=True)
                     if output_id >=0 and output_id<len(models):
                         binding, model_name = self.model_path_to_binding_model(models[output_id])
                         self.select_model(binding, model_name, destroy_previous_model=False)
