@@ -1,10 +1,10 @@
 from llama_cpp import Llama
 
 llm = Llama(
-      model_path=r"E:\lollms\test_lollms\personal_data\models\gguf\Mistral-7B-Instruct-v0.3-GGUF\Mistral-7B-Instruct-v0.3-IQ1_M.gguf",
-      n_gpu_layers=-1, # Uncomment to use GPU acceleration
-      # seed=1337, # Uncomment to set a specific seed
-      n_ctx=4096, # Uncomment to increase the context window
+    model_path=r"E:\lollms\test_lollms\personal_data\models\gguf\Mistral-7B-Instruct-v0.3-GGUF\Mistral-7B-Instruct-v0.3-IQ1_M.gguf",
+    n_gpu_layers=-1,  # Uncomment to use GPU acceleration
+    # seed=1337, # Uncomment to set a specific seed
+    n_ctx=4096,  # Uncomment to increase the context window
 )
 output = llm(
     """
@@ -43,11 +43,11 @@ How can I help you today?
 !@>lollmz: Hello, how can I assist you today?
 !@>User: write a poem about keyboards
 !@>LoLLMZ:
-    """, # Prompt
-      max_tokens=4096, # Generate up to 32 tokens, set to None to generate up to the end of the context window
-      stop=["!@>"], # Stop generating just before the model would generate a new question
-      echo=True, # Echo the prompt back in the output
-    stream=True
-) # Generate a completion, can also call create_completion
+    """,  # Prompt
+    max_tokens=4096,  # Generate up to 32 tokens, set to None to generate up to the end of the context window
+    stop=["!@>"],  # Stop generating just before the model would generate a new question
+    echo=True,  # Echo the prompt back in the output
+    stream=True,
+)  # Generate a completion, can also call create_completion
 for chunk in output:
-    print(chunk["choices"][0]["text"],end="", flush=True)
+    print(chunk["choices"][0]["text"], end="", flush=True)

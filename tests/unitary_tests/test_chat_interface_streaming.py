@@ -1,5 +1,6 @@
-import requests
 import json
+
+import requests
 
 url = "http://localhost:1234/v1/chat/completions"
 
@@ -7,21 +8,19 @@ payload = {
     "messages": [
         {
             "role": "system",
-            "content": "You are a research engineer specialized in the applications of AI in robotics."
+            "content": "You are a research engineer specialized in the applications of AI in robotics.",
         },
         {
             "role": "user",
-            "content": "List a number of libraries I can use for robotics."
-        }        
+            "content": "List a number of libraries I can use for robotics.",
+        },
     ],
     "max_tokens": 100,
     "temperature": 0.5,
-    "stream": True
+    "stream": True,
 }
 
-headers = {
-    "Content-Type": "application/json"
-}
+headers = {"Content-Type": "application/json"}
 
 response = requests.post(url, data=json.dumps(payload), headers=headers, stream=True)
 

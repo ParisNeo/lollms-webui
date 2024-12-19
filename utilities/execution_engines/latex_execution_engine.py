@@ -6,37 +6,38 @@ description:
     This is a utility for executing latex code
 
 """
-from fastapi import APIRouter, Request, routing
-from lollms_webui import LOLLMSWebUI
+
+import json
+import shutil
+import subprocess
+import time
+from pathlib import Path
+
+import tqdm
+from ascii_colors import ASCIIColors, get_trace_exception, trace_exception
+from fastapi import APIRouter, FastAPI, File, Request, UploadFile, routing
+from lollms.client_session import Client
+from lollms.databases.discussions_database import DiscussionsDB
+from lollms.main_config import BaseConfig
+from lollms.types import MSG_OPERATION_TYPE
+from lollms.utilities import discussion_path_to_url
 from pydantic import BaseModel
 from starlette.responses import StreamingResponse
-from lollms.types import MSG_OPERATION_TYPE
-from lollms.main_config import BaseConfig
-from ascii_colors import get_trace_exception, trace_exception
-from ascii_colors import ASCIIColors
-from lollms.databases.discussions_database import DiscussionsDB
-from pathlib import Path
-import tqdm
-from fastapi import FastAPI, UploadFile, File
-import shutil
-import time
-import subprocess
-import json
-from lollms.client_session import Client
-from lollms.utilities import discussion_path_to_url
+
+from lollms_webui import LOLLMSWebUI
+
+lollmsElfServer: LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
 
-lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()           
-
-def execute_latex(code, client:Client, message_id):
+def execute_latex(code, client: Client, message_id):
     # Start the timer.
     start_time = time.time()
 
     # Create a temporary file.
     root_folder = client.discussion.discussion_folder
-    root_folder.mkdir(parents=True,exist_ok=True)
-    tmp_file = root_folder/f"latex_file_{message_id}.tex"
-    with open(tmp_file,"w", encoding="utf-8") as f:
+    root_folder.mkdir(parents=True, exist_ok=True)
+    tmp_file = root_folder / f"latex_file_{message_id}.tex"
+    with open(tmp_file, "w", encoding="utf-8") as f:
         f.write(code)
 
     try:
@@ -44,7 +45,7 @@ def execute_latex(code, client:Client, message_id):
         if lollmsElfServer.config.pdf_latex_path:
             pdflatex_command = lollmsElfServer.config.pdf_latex_path
         else:
-            pdflatex_command = 'pdflatex'
+            pdflatex_command = "pdflatex"
         # Set the execution path to the folder containing the tmp_file
         execution_path = tmp_file.parent
 
@@ -53,7 +54,7 @@ def execute_latex(code, client:Client, message_id):
             [pdflatex_command, "-interaction=nonstopmode", str(tmp_file)],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            cwd=execution_path
+            cwd=execution_path,
         )
 
         # Get the output and error from the process.
@@ -62,7 +63,14 @@ def execute_latex(code, client:Client, message_id):
         # Stop the timer.
         execution_time = time.time() - start_time
         error_message = f"Error executing Python code: {ex}"
-        error_json = {"output": "<div class='text-red-500'>"+ex+"\n"+get_trace_exception(ex)+"</div>", "execution_time": execution_time}
+        error_json = {
+            "output": "<div class='text-red-500'>"
+            + ex
+            + "\n"
+            + get_trace_exception(ex)
+            + "</div>",
+            "execution_time": execution_time,
+        }
         return error_json
 
     # Stop the timer.
@@ -71,7 +79,7 @@ def execute_latex(code, client:Client, message_id):
     # Check if the process was successful.
     if process.returncode != 0:
         # The child process threw an exception.
-        pdf_file = tmp_file.with_suffix('.pdf')
+        pdf_file = tmp_file.with_suffix(".pdf")
         print(f"PDF file generated: {pdf_file}")
         try:
             error_message = f"Error executing Python code:\n{error.decode('utf-8', errors='ignore')}"
@@ -79,31 +87,50 @@ def execute_latex(code, client:Client, message_id):
             error_message = f"Error executing Python code:\n{error}"
         if pdf_file.exists():
             # The child process was successful.
-            pdf_file=str(pdf_file).replace("\\","/")
-            if not "http" in lollmsElfServer.config.host and not "https" in lollmsElfServer.config.host:
-                host = "http://"+lollmsElfServer.config.host
+            pdf_file = str(pdf_file).replace("\\", "/")
+            if (
+                not "http" in lollmsElfServer.config.host
+                and not "https" in lollmsElfServer.config.host
+            ):
+                host = "http://" + lollmsElfServer.config.host
             else:
                 host = lollmsElfServer.config.host
 
             url = f"{host}:{lollmsElfServer.config.port}/{discussion_path_to_url(pdf_file)}"
-            error_json = {"output": f"<div>Pdf file generated at: {pdf_file}\n<a href='{url}' target='_blank'>Click here to show</a></div><div>Output:{output.decode('utf-8', errors='ignore')}\n</div><div class='text-red-500'>"+error_message+"</div>", "execution_time": execution_time}
+            error_json = {
+                "output": f"<div>Pdf file generated at: {pdf_file}\n<a href='{url}' target='_blank'>Click here to show</a></div><div>Output:{output.decode('utf-8', errors='ignore')}\n</div><div class='text-red-500'>"
+                + error_message
+                + "</div>",
+                "execution_time": execution_time,
+            }
 
-        else:            
-            error_json = {"output": f"<div>Output:{output.decode('utf-8', errors='ignore')}\n</div><div class='text-red-500'>"+error_message+"</div>", "execution_time": execution_time}
+        else:
+            error_json = {
+                "output": f"<div>Output:{output.decode('utf-8', errors='ignore')}\n</div><div class='text-red-500'>"
+                + error_message
+                + "</div>",
+                "execution_time": execution_time,
+            }
         return error_json
 
     # The child process was successful.
     # If the compilation is successful, you will get a PDF file
-    pdf_file = tmp_file.with_suffix('.pdf')
+    pdf_file = tmp_file.with_suffix(".pdf")
     print(f"PDF file generated: {pdf_file}")
 
     # The child process was successful.
-    pdf_file=str(pdf_file).replace("\\","/")
-    if not "http" in lollmsElfServer.config.host and not "https" in lollmsElfServer.config.host:
-        host = "http://"+lollmsElfServer.config.host
+    pdf_file = str(pdf_file).replace("\\", "/")
+    if (
+        not "http" in lollmsElfServer.config.host
+        and not "https" in lollmsElfServer.config.host
+    ):
+        host = "http://" + lollmsElfServer.config.host
     else:
         host = lollmsElfServer.config.host
 
     url = f"{host}:{lollmsElfServer.config.port}{discussion_path_to_url(pdf_file)}"
-    output_json = {"output": f"Pdf file generated at: {pdf_file}\n<a href='{url}' target='_blank'>Click here to show</a>", "execution_time": execution_time}
+    output_json = {
+        "output": f"Pdf file generated at: {pdf_file}\n<a href='{url}' target='_blank'>Click here to show</a>",
+        "execution_time": execution_time,
+    }
     return output_json

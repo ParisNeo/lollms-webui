@@ -6,16 +6,20 @@ description:
     This is a utility for executing python code
 
 """
-from fastapi import routing
-from lollms_webui import LOLLMSWebUI
-from ascii_colors import get_trace_exception, trace_exception
-import time
-import subprocess
+
 import json
-from lollms.client_session import Client
 import platform
+import subprocess
+import time
 from pathlib import Path
-lollmsElfServer:LOLLMSWebUI = LOLLMSWebUI.get_instance()           
+
+from ascii_colors import get_trace_exception, trace_exception
+from fastapi import routing
+from lollms.client_session import Client
+
+from lollms_webui import LOLLMSWebUI
+
+lollmsElfServer: LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
 
 def execute_python(code, client, message_id, build_file=True):
@@ -36,11 +40,29 @@ def execute_python(code, client, message_id, build_file=True):
             # Determine the platform and open a terminal to execute the Python code.
             system = platform.system()
             if system == "Windows":
-                process = subprocess.Popen(f"""start cmd /k "cd /d "{root_folder}" && python "{tmp_file}" && pause" """, shell=True)
+                process = subprocess.Popen(
+                    f"""start cmd /k "cd /d "{root_folder}" && python "{tmp_file}" && pause" """,
+                    shell=True,
+                )
             elif system == "Darwin":  # macOS
-                process = subprocess.Popen(["open", "-a", "Terminal", f'cd "{root_folder}" && python "{tmp_file}"'], shell=True)
+                process = subprocess.Popen(
+                    [
+                        "open",
+                        "-a",
+                        "Terminal",
+                        f'cd "{root_folder}" && python "{tmp_file}"',
+                    ],
+                    shell=True,
+                )
             elif system == "Linux":
-                process = subprocess.Popen(["x-terminal-emulator", "-e", f'bash -c "cd \\"{root_folder}\\" && python \\"{tmp_file}\\"; exec bash"'], shell=True)
+                process = subprocess.Popen(
+                    [
+                        "x-terminal-emulator",
+                        "-e",
+                        f'bash -c "cd \\"{root_folder}\\" && python \\"{tmp_file}\\"; exec bash"',
+                    ],
+                    shell=True,
+                )
             else:
                 raise Exception(f"Unsupported platform: {system}")
 
@@ -53,7 +75,14 @@ def execute_python(code, client, message_id, build_file=True):
             # Stop the timer.
             execution_time = time.time() - start_time
             error_message = f"Error executing Python code: {ex}"
-            error_json = {"output": "<div class='text-red-500'>" + error_message + "\n" + get_trace_exception(ex) + "</div>", "execution_time": execution_time}
+            error_json = {
+                "output": "<div class='text-red-500'>"
+                + error_message
+                + "\n"
+                + get_trace_exception(ex)
+                + "</div>",
+                "execution_time": execution_time,
+            }
             return error_json
 
         # Stop the timer.
@@ -66,12 +95,18 @@ def execute_python(code, client, message_id, build_file=True):
                 error_message = f"Output: {output.decode('utf-8', errors='ignore')}\nError executing Python code:\n{error.decode('utf-8', errors='ignore')}"
             except:
                 error_message = f"Error executing Python code:\n{error}"
-            error_json = {"output": "<div class='text-red-500'>" + error_message + "</div>", "execution_time": execution_time}
+            error_json = {
+                "output": "<div class='text-red-500'>" + error_message + "</div>",
+                "execution_time": execution_time,
+            }
             return error_json
 
         # The child process was successful.
         if output:
-            output_json = {"output": output.decode("utf8"), "execution_time": execution_time}
+            output_json = {
+                "output": output.decode("utf8"),
+                "execution_time": execution_time,
+            }
         else:
             output_json = {"output": "", "execution_time": execution_time}
         return output_json
@@ -79,8 +114,7 @@ def execute_python(code, client, message_id, build_file=True):
     return spawn_process(code)
 
 
-
-def execute_python_old(code, client:Client, message_id, build_file=True):
+def execute_python_old(code, client: Client, message_id, build_file=True):
     def spawn_process(code):
         """Executes Python code and returns the output as JSON."""
 
@@ -89,9 +123,9 @@ def execute_python_old(code, client:Client, message_id, build_file=True):
 
         # Create a temporary file.
         root_folder = client.discussion.discussion_folder
-        root_folder.mkdir(parents=True,exist_ok=True)
-        tmp_file = root_folder/f"ai_code_{message_id}.py"
-        with open(tmp_file,"w",encoding="utf8") as f:
+        root_folder.mkdir(parents=True, exist_ok=True)
+        tmp_file = root_folder / f"ai_code_{message_id}.py"
+        with open(tmp_file, "w", encoding="utf8") as f:
             f.write(code)
 
         try:
@@ -100,7 +134,7 @@ def execute_python_old(code, client:Client, message_id, build_file=True):
                 ["python", str(tmp_file)],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                cwd=root_folder
+                cwd=root_folder,
             )
 
             # Get the output and error from the process.
@@ -109,7 +143,14 @@ def execute_python_old(code, client:Client, message_id, build_file=True):
             # Stop the timer.
             execution_time = time.time() - start_time
             error_message = f"Error executing Python code: {ex}"
-            error_json = {"output": "<div class='text-red-500'>"+ex+"\n"+get_trace_exception(ex)+"</div>", "execution_time": execution_time}
+            error_json = {
+                "output": "<div class='text-red-500'>"
+                + ex
+                + "\n"
+                + get_trace_exception(ex)
+                + "</div>",
+                "execution_time": execution_time,
+            }
             return error_json
 
         # Stop the timer.
@@ -122,12 +163,19 @@ def execute_python_old(code, client:Client, message_id, build_file=True):
                 error_message = f"Output:{output.decode('utf-8', errors='ignore')}\nError executing Python code:\n{error.decode('utf-8', errors='ignore')}"
             except:
                 error_message = f"Error executing Python code:\n{error}"
-            error_json = {"output": "<div class='text-red-500'>"+error_message+"</div>", "execution_time": execution_time}
+            error_json = {
+                "output": "<div class='text-red-500'>" + error_message + "</div>",
+                "execution_time": execution_time,
+            }
             return error_json
 
         # The child process was successful.
-        output_json = {"output": output.decode("utf8"), "execution_time": execution_time}
+        output_json = {
+            "output": output.decode("utf8"),
+            "execution_time": execution_time,
+        }
         return output_json
+
     return spawn_process(code)
 
 
@@ -145,18 +193,44 @@ def create_and_execute_script(code, message_id, root_folder):
         # Determine the platform and open a terminal to execute the Python code
         system = platform.system()
         if system == "Windows":
-            subprocess.Popen(f"""start cmd /k "cd /d "{root_folder}" && python "{tmp_file}" && pause" """, shell=True)
+            subprocess.Popen(
+                f"""start cmd /k "cd /d "{root_folder}" && python "{tmp_file}" && pause" """,
+                shell=True,
+            )
         elif system == "Darwin":  # macOS
-            subprocess.Popen(["open", "-a", "Terminal", f'cd "{root_folder}" && python "{tmp_file}"'], shell=True)
+            subprocess.Popen(
+                [
+                    "open",
+                    "-a",
+                    "Terminal",
+                    f'cd "{root_folder}" && python "{tmp_file}"',
+                ],
+                shell=True,
+            )
         elif system == "Linux":
-            subprocess.Popen(["x-terminal-emulator", "-e", f'bash -c "cd \\"{root_folder}\\" && python \\"{tmp_file}\\"; exec bash"'], shell=True)
+            subprocess.Popen(
+                [
+                    "x-terminal-emulator",
+                    "-e",
+                    f'bash -c "cd \\"{root_folder}\\" && python \\"{tmp_file}\\"; exec bash"',
+                ],
+                shell=True,
+            )
         else:
             raise Exception(f"Unsupported platform: {system}")
 
     except Exception as ex:
         error_message = f"Error executing Python code: {ex}"
-        error_json = {"output": "<div class='text-red-500'>" + error_message + "\n" + get_trace_exception(ex) + "</div>", "execution_time": 0}
+        error_json = {
+            "output": "<div class='text-red-500'>"
+            + error_message
+            + "\n"
+            + get_trace_exception(ex)
+            + "</div>",
+            "execution_time": 0,
+        }
         print(error_json)
+
 
 if __name__ == "__main__":
     code = "print('Hello world');input('hi')"

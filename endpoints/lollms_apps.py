@@ -1,72 +1,76 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException, APIRouter, Response
-from fastapi.responses import JSONResponse, StreamingResponse, PlainTextResponse
-from pydantic import BaseModel, Field
-from fastapi.responses import FileResponse
-from lollms_webui import LOLLMSWebUI
-from packaging import version
-from pathlib import Path
-import shutil
-import uuid
 import os
+import platform
+import shutil
+import subprocess
+import sys
+import uuid
+from pathlib import Path
+
+import pipmaster as pm
 import requests
 import yaml
-from lollms.security import check_access, sanitize_path
-import os
-import subprocess
-import uuid
-import platform
 from ascii_colors import ASCIIColors, trace_exception
-import pipmaster as pm
-import sys
+from fastapi import (APIRouter, FastAPI, File, HTTPException, Response,
+                     UploadFile)
+from fastapi.responses import (FileResponse, JSONResponse, PlainTextResponse,
+                               StreamingResponse)
+from lollms.security import check_access, sanitize_path
+from packaging import version
+from pydantic import BaseModel, Field
+
+from lollms_webui import LOLLMSWebUI
 
 if not pm.is_installed("httpx"):
     pm.install("httpx")
 import httpx
 from lollms.utilities import PackageManager
 
+
 # Pull the repository if it already exists
 def check_lollms_models_zoo():
     if not PackageManager.check_package_installed("zipfile"):
         PackageManager.install_or_update("zipfile36")
+
+
 ASCIIColors.execute_with_animation("Checking zip library.", check_lollms_models_zoo)
 
 
-from pydantic import BaseModel
-from pathlib import Path
-import zipfile
 import io
-
-
 import shutil
+import zipfile
+from pathlib import Path
 
+from pydantic import BaseModel
 
 router = APIRouter()
 lollmsElfServer: LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
+
 class AuthRequest(BaseModel):
     client_id: str
 
+
 class AppInfo:
     def __init__(
-            self, 
-            uid: str, 
-            name: str, 
-            folder_name: str, 
-            icon: str, 
-            category:str, 
-            description: str, 
-            author:str, 
-            version:str, 
-            creation_date:str,
-            last_update_date:str,
-            model_name:str, 
-            disclaimer:str, 
-            has_server:bool,
-            has_readme:bool,
-            is_public:bool,
-            has_update:bool,
-            installed: bool
-        ):
+        self,
+        uid: str,
+        name: str,
+        folder_name: str,
+        icon: str,
+        category: str,
+        description: str,
+        author: str,
+        version: str,
+        creation_date: str,
+        last_update_date: str,
+        model_name: str,
+        disclaimer: str,
+        has_server: bool,
+        has_readme: bool,
+        is_public: bool,
+        has_update: bool,
+        installed: bool,
+    ):
         self.uid = uid
         self.name = name
         self.folder_name = folder_name
@@ -85,11 +89,12 @@ class AppInfo:
         self.is_public = is_public
         self.installed = installed
 
+
 @router.get("/apps")
 async def list_apps():
     apps = []
     apps_zoo_path = lollmsElfServer.lollms_paths.apps_zoo_path
-    REPO_DIR = lollmsElfServer.lollms_paths.personal_path/"apps_zoo_repo"
+    REPO_DIR = lollmsElfServer.lollms_paths.personal_path / "apps_zoo_repo"
     if REPO_DIR.exists():
         remote_apps = [a.stem for a in REPO_DIR.iterdir()]
     else:
@@ -107,35 +112,43 @@ async def list_apps():
                 has_server = False
                 has_readme = False
                 is_public = app_name.stem in remote_apps
-                
+
                 if description_path.exists():
-                    with open(description_path, 'r') as file:
+                    with open(description_path, "r") as file:
                         data = yaml.safe_load(file)
-                        application_name = data.get('name', app_name.name)
-                        category = data.get('category', 'generic')
-                        description = data.get('description', '')
-                        author = data.get('author', '')
-                        current_version = data.get('version', '')
-                        creation_date = data.get('creation_date', 'unknown')
-                        last_update_date = data.get('last_update_date', '')
-                        current_version = data.get('version', '')
-                        model_name = data.get('model_name', '')
-                        disclaimer = data.get('disclaimer', 'No disclaimer provided.')
-                        has_server = data.get('has_server', (Path(app_name)/"server.py").exists())
-                        has_readme = data.get('has_readme', (Path(app_name)/"README.md").exists())
+                        application_name = data.get("name", app_name.name)
+                        category = data.get("category", "generic")
+                        description = data.get("description", "")
+                        author = data.get("author", "")
+                        current_version = data.get("version", "")
+                        creation_date = data.get("creation_date", "unknown")
+                        last_update_date = data.get("last_update_date", "")
+                        current_version = data.get("version", "")
+                        model_name = data.get("model_name", "")
+                        disclaimer = data.get("disclaimer", "No disclaimer provided.")
+                        has_server = data.get(
+                            "has_server", (Path(app_name) / "server.py").exists()
+                        )
+                        has_readme = data.get(
+                            "has_readme", (Path(app_name) / "README.md").exists()
+                        )
                         installed = True
                 else:
                     installed = False
 
                 if is_public:
                     try:
-                        with (REPO_DIR / app_name.stem / "description.yaml").open("r") as file:
+                        with (REPO_DIR / app_name.stem / "description.yaml").open(
+                            "r"
+                        ) as file:
                             # Parse the YAML content
                             yaml_content = yaml.safe_load(file)
                             repo_version = yaml_content.get("version", "0")
-                            
+
                             # Compare versions using packaging.version
-                            has_update = version.parse(str(repo_version)) > version.parse(str(current_version))
+                            has_update = version.parse(
+                                str(repo_version)
+                            ) > version.parse(str(current_version))
                     except (yaml.YAMLError, FileNotFoundError) as e:
                         print(f"Error reading or parsing YAML file: {e}")
                         has_update = False
@@ -144,33 +157,36 @@ async def list_apps():
 
                 if icon_path.exists():
                     uid = str(uuid.uuid4())
-                    apps.append(AppInfo(
-                        uid=uid,
-                        name=application_name,
-                        folder_name = app_name.name,
-                        icon=f"/apps/{app_name.name}/icon.png",
-                        category=category,
-                        description=description,
-                        author=author,
-                        version=current_version,
-                        creation_date=creation_date,
-                        last_update_date = last_update_date,
-                        model_name=model_name,
-                        disclaimer=disclaimer,
-                        has_server=has_server,
-                        has_readme=has_readme,
-                        is_public=is_public,
-                        has_update=has_update,
-                        installed=installed
-                    ))
+                    apps.append(
+                        AppInfo(
+                            uid=uid,
+                            name=application_name,
+                            folder_name=app_name.name,
+                            icon=f"/apps/{app_name.name}/icon.png",
+                            category=category,
+                            description=description,
+                            author=author,
+                            version=current_version,
+                            creation_date=creation_date,
+                            last_update_date=last_update_date,
+                            model_name=model_name,
+                            disclaimer=disclaimer,
+                            has_server=has_server,
+                            has_readme=has_readme,
+                            is_public=is_public,
+                            has_update=has_update,
+                            installed=installed,
+                        )
+                    )
         except Exception as ex:
             trace_exception(ex)
-    
+
     return apps
 
 
 class ShowAppsFolderRequest(BaseModel):
     client_id: str = Field(...)
+
 
 @router.post("/show_apps_folder")
 async def open_folder_in_vscode(request: ShowAppsFolderRequest):
@@ -181,28 +197,30 @@ async def open_folder_in_vscode(request: ShowAppsFolderRequest):
     try:
         if current_os == "Windows":
             # For Windows
-            subprocess.run(['explorer', lollmsElfServer.lollms_paths.apps_zoo_path])
+            subprocess.run(["explorer", lollmsElfServer.lollms_paths.apps_zoo_path])
         elif current_os == "Darwin":
             # For macOS
-            subprocess.run(['open', lollmsElfServer.lollms_paths.apps_zoo_path])
+            subprocess.run(["open", lollmsElfServer.lollms_paths.apps_zoo_path])
         elif current_os == "Linux":
             # For Linux
-            subprocess.run(['xdg-open', lollmsElfServer.lollms_paths.apps_zoo_path])
+            subprocess.run(["xdg-open", lollmsElfServer.lollms_paths.apps_zoo_path])
         else:
             print("Unsupported operating system.")
     except Exception as e:
         print(f"An error occurred: {e}")
 
+
 class OpenFolderRequest(BaseModel):
     client_id: str = Field(...)
     app_name: str = Field(...)
+
 
 @router.post("/open_app_in_vscode")
 async def open_folder_in_vscode(request: OpenFolderRequest):
     check_access(lollmsElfServer, request.client_id)
     sanitize_path(request.app_name)
     # Construct the folder path
-    folder_path = lollmsElfServer.lollms_paths.apps_zoo_path/ request.app_name
+    folder_path = lollmsElfServer.lollms_paths.apps_zoo_path / request.app_name
 
     # Check if the folder exists
     if not folder_path.exists():
@@ -218,18 +236,19 @@ async def open_folder_in_vscode(request: OpenFolderRequest):
 
 @router.get("/apps/{app_name}/{file}")
 async def get_app_file(app_name: str, file: str):
-    app_name=sanitize_path(app_name)
-    file=sanitize_path(file)
+    app_name = sanitize_path(app_name)
+    file = sanitize_path(file)
     app_path = lollmsElfServer.lollms_paths.apps_zoo_path / app_name / file
     if not app_path.exists():
         raise HTTPException(status_code=404, detail="App file not found")
     return FileResponse(app_path)
 
+
 @router.get("/apps/{app_name}/{subfolder}/{file}")
 async def get_app_file(app_name: str, subfolder: str, file: str):
-    app_name=sanitize_path(app_name)
-    subfolder=sanitize_path(subfolder)
-    file=sanitize_path(file)
+    app_name = sanitize_path(app_name)
+    subfolder = sanitize_path(subfolder)
+    file = sanitize_path(file)
     app_path = lollmsElfServer.lollms_paths.apps_zoo_path / app_name / subfolder / file
     if not app_path.exists():
         raise HTTPException(status_code=404, detail="App file not found")
@@ -241,16 +260,13 @@ class AppNameInput(BaseModel):
     app_name: str
 
 
-import tempfile
-
-
-from fastapi.responses import FileResponse
-import tempfile
 import os
-
-from fastapi.responses import Response
-from io import BytesIO
+import tempfile
 import zipfile
+from io import BytesIO
+
+from fastapi.responses import FileResponse, Response
+
 
 @router.post("/download_app")
 async def download_app(input_data: AppNameInput):
@@ -265,9 +281,9 @@ async def download_app(input_data: AppNameInput):
     zip_buffer = BytesIO()
 
     try:
-        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
-            for file in app_path.rglob('*'):
-                if file.is_file() and '.git' not in file.parts:
+        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+            for file in app_path.rglob("*"):
+                if file.is_file() and ".git" not in file.parts:
                     relative_path = file.relative_to(app_path)
                     zip_file.write(file, arcname=str(relative_path))
 
@@ -282,18 +298,20 @@ async def download_app(input_data: AppNameInput):
                 "Content-Disposition": f"attachment; filename={app_name}.zip",
                 "Cache-Control": "no-cache",
                 "Pragma": "no-cache",
-                "Expires": "0"
-            }
+                "Expires": "0",
+            },
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error creating ZIP file: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error creating ZIP file: {str(e)}"
+        )
 
 
 @router.post("/upload_app")
 async def upload_app(client_id: str, file: UploadFile = File(...)):
     check_access(lollmsElfServer, client_id)
     sanitize_path(file.filename)
-    
+
     # Create a temporary directory to extract the zip file
     temp_dir = lollmsElfServer.lollms_paths.personal_path / "temp"
     os.makedirs(temp_dir, exist_ok=True)
@@ -305,33 +323,42 @@ async def upload_app(client_id: str, file: UploadFile = File(...)):
             shutil.copyfileobj(file.file, buffer)
 
         # Extract the zip file
-        with zipfile.ZipFile(temp_file, 'r') as zip_ref:
+        with zipfile.ZipFile(temp_file, "r") as zip_ref:
             zip_ref.extractall(temp_dir)
 
         # Check for required files
-        required_files = ['index.html', 'description.yaml', 'icon.png']
+        required_files = ["index.html", "description.yaml", "icon.png"]
         for required_file in required_files:
             if not os.path.exists(os.path.join(temp_dir, required_file)):
-                raise HTTPException(status_code=400, detail=f"Missing required file: {required_file}")
+                raise HTTPException(
+                    status_code=400, detail=f"Missing required file: {required_file}"
+                )
 
         # Read the description.yaml file
-        with open(os.path.join(temp_dir, 'description.yaml'), 'r') as yaml_file:
+        with open(os.path.join(temp_dir, "description.yaml"), "r") as yaml_file:
             description = yaml.safe_load(yaml_file)
 
         # Get the app name from the description
-        app_name = description.get('name')
+        app_name = description.get("name")
         if not app_name:
-            raise HTTPException(status_code=400, detail="App name not found in description.yaml")
+            raise HTTPException(
+                status_code=400, detail="App name not found in description.yaml"
+            )
 
         # Create the app directory
         app_dir = lollmsElfServer.lollms_paths.apps_zoo_path / app_name
         if os.path.exists(app_dir):
-            raise HTTPException(status_code=400, detail="An app with this name already exists")
+            raise HTTPException(
+                status_code=400, detail="An app with this name already exists"
+            )
 
         # Move the extracted files to the app directory
         shutil.move(temp_dir, app_dir)
 
-        return JSONResponse(content={"message": f"App '{app_name}' uploaded successfully"}, status_code=200)
+        return JSONResponse(
+            content={"message": f"App '{app_name}' uploaded successfully"},
+            status_code=200,
+        )
 
     except zipfile.BadZipFile:
         raise HTTPException(status_code=400, detail="Invalid zip file")
@@ -345,69 +372,75 @@ async def upload_app(client_id: str, file: UploadFile = File(...)):
             shutil.rmtree(temp_dir)
 
 
+import json
 import shutil
 from pathlib import Path
-import json
-
 
 
 @router.post("/install/{app_name}")
 async def install_app(app_name: str, auth: AuthRequest):
     check_access(lollmsElfServer, auth.client_id)
-    app_name=sanitize_path(app_name)
+    app_name = sanitize_path(app_name)
 
-    REPO_DIR = lollmsElfServer.lollms_paths.personal_path/"apps_zoo_repo"
-    
+    REPO_DIR = lollmsElfServer.lollms_paths.personal_path / "apps_zoo_repo"
+
     # Create the app directory
-    app_path = lollmsElfServer.lollms_paths.apps_zoo_path/app_name
+    app_path = lollmsElfServer.lollms_paths.apps_zoo_path / app_name
     os.makedirs(app_path, exist_ok=True)
 
-    source_dir = REPO_DIR/app_name
-    
+    source_dir = REPO_DIR / app_name
+
     if not source_dir.exists():
-        raise HTTPException(status_code=404, detail=f"App {app_name} not found in the local repository")
+        raise HTTPException(
+            status_code=404, detail=f"App {app_name} not found in the local repository"
+        )
 
     # Define directories to exclude
-    exclude_dirs = {'.vscode', '.git'}
+    exclude_dirs = {".vscode", ".git"}
 
     # Copy all files and directories, excluding the ones in exclude_dirs
-    for item in source_dir.glob('*'):
+    for item in source_dir.glob("*"):
         if item.is_dir():
             if item.name not in exclude_dirs:
-                shutil.copytree(item, app_path/item.name, dirs_exist_ok=True)
+                shutil.copytree(item, app_path / item.name, dirs_exist_ok=True)
         else:
             shutil.copy2(item, app_path)
 
     try:
-        description_path = app_path/"description.yaml"
-        requirements = app_path/"requirements.txt"
+        description_path = app_path / "description.yaml"
+        requirements = app_path / "requirements.txt"
 
         if description_path.exists() and requirements.exists():
-            with open(description_path, 'r') as file:
+            with open(description_path, "r") as file:
                 description_data = yaml.safe_load(file)
-                if description_data.get("has_server", (Path(app_path)/"server.py").exists()):
-                    pass                 
+                if description_data.get(
+                    "has_server", (Path(app_path) / "server.py").exists()
+                ):
+                    pass
     except Exception as ex:
         trace_exception(ex)
 
     return {"message": f"App {app_name} installed successfully."}
 
+
 @router.post("/uninstall/{app_name}")
 async def uninstall_app(app_name: str, auth: AuthRequest):
     check_access(lollmsElfServer, auth.client_id)
-    app_name=sanitize_path(app_name)
+    app_name = sanitize_path(app_name)
     app_path = lollmsElfServer.lollms_paths.apps_zoo_path / app_name
     if app_path.exists():
         shutil.rmtree(app_path)
         return {"message": f"App {app_name} uninstalled successfully."}
     else:
         raise HTTPException(status_code=404, detail="App not found")
-    
+
 
 REPO_URL = "https://github.com/ParisNeo/lollms_apps_zoo.git"
 
+
 class ProxyRequest(BaseModel):
     url: str
+
 
 @router.post("/api/proxy")
 async def proxy(request: ProxyRequest):
@@ -417,57 +450,74 @@ async def proxy(request: ProxyRequest):
             return {"content": response.text}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
+
+
 def clone_repo():
     REPO_DIR = Path(lollmsElfServer.lollms_paths.personal_path) / "apps_zoo_repo"
-    
+
     # Check if the directory exists and if it is empty
     if REPO_DIR.exists():
         if any(REPO_DIR.iterdir()):  # Check if the directory is not empty
             print(f"Directory {REPO_DIR} is not empty. Aborting clone.")
             return
     else:
-        REPO_DIR.mkdir(parents=True, exist_ok=True)  # Create the directory if it doesn't exist
+        REPO_DIR.mkdir(
+            parents=True, exist_ok=True
+        )  # Create the directory if it doesn't exist
 
     # Clone the repository
     subprocess.run(["git", "clone", REPO_URL, str(REPO_DIR)], check=True)
     print(f"Repository cloned into {REPO_DIR}")
 
+
 def pull_repo():
-    REPO_DIR = lollmsElfServer.lollms_paths.personal_path/"apps_zoo_repo"
+    REPO_DIR = lollmsElfServer.lollms_paths.personal_path / "apps_zoo_repo"
     subprocess.run(["git", "-C", str(REPO_DIR), "pull"], check=True)
+
 
 def load_apps_data():
     apps = []
-    REPO_DIR = lollmsElfServer.lollms_paths.personal_path/"apps_zoo_repo"
+    REPO_DIR = lollmsElfServer.lollms_paths.personal_path / "apps_zoo_repo"
     for item in os.listdir(REPO_DIR):
         item_path = os.path.join(REPO_DIR, item)
         if os.path.isdir(item_path):
             description_path = os.path.join(item_path, "description.yaml")
             icon_url = f"https://github.com/ParisNeo/lollms_apps_zoo/blob/main/{item}/icon.png?raw=true"
-            
+
             if os.path.exists(description_path):
-                with open(description_path, 'r') as file:
+                with open(description_path, "r") as file:
                     description_data = yaml.safe_load(file)
-                    apps.append(AppInfo(
-                        uid=str(uuid.uuid4()),
-                        name=description_data.get("name",item),
-                        folder_name=item,
-                        icon=icon_url,
-                        category=description_data.get('category', 'generic'),
-                        description=description_data.get('description', ''),
-                        author=description_data.get('author', ''),
-                        version=description_data.get('version', ''),
-                        creation_date=description_data.get('creation_date', 'unknown'),
-                        last_update_date=description_data.get('last_update_date', 'unknown'),
-                        model_name=description_data.get('model_name', ''),
-                        disclaimer=description_data.get('disclaimer', 'No disclaimer provided.'),
-                        has_server=description_data.get('has_server', (Path(item_path)/"server.py").exists()),
-                        has_readme=description_data.get('has_readme', (Path(item_path)/"README.md").exists()),
-                        is_public=True,
-                        has_update=False,
-                        installed=True
-                    ))
+                    apps.append(
+                        AppInfo(
+                            uid=str(uuid.uuid4()),
+                            name=description_data.get("name", item),
+                            folder_name=item,
+                            icon=icon_url,
+                            category=description_data.get("category", "generic"),
+                            description=description_data.get("description", ""),
+                            author=description_data.get("author", ""),
+                            version=description_data.get("version", ""),
+                            creation_date=description_data.get(
+                                "creation_date", "unknown"
+                            ),
+                            last_update_date=description_data.get(
+                                "last_update_date", "unknown"
+                            ),
+                            model_name=description_data.get("model_name", ""),
+                            disclaimer=description_data.get(
+                                "disclaimer", "No disclaimer provided."
+                            ),
+                            has_server=description_data.get(
+                                "has_server", (Path(item_path) / "server.py").exists()
+                            ),
+                            has_readme=description_data.get(
+                                "has_readme", (Path(item_path) / "README.md").exists()
+                            ),
+                            is_public=True,
+                            has_update=False,
+                            installed=True,
+                        )
+                    )
     return apps
 
 
@@ -496,7 +546,9 @@ async def lollms_assets(asset_type: str, file_name: str):
     # Construct the full file path
     file_path = directory / f"{safe_file_name}{file_extension}"
     file_path_with_entension = directory / f"{safe_file_name}"
-    if file_path_with_entension.is_file() and file_path_with_entension.is_relative_to(directory):
+    if file_path_with_entension.is_file() and file_path_with_entension.is_relative_to(
+        directory
+    ):
         file_path = file_path_with_entension
 
     # Check if the file exists and is within the allowed directory
@@ -505,11 +557,12 @@ async def lollms_assets(asset_type: str, file_name: str):
 
     # Read and return the file content with the appropriate content type
     try:
-        with file_path.open('r') as file:
+        with file_path.open("r") as file:
             content = file.read()
         return Response(content=content, media_type=content_type)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error reading file: {str(e)}")
+
 
 @router.get("/template")
 async def lollms_js():
@@ -523,8 +576,9 @@ async def lollms_js():
         "start_ai_header_id_template": lollmsElfServer.config.start_ai_header_id_template,
         "end_ai_header_id_template": lollmsElfServer.config.end_ai_header_id_template,
         "end_ai_message_id_template": lollmsElfServer.config.end_ai_message_id_template,
-        "system_message_template": lollmsElfServer.config.system_message_template
+        "system_message_template": lollmsElfServer.config.system_message_template,
     }
+
 
 @router.get("/github/apps")
 async def fetch_github_apps():
@@ -533,7 +587,9 @@ async def fetch_github_apps():
         pull_repo()
     except:
         ASCIIColors.error("Couldn't interact with ")
-        lollmsElfServer.error("Couldn't interact with github.\nPlease verify your internet connection")
+        lollmsElfServer.error(
+            "Couldn't interact with github.\nPlease verify your internet connection"
+        )
     apps = load_apps_data()
     return {"apps": apps}
 
@@ -542,13 +598,16 @@ def install_requirements(app_path: Path):
     requirements_file = app_path / "requirements.txt"
     if requirements_file.exists():
         try:
-            subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", str(requirements_file)])
+            subprocess.check_call(
+                [sys.executable, "-m", "pip", "install", "-r", str(requirements_file)]
+            )
             print("Requirements installed successfully.")
         except subprocess.CalledProcessError as e:
             print(f"Error installing requirements: {e}")
             raise
 
-def run_server(app_path: Path):    
+
+def run_server(app_path: Path):
     server_script = app_path / "server.py"
     if server_script.exists():
         try:
@@ -558,11 +617,29 @@ def run_server(app_path: Path):
             # Determine the platform and open a terminal to execute the Python code.
             system = platform.system()
             if system == "Windows":
-                process = subprocess.Popen(f"""start cmd /k "cd /d "{app_path}" && python "{server_script}" && pause" """, shell=True)
+                process = subprocess.Popen(
+                    f"""start cmd /k "cd /d "{app_path}" && python "{server_script}" && pause" """,
+                    shell=True,
+                )
             elif system == "Darwin":  # macOS
-                process = subprocess.Popen(["open", "-a", "Terminal", f'cd "{app_path}" && python "{server_script}"'], shell=True)
+                process = subprocess.Popen(
+                    [
+                        "open",
+                        "-a",
+                        "Terminal",
+                        f'cd "{app_path}" && python "{server_script}"',
+                    ],
+                    shell=True,
+                )
             elif system == "Linux":
-                process = subprocess.Popen(["x-terminal-emulator", "-e", f'bash -c "cd \\"{app_path}\\" && python \\"{server_script}\\"; exec bash"'], shell=True)
+                process = subprocess.Popen(
+                    [
+                        "x-terminal-emulator",
+                        "-e",
+                        f'bash -c "cd \\"{app_path}\\" && python \\"{server_script}\\"; exec bash"',
+                    ],
+                    shell=True,
+                )
             else:
                 raise Exception(f"Unsupported platform: {system}")
 
@@ -572,20 +649,23 @@ def run_server(app_path: Path):
     else:
         ASCIIColors.error(f"Server script not found for app: {app_path.name}")
 
+
 @router.post("/apps/start_server")
 async def start_app_server(request: OpenFolderRequest):
     check_access(lollmsElfServer, request.client_id)
     app_name = sanitize_path(request.app_name)
     app_path = lollmsElfServer.lollms_paths.apps_zoo_path / app_name
-    
+
     if not app_path.exists():
         raise HTTPException(status_code=404, detail="App not found")
-    
+
     server_script = app_path / "server.py"
     if not server_script.exists():
-        raise HTTPException(status_code=404, detail="Server script not found for this app")
-    
+        raise HTTPException(
+            status_code=404, detail="Server script not found for this app"
+        )
+
     # Start the server in the background
     run_server(app_path)
-    
+
     return {"status": "success", "message": f"Server for {app_path} is starting"}

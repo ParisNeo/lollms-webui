@@ -1,9 +1,13 @@
 import sys
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-                             QPushButton, QLineEdit, QTableView, QHeaderView, QMessageBox,
-                             QFileDialog, QListWidget, QSplitter, QDialog, QLabel, QFormLayout)
+
+from PyQt5.QtCore import QSortFilterProxyModel, Qt
 from PyQt5.QtSql import QSqlDatabase, QSqlTableModel
-from PyQt5.QtCore import Qt, QSortFilterProxyModel
+from PyQt5.QtWidgets import (QApplication, QDialog, QFileDialog, QFormLayout,
+                             QHBoxLayout, QHeaderView, QLabel, QLineEdit,
+                             QListWidget, QMainWindow, QMessageBox,
+                             QPushButton, QSplitter, QTableView, QVBoxLayout,
+                             QWidget)
+
 
 class AddRecordDialog(QDialog):
     def __init__(self, columns, parent=None):
@@ -24,14 +28,18 @@ class AddRecordDialog(QDialog):
         self.layout.addRow(self.submit_button)
 
     def get_values(self):
-        return {column: line_edit.text() for column, line_edit in self.line_edits.items()}
+        return {
+            column: line_edit.text() for column, line_edit in self.line_edits.items()
+        }
+
 
 class LiteSQLViewer(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("LiteSQL Viewer")
         self.setGeometry(100, 100, 800, 600)
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             QMainWindow {
                 background-color: #f0f0f0;
             }
@@ -70,7 +78,8 @@ class LiteSQLViewer(QMainWindow):
                 background-color: #ffffff;
                 border: 1px solid #ddd;
             }
-        """)
+        """
+        )
 
         self.db = QSqlDatabase.addDatabase("QSQLITE")
         self.model = None
@@ -107,7 +116,9 @@ class LiteSQLViewer(QMainWindow):
         self.delete_button = QPushButton("Delete Record", self)
         self.delete_button.clicked.connect(self.delete_record)
         self.scroll_button = QPushButton("Scroll to Bottom", self)
-        self.scroll_button.clicked.connect(self.scroll_to_bottom)  # Connect to scroll method
+        self.scroll_button.clicked.connect(
+            self.scroll_to_bottom
+        )  # Connect to scroll method
         button_layout.addWidget(self.open_button)
         button_layout.addWidget(self.commit_button)
         button_layout.addWidget(self.add_button)
@@ -124,8 +135,12 @@ class LiteSQLViewer(QMainWindow):
 
         # Table view
         self.table_view = QTableView()
-        self.table_view.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
-        self.table_view.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        self.table_view.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeToContents
+        )
+        self.table_view.verticalHeader().setSectionResizeMode(
+            QHeaderView.ResizeToContents
+        )
         main_layout.addWidget(self.table_view)
 
         self.splitter.addWidget(main_widget)
@@ -134,7 +149,12 @@ class LiteSQLViewer(QMainWindow):
         central_widget.setLayout(layout)
 
     def open_database(self):
-        file_name, _ = QFileDialog.getOpenFileName(self, "Open Database", "", "SQLite Database Files (*.db *.sqlite);;All Files (*)")
+        file_name, _ = QFileDialog.getOpenFileName(
+            self,
+            "Open Database",
+            "",
+            "SQLite Database Files (*.db *.sqlite);;All Files (*)",
+        )
         if file_name:
             self.db.setDatabaseName(file_name)
             if not self.db.open():
@@ -171,10 +191,14 @@ class LiteSQLViewer(QMainWindow):
         if not self.model:
             QMessageBox.warning(self, "Warning", "No table selected")
             return
-        
+
         # Get the column names, excluding the ID field
-        columns = [self.model.record().fieldName(i) for i in range(self.model.record().count()) if self.model.record().fieldName(i).lower() != "id"]
-        
+        columns = [
+            self.model.record().fieldName(i)
+            for i in range(self.model.record().count())
+            if self.model.record().fieldName(i).lower() != "id"
+        ]
+
         # Create and show the dialog
         dialog = AddRecordDialog(columns, self)
         if dialog.exec_() == QDialog.Accepted:
@@ -184,12 +208,14 @@ class LiteSQLViewer(QMainWindow):
     def insert_record(self, values):
         if not self.model:
             return
-        
+
         row = self.model.rowCount()
         self.model.insertRow(row)
-        
+
         for column, value in values.items():
-            self.model.setData(self.model.index(row, self.model.fieldIndex(column)), value)
+            self.model.setData(
+                self.model.index(row, self.model.fieldIndex(column)), value
+            )
 
     def edit_record(self):
         if not self.model:
@@ -210,8 +236,12 @@ class LiteSQLViewer(QMainWindow):
         if not indexes:
             QMessageBox.warning(self, "Warning", "Please select row(s) to delete")
             return
-        confirm = QMessageBox.question(self, "Confirm Deletion", f"Are you sure you want to delete {len(indexes)} row(s)?",
-                                       QMessageBox.Yes | QMessageBox.No)
+        confirm = QMessageBox.question(
+            self,
+            "Confirm Deletion",
+            f"Are you sure you want to delete {len(indexes)} row(s)?",
+            QMessageBox.Yes | QMessageBox.No,
+        )
         if confirm == QMessageBox.Yes:
             for index in sorted(indexes, reverse=True):
                 source_index = self.proxy_model.mapToSource(index)
@@ -221,15 +251,22 @@ class LiteSQLViewer(QMainWindow):
     def commit_changes(self):
         if self.model:
             if self.model.submitAll():
-                QMessageBox.information(self, "Success", "Changes committed successfully.")
+                QMessageBox.information(
+                    self, "Success", "Changes committed successfully."
+                )
             else:
-                QMessageBox.critical(self, "Error", "Failed to commit changes: " + self.model.lastError().text())
+                QMessageBox.critical(
+                    self,
+                    "Error",
+                    "Failed to commit changes: " + self.model.lastError().text(),
+                )
 
     def scroll_to_bottom(self):
         if self.model and self.model.rowCount() > 0:
             self.table_view.scrollToBottom()  # Scroll to the bottom of the table view
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = LiteSQLViewer()
     window.show()

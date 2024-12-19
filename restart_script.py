@@ -1,6 +1,7 @@
 import os
 import sys
 
+
 def main():
     if len(sys.argv) != 1:
         print("Usage: python restart_script.py")
@@ -17,6 +18,7 @@ def main():
     else:
         print("Error: Temporary arguments file not found.")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
