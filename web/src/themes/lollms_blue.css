@@ -64,17 +64,51 @@ p {
   @apply text-base text-gray-600 dark:text-gray-300 break-words;
 }
 
+/* Base list styling */
+ul, ol {
+  @apply 
+      my-4          /* Margin top and bottom */
+      px-4          /* Horizontal padding */
+      leading-7     /* Line height */
+      text-base;    /* Text size */
+}
+
+/* Unordered lists */
 ul {
-  @apply list-disc ml-0;
+  @apply 
+      list-disc     /* Disc style bullets */
+      ml-2          /* Left margin */
+      space-y-2;    /* Vertical spacing */
 }
 
+/* List items */
 li {
-  @apply list-disc ml-5;
+  @apply 
+      pl-2         /* Padding left */
+      relative;    /* Positioning */
 }
 
+/* Ordered lists */
 ol {
-  @apply list-decimal ml-5;
+  @apply 
+      list-decimal  /* Numbered style */
+      ml-2          /* Left margin */
+      space-y-2;    /* Vertical spacing */
 }
+
+/* Nested lists */
+ul ul, ol ol, ul ol, ol ul {
+  @apply 
+      mt-2         /* Top margin */
+      mb-0         /* Bottom margin */
+      ml-6;        /* Indentation */
+}
+
+/* For custom properties that aren't available in Tailwind, use regular CSS */
+li::marker {
+  color: #4B5563; /* gray-600 equivalent */
+}
+
 
 :root {
   --color-primary: #0e8ef0;

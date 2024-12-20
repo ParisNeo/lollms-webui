@@ -31,8 +31,31 @@ module.exports = {
         'bg-dark-discussion-odd': 'var(--color-bg-dark-discussion-odd)'
       },
       fontFamily: {
-        sans: ['PTSans', 'Roboto', 'sans-serif']
-      },
+        sans: [
+          'Inter',                // Modern, professional font with excellent readability
+          'Outfit',              // Clean and contemporary
+          'PTSans',              // Keeping your existing font
+          'Roboto',              // Keeping your existing font
+          'ui-sans-serif',       // System UI font
+          'system-ui',           // System default
+          '-apple-system',       // Apple systems
+          'BlinkMacSystemFont',  // Chrome on macOS
+          'Segoe UI',           // Windows
+          'Arial',              // Universal fallback
+          'sans-serif'          // Final fallback
+        ],
+        // You might also want to add specific font configurations for different purposes
+        heading: [
+          'Montserrat',         // Professional heading font
+          'Inter',
+          'sans-serif'
+        ],
+        mono: [
+          'JetBrains Mono',     // High-quality monospace font
+          'Consolas',
+          'monospace'
+        ]
+      },      
       container: {
         padding: '2rem',
         center: true

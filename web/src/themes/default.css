@@ -1,5 +1,5 @@
 /* Soft Bluish Theme */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -44,10 +44,71 @@ h4 { @apply text-xl font-medium text-blue-500 dark:text-blue-400 mb-2; }
 
 h1, h2 { @apply border-b border-blue-300 dark:border-blue-600 pb-2; }
 
-p { @apply text-base text-blue-600 dark:text-blue-300 break-words; }
-ul { @apply list-disc ml-0; }
-li { @apply list-disc ml-5; }
-ol { @apply list-decimal ml-5; }
+p {
+  @apply 
+    text-base 
+    dark:text-blue-300 
+    break-words
+    font-sans 
+    antialiased 
+    tracking-tight 
+    leading-relaxed;
+}
+
+@screen md {
+  p {
+    @apply 
+      text-lg
+      leading-loose;
+  }
+}
+
+
+/* Base list styling */
+ul, ol {
+  @apply 
+      my-4          /* Margin top and bottom */
+      px-4          /* Horizontal padding */
+      leading-7     /* Line height */
+      text-base;    /* Text size */
+}
+
+/* Unordered lists */
+ul {
+  @apply 
+      list-disc     /* Disc style bullets */
+      ml-2          /* Left margin */
+      space-y-2;    /* Vertical spacing */
+}
+
+/* List items */
+li {
+  @apply 
+      pl-2         /* Padding left */
+      relative;    /* Positioning */
+}
+
+/* Ordered lists */
+ol {
+  @apply 
+      list-decimal  /* Numbered style */
+      ml-2          /* Left margin */
+      space-y-2;    /* Vertical spacing */
+}
+
+/* Nested lists */
+ul ul, ol ol, ul ol, ol ul {
+  @apply 
+      mt-2         /* Top margin */
+      mb-0         /* Bottom margin */
+      ml-6;        /* Indentation */
+}
+
+/* For custom properties that aren't available in Tailwind, use regular CSS */
+li::marker {
+  color: #4B5563; /* gray-600 equivalent */
+}
+
 
 :root {
   --color-primary: #4a90e2;
