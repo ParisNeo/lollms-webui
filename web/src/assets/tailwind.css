@@ -55,6 +55,28 @@ p {
   }
 }
 
+table {
+  @apply 
+    border-collapse 
+    border 
+    border-gray-300 
+    dark:border-gray-700;
+}
+
+th, td {
+  @apply 
+    border 
+    border-gray-700 
+    dark:border-gray-300 
+    p-2;
+}
+
+/* Optional: Add hover effect for better interaction */
+tr:hover {
+  @apply 
+    bg-gray-50 
+    dark:bg-gray-800;
+}
 
 /* Base list styling */
 ul, ol {
