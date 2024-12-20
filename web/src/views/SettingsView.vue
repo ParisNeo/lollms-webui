@@ -4535,6 +4535,10 @@ export default {
                 this.configFile.remote_databases.push("new_database::lightrag::localhost");
                 
                 this.settingsChanged = true;
+            },
+            removeDataBase(index) {
+                this.configFile.remote_databases.splice(index, 1);
+                this.settingsChanged = true;
             },        
             fetchElevenLabsVoices() {
                 fetch('https://api.elevenlabs.io/v1/voices')
