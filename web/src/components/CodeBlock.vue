@@ -20,14 +20,24 @@
               >
         <i data-feather="copy"></i>
       </button>
-      <button v-if="['function', 'python', 'sh', 'shell', 'bash', 'cmd', 'powershell', 'latex', 'mermaid', 'graphviz', 'dot', 'javascript', 'html', 'html5', 'svg', 'lilypond'].includes(language)" ref="btn_code_exec" @click="executeCode"  title="execute"
-        class="px-2 py-1 mr-2 mb-2 text-left text-sm font-medium rounded-lg hover:bg-primary dark:hover:bg-primary text-white transition-colors duration-200"
-        :class="isExecuting?'bg-green-500':''">
+      <button 
+        v-if="['function', 'python', 'sh', 'shell', 'bash', 'cmd', 'powershell', 'latex', 'mermaid', 'graphviz', 'dot', 'javascript', 'html', 'html5', 'svg', 'lilypond'].includes(language)" 
+        ref="btn_code_exec" 
+        @click="executeCode"  
+        title="execute"
+        class="execute-button px-2 py-1 mr-2 mb-2 text-left text-sm font-medium rounded-lg hover:bg-primary dark:hover:bg-primary text-white transition-colors duration-200"
+        :class="isExecuting ? 'bg-green-500' : ''"
+      >
         <i data-feather="play-circle"></i>
-      </button>
-      <button v-if="['airplay', 'mermaid', 'graphviz', 'dot', 'javascript', 'html', 'html5', 'svg', 'css'].includes(language.trim())" ref="btn_code_exec_in_new_tab" @click="executeCode_in_new_tab"  title="execute"
-        class="px-2 py-1 mr-2 mb-2 text-left text-sm font-medium rounded-lg hover:bg-primary dark:hover:bg-primary text-white transition-colors duration-200"
-        :class="isExecuting?'bg-green-500':''">
+      </button>      
+      <button 
+        v-if="['airplay', 'mermaid', 'graphviz', 'dot', 'javascript', 'html', 'html5', 'svg', 'css'].includes(language.trim())" 
+        ref="btn_code_exec_in_new_tab" 
+        @click="executeCode_in_new_tab"  
+        title="execute"
+        class="execute-button px-2 py-1 mr-2 mb-2 text-left text-sm font-medium rounded-lg hover:bg-primary dark:hover:bg-primary text-white transition-colors duration-200"
+        :class="isExecuting ? 'bg-green-500' : ''"
+      >
         <i data-feather="airplay"></i>
       </button>
       <button @click="openFolder"  title="open code project folder"
@@ -157,6 +167,10 @@ export default {
     },
     executeCode() {
       this.isExecuting=true;
+      nextTick(() => {
+        feather.replace()
+      })
+
       const json = JSON.stringify({
                                     'client_id': this.client_id, 
                                     'code': this.code, 
@@ -187,6 +201,9 @@ export default {
     },
     executeCode_in_new_tab(){
       this.isExecuting=true;
+      nextTick(() => {
+        feather.replace()
+      })      
       const json = JSON.stringify({
                                     'client_id': this.client_id, 
                                     'code': this.code, 
@@ -200,12 +217,14 @@ export default {
         headers: { 'Content-Type': 'application/json' },
         body: json
       }).then(response=>{
+        console.log("done")
         this.isExecuting=false;
         // Parse the JSON data from the response body
         return response.json();
       })
       .then(jsonData => {
         // Now you can work with the JSON data
+        console.log("done2")
         console.log(jsonData);
         this.executionOutput = jsonData.output;
       })
@@ -307,5 +326,18 @@ export default {
   outline: none; /* Remove the default focus outline */
 }
 
+.spinner {
+  animation: spin 1s linear infinite;
+}
 
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.execute-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
 </style>
