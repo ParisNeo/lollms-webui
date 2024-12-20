@@ -1092,7 +1092,57 @@
                     </button>
                 </div>
                 <div :class="{ 'hidden': data_conf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
-                
+                    <Card title="Remote Dabase Servers" :is_subcard="true" class="pb-2  m-2">
+                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <tr>
+                            <td style="min-width: 200px;">
+                            <label for="remote_databases" class="text-sm font-bold" style="margin-right: 1rem;">Remote Database Servers:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <div v-for="(source, index) in configFile.remote_databases" :key="index" class="flex items-center mb-2">
+                                    <input
+                                        type="text"
+                                        :value="getAlias(index)"
+                                        @input="updateAlias(index, $event.target.value)"
+                                        class="w-40 mx-2 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        placeholder="Database Alias"
+                                    >
+
+                                    <select
+                                        required
+                                        :value="getDatabaseType(index)"
+                                        @input="updateDatabaseType(index, $event.target.value)"
+                                        class="w-40 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                    >
+                                        <option value="lightrag">Light Rag</option>
+                                        <option value="elasticdsearch">Elastic Search</option>
+                                    </select>
+
+                                    <input
+                                        type="text"
+                                        :value="getDatabaseUrl(index)"
+                                        @input="updateDatabaseUrl(index, $event.target.value)"
+                                        class="w-full mx-2 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        placeholder="Database URL"
+                                    >
+
+                                    <input
+                                        type="checkbox"
+                                        :checked="getMounted(index)"
+                                        @change="updateMounted(index, $event.target.checked)"
+                                        class="mx-2"
+                                    >
+                                    <label class="mr-2">Mounted</label>
+
+                                    <button @click="removeDataBase(index)" class="px-2 py-1 bg-red-500 text-white hover:bg-red-600 rounded">
+                                        Remove
+                                    </button>
+                                </div>
+                            <button @click="addDatabaseService" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded">Add Database Service</button>
+                            </td>
+                        </tr>
+                        </table>
+                    </Card>                
                     <Card title="Data Sources" :is_subcard="true" class="pb-2  m-2">
                         <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         <tr>
@@ -4433,6 +4483,59 @@ export default {
         //await socket.on('install_progress', this.progressListener);
     }, 
         methods: {
+            getAlias(index) {
+                return this.configFile.remote_databases[index].split('::')[0];
+            },
+            getDatabaseType(index) {
+                return this.configFile.remote_databases[index].split('::')[1];
+            },
+            getDatabaseUrl(index) {
+                return this.configFile.remote_databases[index].split('::')[2];
+            },
+            getMounted(index) {
+                const parts = this.configFile.remote_databases[index].split('::');
+                return parts.length > 3 ? parts[3] === 'mounted' : false;
+            },
+
+            updateAlias(index, value) {
+                const parts = this.configFile.remote_databases[index].split('::');
+                parts[0] = value;
+                this.configFile.remote_databases[index] = parts.join('::');
+                this.settingsChanged = true;
+            },
+            updateDatabaseType(index, value) {
+                const parts = this.configFile.remote_databases[index].split('::');
+                parts[1] = value;
+                this.configFile.remote_databases[index] = parts.join('::');
+                this.settingsChanged = true;
+            },
+            updateDatabaseUrl(index, value) {
+                const parts = this.configFile.remote_databases[index].split('::');
+                parts[2] = value;
+                this.configFile.remote_databases[index] = parts.join('::');
+                this.settingsChanged = true;
+            },
+            updateMounted(index, value) {
+                const parts = this.configFile.remote_databases[index].split('::');
+                if (value) {
+                    parts[3] = 'mounted';
+                } else {
+                    parts.length = 3; // Remove mounted part if exists
+                }
+                this.configFile.remote_databases[index] = parts.join('::');
+                this.settingsChanged = true;
+            },
+
+            addDatabaseService() {
+                if (!this.configFile.remote_databases) {
+                    this.configFile.remote_databases = [];
+                }
+                
+                // Add new entry with default values including alias
+                this.configFile.remote_databases.push("new_database::lightrag::localhost");
+                
+                this.settingsChanged = true;
+            },        
             fetchElevenLabsVoices() {
                 fetch('https://api.elevenlabs.io/v1/voices')
                     .then(response => response.json())

@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 146
+version: 147
 
 # video viewing and news recovering
 last_viewed_video: null
@@ -277,6 +277,9 @@ audio_out_voice: null
 audio_pitch: 1
 audio_auto_send_input: true
 audio_silenceTimer: 5000
+
+# relmote databases
+remote_databases: [] # This is the list of remote databases addresses in form database_type::database url
 
 # Data vectorization
 rag_databases: [] # This is the list of paths to database sources. Each database is a folder containing data
