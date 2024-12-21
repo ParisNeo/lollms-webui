@@ -22,7 +22,6 @@
   import { nextTick, ref, onMounted, watch } from 'vue';
   import feather from 'feather-icons';
   import MarkdownIt from 'markdown-it'
-  import markdownItKatex from 'markdown-it-katex'
   import emoji from 'markdown-it-emoji';
   import anchor from 'markdown-it-anchor';
   import MarkdownItMultimdTable from 'markdown-it-multimd-table';
@@ -32,7 +31,7 @@
   import attrs from 'markdown-it-attrs';
   import CodeBlock from './CodeBlock.vue';
   import hljs from 'highlight.js';
-  import mathjax from 'markdown-it-mathjax';
+  import mathjax from 'markdown-it-mathjax3';
   
   function escapeHtml(unsafe) {
     return unsafe
@@ -102,7 +101,15 @@
           multilineCellPadding: ' ',
           multilineCellJoiner: '\n',
         })
-        .use(markdownItKatex)
+        .use(mathjax, {
+          inlineOpen: ['$', '\\('],
+          inlineClose: ['$', '\\)'],
+          blockOpen: ['$$', '\\['],
+          blockClose: ['$$', '\\]'],
+          mode: 'tex',
+          beforeMath: '',
+          afterMath: ''
+        });
   
       const markdownItems = ref([]);
       const updateMarkdown = () => {
@@ -160,18 +167,12 @@
   </script>
   
   <style>
-  /* Your existing styles */
-  .katex-display {
-    display: inline-block;
-    margin: 0;
+  .math {
+    display: inline-block; /* this should allow inline math to display inline */
   }
-  
-  .katex {
-    display: inline-block;
-    white-space: nowrap;
-  }
-  .inline-latex {
-    display: inline !important;
+
+  .mathjax_block { /* if this class exists, ensure it's not applied to inline math */
+    display: block;
   }
   </style>
   
