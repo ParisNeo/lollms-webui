@@ -484,9 +484,17 @@ export default {
             return Array.isArray(this.dataSourceNames) && this.dataSourceNames.length > 0;
         },        
         dataSourceNames() {
-            console.log("dataSourceNames", this.$store.state.config.rag_databases);
-            // Extract the names from the rag_databases array and transform them into the desired format
-            const formattedDataSources = this.$store.state.config.rag_databases.map(dataSource => {
+            console.log("rag_databases", this.$store.state.config.rag_databases);
+            console.log("remote_databases", this.$store.state.config.remote_databases);
+
+            // Combine both rag_databases and remote_databases
+            const combinedDatabases = [
+                ...this.$store.state.config.rag_databases,
+                ...this.$store.state.config.remote_databases
+            ];
+
+            // Extract the names from the combined array and transform them into the desired format
+            const formattedDataSources = combinedDatabases.map(dataSource => {
                 console.log("entry", dataSource);
                 const parts = dataSource.split('::');
                 console.log("extracted", parts[0]);
@@ -503,9 +511,10 @@ export default {
                     help: 'mounts the database'
                 };
             });
+
             console.log("formatted data sources", formattedDataSources);
             return formattedDataSources;
-        },    
+        }
     },
     methods: { 
         showSendMenu() {
