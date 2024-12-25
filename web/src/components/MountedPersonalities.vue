@@ -117,7 +117,6 @@ export default {
             const pers = this.mountedPers
             console.log("pers:",pers)
             this.isGenerating = true;
-            this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
             let res = await axios.get('/get_generation_status', {})
             if (res) {
                 //console.log(res.data.status);

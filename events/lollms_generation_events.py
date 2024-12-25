@@ -208,13 +208,9 @@ def add_events(sio: socketio):
         id_ = data["id"]
         generation_type = data.get("msg_type", None)
         if id_ == -1:
-            message = lollmsElfServer.session.get_client(
-                client_id
-            ).discussion.current_message
+            message = client.discussion.messages[-1]
         else:
-            message = lollmsElfServer.session.get_client(
-                client_id
-            ).discussion.load_message(id_)
+            message = client.discussion.load_message(id_)
         if message is None:
             return
         client.generation_thread = threading.Thread(

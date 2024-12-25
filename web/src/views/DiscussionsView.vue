@@ -599,8 +599,8 @@
                 <div class="mx-0 flex flex-col flex-grow  w-full " :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
                     <div id="dis-list" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''"
                         class="flex flex-col flex-grow w-full pb-80">
-                        <TransitionGroup v-if="list.length > 0" name="list">
-                            <Discussion v-for="(item, index) in list" :key="item.id" :id="item.id" :title="item.title"
+                        <TransitionGroup v-if="discussionsList.length > 0" name="discussionsList">
+                            <Discussion v-for="(item, index) in discussionsList" :key="item.id" :id="item.id" :title="item.title"
                                 :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"
                                 :checkBoxValue="item.checkBoxValue"
                                 :openfolder_enabled="true"
@@ -611,7 +611,7 @@
                                 @makeTitle="makeTitle"
                                 @checked="checkUncheckDiscussion" />
                         </TransitionGroup>
-                        <div v-if="list.length < 1"
+                        <div v-if="discussionsList.length < 1"
                             class="gap-2 py-2 my-2 hover:shadow-md hover:bg-primary-light dark:hover:bg-primary rounded-md p-2 duration-75 group cursor-pointer">
                             <p class="px-3">No discussions are found</p>
                         </div>
@@ -1536,7 +1536,7 @@ export default {
                 SENDER_TYPES_AI                 : 1, // Sent by ai
                 SENDER_TYPES_SYSTEM             : 2, // Sent by athe system
             },
-            list                                : [], // Discussion list
+            discussionsList                                : [], // Discussion list
             tempList                            : [], // Copy of Discussion list (used for keeping the original list during filtering discussions/searching action)
             currentDiscussion                   : {}, // Current/selected discussion id
             discussionArr                       : [],
@@ -1571,10 +1571,29 @@ export default {
             
             this.randomFact = newFact;
         },        
-        handleOnTalk(pers){
-            this.showPersonalities=false
-            this.$store.state.toast.showToast(`Personality ${pers.name} is Talking`, 4, true)
-            this.onTalk(pers)
+        async handleOnTalk(){
+            const pers = this.mountedPers
+            console.log("pers:",pers)
+            this.isGenerating = true;
+            this.setDiscussionLoading(this.currentDiscussion.id, this.isGenerating);
+            let res = await axios.get('/get_generation_status', {})
+            if (res) {
+                //console.log(res.data.status);
+                if (!res.data.status) {
+                    const id = this.$store.state.config.personalities.findIndex(item => item === pers.full_path)
+                    const obj = {
+                    client_id:this.$store.state.client_id,
+                    id: id
+                    }
+                    res = await axios.post('/select_personality', obj);
+
+                    console.log('Generating message from ',res.data.status);
+                    socket.emit('generate_msg_from', { id: -1 });
+                }
+                else {
+                    console.log("Already generating");
+                }
+            }
         },
         onPersonalitiesReadyFun(){
             this.$store.state.personalities_ready = true;
@@ -2333,8 +2352,8 @@ export default {
                 socket.on('discussion_created',(data)=>{
                     socket.off('discussion_created')
                     this.list_discussions().then(()=>{
-                        const index = this.list.findIndex((x) => x.id == data.id)
-                        const discussionItem = this.list[index]
+                        const index = this.discussionsList.findIndex((x) => x.id == data.id)
+                        const discussionItem = this.discussionsList[index]
                         this.selectDiscussion(discussionItem)
                         this.load_discussion(data.id,()=>{
                             this.loading = false
@@ -2384,10 +2403,10 @@ export default {
                     this.loading = false
                     this.setDiscussionLoading(id, this.loading)
                     if (res.status == 200) {
-                        const index = this.list.findIndex((x) => x.id == id)
-                        const discussionItem = this.list[index]
+                        const index = this.discussionsList.findIndex((x) => x.id == id)
+                        const discussionItem = this.discussionsList[index]
                         discussionItem.title = new_title
-                        this.tempList = this.list
+                        this.tempList = this.discussionsList
                     }
                 }
             } catch (error) {
@@ -2409,11 +2428,11 @@ export default {
                     this.loading = false
                     this.setDiscussionLoading(id, this.loading)
                     if (res.status == 200) {
-                        const index = this.list.findIndex((x) => x.id == id)
-                        const discussionItem = this.list[index]
+                        const index = this.discussionsList.findIndex((x) => x.id == id)
+                        const discussionItem = this.discussionsList[index]
                         discussionItem.title = res.data.title
                         
-                        this.tempList = this.list
+                        this.tempList = this.discussionsList
                     }
                 }
             } catch (error) {
@@ -2556,10 +2575,10 @@ export default {
                 this.filterInProgress = true
                 setTimeout(() => {
                     if (this.filterTitle) {
-                        this.list = this.tempList.filter((item) => item.title && item.title.includes(this.filterTitle))
+                        this.discussionsList = this.tempList.filter((item) => item.title && item.title.includes(this.filterTitle))
 
                     } else {
-                        this.list = this.tempList
+                        this.discussionsList = this.tempList
                     }
                     this.filterInProgress = false
                 }, 100)
@@ -2982,11 +3001,11 @@ export default {
         async changeTitleUsingUserMSG(id, msg) {
             // If discussion is untitled or title is null then it sets the title to first user message.
 
-            const index = this.list.findIndex((x) => x.id == id)
-            const discussionItem = this.list[index]
+            const index = this.discussionsList.findIndex((x) => x.id == id)
+            const discussionItem = this.discussionsList[index]
             if (msg) {
                 discussionItem.title = msg
-                this.tempList = this.list
+                this.tempList = this.discussionsList
                 await this.edit_title(id, msg)
             }
 
@@ -3002,8 +3021,8 @@ export default {
             // Checks local storage for last selected discussion
             const id = localStorage.getItem('selected_discussion')
             if (id) {
-                const index = this.list.findIndex((x) => x.id == id)
-                const discussionItem = this.list[index]
+                const index = this.discussionsList.findIndex((x) => x.id == id)
+                const discussionItem = this.discussionsList[index]
                 if (discussionItem) {
                     this.selectDiscussion(discussionItem)
                 }
@@ -3022,9 +3041,9 @@ export default {
                 this.discussionArr = []
                 this.setPageTitle()
             }
-            this.list.splice(this.list.findIndex(item => item.id == id), 1)
+            this.discussionsList.splice(this.discussionsList.findIndex(item => item.id == id), 1)
 
-            this.createDiscussionList(this.list)
+            this.createDiscussionList(this.discussionsList)
         },
         async deleteDiscussionMulti() {
             // Delete selected discussions
@@ -3040,9 +3059,9 @@ export default {
                     this.discussionArr = []
                     this.setPageTitle()
                 }
-                this.list.splice(this.list.findIndex(item => item.id == discussionItem.id), 1)
+                this.discussionsList.splice(this.discussionsList.findIndex(item => item.id == discussionItem.id), 1)
             }
-            this.tempList = this.list
+            this.tempList = this.discussionsList
             this.isCheckbox = false
             this.$store.state.toast.showToast("Removed (" + deleteList.length + ") items", 4, true)
             this.showConfirmation = false
@@ -3068,24 +3087,24 @@ export default {
         },
         async editTitle(newTitleObj) {
 
-            const index = this.list.findIndex((x) => x.id == newTitleObj.id)
-            const discussionItem = this.list[index]
+            const index = this.discussionsList.findIndex((x) => x.id == newTitleObj.id)
+            const discussionItem = this.discussionsList[index]
             discussionItem.title = newTitleObj.title
             discussionItem.loading = true
             await this.edit_title(newTitleObj.id, newTitleObj.title)
             discussionItem.loading = false
         },
         async makeTitle(editTitleObj) {
-            const index = this.list.findIndex((x) => x.id == editTitleObj.id)
+            const index = this.discussionsList.findIndex((x) => x.id == editTitleObj.id)
             await this.make_title(editTitleObj.id)
         },
 
         checkUncheckDiscussion(event, id) {
             // If checked = true and item is not in array then add item to list
-            const index = this.list.findIndex((x) => x.id == id)
-            const discussionItem = this.list[index]
+            const index = this.discussionsList.findIndex((x) => x.id == id)
+            const discussionItem = this.discussionsList[index]
             discussionItem.checkBoxValue = event.target.checked
-            this.tempList = this.list
+            this.tempList = this.discussionsList
         },
         selectAllDiscussions() {
 
@@ -3096,7 +3115,7 @@ export default {
                 this.tempList[i].checkBoxValue = !this.isSelectAll
             }
 
-            this.tempList = this.list
+            this.tempList = this.discussionsList
             this.isSelectAll = !this.isSelectAll
         },
         createDiscussionList(disList) {
@@ -3117,14 +3136,14 @@ export default {
                     return b.id - a.id
                 })
 
-                this.list = newDisList
+                this.discussionsList = newDisList
                 this.tempList = newDisList
             }
         },
         setDiscussionLoading(id, loading) {
             try{
-                const index = this.list.findIndex((x) => x.id == id)
-                const discussionItem = this.list[index]
+                const index = this.discussionsList.findIndex((x) => x.id == id)
+                const discussionItem = this.discussionsList[index]
                 discussionItem.loading = loading
             }
             catch{
@@ -3376,7 +3395,7 @@ export default {
         async exportDiscussionsAsMarkdown() {
             // Export selected discussions
 
-            const discussionIdArr = this.list.filter((item) => item.checkBoxValue == true).map((item) => {
+            const discussionIdArr = this.discussionsList.filter((item) => item.checkBoxValue == true).map((item) => {
                 return item.id
             })
 
@@ -3423,7 +3442,7 @@ export default {
         async exportDiscussionsAsJson() {
             // Export selected discussions
 
-            const discussionIdArr = this.list.filter((item) => item.checkBoxValue == true).map((item) => {
+            const discussionIdArr = this.discussionsList.filter((item) => item.checkBoxValue == true).map((item) => {
                 return item.id
             })
 
@@ -3684,8 +3703,8 @@ export default {
         socket.on('close_message', this.finalMsgEvent)
 
         socket.on('disucssion_renamed',(event)=>{
-            const index = this.list.findIndex((x) => x.id == event.discussion_id)
-            const discussionItem = this.list[index]
+            const index = this.discussionsList.findIndex((x) => x.id == event.discussion_id)
+            const discussionItem = this.discussionsList[index]
             discussionItem.title = event.title
             /*
             {
@@ -3809,7 +3828,7 @@ export default {
         filterTitle(newVal) {
             if (newVal == '') {
                 this.filterInProgress = true
-                this.list = this.tempList
+                this.discussionsList = this.tempList
                 this.filterInProgress = false
             }
         },
@@ -4042,7 +4061,7 @@ export default {
                 feather.replace()
 
             })
-            return this.list.filter((item) => item.checkBoxValue == true)
+            return this.discussionsList.filter((item) => item.checkBoxValue == true)
         }
     }
 }
