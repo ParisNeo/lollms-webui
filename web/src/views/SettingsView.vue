@@ -1134,7 +1134,7 @@
                                     >
                                     <label class="mr-2">Mounted</label>
 
-                                    <button @click="removeDataSource(index)" 
+                                    <button @click="removeDataBase(index)" 
                                             class="ml-2 px-2 py-1 bg-red-500 text-white hover:bg-red-300 rounded flex items-center"
                                             title="Remove this data source">
                                         <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -4596,12 +4596,15 @@ export default {
                 }
                 
                 // Add new entry with default values including alias
-                this.configFile.remote_databases.push("new_database::lightrag::localhost");
+                this.configFile.remote_databases.push("new_database::lightrag::http://localhost:9621/");
                 
                 this.settingsChanged = true;
             },
             removeDataBase(index) {
+                console.log("Removing remote database")
                 this.configFile.remote_databases.splice(index, 1);
+                console.log(this.configFile.remote_databases)
+
                 this.settingsChanged = true;
             },        
             fetchElevenLabsVoices() {
