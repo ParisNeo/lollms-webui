@@ -31,7 +31,6 @@ setuptools.setup(
     url="https://github.com/ParisNeo/lollms-webui",
     packages=setuptools.find_packages(),
     install_requires=requirements,
-    extras_require={"dev": requirements_dev},
     classifiers=[
         "Programming Language :: Python :: 3.10",
         "License :: OSI Approved :: Apache 2.0 License",
