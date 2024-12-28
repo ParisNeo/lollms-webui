@@ -3,14 +3,19 @@ from typing import Union
 
 import setuptools
 
-with open("README.md", "r") as fh:
+README_MD_FILE = "README.md"
+REQUIREMENTS_TXT_FILE = "requirements.txt"
+REQUIREMENTS_DEV_TXT_FILE = "requirements_dev.txt"
+
+with open(README_MD_FILE, "r") as fh:
     long_description = fh.read()
 
-
-def read_requirements(path: Union[str, Path]):
+def read_requirements(path: Union[str, Path]) -> list:
     with open(path, "r") as file:
-        return file.read().splitlines()
+        return [line.strip() for line in file.readlines()]
 
+requirements = list(filter(None, read_requirements(REQUIREMENTS_TXT_FILE)))
+requirements_dev = list(filter(None, read_requirements(REQUIREMENTS_DEV_TXT_FILE)))
 
 requirements = read_requirements("requirements.txt")
 requirements_dev = read_requirements("requirements_dev.txt")
