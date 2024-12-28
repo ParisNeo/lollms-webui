@@ -22,7 +22,7 @@ requirements_dev = read_requirements("requirements_dev.txt")
 
 setuptools.setup(
     name="Lollms-webui",
-    version="5.0.2",
+    version="5.0.3",
     author="Saifeddine ALOUI",
     author_email="aloui.saifeddine@gmail.com",
     description="A web ui for running chat models with different bindings. Supports multiple personalities and extensions.",
@@ -32,7 +32,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=requirements,
     classifiers=[
-        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "License :: OSI Approved :: Apache 2.0 License",
         "Operating System :: OS Independent",
     ],
