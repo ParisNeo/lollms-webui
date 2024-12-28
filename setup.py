@@ -28,7 +28,7 @@ setuptools.setup(
     description="A web ui for running chat models with different bindings. Supports multiple personalities and extensions.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/ParisNeo/lollms-webui",
+    url="https://github.com/ba2512005/lollms-webui",
     packages=setuptools.find_packages(),
     install_requires=requirements,
     classifiers=[
