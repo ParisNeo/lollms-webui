@@ -7,7 +7,7 @@ README_MD_FILE = "README.md"
 REQUIREMENTS_TXT_FILE = "requirements.txt"
 REQUIREMENTS_DEV_TXT_FILE = "requirements_dev.txt"
 
-with open(README_MD_FILE, "r") as fh:
+with open(README_MD_FILE, "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 def read_requirements(path: Union[str, Path]) -> list:
