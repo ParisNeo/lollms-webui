@@ -32,10 +32,10 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # Build-time optimizations to reduce image size
-RUN find /app -type f | xargs grep -oE '\n\s+$' | sed 's/^/rm /' | bash \
-    && rm -rf /var/lib/apt/lists/* \
-    && conda clean -a
-
+#RUN find /app -type f | xargs grep -oE '\n\s+$' | sed 's/^/rm /' | bash \
+#    && rm -rf /var/lib/apt/lists/* \
+#    && conda clean -a
+RUN conda clean -a
 # Final stage: production-ready environment
 FROM python:3.11-slim
 
