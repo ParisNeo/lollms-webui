@@ -28,7 +28,6 @@ RUN git clone --depth 1 --recurse-submodules https://github.com/ba2512005/lollms
 COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
-RUN pip install fastapi 
 
 # Copy the rest of the application code
 COPY . .
