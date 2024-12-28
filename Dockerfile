@@ -42,8 +42,8 @@ RUN conda clean -a
 FROM python:3.11-slim
 
 # Set working directory and copy application code
-#WORKDIR /app
-#COPY --from=builder /app/lollms-webui .
+WORKDIR /app
+COPY --from=builder /app/lollms-webui .
 
 # Expose port 9600
 EXPOSE 9600
