@@ -12,7 +12,6 @@ import threading
 import time
 from typing import List, Tuple
 
-from fastapi.middleware.cors import CORSMiddleware
 from lollms.utilities import PackageManager
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
