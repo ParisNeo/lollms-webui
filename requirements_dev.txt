@@ -22,14 +22,12 @@ GitPython
 ascii_colors>=0.1.4
 beautifulsoup4
 packaging
-
 fastapi
 uvicorn
 python-multipart
 python-socketio
 python-socketio[client]
 python-socketio[asyncio_client]
-
 pydantic
 selenium
 tiktoken
