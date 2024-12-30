@@ -1422,16 +1422,34 @@ class LOLLMSWebUI(LOLLMSElfServer):
                         f"{k}"
                         for k, v in self.config.smart_routing_models_description.items()
                     ]
-                    output_id, explanation = self.personality.multichoice_question(
-                        "Select most suitable model to answer the user request given the context. Answer with the selected model index followed by an explanation in a new line.",
+                    
+                    code = self.personality.generate_custom_code(
+                        "\n".join([
+                            self.system_full_header,
+                        "Given the following list of models:"]+
                         [
                             f"{k}: {v}"
                             for k, v in self.config.smart_routing_models_description.items()
-                        ],
-                        "!@>user prompt:" + context_details["prompt"],
-                        return_explanation=True,
-                    )
-                    if output_id >= 0 and output_id < len(models):
+                        ]+[
+                        "!@>prompt:" + context_details["prompt"],
+                        """Given the prompt, which model among the previous list is the most suited and why?
+
+You must answer with json code placed inside the markdown code tag like this:
+```json
+{
+    "choice_index": [an int representing the index of the choice made]
+    "justification": "[Justify the choice]",
+}
+Make sure you fill all fields and to use the exact same keys as the template.
+Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
+
+!@>assistant:"""
+                        ]
+                    ))
+
+                    if code:
+                        output_id = code["choice_index"]
+                        explanation = code["justification"]
                         binding, model_name = self.model_path_to_binding_model(
                             models[output_id]
                         )

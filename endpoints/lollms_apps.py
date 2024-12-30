@@ -606,6 +606,7 @@ def install_requirements(app_path: Path):
             print(f"Error installing requirements: {e}")
             raise
 
+import sys
 
 def run_server(app_path: Path):
     server_script = app_path / "server.py"
@@ -614,11 +615,14 @@ def run_server(app_path: Path):
             # Install requirements if they exist
             install_requirements(app_path)
 
+            # Get current Python executable path
+            python_executable = sys.executable
+
             # Determine the platform and open a terminal to execute the Python code.
             system = platform.system()
             if system == "Windows":
                 process = subprocess.Popen(
-                    f"""start cmd /k "cd /d "{app_path}" && python "{server_script}" && pause" """,
+                    f"""start cmd /k "cd /d "{app_path}" && "{python_executable}" "{server_script}" && pause" """,
                     shell=True,
                 )
             elif system == "Darwin":  # macOS
@@ -627,7 +631,7 @@ def run_server(app_path: Path):
                         "open",
                         "-a",
                         "Terminal",
-                        f'cd "{app_path}" && python "{server_script}"',
+                        f'cd "{app_path}" && "{python_executable}" "{server_script}"',
                     ],
                     shell=True,
                 )
@@ -636,7 +640,7 @@ def run_server(app_path: Path):
                     [
                         "x-terminal-emulator",
                         "-e",
-                        f'bash -c "cd \\"{app_path}\\" && python \\"{server_script}\\"; exec bash"',
+                        f'bash -c "cd \\"{app_path}\\" && \\"{python_executable}\\" \\"{server_script}\\"; exec bash"',
                     ],
                     shell=True,
                 )
@@ -648,6 +652,7 @@ def run_server(app_path: Path):
             ASCIIColors.error(f"Error executing Python code: {ex}")
     else:
         ASCIIColors.error(f"Server script not found for app: {app_path.name}")
+
 
 
 @router.post("/apps/start_server")
