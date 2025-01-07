@@ -23,7 +23,24 @@ const ELF_COMPLETION_FORMAT = {
 Object.freeze(ELF_GENERATION_FORMAT);
 Object.freeze(ELF_COMPLETION_FORMAT);
 
-
+// Helper function to convert string to ELF_GENERATION_FORMAT
+function convertToGenerationFormat(mode) {
+  if (typeof mode === 'string') {
+      // Convert string to uppercase for case-insensitive comparison
+      const upperMode = mode.toUpperCase();
+      
+      // Find matching key in ELF_GENERATION_FORMAT
+      for (const [key, value] of Object.entries(ELF_GENERATION_FORMAT)) {
+          if (key === upperMode) {
+              return value;
+          }
+      }
+      // If no match found, return default LOLLMS (0)
+      return ELF_GENERATION_FORMAT.LOLLMS;
+  }
+  // If not a string, return the value as is
+  return mode;
+}
 class LollmsClient {
   constructor(
     host_address = null,
@@ -57,7 +74,7 @@ class LollmsClient {
     this.seed = seed;
     this.n_threads = n_threads;
     this.service_key = service_key;
-    this.default_generation_mode = default_generation_mode;
+    this.default_generation_mode = convertToGenerationFormat(default_generation_mode);
     this.minNPredict = 10
     this.template = {
       start_header_id_template: "!@>",
@@ -196,7 +213,7 @@ cancel_generation() {
           throw new Error('Invalid generation mode');
       }
     }
-    generate_with_images(prompt, images, {
+    generate_with_images(prompt, images,
       n_predict = null,
       stream = false,
       temperature = 0.1,
@@ -208,7 +225,7 @@ cancel_generation() {
       n_threads = 8,
       service_key = "",
       streamingCallback = null
-    } = {}) {
+    ) {
       switch (this.default_generation_mode) {
         case ELF_GENERATION_FORMAT.LOLLMS:
           return this.lollms_generate_with_images(prompt, images, this.host_address, this.model_name, -1, n_predict, stream, temperature, top_k, top_p, repeat_penalty, repeat_last_n, seed, n_threads, service_key, streamingCallback);
@@ -699,23 +716,31 @@ async encode_image(image_path, max_image_width = -1) {
     img.src = image_path;
   });
 }
-async generateCode(prompt, images = [], {
-  n_predict = null,
-  stream = false,
-  temperature = 0.1,
-  top_k = 50,
-  top_p = 0.95,
-  repeat_penalty = 0.8,
-  repeat_last_n = 40,
-  seed = null,
-  n_threads = 8,
-  service_key = "",
-  streamingCallback = null
-} = {}){
+async generateCode(
+  prompt, 
+  template=null,
+  language="json",
+  images = [],  
+  {
+    n_predict = null,
+    temperature = 0.1,
+    top_k = 50,
+    top_p = 0.95,
+    repeat_penalty = 0.8,
+    repeat_last_n = 40,
+    streamingCallback = null
+  } = {}
+){
   let response;
   const systemHeader = this.custom_message("Generation infos");
-  const codeInstructions = "Generated code must be put inside the adequate markdown code tag. Use this template:\n```language name\nCode\n```\nMake sure only a single code tag is generated at each dialogue turn.\n";
-  const fullPrompt = systemHeader + codeInstructions + this.separatorTemplate() + prompt;
+  let codeInstructions = "";
+  if(template){
+      codeInstructions =   "Generated code must be put inside the adequate markdown code tag. Use this template:\n```"+language+"\n"+template+"\n```\nMake sure only a single code tag is generated at each dialogue turn.\n";
+  }
+  else{
+      codeInstructions =   "Generated code must be put inside the adequate markdown code tag. Use this template:\n```language name\nCode\n```\nMake sure only a single code tag is generated at each dialogue turn.\n";
+  }
+  const fullPrompt = systemHeader + codeInstructions + this.separatorTemplate() + prompt + this.ai_message();
 
   if (images.length > 0) {
       response = await this.generate_with_images(fullPrompt, images, {
@@ -776,15 +801,11 @@ async generateCode(prompt, images = [], {
 }
 async generateCodes(prompt, images = [], {
   n_predict = null,
-  stream = false,
   temperature = 0.1,
   top_k = 50,
   top_p = 0.95,
   repeat_penalty = 0.8,
   repeat_last_n = 40,
-  seed = null,
-  n_threads = 8,
-  service_key = "",
   streamingCallback = null
 } = {}) {
   let response;
