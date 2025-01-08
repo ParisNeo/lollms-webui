@@ -1141,7 +1141,25 @@
                                         class="mx-2"
                                     >
                                     <label class="mr-2">Mounted</label>
-
+                                    <div class="inline-flex">
+                                        <input 
+                                        type="file" 
+                                        ref="fileInput"
+                                        @change="handleFileUpload" 
+                                        accept=".pdf,.txt,.doc,.docx,.csv,.md"
+                                        class="hidden"
+                                        multiple
+                                        />
+                                        <button 
+                                        @click="triggerFileInput" 
+                                        class="ml-2 px-2 py-1 bg-green-500 text-white hover:bg-green-300 rounded flex items-center"
+                                        title="Upload documents to this data source"
+                                        >
+                                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                        </svg>
+                                        </button>
+                                    </div>
                                     <button @click="removeDataBase(index)" 
                                             class="ml-2 px-2 py-1 bg-red-500 text-white hover:bg-red-300 rounded flex items-center"
                                             title="Remove this data source">
@@ -4368,7 +4386,7 @@
 import filesize from '../plugins/filesize'
 import axios from "axios";
 import feather from 'feather-icons'
-import { nextTick, TransitionGroup } from 'vue'
+import { nextTick } from 'vue'
 import ModelEntry from '@/components/ModelEntry.vue';
 import PersonalityViewer from '@/components/PersonalityViewer.vue';
 import PersonalityEntry from "@/components/PersonalityEntry.vue";
@@ -4416,6 +4434,7 @@ export default {
                 'accept': 'application/json',
                 'Content-Type': 'application/json'
             },
+            isUploading: false,
             defaultModelImgPlaceholder:defaultModelImgPlaceholder,
             snd_input_devices: [],
             snd_input_devices_indexes: [],
@@ -4541,6 +4560,44 @@ export default {
         //await socket.on('install_progress', this.progressListener);
     }, 
         methods: {
+            triggerFileInput() {
+            this.$refs.fileInput.click()
+            },
+            async handleFileUpload(event) {
+            const files = event.target.files
+            if (!files.length) return
+
+            this.isUploading = true
+            const formData = new FormData()
+            
+            // Add database name
+            formData.append('database_name', this.databaseName)
+            
+            // Add all files
+            Array.from(files).forEach(file => {
+                formData.append('files', file)
+            })
+
+            try {
+                const response = await axios.post('/upload_files_2_rag_db', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                onUploadProgress: (progressEvent) => {
+                    const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+                    this.$emit('upload-progress', percentCompleted)
+                }
+                })
+                
+                this.$emit('upload-success', response.data)
+            } catch (error) {
+                console.error('Upload failed:', error)
+                this.$emit('upload-error', error)
+            } finally {
+                this.isUploading = false
+                event.target.value = ''
+            }
+            },    
             updateRagDatabase(index, value, field) {
                 if (field) {
                     // For mounted, keep it as boolean, for others just set the value
@@ -4649,7 +4706,7 @@ export default {
             this.settingsChanged = true;
             },
             async vectorize_folder(index){
-                await axios.post('/vectorize_folder', {client_id:this.$store.state.client_id, db_path:this.$store.state.config.rag_databases[index]}, this.posts_headers)
+                await axios.post('/vectorize_folder', {client_id:this.$store.state.client_id, rag_database:this.$store.state.config.rag_databases[index]}, this.posts_headers)
             },
             async select_folder(index) {
                 try {
