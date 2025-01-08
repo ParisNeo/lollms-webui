@@ -496,18 +496,15 @@ export default {
             // Extract the names from the combined array and transform them into the desired format
             const formattedDataSources = combinedDatabases.map(dataSource => {
                 console.log("entry", dataSource);
-                const parts = dataSource.split('::');
-                console.log("extracted", parts[0]);
-
-                const isMounted = dataSource.endsWith('mounted');
-                const icon = isMounted ? 'feather:check' : '';
-
+                
+                const icon = dataSource.mounted ? 'feather:check' : '';
+                
                 console.log("icon decision", icon);
 
                 return {
-                    name: parts[0], 
-                    value: parts[0] || 'default_value', 
-                    icon: icon, 
+                    name: dataSource.alias,
+                    value: dataSource.alias || 'default_value',
+                    icon: icon,
                     help: 'mounts the database'
                 };
             });
@@ -515,6 +512,7 @@ export default {
             console.log("formatted data sources", formattedDataSources);
             return formattedDataSources;
         }
+
     },
     methods: { 
         showSendMenu() {

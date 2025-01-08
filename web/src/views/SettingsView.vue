@@ -1127,6 +1127,14 @@
                                     >
 
                                     <input
+                                        type="text"
+                                        :value="getDatabaseKey(index)"
+                                        @input="updateDatabaseKey(index, $event.target.value)"
+                                        class="w-full mx-2 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        placeholder="Database api key"
+                                    >
+
+                                    <input
                                         type="checkbox"
                                         :checked="getMounted(index)"
                                         @change="updateMounted(index, $event.target.checked)"
@@ -1158,7 +1166,7 @@
                                     <!-- Name input -->
                                     <input
                                         type="text"
-                                        :value="source.split('::')[0]"
+                                        :value="source.alias"
                                         @input="(e) => updateRagDatabase(index, e.target.value, 'name')"
                                         class="w-1/3 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600 mr-2"
                                         placeholder="Database Name"
@@ -1166,7 +1174,7 @@
                                     <!-- Path input -->
                                     <input
                                         type="text"
-                                        :value="source.split('::')[1]"
+                                        :value="source.path"
                                         @input="(e) => updateRagDatabase(index, e.target.value, 'path')"
                                         class="w-1/3 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600 mr-2"
                                         placeholder="Database Path"
@@ -1175,13 +1183,14 @@
                                     <div class="flex items-center mr-2">
                                         <input
                                             type="checkbox"
-                                            :checked="source.split('::')[2] === 'mounted'"
+                                            :checked="source.mounted"
                                             @change="(e) => updateRagDatabase(index, e.target.checked, 'mounted')"
                                             class="mr-1"
                                         >
                                         <span class="text-sm">Mounted</span>
                                     </div>
                                     
+                                    <!-- Vectorize button -->
                                     <button @click="vectorize_folder(index)" 
                                             class="w-500 ml-2 px-2 py-1 bg-green-500 text-white hover:bg-green-300 rounded flex items-center"
                                             title="Vectorize or re-vectorize the selected folder">
@@ -1190,6 +1199,7 @@
                                         </svg>
                                     </button>
 
+                                    <!-- Select folder button -->
                                     <button @click="select_folder(index)" 
                                             class="w-500 ml-2 px-2 py-1 bg-blue-500 text-white hover:bg-blue-300 rounded flex items-center"
                                             title="Select a folder as data source">
@@ -1198,6 +1208,7 @@
                                         </svg>
                                     </button>
 
+                                    <!-- Remove button -->
                                     <button @click="removeDataSource(index)" 
                                             class="ml-2 px-2 py-1 bg-red-500 text-white hover:bg-red-300 rounded flex items-center"
                                             title="Remove this data source">
@@ -1206,6 +1217,7 @@
                                         </svg>
                                     </button>
                                 </div>
+
 
                             <button @click="addDataSource" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded">Add Data Source</button>
                             </td>
@@ -4530,73 +4542,72 @@ export default {
     }, 
         methods: {
             updateRagDatabase(index, value, field) {
-                let parts = this.configFile.rag_databases[index].split('::');
-                
-                switch(field) {
-                    case 'name':
-                        parts[0] = value;
-                        break;
-                    case 'path':
-                        parts[1] = value;
-                        break;
-                    case 'mounted':
-                        parts[2] = value ? 'mounted' : '';
-                        break;
+                if (field) {
+                    // For mounted, keep it as boolean, for others just set the value
+                    if (field === 'mounted') {
+                        this.configFile.rag_databases[index][field] = Boolean(value);
+                    } else {
+                        this.configFile.rag_databases[index][field] = value;
+                    }
+                    
+                    this.settingsChanged = true;
                 }
-                
-                this.configFile.rag_databases[index] = parts.join('::');
-                this.settingsChanged = true;
-            },        
+            },
+
             getAlias(index) {
-                return this.configFile.remote_databases[index].split('::')[0];
+                return this.configFile.remote_databases[index].alias;
             },
             getDatabaseType(index) {
-                return this.configFile.remote_databases[index].split('::')[1];
+                return this.configFile.remote_databases[index].type;
             },
             getDatabaseUrl(index) {
-                return this.configFile.remote_databases[index].split('::')[2];
+                return this.configFile.remote_databases[index].url;
+            },
+            getDatabaseKey(index) {
+                return this.configFile.remote_databases[index].key || "";
             },
             getMounted(index) {
-                const parts = this.configFile.remote_databases[index].split('::');
-                return parts.length > 3 ? parts[3] === 'mounted' : false;
+                return this.configFile.remote_databases[index].mounted || false;
             },
 
             updateAlias(index, value) {
-                const parts = this.configFile.remote_databases[index].split('::');
-                parts[0] = value;
-                this.configFile.remote_databases[index] = parts.join('::');
-                this.settingsChanged = true;
-            },
-            updateDatabaseType(index, value) {
-                const parts = this.configFile.remote_databases[index].split('::');
-                parts[1] = value;
-                this.configFile.remote_databases[index] = parts.join('::');
-                this.settingsChanged = true;
-            },
-            updateDatabaseUrl(index, value) {
-                const parts = this.configFile.remote_databases[index].split('::');
-                parts[2] = value;
-                this.configFile.remote_databases[index] = parts.join('::');
-                this.settingsChanged = true;
-            },
-            updateMounted(index, value) {
-                const parts = this.configFile.remote_databases[index].split('::');
-                if (value) {
-                    parts[3] = 'mounted';
-                } else {
-                    parts.length = 3; // Remove mounted part if exists
-                }
-                this.configFile.remote_databases[index] = parts.join('::');
+                this.configFile.remote_databases[index].alias = value;
                 this.settingsChanged = true;
             },
 
+            updateDatabaseType(index, value) {
+                this.configFile.remote_databases[index].type = value;
+                this.settingsChanged = true;
+            },
+
+            updateDatabaseUrl(index, value) {
+                this.configFile.remote_databases[index].url = value;
+                this.settingsChanged = true;
+            },
+
+            updateDatabaseKey(index, value) {
+                this.configFile.remote_databases[index].key = value;
+                this.settingsChanged = true;
+            },
+
+            updateMounted(index, value) {
+                this.configFile.remote_databases[index].mounted = value;
+                this.settingsChanged = true;
+            },
             addDatabaseService() {
                 if (!this.configFile.remote_databases) {
                     this.configFile.remote_databases = [];
                 }
                 
-                // Add new entry with default values including alias
-                this.configFile.remote_databases.push("new_database::lightrag::http://localhost:9621/");
+                // Add new entry as an object with default values
+                this.configFile.remote_databases.push({
+                    alias: "new_database",
+                    is_local: false,     // this is a remote database
+                    type: "lightrag",
+                    url: "http://localhost:9621/",
+                    key: "",
+                    mounted: false
+                });
                 
                 this.settingsChanged = true;
             },
@@ -4621,35 +4632,53 @@ export default {
                 await store.dispatch('refreshVramUsage');
             },            
             addDataSource() {
-            this.$store.state.config.rag_databases.push('');
-            this.settingsChanged = true;
+                // Add new database entry with default values
+                this.$store.state.config.rag_databases.push({
+                    alias: '',          // Empty name initially
+                    is_local: true,     // this is a local database
+                    path: '',          // Empty path initially
+                    mounted: false,    // Not mounted by default
+                    key: ''           // No key for local databases
+                });
+                
+                this.settingsChanged = true;
             },
+
             removeDataSource(index) {
             this.$store.state.config.rag_databases.splice(index, 1);
             this.settingsChanged = true;
             },
             async vectorize_folder(index){
                 await axios.post('/vectorize_folder', {client_id:this.$store.state.client_id, db_path:this.$store.state.config.rag_databases[index]}, this.posts_headers)
-            },            
-            async select_folder(index){
-                try{
-                    socket.on("rag_db_added", (infos)=>{
+            },
+            async select_folder(index) {
+                try {
+                    socket.on("rag_db_added", (infos) => {
                         console.log(infos)
-                        if (infos){
-                            this.$store.state.config.rag_databases[index]=`${infos["database_name"]}::${infos["database_path"]}`
-                            this.settingsChanged=true;
-                        }
-                        else{
+                        if (infos) {
+                            // Update with new dictionary structure
+                            this.$store.state.config.rag_databases[index] = {
+                                alias: infos["database_name"],
+                                is_local: true,
+                                path: infos["database_path"],
+                                mounted: false,
+                                key: ''
+                            };
+                            this.settingsChanged = true;
+                        } else {
                             this.$store.state.toast.showToast("Failed to select a folder", 4, false)
                         }
-
                     });
-                    await axios.post('/add_rag_database', {client_id:this.$store.state.client_id}, this.posts_headers)
-                }
-                catch{
+
+                    await axios.post('/add_rag_database', 
+                        { client_id: this.$store.state.client_id }, 
+                        this.posts_headers
+                    )
+                } catch {
                     this.$store.state.toast.showToast("Failed to select a folder", 4, false)
                 }
             },
+
         handleTemplateSelection(event) {
             console.log("handleTemplateSelection")
             const selectedOption = event.target.value;
