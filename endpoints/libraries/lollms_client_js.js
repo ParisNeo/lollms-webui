@@ -772,7 +772,7 @@ async generateCode(
           code = codes[0].content.split('\n').slice(0, -1).join('\n');
           while (!codes[0].is_complete) {
               console.warn("The AI did not finish the code, let's ask it to continue")
-              const continuePrompt = prompt + code + this.userFullHeader + "continue the code. Rewrite last line and continue the code. Don't forget to put the code inside a markdown code tag." + this.separatorTemplate() + this.aiFullHeader;
+              const continuePrompt = prompt + self.separator_template + code + self.separator_template + this.user_message() + "continue the code. Rewrite last line and continue the code. Don't forget to put the code inside a markdown code tag." + this.separatorTemplate() + this.aiFullHeader;
               response = await this.generate(continuePrompt, {
                   n_predict: n_predict,
                   temperature: temperature,
@@ -844,7 +844,7 @@ async generateCodes(prompt, images = [], {
 
     while (!currentCode.is_complete) {
       console.warn("The AI did not finish the code, let's ask it to continue");
-      const continuePrompt = prompt + codeContent + this.userFullHeader + "continue the code. Rewrite last line and continue the code." + this.separatorTemplate() + this.aiFullHeader;
+      const continuePrompt = prompt + self.separator_template + codeContent + self.separator_template + this.user_message() + "continue the code. Rewrite last line and continue the code." + this.separatorTemplate() + this.aiFullHeader;
       
       response = await this.generate(continuePrompt, {
         n_predict,
