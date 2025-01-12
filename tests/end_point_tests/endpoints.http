@@ -145,7 +145,7 @@ GET http://localhost:9600/get_active_binding_settings
 ############################################
 GET http://localhost:9600/list_models
 ############################################
-### Get avaliable Models
+### Get available Models
 ############################################
 GET http://localhost:9600/get_available_models
 ############################################
