@@ -168,9 +168,9 @@
                         </div>   
                         <div class="w-fit">
                             <PersonalitiesCommands
-                                v-if="isDataSourceNamesValid"
+                                v-if="isdataLakeNamesValid"
                                 :icon="'feather:book'"
-                                :commandsList="dataSourceNames"
+                                :commandsList="dataLakeNames"
                                 :sendCommand="mountDB"
                                 :on-show-toast-message="onShowToastMessage"
                                 ref="databasesList"
@@ -478,38 +478,30 @@ export default {
         isCompactMode() {
             return this.$store.state.view_mode === 'compact';
         },
-        isDataSourceNamesValid() {
-            console.log('dataSourceNames:', this.dataSourceNames);
-            console.log('Type of dataSourceNames:', typeof this.dataSourceNames);
-            return Array.isArray(this.dataSourceNames) && this.dataSourceNames.length > 0;
+        isdataLakeNamesValid() {
+            console.log('dataLakeNames:', this.dataLakeNames);
+            console.log('Type of dataLakeNames:', typeof this.dataLakeNames);
+            return Array.isArray(this.dataLakeNames) && this.dataLakeNames.length > 0;
         },        
-        dataSourceNames() {
-            console.log("rag_databases", this.$store.state.config.rag_databases);
-            console.log("remote_databases", this.$store.state.config.remote_databases);
-
-            // Combine both rag_databases and remote_databases
-            const combinedDatabases = [
-                ...this.$store.state.config.rag_databases,
-                ...this.$store.state.config.remote_databases
-            ];
-
+        dataLakeNames() {
+            console.log("rag_databases", this.$store.state.config.datalakes);
             // Extract the names from the combined array and transform them into the desired format
-            const formattedDataSources = combinedDatabases.map(dataSource => {
-                console.log("entry", dataSource);
+            const formattedDataSources = this.$store.state.config.datalakes.map(dataLake => {
+                console.log("entry", dataLake);
                 
-                const icon = dataSource.mounted ? 'feather:check' : '';
+                const icon = dataLake.mounted ? 'feather:check' : '';
                 
                 console.log("icon decision", icon);
 
                 return {
-                    name: dataSource.alias,
-                    value: dataSource.alias || 'default_value',
+                    name: dataLake.alias,
+                    value: dataLake.alias || 'default_value',
                     icon: icon,
-                    help: 'mounts the database'
+                    help: 'mounts the datalake'
                 };
             });
 
-            console.log("formatted data sources", formattedDataSources);
+            console.log("formatted datalake", formattedDataSources);
             return formattedDataSources;
         }
 
@@ -735,7 +727,7 @@ export default {
             this.$emit('sendCMDEvent', cmd)
         },
         async mountDB(cmd){
-            await axios.post('/toggle_mount_rag_database', {"client_id":this.$store.state.client_id,"database_name":cmd})
+            await axios.post('/toggle_mount_rag_database', {"client_id":this.$store.state.client_id,"datalake_name":cmd})
             await this.$store.dispatch('refreshConfig');
             console.log("Refreshed")
 

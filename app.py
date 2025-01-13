@@ -17,7 +17,7 @@ from lollms.utilities import PackageManager
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-expected_ascii_colors_version = "0.4.2"
+expected_ascii_colors_version = "0.5.0"
 print(
     f"Checking ascii_colors ({expected_ascii_colors_version}) ...", end="", flush=True
 )
@@ -87,7 +87,7 @@ def check_and_install_package(package: str, version: str):
 
 
 packages: List[Tuple[str, str]] = [
-    ("freedom_search", "0.1.9"),
+    ("freedom_search", "0.2.2"),
     ("scrapemaster", "0.2.1"),
     ("lollms_client", "0.7.7"),
     ("lollmsvectordb", "1.3.6"),

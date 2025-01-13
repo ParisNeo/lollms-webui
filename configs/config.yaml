@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 147
+version: 148
 
 # video viewing and news recovering
 last_viewed_video: null
@@ -279,10 +279,14 @@ audio_auto_send_input: true
 audio_silenceTimer: 5000
 
 # relmote databases
-remote_databases: [] # This is the list of remote databases addresses in form database_type::database url
+# This is the list of datalakes to be used for RAG
+# Datalakes hae the following entries
+#
+datalakes: [] 
 
 # Data vectorization
-rag_databases: [] # This is the list of paths to database sources. Each database is a folder containing data
+rag_local_services: [] # This is the list of rag services served locally 
+
 rag_vectorizer: semantic # possible values semantic, tfidf, openai, ollama
 rag_service_url: "http://localhost:11434" # rag service url for ollama
 rag_vectorizer_model:  "BAAI/bge-m3" # The model name if applicable

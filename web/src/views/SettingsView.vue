@@ -1092,17 +1092,14 @@
                     </button>
                 </div>
                 <div :class="{ 'hidden': data_conf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
-                    <Card title="Remote Dabase Servers" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <Card title="Data Lakes" :is_subcard="true" class="pb-2  m-2">
+                        <table class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         <tr>
-                            <td style="min-width: 200px;">
-                            <label for="remote_databases" class="text-sm font-bold" style="margin-right: 1rem;">Remote Database Servers:</label>
-                            </td>
                             <td style="width: 100%;">
-                                <div v-for="(source, index) in configFile.remote_databases" :key="index" class="flex items-center mb-2">
+                                <div v-for="(source, index) in configFile.datalakes" :key="index" class="flex items-center mb-2">
                                     <input
                                         type="text"
-                                        :value="getAlias(index)"
+                                        :value="getDataLakeAlias(index)"
                                         @input="updateAlias(index, $event.target.value)"
                                         class="w-40 mx-2 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
                                         placeholder="Database Alias"
@@ -1110,7 +1107,118 @@
 
                                     <select
                                         required
-                                        :value="getDatabaseType(index)"
+                                        :value="getDataLakeType(index)"
+                                        @input="updateDatabaseType(index, $event.target.value)"
+                                        class="w-40 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                    >
+                                        <option value="lollmsvectordb">Lollms VectorDB Folder</option>
+                                        <option value="lightrag">Light Rag</option>
+                                        <option value="elasticdsearch">Elastic Search</option>
+                                    </select>
+
+                                    <input
+                                        v-if="source.type=='lightrag'"
+                                        type="text"
+                                        :value="getDataLakeUrl(index)"
+                                        @input="updateDataLakeUrl(index, $event.target.value)"
+                                        class="w-full mx-2 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        placeholder="DataLake URL"
+                                    >
+
+                                    <input
+                                        v-if="source.type=='lollmsvectordb'"
+                                        type="text"
+                                        :value="getDataLakePath(index)"
+                                        @input="updateDataLakePath(index, $event.target.value)"
+                                        class="w-full mx-2 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        placeholder="DataLake Path"
+                                    >
+
+                                    <input
+                                        v-if="source.type=='lightrag'"
+                                        type="text"
+                                        :value="getDataLakeKey(index)"
+                                        @input="updateDatabaseKey(index, $event.target.value)"
+                                        class="w-full mx-2 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        placeholder="Database api key"
+                                    >
+
+                                    <input
+                                        type="checkbox"
+                                        :checked="getDataLakeStatus(index)"
+                                        @change="updateMounted(index, $event.target.checked)"
+                                        class="mx-2"
+                                    >
+                                    <label class="mr-2">Mounted</label>
+                                    <!-- Vectorize button -->
+                                    <button v-if="source.type=='lollmsvectordb'" @click="vectorize_folder(index)" 
+                                            class="w-500 ml-2 px-2 py-1 bg-green-500 text-white hover:bg-green-300 rounded flex items-center"
+                                            title="Vectorize or re-vectorize the selected folder">
+                                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                        </svg>
+                                    </button>
+
+                                    <!-- Select folder button -->
+                                    <button v-if="source.type=='lollmsvectordb'"  @click="select_folder(index)" 
+                                            class="w-500 ml-2 px-2 py-1 bg-blue-500 text-white hover:bg-blue-300 rounded flex items-center"
+                                            title="Select a folder as data source">
+                                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                                        </svg>
+                                    </button>
+
+                                    <div class="inline-flex">
+                                        <input 
+                                        type="file" 
+                                        ref="fileInput"
+                                        @change="handleFileUpload" 
+                                        accept=".pdf,.txt,.doc,.docx,.csv,.md"
+                                        class="hidden"
+                                        multiple
+                                        />
+                                        <button 
+                                        @click="triggerFileInput" 
+                                        class="ml-2 px-2 py-1 bg-green-500 text-white hover:bg-green-300 rounded flex items-center"
+                                        title="Upload documents to this data source"
+                                        >
+                                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                        </svg>
+                                        </button>
+                                    </div>
+                                    <button @click="removeDataLake(index)" 
+                                            class="ml-2 px-2 py-1 bg-red-500 text-white hover:bg-red-300 rounded flex items-center"
+                                            title="Remove this data source">
+                                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            <button @click="addDatabaseService" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded">Add Data lake</button>
+                            </td>
+                        </tr>
+                        </table>
+                    </Card>                
+                    <Card title="Data Servers" :is_subcard="true" class="pb-2  m-2">
+                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <tr>
+                            <td style="min-width: 200px;">
+                            <label for="rag_served_databases" class="text-sm font-bold" style="margin-right: 1rem;">Database Servers:</label>
+                            </td>
+                            <td style="width: 100%;">
+                                <div v-for="(source, index) in configFile.rag_served_databases" :key="index" class="flex items-center mb-2">
+                                    <input
+                                        type="text"
+                                        :value="getServedDatabaseAlias(index)"
+                                        @input="updateAlias(index, $event.target.value)"
+                                        class="w-40 mx-2 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                        placeholder="Database Alias"
+                                    >
+
+                                    <select
+                                        required
+                                        :value="getServedDatabaseType(index)"
                                         @input="updateDatabaseType(index, $event.target.value)"
                                         class="w-40 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
                                     >
@@ -1120,15 +1228,15 @@
 
                                     <input
                                         type="text"
-                                        :value="getDatabaseUrl(index)"
-                                        @input="updateDatabaseUrl(index, $event.target.value)"
+                                        :value="getServedDatabaseUrl(index)"
+                                        @input="updateDataLakeUrl(index, $event.target.value)"
                                         class="w-full mx-2 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
                                         placeholder="Database URL"
                                     >
 
                                     <input
                                         type="text"
-                                        :value="getDatabaseKey(index)"
+                                        :value="getServedDatabaseKey(index)"
                                         @input="updateDatabaseKey(index, $event.target.value)"
                                         class="w-full mx-2 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
                                         placeholder="Database api key"
@@ -1136,7 +1244,7 @@
 
                                     <input
                                         type="checkbox"
-                                        :checked="getMounted(index)"
+                                        :checked="getServedDatabaseStatus(index)"
                                         @change="updateMounted(index, $event.target.checked)"
                                         class="mx-2"
                                     >
@@ -1160,7 +1268,8 @@
                                         </svg>
                                         </button>
                                     </div>
-                                    <button @click="removeDataBase(index)" 
+
+                                    <button @click="removeServedDataBase(index)" 
                                             class="ml-2 px-2 py-1 bg-red-500 text-white hover:bg-red-300 rounded flex items-center"
                                             title="Remove this data source">
                                         <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1168,19 +1277,15 @@
                                         </svg>
                                     </button>
                                 </div>
-                            <button @click="addDatabaseService" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded">Add Database Service</button>
+                            <button @click="addDatabaseService" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded">Create Database server</button>
                             </td>
                         </tr>
-                        </table>
-                    </Card>                
-                    <Card title="Data Sources" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         <tr>
                             <td style="min-width: 200px;">
-                            <label for="rag_databases" class="text-sm font-bold" style="margin-right: 1rem;">Data Sources:</label>
+                            <label for="datalakes" class="text-sm font-bold" style="margin-right: 1rem;">Data Servers:</label>
                             </td>
                             <td style="width: 100%;">
-                                <div v-for="(source, index) in configFile.rag_databases" :key="index" class="flex items-center mb-2">
+                                <div v-for="(source, index) in configFile.datalakes" :key="index" class="flex items-center mb-2">
                                     <!-- Name input -->
                                     <input
                                         type="text"
@@ -1239,7 +1344,13 @@
 
                             <button @click="addDataSource" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded">Add Data Source</button>
                             </td>
-                        </tr>
+                        </tr>                        
+                        </table>
+                    </Card>
+
+                    <Card title="LollmsVectordb Configuration" :is_subcard="true" class="pb-2  m-2">
+                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
                         <tr>
                             <td style="min-width: 200px;">
                                 <label for="data_vectorization_save_db" class="text-sm font-bold" style="margin-right: 1rem;">RAG Vectorizer:</label>
@@ -4602,76 +4713,85 @@ export default {
                 if (field) {
                     // For mounted, keep it as boolean, for others just set the value
                     if (field === 'mounted') {
-                        this.configFile.rag_databases[index][field] = Boolean(value);
+                        this.configFile.datalakes[index][field] = Boolean(value);
                     } else {
-                        this.configFile.rag_databases[index][field] = value;
+                        this.configFile.datalakes[index][field] = value;
                     }
                     
                     this.settingsChanged = true;
                 }
             },
 
-            getAlias(index) {
-                return this.configFile.remote_databases[index].alias;
+            getDataLakeAlias(index) {
+                return this.configFile.datalakes[index].alias;
             },
-            getDatabaseType(index) {
-                return this.configFile.remote_databases[index].type;
+            getDataLakeType(index) {
+                return this.configFile.datalakes[index].type;
             },
-            getDatabaseUrl(index) {
-                return this.configFile.remote_databases[index].url;
+            getDataLakeUrl(index) {
+                return this.configFile.datalakes[index].url;
             },
-            getDatabaseKey(index) {
-                return this.configFile.remote_databases[index].key || "";
+            getDataLakePath(index) {
+                return this.configFile.datalakes[index].path;
             },
-            getMounted(index) {
-                return this.configFile.remote_databases[index].mounted || false;
+            getDataLakeKey(index) {
+                return this.configFile.datalakes[index].key || "";
+            },
+            getDataLakeStatus(index) {
+                return this.configFile.datalakes[index].mounted || false;
             },
 
             updateAlias(index, value) {
-                this.configFile.remote_databases[index].alias = value;
+                this.configFile.datalakes[index].alias = value;
                 this.settingsChanged = true;
             },
 
             updateDatabaseType(index, value) {
-                this.configFile.remote_databases[index].type = value;
+                this.configFile.datalakes[index].type = value;
                 this.settingsChanged = true;
             },
 
-            updateDatabaseUrl(index, value) {
-                this.configFile.remote_databases[index].url = value;
+            updateDataLakeUrl(index, value) {
+                this.configFile.datalakes[index].url = value;
+                this.settingsChanged = true;
+            },
+
+            
+            updateDataLakePath(index, value) {
+                this.configFile.datalakes[index].path = value;
                 this.settingsChanged = true;
             },
 
             updateDatabaseKey(index, value) {
-                this.configFile.remote_databases[index].key = value;
+                this.configFile.datalakes[index].key = value;
                 this.settingsChanged = true;
             },
 
             updateMounted(index, value) {
-                this.configFile.remote_databases[index].mounted = value;
+                this.configFile.datalakes[index].mounted = value;
                 this.settingsChanged = true;
             },
             addDatabaseService() {
-                if (!this.configFile.remote_databases) {
-                    this.configFile.remote_databases = [];
+                if (!this.configFile.datalakes) {
+                    this.configFile.datalakes = [];
                 }
                 
                 // Add new entry as an object with default values
-                this.configFile.remote_databases.push({
-                    alias: "new_database",
-                    is_local: false,     // this is a remote database
+                this.configFile.datalakes.push({
+                    alias: "datalake",
                     type: "lightrag",
                     url: "http://localhost:9621/",
+                    path: "",
                     key: "",
                     mounted: false
                 });
                 
                 this.settingsChanged = true;
             },
-            removeDataBase(index) {
+            removeDataLake(index) {
                 console.log("Removing remote database")
-                this.configFile.remote_databases.splice(index, 1);
-                console.log(this.configFile.remote_databases)
+                this.configFile.datalakes.splice(index, 1);
+                console.log(this.configFile.datalakes)
 
                 this.settingsChanged = true;
             },        
@@ -4690,7 +4810,7 @@ export default {
             },            
             addDataSource() {
                 // Add new database entry with default values
-                this.$store.state.config.rag_databases.push({
+                this.$store.state.config.datalakes.push({
                     alias: '',          // Empty name initially
                     is_local: true,     // this is a local database
                     path: '',          // Empty path initially
@@ -4702,22 +4822,25 @@ export default {
             },
 
             removeDataSource(index) {
-            this.$store.state.config.rag_databases.splice(index, 1);
+            this.$store.state.config.datalakes.splice(index, 1);
             this.settingsChanged = true;
             },
             async vectorize_folder(index){
-                await axios.post('/vectorize_folder', {client_id:this.$store.state.client_id, rag_database:this.$store.state.config.rag_databases[index]}, this.posts_headers)
+                await axios.post('/vectorize_folder', {client_id:this.$store.state.client_id, rag_database:this.$store.state.config.datalakes[index]}, this.posts_headers)
             },
             async select_folder(index) {
                 try {
                     socket.on("rag_db_added", (infos) => {
+                        console.log("rag_db_added")
                         console.log(infos)
                         if (infos) {
                             // Update with new dictionary structure
-                            this.$store.state.config.rag_databases[index] = {
-                                alias: infos["database_name"],
-                                is_local: true,
-                                path: infos["database_path"],
+                            console.log(this.$store.state.config.datalakes)
+                            console.log(index)
+                            this.$store.state.config.datalakes[index] = {
+                                alias: infos["datalake_name"],
+                                type: "lollmsvectordb",
+                                path: infos["path"],
                                 mounted: false,
                                 key: ''
                             };
