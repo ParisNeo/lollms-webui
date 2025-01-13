@@ -1073,7 +1073,7 @@
                             </div>
                             
                             <div class="space-y-4">
-                                <div v-for="(source, index) in configFile.rag_served_databases" :key="index" 
+                                <div v-for="(source, index) in configFile.rag_local_services" :key="index" 
                                     class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                         <!-- Database Alias -->
@@ -4399,7 +4399,21 @@ export default {
                     this.settingsChanged = true;
                 }
             },
-
+            getServedDatabaseAlias(index) {
+                return this.configFile.rag_local_services[index].alias;
+            },
+            getServedDatabaseType(index) {
+                return this.configFile.rag_local_services[index].type;
+            },
+            getServedDatabaseUrl(index) {
+                return this.configFile.rag_local_services[index].url;
+            },
+            getServedDatabaseStatus(index) {
+                return this.configFile.rag_local_services[index].mounted || false;
+            },
+            getServedDatabaseKey(index) {
+                return this.configFile.rag_local_services[index].key || "";
+            },
             getDataLakeAlias(index) {
                 return this.configFile.datalakes[index].alias;
             },
